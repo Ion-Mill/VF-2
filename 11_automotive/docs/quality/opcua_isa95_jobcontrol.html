@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OPC-10031-4 &#x2013; OPC UA for ISA-95 - Part 4: Job Control</title>
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/css/site.css?v=V5GQNmsbOl8B9o5m0N4IedP0ikjJeS8mhboD9acFTBw" />
+    <script>
+    (function () {
+        try {
+            var w = parseInt(localStorage.getItem('opc.tocWidth'), 10);
+            if (w >= 180 && w <= 900) {
+                document.documentElement.style.setProperty('--toc-w', w + 'px');
+            }
+        } catch (e) { /* private mode / storage disabled — keep the CSS default */ }
+    })();
+    </script>
+        <meta property="og:title" content="OPC-10031-4 &#x2013; OPC UA for ISA-95 - Part 4: Job Control" />
+</head>
+<body>
+    <header b-9bvyxychcn class="site-header">
+        <div b-9bvyxychcn class="site-header-inner">
+            <a b-9bvyxychcn href="/" aria-label="OPC Foundation home">
+                <img src="/images/opclogo.png" class="site-logo" alt="OPC Foundation" />
+            </a>
+                <span b-9bvyxychcn class="site-header-spec">OPC UA for ISA-95 - Part 4: Job Control</span>
+                <form class="header-search" action="/specs/OPC-10031-4/search" method="get" role="search">
+                    <input b-9bvyxychcn type="search" name="q" placeholder="Search…" aria-label="Search this specification" />
+                    <button b-9bvyxychcn type="submit">Go</button>
+                </form>
+            <a b-9bvyxychcn class="header-report" href="mailto:webmaster@opcfoundation.org?subject=Online%20Reference%20Problem%20Report&amp;body=Current%20page%3A%20https%3A%2F%2Freference.opcfoundation.org%2Fspecs%2FOPC-10031-4" title="Report Problem" aria-label="Report Problem">
+                <svg b-9bvyxychcn viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
+                    <path b-9bvyxychcn fill="currentColor" d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" />
+                </svg>
+            </a>
+        </div>
+    </header>
+
+        <div b-9bvyxychcn class="page-container">
+            <main b-9bvyxychcn role="main">
+                
+<header class="intro-header">
+    <div class="intro-id">OPC-10031-4</div>
+    <h1>OPC UA for ISA-95 - Part 4: Job Control</h1>
+</header>
+
+<section class="intro-meta">
+    <table class="meta-table">
+        <tbody>
+                <tr><th scope="row">Document</th><td>OPC 10031-4</td></tr>
+                <tr><th scope="row">Release Version</th><td>2.00.0</td></tr>
+                <tr><th scope="row">Publication Date</th><td>2024-01-31</td></tr>
+        </tbody>
+    </table>
+</section>
+
+<section class="intro-actions">
+        <a class="intro-cta" href="/specs/OPC-10031-4/1">Browse</a>
+        <a class="intro-cta intro-cta-secondary" href="/specs/OPC-10031-4/full">Single Page View</a>
+    <div class="intro-download">
+        <button class="intro-download-btn" type="button"
+                aria-haspopup="true" aria-expanded="false"
+                id="download-btn">
+            Download ▾
+        </button>
+        <div class="intro-download-menu" role="menu" id="download-menu">
+            <a class="intro-download-item" role="menuitem"
+               href="/specs/OPC-10031-4/v2.00.0/t63916693182/download/sts-xml">STS XML (XML for IEC Specifications)</a>
+            <a class="intro-download-item" role="menuitem"
+               href="/specs/OPC-10031-4/v2.00.0/t63916693182/download/markdown">Markdown (AI Friendly, Low Token Count)</a>
+            <a class="intro-download-item" role="menuitem"
+               href="/specs/OPC-10031-4/v2.00.0/t63916693182/download/rag-jsonl">RAG Chunks (JSONL for Ollama / local models)</a>
+        </div>
+    </div>
+</section>
+
+
+    <section class="intro-section">
+        <h2>Version History</h2>
+        <table class="intro-table">
+            <thead>
+                <tr><th scope="col">Version</th><th scope="col">Published</th><th scope="col"></th></tr>
+            </thead>
+            <tbody>
+                    <tr class="is-current">
+                        <td><a href="/specs/OPC-10031-4/v2.00.0">2.00.0</a></td>
+                        <td>2024-01-31</td>
+                        <td>
+ <span class="current-tag">current</span>                         </td>
+                    </tr>
+                    <tr>
+                        <td><a href="/specs/OPC-10031-4/v1.00.0" rel="nofollow noindex">1.00.0</a></td>
+                        <td>2021-05-09</td>
+                        <td>
+                        </td>
+                    </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="intro-section">
+        <h2>Namespaces</h2>
+        <table class="intro-table">
+            <thead>
+                <tr>
+                    <th scope="col">Namespace URI</th>
+                    <th scope="col">Model Version</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                    <tr>
+                        <td>
+                            <code>http://opcfoundation.org/UA/ISA95-JOBCONTROL_V2/</code>
+ <span class="primary-tag">primary</span>                         </td>
+                        <td>2.0.0</td>
+                        <td>
+                            <a class="ns-download-btn"
+                               href="/nodesets/download?ns=http%3A%2F%2Fopcfoundation.org%2FUA%2FISA95-JOBCONTROL_V2%2F&version=2.0.0">
+                                Download
+                            </a>
+                        </td>
+                    </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="intro-section">
+        <h2>Supplementary Files</h2>
+        <ul class="intro-link-list">
+                <li><a href="https://github.com/OPCFoundation/UA-Nodeset/tree/ISA95-JOBCONTROL-2.0.0-2024-01-31/ISA95-JOBCONTROL" target="_blank" rel="noopener">ISA95-JOBCONTROL-2.0.0-2024-01-31/ISA95-JOBCONTROL</a></li>
+        </ul>
+    </section>
+
+<section class="intro-section intro-license">
+    <h2>Licences</h2>
+    <div id="licence-text">
+        <p>This document is subject to the license terms described <a href="/specs/OPC-10031-4/agreement-of-use" rel="nofollow noindex">here</a>.</p>
+        <p>The general OPC Foundation specification license agreement also applies and can be found <a href="https://opcfoundation.org/license/specifications/1.14/" target="_blank" rel="noopener">here</a>.</p>
+    </div>
+</section>
+
+<section class="intro-official">
+    <p>
+        The official version of the specification is
+        <a href="https://opcfoundation.org/documents/10031-4" target="_blank" rel="noopener">here</a>.
+        The official version is considered correct if there are differences with this website.
+    </p>
+</section>
+
+<dialog class="licence-dialog" id="licence-dialog" aria-labelledby="licence-dialog-title">
+    <h2 class="licence-dialog-title" id="licence-dialog-title">Licences</h2>
+    <div class="licence-dialog-body" id="licence-dialog-body"></div>
+    <div class="licence-dialog-actions">
+        <button type="button" class="intro-cta intro-cta-secondary" id="licence-cancel">Cancel</button>
+        <button type="button" class="intro-cta" id="licence-ok">OK</button>
+    </div>
+</dialog>
+
+            </main>
+        </div>
+
+    
+<script>
+(function () {
+    var btn  = document.getElementById('download-btn');
+    var menu = document.getElementById('download-menu');
+    if (!btn || !menu) return;
+    btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var opening = !menu.classList.contains('open');
+        menu.classList.toggle('open', opening);
+        btn.setAttribute('aria-expanded', String(opening));
+    });
+    document.addEventListener('click', function () {
+        menu.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+    });
+})();
+
+// The Download button's format links are gated by a licence confirmation: the dialog
+// shows the exact text of the Licences section, and only OK starts the download.
+(function () {
+    var dlg    = document.getElementById('licence-dialog');
+    var body   = document.getElementById('licence-dialog-body');
+    var source = document.getElementById('licence-text');
+    var ok     = document.getElementById('licence-ok');
+    var cancel = document.getElementById('licence-cancel');
+    if (!dlg || !body || !source || typeof dlg.showModal !== 'function') return;
+
+    // Clone once; the links open in a new tab so reading them does not lose the dialog.
+    var clone = source.cloneNode(true);
+    clone.removeAttribute('id');
+    Array.prototype.forEach.call(clone.querySelectorAll('a'), function (a) {
+        a.target = '_blank';
+        a.rel = 'noopener';
+    });
+    body.appendChild(clone);
+
+    var pendingHref = null;
+
+    document.addEventListener('click', function (e) {
+        var link = e.target.closest ? e.target.closest('.intro-download-item') : null;
+        if (!link || !link.getAttribute('href')) return;
+        e.preventDefault();
+        pendingHref = link.href;
+        dlg.showModal();
+    });
+
+    ok.addEventListener('click', function () {
+        var href = pendingHref;
+        dlg.close();
+        if (href) window.location.href = href;
+    });
+    cancel.addEventListener('click', function () { dlg.close(); });
+    dlg.addEventListener('close', function () { pendingHref = null; });
+    // Click on the backdrop (outside the dialog box) dismisses too.
+    dlg.addEventListener('click', function (e) {
+        if (e.target === dlg) dlg.close();
+    });
+})();
+</script>
+
+
+    <!-- In-page find bar (Ctrl+F) -->
+    <div b-9bvyxychcn id="find-bar" class="find-bar" hidden aria-label="Find on page">
+        <input b-9bvyxychcn id="find-input" type="text" placeholder="Find on page…" autocomplete="off" spellcheck="false" aria-label="Search text" />
+        <span b-9bvyxychcn id="find-count" class="find-count" aria-live="polite"></span>
+        <button b-9bvyxychcn id="find-prev" class="find-btn" title="Previous (Shift+Enter)">&#x2191;</button>
+        <button b-9bvyxychcn id="find-next" class="find-btn" title="Next (Enter)">&#x2193;</button>
+        <button b-9bvyxychcn id="find-close" class="find-btn find-close-btn" title="Close (Escape)" aria-label="Close">&#x2715;</button>
+    </div>
+
+    <script>
+    // ── ToC mobile drawer ────────────────────────────────────────────────────────
+    (function () {
+        var b = document.body;
+        function closeToc() {
+            b.classList.remove('toc-open');
+            var btn = document.querySelector('.toc-toggle');
+            if (btn) btn.setAttribute('aria-expanded', 'false');
+        }
+        document.addEventListener('click', function (e) {
+            if (e.target.closest('.toc-toggle')) {
+                var open = b.classList.toggle('toc-open');
+                var btn = e.target.closest('.toc-toggle');
+                btn.setAttribute('aria-expanded', String(open));
+            } else if (e.target.closest('.toc-backdrop') || e.target.closest('.toc-list a')) {
+                closeToc();
+            }
+        });
+    })();
+
+    // ── ToC pane resizer ─────────────────────────────────────────────────────────
+    // Writes --toc-w on <html> and persists it; the <head> script above replays it on
+    // the next page, so the width survives normal server-rendered navigation.
+    (function () {
+        var DEFAULT = 300, MIN = 180, KEY = 'opc.tocWidth';
+        var handle = document.getElementById('toc-resizer');
+        var layout = document.querySelector('.spec-layout');
+        if (!handle || !layout) return;
+
+        // Never let the ToC squeeze the content pane below a readable width.
+        function maxWidth() { return Math.max(MIN, Math.min(900, window.innerWidth - 320)); }
+
+        function current() {
+            var v = parseInt(getComputedStyle(document.documentElement)
+                             .getPropertyValue('--toc-w'), 10);
+            return isNaN(v) ? DEFAULT : v;
+        }
+
+        // The width the user asked for, before clamping — kept so a temporarily narrow
+        // window does not permanently shrink their preference.
+        var desired = current();
+
+        function apply(px, persist) {
+            var w = Math.round(Math.max(MIN, Math.min(maxWidth(), px)));
+            document.documentElement.style.setProperty('--toc-w', w + 'px');
+            handle.setAttribute('aria-valuenow', String(w));
+            if (persist) {
+                desired = w;
+                try { localStorage.setItem(KEY, String(w)); } catch (e) { }
+            }
+            return w;
+        }
+
+        handle.setAttribute('aria-valuenow', String(desired));
+
+        handle.addEventListener('pointerdown', function (e) {
+            if (e.button !== 0) return;
+            e.preventDefault();
+            handle.setPointerCapture(e.pointerId);
+            document.body.classList.add('toc-resizing');
+            var originX = layout.getBoundingClientRect().left;
+
+            function onMove(ev) { apply(ev.clientX - originX, false); }
+            function onUp(ev) {
+                handle.removeEventListener('pointermove', onMove);
+                handle.removeEventListener('pointerup', onUp);
+                handle.removeEventListener('pointercancel', onUp);
+                document.body.classList.remove('toc-resizing');
+                apply(ev.type === 'pointercancel' ? current() : ev.clientX - originX, true);
+            }
+            handle.addEventListener('pointermove', onMove);
+            handle.addEventListener('pointerup', onUp);
+            handle.addEventListener('pointercancel', onUp);
+        });
+
+        handle.addEventListener('dblclick', function () {
+            apply(DEFAULT, true);
+        });
+
+        handle.addEventListener('keydown', function (e) {
+            var step = e.shiftKey ? 50 : 10;
+            if (e.key === 'ArrowLeft')       { apply(current() - step, true); }
+            else if (e.key === 'ArrowRight') { apply(current() + step, true); }
+            else if (e.key === 'Home')       { apply(DEFAULT, true); }
+            else return;
+            e.preventDefault();
+        });
+
+        // A narrowed window can invalidate the stored width; re-clamp the *preference*
+        // (not the clamped value) so the chosen width returns when the window grows.
+        // Below the breakpoint the ToC is an overlay drawer sized by the stylesheet
+        // (min(--toc-w, 85vw)) — leave it alone rather than clamping against a viewport
+        // the drawer does not share with the content.
+        var narrow = window.matchMedia('(max-width: 768px)');
+        function sync() { if (!narrow.matches) { apply(desired, false); } }
+        window.addEventListener('resize', sync);
+        sync();
+    })();
+
+    // ── Scroll active ToC item into view on load ─────────────────────────────────
+    (function () {
+        var pane   = document.getElementById('toc-pane');
+        var active = pane && pane.querySelector('.toc-list a.active');
+        if (active) active.scrollIntoView({ block: 'center' });
+    })();
+
+    // ── In-page find bar (Ctrl/Cmd+F) ────────────────────────────────────────────
+    (function () {
+        var bar   = document.getElementById('find-bar');
+        var input = document.getElementById('find-input');
+        var count = document.getElementById('find-count');
+        var marks = [];
+        var cur   = -1;
+        var tocHits = [];   // ToC anchors holding a match — declipped while the find bar is open
+
+        // Content first, then the ToC: reading matches come before navigational ones.
+        function getPanes() {
+            var content = document.getElementById('content') ||
+                          document.querySelector('.content-pane') ||
+                          document.querySelector('main');
+            var toc = document.getElementById('toc-pane');
+            return [content, toc].filter(Boolean);
+        }
+
+        function clearMarks() {
+            marks.forEach(function (m) {
+                if (!m.parentNode) return;
+                m.parentNode.replaceChild(document.createTextNode(m.textContent), m);
+            });
+            getPanes().forEach(function (p) { p.normalize(); });
+            tocHits.forEach(function (a) { a.classList.remove('find-hit'); });
+            tocHits = [];
+            marks = [];
+            cur   = -1;
+        }
+
+        function highlightIn(pane, query) {
+            var lq = query.toLowerCase();
+            var walker = document.createTreeWalker(pane, NodeFilter.SHOW_TEXT, {
+                acceptNode: function (node) {
+                    var tag = node.parentElement && node.parentElement.tagName;
+                    return (tag === 'SCRIPT' || tag === 'STYLE')
+                        ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
+                }
+            });
+            var nodes = [];
+            var node;
+            while ((node = walker.nextNode())) nodes.push(node);
+            nodes.forEach(function (textNode) {
+                var text = textNode.textContent;
+                var lt   = text.toLowerCase();
+                var pos  = 0;
+                var frags = [];
+                var found = false;
+                while (pos < text.length) {
+                    var idx = lt.indexOf(lq, pos);
+                    if (idx < 0) { frags.push(document.createTextNode(text.slice(pos))); break; }
+                    found = true;
+                    if (idx > pos) frags.push(document.createTextNode(text.slice(pos, idx)));
+                    var m = document.createElement('mark');
+                    m.textContent = text.slice(idx, idx + query.length);
+                    frags.push(m);
+                    marks.push(m);
+                    pos = idx + lq.length;
+                }
+                if (!found) return;
+                var parent = textNode.parentNode;
+                var ref    = textNode.nextSibling;
+                // ToC titles are ellipsised to one line, so a match in the middle of a long
+                // title would be invisible — declip the entry that holds it.
+                var anchor = parent.closest ? parent.closest('.toc-list a') : null;
+                if (anchor && !anchor.classList.contains('find-hit')) {
+                    anchor.classList.add('find-hit');
+                    tocHits.push(anchor);
+                }
+                parent.removeChild(textNode);
+                frags.forEach(function (f) { parent.insertBefore(f, ref); });
+            });
+        }
+
+        function highlight(query) {
+            clearMarks();
+            count.textContent = '';
+            if (!query) return;
+            getPanes().forEach(function (pane) { highlightIn(pane, query); });
+            if (marks.length > 0) { scrollToMark(0); }
+            else { count.textContent = 'No results'; }
+        }
+
+        function inToc(m) {
+            return !!(m.closest && m.closest('#toc-pane'));
+        }
+
+        var tocOpenedByFind = false;
+        function setDrawer(open) {
+            document.body.classList.toggle('toc-open', open);
+            var btn = document.querySelector('.toc-toggle');
+            if (btn) btn.setAttribute('aria-expanded', String(open));
+        }
+
+        function scrollToMark(idx) {
+            if (!marks.length) return;
+            marks.forEach(function (m, i) { m.className = i === idx ? 'find-current' : ''; });
+            var m = marks[idx];
+            // On mobile the ToC is an off-screen drawer — open it before scrolling into it,
+            // and put it back when the walk returns to the content pane.
+            if (window.matchMedia('(max-width: 768px)').matches) {
+                if (inToc(m)) { setDrawer(true); tocOpenedByFind = true; }
+                else if (tocOpenedByFind) { setDrawer(false); tocOpenedByFind = false; }
+            }
+            m.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            cur = idx;
+            count.textContent = (cur + 1) + ' of ' + marks.length + (inToc(m) ? ' · contents' : '');
+        }
+
+        function openBar() { bar.hidden = false; input.focus(); input.select(); }
+        function closeBar() {
+            clearMarks();
+            if (tocOpenedByFind) { setDrawer(false); tocOpenedByFind = false; }
+            bar.hidden = true; input.value = ''; count.textContent = '';
+        }
+
+        document.addEventListener('keydown', function (e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'f') { e.preventDefault(); openBar(); }
+            if (e.key === 'Escape' && !bar.hidden) closeBar();
+        });
+        input.addEventListener('input', function () { highlight(input.value); });
+        input.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (marks.length) scrollToMark(e.shiftKey
+                    ? (cur - 1 + marks.length) % marks.length
+                    : (cur + 1) % marks.length);
+            }
+        });
+        document.getElementById('find-prev').addEventListener('click', function () {
+            if (marks.length) scrollToMark((cur - 1 + marks.length) % marks.length);
+        });
+        document.getElementById('find-next').addEventListener('click', function () {
+            if (marks.length) scrollToMark((cur + 1) % marks.length);
+        });
+        document.getElementById('find-close').addEventListener('click', closeBar);
+    })();
+
+    // ── Term click → keyword search ───────────────────────────────────────────────
+    (function () {
+        document.addEventListener('click', function (e) {
+            var el = e.target.closest('em[data-term]');
+            if (!el) return;
+            e.preventDefault();
+            var term = el.getAttribute('data-term');
+            if (!term) return;
+            var form   = document.querySelector('.header-search');
+            var action = form ? form.getAttribute('action') : null;
+            if (!action) {
+                var m = window.location.pathname.match(/^\/specs\/([^/]+)/);
+                action = m ? '/specs/' + m[1] + '/search' : null;
+            }
+            if (action) window.location.href = action + '?q=' + encodeURIComponent(term) + '&tab=term';
+        });
+    })();
+    </script>
+</body>
+</html>

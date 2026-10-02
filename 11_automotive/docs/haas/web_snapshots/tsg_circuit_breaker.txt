@@ -1,0 +1,1154 @@
+Circuit Breaker - Troubleshooting Guide
+My Haas
+Welcome,
+! 
+Haas Tooling
+Guest Order History
+MyHaas/HaasConnect
+Sign In
+Register
+Haas Tooling
+My Account
+Order History
+Return History
+MyHaas/HaasConnect
+Sign Out
+Welcome, 
+My Machines
+Latest Activity
+My Quotes
+My Account
+My Users
+Sign Out
+Find Your Distributor
+Select Language
+English
+Deutsch
+Español - España
+Español - México
+Français
+Italiano
+Português
+Český
+Dansk
+Nederlands
+Magyar
+Polski
+Svenska
+Türkçe
+中文
+Suomi
+Norsk
+الإنجليزية
+български
+Hrvatski
+Ελληνικά
+Română
+Slovenský
+Slovenščina
+한국어
+日本語
+Українська
+machines
+Main Menu
+Vertical Mills 
+Vertical Mills 
+Vertical Mills 
+View All
+Vertical Mills 
+VF Series
+Universal Machines
+VR Series
+VP-5 Prismatic
+Pallet-Changing VMCs
+Mini Mills
+Mold Machines
+High-Speed Drill Centers
+Drill/Tap/ Mill Series
+Toolroom Mills
+Compact Mills
+Gantry Series
+SR Sheet Routers
+Extra-Large VMC
+Double-Column Mills
+Mill Automatic Parts Loader
+VMC/UMC Side-Loading Automatic Parts Loader
+Compact Automatic Parts Loader
+Multi-Axis Solutions
+Multi-Axis Solutions
+Multi-Axis Solutions
+View All
+Multi-Axis Solutions
+Y-Axis Lathes
+5-Axis Mills
+Lathes
+Lathes
+Lathes
+View All
+Lathes
+ST Series
+Dual-Spindle
+Box Way Series
+Toolroom Lathes
+Chucker Lathe
+Haas Bar Feeder V2
+Horizontal Mills
+Horizontal Mills
+Horizontal Mills
+View All
+Horizontal Mills
+50-Taper
+40-Taper
+Rotaries & Indexers
+Rotaries & Indexers
+Rotaries & Indexers
+View All
+Rotaries & Indexers
+Rotary Tables
+Indexers
+5-Axis Rotaries
+Extra-Large Rotaries
+Special Series
+Special Series
+Special Series
+View All
+Special Series
+EU_Series_Redirect
+Automation Systems
+Automation Systems
+Automation Systems
+View All
+Automation Systems
+Mill Automation
+Lathe Automation
+Automation Models
+Desktop Machines
+Desktop Machines
+Desktop Machines
+View All
+Desktop Machines
+Desktop Mill
+Desktop Lathe
+Control Simulator
+Shop Equipment
+Shop Equipment
+Shop Equipment
+View All
+Shop Equipment
+Bandsaw
+Knee Mills
+Manual Lathe
+Vertical Saw
+Miter Saw
+Pocket Machines
+Pocket Machines
+Pocket Machines
+View All
+Pocket Machines
+Pocket Mill
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Options
+Main Menu
+Value Option Packages
+Value Option Packages
+Value Option Packages
+View All
+Value Option Packages
+Spindles
+Spindles
+Spindles
+View All
+Spindles
+Tool Changers
+Tool Changers
+Tool Changers
+View All
+Tool Changers
+4th- | 5th-Axis
+4th- | 5th-Axis
+4th- | 5th-Axis
+View All
+4th- | 5th-Axis
+Turrets & Live Tooling
+Turrets & Live Tooling
+Turrets & Live Tooling
+View All
+Turrets & Live Tooling
+Probing
+Probing
+Probing
+View All
+Probing
+Chip & Coolant Management
+Chip & Coolant Management
+Chip & Coolant Management
+View All
+Chip & Coolant Management
+The Haas Control
+The Haas Control
+The Haas Control
+View All
+The Haas Control
+Product Options
+Product Options
+Product Options
+View All
+Product Options
+Tooling & Fixturing
+Tooling & Fixturing
+Tooling & Fixturing
+View All
+Tooling & Fixturing
+Workholding
+Workholding
+Workholding
+View All
+Workholding
+5-Axis Solutions
+5-Axis Solutions
+5-Axis Solutions
+View All
+5-Axis Solutions
+5 Easy Steps to 5-Axis
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Why Haas
+Main Menu
+Discover the Haas Difference
+Why Haas
+MyHaas
+Education Community
+Industry 4.0
+Haas Certification
+Customer Testimonials
+Service
+Main Menu
+Welcome to Haas Service
+SERVICE HOME
+Operator’s Manuals
+How-To Procedures
+Troubleshooting Guides
+Preventive Maintenance
+Haas Parts
+Haas Tooling
+Videos
+Videos
+Main Menu
+Main Menu
+View All
+View All
+View All
+View All
+HTEC Curriculum Support
+View All
+Haas 10 kg Cobot Package
+Cobot Kits
+View All
+View All
+4 - AUTOMATION SYSTEMS
+Mill Toolholding
+Carousel-V2
+expert test
+Demo_Day_Trident-test
+View All
+Choose Options
+View All
+View All
+View All
+View All
+View All
+calc-test
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Haas Tooling
+Main Menu
+Automation Accessories
+Shop Support
+Mill Toolholding
+Mill Cutting Tools
+Boring Systems
+Mill Workholding
+Lathe Toolholding
+Lathe Cutting Tools
+Lathe Workholding
+Package Kits
+ER Collets & Chucks
+Holemaking
+Threading
+Broaching
+Tombstones & Kits
+Manual Chucks For Milling
+Deburring & Abrasives
+Tool Presetter & Heat Shrinkers
+Storage & Handling
+Machine Maintenance
+Tooling Accessories
+Apparel & Accessories
+Measuring & Inspection
+Winner's Circle
+Winner's Circle
+Clearance
+Today's Hot Deals
+Haas Tooling
+Winner's Circle
+Winner's Circle
+Shop All
+WINNERS_CIRCLE-1Y
+Winner's Circle
+Winner's Circle
+Shop All
+WC-1Y-EU
+Today’s Hot Deals
+Today’s Hot Deals
+Shop All
+Mill Toolholding
+Mill Tooling
+Measuring & Inspection
+Boring Systems
+Mill Workholding
+Shell Mill Kits
+Lathe Toolholding
+Lathe Tooling
+Lathe Workholding
+ER Collets & Chucks
+Holemaking
+Threading
+Broaching
+Tool Storage
+Apparel & Accessories
+Clearance
+Clearance
+Shop All
+00-99-57466
+Measuring & Inspection
+Measuring & Inspection
+Shop All
+Probe Kits & Accessories
+Edge & Center Finders
+Comparative Measuring Gauges
+Height Gauges
+Calipers
+Threaded Plug & Ring Gauges
+Gauge Blocks
+Pin Gauges
+Drop Indicators
+Dial Test Indicators
+Bore Gauges
+Indicator Accessories
+V Blocks
+Setup Blocks
+Depth Measuring
+Micrometers
+Micrometer Accessories
+Micrometer Kits
+Bore Gauge Kits
+Starter Kits
+Indicator Kits
+Caliper Kits
+Toolholder Check Station
+Height Setters
+Coordinate Measuring Machines
+Automation Accessories
+Automation Accessories
+Shop All
+Cobot Kits
+Cobot Kits
+Protective Barriers
+Grippers
+Robot Cell Accessories
+Shop Support
+Shop Support
+Shop All
+Air Compressors
+Laser Marking Machines
+Bandsaw Blades
+Bandsaw Accessories
+Surface Grinding Wheels
+Shop Equipment Accessories
+Mill Toolholding
+Mill Toolholding
+Shop All
+End Mill Holders
+Shell Mill Holders
+Shrink Fit Holders
+ER Collet Chucks
+Milling Chucks & Collets
+NC Drilling Chucks
+Pull Studs / Retention Knobs
+Rotary Tool Holder & Tool Chuck Kits
+Hydraulic Milling Chucks & Collets
+Toolholder Attachments & Wrenches
+Mill Broaching Holders
+Mill Tooling
+Mill Tooling
+Shop All
+Shell Mill Bodies
+Milling Inserts
+End Mills
+Chamfer Mills & Inserts
+Indexable End Mill Bodies
+Ball End Mills
+Chamfer End Mills
+Roughing End Mills
+Indexable Ball End Mills & Inserts
+Shell Mill Kits
+Chamfer Mill Kits
+Indexable End Mill Kits
+Dovetail Cutters
+Indexable Dovetail Cutters
+Engraving End Mills
+Rotary Burrs / Die Grinding Bits
+Keyseat Cutters
+Corner Rounding End Mills
+Slot Mill Bodies
+CNC Router Bits For Wood
+Indexable CNC Router Bits & Inserts
+Boring Systems
+Boring Systems
+Shop All
+Boring Heads & Cartridges
+Boring Holders & Extensions
+Mill Workholding
+Mill Workholding
+Shop All
+Fixed-Jaw Vises
+Self-Centering Vises
+Adapter Plates
+Vise Jaws
+Vise Mounts & Fixtures
+Vise Kits
+Vise Parallels
+Rotary Vise Kits
+Fixture Clamps & Rails
+Automated Workholding Kits
+Tooling Fixture Subplates
+Toolmakers' Vises
+Clamp Force Gauges
+Collet Fixtures
+Angle Plates
+Lathe Toolholding
+Lathe Toolholding
+Shop All
+TL & CL Static Turning Holders
+BOT Static Turning Holders
+BMT Static Turning Holders
+Live / Driven Turning Holders
+Turning Holder Reduction Sleeves / Bushings
+VDI Static Turning Holders
+Turning Holder Accessories
+Lathe Tooling
+Lathe Tooling
+Shop All
+Cut-Off Tool Blocks & Blades
+Cut-Off Tooling Kits
+Turning Inserts
+Grooving & Cut-Off Tools
+Internal (ID) Grooving & Threading Tools
+Threading Inserts
+Threading Tools
+Boring Bars / Internal (ID) Turning Tools
+External (OD) Turning Tools
+Cermet Turning Inserts
+CBN Turning Inserts
+Haas Notch Grooving & Threading Inserts
+Haas Notch Grooving & Threading Tools
+Micro Turning Tools
+Desktop Lathe Tools
+Lathe Workholding
+Lathe Workholding
+Shop All
+Live Centers
+Spindle Reduction Sleeves / Liners
+Quick-Change Collets
+Quick-Change Collet Chucks
+5C Collets
+5C Collet Sets
+Lathe Jaw Boring Rings
+Lathe Jaws
+Bar Pullers
+Scroll Chucks
+Guide Pins
+Collet Accessories
+Package Kits
+Package Kits
+Shop All
+Chip Clearing Fan Kits
+Cutting Tool Kits
+Indexable End Mill Kits
+Cut-Off Tool Block & Blade Kits
+Drill & Tap Kits
+Indexable Drilling Kits
+Shell Mill Kits
+Chamfer Mill Kits
+Rotary Tool Holder & Tool Chuck Kits
+Lathe Starter Kits
+Workholding Kits
+Rotary Vise Kits
+Vise Kits
+3-Jaw Chuck Kits for Mills
+Tombstone Kits
+Reduction Sleeve Kits
+Automated Workholding Kits
+08-1869
+08-1870
+Measuring & Inspection Kits
+Starter Kits
+Bore Gauge Kits
+Caliper Kits
+Indicator Kits
+Micrometer Kits
+ER Collets & Chucks
+ER Collets & Chucks
+Shop All
+ER Straight-Bore Collets
+ER Sealed Collets
+ER Tap Collets
+ER Collet Sets & Accessories
+ER Collet Chucks
+Straight Shank ER Collet Chucks
+Straight Shank Keyless NC Drilling Chucks
+Holemaking
+Holemaking
+Shop All
+Carbide Drills
+Indexable Drill Bodies
+Indexable Drill Inserts
+Modular Drill Bodies
+Modular Drill Heads
+Cobalt Drills & Sets
+Center Drills
+Reamers
+Indexable Drilling Kits
+Spot Drills
+Spade Drill Bodies
+Spade Drill Inserts
+Countersinks
+Threading
+Threading
+Shop All
+Taps
+Threading Inserts
+Threading Tools
+Thread Mills
+Pipe Taps
+Drill Tap Kits
+Broaching
+Broaching
+Shop All
+Broaching Tools
+Broaching Inserts
+Tombstones
+Tombstones
+Shop All
+Tombstones
+Tombstone Kits
+Vise Cluster Towers
+Manual Chucks For Milling
+Manual Chucks For Milling
+Shop All
+5C Indexer Chucks
+3-Jaw Chucks & Mounts for Mills
+Deburring & Abrasives
+Deburring & Abrasives
+Shop All
+Abrasive Pads
+Deburr Tools
+Deburr Wheels
+Abrasive Sheets & Rolls
+Sharpening / Lapping Stones
+Tool Presetter & Heat Shrinkers
+Tool Presetter & Heat Shrinkers
+Shop All
+Tool Presetting Machines
+Shrink Fit Machines
+Tool Storage
+Tool Storage
+Shop All
+Tool Carts
+Tool Tray
+Tool Bags
+Machine Maintenance
+Machine Maintenance
+Shop All
+Spindle Test Bars
+Levels
+Refractometers
+Machine Additives & Supplies
+Machine Accessories
+Machine Maintenance Kits
+Tooling Accessories
+Tooling Accessories
+Shop All
+Spindle & Toolholder Taper Cleaners
+Haas Shop Lift
+Toolholder Fixtures
+CNC Chip Clearing Fans
+Hammers & Mallets
+Anti-Fatigue Mats
+Layout Tools
+Wrenches
+Magnetic Tools
+Torque Screwdrivers
+Hand Cutting Tools
+Shop Stools
+Lifting Magnets
+Safety Apparel
+Cutting Tool Sharpeners
+Apparel & Accessories
+Apparel & Accessories
+Shop All
+Accessories
+Apparel
+HAAS TOOLING QUICK LINKS
+NEW PRODUCTS 
+NEW PRODUCTS 
+NEW PRODUCTS 
+NEW PRODUCTS 
+MOST POPULAR 
+MOST POPULAR 
+TOOLING PROMOS
+TOOLING PROMOS
+FINANCING & OPEN TERMS
+FINANCING & OPEN TERMS
+PAY BY INVOICE
+PAY BY INVOICE
+FAQs 
+FAQs 
+KITS CREATED FOR YOU
+KITS CREATED FOR YOU
+Haas Service Parts
+Main Menu
+Automatic Pallet Changer
+Lathe Turret
+Tool Changer
+Chip Management
+Coolant
+Counterbalance
+Electrical Cabinet
+Enclosure
+Hydraulics
+Lubrication
+Maintenance
+Pendant
+Probing
+Rotary
+Spindle
+Tailstock
+Haas Service Parts
+Automatic Pallet Changer
+Automatic Pallet Changer
+Shop All
+HMC - Automatic Pallet Changer
+VMC - Automatic Pallet Changer
+Lathe Turret
+Lathe Turret
+Shop All
+Lathe - Turret
+Live Tooling
+Tool Changer
+Tool Changer
+Shop All
+Side Mount
+Umbrella
+Chip Management
+Chip Management
+Shop All
+Multi Auger
+Single Auger
+Coolant
+Coolant
+Shop All
+Auxiliary Filter
+HPC-300 (Lathe)
+HPC-1000 (Lathe)
+Oil Skimmer
+Standard Coolant
+TSC-300 (Mill)
+TSC-1000 (Mill)
+Coolant Refill
+Loc-Line
+Counterbalance
+Counterbalance
+Shop All
+Charge & Discharge Hose
+Electrical Cabinet
+Electrical Cabinet
+Shop All
+Fans
+Filters
+Upgrade Kits
+Enclosure
+Enclosure
+Shop All
+Accessories
+Air Nozzle
+Decals
+Door Bumpers
+Lighting
+Windows, Gaskets, & Weather Strip
+Chip & Coolant Management
+Hydraulics
+Hydraulics
+Shop All
+Filters
+Gauges
+Heat Exchanger
+Hoses
+Lubrication
+Lubrication
+Shop All
+Bijur Mechanical Lubrication
+Minimum Lubrication
+Maintenance
+Maintenance
+Shop All
+Grease, Oil, & Sealants
+Pendant
+Pendant
+Shop All
+Floppy Disk & USB
+Keypad
+Keys
+Lens
+Gaskets & Seals
+Probing
+Probing
+Shop All
+Mill Probing
+Lathe Tool Presetter
+Rotary
+Rotary
+Shop All
+Rotary Gaskets & Seals
+Spindles
+Spindles
+Shop All
+Couplings
+Gaskets & Seals
+Spindle Motor Drive
+Gearbox Drive
+Tool Release Piston
+Tailstock
+Tailstock
+Shop All
+Handles
+×
+Search Results
+Web Pages
+Images
+<
+1
+>
+My Haas
+Welcome,
+! 
+Haas Tooling
+Guest Order History
+MyHaas/HaasConnect
+Sign In
+Register
+Haas Tooling
+My Account
+Order History
+Return History
+MyHaas/HaasConnect
+Sign Out
+Welcome, 
+My Machines
+Latest Activity
+My Quotes
+My Account
+My Users
+Sign Out
+Find Your Distributor
+Select Language
+English
+Deutsch
+Español - España
+Español - México
+Français
+Italiano
+Português
+Český
+Dansk
+Nederlands
+Magyar
+Polski
+Svenska
+Türkçe
+中文
+Suomi
+Norsk
+الإنجليزية
+български
+Hrvatski
+Ελληνικά
+Română
+Slovenský
+Slovenščina
+한국어
+日本語
+Українська
+×
+Search Results
+Web Pages
+Images
+<
+1
+>
+Circuit Breaker - Troubleshooting Guide
+Service Home
+Circuit Breaker - Troubleshooting Guide
+Your document is ready for download, please click below to download your document.
+Download Document
+Error processing this document, please try again or 
+Contact Us
+.
+Please wait while your document is being loaded.
+Circuit Breaker - Troubleshooting Guide
+- Jump to Cause -
+Back to Top
+Your document is ready for download, please click below to download your document.
+Download Document
+Error processing this document, please try again or 
+Contact Us
+.
+Please wait while your document is being loaded.
+Recently Updated
+Last updated: 03/25/2022
+Circuit Breaker
+ - Troubleshooting Guide
+Circuit Breaker Testing
+Symptoms Table
+Symptom
+Probable Cause
+Solution
+Alarm 552 
+TRIPPED CIRCUIT BREAKER
+There is a short circuit on the Coolant Pump Motor or Cable.
+Refer to the 
+Standard Coolant - Troubleshooting Guide 
+: 
+Defective Pump
+ section.
+The circuit breaker is defective.
+Test the circuit breaker inrush current and duration time. Refer to the
+ Coolant Pump Breaker Troubleshooting
+ section below.
+The PSUP PCB is defective.
+If the machine generates alarm 552 and the circuit breaker did not trip, then the PSUP may be at fault. Refer to the 
+PSUP PCB Troubleshooting Guide
+: 
+PCB Inspection component
+ section.
+Coolant Pump Circuit Breaker
+This guide is meant to be used for troubleshooting circuit breakers 61-7361 (10A) and 61-7352 (15A) used for machine coolant applications.
+Note: 
+This guide does not apply to the Variable Flow coolant or the Shower coolant option as these use VFDs. 
+Required Tools:
+AC Clamp Meter
+ able to measure
+ Inrush Current
+The table below shows the coolant pump and circuit breaker combination used for the various coolant options. 
+Coolant Options
+Coolant Pump Motor
+Circuit Breaker
+Motor Rating / Phases
+Current Rating
+Location
+Standard flood coolant
+1.00HP / 3PH or 0.25HP / 1PH
+10A
+PSUP PCB
+High pressure flood coolant
+ 1.50HP / 3PH
+10A
+PSUP PCB
+TSC 300 PSI
+1.50HP / 3PH
+15A
+PSUP PCB or TMD PCB
+TSC 1000 PSI
+ 3.00HP / 3PH
+Measure the Inrush Current and Duration Time
+Figure 1:
+ I/O PCB motor power cable connections. 
+Figure 2:
+ TMD PCB motor power cable connection.
+1
+Trace back the pump power cable to locate the connection point inside the electrical control.
+This will either be on the I/O PCB P29, P31 or the TMD PCB P1 which is mounted on the I/O hinge door depending on the machine.
+NOTE FOR TSC
+If the strip length on the TSC pump power cable is too tight to fit a current clamp around the individual conductors, the inrush and nominal running current can be measured from cable 
+33-1980 
+connected to 
+I/O PCB P30
+.
+If the pump power cable is connected to the 
+I/O PCB
+. On cable 
+33-1980
+the gray conductor
+ is
+ phase A (77)
+, the 
+orange is phase B (78)
+, and the 
+brown is phase C (79)
+. 
+If the TSC pump power cable is connected to the 
+TMD PCB
+, then the inrush and nominal running current can be measured from cable 
+33-0987B connected to P4
+ on the 
+TMD PCB
+.
+On cable 
+33-0987B
+ the 
+red conductor is phase A (77)
+, 
+white is phase B (78)
+, and 
+black is phase C (79)
+. 
+Figure 3:
+ Correct method to measure current. 
+Figure 4:
+ Incorrect method to measure current.
+2
+Using a current clamp meter set to measure the
+ Max/Inrush AC
+ current, clamp the meter around a single conductor on the cable. 
+Turn the pump on and measure the inrush current and its duration time which is the time from the moment the pump is turned on to the time the circuit breaker trips. 
+Repeat this 2-3 times making sure to record the inrush current and duration time. Repeat this step on all the remaining conductors on the power cable excluding the green ground conductor.
+3
+Compare the recorded inrush currents and duration times to the 
+NOMINAL COOLANT PUMP INRUSH CURRENT VALUES PER PHASE
+ table on 
+Figure 6
+.
+If the breaker did not trip, measure the nominal running current of the pump as described in the section below.
+Figure 6:
+ Known nominal inrush values per motor phase for coolant pumps. Values are nominal +/- 20% of the value listed. 
+NOTE: 
+For TSC and High Pressure Coolant options, do not measure the inrush current with the pump out of the coolant reservoir as these have a pressure switch which will alarm out.
+Nominal Coolant Pump Inrush Current Values per Phase
+Pump Motor
+Red Conductor
+White Conductor
+Black Conductor
+Phase A (77)
+Phase B (78)
+Phase C (79)
+Rating / Phases
+Inside Coolant Reservoir
+Inside Coolant Reservoir
+Inside Coolant Reservoir
+0.25HP / 1 PH (SINGLE PHASE MOTOR)
+-
+5 A
+5 A
+1.00HP / 3PH
+17 A
+17 A
+17 A
+1.50HP / 3PH (TSC)
+25 A
+25 A
+25 A
+3.00HP / 3PH (TSC)
+32 A
+32 A
+32 A
+Measure the Nominal Running Current
+To measure the nominal running current of the pump, the coolant hose at the machine needs to be disconnected to prevent head pressure from skewing the nominal running current measurement. 
+ IMPORTANT: This does not apply to TSC and the High Pressure Coolant option.
+Figure 7:
+ Pump hose for Flood Coolant.
+1
+Disconnect the coolant hose [7] from the machine and secure the hose tightly to the coolant tank reservoir. This is important as not securing the hose will cause it to spray coolant everywhere. 
+Figure 8:
+ Correct method to measure current. 
+Figure 9:
+ Incorrect method to measure current.
+2
+Using a current clamp meter set to measure nominal AC current, clamp the meter around a single conductor on the power cable. After checking the pump hose is secured, turn the pump on and let it run for 5 seconds. 
+Record the nominal running current from the current clamp and then stop the pump. Repeat this step for all the remaining conductors on the power cable making sure to record the nominal running current for each conductor excluding the green ground conductor. 
+3
+Remove the pump from the coolant reservoir and repeat step 2 and 3 with the coolant pump outside of the coolant reservoir. 
+4
+Compare the recorded nominal running current values from step 2 and 3 to the known nominal running current values for the specific pump size as shown below.
+If the recorded nominal current values are within the known nominal current values +/- 20%, then the pump and circuit breaker are not faulty and the other parts of the coolant system should be inspected.
+If the recorded nominal current values are higher than the known nominal running current values shown, then the pump needs to be inspected for any faults which could be causing the higher running currents.
+Figure 10:
+ Known nominal running current values per motor phase for coolant pumps. Values are nominal +/- 20% of the value listed. For TSC and High Pressure Coolant options, do not measure the nominal running current with the pump out of the coolant reservoir as these have a pressure switch which will alarm out.
+Known Nominal Coolant Pump Running Current Values per Phase
+Pump Motor
+Red Conductor
+White Conductor
+Black Conductor
+Phase A (77)
+Phase B (78)
+Phase C (79)
+Rating / Phases
+Inside Coolant Reservoir
+Outside Coolant Reservoir
+Inside Coolant Reservoir
+Outside Coolant Reservoir
+Inside Coolant Reservoir
+Outside Coolant Reservoir
+0.25HP / 1 PH
+-
+-
+1.3 A
+0.6 A
+1.3 A
+0.6 A
+1.00HP / 3PH
+3 A
+1.2 A
+3 A
+1.2 A
+3 A
+1.2 A
+1.50HP / 3PH (TSC)
+3.0 A
+Do not measure
+3.0 A
+Do not measure
+3.0 A
+Do not measure
+3.00HP / 3PH (TSC)
+4.5 A
+Do not measure
+4.5 A
+Do not measure
+4.5 A
+Do not measure
+Recently Viewed Items
+Clear Items
+You Have No Recently Viewed Items Yet
+ Feedback 
+美元价格不包括关税、报关费用、保险费、增值税及运费。
+USD prices DO NOT include customs duty, customs fees, insurance, VAT, or freight.
+人民币价格包含关税、报关费用、货运保险和增值税, 但不包括运费。
+CNY prices include customs duty, customs fees, insurance, and VAT. DOES NOT include freight.
+Haas Delivered Price
+This price includes shipping cost, export and import duties, insurance, and any other expenses incurred during shipping to a location in France agreed with you as a buyer. No other mandatory costs can be added to the delivery of a Haas CNC Product.
+Click for details
+KEEP UP WITH THE LATEST HAAS TIPS AND TECHNOLOGY...
+Sign up now! 
+HAAS TOOLING ACCEPTS THE FOLLOWING:
+Service & Support
+Owners
+Request Service
+Operator Manuals
+Haas Parts
+Rotary Repair Request
+Pre-Install Guides
+Shopping Tools
+Build & Price a New Haas
+Available Inventory
+The Haas Price List
+CNCA Financing
+About Haas
+DNSH Statement
+Export Compliance
+Careers
+Certifications & Safety
+Contact Us
+History
+Terms & Conditions
+Haas Tooling Terms & Conditions
+Privacy
+Warranty
+Haas Community
+Haas Certification Program
+Haas Motorsports
+Gene Haas Foundation
+Haas Technical Education Community
+Events
+Join the Conversation
+Facebook
+X
+Flickr
+YouTube
+LinkedIn
+Instagram
+TikTok
+ © 2025 
+Haas Automation, Inc – CNC Machine Tools
+ This site is protected by reCAPTCHA and the Google 
+Privacy Policy
+ and 
+Terms of Service
+ apply. 
+2800 Sturgis Rd., Oxnard, CA 93030
+ Toll Free: (888) 817-4446 / Fax: 805-278-8554
+ {{ if (loading) { }} {{=loadingSpinner}} {{ } else { }} 
+×
+ {{=content}} 
+ {{ } }} 
+ {{ if (loading) { }} {{=loadingSpinner}} {{ } else { }} 
+×
+ {{=content}} 
+ {{ } }} 

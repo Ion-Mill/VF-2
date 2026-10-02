@@ -1,0 +1,364 @@
+{
+ "4tu": {
+  "rows": 4543,
+  "columns": [
+   "Case ID",
+   "Activity",
+   "Resource",
+   "Start Timestamp",
+   "Complete Timestamp",
+   "Span",
+   "Work Order Qty",
+   "Part Desc.",
+   "Worker ID",
+   "Report Type",
+   "Qty Completed",
+   "Qty Rejected",
+   "Qty for MRB",
+   "Rework"
+  ],
+  "work_orders": 225,
+  "activities": 55,
+  "resources": 31,
+  "machines": 26,
+  "workers": 49,
+  "parts": 43,
+  "first": "2012-01-02 00:00:00",
+  "last": "2012-03-31 05:45:00",
+  "report_type": {
+   "B": 53,
+   "D": 3785,
+   "S": 705
+  },
+  "qty_completed": 92519,
+  "qty_rejected": 593,
+  "qty_mrb": 105,
+  "reject_ratio_pct": 0.64,
+  "rows_with_reject": 231,
+  "orders_with_reject": 122,
+  "rework_rows": 32,
+  "events_per_order_median": 14.0,
+  "event_hours_median": 1.68,
+  "order_qty_median": 36.0,
+  "top_reject_activities": [
+   {
+    "Activity": "Turning & Milling Q.C.",
+    "events": 522,
+    "done": 12641,
+    "rejected": 246,
+    "hours": 797.1,
+    "reject_pct": 1.91
+   },
+   {
+    "Activity": "Final Inspection Q.C.",
+    "events": 550,
+    "done": 12053,
+    "rejected": 233,
+    "hours": 1052.4,
+    "reject_pct": 1.9
+   },
+   {
+    "Activity": "Round Grinding - Q.C.",
+    "events": 59,
+    "done": 1329,
+    "rejected": 27,
+    "hours": 142.9,
+    "reject_pct": 1.99
+   },
+   {
+    "Activity": "Round Grinding - Machine 2",
+    "events": 267,
+    "done": 3169,
+    "rejected": 16,
+    "hours": 1038.9,
+    "reject_pct": 0.5
+   },
+   {
+    "Activity": "Laser Marking - Machine 7",
+    "events": 252,
+    "done": 12934,
+    "rejected": 14,
+    "hours": 242.6,
+    "reject_pct": 0.11
+   },
+   {
+    "Activity": "Turning & Milling - Machine 5",
+    "events": 259,
+    "done": 4237,
+    "rejected": 13,
+    "hours": 1394.9,
+    "reject_pct": 0.31
+   },
+   {
+    "Activity": "Turn & Mill. & Screw Assem - Machine 10",
+    "events": 28,
+    "done": 258,
+    "rejected": 10,
+    "hours": 164.2,
+    "reject_pct": 3.73
+   },
+   {
+    "Activity": "Turning & Milling - Machine 10",
+    "events": 149,
+    "done": 1027,
+    "rejected": 8,
+    "hours": 839.6,
+    "reject_pct": 0.77
+   }
+  ],
+  "by_report_type": [
+   {
+    "Report Type": "S",
+    "rows": 705,
+    "median_hours": 2.67,
+    "total_hours": 2424.0
+   },
+   {
+    "Report Type": "B",
+    "rows": 53,
+    "median_hours": 1.53,
+    "total_hours": 172.0
+   },
+   {
+    "Report Type": "D",
+    "rows": 3785,
+    "median_hours": 1.58,
+    "total_hours": 11327.0
+   }
+  ],
+  "route_len_median": 6.0,
+  "example_route": [
+   "Milling - Machine 16",
+   "Turning & Milling Q.C.",
+   "Lapping - Machine 1",
+   "Round Grinding - Manual",
+   "Packing",
+   "Final Inspection Q.C."
+  ]
+ },
+ "nist_raw_days": [
+  {
+   "file": "GFAgie01-20170111-20170112.txt",
+   "lines": 26,
+   "keys": 26,
+   "execution_key": null,
+   "warnings": 0,
+   "faults": 0,
+   "top_alarm_texts": []
+  },
+  {
+   "file": "Hurco01-20170518-20170519.txt",
+   "lines": 2211,
+   "keys": 17,
+   "execution_key": "Program_Status",
+   "execution_changes": 24,
+   "observed_minutes": 17.9,
+   "minutes_by_state": {
+    "READY": 16.2,
+    "ACTIVE": 1.6,
+    "FEED_HOLD": 0.1
+   },
+   "first_change": "2017-05-18 08:59:38.343750+00:00",
+   "last_change": "2017-05-18 09:17:33.031250+00:00",
+   "warnings": 0,
+   "faults": 0,
+   "top_alarm_texts": []
+  },
+  {
+   "file": "Hurco03-20180606-20180607.txt",
+   "lines": 34,
+   "keys": 17,
+   "execution_key": null,
+   "warnings": 0,
+   "faults": 0,
+   "top_alarm_texts": []
+  },
+  {
+   "file": "Mazak01-20170111-20170112.txt",
+   "lines": 193649,
+   "keys": 86,
+   "execution_key": "execution",
+   "execution_changes": 101,
+   "observed_minutes": 670.4,
+   "minutes_by_state": {
+    "ACTIVE": 483.6,
+    "STOPPED": 127.6,
+    "READY": 58.4,
+    "FEED_HOLD": 0.7,
+    "INTERRUPTED": 0.1
+   },
+   "first_change": "2017-01-11 09:13:10.966000+00:00",
+   "last_change": "2017-01-11 20:23:33.564000+00:00",
+   "warnings": 10,
+   "faults": 0,
+   "top_alarm_texts": [
+    [
+     "Warning 1251  MOVE INH.(C AXIS CLAMP)",
+     3
+    ],
+    [
+     "Warning 1101 INTERFERE",
+     2
+    ],
+    [
+     "Warning 406 MEMORY PROTECT",
+     1
+    ],
+    [
+     "Warning 1242  SP.INHIBIT(MILL CLAMP)",
+     1
+    ],
+    [
+     "Warning 468 MAINTENANCE CHECK WARNING",
+     1
+    ],
+    [
+     "Warning 275 SPDL CANNOT ROT(SPECIAL TOOL)",
+     1
+    ]
+   ]
+  },
+  {
+   "file": "Mazak03-20180815-20180816.txt",
+   "lines": 188434,
+   "keys": 65,
+   "execution_key": "execution",
+   "execution_changes": 98,
+   "observed_minutes": 1272.8,
+   "minutes_by_state": {
+    "ACTIVE": 608.0,
+    "READY": 573.4,
+    "STOPPED": 88.0,
+    "FEED_HOLD": 3.4
+   },
+   "first_change": "2018-08-15 07:01:44.724000+00:00",
+   "last_change": "2018-08-16 04:14:32.455000+00:00",
+   "warnings": 9,
+   "faults": 6,
+   "top_alarm_texts": [
+    [
+     "Warning 401 ILLEGAL FORMAT",
+     4
+    ],
+    [
+     "Fault 809 ILLEGAL NUMBER INPUT",
+     3
+    ],
+    [
+     "Warning 354  COND. ERR (SET UP SW)",
+     3
+    ],
+    [
+     "Fault 811 ILLEGAL O/N NUMBER",
+     3
+    ],
+    [
+     "Warning 406 MEMORY PROTECT",
+     1
+    ],
+    [
+     "Warning 146 NOT AUTO MODE",
+     1
+    ]
+   ]
+  }
+ ],
+ "nist_archive_day_files": {
+  "GFAgie01": 1133,
+  "Hurco01": 1010,
+  "Hurco02": 1010,
+  "Hurco03": 1007,
+  "Hurco04": 1018,
+  "Hurco06": 1008,
+  "Mazak01": 1012,
+  "Mazak03": 1117
+ },
+ "haas_ngc_probe": {
+  "st40-100.21.000.1120_probe.xml": {
+   "data_items": 202,
+   "by_category": {
+    "EVENT": 193,
+    "CONDITION": 1,
+    "SAMPLE": 8
+   },
+   "event_types": [
+    "ACTIVE_AXES",
+    "AVAILABILITY",
+    "AXIS_COUPLING",
+    "CONTROLLER_MODE",
+    "EMERGENCY_STOP",
+    "EXECUTION",
+    "MATERIAL",
+    "MESSAGE",
+    "PATH_FEEDRATE",
+    "PATH_FEEDRATE_OVERRIDE",
+    "POSITION",
+    "PROGRAM",
+    "WORK_OFFSET"
+   ],
+   "condition_types": [
+    "SYSTEM"
+   ]
+  },
+  "vf6_100.21.000.1101_probe.xml": {
+   "data_items": 202,
+   "by_category": {
+    "EVENT": 193,
+    "CONDITION": 1,
+    "SAMPLE": 8
+   },
+   "event_types": [
+    "ACTIVE_AXES",
+    "AVAILABILITY",
+    "AXIS_COUPLING",
+    "CONTROLLER_MODE",
+    "EMERGENCY_STOP",
+    "EXECUTION",
+    "MATERIAL",
+    "MESSAGE",
+    "PATH_FEEDRATE",
+    "PATH_FEEDRATE_OVERRIDE",
+    "POSITION",
+    "PROGRAM",
+    "WORK_OFFSET"
+   ],
+   "condition_types": [
+    "SYSTEM"
+   ]
+  },
+  "vf6_100.21.000.1133_probe.xml": {
+   "data_items": 259,
+   "by_category": {
+    "EVENT": 245,
+    "CONDITION": 1,
+    "SAMPLE": 13
+   },
+   "event_types": [
+    "ACTIVE_AXES",
+    "AVAILABILITY",
+    "AXIS_COUPLING",
+    "CONTROLLER_MODE",
+    "EMERGENCY_STOP",
+    "EXECUTION",
+    "MATERIAL",
+    "MESSAGE",
+    "PATH_FEEDRATE",
+    "PATH_FEEDRATE_OVERRIDE",
+    "POSITION",
+    "PROGRAM",
+    "WORK_OFFSET"
+   ],
+   "condition_types": [
+    "SYSTEM"
+   ]
+  }
+ },
+ "haas_ngc_current_example": {
+  "file": "vf6_100.21.000.1101_current.xml",
+  "values": {
+   "PathFeedrateOverride": "0.007",
+   "EmergencyStop": "ARMED",
+   "ControllerMode": "MANUAL_DATA_INPUT",
+   "Execution": "STOPPED",
+   "Program": "CBH16441.NC",
+   "Availability": "AVAILABLE"

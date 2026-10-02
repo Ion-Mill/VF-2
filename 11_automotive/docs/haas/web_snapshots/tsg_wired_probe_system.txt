@@ -1,0 +1,644 @@
+Wired Probe System - Troubleshooting Guide - TG0160
+My Haas
+Welcome,
+! 
+Haas Tooling
+MyHaas/HaasConnect
+Sign In
+Register
+Haas Tooling
+MyHaas/HaasConnect
+Sign Out
+Welcome, 
+My Machines
+Latest Activity
+My Quotes
+My Account
+My Users
+Sign Out
+Find Your Distributor
+Select Language
+English
+Deutsch
+Español - España
+Español - México
+Français
+Italiano
+Português
+Český
+Dansk
+Nederlands
+Magyar
+Polski
+Svenska
+Türkçe
+中文
+Suomi
+Norsk
+الإنجليزية
+български
+Hrvatski
+Ελληνικά
+Română
+Slovenský
+Slovenščina
+한국어
+日本語
+Українська
+machines
+Main Menu
+Vertical Mills 
+Vertical Mills 
+Vertical Mills 
+View All
+Vertical Mills 
+VF Series
+Universal Machines
+VR Series
+VP-5 Prismatic
+Pallet-Changing VMCs
+Mini Mills
+Mold Machines
+High-Speed Drill Centers
+Drill/Tap/ Mill Series
+Toolroom Mills
+Compact Mills
+Gantry Series
+SR Sheet Routers
+Extra-Large VMC
+Double-Column Mills
+Pocket Mill
+Multi-Axis Solutions
+Multi-Axis Solutions
+Multi-Axis Solutions
+View All
+Multi-Axis Solutions
+Y-Axis Lathes
+5-Axis Mills
+Lathes
+Lathes
+Lathes
+View All
+Lathes
+ST Series
+Dual-Spindle
+Box Way Series
+Toolroom Lathes
+Chucker Lathe
+Haas Bar Feeder V2
+Haas Bar Feeder 12
+Horizontal Mills
+Horizontal Mills
+Horizontal Mills
+View All
+Horizontal Mills
+50-Taper
+40-Taper
+Rotaries & Indexers
+Rotaries & Indexers
+Rotaries & Indexers
+View All
+Rotaries & Indexers
+Rotary Tables
+Indexers
+5-Axis Rotaries
+Extra-Large Rotaries
+Special Series
+Special Series
+Special Series
+View All
+Special Series
+EU_Series_Redirect
+Automation Systems
+Automation Systems
+Automation Systems
+View All
+Automation Systems
+Mill Automation
+Lathe Automation
+Automatic Parts Loaders
+Automation Models
+Desktop Machines
+Desktop Machines
+Desktop Machines
+View All
+Desktop Machines
+Desktop Mill
+Desktop Lathe
+Control Simulator, Standard
+Control Simulator, Premium
+Shop Equipment
+Shop Equipment
+Shop Equipment
+View All
+Shop Equipment
+Bandsaw
+Vertical Saw
+Miter Saw
+Knee Mill
+Manual Lathe
+Laser Cutting Machines
+Pocket Machines
+Pocket Machines
+Pocket Machines
+View All
+Pocket Machines
+Pocket Mill
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Options
+Main Menu
+Value Option Packages
+Value Option Packages
+Value Option Packages
+View All
+Value Option Packages
+Spindles
+Spindles
+Spindles
+View All
+Spindles
+Tool Changers
+Tool Changers
+Tool Changers
+View All
+Tool Changers
+4th- | 5th-Axis
+4th- | 5th-Axis
+4th- | 5th-Axis
+View All
+4th- | 5th-Axis
+Turrets & Live Tooling
+Turrets & Live Tooling
+Turrets & Live Tooling
+View All
+Turrets & Live Tooling
+Probing
+Probing
+Probing
+View All
+Probing
+Chip & Coolant Management
+Chip & Coolant Management
+Chip & Coolant Management
+View All
+Chip & Coolant Management
+The Haas Control
+The Haas Control
+The Haas Control
+View All
+The Haas Control
+Product Options
+Product Options
+Product Options
+View All
+Product Options
+Tooling & Fixturing
+Tooling & Fixturing
+Tooling & Fixturing
+View All
+Tooling & Fixturing
+Workholding
+Workholding
+Workholding
+View All
+Workholding
+5-Axis Solutions
+5-Axis Solutions
+5-Axis Solutions
+View All
+5-Axis Solutions
+5 Easy Steps to 5-Axis
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Why Haas
+Main Menu
+Discover the Haas Difference
+Why Haas
+MyHaas
+Education Community
+Industry 4.0
+Haas Certification
+Customer Testimonials
+Service
+Main Menu
+Welcome to Haas Service
+SERVICE HOME
+Operator’s Manuals
+How-To Procedures
+Troubleshooting Guides
+Preventive Maintenance
+Haas Parts
+Haas Tooling
+Videos
+Videos
+Main Menu
+Main Menu
+View All
+View All
+View All
+View All
+HTEC Curriculum Support
+View All
+Haas 10 kg Cobot Package
+Cobot Kits
+DC-1 Drill Center
+CNC Sales News
+View All
+View All
+contact-us-test
+4 - AUTOMATION SYSTEMS
+Carousel-V2
+expert test
+Demo_Day_Trident-test
+Link Test
+image-sale-tag-test
+View All
+Choose Options
+View All
+View All
+View All
+View All
+View All
+calc-test
+View All
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Haas Tooling
+Main Menu
+Haas Service Parts
+Main Menu
+My Haas
+Welcome,
+! 
+Haas Tooling
+MyHaas/HaasConnect
+Sign In
+Register
+Haas Tooling
+MyHaas/HaasConnect
+Sign Out
+Welcome, 
+My Machines
+Latest Activity
+My Quotes
+My Account
+My Users
+Sign Out
+Find Your Distributor
+Select Language
+English
+Deutsch
+Español - España
+Español - México
+Français
+Italiano
+Português
+Český
+Dansk
+Nederlands
+Magyar
+Polski
+Svenska
+Türkçe
+中文
+Suomi
+Norsk
+الإنجليزية
+български
+Hrvatski
+Ελληνικά
+Română
+Slovenský
+Slovenščina
+한국어
+日本語
+Українська
+×
+Search Results
+Web Pages
+Images
+<
+1
+>
+Wired Probe System - Troubleshooting Guide - TG0160
+Service Home
+Wired Probe System - Troubleshooting Guide - TG0160
+Your document is ready for download, please click below to download your document.
+Download Document
+Error processing this document, please try again or 
+Contact Us
+.
+Please wait while your document is being loaded.
+Recently Updated
+Last updated: 10/15/2025
+Wired Probe System
+ - Troubleshooting Guide
+TG0160
+Wired Probe System - Troubleshooting Guide - TG0160
+Jump to Section
+1. 
+Introduction 
+2. 
+Work Probe Operation 
+3. 
+Tool Probe Operation 
+4. 
+OMI Operation 
+5. 
+Symptom Table 
+6. 
+Batteries 
+7. 
+Interference 
+8. 
+Macros 
+9. 
+Surface Not Found 
+10. 
+Settings 
+11. 
+Calibration 
+Back to Top
+Your document is ready for download, please click below to download your document.
+Download Document
+Error processing this document, please try again or 
+Contact Us
+.
+Please wait while your document is being loaded.
+Introduction
+OMP40 work probe:
+ A spindle-mounted wireless probe that communicates with an optical interface.
+Work probe stylus:
+ The part of the work probe that touches parts during measurement.
+Tool probe stylus:
+ The part of the tool probe that tools touch during measurement. Tools touch the top and side of the stylus when the probe measures tool length and diameter.
+TS27R tool probe: 
+The table-mounted TS27R has no batteries or optical interface. This is a wired probe.
+Tool probe cable:
+ This cable carries signals from the tool probe to the CNC control.
+OMI 
+Optical Machine Interface
+:
+ The wireless interface for the OMP40 work probe. The OMI uses infrared light to communicate with the CNC control and switch the probe on or off.
+OMI cable: 
+This cable connects the OMI to the CNC control.
+Work probes for Wireless Probe System (WIPS) do not work in the wired probe systems (VQCPS).
+The VCQPS work probe (P/N 60-0024) has a square Haas logo.
+The WIPS work probe (P/N 60-0050) has a round Haas logo.
+Work Probe Operation
+To power on the work probe, enter this program in MDI:
+M53;
+G04 P2.;
+Push
+ [CYCLE START]
+.
+The LEDs on the work probe flash green when the probe is powered on and ready for use. When the probe stylus is touched, a “beep” sound is made by the CNC control. The LEDs on the work probe flash red each time the stylus is touched.
+To power off the work probe, enter this code in MDI:
+M63;
+Tool Probe Operation
+To power on the wired tool probe, enter this program in MDI:
+M52;
+Push
+ [CYCLE START]
+.
+When the stylus on the tool probe is touched, the CNC control makes a "beep" sound.
+The tool probe does not have any LEDs.
+To power off the wired tool probe, enter this program in MDI:
+M62;
+OMI Operation
+[1] CNC control is powered on. The probe is not in use.
+[2] M53 commanded. The OMI is sending a start signal to the work probe to power it on or power it off.
+[3] The work probe is powered on and ready for use.
+[4] The stylus has been touched. The OMI is sending a skip signal to the CNC control.
+Symptom Table
+Symptom
+Possible Cause
+Corrective Action
+Alarm 1086 
+PATH OBSTRUCTED 
+Protected Positioning Cycle only.
+Clear the obstruction and start again from a safe position.
+Alarm 1088 
+NO FEED RATE
+Protected Positioning Cycle only.
+Insert the F code input and start again from a safe position. Recommended protected positioning feed rate is 120 in/min.
+Alarm 1089 
+NO TOOL LENGTH ACTIVE
+G43 or G44 is not active before the cycle is called.
+Edit the program and start again from a safe position.
+Alarm 1091 
+FORMAT ERROR 
+Inputs are mixed, missing, or incorrectly formatted.
+Edit the program and start again from a safe position.
+Alarm 1092
+ PROBE OPEN/UNEXPECTED SURFACE FOUND
+Interference from the work lights.
+Adjust the work lights
+Settings in the work probe are not correct.
+Correct the settings.
+The surface of the part was not found.
+Edit the program.
+Occurs if the probe is already triggered before a move or triggered while positioning the probe or tool.
+Clear faults and restart from safe position, check if chips are trapped around probe eyelids
+Alarm 1093
+ PROBE FAIL/SURFACE NOT FOUND
+Interference from the work lights.
+Adjust the work lights
+Settings in the work probe are not correct.
+Correct the settings.
+The surface of the part was not found.
+Edit the program.
+Alarm 1099 
+BROKEN TOOL
+This alarm occurs if a tool is out of user defined tolerance.
+Replace defective tool and establish correct tool offset value.
+Alarm 1101
+ PROBE STARTUP FAILURE.
+Bad Batteries.
+Replace the batteries.
+The macros are corrupted.
+Reload the macros
+Settings in the work probe are not correct
+Correct the settings 
+During probe start-up, the spindle must reach a speed of 500 RPM.
+Check that the spindle override is not active. Possible faulty probe.
+The tool probe does not beep/activate.
+The macros are corrupted.
+Reload the macros
+The OMI LEDs do not turn green.
+The macros are corrupted.
+Reload the macros
+Incorrect measurements.
+The probe is not calibrated.
+Calibrate the probe.
+Batteries
+Corrective Action:
+Refer to 
+Wireless Intuitive Probe System - WIPS - Troubleshooting Guide
+Interference
+Corrective Action:
+Refer to 
+Wireless Intuitive Probe System - WIPS - Troubleshooting Guide
+Macros
+Corrective Action:
+The wired probe system uses 
+Renishaw VQCPS macro version 1.9
+.
+After you load this program file into the CNC control, make sure
+ Setting 26
+, 9xxx PROGS EDIT LOCK, is set to 1. This prevents all of the Macro programs from being edited or deleted.
+Surface Not Found
+Corrective Action:
+Refer to 
+Wireless Intuitive Probe System - WIPS - Troubleshooting Guide
+Settings
+Corrective Action:
+A procedure to verify the probe settings is included in the Renishaw Probes Installation guide. Refer to 
+Mill - Renishaw Probes - Installation
+.
+ Note:
+ Do not touch the stylus when you install the batteries. This can change the settings.
+To change the probe settings you move the stylus in a specified order. Refer to the illustration to see the specified order.
+The Illustration shows these symbols:
+The symbols tells you this:
+This gives this result:
+A red arrow that points to the right.
+Move and hold the stylus for less than (4) seconds.
+Selects the next option within a group.
+A green arrow that points down.
+Move and hold the stylus for more than (4) seconds.
+Moves from one group to another.
+A white arrow that points down.
+Do not touch the stylus for (20) seconds or more.
+Exits the set up.
+Calibration
+Corrective Action:
+The probes need to be calibrated anytime a stylus has been replaced, the table probe has been moved, or if the CNC control generates alarms during probe routines. Follow the procedure for calibrating the Table Probe and the Spindle Probe. Refer to 
+MILL - PROBING WITH VQC TEMPLATES
+.
+This procedure includes instructions for calibrating the probes. The probes must be calibrated in this order:
+Table Probe
+Spindle Probe Length
+Spindle Probe Diameter
+Recently Viewed Items
+Clear Items
+You Have No Recently Viewed Items Yet
+ Feedback 
+Haas Delivered Price
+This price includes shipping cost, export and import duties, insurance, and any other expenses incurred during shipping to a location in France agreed with you as a buyer. No other mandatory costs can be added to the delivery of a Haas CNC Product.
+Click for details
+KEEP UP WITH THE LATEST HAAS TIPS AND TECHNOLOGY...
+Sign up now! 
+HAAS TOOLING ACCEPTS THE FOLLOWING:
+Service & Support
+Owners
+Request Service
+Operator Manuals
+Haas Parts
+Rotary Repair Request
+Pre-Install Guides
+Shopping Tools
+Build & Price a New Haas
+Available Inventory
+The Haas Price List
+CNCA Financing
+About Haas
+DNSH Statement
+Export Compliance
+Careers
+Certifications & Safety
+Contact Us
+History
+Terms & Conditions
+Haas Tooling Terms & Conditions
+Privacy
+Warranty
+Haas Community
+Haas Certification Program
+Haas Motorsports
+Gene Haas Foundation
+Haas Technical Education Community
+Events
+Join the Conversation
+Facebook
+X
+Flickr
+YouTube
+LinkedIn
+Instagram
+TikTok
+ © 2026 
+Haas Automation, Inc – CNC Machine Tools
+ This site is protected by reCAPTCHA and the Google 
+Privacy Policy
+ and 
+Terms of Service
+ apply. 
+2800 Sturgis Rd., Oxnard, CA 93030
+ Toll Free: (888) 817-4446 / Fax: 805-278-8554
+ {{ if (loading) { }} {{=loadingSpinner}} {{ } else { }} 
+×
+ {{=content}} 
+ {{ } }} 
+ {{ if (loading) { }} {{=loadingSpinner}} {{ } else { }} 
+×
+ {{=content}} 
+ {{ } }} 

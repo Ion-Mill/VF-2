@@ -1,0 +1,292 @@
+{
+  "sha": "3d5a21a716382264507a099b42bfaeaf7f6b4da1",
+  "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/trees/3d5a21a716382264507a099b42bfaeaf7f6b4da1",
+  "tree": [
+    {
+      "path": ".vscode",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "7f0ed96d491f7bfb0d3b1974c804cde5d2ae4cc6",
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/trees/7f0ed96d491f7bfb0d3b1974c804cde5d2ae4cc6"
+    },
+    {
+      "path": ".vscode/launch.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "17e15f27ec2bb23f50627f046a7e8d1b225be974",
+      "size": 463,
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/blobs/17e15f27ec2bb23f50627f046a7e8d1b225be974"
+    },
+    {
+      "path": "Procfile",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9c2ad045db75ede35da1c7686896c7fdc3e0d635",
+      "size": 50,
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/blobs/9c2ad045db75ede35da1c7686896c7fdc3e0d635"
+    },
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ef07cdfd39acb23dff2ea0a731782095a04d1574",
+      "size": 1968,
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/blobs/ef07cdfd39acb23dff2ea0a731782095a04d1574"
+    },
+    {
+      "path": "__pycache__",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "5160b23e8783d3d48f91f3ec62ceb8e821a29a3a",
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/trees/5160b23e8783d3d48f91f3ec62ceb8e821a29a3a"
+    },
+    {
+      "path": "__pycache__/print_utils.cpython-37.pyc",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cbba5c5148f154e6c9a88f38b432119f7b11ac76",
+      "size": 7855,
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/blobs/cbba5c5148f154e6c9a88f38b432119f7b11ac76"
+    },
+    {
+      "path": "__pycache__/print_utils.cpython-38.pyc",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c815346fc66bf7d39fd9de7997ade59bff16a8ce",
+      "size": 1345,
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/blobs/c815346fc66bf7d39fd9de7997ade59bff16a8ce"
+    },
+    {
+      "path": "__pycache__/utils.cpython-37.pyc",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f7c1cfedb252675b1efab8e91b3b6ed07a711a1b",
+      "size": 8979,
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/blobs/f7c1cfedb252675b1efab8e91b3b6ed07a711a1b"
+    },
+    {
+      "path": "__pycache__/utils.cpython-38.pyc",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c95a64873e1a923600b50fdaf8d21d801419d479",
+      "size": 6236,
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/blobs/c95a64873e1a923600b50fdaf8d21d801419d479"
+    },
+    {
+      "path": "data",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "100e1de589d1a756ecc650402c6628e5c8c6918e",
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/trees/100e1de589d1a756ecc650402c6628e5c8c6918e"
+    },
+    {
+      "path": "data/README.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "830cbe93fab063c90a30d3b1b37472b2cf8b6062",
+      "size": 5463,
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/blobs/830cbe93fab063c90a30d3b1b37472b2cf8b6062"
+    },
+    {
+      "path": "data/experiment_01.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5bbad6f463c3fd6ac15c34bf7860f57ac2f0e25e",
+      "size": 466137,
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/blobs/5bbad6f463c3fd6ac15c34bf7860f57ac2f0e25e"
+    },
+    {
+      "path": "data/experiment_02.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0d6cf15ed788ea7daeff5a06f6074dfa19b3c954",
+      "size": 734790,
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/blobs/0d6cf15ed788ea7daeff5a06f6074dfa19b3c954"
+    },
+    {
+      "path": "data/experiment_03.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "753762e44c40597c44f93245d88351403432949d",
+      "size": 670463,
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/blobs/753762e44c40597c44f93245d88351403432949d"
+    },
+    {
+      "path": "data/experiment_04.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9b7bd28dcb74567c34112568613ca07cda486695",
+      "size": 233663,
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/blobs/9b7bd28dcb74567c34112568613ca07cda486695"
+    },
+    {
+      "path": "data/experiment_05.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a82ac24e6cdc51081a98877e696b1cc59a181694",
+      "size": 201857,
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/blobs/a82ac24e6cdc51081a98877e696b1cc59a181694"
+    },
+    {
+      "path": "data/experiment_06.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "556aaa38fd78565be6df4135c8902db6ac0c9679",
+      "size": 572999,
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/blobs/556aaa38fd78565be6df4135c8902db6ac0c9679"
+    },
+    {
+      "path": "data/experiment_07.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "85f0ef6fc65f19fd06d23bc76f3d5a01f890ff9d",
+      "size": 250294,
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/blobs/85f0ef6fc65f19fd06d23bc76f3d5a01f890ff9d"
+    },
+    {
+      "path": "data/experiment_08.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6709c5b1d39bdd92153d9f6ac1db7d48cb15ed37",
+      "size": 267214,
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/blobs/6709c5b1d39bdd92153d9f6ac1db7d48cb15ed37"
+    },
+    {
+      "path": "data/experiment_09.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dacdf8826db2df47f6b7ddb5e3e8e70a57377bdb",
+      "size": 328146,
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/blobs/dacdf8826db2df47f6b7ddb5e3e8e70a57377bdb"
+    },
+    {
+      "path": "data/experiment_10.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "57aa88e7ca930483ec8d9d518112aa72e7d91218",
+      "size": 573293,
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/blobs/57aa88e7ca930483ec8d9d518112aa72e7d91218"
+    },
+    {
+      "path": "data/experiment_11.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9a45740bf02705e01a3ffa69bfab86d1638d05e8",
+      "size": 1020230,
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/blobs/9a45740bf02705e01a3ffa69bfab86d1638d05e8"
+    },
+    {
+      "path": "data/experiment_12.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "29cb24e315774620a73a8a3be4ceca88a67c2406",
+      "size": 1004981,
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/blobs/29cb24e315774620a73a8a3be4ceca88a67c2406"
+    },
+    {
+      "path": "data/experiment_13.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "870e92517a48c07f00c2fd68f632c808df9c2aba",
+      "size": 985419,
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/blobs/870e92517a48c07f00c2fd68f632c808df9c2aba"
+    },
+    {
+      "path": "data/experiment_14.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "67c24b0a1469c8687d15e7a530abc6e8eb7f8e2e",
+      "size": 1028462,
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/blobs/67c24b0a1469c8687d15e7a530abc6e8eb7f8e2e"
+    },
+    {
+      "path": "data/experiment_15.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "23013db56fdffc3f236bfbc8becd01de76c37839",
+      "size": 607501,
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/blobs/23013db56fdffc3f236bfbc8becd01de76c37839"
+    },
+    {
+      "path": "data/experiment_16.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "acf8644d3001b9e3d720209eda9574854d853f64",
+      "size": 263888,
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/blobs/acf8644d3001b9e3d720209eda9574854d853f64"
+    },
+    {
+      "path": "data/experiment_17.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0e0e83a59c63613875dacec840b013e78e3a3eb4",
+      "size": 946697,
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/blobs/0e0e83a59c63613875dacec840b013e78e3a3eb4"
+    },
+    {
+      "path": "data/experiment_18.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5154f6aadb6c0888a2d60c48d5909b1a74467a13",
+      "size": 993807,
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/blobs/5154f6aadb6c0888a2d60c48d5909b1a74467a13"
+    },
+    {
+      "path": "data/test_artifact.jpg",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "14b1840a7bad0c14d5f1b1caca4ca9ba335c57e8",
+      "size": 1038564,
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/blobs/14b1840a7bad0c14d5f1b1caca4ca9ba335c57e8"
+    },
+    {
+      "path": "data/train.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b96b3741ed707e83e35c87cc8a5705ba7155ffe6",
+      "size": 528,
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/blobs/b96b3741ed707e83e35c87cc8a5705ba7155ffe6"
+    },
+    {
+      "path": "data_analysis.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ffa9d4b7951b35f0cfd9215c06d8a1ea047f1e4d",
+      "size": 14534,
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/blobs/ffa9d4b7951b35f0cfd9215c06d8a1ea047f1e4d"
+    },
+    {
+      "path": "filename.pickle",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1539cb1d5f265d6706edfe37754c2b946772ba53",
+      "size": 25340333,
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/blobs/1539cb1d5f265d6706edfe37754c2b946772ba53"
+    },
+    {
+      "path": "print_utils.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "443ac4ab5e6671c4bca2075f247a7784019c7428",
+      "size": 7529,
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/blobs/443ac4ab5e6671c4bca2075f247a7784019c7428"
+    },
+    {
+      "path": "requirements.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5b94a9fe71e4ef86362133f6e0e7c06691c97a33",
+      "size": 101,
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/blobs/5b94a9fe71e4ef86362133f6e0e7c06691c97a33"
+    },
+    {
+      "path": "utils.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bdafeb44abf47a10776a4035cf8663588212efec",
+      "size": 11172,
+      "url": "https://api.github.com/repos/salmanedhi/CNC-Mill-tool-wear/git/blobs/bdafeb44abf47a10776a4035cf8663588212efec"
+    }
+  ],
+  "truncated": false
+}

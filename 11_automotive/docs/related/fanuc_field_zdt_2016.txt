@@ -1,0 +1,292 @@
+SOURCE: https://www.fanucamerica.com/press-releases/fanuc-showcases-new-field-system-iot-technology-with-zdt-monitoring-software-at-imts-2016
+FETCHED: 2026-10-02
+
+ 
+ FANUC Showcases New FIELD System IoT Technology with… | FANUC America 
+ Skip to content 
+ Skip to navigation 
+ Resources 
+ About 
+ MyPortal Login 
+ Edit Entry
+ English (US) 
+ English (US)
+ Español (MX)
+ Products
+ Solutions
+ Education
+ How to Buy
+ Support
+ Product Family 
+ Robot 
+ CNC 
+ ROBODRILL 
+ ROBOCUT
+ ROBOSHOT
+ Software
+ Accessories
+ Explore Solutions 
+ Physical AI
+ AI-powered automation 
+ Innovation Lab
+ Custom solutions 
+ Case Studies
+ Customer stories 
+ By Application 
+ All Applications 
+ Arc Welding
+ Assembly
+ Dispensing & Sealing
+ Inspection
+ Laser Applications
+ Laser Cutting
+ Machine Tending
+ Material Handling
+ Material Removal
+ Painting
+ Palletizing
+ Picking & Packaging
+ Spot Welding
+ Welding
+ Welding Cobot
+ By Industry 
+ All Industries 
+ Aerospace
+ Agriculture
+ Alternative Energy
+ Automotive
+ Composites
+ Construction
+ Consumer Goods
+ Die Cast, Foundry & Mold
+ Electric Vehicles
+ Electronics
+ Fabricated Metals
+ Food & Beverage
+ Glass
+ Job Shops
+ Medical Device
+ Oil & Gas
+ Paper & Printing
+ Pharmaceutical
+ Plastics
+ Warehousing
+ White Goods
+ Woodworking
+ By Audience 
+ School Solutions
+ Student Solutions
+ Workforce Training
+ Education Sales
+ Education Partners
+ Programs & Initiatives 
+ Join the Automation Generation
+ Education and career videos 
+ NOCTI Certifications
+ National certification programs 
+ Scholarships
+ FANUC scholarship programs 
+ Robot 
+ Robot System Integrators 
+ FANUC Authorized System Integrators design, build, and support custom robotic systems with cross-industry expertise and local support backed by FANUC standards. 
+ Ready to Go Solutions 
+ Ready-to-deploy robot solutions that are easy to set up, and ideal for small and mid-size manufacturers. 
+ Automation Evaluation 
+ Not sure where to start? Contact a FANUC Expert today to help find a robot solution tailored to your application and production goals. 
+ CNC 
+ CNC System Integrators 
+ Work with a FANUC Authorized CNC integrator to build or upgrade your machining systems with expert local support and proven FANUC technology. 
+ CNC Retrofit Providers 
+ Modernize existing machine tools with the latest FANUC CNC controls. Extend machine life and boost productivity at a fraction of new equipment costs. 
+ Machining Evaluation 
+ Contact a FANUC Expert today to help find a CNC solution tailored to your application and production goals. 
+ ROBOMACHINE 
+ ROBODRILL 
+ High-speed, high-precision vertical machining centers built for demanding production environments with industry-leading reliability. 
+ ROBOSHOT 
+ All-electric injection molding machines delivering superior precision, repeatability, and energy efficiency for plastics manufacturing. 
+ ROBOCUT 
+ Wire EDM machines offering exceptional cutting accuracy and surface finish for complex part geometries in tool and die applications. 
+ By Product 
+ CNC Support
+ Robot Support
+ ROBODRILL Support
+ Training
+ Support Services 
+ Tech Transfer
+ Video tutorials 
+ MyPortal
+ Customer portal 
+ Contact
+ Products 
+ Robot 
+ CNC 
+ ROBODRILL 
+ ROBOCUT 
+ ROBOSHOT 
+ Software 
+ Explore all Products → 
+ Solutions 
+ By Application 
+ By Industry 
+ Physical AI 
+ Innovation Lab 
+ Case Studies 
+ Physical AI 
+ ROS 2 Driver 
+ Explore all Solutions → 
+ Education 
+ Solutions for Schools 
+ Solutions for Students 
+ Education Sales 
+ FANUC Academy 
+ Partners 
+ Scholarships 
+ Join the Automation Generation 
+ NOCTI Certifications 
+ Explore all Education → 
+ How to Buy 
+ Robotics Authorized System Integrators 
+ Ready to Go Solutions 
+ Automation Evaluation 
+ Authorized CNC System Integrators 
+ Retrofit Solutions 
+ Machining Evaluation 
+ Explore all How to Buy → 
+ Support 
+ CNC Support 
+ Robot Support 
+ ROBODRILL Support 
+ FANUC Academy 
+ Tech Transfer Videos 
+ MyPortal Customer Portal 
+ Explore all Support → 
+ Resources 
+ About FANUC America 
+ Articles 
+ Case Studies 
+ Events 
+ Newsroom 
+ Product Brochures 
+ Explore all Resources → 
+ Search
+ Contact
+ search())"
+ class="flex flex-col transition-[height] duration-150 ease-out"
+ :class="hasExpanded ? 'h-[min(56rem,85vh)]' : 'h-[24rem]'"
+ @keydown.arrow-down.prevent="selectNext()"
+ @keydown.arrow-up.prevent="selectPrev()"
+ @keydown.enter="if (selectedIndex >= 0) { $event.preventDefault(); openSelected(); }"
+ >
+ = minLength; $nextTick(() => $refs.searchInput.focus()) }"
+ placeholder="Search..."
+ class="w-full text-xl focus:outline-none focus:ring-0 search-reset"
+ autocomplete="off"
+ autocorrect="off"
+ autocapitalize="off"
+ spellcheck="false"
+ >
+ 0" class="px-6 border-b border-gray-200">
+ All 
+ All
+ 0"
+ class="flex items-center justify-between px-6 py-3 text-sm text-gray-500 bg-gray-50 border-b border-gray-100">
+ Showing of results
+ Searching... 
+ 1" class="flex items-center gap-4">
+ Previous
+ / 
+ = totalPages - 1"
+ class="flex items-center gap-1 text-sm font-medium cursor-pointer hover:text-black disabled:opacity-30 disabled:cursor-not-allowed"
+ >
+ Next
+ Search for robots, products, articles, and more 
+ Searching...
+ = minLength"
+ class="flex-1 flex items-center justify-center p-6 text-center text-gray-500">
+ No results found for " "
+ — 
+ Legacy 
+ = 0 }">
+ ⌘K 
+ Ctrl+K 
+ to search
+ ↑ 
+ ↓ 
+ to navigate
+ esc 
+ to close
+ = 0 }">
+ Keyboard Shortcuts 
+ Open search 
+ ⌘K 
+ Ctrl+K 
+ or 
+ / 
+ Navigate results 
+ ↑ 
+ ↓ 
+ Open selected result 
+ Enter 
+ Close modal 
+ Esc 
+ Show this help 
+ ? 
+ Home 
+ › 
+ Press Releases 
+ › 
+ FANUC Showcases New FIELD System IoT Technology with ZDT Monitoring Software at IMTS 2016 
+ FANUC Showcases New FIELD System IoT Technology with ZDT Monitoring Software at IMTS 2016
+ FANUC debuts FIELD IoT system with ZDT monitoring at IMTS 2016, enabling advanced analytics, predictive maintenance, and improved factory performance. 
+ dl:nth-child(even)]:border-l max-sm:[&>dl:nth-child(even)]:border-gray-200 max-sm:[&>dl:nth-child(even)]:pl-8 max-sm:[&>dl:nth-child(n+3)]:border-t max-sm:[&>dl:nth-child(n+3)]:border-gray-200 max-sm:[&>dl:nth-child(n+3)]:pt-4 sm:[&>dl]:px-8 print:[&>dl]:px-3 sm:[&>dl:first-child]:pl-0 print:[&>dl:first-child]:pl-0 sm:[&>dl:last-child]:pr-0 print:[&>dl:last-child]:pr-0">
+ Published 
+ September 12, 2016 
+ Reading Time 
+ 4 min 
+ Save PDF
+ Share 
+ Facebook 
+ X 
+ LinkedIn 
+ Email 
+ Copied link 
+ ROCHESTER HILLS, MI – (Sept. 12, 2016)  FANUC CORPORATION, the world’s leading supplier of robotics and factory automation will demonstrate its new FANUC Intelligent Edge Link and Drive (FIELD) system that provides advanced analytics and deep learning capabilities for FANUC CNCs and robots, peripheral devices and sensors used in automation systems at IMTS 2016, booth #S-8919.  The FIELD system allows applications such as Zero Down Time (ZDT) or capabilities such as deep learning or machine learning to be applied in the Edge level of a factory site. The FIELD system is based on Edge computing where a large amount of data is processed within the manufacturing site, minimizing the volume and cost of sharing data, while also providing a secure connection to the Cloud for suitable applications.  The data that is on the FIELD system from various machines can also be used for collaboration among equipment, performance optimization, improved traceability and quality control. FANUC collaborated on the development of FIELD with Cisco, the worldwide leader in IT-enabled digitization; Rockwell Automation, the world’s largest company dedicated to industrial automation and information solutions; and Preferred Networks, a leading provider of Artificial Intelligence solutions.   FIELD consists of hardware and software that allows multiple external computing devices to be added to the plant network in a highly secure manner.  The software suite is composed of both open source and proprietary licensable products (from Cisco and Preferred Network). Once the FIELD software is loaded and configured, the machine data from all the automation equipment including CNC machines and robots can then be accessible to application developers through an open Application Programming Interface (API).  The easy access to machine data significantly reduces the effort for a third party to develop applications to run on the FIELD system, providing a variety of monitoring, analytic and real-time functions.  At IMTS, FANUC will demonstrate FIELD’s connectivity to a versatile range of products including CNCs, robots, ROBOMACHINEs, and Rockwell Automation programmable automation controllers (PACs) using a variety of monitoring/data collection protocols including FANUC’s MT-Link  i and ROBOMACHINE Link  i , EtherNet/IP and HTTP.  The display will show live data being monitored by the FIELD system for all equipment in the FANUC booth, including progressive CNC functions and deep learning.  Another display will show the development process for FIELD applications and data being collected from automation equipment.  “FIELD is the next generation of intelligence for FANUC,” said Joe Gazzarato, director of product development, FANUC America. “We’re showing customers that the FIELD system will enable new applications that can drive significant improvements in machine reliability, quality, flexibility and speed to elevate manufacturing efficiency and profitability.”  The FIELD system is scheduled for release by the end of the year. Zero Down Time ZDT, an application that runs on FANUC’s FIELD system, currently collects data from more than 6000 robots in 26 factories.  ZDT monitors these robots to see if the application is causing abnormal wear that could lead to a failure, and if so, FANUC sends parts with support to address the issue before any downtime occurs.  With ZDT, FANUC also keeps track of robot usage and sends reminders at appropriate intervals to ensure important maintenance activities are completed on time.  As the FIELD system and ZDT grow in the marketplace, FANUC will be able to help more customers with intelligent condition-based maintenance notifications and help optimize the performance and life of their robots. At IMTS, a ZDT data collector running on a Cisco UCS (server) will collect data on all robots in the FANUC booth and send it to the cloud.  Monitors will show the benefits of ZDT and each robot’s health data available in the cloud such as RV, motor, E-stop, energy usage, maintenance reminders, etc.  ZDT will also collect and monitor data in the cloud for robots at ACME Manufacturing (booth #N-7255), Rockwell Automation (booth #E-4357), and Methods Machine Tools, Inc. (booth #S-9119). A Cisco 809 router running FANUC’s ZDT data collector will send messages from those external booths to the FANUC ZDT data center in the cloud for analysis and reporting.    “The convergence of Internet of Things and industrial manufacturing has begun. Connectivity to equipment on the factory floor is growing at a rapid pace,” added Gazzarato.  “This connectivity opens the door to new sources of data enabling applications that can leverage this data to deliver real business value.”  
+ About FANUC America Corporation 
+ FANUC America Corporation is a subsidiary of FANUC CORPORATION in Japan, and provides industry-leading CNC systems, robotics and ROBOMACHINEs. FANUC’s innovative technologies and proven expertise help manufacturers in the Americas maximize productivity, reliability and profitability. Headquartered in Rochester Hills, Mich., FANUC America has facilities throughout North and South America. Visit  www.fanucamerica.com  for more information or explore the CRX line of cobots at  CRX.FANUCAmerica.com . Connect with FANUC America on  YouTube ,  X ,  Facebook ,  LinkedIn  and  Instagram . 
+ Start Your Journey 
+ Ready to Get Started? 
+ Tell us about your project and a FANUC specialist will be in touch. 
+ Name First Name  * Last Name  * Email  * Phone  * Job Title  * Company  * Address Address  * City  * ZIP / Postal Code  * State / Province  * Country  * Select an option Afghanistan Albania Algeria American Samoa Andorra Angola Anguilla Antigua & Barbuda Argentina Armenia Aruba Ascension Island Australia Austria Azerbaijan Bahamas Bahrain Bangladesh Barbados Belarus Belgium Belize Benin Bermuda Bhutan Bolivia Bosnia & Herzegovina Botswana Brazil British Indian Ocean Territory British Virgin Islands Brunei Bulgaria Burkina Faso Burundi Cambodia Cameroon Canada Cape Verde Caribbean Netherlands Cayman Islands Central African Republic Chad Chile China Christmas Island Cocos (Keeling) Islands Colombia Comoros Congo - Brazzaville Congo - Kinshasa Cook Islands Costa Rica Croatia Cuba Curaçao Cyprus Czechia Côte d’Ivoire Denmark Djibouti Dominica Dominican Republic Ecuador Egypt El Salvador Equatorial Guinea Eritrea Estonia Eswatini Ethiopia Falkland Islands Faroe Islands Fiji Finland France French Guiana French Polynesia Gabon Gambia Georgia Germany Ghana Gibraltar Greece Greenland Grenada Guadeloupe Guam Guatemala Guernsey Guinea Guinea-Bissau Guyana Haiti Honduras Hong Kong SAR China Hungary Iceland India Indonesia Iran Iraq Ireland Isle of Man Israel Italy Jamaica Japan Jersey Jordan Kazakhstan Kenya Kiribati Kosovo Kuwait Kyrgyzstan Laos Latvia Lebanon Lesotho Liberia Libya Liechtenstein Lithuania Luxembourg Macao SAR China Madagascar Malawi Malaysia Maldives Mali Malta Marshall Islands Martinique Mauritania Mauritius Mayotte Mexico Micronesia Moldova Monaco Mongolia Montenegro Montserrat Morocco Mozambique Myanmar (Burma) Namibia Nauru Nepal Netherlands New Caledonia New Zealand Nicaragua Niger Nigeria Niue Norfolk Island North Korea North Macedonia Northern Mariana Islands Norway Oman Pakistan Palau Palestinian Territories Panama Papua New Guinea Paraguay Peru Philippines Poland Portugal Puerto Rico Qatar Romania Russia Rwanda Réunion Samoa San Marino Saudi Arabia Senegal Serbia Seychelles Sierra Leone Singapore Sint Maarten Slovakia Slovenia Solomon Islands Somalia South Africa South Korea South Sudan Spain Sri Lanka St. Barthélemy St. Helena St. Kitts & Nevis St. Lucia St. Martin St. Pierre & Miquelon St. Vincent & Grenadines Sudan Suriname Svalbard & Jan Mayen Sweden Switzerland Syria São Tomé & Príncipe Taiwan Tajikistan Tanzania Thailand Timor-Leste Togo Tokelau Tonga Trinidad & Tobago Tristan da Cunha Tunisia Turkmenistan Turks & Caicos Islands Tuvalu Türkiye U.S. Virgin Islands Uganda Ukraine United Arab Emirates United Kingdom United States Uruguay Uzbekistan Vanuatu Vatican City Venezuela Vietnam Wallis & Futuna Western Sahara Yemen Zambia Zimbabwe Åland Islands Message  * Leave this field blank Send Message 
+ This site is protected by reCAPTCHA and the Google Privacy Policy and Terms of Service apply.
+ Send Another
+ Message
+ Support, Parts & Service 
+ Service, parts, and technical support for existing equipment. 
+ CNC Support 
+ CNC Parts & Repair 
+ Robot Technical Support 
+ Robot Parts & Repair 
+ ROBOMACHINE Support 
+ ROBOMACHINE Parts 
+ Give Us a Call 
+ We're here to help. 
+ 888-FANUC-US 
+ Products
+ Robot
+ Cobots
+ CNC
+ ROBODRILL
+ CRX Cobot
+ ROBOCUT
+ ROBOSHOT
+ Solutions
+ Applications
+ Industries
+ Case Studies
+ Innovation Lab
+ Physical AI
+ ROS 2 Driver
+ Education
+ Solutions for Students
+ S

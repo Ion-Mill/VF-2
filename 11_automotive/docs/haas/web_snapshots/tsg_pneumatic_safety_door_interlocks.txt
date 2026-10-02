@@ -1,0 +1,545 @@
+Pneumatic Safety Door Interlocks Troubleshooting Guide - TG0110
+My Haas
+Welcome,
+! 
+Haas Tooling
+MyHaas/HaasConnect
+Sign In
+Register
+Haas Tooling
+MyHaas/HaasConnect
+Sign Out
+Welcome, 
+My Machines
+Latest Activity
+My Quotes
+My Account
+My Users
+Sign Out
+Find Your Distributor
+Select Language
+English
+Deutsch
+Español - España
+Español - México
+Français
+Italiano
+Português
+Český
+Dansk
+Nederlands
+Magyar
+Polski
+Svenska
+Türkçe
+中文
+Suomi
+Norsk
+الإنجليزية
+български
+Hrvatski
+Ελληνικά
+Română
+Slovenský
+Slovenščina
+한국어
+日本語
+Українська
+machines
+Main Menu
+Vertical Mills 
+Vertical Mills 
+Vertical Mills 
+View All
+Vertical Mills 
+VF Series
+Universal Machines
+VR Series
+VP-5 Prismatic
+Pallet-Changing VMCs
+Mini Mills
+Mold Machines
+High-Speed Drill Centers
+Drill/Tap/ Mill Series
+Toolroom Mills
+Compact Mills
+Gantry Series
+SR Sheet Routers
+Extra-Large VMC
+Double-Column Mills
+Pocket Mill
+Multi-Axis Solutions
+Multi-Axis Solutions
+Multi-Axis Solutions
+View All
+Multi-Axis Solutions
+Y-Axis Lathes
+5-Axis Mills
+Lathes
+Lathes
+Lathes
+View All
+Lathes
+ST Series
+Dual-Spindle
+Box Way Series
+Toolroom Lathes
+Chucker Lathe
+Haas Bar Feeder V2
+Haas Bar Feeder 12
+Horizontal Mills
+Horizontal Mills
+Horizontal Mills
+View All
+Horizontal Mills
+50-Taper
+40-Taper
+Rotaries & Indexers
+Rotaries & Indexers
+Rotaries & Indexers
+View All
+Rotaries & Indexers
+Rotary Tables
+Indexers
+5-Axis Rotaries
+Extra-Large Rotaries
+Special Series
+Special Series
+Special Series
+View All
+Special Series
+EU_Series_Redirect
+Automation Systems
+Automation Systems
+Automation Systems
+View All
+Automation Systems
+Mill Automation
+Lathe Automation
+Automatic Parts Loaders
+Automation Models
+Desktop Machines
+Desktop Machines
+Desktop Machines
+View All
+Desktop Machines
+Desktop Mill
+Desktop Lathe
+Control Simulator, Standard
+Control Simulator, Premium
+Shop Equipment
+Shop Equipment
+Shop Equipment
+View All
+Shop Equipment
+Bandsaw
+Vertical Saw
+Miter Saw
+Knee Mill
+Manual Lathe
+Laser Cutting Machines
+Pocket Machines
+Pocket Machines
+Pocket Machines
+View All
+Pocket Machines
+Pocket Mill
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Options
+Main Menu
+Value Option Packages
+Value Option Packages
+Value Option Packages
+View All
+Value Option Packages
+Spindles
+Spindles
+Spindles
+View All
+Spindles
+Tool Changers
+Tool Changers
+Tool Changers
+View All
+Tool Changers
+4th- | 5th-Axis
+4th- | 5th-Axis
+4th- | 5th-Axis
+View All
+4th- | 5th-Axis
+Turrets & Live Tooling
+Turrets & Live Tooling
+Turrets & Live Tooling
+View All
+Turrets & Live Tooling
+Probing
+Probing
+Probing
+View All
+Probing
+Chip & Coolant Management
+Chip & Coolant Management
+Chip & Coolant Management
+View All
+Chip & Coolant Management
+The Haas Control
+The Haas Control
+The Haas Control
+View All
+The Haas Control
+Product Options
+Product Options
+Product Options
+View All
+Product Options
+Tooling & Fixturing
+Tooling & Fixturing
+Tooling & Fixturing
+View All
+Tooling & Fixturing
+Workholding
+Workholding
+Workholding
+View All
+Workholding
+5-Axis Solutions
+5-Axis Solutions
+5-Axis Solutions
+View All
+5-Axis Solutions
+5 Easy Steps to 5-Axis
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Why Haas
+Main Menu
+Discover the Haas Difference
+Why Haas
+MyHaas
+Education Community
+Industry 4.0
+Haas Certification
+Customer Testimonials
+Service
+Main Menu
+Welcome to Haas Service
+SERVICE HOME
+Operator’s Manuals
+How-To Procedures
+Troubleshooting Guides
+Preventive Maintenance
+Haas Parts
+Haas Tooling
+Videos
+Videos
+Main Menu
+Main Menu
+View All
+View All
+View All
+View All
+HTEC Curriculum Support
+View All
+Haas 10 kg Cobot Package
+Cobot Kits
+DC-1 Drill Center
+CNC Sales News
+View All
+View All
+contact-us-test
+4 - AUTOMATION SYSTEMS
+Carousel-V2
+expert test
+Demo_Day_Trident-test
+Link Test
+View All
+Choose Options
+View All
+View All
+View All
+View All
+View All
+calc-test
+View All
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Haas Tooling
+Main Menu
+Haas Service Parts
+Main Menu
+My Haas
+Welcome,
+! 
+Haas Tooling
+MyHaas/HaasConnect
+Sign In
+Register
+Haas Tooling
+MyHaas/HaasConnect
+Sign Out
+Welcome, 
+My Machines
+Latest Activity
+My Quotes
+My Account
+My Users
+Sign Out
+Find Your Distributor
+Select Language
+English
+Deutsch
+Español - España
+Español - México
+Français
+Italiano
+Português
+Český
+Dansk
+Nederlands
+Magyar
+Polski
+Svenska
+Türkçe
+中文
+Suomi
+Norsk
+الإنجليزية
+български
+Hrvatski
+Ελληνικά
+Română
+Slovenský
+Slovenščina
+한국어
+日本語
+Українська
+×
+Search Results
+Web Pages
+Images
+<
+1
+>
+Pneumatic Safety Door Interlocks Troubleshooting Guide - TG0110
+Service Home
+Pneumatic Safety Door Interlocks Troubleshooting Guide - TG0110
+Your document is ready for download, please click below to download your document.
+Download Document
+Error processing this document, please try again or 
+Contact Us
+.
+Please wait while your document is being loaded.
+Recently Updated
+Last updated: 10/14/2025
+Pneumatic Safety Door Interlocks
+ - Troubleshooting Guide
+TG0110
+Pneumatic Safety Door Interlocks Troubleshooting Guide - TG0110
+Jump to Section
+1. 
+Troubleshooting Videos 
+2. 
+Introduction 
+3. 
+Symptom Table 
+4. 
+Alignment 
+5. 
+Voltage 
+6. 
+Contamination 
+7. 
+Broken Spring 
+8. 
+Electrical Diagram 
+Back to Top
+Your document is ready for download, please click below to download your document.
+Download Document
+Error processing this document, please try again or 
+Contact Us
+.
+Please wait while your document is being loaded.
+Troubleshooting Videos
+Introduction
+In the image, the cover for the sensor and piston is removed.
+Proximity sensor
+Piston
+Stop block
+ Note:
+ The door shown closes to the right. On machines with two doors, the sensor and stop block for the left door are on the left side of the piston.
+All Haas CNC machines are equipped with locks on the operator doors and a key switch on the side of the control pendant to lock and unlock setup mode. Generally, setup mode status (locked or unlocked) affects how the machine operates when the doors are opened.
+For more information refer to the Door Rules - Run / Setup Mode reference document.
+ Door Rules - Run / Setup Mode 
+Symptom Table
+Symptom
+Possible Cause
+Corrective Action
+Alarm 223
+ DOOR LOCK FAILURE
+Sensor is misaligned
+Check the sensor alignment
+No power to the solenoid or the sensor
+Measure the voltage at the I/O PCB
+Piston is stuck from contamination
+Clean the piston assembly
+Broken return spring
+Replace the broken spring
+Alignment
+Corrective Action:
+If the door was removed or any components are loose, the door interlock sensor can become misaligned. 
+R is 0.0" - 0.09" (0.0 - 2.3 mm). Space R is the distance between the end of the proximity sensor housing [2] and the top of the stop block [3].
+S is 0.06" - 0.25" (1.5 - 6.4 mm). Space S is the distance between the extended piston [1] and the stop block [3].
+Note: 
+Refer to the videos above for any clarification. 
+Corrective Action:
+Inspect the door rollers and make sure all of the interlock components are aligned. Adjust the doors from the pivot locations [1] for necessary clearance between the stop blocks and interlock. 
+Note: 
+Activate Interlocks and verifty that doors will not open or cause an alarm during operation. 
+Voltage
+Corrective Action:
+Interlock solenoids use the power-to-lock system.
+Command a spindle speed of 100 rpm.
+Measure the voltage at the I/O PCB. The correct voltage is 120 VAC. Verify that voltage is present (connectors P29 [1] on a Classic Haas Control (CHC), P40 and P41 [2] on a Next Generation Control (NGC)) when the door is closed and locked. If no voltage is present, go to 
+I/O PCB - Troubleshooting Guide (Classic Haas Control)
+ to troubleshoot the I/O PCB. If voltage is present, test the solenoid. Refer to 
+Solenoid - Troubleshooting Guide
+ to troubleshoot the solenoid.
+Set the pendant key to “run”/locked mode. Close the door. Make sure the sensor indicator lights [4,5] activate. If the sensor lights fail to activate, the sensor may be defective, misaligned, or have a faulty connection. Refer to Sections 1 and 
+Proximity Sensor - Troubleshooting Guide
+ to troubleshoot the proximity sensors.
+Contamination
+Improper maintenance of the machines air supply can lead to water contamination and Failure of the machines door interlocks.
+If the interlock is contamintated, make sure the machine air supply is clean and dry.
+Rebuild the intelock per the steps below
+Corrective Action:
+Remove the upper fitting and O-ring (59-1997) [1] and the piston assembly [2] from the interlock body [3]. Use a pick to remove the bottom o-ring [7].
+Clean the inside of the interlock body and all parts. Replace any damaged o-rings.
+Apply a thin coat of silicone grease to the Piston o-ring (59-2218) [4], the piston shaft [5], the spring [6], and the bottom o-ring (59-2218) [7].
+Fix the source of contamination to prevent a recurrence of the problem.
+Broken Spring
+Corrective Action:
+Remove the upper fitting and O-ring (59-1997) [1] and the piston assembly [2] from the interlock body [3]. Use a pick to remove the bottom o-ring [7].
+Clean the inside of the interlock body and all parts. Inspect/replace the spring [6], 59-1409.
+Apply a thin coat of silicone grease to the piston o-ring (59-2218) [4], the piston shaft [5], the spring [6], and the bottom o-ring (59-2218) [7].
+Electrical Diagram
+Recently Viewed Items
+Clear Items
+You Have No Recently Viewed Items Yet
+ Feedback 
+Haas Delivered Price
+This price includes shipping cost, export and import duties, insurance, and any other expenses incurred during shipping to a location in France agreed with you as a buyer. No other mandatory costs can be added to the delivery of a Haas CNC Product.
+Click for details
+KEEP UP WITH THE LATEST HAAS TIPS AND TECHNOLOGY...
+Sign up now! 
+HAAS TOOLING ACCEPTS THE FOLLOWING:
+Service & Support
+Owners
+Request Service
+Operator Manuals
+Haas Parts
+Rotary Repair Request
+Pre-Install Guides
+Shopping Tools
+Build & Price a New Haas
+Available Inventory
+The Haas Price List
+CNCA Financing
+About Haas
+DNSH Statement
+Export Compliance
+Careers
+Certifications & Safety
+Contact Us
+History
+Terms & Conditions
+Haas Tooling Terms & Conditions
+Privacy
+Warranty
+Haas Community
+Haas Certification Program
+Haas Motorsports
+Gene Haas Foundation
+Haas Technical Education Community
+Events
+Join the Conversation
+Facebook
+X
+Flickr
+YouTube
+LinkedIn
+Instagram
+TikTok
+ © 2026 
+Haas Automation, Inc – CNC Machine Tools
+ This site is protected by reCAPTCHA and the Google 
+Privacy Policy
+ and 
+Terms of Service
+ apply. 
+2800 Sturgis Rd., Oxnard, CA 93030
+ Toll Free: (888) 817-4446 / Fax: 805-278-8554
+ {{ if (loading) { }} {{=loadingSpinner}} {{ } else { }} 
+×
+ {{=content}} 
+ {{ } }} 
+ {{ if (loading) { }} {{=loadingSpinner}} {{ } else { }} 
+×
+ {{=content}} 
+ {{ } }} 

@@ -1,0 +1,806 @@
+Wireless Intuitive Probe System - WIPS - IR - Troubleshooting Guide - TG0161
+Skip To Content Button
+Skip To Content
+My Haas
+Welcome,
+! 
+Haas Tooling
+MyHaas/HaasConnect
+Sign In
+Register
+Haas Tooling
+MyHaas/HaasConnect
+Sign Out
+Welcome, 
+My Machines
+Latest Activity
+My Quotes
+My Account
+My Users
+Sign Out
+Find Your Distributor
+Select Language
+English
+Deutsch
+Español - ES
+Español - MX
+Français
+Italiano
+Português
+Český
+Dansk
+Nederlands
+Magyar
+Polski
+Svenska
+Türkçe
+中文
+Suomi
+Norsk
+الإنجليزية
+български
+Hrvatski
+Ελληνικά
+Română
+Slovenský
+Slovenščina
+한국어
+日本語
+Українська
+machines
+Main Menu
+Vertical Mills 
+Vertical Mills 
+Vertical Mills 
+View All
+Vertical Mills 
+VF Series
+Universal Machines
+VR Series
+VP-5 Prismatic
+Pallet-Changing VMCs
+Mini Mills
+Mold Machines
+High-Speed Drill Centers
+Drill/Tap/ Mill Series
+Toolroom Mills
+Pocket Mill
+Compact Mills
+Gantry Series
+SR Sheet Routers
+Extra-Large VMC
+Double-Column Mills
+3+2 Positioning Machines
+Multi-Axis Solutions
+Multi-Axis Solutions
+Multi-Axis Solutions
+View All
+Multi-Axis Solutions
+Y-Axis Lathes
+5-Axis Mills
+Lathes
+Lathes
+Lathes
+View All
+Lathes
+ST Series
+Dual-Spindle
+Box Way Series
+Toolroom Lathes
+Chucker Lathe
+Pocket Lathe
+Haas Bar Feeders
+Horizontal Mills
+Horizontal Mills
+Horizontal Mills
+View All
+Horizontal Mills
+50-Taper
+40-Taper
+Rotaries & Indexers
+Rotaries & Indexers
+Rotaries & Indexers
+View All
+Rotaries & Indexers
+Rotary Tables
+Indexers
+5-Axis Rotaries
+Extra-Large Rotaries
+Special Series
+Special Series
+Special Series
+View All
+Special Series
+EU_Series_Redirect
+Automation Systems
+Automation Systems
+Automation Systems
+View All
+Automation Systems
+Mill Automation
+Lathe Automation
+Automatic Parts Loaders
+Automation Models
+Desktop Machines
+Desktop Machines
+Desktop Machines
+View All
+Desktop Machines
+Desktop Mill
+Desktop Lathe
+Control Simulator, Standard
+Control Simulator, Premium
+Shop Equipment
+Shop Equipment
+Shop Equipment
+View All
+Shop Equipment
+Knee Mill
+Haas Manual Lathes
+Haas Saws
+Fabrication Machines
+Fabrication Machines
+Fabrication Machines
+View All
+Fabrication Machines
+Laser Cutting Machines
+CNC Press Brakes
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Options
+Main Menu
+Value Option Packages
+Value Option Packages
+Value Option Packages
+View All
+Value Option Packages
+Spindles
+Spindles
+Spindles
+View All
+Spindles
+Tool Changers
+Tool Changers
+Tool Changers
+View All
+Tool Changers
+4th- | 5th-Axis
+4th- | 5th-Axis
+4th- | 5th-Axis
+View All
+4th- | 5th-Axis
+Turrets & Live Tooling
+Turrets & Live Tooling
+Turrets & Live Tooling
+View All
+Turrets & Live Tooling
+Probing
+Probing
+Probing
+View All
+Probing
+Chip & Coolant Management
+Chip & Coolant Management
+Chip & Coolant Management
+View All
+Chip & Coolant Management
+The Haas Control
+The Haas Control
+The Haas Control
+View All
+The Haas Control
+Product Options
+Product Options
+Product Options
+View All
+Product Options
+Tooling & Fixturing
+Tooling & Fixturing
+Tooling & Fixturing
+View All
+Tooling & Fixturing
+Workholding
+Workholding
+Workholding
+View All
+Workholding
+5-Axis Solutions
+5-Axis Solutions
+5-Axis Solutions
+View All
+5-Axis Solutions
+5 Easy Steps to 5-Axis
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Why Haas
+Main Menu
+Discover the Haas Difference
+Why Haas
+MyHaas
+Education Community
+Industry 4.0
+Haas Certification
+Customer Testimonials
+Service
+Main Menu
+Welcome to Haas Service
+SERVICE HOME
+Operator’s Manuals
+How-To Procedures
+Troubleshooting Guides
+Preventive Maintenance
+Haas Parts
+Haas Tooling
+Videos
+Videos
+Main Menu
+Main Menu
+View All
+View All
+View All
+View All
+HTEC Curriculum Support
+Haas Value Option Packages (VOP) Journey
+View All
+Haas 10 kg Cobot Package
+Cobot Kits
+DC-1 Drill Center
+CNC Sales News
+Do More With Your Haas
+View All
+View All
+contact-us-test
+4 - AUTOMATION SYSTEMS
+Carousel-V2
+expert test
+Demo_Day_Trident-test
+Link Test
+image-sale-tag-test
+article-list-test
+Haas 25 kg Robot Package
+test-algolia-page
+View All
+View All
+View All
+View All
+calc-test
+View All
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Haas Tooling
+Main Menu
+Haas Service Parts
+Main Menu
+My Haas
+Welcome,
+! 
+Haas Tooling
+MyHaas/HaasConnect
+Sign In
+Register
+Haas Tooling
+MyHaas/HaasConnect
+Sign Out
+Welcome, 
+My Machines
+Latest Activity
+My Quotes
+My Account
+My Users
+Sign Out
+Find Your Distributor
+Select Language
+English
+Deutsch
+Español - ES
+Español - MX
+Français
+Italiano
+Português
+Český
+Dansk
+Nederlands
+Magyar
+Polski
+Svenska
+Türkçe
+中文
+Suomi
+Norsk
+الإنجليزية
+български
+Hrvatski
+Ελληνικά
+Română
+Slovenský
+Slovenščina
+한국어
+日本語
+Українська
+×
+Search Results
+Web Pages
+Images
+<
+1
+>
+Wireless Intuitive Probe System - WIPS - IR - Troubleshooting Guide - TG0161
+Service Home
+Wireless Intuitive Probe System - WIPS - IR - Troubleshooting Guide - TG0161
+Your document is ready for download, please click below to download your document.
+Download Document
+Error processing this document, please try again or 
+Contact Us
+.
+Please wait while your document is being loaded.
+Wireless Intuitive Probe System - WIPS - IR - Troubleshooting Guide - TG0161
+Jump to Section
+Back to Top
+Your document is ready for download, please click below to download your document.
+Download Document
+Error processing this document, please try again or 
+Contact Us
+.
+Please wait while your document is being loaded.
+Recently Updated
+Last updated: 10/15/2025
+Wireless Intuitive Probe System
+ - WIPS - IR - Troubleshooting Guide
+TG0161
+Revision A - 12/2025
+ Download and fill out the Probe Inspection Report Checklist below before replacing any parts.
+ Probe Inspection Report Checklist 
+Introduction
+OMP40-2 work probe:
+ A spindle-mounted wireless probe that communicates with an optical interface.
+Work probe stylus:
+ The part of the work probe that touches parts during measurement.
+Tool probe stylus:
+ The part of the tool probe that tools touch during measurement. Tools touch the top and side of the stylus when the probe measures tool length and diameter.
+OTS tool probe: 
+The OTS is a battery-powered, wireless probe.
+OMI-2H Optical Machine Interface: 
+The wireless interface for the OMP40-2 work probe. The OMI-2H uses infrared light to communicate with the CNC control and switch the probe on or off.
+OMI cable:
+ This cable connects the OMI to the CNC control.
+Work probes for Wireless Intuitive Probe System (WIPS) do not work in the wired probe systems (VQCPS). The work probes can be differentiated by:
+The VQCPS work probe (P/N 60-0024) has a square Haas logo.
+The WIPS work probe (P/N 60-0050) has a round Haas logo.
+For installation instructions for both the work probe and tool probe refer to: 
+Wireless Intuitive Probe System (WIPS) - Installation
+Powering on the Work Probe and Tool Probe
+Probe Operation:
+Power on the Work Probe
+Power on the Tool Probe
+Classic Haas Control (CHC)
+M59 P1134;
+Push 
+[CYCLE START]
+.
+M59 P1133;
+G04 P1.0;
+M59 P1134;
+Push 
+[CYCLE START]
+.
+Next Generation Contol (NGC)
+M59 P3;
+Push
+ [CYCLE START]
+.
+M59 P2;
+G04 P1.0;
+M59 P3;
+Push 
+[CYCLE START]
+.
+The LEDs on the work probe flash green when the probe is powered on and ready for use.
+When the probe stylus is touched, a “beep” sound is made by the CNC control.
+The LEDs on the work probe flash red each time the stylus is touched.
+The LEDs on the work probe flash green when the probe is powered on and ready for use.
+When the probe stylus is touched, a “beep” sound is made by the CNC control.
+The LEDs on the work probe flash red each time the stylus is touched.
+When the stylus on the tool probe is touched, the CNC control makes a "beep" sound.
+The tool probe does not have any LEDs.
+Symptom Table
+Symptom
+Possible Cause
+Corrective Action
+Alarm 1086 
+PATH OBSTRUCTED 
+Protected Positioning Cycle only.
+Clear the obstruction and start again from a safe position.
+Alarm 1088 
+NO FEED RATE
+Protected Positioning Cycle only.
+Insert the F code input and start again from a safe position. Recommended protected positioning feed rate is 120 in/min.
+Alarm 1089 
+NO TOOL LENGTH ACTIVE
+G43 or G44 is not active before the cycle is called.
+Edit the program and start again from a safe position.
+Alarm 1091 
+FORMAT ERROR 
+Inputs are mixed, missing, or incorrectly formatted.
+Edit the program and start again from a safe position.
+Alarm 1092
+ PROBE OPEN/UNEXPECTED SURFACE FOUND
+Interference from the work lights.
+Adjust the work lights
+Settings in the work probe are not correct.
+Correct the settings.
+The surface of the part was found, when not expected.
+Edit the program.
+Occurs if the probe is already triggered before a move or triggered while positioning the probe or tool.
+Clear faults and restart from safe position, check if chips are trapped around probe eyelids
+Alarm 1093
+ PROBE FAIL/SURFACE NOT FOUND
+Interference from the work lights.
+Adjust the work lights
+Settings in the work probe are not correct.
+Correct the settings.
+The surface of the part was not found.
+Edit the program.
+Alarm 1099 
+BROKEN TOOL
+This alarm occurs if a tool is out of user defined tolerance.
+Replace defective tool and establish correct tool offset value.
+Alarm 1101
+ PROBE STARTUP FAILURE.
+Bad Batteries.
+Replace the batteries.
+The macros are corrupted.
+Reload the macros
+Settings in the work probe are not correct
+Correct the settings 
+Alarm 1011
+ OMP40 Not Calibrated
+The spindle probe tool offset does not match macro variable #10561.
+To correct this issue re-calibrate the spindle probe.
+The spindle probe is not calibrated.
+To correct this issue calibrate the spindle probe.
+Alarm 1106 or 1107
+ OMP40 Needs Calibration
+The spindle probe tool offset does not match macro variable #10561.
+To correct this issue re-calibrate the spindle probe.
+The spindle probe is not calibrated.
+To correct this issue calibrate the spindle probe.
+Alarm 1010
+ OTS Not Calibrated
+The tool probe is not calibrated.
+Calibrate the tool probe.
+Alarm 1104
+ OTS Needs Calibration
+The tool probe is not calibrated.
+Calibrate the tool probe.
+Incorrect measurements. The probe does not give repeatable location results.
+The probe is not calibrated.
+Calibrate the probe.
+The probe stylus is loose.
+Check the probe stylus.
+The probe stylus is not concentric to the spindle centerline (runout).
+Adjust the probe stylus to eliminate runout.
+The WIPS programs or macro variables are corrupted.
+Load the latest Renishaw macro programs. Make sure to overwrite the current macro programs.
+On an EC-400 the probe was commanded to expand or retract using M104/M105 then 
+Alarm 329
+ UNDEFINED M CODE appears
+Probe arm type parameter value was set incorrectly
+Check 
+Parameter 805
+ PROBE ARM TYPE and verify the value is on AUTO. 
+On EC-400 
+Alarm 808
+ AUTOMATIC PROBE ARM FAULT appears while retracting.
+The connector for the probe down switch on the cable is pinned incorrectly.
+Check the pin out on the probe down switch cable. Refer to the EC-400 Automatic Probe arm Cable section for further information. 
+Intermittently, the probe cylinder can get stuck in the extended position causing 
+Alarm
+808 
+AUTOMATIC PROBE ARM FAULT on EC-400/500/630 and VC-400/SS
+ machines built in 2017 or later
+.
+Air can leak past the piston O-ring due to the design having minimal compression. This is witnessed by observing air coming out of the exhaust port of the solenoid when the cylinder is extended.
+Refer to 
+HSG-A-12/04/2024
+ for the corrective action. 
+The probe is not communicating with the OMI.
+The probe may be in the wrong mode.
+Check which mode the probe is in by referring to the light sequence guide in the relevant section below. Change the mode as needed.
+UMC-350HD Machines built before 6/14/2023
+Tools 1.25 inches or longer do not reach the OTS Probe.
+Longer tools will need to update the probe mount.
+Refer to the 
+UMC-350HD Probe Mount Retro Fit
+ procedure to determine if the machine has the old probe mount and retrofit the new one if needed.
+Probes on a CM-1 machine is powering on and off unexpectedly.
+There is an issue with electrical noise affecting the OMI function on the 
+CM-1 machine
+.
+Contact Haas Service for corrective action. 
+NOTE:
+ Do not replace any parts for these symptoms. Refer to
+HBC-N-01/09/2025
+ for more details.
+The OMI intermittently tries to switch-on both probes at the same time. 
+The LEDs for both probes are lit on the OMI simultaneously.
+Probe looses connection to OMI during a cycle.
+Object may have blocked the optical signals between the probe and the OMI.
+See Probe Connection Lost section below.
+Probe drains battery quickly. 
+Probe power set to "Standard".
+Change the power set to "Low". Refer to the light sequence guide in the relevant section below. 
+EC-400 Automatic Probe Arm Cable
+1
+An example of a mis-pinned connector is shown on the left, the cable that connects to cable 32-0763 had a pin in the wrong location. 
+Re-pin the wire to the correct location indicated in the image. 
+2
+If the probe up input flickers between 1 and 0 add ferrite filters to reduce noise. 
+Batteries
+Corrective Action:
+Battery replacement is always the first step in probe troubleshooting. Replace both batteries at the same time. Test the batteries before you install them.
+The batteries in the probes have a life span of about (8) months, and must be replaced regularly. If the batteries are low, the work probe's green and blue LEDs may flash. If the batteries are completely dead, the red LED may constantly be on.
+Do not rely on a multimeter for testing the batteries. The lithium batteries in the probe may read 3.6 Volts from a multimeter, even though they are low.
+Write the date on newly installed batteries for future reference.
+Note
+: Do not touch the stylus during battery replacement. If the stylus is touched, the probe may power on in the setting mode. Settings can be accidentally changed in this mode.
+Interference
+Corrective Action:
+Turn the work lights off to begin troubleshooting. Make sure the work lights inside the machine are not aimed at the probe or the RMI-QE. Bright lights can interfere with the work probe. Make sure no bright lights are aimed at the machine.
+Surface Not Found
+Corrective Action:
+Edit the program to start the probe closer to the part.
+Calibration
+Corrective Action:
+The probes need to be calibrated any time a stylus has been replaced, the tool probe has been moved, or if the CNC control generates alarms during probe routines. The probe needs to be calibrated when changing from inch to metric or metric to inch.
+Follow the procedure to calibrate the tool probe and the work probe. Refer to:
+CHC: 
+Wireless Intuitive Probe System (WIPS) - Calibration
+.
+NGC: 
+Next Generation Control - Probe Calibration (VPS)
+The probes must be calibrated in this order:
+Tool probe
+Work probe length
+Work probe diameter
+OMP 40-2 Work Probe Settings
+Probe Settings Basics
+The probe settings are in these (4) groups:
+Switch-Off Method
+Enhanced Trigger Filter
+Optical Transmission Method/Probe Identification
+Optical Power
+The sequence that probe flashes tells you the current probe settings.
+Note:
+ The LEDs flash in different colors and different lengths of time. The sequence that the LED flashes tells you the probe settings. The LEDs flashes a short or a long time. In the tables that follow, a small colored circle 
+ shows that the LED flashes a short time. A rectangle 
+ shows that the LED flashes a long time.
+To see what the current probe settings are, do the following:
+Remove the batteries from the probe for a minimum of 5 seconds.
+Install the batteries.
+Important
+: Do not touch the probe stylus after re-inserting batteries - this is how probe settings are changed. Only touch it later if necessary to change the settings.
+After you replace the batteries, the probe LED flashes in a specific sequence.
+Look at the probe LEDs. Record the sequence that the LED flashes.
+Refer to 
+Renishaw - Probe - OMP40-2 - Settings
+ for the meaning of the sequence.
+If you would like to change the probe settings, do the following:
+Remove the batteries [1] from the probe for a minimum of 5 seconds.
+Move and hold the stylus [2] while installing the batteries.
+Hold the stylus until the probe completes the LED sequence [3] and flashes Red 5 times.
+Release the stylus.
+To change the probe settings you move the stylus in a specified order, refer to the tables below for the orders for different settings:
+The Illustration shows these symbols:
+The symbols tells you this:
+This gives this result:
+A red arrow that points to the right.
+Move and hold the stylus for less than (4) seconds.
+Selects the next option within a group.
+A green arrow that points down.
+Move and hold the stylus for more than (4) seconds.
+Moves from one group to another.
+A white arrow that points down.
+Do not touch the stylus for (20) seconds or more.
+Exits the set up.
+Default OMP40-2 settings are the following:
+Switch Off Method: Optical Off
+Enhanced Trigger Filter: Trigger Filter Off
+Optical Transmission Method/Probe Identification: Modulate Probe 1
+Optical Power: Standard
+OMP40-2 - Macro Variables.
+556: (XRAD) Stylus X calibration radius
+557: (YRAD) Stylus Y calibration radius
+558: (XOFF) X axis stylus offset (run out)
+559: (YOFF) Y axis stylus offset (run out)
+560: Tool number for the OMP40-2 probe
+OTS Tool Probe Settings
+OTS Settings Basics:
+The probe settings are in these (3) groups.
+Enhanced Trigger Filter
+Probe Identification
+Optical Power
+The LEDs flash in different colors and different lengths of time. The sequence that the LED flashes tells you the probe settings. The LEDs flash a short or a long time. In the tables that follow, a small colored circle 
+ shows that the LED flashes a short time. A colored rectangle 
+ shows that the LED flashes a long time.
+To find the current OTS probe settings do the following:
+Remove and re-install the batteries. After you install the batteries, the probe LED flashes in a special sequence. These LEDs should show the initial factory settings.
+Note:
+ Do not touch the probe when installing the batteries, this could alter the probe settings.
+Look at the probe LEDs. Record the sequence of color and length of time that the LED flashes
+Refer to 
+Renishaw - Probe - OTS - Settings
+ for light sequence meanings.
+To change the OTS probe settings do the following:
+Remove the batteries [1] from the probe for a minimum of 5 seconds.
+Move and hold the stylus [2] while installing the batteries. Hold the stylus until the probe completes the LED sequence [3] and flashes Red 5 times.
+Release the stylus.
+Follow the below tables to select the values you want for the settings. Default factory settings are shown in the next set of tables:
+The Illustration shows these symbols:
+The symbols tells you this:
+This gives this result:
+A red arrow that points to the right.
+Move and hold the stylus for less than (4) seconds.
+Selects the next option within a group.
+A green arrow that points down.
+Move and hold the stylus for more than (4) seconds.
+Moves from one group to another.
+A white arrow that points down.
+Do not touch the stylus for (20) seconds or more.
+Exits the set up.
+Default probe settings are the following:
+Enhanced Trigger Filter: Off
+Probe Identification: Probe 2
+Optical Power: Standard
+OTS Macro Variables
+582: OTS stylus Z location, non rotating tools
+583: OTS stylus Z locations, rotating tools
+584: Stylus size for diameter setting
+585: X-Axis stylus center location
+586: Y-Axis stylus center location
+587: Z approach position (This is used in length and diameter probing only). The first fast positioning move to the position where the tool offset is applied (height above stylus).
+588: Z clearance position (This is used in length and diameter probing only). The position above the stylus for clearance moves around the stylus (height above stylus).
+589: Tools above this diameter rotate (This is used in length and diameter probing only)
+590: Maximum cutter diameter size (This is used in length and diameter probing only)
+592: Probe orientation. This defines the diameter measuring axis, and the radius offsetting direction for rotating length setting.
+OMI-2H Operation:
+START SIGNAL (yellow): This LED flashes for one second when the OMI-2H sends a start signal to switch on or switch off the work probe or the tool probe.
+LOW BATTERY (red): If the OMI-2H detects a low battery from one of the probes, the low battery LED is on. Replace the batteries in the probes.
+PROBE STATUS (green,red): This bi-color LED is green when the probe is powered on, and red when the probe is triggered.
+ERROR (red, blue, yellow): Tri-color LED indicates a weak or lost signal from the probe. Red indicates the probe has failed or switched off. Blue indicates a signal from a second probe is being received. Yellow indicates that a weak signal is received. The probe signal could be blocked from a fixture or rotary table.
+SIGNAL CONDITION (red, blue, yellow): This tri-colored LED indicates the strength of the signal from the probes. Red indicates no signal from the probe. Yellow indicates a weak signal. Green indicates a good signal.
+ACTIVE PROBE (green): There are (2) LEDs that show which probe is currently active.
+For more information refer to 
+Optical Machine Interface (OMI) - Lights Information
+.
+Probe Connection Lost
+If the machine loses signal between the probe and the OMI during the MRZP cycle, do the following one at a time until the machine can complete the MRZP cycle. After each step, re-run the MRZP cycle to verify the connection. If the connection is lost again, move to the next step:
+Clean the inside of the machine
+Reposition the OMI on the roof, closer to the doors
+Place a white poster board on one of the front T-slots (see step below)
+Order the 
+WIPS - RF
+Note:
+ WIPS - RF is currently only available for VR, GM-2-5AX , and HDC-3-5AX machines.
+Place a white poster board [1] in one of the front T-slots, in an area that will allow the probe signal to reflect towards the OMI while the spindle casting is in the way..
+Recently Viewed Items
+Clear Items
+You Have No Recently Viewed Items Yet
+ Feedback 
+Haas Delivered Price
+This price includes shipping cost, export and import duties, insurance, and any other expenses incurred during shipping to a location in France agreed with you as a buyer. No other mandatory costs can be added to the delivery of a Haas CNC Product.
+Click for details
+KEEP UP WITH THE LATEST HAAS TIPS AND TECHNOLOGY...
+Sign up now! 
+HAAS TOOLING ACCEPTS THE FOLLOWING:
+Service & Support
+Owners
+Request Service
+Operator Manuals
+Haas Parts
+Rotary Repair Request
+Pre-Install Guides
+Shopping Tools
+Build & Price a New Haas
+Available Inventory
+The Haas Price List
+CNCA Financing
+About Haas
+Accessibility Statement
+DNSH Statement
+Export Compliance
+Careers
+Certifications & Safety
+Contact Us
+History
+Terms & Conditions
+Haas Tooling Terms & Conditions
+Privacy
+Warranty
+Haas Community
+Haas Certification Program
+Haas Motorsports
+Gene Haas Foundation
+Haas Technical Education Community
+Events
+Join the Conversation
+Facebook
+X
+Flickr
+YouTube
+LinkedIn
+Instagram
+TikTok
+ © 2026 
+Haas Automation, Inc – CNC Machine Tools
+ This site is protected by reCAPTCHA and the Google 
+Privacy Policy
+ and 
+Terms of Service
+ apply. 
+2800 Sturgis Rd., Oxnard, CA 93030
+ Toll Free: (888) 817-4446 / Fax: 805-278-8554
+ {{ if (loading) { }} {{=loadingSpinner}} {{ } else { }} 
+×
+ {{=content}} 
+ {{ } }} 
+ {{ if (loading) { }} {{=loadingSpinner}} {{ } else { }} 
+×
+ {{=content}} 
+ {{ } }} 

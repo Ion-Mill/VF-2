@@ -1,0 +1,1328 @@
+TSC-300/1K - Troubleshooting Guide - NGC
+MyHaas
+Welcome,
+! 
+Haas Tooling
+Guest Order History
+MyHaas/HaasConnect
+Sign In
+Register
+Haas Tooling
+My Account
+Order History
+Return History
+MyHaas/HaasConnect
+Sign Out
+Welcome, 
+My Machines
+Latest Activity
+My Quotes
+My Account
+My Users
+Sign Out
+Find Your Distributor
+Select Language
+English
+Deutsch
+Español - España
+Español - México
+Français
+Italiano
+Português
+Český
+Dansk
+Nederlands
+Magyar
+Polski
+Svenska
+Türkçe
+中文
+Suomi
+Norsk
+الإنجليزية
+български
+Hrvatski
+Ελληνικά
+Română
+Slovenský
+Slovenščina
+한국어
+日本語
+Українська
+machines
+Main Menu
+Vertical Mills 
+Vertical Mills 
+Vertical Mills 
+View All
+Vertical Mills 
+VF Series
+Universal Machines
+VR Series
+VP-5 Prismatic
+Pallet-Changing VMCs
+Mini Mills
+Mold Machines
+High-Speed Drill Centers
+Drill/ Tap/ Mill Series
+Toolroom Mills
+Compact Mills
+Gantry Series
+SR Sheet Routers
+Extra-Large VMC
+Double-Column Mills
+Desktop Mill
+Control Simulator
+Mill Automatic Parts Loader
+Compact Automatic Parts Loader
+Multi-Axis Solutions
+Multi-Axis Solutions
+Multi-Axis Solutions
+View All
+Multi-Axis Solutions
+Y-Axis Lathes
+5-Axis Mills
+Lathes
+Lathes
+Lathes
+View All
+Lathes
+ST Series
+Dual-Spindle
+Toolroom Lathes
+Chucker Lathe
+Desktop Lathe
+Haas Bar Feeder
+Lathe Automatic Parts Loader
+Horizontal Mills
+Horizontal Mills
+Horizontal Mills
+View All
+Horizontal Mills
+50-Taper
+40-Taper
+Rotaries & Indexers
+Rotaries & Indexers
+Rotaries & Indexers
+View All
+Rotaries & Indexers
+Rotary Tables
+Indexers
+5-Axis Rotaries
+Extra-Large Rotaries
+Automation Systems
+Automation Systems
+Automation Systems
+View All
+Automation Systems
+Mill Automation
+Lathe Automation
+Automation Models
+Desktop Machines
+Desktop Machines
+Desktop Machines
+View All
+Desktop Machines
+Desktop Mill
+Desktop Lathe
+Shop Equipment
+Shop Equipment
+Shop Equipment
+View All
+Shop Equipment
+Band Saw
+Knee Mill
+Surface Grinder
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+HAAS SIX PACK
+HAAS SIX PACK
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Options
+Main Menu
+Spindles
+Spindles
+Spindles
+View All
+Spindles
+Tool Changers
+Tool Changers
+Tool Changers
+View All
+Tool Changers
+4th- | 5th-Axis
+4th- | 5th-Axis
+4th- | 5th-Axis
+View All
+4th- | 5th-Axis
+Turrets & Live Tooling
+Turrets & Live Tooling
+Turrets & Live Tooling
+View All
+Turrets & Live Tooling
+Probing
+Probing
+Probing
+View All
+Probing
+Chip & Coolant Management
+Chip & Coolant Management
+Chip & Coolant Management
+View All
+Chip & Coolant Management
+The Haas Control
+The Haas Control
+The Haas Control
+View All
+The Haas Control
+Product Options
+Product Options
+Product Options
+View All
+Product Options
+Tooling & Fixturing
+Tooling & Fixturing
+Tooling & Fixturing
+View All
+Tooling & Fixturing
+Workholding
+Workholding
+Workholding
+View All
+Workholding
+5-Axis Solutions
+5-Axis Solutions
+5-Axis Solutions
+View All
+5-Axis Solutions
+5 Easy Steps to 5-Axis
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+HAAS SIX PACK
+HAAS SIX PACK
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Why Haas
+Main Menu
+Discover the Haas Difference
+Why Haas
+MyHaas
+Education Community
+Industry 4.0
+Haas Certification
+Customer Testimonials
+Service
+Main Menu
+Welcome to Haas Service
+SERVICE HOME
+Operator’s Manuals
+How-To Procedures
+Troubleshooting Guides
+Preventive Maintenance
+Haas Parts
+Haas Tooling
+Videos
+Videos
+Main Menu
+Main Menu
+View All
+View All
+Haas 10 kg Cobot Package
+View All
+View All
+View All
+Haas 10 kg Cobot Package
+Cobot Kits
+View All
+View All
+4 - AUTOMATION SYSTEMS
+View All
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+HAAS SIX PACK
+HAAS SIX PACK
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Haas Tooling
+Main Menu
+Automation Accessories
+Shop Support
+Mill Toolholding
+Mill Cutting Tools
+Boring Systems
+Mill Workholding
+Lathe Toolholding
+Lathe Cutting Tools
+Lathe Workholding
+Package Kits
+ER Collets & Chucks
+Holemaking
+Threading
+Broaching
+Tombstones & Kits
+Manual Chucks For Milling
+Deburring & Abrasives
+Tool Presetter & Heat Shrinkers
+Storage & Handling
+Machine Maintenance
+Tooling Accessories
+Apparel & Accessories
+Measuring & Inspection
+Winner's Circle
+Winner's Circle
+Clearance
+Black Friday
+Haas Tooling
+Winner's Circle
+Winner's Circle
+Shop All
+WINNERS_CIRCLE-1Y
+Winner's Circle
+Winner's Circle
+Shop All
+WC-1Y-EU
+Today’s Hot Deals
+Today’s Hot Deals
+Shop All
+Mill Toolholding
+Mill Tooling
+Measuring & Inspection
+Boring Systems
+Mill Workholding
+Shell Mill Kits
+Lathe Toolholding
+Lathe Tooling
+Lathe Workholding
+ER Collets & Chucks
+Holemaking
+Threading
+Broaching
+Tool Storage
+Apparel & Accessories
+Clearance
+Clearance
+Shop All
+Measuring & Inspection
+Measuring & Inspection
+Shop All
+Probe Kits & Accessories
+Edge & Center Finders
+Comparative Measuring Gauges
+Height Gauges
+Calipers
+Threaded Plug & Ring Gauges
+Gauge Blocks
+Pin Gauges
+Drop Indicators
+Dial Test Indicators
+Bore Gauges
+Indicator Accessories
+V Blocks
+Setup Blocks
+Depth Measuring
+Micrometers
+Micrometer Accessories
+Micrometer Kits
+Bore Gauge Kits
+Starter Kits
+Indicator Kits
+Caliper Kits
+Toolholder Check Station
+Height Setters
+Coordinate Measuring Machines
+Automation Accessories
+Automation Accessories
+Shop All
+Cobot Kits
+Cobot Kits
+Protective Barriers
+Grippers
+Robot Cell Accessories
+Shop Support
+Shop Support
+Shop All
+Air Compressors
+Laser Marking Machines
+Bandsaw Blades
+Lifting Magnets
+Mill Toolholding
+Mill Toolholding
+Shop All
+End Mill Holders
+Shell Mill Holders
+Shrink Fit Holders
+ER Collet Chucks
+Milling Chucks & Collets
+NC Drilling Chucks
+Pull Studs / Retention Knobs
+Rotary Tool Holder & Tool Chuck Kits
+Hydraulic Milling Chucks & Collets
+Toolholder Attachments & Wrenches
+Mill Broaching Holders
+Mill Tooling
+Mill Tooling
+Shop All
+Shell Mill Bodies
+Milling Inserts
+End Mills
+Chamfer Mills & Inserts
+Indexable End Mill Bodies
+Ball End Mills
+Chamfer End Mills
+Roughing End Mills
+Indexable Ball End Mills & Inserts
+Shell Mill Kits
+Chamfer Mill Kits
+Indexable End Mill Kits
+Dovetail Cutters
+Indexable Dovetail Cutters
+Engraving End Mills
+Rotary Burrs / Die Grinding Bits
+Keyseat Cutters
+Corner Rounding End Mills
+Slot Mill Bodies
+Boring Systems
+Boring Systems
+Shop All
+Boring Heads & Cartridges
+Boring Holders & Extensions
+Mill Workholding
+Mill Workholding
+Shop All
+Fixed-Jaw Vises
+Self-Centering Vises
+Adapter Plates
+Vise Jaws
+Vise Mounts & Fixtures
+Vise Kits
+Vise Parallels
+Rotary Vise Kits
+Fixture Clamps
+Automated Workholding Kits
+Tooling Plates
+Toolmakers' Vises
+Clamp Force Gauges
+Collet Fixtures
+Angle Plates
+Lathe Toolholding
+Lathe Toolholding
+Shop All
+TL & CL Static Turning Holders
+BOT Static Turning Holders
+BMT Static Turning Holders
+Live / Driven Turning Holders
+Turning Holder Reduction Sleeves / Bushings
+VDI Static Turning Holders
+Turning Holder Accessories
+Lathe Tooling
+Lathe Tooling
+Shop All
+Cut-Off Tool Blocks & Blades
+Cut-Off Tooling Kits
+Turning Inserts
+Grooving & Cut-Off Tools
+Internal (ID) Grooving & Threading Tools
+Threading Inserts
+Threading Tools
+Boring Bars / Internal (ID) Turning Tools
+External (OD) Turning Tools
+Cermet Turning Inserts
+CBN Turning Inserts
+Haas Notch Grooving & Threading Inserts
+Haas Notch Grooving & Threading Tools
+Micro Turning Tools
+Desktop Lathe Tools
+Lathe Workholding
+Lathe Workholding
+Shop All
+Live Centers
+Spindle Reduction Sleeves / Liners
+Quick-Change Collets
+Quick-Change Collet Chucks
+5C Collets
+5C Collet Sets
+Lathe Jaw Boring Rings
+Lathe Jaws
+Bar Pullers
+Scroll Chucks
+Guide Pins
+Package Kits
+Package Kits
+Shop All
+Chip Clearing Fan Kits
+Cutting Tool Kits
+Indexable End Mill Kits
+Cut-Off Tool Block & Blade Kits
+Drill & Tap Kits
+Indexable Drilling Kits
+Shell Mill Kits
+Chamfer Mill Kits
+Rotary Tool Holder & Tool Chuck Kits
+Lathe Starter Kits
+Workholding Kits
+Rotary Vise Kits
+Vise Kits
+3-Jaw Chuck Kits for Mills
+Tombstone Kits
+Reduction Sleeve Kits
+Automated Workholding Kits
+Measuring & Inspection Kits
+Starter Kits
+Bore Gauge Kits
+Caliper Kits
+Indicator Kits
+Micrometer Kits
+ER Collets & Chucks
+ER Collets & Chucks
+Shop All
+ER Straight-Bore Collets
+ER Sealed Collets
+ER Tap Collets
+ER Collet Sets & Accessories
+ER Collet Chucks
+Straight Shank ER Collet Chucks
+Straight Shank Keyless NC Drilling Chucks
+Holemaking
+Holemaking
+Shop All
+Carbide Drills
+Indexable Drill Bodies
+Indexable Drill Inserts
+Modular Drill Bodies
+Modular Drill Heads
+Cobalt Drills & Sets
+Center Drills
+Reamers
+Indexable Drilling Kits
+Spot Drills
+Spade Drill Bodies
+Spade Drill Inserts
+Countersinks
+Threading
+Threading
+Shop All
+Taps
+Threading Inserts
+Threading Tools
+Thread Mills
+Pipe Taps
+Drill Tap Kits
+Broaching
+Broaching
+Shop All
+Broaching Tools
+Broaching Inserts
+Tombstones
+Tombstones
+Shop All
+Tombstones
+Tombstone Kits
+Manual Chucks For Milling
+Manual Chucks For Milling
+Shop All
+3-Jaw Chucks & Mounts for Mills
+Deburring & Abrasives
+Deburring & Abrasives
+Shop All
+Abrasive Pads
+Deburr Tools
+Deburr Wheels
+Abrasive Sheets & Rolls
+Sharpening / Lapping Stones
+Tool Presetter & Heat Shrinkers
+Tool Presetter & Heat Shrinkers
+Shop All
+Tool Presetting Machines
+Shrink Fit Machines
+Tool Storage
+Tool Storage
+Shop All
+Tool Carts
+Machine Maintenance
+Machine Maintenance
+Shop All
+Spindle Test Bars
+Levels
+Refractometers
+Machine Additives & Supplies
+Machine Accessories
+Machine Maintenance Kits
+Tooling Accessories
+Tooling Accessories
+Shop All
+Spindle & Toolholder Taper Cleaners
+Haas Shop Lift
+Toolholder Fixtures
+CNC Chip Clearing Fans
+Hammers & Mallets
+Anti-Fatigue Mats
+Layout Tools
+Wrenches
+Magnetic Tools
+Torque Screwdrivers
+Hand Cutting Tools
+Shop Stools
+Apparel & Accessories
+Apparel & Accessories
+Shop All
+Accessories
+Apparel
+HAAS TOOLING QUICK LINKS
+NEW PRODUCTS 
+NEW PRODUCTS 
+NEW PRODUCTS 
+NEW PRODUCTS 
+MOST POPULAR 
+MOST POPULAR 
+TOOLING PROMOS
+TOOLING PROMOS
+FINANCING & OPEN TERMS
+FINANCING & OPEN TERMS
+PAY BY INVOICE
+PAY BY INVOICE
+FAQs 
+FAQs 
+KITS CREATED FOR YOU
+KITS CREATED FOR YOU
+Haas Service Parts
+Main Menu
+Automatic Pallet Changer
+Lathe Turret
+Tool Changer
+Chip Management
+Coolant
+Counterbalance
+Electrical Cabinet
+Enclosure
+Hydraulics
+Lubrication
+Maintenance
+Pendant
+Probing
+Rotary
+Spindle
+Tailstock
+Haas Service Parts
+Automatic Pallet Changer
+Automatic Pallet Changer
+Shop All
+HMC - Automatic Pallet Changer
+VMC - Automatic Pallet Changer
+Lathe Turret
+Lathe Turret
+Shop All
+Lathe - Turret
+Live Tooling
+Tool Changer
+Tool Changer
+Shop All
+Side Mount
+Umbrella
+Chip Management
+Chip Management
+Shop All
+Multi Auger
+Single Auger
+Coolant
+Coolant
+Shop All
+Auxiliary Filter
+HPC-300 (Lathe)
+HPC-1000 (Lathe)
+Oil Skimmer
+Standard Coolant
+TSC-300 (Mill)
+TSC-1000 (Mill)
+Coolant Refill
+Loc-Line
+Counterbalance
+Counterbalance
+Shop All
+Charge & Discharge Hose
+Electrical Cabinet
+Electrical Cabinet
+Shop All
+Fans
+Filters
+Upgrade Kits
+Enclosure
+Enclosure
+Shop All
+Accessories
+Air Nozzle
+Decals
+Door Bumpers
+Lighting
+Windows, Gaskets, & Weather Strip
+Chip & Coolant Management
+Hydraulics
+Hydraulics
+Shop All
+Filters
+Gauges
+Heat Exchanger
+Hoses
+Lubrication
+Lubrication
+Shop All
+Bijur Mechanical Lubrication
+Minimum Lubrication
+Maintenance
+Maintenance
+Shop All
+Grease, Oil, & Sealants
+Pendant
+Pendant
+Shop All
+Floppy Disk & USB
+Keypad
+Keys
+Lens
+Gaskets & Seals
+Probing
+Probing
+Shop All
+Mill Probing
+Lathe Tool Presetter
+Rotary
+Rotary
+Shop All
+Rotary Gaskets & Seals
+Spindles
+Spindles
+Shop All
+Couplings
+Gaskets & Seals
+Spindle Motor Drive
+Gearbox Drive
+Tool Release Piston
+Tailstock
+Tailstock
+Shop All
+Handles
+×
+Search Results
+Web Pages
+Images
+<
+1
+>
+MyHaas
+Welcome,
+! 
+Haas Tooling
+Guest Order History
+MyHaas/HaasConnect
+Sign In
+Register
+Haas Tooling
+My Account
+Order History
+Return History
+MyHaas/HaasConnect
+Sign Out
+Welcome, 
+My Machines
+Latest Activity
+My Quotes
+My Account
+My Users
+Sign Out
+Find Your Distributor
+Select Language
+English
+Deutsch
+Español - España
+Español - México
+Français
+Italiano
+Português
+Český
+Dansk
+Nederlands
+Magyar
+Polski
+Svenska
+Türkçe
+中文
+Suomi
+Norsk
+الإنجليزية
+български
+Hrvatski
+Ελληνικά
+Română
+Slovenský
+Slovenščina
+한국어
+日本語
+Українська
+×
+Search Results
+Web Pages
+Images
+<
+1
+>
+TSC-300/1K - Troubleshooting Guide - NGC
+Service Home
+TSC-300/1K - Troubleshooting Guide - NGC
+Your document is ready for download, please click below to download your document.
+Download Document
+Error processing this document, please try again or 
+Contact Us
+.
+Please wait while your document is being loaded.
+Recently Updated
+Last updated: 11/06/2024
+TSC-300/1K
+ - Troubleshooting Guide - NGC
+Revision 1
+TSC-300/1K - Troubleshooting Guide - NGC
+- Jump to Cause -
+1. 
+Introduction 
+2. 
+Shuttle & Ball - TSC Check Valve - System Diagram 
+3. 
+ Spring & Ball - TSC Check Valve - System Diagram 
+4. 
+Built-in - TSC/TAB Check Valve - Diagram 
+5. 
+TSC Videos 
+6. 
+Recommended Coolants 
+7. 
+Symptom Table 
+8. 
+TSC Pressure Test 
+9. 
+Vacuum Switch 
+10. 
+Fitting Replacement for Auxiliary filter 
+11. 
+Output Pressure Reference Chart 
+12. 
+Flow Rate Reference Chart 
+13. 
+Short Circuit 
+14. 
+Incorrect Input Power-Phasing 
+15. 
+Coolant Pump Damage 
+16. 
+Motor Shaft Reference Dimension 
+(1 step)
+17. 
+Standoff Alignment 
+18. 
+TSC Pressure-Sensor Failure 
+19. 
+Coolant Blockage 
+20. 
+Coolant Check Valve Inspection 
+21. 
+Kinked Pick-up hose 
+Back to Top
+Your document is ready for download, please click below to download your document.
+Download Document
+Error processing this document, please try again or 
+Contact Us
+.
+Please wait while your document is being loaded.
+Introduction
+ Download and fillout the coolant pump Inspection Report Checklist below before replacing any parts.
+ Coolant pump Inspection Report Checklist 
+Shuttle & Ball - TSC Check Valve - System Diagram
+TSC Purge Check Valve
+Air Blast Check Valve 
+TRP Air Blast
+ - This line provides air during a tool change or when TRP unclamp is activated.
+TSC Purge Valve
+TSC Pump
+Coolant Check Valve 
+- This check valve prevents coolant or air to backflow into the coolant system. 
+Compensating Union
+Analog TSC/TAB Pressure Sensor
+ Spring & Ball - TSC Check Valve - System Diagram
+TAB Air Check Valve
+ - This check valve prevents coolant from entering the CALM system.
+TSC Purge Check Valve
+Air Blast Check Valve 
+Coolant Check Valve 
+- This check valve prevents coolant or air to backflow into the coolant system. There is a spring and ball inside this check valve. 
+TRP Air Blast
+ - This line provides air during a tool change or when TRP unclamp is activated.
+TSC Purge Valve
+Spindle Air Valve
+Analog TSC/TAB Pressure Sensor
+TSC Pump
+Compensating Union
+High Pressure TSC Coolant Hose
+Through Spindle Coolant (TSC) flow diagram.
+Built-in - TSC/TAB Check Valve - Diagram
+TAB Air Check Valve
+ - This check valve prevents coolant from entering the CALM system.
+TAB Assembly
+TRP Air Blast
+ - This line provides air during a tool change or when TRP unclamp is activated.
+TSC/TAB Compensating Union
+To Spindle connection
+Drain Assembly
+TSC Pump
+Spindle Air Valve
+TAB Air Valve
+TSC Purge Valve
+TSC Purge Check Valve
+TSC Videos
+The following video shows how the compensating TSC union works.
+The following video shows the basics on how to troubleshoot the TSC system.
+Recommended Coolants
+Good cutting performance and long pump life rely on using the proper type of coolant. Always use a soluble oil or a semi-synthetic coolant, mixed to the manufacturer’s recommended concentration. Full synthetic coolants typically do not have adequate lubricity and don’t always have adequate rust preventative properties.
+Good system performance and reliability also relies on adequate coolant filtration. If you are cutting cast materials or abrasive materials you need to use the Haas Auxiliary Filter assembly.
+Symptom Table
+Symptom
+Possible Cause(s)
+Corrective Action(s)
+Compensating Union: 
+ Leaking Coolant from Union. 
+The coolant union seal is damaged. 
+Manually depress the piston or replace the cup seal, 93-3179, if flowing out the bypass. Replace the base seal 20-7908 if leaking on the motor. 
+The TSC Filter Icon stays on the screen. 
+The TSC filter is clogged. 
+Cycle the Tool changer a few times to actuate the AutoClean system on the TSC pump. 
+The vacuum sensor is not plugged in, or the cable is damaged. 
+See the 
+Vacuum Switch
+ section. 
+The vacuum sensor has debris or is clogged. 
+The Auto-clean cylinder is leaking. 
+Alarm 151
+ LOW THROUGH SPINDLE COOLANT
+The TSC pressure gauge on the I/O page is stuck on a number, normally 0, that does not accurately reflect the actual pressure. 
+Example:
+ TSC is commanded on, but the gauge reads 0. Even though TSC is active and working.
+Press 
+[RESET]
+ to reset the alarm and turn TSC back on. Carefully watch the gauge on the I/O page to see if the value the gauge displays gets stuck even when the TSC is on. 
+[CYCLE POWER]
+ The machine turn the TSC on and watch the gauge on the I/O screen. If the gauge is operating correctly and the machine does not alarm out, it can continue to be used. If the gauge is still stuck at 0 or alarms out, continue troubleshooting. 
+A short circuit in the pump motor or pump motor cable causes a fuse to blow or a circuit breaker to trip. 
+Check the circuit breakers and fuses on the power supply PCB.
+Check for shorts in the TSC pump cable and the motor leads. 
+Incorrect Circuit Breaker size installed
+TSC 1K requires a 15 Amp Circuit breaker. Verify that the correct size is installed. 
+Incorrect power phasing - the pump motor is running backward. 
+Check the phasing indicators and change the incoming power cables if necessary. 
+Damage to the motor shaft key, shaft collar, or wear in other parts of the pump head assembly. 
+Inspect the motor shaft / pump head assembly. 
+The TSC pressure sensor is defective. Some coolant flow may occur if this is the case. 
+Troubleshoot by following the 
+TSC Pressure Sensor Failure.
+ See the section below. 
+The coolant check valve has failed. Some coolant flow may occur if this is the case. 
+Troubleshoot by following the 
+Coolant Check Valve Inspection. 
+See the section below. 
+The TSC auto clean cylinder is leaking air into the tank, which will fill the auxiliary filter with air. 
+Remove the cylinder from the pump and place that end in the coolant. Manually actuate the TSC purge solenoid a few times. Once complete, let it sit and see if any bubbles are present. If they are, replace the auto clean cylinder. 
+The auxiliary filter is draining from being used with the TSC pump. 
+Replace muffler fitting with 58-2103 (FITG NPT1/4M X 1/8" THRU 90 BRASS) See section below. 
+The auxiliary filter is being drained. The tank lid is not leaking. 
+The TSC pump is cavitating. 
+The auxiliary filter tank runs out of coolant periodically. 
+Pump head shaft misalignment causes the shaft to seize and shear. 
+Check if the output shaft has a bushing. If it does not replace the pump head. All current production heads have bushings. 
+VF-Small and Medium Machines (VF-1 through VF-5) built between 3/15/2023 and 5/19/2023 may not have the new slotted elbow fitting in the new TSC check valve. 
+Verify if the new TSC check valve has the new slotted elbow fitting. If the new slotted elbow fitting is not installed, order PN
+ 20-10157
+ and install it.
+HSG-A 5-24-2023
+Alarm 552
+ TRIPPED CIRCUIT BREAKER
+Pump head shaft misalignment, causing shaft to seize and shear. 
+Check if the output shaft has a bushing. If it does not replace the pump head. All current production heads have bushings. 
+Low coolant flow, no alarm.
+Low coolant flow, the pump cavitates (cavitation sounds like heavy grit in the pump head, or a suction sound) or is otherwise noisy.
+Damage to the motor shaft key, shaft collar, or wear in other parts of the pump head assembly.
+Inspect the motor shaft / pump head assembly.
+The coolant does not return to the coolant tank fast enough.
+Remove chip buildup from the coolant return path.
+The pressure relief spring in the pump head is damaged.
+Inspect the pressure relief spring.
+The TSC pump filter or intake strainer is clogged.
+Clean the filters. Remove chips from the coolant system.
+The Auto-clean coolant pump filter does not work (if equipped).
+Test and troubleshoot the Auto-clean pump filter.
+The pick-up hose can kink when the pump is running. 
+Replace the pick-up hose with the new version with a spring.
+The pickup hose fittings are loose.
+Tighten the pickup hose fittings.
+There is an alignment problem due to the pump not properly seated.
+Loosen and re-tighten the standoffs supporting the pump. Refer to the 
+Standoff Alignment 
+section below for more information. 
+Gear pump coupler misalignment.
+Order kit 
+93-4195 Coolant Gear Pump Coupler Conversion
+. Follow the 
+Pump Head Coupling - Flexible Coupling Replacement
+ procedure.
+TSC union solenoid does not turn off after running TSC.
+Faulty pressure sensor.
+Troubleshoot by following the 
+TSC pressure sensor failure. 
+See section below. 
+Faulty coolant check valve.
+Troubleshoot by following the 
+Coolant Check Valve Inspection.
+ See section below. 
+TSC-1K Only
+: The 230V system does not turn ON and the red LED on the motor drive PCB is OFF. 
+The jumper on the motor drive PCB is incorrectly located or defective. 
+Make sure that the motor drive PCB has a jumper installed on 
+P3 
+inbetween pin 1 and 2 (the bottom two pins). 
+There is no 12V input power. 
+Make sure that the 12V input power is connected to 
+P2
+ on the motor drive PCB. 
+There is a delay before the coolant starts to flow.
+The coolant check valve is defective.
+Inspect the check valve for contamination and proper operation. Refer to the 
+Coolant Check Valve Inspection
+ section below.
+The Auto-clean cylinder is leaking.
+Inspect the air cylinder for leaks into the coolant tank after it cycles. 
+The TSC pressure seems low.
+The TSC pump could not be putting out enough pressure.
+Order tool 
+T-0152
+ and refer to the 
+TSC Pressure Test
+ section below.
+Tool Air Blast (TAB) causes coolant tank overflow.
+The coolant check valve has failed.
+Troubleshoot the coolant check valve. Refer to the 
+Through-Tool Air Blast (TAB) - Troubleshooting Guide
+.
+Coolant fills the TAB air pneumatic line and blows out the muffler in the CALM cabinet.
+The TAB air check valve has failed.
+Troubleshoot the TAB check valve. Refer to the 
+Through-Tool Air Blast (TAB) - Troubleshooting Guide
+.
+TSC union is making squeeling noise while running.
+Motor shaft is pushed up causing the standoff height to be incorrect.
+Measure the height from the top of the motor shaft to the mounting surface, refer to Motor Shaft Reference Dimension Section for further instructions.
+Spindle motor coolant damage.
+Coolant intrusion due to TSC union leaking.
+Upgrade machine software to version 
+100.22.000.1000 or higher.
+A large flow of coolant comes out of the drain when the TSC is turned on for the first time.
+The union piston is not seated.
+Turn on TSC again with a TSC tool in the spindle and then quickly turn it off. The back pressure, or the TSC Purge cycle will likely push the piston down. Or, disconnect the hydraulic hose from the top of the union and use a screwdriver to manually seat the piston.
+40T and 50T Belted Spindles
+Pull studs will not enter into spindle taper, carbide tips on drawbar and TRP are damaged prematurely,
+ And possibly one of the following alarms:
+Alarm 130
+ Tool Unclamped
+Alarm 134
+ Tool Unclamp Fault
+Alarm 9970 
+Unexpected Tool Release
+There is a small delay from the I/O PCB that causes the pre-charge solenoid not to turn OFF.
+Order service kits
+ 93-3451
+ & 
+93-3452
+ and follow the 
+Low Load Solenoid Valve Kit - Installation
+ procedure.
+Excessive noise from pump
+Gear pump coupler misalignment.
+Order kit 
+93-4195 Coolant Gear Pump Coupler Conversion
+. Follow the 
+Pump Head Coupling - Flexible Coupling Replacement
+ procedure.
+TSC Pressure Test
+To test the TSC pressure order tool 
+T-0152 [2]
+.
+Perform the following steps to use the TSC pressure tool:
+Grease around the o-ring [1] on the tool [2]. This will protect the o-ring from being damaged when inserted into the tool holder.
+Insert the tool into a tool holder. This is a 3/4 shank tool and will only work with a 3/4 set screw tool holder. Collet style tool holders will 
+not
+ work.
+ Note:
+ Use a single set screw type tool holder as a two set screw tool holder may effect the reading of the TSC pressure.
+Insert the tool in the spindle [4].
+Run the TSC to see the pressure reading.
+A good TSC pump will produce a pressure value that is at least 75% of its rated value. 
+Example:
+ TSC-1K will produce at least 750 psi and TSC-300 will produce at least 225 psi.
+If the pump is producing less that 75% of its rated value it will need to be replaced.
+ Important: 
+Before replacing make sure the rest of the troubleshooting guide has been followed and watch the video below.
+Vacuum Switch
+There is a vacuum switch 
+[4]
+ on the TSC pump. Go to 
+DIAGNOSTIC> I/O> 
+tab 
+[1]
+. Type in TSC, press 
+[F1] [2]
+. Look at the state of 
+Input 48 TSC VACUUM SWITCH [3]
+.
+Make sure the vacuum switch 
+[4] 
+is fully connected.
+Check the vacuum switch cable 
+[5] 
+for damaged.
+Remove the switch and make sure that it does not have any debris or plugged.
+The Auto clean cylinder might be leaking. Remove the cylinder from the pump and place that end in the coolant, manually actuate the TSC purge solenoid a few times, once complete let it sit and see if any bubbles are present, replace auto clean cylinder.
+Once the above is checked, test the Vacuum Switch as described below:
+Show
+ Input 48 TSC VACUUM SWITCH
+ on the Diagnotsic I/O page
+[1]
+. 
+Unplug the M12 connector from the Vacuum Switch, the bit on the I/O page should change from 0 to 1. The TSC filter icon should turn on as soon as TSC is turned on.
+Plug the M12 cable end back into the Vacuum Switch, the bit on the I/O page should change from 1 to 0. The TSC filter icon should turn off after a few minutes.
+Then test the vacuum switch 
+[4]
+ with a multimeter by checking that there is continuity between Pin 1
+ [6]
+ and Pin 2 
+[7]
+ with low resistance. Also check that there is no continuity or resistance readings between Pin 1 
+[6]
+ and Pin 3 
+[8]
+.
+Fitting Replacement for Auxiliary filter
+If your auxiliary filter is draining for any of the reasons in the symptom table above you will need to change the muffler fitting to fitting 58-2103 (FITG NPT1/4M X 1/8" THRU 90 BRASS) [1]. The orientation of hole [2] must face the opposite side of the threaded portion of the fitting as shown in the image.
+Output Pressure Reference Chart
+This graph shows approximate pressure vs. tool orifice diameters for Through Spindle Coolant.
+This graph shows approximate pressure vs. tool orifice diameters for tool air blast. (single orifce tools)
+Flow Rate Reference Chart
+This graph shows approximate Flowrates vs. tool orifice diameters. This data can be used to aid in the selection of an appropriate spindle speeder for your appliaction.
+Short Circuit
+1. Check for a blown fuse or a tripped breaker:
+TSC-300 - On the power supply PCB:
+ Make sure that the fuses at F1 and F3 are not blown. If there are blown fuses, check for shorts in the motor or motor cable in Step 2 before you replace the fuses.
+TSC-1K - On the motor drive PCB:
+ Make sure the circuit breaker [2] on the motor drive PCB is in the ON position. Verify 15 Amp Circuit breaker is installed for TSC-1K
+If the circuit breaker has tripped, turn it back on. Test the TSC system. If the circuit breaker trips again, check for a short circuit in the TSC pump.
+ Note:
+ On pumps made before December, 2016, you must use water-based coolants with The TSC-1K system. Thicker fluids like cutting oil will overload the pump and trip the breaker.
+2. Check the pump for shorts:
+Measure the (3) leads [3] to ground [4] on the TSC power cable. If all leads [3] test open to ground [4], the pump and cable do not have a short.
+If the motor cable leads [3] indicate a short, disconnect the cable from the motor. Measure the (3) cable leads [5] to ground [6]. If any lead tests short, the pump is at fault. If none of the leads [5] test short, the cable is at fault.
+3. If all leads test OK:
+Check the TSC motor for binding that could cause an over amperage condition.
+Incorrect Input Power-Phasing
+The power supply PCB has a phase detect with neon indicators on the top center portion of the board. Make sure that the electrical power is phased correctly:
+Green Light: 
+The incoming power is phased correctly.
+Orange Light: 
+The incoming power is incorrectly phased.
+Both Lights: 
+A phase is missing (there is a loose cable in the system).
+If the electrical power is phased incorrectly:
+Set the main circuit breaker on the machine to the OFF position.
+Lock the main circuit breaker. Use an approved lock with an approved safety tag.
+Swap the #74 and #75 incoming power cables at the main transformer.
+Coolant Pump Damage
+Cutting abrasive materials causes premature wear on the coolant system, resulting in reduced pressure. Use additional filtration when you cut abrasive materials.
+Remove the pump from the tank. Rotate the pump motor fan [1] by hand clockwise. Make sure that the pump coupling [2] also turns.
+If it does not turn, separate the pump from the motor. Check for a damaged key on the motor shaft.
+Check the pressure relief spring in the pump head.
+Remove the TSC pump from the tank.
+Remove the pressure relief plugs.
+Inspect the spring and valve pin. Replace the spring if it is broken and the pin if it is pitted or worn.
+Motor Shaft Reference Dimension
+1
+Measure from the end of the motor shaft to the mating surface of the standoffs; these measurements should be as follows:
+DT/DM built 
+before
+ 2018: 1.74 in (44 mm)
+DT/DM built 
+after
+ 2018: 1.09 in (28 mm)
+VF Inline: 1.29 in (33 mm)
+If this reference height is incorrect, please contact your local Haas Factory Outlet for assistance. 
+Standoff Alignment
+Remove the side panel covering the pump in order to access the standoffs. 
+Loosen the (x4) standoff bolts. 
+Re-tighten the (x4) standoff bolts. 
+Run the pump while listening for excessive noise. 
+TSC Pressure-Sensor Failure
+ Important: 
+If the I/O page is displaying that pressure and alarm 151 is generated, the machine will stop. 
+Press reset to reset the alarm and turn TSC back on. Carefully watch the gauge on the I/O page to see if it the gauge is stuck at 0 psi even when the TSC is on. 
+Cycle, power the machine, turn TSC on, and watch the gauge on the I/O screen. If the gauge is operating correctly and the machine does not alarm out, it can continue to be used. If the gauge is still stuck at 0 or alarms out, continue troubleshooting. 
+Pressure Sensor:
+Check the TSC pressure gauge page in 
+DIAGNOSTICS 
+when the pump is not running. It should read 0 PSI/BAR. If it reads pressure when the pump is off, the TSC union solenoid will remain on after use. Check the TSC check valve before replacing the sensor on the check valve assembly. 
+How to Test TSC Analog Pressure Sensor with Multimeter:
+You will need to remove the spindle head sheet metal panel to gain access to the spindle head inputs bracket. The machine must be powered on and at idle. Locate the M12 to 2x2 TSC pressure sensor cable. With the able still plugged into the spindle head inputs bracket, use fine tip probes to check readings between pins. Refer to the table below for the correct readings. If the values are not within range, the TSC sensor is likely to be faulty.
+Red Multimeter Lead
+Black Multimeter Lead
+Expected Reading
+Pin 2
+Pin 1
+4.75VDC to 5.25VDC
+Pin 3
+Pin 1
+0.490VDC to 0.510VDC (machine is at idle)
+How to Check TSC Check Valve: 
+Disassemble and visually inspect the check valve for any deformities. Make sure the ball isn't trapped inside the spring. If it is, the spring would be pushing the ball against the countersink of the fitting. Replace the valve if it has failed.
+Coolant Blockage
+Remove all chips from the the auger trough [1], and the coolant return drain [2].
+Remove chips from the coolant tank. Excessive chips in the coolant tank reduce the amount of coolant the tank can store. Watch the video 
+Machine Tool Coolant - Cleaning Your Tank - Video
+.
+Fill the coolant tank. Watch the video 
+Standard Coolant – Simplified - Filling your Tank … and More
+.
+Make sure the coolant level sensor operates correctly.
+Clean the coolant filters and the filters in the coolant tank.
+Press the plunger down (5) times to clean the filter. Make sure that the auto-clean plunger activates when the TSC pump shuts off. If it does not activate, troubleshoot the solenoid. Test the TSC purge solenoid.
+Remove the filter tray from the bottom of the TSC assembly. Remove the tray lid from the filter. Use a brush to clean the filter. Install the filter tray to the bottom of the TSC pump assembly.
+If the solenoid operates and it outputs air, check the air tube for kinks or breaks.
+Remove the chip basket and polyester mesh strainer (if the strainer is installed) from the chip tray. Remove all chips from the chip strainer basket.
+To replace the mesh strainer, pull it tightly over the top of the chip basket. Make sure that the elastic band goes over the edge of the chip basket.
+Coolant Check Valve Inspection 
+Shuttle & Ball
+This check valve has a ball deflector [2] inside rather than a spring. The ball deflector acts as a shuttle by directing the ball from one location to another--either blocking the coolant or TAB opening.
+As coolant flows into the valve, the ball gets pushed and deflected out of the way [3]. When TAB air flows into the valve, the ball gets pushed back down due to both air and gravity [4].
+The new shuttle and ball check valve also has a new elbow fitting that is slotted [1]. This elbow fitting allows a small amount of coolant or air pressure through to pressurize the pressure sensor.
+Spring & Ball
+Coolant pressure can push the ball into the spring and trap it, causing the check valve to fail. Without a functional check valve, air from the TAB may flow backward through the coolant system and cause the coolant tank to overflow and/or bubble. 
+Corrective Action:
+Disassemble and visually inspect the check valve for any deformities. Make sure the ball isn't trapped inside the spring. If it is, the spring would be pushing the ball against the countersink of the fitting.
+Kinked Pick-up hose
+The pick-up hose can kink when the pump is running. Replace the pick-up hose with the new version with a spring.
+Recently Viewed Items
+Clear Items
+You Have No Recently Viewed Items Yet
+ Feedback 
+美元价格不包括关税、报关费用、保险费、增值税及运费。
+USD prices DO NOT include customs duty, customs fees, insurance, VAT, or freight.
+人民币价格包含关税、报关费用、货运保险和增值税, 但不包括运费。
+CNY prices include customs duty, customs fees, insurance, and VAT. DOES NOT include freight.
+Haas Delivered Price
+This price includes shipping cost, export and import duties, insurance, and any other expenses incurred during shipping to a location in France agreed with you as a buyer. No other mandatory costs can be added to the delivery of a Haas CNC Product.
+Click for details
+KEEP UP WITH THE LATEST HAAS TIPS AND TECHNOLOGY...
+Sign up now! 
+HAAS TOOLING ACCEPTS THE FOLLOWING:
+Service & Support
+Owners
+Request Service
+Operator Manuals
+Haas Parts
+Rotary Repair Request
+Pre-Install Guides
+Shopping Tools
+Build & Price a New Haas
+Available Inventory
+The Haas Price List
+CNCA Financing
+About Haas
+Careers
+Certifications & Safety
+Contact Us
+History
+Terms & Conditions
+Haas Tooling Terms & Conditions
+Privacy
+Warranty
+Haas Community
+Haas Certification Program
+Haas Motorsports
+Gene Haas Foundation
+Haas Technical Education Community
+Events
+Join the Conversation
+Facebook
+X
+Flickr
+YouTube
+LinkedIn
+Instagram
+TikTok
+ © 2024 
+Haas Automation, Inc – CNC Machine Tools
+ This site is protected by reCAPTCHA and the Google 
+Privacy Policy
+ and 
+Terms of Service
+ apply. 
+2800 Sturgis Rd., Oxnard, CA 93030 / Toll Free: 800-331-6746
+ Phone: 805-278-1800 / Fax: 805-278-8554
+ {{ if (loading) { }} {{=loadingSpinner}} {{ } else { }} 
+×
+ {{=content}} 
+ {{ } }} 
+ {{ if (loading) { }} {{=loadingSpinner}} {{ } else { }} 
+×
+ {{=content}} 
+ {{ } }} 

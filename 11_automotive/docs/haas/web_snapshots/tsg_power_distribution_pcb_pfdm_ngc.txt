@@ -1,0 +1,705 @@
+ PSUP PCB - Troubleshooting Guide - NGC
+My Haas
+Welcome,
+! 
+Haas Tooling
+MyHaas/HaasConnect
+Sign In
+Register
+Haas Tooling
+MyHaas/HaasConnect
+Sign Out
+Welcome, 
+My Machines
+Latest Activity
+My Quotes
+My Account
+My Users
+Sign Out
+Find Your Distributor
+Select Language
+English
+Deutsch
+Español - España
+Español - México
+Français
+Italiano
+Português
+Český
+Dansk
+Nederlands
+Magyar
+Polski
+Svenska
+Türkçe
+中文
+Suomi
+Norsk
+الإنجليزية
+български
+Hrvatski
+Ελληνικά
+Română
+Slovenský
+Slovenščina
+한국어
+日本語
+Українська
+machines
+Main Menu
+Vertical Mills 
+Vertical Mills 
+Vertical Mills 
+View All
+Vertical Mills 
+VF Series
+Universal Machines
+VR Series
+VP-5 Prismatic
+Pallet-Changing VMCs
+Mini Mills
+Mold Machines
+High-Speed Drill Centers
+Drill/Tap/ Mill Series
+Toolroom Mills
+Compact Mills
+Gantry Series
+SR Sheet Routers
+Extra-Large VMC
+Double-Column Mills
+Pocket Mill
+Mill Automatic Parts Loader
+VMC/UMC Side-Loading Automatic Parts Loader
+Compact Automatic Parts Loader
+Multi-Axis Solutions
+Multi-Axis Solutions
+Multi-Axis Solutions
+View All
+Multi-Axis Solutions
+Y-Axis Lathes
+5-Axis Mills
+Lathes
+Lathes
+Lathes
+View All
+Lathes
+ST Series
+Dual-Spindle
+Box Way Series
+Toolroom Lathes
+Chucker Lathe
+Haas Bar Feeder V2
+Haas Bar Feeder 12
+Horizontal Mills
+Horizontal Mills
+Horizontal Mills
+View All
+Horizontal Mills
+50-Taper
+40-Taper
+Rotaries & Indexers
+Rotaries & Indexers
+Rotaries & Indexers
+View All
+Rotaries & Indexers
+Rotary Tables
+Indexers
+5-Axis Rotaries
+Extra-Large Rotaries
+Special Series
+Special Series
+Special Series
+View All
+Special Series
+EU_Series_Redirect
+Automation Systems
+Automation Systems
+Automation Systems
+View All
+Automation Systems
+Mill Automation
+Lathe Automation
+Automation Models
+Desktop Machines
+Desktop Machines
+Desktop Machines
+View All
+Desktop Machines
+Desktop Mill
+Desktop Lathe
+Control Simulator
+Shop Equipment
+Shop Equipment
+Shop Equipment
+View All
+Shop Equipment
+Bandsaw
+Knee Mills
+Manual Lathe
+Laser Cutting Machine
+Vertical Saw
+Miter Saw
+Pocket Machines
+Pocket Machines
+Pocket Machines
+View All
+Pocket Machines
+Pocket Mill
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Options
+Main Menu
+Value Option Packages
+Value Option Packages
+Value Option Packages
+View All
+Value Option Packages
+Spindles
+Spindles
+Spindles
+View All
+Spindles
+Tool Changers
+Tool Changers
+Tool Changers
+View All
+Tool Changers
+4th- | 5th-Axis
+4th- | 5th-Axis
+4th- | 5th-Axis
+View All
+4th- | 5th-Axis
+Turrets & Live Tooling
+Turrets & Live Tooling
+Turrets & Live Tooling
+View All
+Turrets & Live Tooling
+Probing
+Probing
+Probing
+View All
+Probing
+Chip & Coolant Management
+Chip & Coolant Management
+Chip & Coolant Management
+View All
+Chip & Coolant Management
+The Haas Control
+The Haas Control
+The Haas Control
+View All
+The Haas Control
+Product Options
+Product Options
+Product Options
+View All
+Product Options
+Tooling & Fixturing
+Tooling & Fixturing
+Tooling & Fixturing
+View All
+Tooling & Fixturing
+Workholding
+Workholding
+Workholding
+View All
+Workholding
+5-Axis Solutions
+5-Axis Solutions
+5-Axis Solutions
+View All
+5-Axis Solutions
+5 Easy Steps to 5-Axis
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Why Haas
+Main Menu
+Discover the Haas Difference
+Why Haas
+MyHaas
+Education Community
+Industry 4.0
+Haas Certification
+Customer Testimonials
+Service
+Main Menu
+Welcome to Haas Service
+SERVICE HOME
+Operator’s Manuals
+How-To Procedures
+Troubleshooting Guides
+Preventive Maintenance
+Haas Parts
+Haas Tooling
+Videos
+Videos
+Main Menu
+Main Menu
+View All
+View All
+View All
+View All
+HTEC Curriculum Support
+View All
+Haas 10 kg Cobot Package
+Cobot Kits
+View All
+View All
+4 - AUTOMATION SYSTEMS
+Carousel-V2
+expert test
+Demo_Day_Trident-test
+View All
+Choose Options
+View All
+View All
+View All
+View All
+View All
+calc-test
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Haas Tooling
+Main Menu
+Haas Service Parts
+Main Menu
+My Haas
+Welcome,
+! 
+Haas Tooling
+MyHaas/HaasConnect
+Sign In
+Register
+Haas Tooling
+MyHaas/HaasConnect
+Sign Out
+Welcome, 
+My Machines
+Latest Activity
+My Quotes
+My Account
+My Users
+Sign Out
+Find Your Distributor
+Select Language
+English
+Deutsch
+Español - España
+Español - México
+Français
+Italiano
+Português
+Český
+Dansk
+Nederlands
+Magyar
+Polski
+Svenska
+Türkçe
+中文
+Suomi
+Norsk
+الإنجليزية
+български
+Hrvatski
+Ελληνικά
+Română
+Slovenský
+Slovenščina
+한국어
+日本語
+Українська
+×
+Search Results
+Web Pages
+Images
+<
+1
+>
+ PSUP PCB - Troubleshooting Guide - NGC
+Service Home
+ PSUP PCB - Troubleshooting Guide - NGC
+Your document is ready for download, please click below to download your document.
+Download Document
+Error processing this document, please try again or 
+Contact Us
+.
+Please wait while your document is being loaded.
+ PSUP PCB - Troubleshooting Guide - NGC
+Jump to Section
+Back to Top
+Your document is ready for download, please click below to download your document.
+Download Document
+Error processing this document, please try again or 
+Contact Us
+.
+Please wait while your document is being loaded.
+Recently Updated
+Last updated: 08/30/2021
+PSUP PCB 
+ - Troubleshooting Guide - NGC
+Revision A - 08/2025
+Introduction
+Embeds the Power Fault Detect Module. Now standard on all machines equipped with the Next Generation Control.
+Indicates the Status of the three phase power.
+Low Voltage power indicator LEDs.
+Circuit breaker open indicator circuit.
+Added a ground fault detect circuit for the 115 VAC line.
+Depending on the PSUP version, it may have two or three fuses for different circuits. The universal reference designator for a fuse is “F” or “FU”.
+F1 is used to protect the ON/OFF circuit during a power spike or transient.
+On PSUP N and newer, F2 is used on the input of the Bridge rectifier for the capacitor bank that is part of the PFDM. This fuse will open if:
+1. The bridge BR1 is shorted.
+2. If any of the alum electrolytic capacitors is shorted
+3. If the LVPS is shorted
+Electrical Safety
+Caution:
+ When performing 
+maintenance or repairs
+ on CNC machines or their components, it is essential to follow 
+basic safety precautions
+ at all times.
+Adhering to these guidelines helps to:
+Minimize the risk of 
+personal injury
+Prevent 
+mechanical damage
+ to equipment
+Ensure a 
+safe and efficient
+ working environment
+ Always consult the machine’s service documentation and wear appropriate personal protective equipment (PPE) before beginning any work.
+Set the main circuit breaker to the 
+[OFF]
+ position.
+Danger:
+ Before beginning any work inside the control cabinet, verify that the 
+High Voltage indicator light
+ on the 
+320V Power Supply / Vector Drive
+ has been 
+off for a minimum of five (5) minutes
+. This waiting period ensures that residual voltage has dissipated and reduces the risk of electric shock.
+Certain service procedures involve 
+high-risk electrical components
+ and may pose 
+serious injury or fatality hazards
+. Technicians must 
+not attempt
+ any procedure unless they have a 
+complete understanding
+ of the steps involved and the associated risks.
+If there is 
+any uncertainty
+ regarding a procedure, contact your 
+Haas Factory Outlet (HFO)
+ to arrange for a qualified service technician.
+Symptom Table
+Symptom / Alarm
+Possible Cause
+Corrective Action
+Alarm 552
+ TRIPPED CIRCUIT BREAKER
+There is an current overload or short-circuit detected at the power distribution PCB. One or more circuit breakers is not installed correctly.
+Check the Power Distribution PCB. Make sure the circuit breakers are properly seated.
+The TSC jumper JP2 is missing.
+On machines without TSC/HPC circuit breaker jumper JP2 must be installed.
+A short-circuit detected on CB3 coolant pump breaker, CB3 tripped.
+Check 240VAC cable from PSUP (P9) to I/O PCB (P30). Make sure that cable is not pinched. Make sure that cabled is wired correctly.
+Check the 240VAC cable from I/O (P29) to coolant pump amphenol. Make sure the cable is not pinched. Make sure that cable is wired correctly.
+Disconnect the connector from I/O PCB (P29) and check red and black wire to ground they should read open (O.L).
+Check for short-circuit on coolant pump/cable. Refer to the: 
+Standard Coolant - System - Troubleshooting Guide
+(Single-phase machines only), 
+Alarm 552
+ TRIPPED CIRCUIT BREAKER occurs when the coolant pump gets commanded to turn on.
+Note:
+ The circuit breaker did not trip.
+The 240 VAC input cable connected to the PSUP at P11 is not correct.
+Turn off the main breaker and disconnect 240 VAC input cable from the PSUP at P11 and swap the white and black wire positions on the cable.
+Alarm 9101
+ RESETTABLE SOFTWARE ERROR
+One or more circuit breakers is turned OFF.
+Check the Power Distribution PCB. Find the cause of the short-circuit then turn the circuit breaker back on.
+Alarm 175
+ GROUND FAULT DETECTED 
+Alarm 9803
+ 120VAC GROUND FAULT
+Alarm 9804 
+240 VAC GROUND FAULT
+There is a short circuit in one of the 115 / 230 VAC components. Spindle motor/cable and Axis motors/cables as well.
+Refer to the 
+Next Generation Control - I/O PCB - Troubleshooting Guide
+.
+Alarm 9902
+ GROUND FAULT
+One of the PSUP circuit breakers is not installed correctly.
+Check all the circuit breakers tabs to make sure they are installed inside the female tabs.
+Alarm 840
+ INCOMING AC LINE VOLTAGE TOO LOW DURING POWER UP
+ or the AC Line Voltage gauge is not showing the correct reading.
+There is a problem with the incoming voltage. 
+Check the incoming voltage and make sure the transformer taps are in the correct location. 
+The voltage monitor circuit on the power card PCB is not outputting the correct reference voltage.
+Make sure the PFDM on PSUP PCB is putting the correct reference voltage to NGC Main PCB.
+The Power Card was replaced with a REV - P but the patch file was not installed or the software upgraded.
+If the machine has a 
+4075-N
+ and software version 
+lower than 100.16.000.1040
+ you must install a patch to change parameter 2009 
+before 
+you install the replacement PSUP PCB. Failure to do so will cause then machine to shut down immediately upon power up.
+If you are replacing a 4075-P with a 4075-P no patch is required.
+Refer to: 
+Next Generation Control - Patch File Load/Uninstall
+ If you install the 
+4075-P
+ or 
+4075-T
+ on a machine with software 
+lower than 100.16.000.1040
+ and did not applied the patch, you must do a clean software installation. Refer to
+Next Generation Control - Software Download and Update - Clean Installation
+Alarm 840
+ INCOMING AC LINE VOLTAGE TOO LOW DURING POWER UP
+ Alarm continues to appear after replacing the PSUP PCB with 4075- REV - P.
+There is a defective component on the PSUP PCB - REV - P.
+Contact the service department for troubleshooting information.
+The machine will not turn on. 
+(The 
+K1 contactor does not turn on
+.)
+The F1 fuse is blown.
+Check F1 fuse, check the JP1 jumper to be installed if the machine has a High Voltage service input (380-480 VAC).
+Note:
+If the machine is a 240VAC and it has a 60HP vector drive, make sure a 2A CERAMIC FUSE is installed at F1.
+There is problem with the power on/off circuit.
+Refer to: 
+Next Generation Control - Power On/Off Circuit, Main Transformer - Troubleshooting Guide
+.
+The machine will not turn on. 
+(The 
+K1 contactor turns on 
+but there is no display).
+There is a problem with low voltage power supply (LVPS) that is connected to the PSUP PCB. 
+Look at the 5V, 12V, LED lights on the PSUP PCB if they flash when turning on the machine, this means the LVPS has detected a short circuit. Inspect the all the 5V, 12V and -12V outputs on the LVPS for a short circuit condition. 
+Power Fault Detect Module (PFDM) Reference Voltage
+There is an embedded power fault detect monitor built-in to the NGC power card PCB. The circuit monitors the 115VAC output of the main transformer (TB 94, 95). This circuit produces a 0 - 5 VDC reference voltage to the main NGC PCB. This reference voltage varies in proportional to the incoming AC voltage. The variance in this voltage will cause the AC Line Voltage gauge to change. When the output of the transformer equals 120 VAC the control will show 100% AC LINE VOLTAGE. This gauge is located under DIAGNOSTIC / GAUGES. 
+ Note: 
+The data signal input from the PFDM can be viewed under the MOCON Tab listed as Pfdm Incoming Power Voltage.
+Corrective Action:
+Measure the incoming AC voltage to the machine.
+Make sure the transformer taps are in the correct voltage range.
+Make sure the 115 VAC output cable from the transformer terminal block 94, 95 is properly connected to the power card at P1.
+ Note:
+ When the 115 VAC output of the transformer equals 120VAC the control will show 100% AC LINE VOLTAGE.
+Measure the PFDM Signal and PFDM Ground wires on the PSUP PCB behind the P20 connector (see diagrams below). 
+ Caution:
+ Make sure you use needle tip leads on your meter. Be careful not to short your leads together this can cause damage to the NGC power PCB.
+IMPORTANT:
+ When the AC Line Voltage gauge displays 100% the following voltages are expected:
+For a Rev -N Power Card
+ 3.56 VDC.
+For a Rev -P or -T Power Card
+ 3.74 VDC.
+ If the voltage is low or no voltage is measured, the voltage monitor circuit on the power card is damaged and will need to be replaced.
+If the voltage is correct:
+For a Rev -N Power Card
+ make sure parameter 2009 ADC VALUE FOR AC INPUT is set to 3550.
+For a Rev -P or -T Power Card
+ make sure parameter 2009 ADC VALUE FOR AC INPUT is set to 2850.
+ Note: 
+To view the parameter values refer to 
+Next Generation Control - How to Read an Error Report
+ for more information.
+ If the value of parameter of 2009 is not correct you will need to load a patch file. Go to the HBC site and click on Service>NGC-Configuration, and download the patch.
+Low Voltage Inspection
+Corrective Action:
+Measure the low voltage power supply voltage levels at the Maincon PCB. Make sure you do not short or cross your multimeter pins.
+Cycle power to the machine. If the fault stays, then the amplifier is faulty.
+If every axis amplifier in the machine generates the alarm at the same time, and the low voltage power supply is correct, then the Maincon PCB may be at fault.
+Pins
+Correct Voltage
++5 and GND
++4.90 to +5.20 V dc
++12 and GND
++11.85 to +12.50 V dc
+-12 and GND
+-11.85 to -12.50 V dc
+PSUP PCB Reference LED's
+The -12V, +12V, and +5V reference LED's on the PSUP have different behaviors depending on whether a machine has a 15-inch monitor or a 19-inch monitor. 
+Note: 
+The 19-inch monitor machines use an iPFDM assembly. There is also a different cable used between the LVPS output and the PSUP on 19-inch machines. See the wiring diagrams below for more information.
+The expected behavior for the reference LED's located next to 
+P19/P20
+ on the PSUP PCB are detailed below:
+19-inch monitor machines:
+-12V (LE1) = 
+OFF
++5V (LE2) =
+ ON
++12V (LE3) =
+ ON
+15-inch monitor machines:
+-12V (LE1) = 
+ON
++5V (LE2) =
+ ON
++12V (LE3) =
+ ON
+PCB Component Inspection
+Intermittent symptoms or alarms can be caused by component failure. Below is a list of possible failures:
+Missing solder on all or some components pins
+Poor solder
+Solder bridges
+Wrong component installation (orientation)
+Missing components
+ Note:
+ Some PCB's have unused circuits and are missing components intentionally, look for broken off components.
+Broken components
+Broken pins on IC's
+Bent pins on the connectors
+Circuit breakers not installed correctly.
+Use a magnifying glass to inspect the circuit components on the front and back of the PSUP PCB. Below are the circuit component zones to inspect depending on the alarm or symptom:
+Power Fault Detect Module circuit components, look for leaky capacitors, damaged components.
+Ground fault monitor circuit, inspect surface mount components, resistors and bent pins on the connectors.
+Circuit breaker trip circuit, pull breakers and inspect for burnt components underneath the breakers.
+Inspect for bent or missing pins on the connectors.
+Inspect all solder joints and surface mount components on the back of the PSUP PCB.
+ Important
+: If you find a damaged component, replace the PSUP PCB, inspect the new PSUP PCB circuit components before installing.
+15" LCD - Electrical Diagrams
+PSUP Interconnect Diagram with Gnd Fault Sensor (P15)
+PSUP Interconnect Diagram with P15 Jumper
+PSUP (P17) to I/O PCB (P56) Detail Diagram
+Maincon PCB (J3) to PSUP PCB (P20) Detail Diagram
+19" LCD - Electrical Diagrams
+19 in LCD PSUP Interconnect Diagram with Gnd Fault Sensor (P15)
+19 in LCD PSUP Interconnect Diagram with P15 Jumper
+PSUP (P17) to I/O PCB (P56) Detail Diagram
+19 in LCD Maincon PCB (J3) to iPFDM to PSUP PCB (P20) Detail Diagram
+Recently Viewed Items
+Clear Items
+You Have No Recently Viewed Items Yet
+ Feedback 
+美元价格不包括关税、报关费用、保险费、增值税及运费。
+USD prices DO NOT include customs duty, customs fees, insurance, VAT, or freight.
+人民币价格包含关税、报关费用、货运保险和增值税, 但不包括运费。
+CNY prices include customs duty, customs fees, insurance, and VAT. DOES NOT include freight.
+Haas Delivered Price
+This price includes shipping cost, export and import duties, insurance, and any other expenses incurred during shipping to a location in France agreed with you as a buyer. No other mandatory costs can be added to the delivery of a Haas CNC Product.
+Click for details
+KEEP UP WITH THE LATEST HAAS TIPS AND TECHNOLOGY...
+Sign up now! 
+HAAS TOOLING ACCEPTS THE FOLLOWING:
+Service & Support
+Owners
+Request Service
+Operator Manuals
+Haas Parts
+Rotary Repair Request
+Pre-Install Guides
+Shopping Tools
+Build & Price a New Haas
+Available Inventory
+The Haas Price List
+CNCA Financing
+About Haas
+DNSH Statement
+Export Compliance
+Careers
+Certifications & Safety
+Contact Us
+History
+Terms & Conditions
+Haas Tooling Terms & Conditions
+Privacy
+Warranty
+Haas Community
+Haas Certification Program
+Haas Motorsports
+Gene Haas Foundation
+Haas Technical Education Community
+Events
+Join the Conversation
+Facebook
+X
+Flickr
+YouTube
+LinkedIn
+Instagram
+TikTok
+ © 2025 
+Haas Automation, Inc – CNC Machine Tools
+ This site is protected by reCAPTCHA and the Google 
+Privacy Policy
+ and 
+Terms of Service
+ apply. 
+2800 Sturgis Rd., Oxnard, CA 93030
+ Toll Free: (888) 817-4446 / Fax: 805-278-8554
+ {{ if (loading) { }} {{=loadingSpinner}} {{ } else { }} 
+×
+ {{=content}} 
+ {{ } }} 
+ {{ if (loading) { }} {{=loadingSpinner}} {{ } else { }} 
+×
+ {{=content}} 
+ {{ } }} 

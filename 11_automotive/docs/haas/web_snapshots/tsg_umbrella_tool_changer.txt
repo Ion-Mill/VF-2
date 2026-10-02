@@ -1,0 +1,729 @@
+
+ Umbrella Tool Changer - Troubleshooting Guide - TG0155 
+ My Haas 
+ Welcome,
+ !
+ Haas Tooling 
+ Guest Order History -->
+ MyHaas/HaasConnect 
+ Sign In 
+ Register 
+ Haas Tooling 
+ My Account 
+ Order History 
+ Return History -->
+ MyHaas/HaasConnect 
+ Sign Out 
+ Welcome, 
+ My Machines 
+ Latest Activity 
+ My Quotes 
+ My Account 
+ My Users 
+ Sign Out 
+ Find Your Distributor 
+ Select Language 
+ English 
+ Deutsch 
+ Español 
+ Français 
+ Italiano 
+ Português 
+ Český 
+ Dansk 
+ Nederlands 
+ Magyar 
+ Polski 
+ Svenska 
+ Türkçe 
+ 中文 
+ Suomi 
+ Norsk 
+ الإنجليزية 
+ български 
+ Hrvatski 
+ Ελληνικά 
+ Română 
+ Slovenský 
+ Slovenščina 
+ 한국어 
+ 日本語 
+ Українська 
+ machines 
+ Main Menu 
+ Vertical Mills 
+ Vertical Mills 
+ Vertical Mills 
+ View All 
+ Vertical Mills 
+ VF Series 
+ Universal Machines 
+ VR Series 
+ VP-5 Prismatic 
+ Pallet-Changing VMCs 
+ Mini Mills 
+ Mold Machines 
+ High-Speed Drill Centers 
+ Drill/Tap/ Mill Series 
+ Toolroom Mills 
+ Compact Mills 
+ Gantry Series 
+ SR Sheet Routers 
+ Extra-Large VMC 
+ Double-Column Mills 
+ Pocket Mill 
+ Multi-Axis Solutions 
+ Multi-Axis Solutions 
+ Multi-Axis Solutions 
+ View All 
+ Multi-Axis Solutions 
+ Y-Axis Lathes 
+ 5-Axis Mills 
+ Lathes 
+ Lathes 
+ Lathes 
+ View All 
+ Lathes 
+ ST Series 
+ Dual-Spindle 
+ Box Way Series 
+ Toolroom Lathes 
+ Chucker Lathe 
+ Haas Bar Feeder V2 
+ Haas Bar Feeder 12 
+ Horizontal Mills 
+ Horizontal Mills 
+ Horizontal Mills 
+ View All 
+ Horizontal Mills 
+ 50-Taper 
+ 40-Taper 
+ Rotaries & Indexers 
+ Rotaries & Indexers 
+ Rotaries & Indexers 
+ View All 
+ Rotaries & Indexers 
+ Rotary Tables 
+ Indexers 
+ 5-Axis Rotaries 
+ Extra-Large Rotaries 
+ Special Series 
+ Special Series 
+ Special Series 
+ View All 
+ Special Series 
+ EU_Series_Redirect 
+ Automation Systems 
+ Automation Systems 
+ Automation Systems 
+ View All 
+ Automation Systems 
+ Mill Automation 
+ Lathe Automation 
+ Automatic Parts Loaders 
+ Automation Models 
+ Desktop Machines 
+ Desktop Machines 
+ Desktop Machines 
+ View All 
+ Desktop Machines 
+ Desktop Mill 
+ Desktop Lathe 
+ Control Simulator, Standard 
+ Control Simulator, Premium 
+ Shop Equipment 
+ Shop Equipment 
+ Shop Equipment 
+ View All 
+ Shop Equipment 
+ Bandsaw 
+ Vertical Saw 
+ Miter Saw 
+ Knee Mill 
+ Manual Lathe 
+ Laser Cutting Machines 
+ Pocket Machines 
+ Pocket Machines 
+ Pocket Machines 
+ View All 
+ Pocket Machines 
+ Pocket Mill 
+ QUICK LINKS 
+ Special Series  
+ Special Series  
+ EU SERIES 
+ EU SERIES 
+ BUILD & PRICE | PRICE LIST 
+ BUILD & PRICE | PRICE LIST 
+ In-Stock Machines 
+ In-Stock Machines 
+ WHAT’S NEW 
+ WHAT’S NEW 
+ YOUR FIRST CNC 
+ YOUR FIRST CNC 
+ SHOPPING TOOLS 
+ Build & Price a Haas 
+ Price List 
+ Available Inventory 
+ CNCA Financing 
+ WANT TO TALK TO SOMEONE? 
+ A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+ CONTACT YOUR DISTRIBUTOR > 
+ Options 
+ Main Menu 
+ Value Option Packages 
+ Value Option Packages 
+ Value Option Packages 
+ View All 
+ Value Option Packages 
+ Spindles 
+ Spindles 
+ Spindles 
+ View All 
+ Spindles 
+ Tool Changers 
+ Tool Changers 
+ Tool Changers 
+ View All 
+ Tool Changers 
+ 4th- | 5th-Axis 
+ 4th- | 5th-Axis 
+ 4th- | 5th-Axis 
+ View All 
+ 4th- | 5th-Axis 
+ Turrets & Live Tooling 
+ Turrets & Live Tooling 
+ Turrets & Live Tooling 
+ View All 
+ Turrets & Live Tooling 
+ Probing 
+ Probing 
+ Probing 
+ View All 
+ Probing 
+ Chip & Coolant Management 
+ Chip & Coolant Management 
+ Chip & Coolant Management 
+ View All 
+ Chip & Coolant Management 
+ The Haas Control 
+ The Haas Control 
+ The Haas Control 
+ View All 
+ The Haas Control 
+ Product Options 
+ Product Options 
+ Product Options 
+ View All 
+ Product Options 
+ Tooling & Fixturing 
+ Tooling & Fixturing 
+ Tooling & Fixturing 
+ View All 
+ Tooling & Fixturing 
+ Workholding 
+ Workholding 
+ Workholding 
+ View All 
+ Workholding 
+ 5-Axis Solutions 
+ 5-Axis Solutions 
+ 5-Axis Solutions 
+ View All 
+ 5-Axis Solutions 
+ 5 Easy Steps to 5-Axis 
+ QUICK LINKS 
+ Special Series  
+ Special Series  
+ EU SERIES 
+ EU SERIES 
+ BUILD & PRICE | PRICE LIST 
+ BUILD & PRICE | PRICE LIST 
+ In-Stock Machines 
+ In-Stock Machines 
+ WHAT’S NEW 
+ WHAT’S NEW 
+ YOUR FIRST CNC 
+ YOUR FIRST CNC 
+ SHOPPING TOOLS 
+ Build & Price a Haas 
+ Price List 
+ Available Inventory 
+ CNCA Financing 
+ WANT TO TALK TO SOMEONE? 
+ A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+ CONTACT YOUR DISTRIBUTOR > 
+ Why Haas 
+ Main Menu 
+ Discover the Haas Difference 
+ Why Haas 
+ MyHaas 
+ Education Community 
+ Industry 4.0 
+ Haas Certification 
+ Customer Testimonials 
+ Service 
+ Main Menu 
+ Welcome to Haas Service 
+ SERVICE HOME 
+ Operator’s Manuals 
+ How-To Procedures 
+ Troubleshooting Guides 
+ Preventive Maintenance 
+ Haas Parts 
+ Haas Tooling 
+ Videos 
+ Videos 
+ Main Menu 
+ Main Menu 
+ View All 
+ View All 
+ View All 
+ View All 
+ HTEC Curriculum Support 
+ View All 
+ Haas 10 kg Cobot Package 
+ Cobot Kits 
+ DC-1 Drill Center 
+ View All 
+ View All 
+ contact-us-test 
+ 4 - AUTOMATION SYSTEMS 
+ Carousel-V2 
+ expert test 
+ Demo_Day_Trident-test 
+ Link Test 
+ View All 
+ Choose Options 
+ View All 
+ View All 
+ View All 
+ View All 
+ View All 
+ calc-test 
+ View All 
+ QUICK LINKS 
+ Special Series  
+ Special Series  
+ EU SERIES 
+ EU SERIES 
+ BUILD & PRICE | PRICE LIST 
+ BUILD & PRICE | PRICE LIST 
+ In-Stock Machines 
+ In-Stock Machines 
+ WHAT’S NEW 
+ WHAT’S NEW 
+ YOUR FIRST CNC 
+ YOUR FIRST CNC 
+ SHOPPING TOOLS 
+ Build & Price a Haas 
+ Price List 
+ Available Inventory 
+ CNCA Financing 
+ WANT TO TALK TO SOMEONE? 
+ A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+ CONTACT YOUR DISTRIBUTOR > 
+ Haas Tooling 
+ Main Menu 
+ Coming
+ Soon! 
+ Haas Tooling 
+ Shop All 
+ HAAS TOOLING QUICK LINKS 
+ NEW PRODUCTS 
+ NEW PRODUCTS 
+ NEW PRODUCTS 
+ NEW PRODUCTS 
+ MOST POPULAR 
+ MOST POPULAR 
+ TOOLING PROMOS 
+ TOOLING PROMOS 
+ FINANCING & OPEN TERMS 
+ FINANCING & OPEN TERMS 
+ PAY BY INVOICE 
+ PAY BY INVOICE 
+ FAQs 
+ FAQs 
+ KITS CREATED FOR YOU 
+ KITS CREATED FOR YOU 
+ HAAS TOOLING QUICK LINKS 
+ NEW PRODUCTS 
+ NEW PRODUCTS 
+ MOST POPULAR 
+ MOST POPULAR 
+ TOOLING PROMOS 
+ TOOLING PROMOS 
+ FINANCING & OPEN TERMS 
+ FINANCING & OPEN TERMS 
+ FAQs 
+ FAQs 
+ KITS CREATED FOR YOU 
+ KITS CREATED FOR YOU 
+ /* Hack until we can rewrite navigation * 
+ -->
+ Haas Service Parts 
+ Main Menu 
+ Coming
+ Soon! 
+ Haas Service Parts 
+ Shop All 
+ /* Hack until we can rewrite navigation */ 
+ -->
+ My Haas 
+ Welcome,
+ !
+ Haas Tooling 
+ Guest Order History -->
+ MyHaas/HaasConnect 
+ Sign In 
+ Register 
+ Haas Tooling 
+ My Account 
+ Order History 
+ Return History -->
+ MyHaas/HaasConnect 
+ Sign Out 
+ Welcome, 
+ My Machines 
+ Latest Activity 
+ My Quotes 
+ My Account 
+ My Users 
+ Sign Out 
+ Find Your Distributor 
+ Select Language 
+ English 
+ Deutsch 
+ Español 
+ Français 
+ Italiano 
+ Português 
+ Český 
+ Dansk 
+ Nederlands 
+ Magyar 
+ Polski 
+ Svenska 
+ Türkçe 
+ 中文 
+ Suomi 
+ Norsk 
+ الإنجليزية 
+ български 
+ Hrvatski 
+ Ελληνικά 
+ Română 
+ Slovenský 
+ Slovenščina 
+ 한국어 
+ 日本語 
+ Українська 
+ × 
+ Search Results
+ Web Pages
+ Images
+ < 
+ 1 
+ > 
+ Umbrella Tool Changer - Troubleshooting Guide - TG0155
+ Service Home 
+ Umbrella Tool Changer - Troubleshooting Guide - TG0155 
+ Your document is ready for download, please click below to download your document.
+ Download Document 
+ Error processing this document, please try again or Contact Us .
+ Please wait while your document is being loaded.
+ Umbrella Tool Changer - Troubleshooting Guide - TG0155
+ Jump to Section 
+ Back to Top 
+ Your document is ready for download, please click below to download your document.
+ Download Document 
+ Error processing this document, please try again or Contact Us .
+ Please wait while your document is being loaded.
+ 9.1 Umbrella Tool Changer - Troubleshooting Guide
+ Recently Updated 
+ Last updated: 10/15/2025 
+ Umbrella Tool Changer - Troubleshooting Guide
+ TG0155 
+ Revision A - 08/2025
+ Introduction
+ EXPLODED VIEW: 
+ SHUTTLE MOTOR
+ V-TRACK COVER
+ WIPER
+ WIPER RETAINER
+ SHCS 10-32 X 3/8
+ SLIP CLUTCH ARM
+ MOUNTING BLOCK
+ PROXIMITY SENSOR
+ SHUTTLE ROLLER
+ NUT 3/4-10 NYLON LOCK
+ WASHER 3/4 FLAT
+ TOOL CARRIAGE
+ NUT 3/8-24 HEX
+ GASKET TOOL CARRIAGE
+ CONNECTOR BRACKET
+ TURRET MOTOR
+ TOOL CARRIAGE COVER
+ MOTOR MOUNTING PLATE
+ SHCS M3 X 5
+ DRIVER GENEVA 2 PIN
+ CAM FOLLOWER 3/4 HEX
+ SPACER RING
+ BHCS 10-32 X 1
+ TOOL #1 STANDOFF
+ GENEVA STAR
+ VERTICAL AXLE
+ BEARING
+ BEARING LOCKNUT
+ BEARING HOUSING
+ DOOR SPRING
+ NUMBER RING
+ TOOL CHANGER CAP
+ SHCS 5/16-18 X 1
+ FHCS 10-32 X 3/8
+ SLIDING PANEL COVER
+ SLIDING PANEL DOOR
+ RIVET 3/32 X .200 X .160 HEAD DIA
+ EXTRACTOR BUSHING
+ ROLL PIN 3/16 X 7/8
+ EXTRACTOR COMPRESSION SPRING
+ EXTRACTOR
+ ALIGNMENT KEY
+ SHCS 1/4-20 X 7/8
+ SHCS 5/16-18 X 3/4
+ TOOL CHANGER COVER
+ TRAP DOOR
+ SWITCH COVER
+ SHCS 8-32 X 7/8
+ HOLDING PLATE
+ LOCATING PIN
+ DOOR OPENER BRACKET LOWER
+ DOOR OPENER BRACKET UPPER
+ Shuttle motor:  DC motor that drives the slip clutch arm assembly to move the shuttle in and out of the spindle.
+ Carousel motor:  DC motor that rotates the carousel.
+ Tool Changer pocket assembly:  Holds the tools in the carousel, it consists of two extractor fingers, spring, locating tool key.
+ Slip clutch arm:  Mechanism that couples the shuttle motor to the carriage casting, it will slip if there is a crash to prevent damage to tool changer.
+ Carousel motor connector bracket:  The motor and sensors will connect to this connector bracket.
+ Shuttle in and out sensors:  These sensors let the control know the shuttle position.
+ Tool #1 and tool mark sensors:  These sensors let the control know the carousel position.
+ Symptom Table
+ Symptom
+ Possible Cause
+ Corrective Action
+ Alarm 113  SHUTTLE IN FAULT
+ Alarm 114  SHUTTLE OUT FAULT
+ Alarm 125  SHUTTLE FAULT
+ Alarm 856  ATC SHUTTLE DRIVE TRAIN FAILURE
+ Alarm 859  ATC SHUTTLE MOTOR ELECTRICAL FAULT
+ Alarm 2066  TOOL CHANGER HOME POSITION FAULT
+ Chips interfere with the umbrella tool changer proximity sensors or the movement of the shuttle.
+ Check the system for chips. Refer to the Rail Guides and Proximity Sensors section.
+ The motor does not receive power.
+ Check the voltage to the motor.  Refer to the  Carousel and Shuttle Motor section.
+ Check resistance in the motor. Refer to the  Carousel and Shuttle Motor  section.
+ Check the motor brushes. Refer to the  Carousel and Shuttle Motor  section.
+ The slip clutch arm is loose or damaged.
+ Inspect the slip clutch arm.  Refer to the Slip Clutch Arm section
+ The spindle orientation is incorrect.
+ Set the correct spindle orientation.
+ The extractor fingers or springs are damaged or worn.
+ Rebuild the tool pockets.
+ The carousel plate is bent.
+ Find the cause of the bent carousel plate.
+ Damaged cable or loose cable connection. (Especially if problem is intermittent or during movement of shuttle)
+ Inspect pins and cable for condition.
+ One of the tool changer relays is faulty.
+ Test the tool changer relays.
+ Alarm 143  SPINDLE ROTATED DURING A TOOL CHANGE
+ Incorrect alignment of the carousel plate to the spindle is causing the spindle to turn as it goes into the tool holder.
+ Check the tool changer alignment to the spindle.
+ The spindle orientation is incorrect.
+ Set the correct spindle orientation.
+ The orientation is weak due to low voltage or loose motor power wires.
+ Check for loose wires at the spindle motor and amplifier terminals.  Check incoming voltage.
+ Alarm 115  CAROUSEL POSITION FAULT
+ Alarm 127  NO TURRET MARK
+ Alarm 854  ATC CAROUSEL DRIVE TRAIN FAILURE
+ Alarm 942  CAROUSEL POSITION TIME OUT
+ Chips interfere with the umbrella tool changer proximity sensors or movement of the shuttle.
+ Check the system for chips.
+ The proximity sensor is faulty or not recieveing power
+ Check the operation of the proximity sensor
+ One of the tool changer relays is faulty. (non-servo motor tool changers only)
+ Test the tool changer relays.
+ The motor does not receive power.
+ Check resistance in the motor.
+ Check the motor brushes.
+ Alarm 115  CAROUSEL POSITION FAULT, during Power-up.
+ There is a software error (NGC only).
+ Set setting 81 TOOL AT POWER UP to 0, as a temporary work around. Check NGC software release notes for when the error was corrected.  
+ Note:  Only a Certified Service Technician can upgrade the machine software.
+ Tools fall or drop from the tool changer.
+ The extractor fingers or springs are damaged or worn.
+ Rebuild the tool pockets.
+ The pull studs are incorrect.
+ Check the tool specifications.
+ The tool is too heavy or too long.
+ The Umbrella Tool Changer Carousel Plate is Loose.
+ The lock nut on the shaft axle is loose.
+ Check the lock nut on the shaft axle, bearing housing bolts and the 6 screws that hold the carousel plate.
+ The bolts at the bearing housing are loose.
+ Mounting hardware in the tool changer assembly is loose.
+ Tool changes are noisy.
+ The plastic riders on the carousel trap door are damaged or missing.
+ Inspect the carousel trap door.
+ The guide pin on the carousel trap door is damaged.
+ The Tool changer is not aligned to the spindle.
+ Use this procedure to align the Umbrella Tool Changer to the Spindle.
+ Procedure: Umbrella Tool Changer to Spindle Alignment
+ The Geneva driver or the Geneva star is damaged.
+ Examine the geneva driver and the geneva star for damage.  Use this procedure: Carousel Plate Replacement - Umbrella Tool Changer 
+ The shuttle roller bolts are not adjusted correctly.
+ Use this procedure to adjust or replace the shuttle rollers.
+ Procedure:  Shuttle Roller Replacement and Adjustment 
+ The sliding panels do not fully retract.
+ The sliding panels do not move smoothly. The tools make scores or scratches on the inner surface of the carousel. Clean the slider and spring assembly.
+ Use the correct procedure for slider and spring removal. Refer to  Umbrella Tool Changer - Pocket - Replacement .
+ The Umbrella Tool Changer Trap Door Does Not Open
+ The trap door pivot point is not greased.
+ Grease the trap door pivot point.
+ There are chips between the trap door and the carousel.
+ Inspect the carousel trap door.
+ The plastic trap door riders are worn.
+ CM-1 36 Pocket Tool Changer Only: Misloading of the tools.
+ The tool changer's door spring is too strong. 
+ Replace with weaker door spring P/N 93-3750 . Refer to CM-1 36 Pocket Tool Changer - Door Spring Replacement - AD0678 for more information. 
+ For Umbrella Tool Changers built before 02/2022 
+ Alarm 856 ATC Shuttle Drive Train Failure
+ Alarm 859 ATC Shuttle Motor Electrical Fault
+ Alarm 9809 Tool Changer Bus Short Circuit
+ Coolant getting into the shuttle motor windings through the brush caps.
+ Clean out brush caps/brushes and attach vinyl caps with sealant, refer to the Shuttle Motor Coolant Intrusion section below for more info.
+ Note: Shuttle motors on umbrella tool changers built February 2022 and later are dipped and sealed at the factory and will not require the vinyl caps. 
+ Shuttle Motor Coolant Intrusion
+ 1. Remove the brush caps [1] from both sides of the motor
+ 2. Inspect the brushes for coolant intrusion and clean and reinstall the brushes and their brush caps.
+ 3. Order two (2) vinyl caps [2] for the shuttle motor
+ PN  59-2011  for  32-1875: MTR ASSY CAROUSEL/SHUTTLE/APC 
+ PN  59-0297  for  CM-1  tool changers
+ 4. Fill the vinyl caps about a 1/4 of the way with RTV Silicone [3]
+ 5. Push the vinyl caps onto the brush caps and rotate them clockwise and counterclockwise for an even seal [4]
+ 6. A good seal could be seen in [5]
+ 7. Put a rubber band around both caps as shown in [6] and leave them on for at least 4 hours to allow the vinyl caps seal to cure.
+ Note: Shuttle motors on umbrella tool changers built February 2022 and later are dipped and sealed at the factory and will not require the vinyl caps.
+ Rail Guides and Proximity Sensors
+ Corrective Action: 
+ Check the top [1] and bottom [2] V-rails, and the wheels for chips. Check for damaged or worn wipers [3]. Some machines do not have a wiper bracket [4].
+ Remove any chips that prevent correct sensor operation. Remove the carousel motor from the carriage assembly. Remove the sensors [5] on both sides of the carousel motor plate to clean them.
+ Remove the cam follower assembly [6] and lower the slip clutch arm [8] to move the carriage assembly and access the sensors [7] behind the carriage assembly.
+ Older machine models use roller switches [5] in place of the proximity sensors. The plunger and roller must operate smoothly without sticking. If the switches or sensors are clean, but do not operate correctly, go to  Mechanical Limit Switch - Troubleshooting Guide  or  Proximity Sensor - Troubleshooting Guide  to troubleshoot them.
+ Carousel and Shuttle Motor
+ Corrective Action: 
+ How to access the shuttle motor to troubleshoot alarms 113, 114, 125, 856, 859, and 2066:  Remove the support arm cover [1] and cable channel cover [2]. Measure the voltage to the power cable.
+ How to access the carousel motor to troubleshoot alarms 115, 127, and 854:  Remove the cover [4] to the carriage. Measure the voltage to the power cable [5] on the connector bracket.
+ Measure the voltage: 
+ Measure for DC voltage at the connector that goes to the motor from the I/O PCB. Adjust the range to 0.0 and set your multimeter for Min/Max. The power to the motor will only be on for one second before an alarm generates and the power is shut off to the motor. Command a tool change. The reading must be 135-165 VDC, or show a signal change when it is commanded to run. Some multimeters are not fast enough to read the voltage before the alarm occurs. It should still show a signal change or OL before the alarm is generated. If there is no voltage, refer to:
+ Next Generation Control - I/O PCB - Troubleshooting Guide 
+ I/O PCB - Troubleshooting Guide (Classic Haas Control) 
+ Inspect the brushes. 
+ Normal wear on brush.
+ Bad wear on brush.
+ Disconnect the motor from the connector. Measure the resistance from pin to pin. The resistance must be between 5-20 Ohms. Measure the resistance from one of the pins to the motor chassis. The resistance must be greater than 100k Ohms.
+ If the measurements are low, there is not a good contact between the brushes and the commutator. Vacuum and clean any contamination between the brushes and the commutator. Check for damage or wear. Make sure there are no signs of oil or coolant in the motor. Inspect the area around the DC motor for causes of contamination.
+   IMPORTANT:  Incorrect installation of the motor brushes can cause malfunction of the motor or noise.
+ Slip Clutch Arm
+ Corrective Action: 
+ Inspect the slip clutch arm:  Remove and inspect the cam follower assembly [1] for damage and chips. Push the carousel motor housing in the direction of the spindle to get access to the slip clutch arm [2]. Manually turn the slip clutch arm [2] through 180° of movement. It should rotate smoothly, but with heavy resistance. If the arm does not move smoothly, the shuttle motor [3] is faulty.
+ Spindle Orientation
+ Corrective Action: 
+ Find the cause of the spindle orientation error.
+ Make sure spindle drive and encoder belts have the correct tension. Make sure the spindle motor pulley and encoder pulley are not worn.
+ Refer to these procedures
+ CHC - Umbrella Tool Changer - Set Parameter 257 - Spindle Orientation Offset 
+ NGC - Umbrella Tool Changer - Spindle Orientation Offset 
+ Tool Changer Relays
+ Corrective Action: 
+ Test the suspected relay:  Exchange the relay with another relay. If the alarm changes to a different alarm, the relay is at fault.
+ For example:  If the machine displays Alarm 113 , change the K9 relay with the K10 relay. If the alarm changes to Alarm 114 , the relay is faulty. If the alarm does not change, proceed to other troubleshooting sections.
+ Tool Pocket
+ Corrective Action: 
+ The extractor fingers and spring hold the tool in the tool pocket. Worn or damaged fingers or springs can let the tool fall.
+ Refer to:
+   VMC - Umbrella Tool Changer - Pocket - Replacement 
+ Video - Umbrella/Carousel Tool Changer Maintenance 
+ Carousel Plate and Tool Release Piston Adjustment
+ Corrective Action: 
+ If the tool-release piston (TRP) sensors are not adjusted correctly, a tool can get stuck in the spindle taper, or the drawbar might not release a tool. Damage to the umbrella tool changer can occur. Adjust the tool release piston switches correctly. Refer to the  TRP - Proximity Sensor - Adjustment  procedure.
+ Go to  Umbrella - Tool Changer – Carousel Plate - Replacement  for carousel plate replacement instructions.
+ Carousel Trap Door
+ Corrective Action: 
+ Check for damage to the guide pin [1], trap door [2], and the plastic riders [3].
+ Refer to the  Umbrella Tool Changer - Guide Pin and Trap Door - Replacement procedure.
+ Electrical Diagram
+ Recently Viewed Items
+ Clear Items 
+ You Have No Recently Viewed Items Yet
+ Feedback
+ Haas Delivered Price
+ This price includes shipping cost, export and import duties, insurance, and any other expenses incurred during shipping to a location in France agreed with you as a buyer. No other mandatory costs can be added to the delivery of a Haas CNC Product.
+ Click for details 
+ KEEP UP WITH THE LATEST HAAS TIPS AND TECHNOLOGY...
+ Sign up now!    
+ HAAS TOOLING ACCEPTS THE FOLLOWING:
+ -->
+-->
+ Service & Support
+ Owners 
+ Request Service 
+ Operator Manuals 
+ Haas Parts 
+ Rotary Repair Request 
+ Pre-Install Guides 
+ Shopping Tools
+ Build & Price a New Haas 
+ Available Inventory 
+ The Haas Price List 
+ CNCA Financing 
+ About Haas
+ DNSH Statement 
+ Export Compliance 
+ Careers 
+ Certifications & Safety 
+ Contact Us 
+ History 
+ Terms & Conditions 
+ Haas Tooling Terms & Conditions 
+ Privacy 
+ Warranty 
+ Haas Community
+ Haas Certification Program 
+ Haas Motorsports 
+ Gene Haas Foundation 
+ Haas Technical Education Community 
+ Events 
+ Join the Conversation
+ Facebook 
+ X 
+ Flickr 
+ YouTube 
+ LinkedIn 
+ Instagram 
+ TikTok 
+ © 2026  Haas Automation, Inc – CNC Machine Tools 
+ This site is protected by reCAPTCHA and the Google
+ Privacy Policy and
+ Terms of Service apply.
+ 2800 Sturgis Rd., Oxnard, CA 93030
+Toll Free: (888) 817-4446 / Fax: 805-278-8554
+ {{ if (loading) { }}
+ {{=loadingSpinner}}
+ {{ } else { }}
+ ×
+ {{=content}}
+ {{ } }}
+ {{ if (loading) { }}
+ {{=loadingSpinner}}
+ {{ } else { }}
+ ×
+ {{=content}}
+ {{ } }}

@@ -1,0 +1,206 @@
+{
+ "haas_alarm_list": {
+  "total": 1564,
+  "by_type": {
+   "NGC": {
+    "entries": 865,
+    "distinct_base_numbers": 770,
+    "with_axis_prefix": 129,
+    "desc_len_median": 178,
+    "desc_len_q1": 114,
+    "desc_len_q3": 297,
+    "desc_under_60_chars": 34,
+    "with_action_word": 543,
+    "korean_title": 809,
+    "korean_description": 809
+   },
+   "CHC-Mill": {
+    "entries": 398,
+    "distinct_base_numbers": 398,
+    "with_axis_prefix": 0,
+    "desc_len_median": 149,
+    "desc_len_q1": 90,
+    "desc_len_q3": 218,
+    "desc_under_60_chars": 51,
+    "with_action_word": 260,
+    "korean_title": 398,
+    "korean_description": 398
+   },
+   "CHC-Lathe": {
+    "entries": 301,
+    "distinct_base_numbers": 301,
+    "with_axis_prefix": 0,
+    "desc_len_median": 151,
+    "desc_len_q1": 101,
+    "desc_len_q3": 243,
+    "desc_under_60_chars": 33,
+    "with_action_word": 151,
+    "korean_title": 301,
+    "korean_description": 300
+   }
+  }
+ },
+ "haas_ngc_number_ranges": {
+  "0000~999": 378,
+  "1000~1999": 14,
+  "20000~20999": 32,
+  "2000~2999": 64,
+  "4000~4999": 24,
+  "8000~8999": 9,
+  "9000~9999": 344
+ },
+ "haas_troubleshooting_guides": {
+  "tsg_320v_power_supply_ngc": {
+   "chars": 17742,
+   "corrective_action": 4,
+   "possible_cause": 1,
+   "alarm_numbers_mentioned": 5,
+   "has_electrical_safety": true
+  },
+  "tsg_gauges_pneumatic_hydraulic": {
+   "chars": 18604,
+   "corrective_action": 3,
+   "possible_cause": 3,
+   "alarm_numbers_mentioned": 0,
+   "has_electrical_safety": false
+  },
+  "tsg_haas_axis_lubrication_oil": {
+   "chars": 24747,
+   "corrective_action": 1,
+   "possible_cause": 1,
+   "alarm_numbers_mentioned": 2,
+   "has_electrical_safety": false
+  },
+  "tsg_mill_spindle": {
+   "chars": 25507,
+   "corrective_action": 11,
+   "possible_cause": 1,
+   "alarm_numbers_mentioned": 2,
+   "has_electrical_safety": false
+  },
+  "tsg_regen_vector_drive_ngc": {
+   "chars": 22948,
+   "corrective_action": 3,
+   "possible_cause": 1,
+   "alarm_numbers_mentioned": 14,
+   "has_electrical_safety": true
+  },
+  "tsg_servo_amplifier_ngc": {
+   "chars": 24336,
+   "corrective_action": 7,
+   "possible_cause": 1,
+   "alarm_numbers_mentioned": 6,
+   "has_electrical_safety": true
+  },
+  "tsg_sigma1_axis_servo_motor_cables": {
+   "chars": 22031,
+   "corrective_action": 6,
+   "possible_cause": 1,
+   "alarm_numbers_mentioned": 9,
+   "has_electrical_safety": true
+  },
+  "tsg_sigma5_axis_servo_motor_cables": {
+   "chars": 23645,
+   "corrective_action": 6,
+   "possible_cause": 1,
+   "alarm_numbers_mentioned": 3,
+   "has_electrical_safety": true
+  },
+  "tsg_sigma5_axis_servo_motor_cables_ngc": {
+   "chars": 30114,
+   "corrective_action": 4,
+   "possible_cause": 1,
+   "alarm_numbers_mentioned": 16,
+   "has_electrical_safety": true
+  },
+  "tsg_smtc_carousel_pocket": {
+   "chars": 23175,
+   "corrective_action": 14,
+   "possible_cause": 3,
+   "alarm_numbers_mentioned": 4,
+   "has_electrical_safety": false
+  },
+  "tsg_standard_coolant_ngc": {
+   "chars": 27105,
+   "corrective_action": 1,
+   "possible_cause": 1,
+   "alarm_numbers_mentioned": 3,
+   "has_electrical_safety": false
+  },
+  "tsg_umbrella_tool_changer": {
+   "chars": 20871,
+   "corrective_action": 9,
+   "possible_cause": 1,
+   "alarm_numbers_mentioned": 12,
+   "has_electrical_safety": false
+  }
+ },
+ "haas_vmc_maintenance_schedule": {
+  "items": 58,
+  "by_interval": {
+   "Weekly": 9,
+   "Monthly": 14,
+   "Six Months": 18,
+   "Annually": 7,
+   "Quarterly": 1,
+   "Check the Gauge": 1,
+   "Daily": 2,
+   "Two Years": 2,
+   "Four Years": 1,
+   "As Required": 3
+  }
+ },
+ "other_equipment_alarm_manuals": {
+  "Siemens SINUMERIK 840D sl 알람 (한국어)": {
+   "pages": 1478,
+   "entries": 4143
+  },
+  "Siemens SINUMERIK 840D sl 알람 (영어)": {
+   "pages": 1536,
+   "entries": 4143
+  },
+  "Siemens SINUMERIK 808D (영어)": {
+   "pages": 582,
+   "entries": 1698
+  },
+  "Mitsubishi M800/M80 알람 (영어)": {
+   "pages": 754,
+   "entries": 872
+  },
+  "Yaskawa YRC1000 로봇 알람 (영어)": {
+   "pages": 1250,
+   "entries": 1154
+  },
+  "LS G100 인버터 원인·조치 표 (한국어)": {
+   "pages": 41,
+   "entries": 14
+  },
+  "LS iS7 인버터 원인·조치 표 (한국어)": {
+   "pages": 49,
+   "entries": 17
+  },
+  "Haas Cold Saw HCS-80 알람 (영어·한국어 페이지)": {
+   "pages": null,
+   "entries": 30
+  },
+  "Hexagon PC-DMIS 측정기 오류 코드 MP·MLB (영어)": {
+   "pages": null,
+   "entries": 258
+  }
+ },
+ "haas_korean_manuals": {
+  "haas/ko_96-KO8210_Mill.pdf": {
+   "pages": 498,
+   "hangul_chars": 172874,
+   "mentions_알람": 106,
+   "mentions_유지보수": 30
+  },
+  "haas/ko_mill_operators_manual_2015.pdf": {
+   "pages": 402,
+   "hangul_chars": 154755,
+   "mentions_알람": 88,
+   "mentions_유지보수": 64
+  }
+ }
+}
+KOSHA: 36 개, 496 쪽, 글자 추출 안 됨: ['KOSHA_B-M-14-2025 연삭기 안전작업에 관한 기술지원규정.pdf', 'KOSHAMEDIA_31376_2012-교육미디어-890_기계공구-밀링기.pdf', 'KOSHAMEDIA_40456_2019-경남동부지사-273_끼임재해 4대 위험설비 재해사례 및 자율안전점검표_밀링기(웹용).pdf', 'KOSHAMEDIA_41938_2020-기술총괄본부-69_2020-기술총괄본부-69_LOTO 작업절차 바로알기_OPS_제조업_제2유형_(붙임1) LOTO(잠금장치, 표지판) 바로알기 .pdf', 'KOSHAMEDIA_43303_2021-교육혁신실-360__끼임사고예방 안전수칙_포스터(웹용).pdf']

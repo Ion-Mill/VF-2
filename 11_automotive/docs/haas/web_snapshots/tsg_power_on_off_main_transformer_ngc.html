@@ -1,0 +1,2005 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+
+<script>
+    if (localStorage.getItem('allowTrackingCookies')) {
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-MZL3FGR');
+    }
+</script>
+
+<meta charset="utf-8" />
+<title> Power On/Off Circuit - Main Transformer - Troubleshooting Guide - NGC</title>
+<meta name="keywords" />
+<meta name="description" content="Power on
+Transformer
+T5
+PSUP
+Circuit Breaker" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="search.keywords" />
+<meta name="search.contentType" content="Troubleshooting Guide" />
+<meta name="search.localizedContentType" content="Troubleshooting Guide" />
+<meta name="search.popularTopics" content="Lathe, Mill, Power Distribution System, Electrical Cabinet" />
+<meta name="search.alarms" content="NGC_9931.0000, NGC_2095.0000, NGC_175.0000" />
+<meta name="search.localizedAlarms" content="Alarm 9931, Alarm 2095, Alarm 175" />
+<meta name="search.updated" content="false" />
+<meta name="search.lastUpdated" content="2021-02-08T13:15:28.459-08:00" />
+<meta name="search.lastUpdatedTimestamp" content="0" />
+<link type="image/ico" rel="icon" href="/etc/designs/haascnc/favicon.ico" />
+<script>history.scrollRestoration = "manual"</script>
+<script>window.wcmmode = {"edit": false,"design": false,"preview": false,"disabled": true};</script>
+
+<noscript>
+    <link rel="stylesheet" href="https://use.fontawesome.com/95f7b4eb48.css" media="print"/>
+</noscript>
+<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,800,600' rel='stylesheet' type='text/css' />
+<link href='https://fonts.googleapis.com/css?family=Work+Sans:200,300,400' rel='stylesheet' type='text/css' />
+<link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300,700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css?family=Sarabun:300,400,500,700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Noto+Sans+KR:wght@100;300;400&display=swap" rel="stylesheet" />
+<link href='//webfonts.typetrust.com/170425104442_haastest' rel='stylesheet' type='text/css' />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick-theme.min.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" />
+<link rel="stylesheet" href="https://use.typekit.net/yaa0wao.css" />
+
+<link rel="stylesheet" href="/etc/clientlibs/haascnc/haashead.min.ACSHASH272e792fc83fe63c349112ca628d1bc6.css" type="text/css">
+<link rel="stylesheet" href="/etc/clientlibs/haascnc/haascomponents.min.ACSHASH0aaefa835239c0773f84a2bf818aa320.css" type="text/css">
+<link rel="stylesheet" href="/etc.clientlibs/haascnc/clientlibs/core.min.ACSHASH4bdbc8fa46316e1275c9fc1814ee6c48.css" type="text/css">
+
+<script type="text/javascript" src="/etc.clientlibs/clientlibs/granite/jquery/granite/csrf.min.ACSHASHac506bd4bf7ff572fc64ba210d255c54.js"></script>
+<script type="text/javascript" src="/etc.clientlibs/clientlibs/granite/jquery.min.ACSHASH772fb04d4ce536dfb06c17e789ad4dbd.js"></script>
+<script type="text/javascript" src="/etc.clientlibs/clientlibs/granite/utils.min.ACSHASH308082b4c347f4fec37ffef277d39d0e.js"></script>
+<script type="text/javascript" src="/etc.clientlibs/clientlibs/granite/jquery/granite.min.ACSHASHd9075d4175ab7b0e3ccf4305a4089645.js"></script>
+<script type="text/javascript" src="/etc.clientlibs/foundation/clientlibs/jquery.min.ACSHASHdd9b395c741ce2784096e26619e14910.js"></script>
+<script type="text/javascript" src="/etc.clientlibs/foundation/clientlibs/shared.min.ACSHASHd8eee0685f08a5253a1d753a2619a08f.js"></script>
+<script type="text/javascript" src="/etc/clientlibs/haascnc/haashead.min.ACSHASH27f84b17477c6d3bd2c52014eb1c2b6d.js"></script>
+<script>
+     window.haas.VERSION = '4.0.0.210' || window.haas.VERSION;
+ </script>
+<script type="text/javascript">
+            (function() {
+                window.ContextHub = window.ContextHub || {};
+
+                /* setting paths */
+                ContextHub.Paths = ContextHub.Paths || {};
+                ContextHub.Paths.CONTEXTHUB_PATH = "/conf/haascnc/settings/cloudsettings/contexthub";
+                ContextHub.Paths.RESOURCE_PATH = "\/content\/haascnc\/en\/service\/troubleshooting\u002Dand\u002Dhow\u002Dto\/troubleshooting\/next\u002Dgeneration\u002Dcontrol\u002D\u002D\u002Dpower\u002Don\u002Doff\u002Dcircuit\u002D\u002Dmain\u002Dtransformer\/_jcr_content\/contexthub";
+                ContextHub.Paths.SEGMENTATION_PATH = "\/conf\/haascnc\/settings\/wcm\/segments";
+                ContextHub.Paths.CQ_CONTEXT_PATH = "";
+
+                /* setting initial constants */
+                ContextHub.Constants = ContextHub.Constants || {};
+                ContextHub.Constants.ANONYMOUS_HOME = "/home/users/1/1RtWfhMWTPi_N-BCw3VO";
+                ContextHub.Constants.MODE = "no-ui";
+            }());
+        </script><script src="/etc/cloudsettings.kernel.js/conf/haascnc/settings/cloudsettings/contexthub" type="text/javascript"></script>
+
+<script>
+    digitalData = {
+        page:{
+            pageInfo:{
+                pageID: "next\u002Dgeneration\u002Dcontrol\u002D\u002D\u002Dpower\u002Don\u002Doff\u002Dcircuit\u002D\u002Dmain\u002Dtransformer",
+                pageName: "haascnc:en:service:troubleshooting\u002Dand\u002Dhow\u002Dto:troubleshooting:next\u002Dgeneration\u002Dcontrol\u002D\u002D\u002Dpower\u002Don\u002Doff\u002Dcircuit\u002D\u002Dmain\u002Dtransformer",
+                prevPage: document.referrer
+            },
+            category:{
+                section:{
+                    "level1":"service","level2":"troubleshooting-and-how-to","level3":"troubleshooting","level4":"next-generation-control---power-on-off-circuit--main-transformer"
+                },
+                pageType: "troubleshooting\u002Dguide"
+            },
+            attributes:{
+                country: "US", //User country
+                language: "en" //User agent language
+            }
+        },
+        product:{
+            baq:{ //Build-a-quote stuff
+                type:["",""]
+            },
+            category:"",
+            series:"",
+            model:""
+        }
+    };
+</script>
+<script type="text/javascript" id='dtm-script-init' data-dtm-script='//assets.adobedtm.com/launch-ENcbc5e06987404dbdb7f2f7e8e0c52e42.min.js'>
+    
+    
+    var allowTrackingCookies = localStorage.getItem('allowTrackingCookies');
+    if (allowTrackingCookies) {
+        /*
+        // Adobe Analytics Cookies
+        var self = document.getElementById('dtm-script-init');
+        var scriptSrc = self.getAttribute('data-dtm-script');
+        (function() {
+            var dtmScriptElement = document.createElement('script');
+            dtmScriptElement.async = true;
+            dtmScriptElement.src = 'https:' + scriptSrc;
+            self.parentNode.insertBefore(dtmScriptElement, self.nextSibling);
+        })();
+        */
+        // helper func to trace _satellite.track() calls
+        (function () {
+             if (typeof console.trace !== 'function') return;
+             var debugKey = 'debugAnalytics';
+             if (localStorage && localStorage.getItem(debugKey)) {
+                 var trackCopy = window._satellite.track;
+
+                 window._satellite.track = function () {
+                     console.trace('_satellite.track() trace');
+                     trackCopy.apply(window._satellite, arguments);
+                 };
+             }
+
+             window.debugAnalytics = function (bool) {
+                 if (!localStorage) return;
+                 if (!bool) {
+                     localStorage.removeItem(debugKey);
+                     return;
+                 }
+
+                 localStorage.setItem(debugKey, bool);
+             };
+        })();
+    }
+</script>
+</head>
+<body class="page troubleshooting-guide">
+
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MZL3FGR" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+<div id="navibar">
+<div id="logo-mobile">
+<a href="#" class="logo-mobile-link" onclick="_gaq.push(['_trackEvent', 'Header Menu', 'Logo Mobile'])"><img src="/content/dam/haascnc/assets/haaslogos/HaasF1TeamLogoLockup_Black.png" /></a>
+</div>
+<div id="topsub">
+<div class="menu-container">
+<div id="logo">
+<a href="/content/haascnc/en.html" onclick="_gaq.push(['_trackEvent', 'Header Menu', 'Logo - Home'])"><img src="/content/dam/haascnc/assets/haaslogos/HaasF1TeamLogoLockup_Color.png" /></a>
+</div>
+<button type="button" class="view-menu" id="mobileMenu"><span class="fa fa-bars"></span></button>
+<div class="menu-wrapper">
+<div class="menu">
+<div class="menu-overlay"></div>
+<div class="mainmenu-container">
+<div class="desktop-searchbar-wrapper">
+<div id="search-box-container" class="search_box_top">
+<div class="bcs-container-searchbox">
+<input id="bcs-searchbox" class="bcs-searchbox" placeholder="" autocomplete="off" />
+<button type="button" class="bcs-searchbox-submit">
+<i class='fa fa-search'></i>
+</button>
+<div id="bcsSuggestionsContainer" role="listbox" aria-label="Suggestions">
+</div>
+</div>
+<div class="bcs-modal">
+<div class="bcs-modal-content">
+<div class="bcs-modal-header">
+<span class="bcs-modal-close">×</span>
+<h2>Search Results</h2>
+</div>
+<div class="bcs-modal-body">
+<div class='search-type-header'>
+<div id='bcs-web-search' class='active'>
+<a><h3>Web Pages</h3></a>
+</div>
+<div id='bcs-img-search'>
+<a><h3>Images</h3></a>
+</div>
+</div>
+<ol class="bcs-results">
+
+</ol>
+<ol class='bcs-pagination-container'>
+<li class="bcs-pagination bcs-modal-pagination">
+<ul>
+<li>
+<a>&lt;</a>
+</li>
+<li>
+<a class="bcs-current-page">1</a>
+</li>
+<li>
+<a>&gt;</a>
+</li>
+</ul>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+<ul class="mainmenu">
+<span class="mobile-menu-header"><span id="mobile-flyout-logo">
+<a href="#" class="logo-mobile-link" onclick="_gaq.push(['_trackEvent', 'Header Menu', 'Logo Mobile'])"><img src="/content/dam/haascnc/assets/haaslogos/HaasF1TeamLogoLockup_Black.png" /></a>
+</span><div id="mobile-menu-close"><span class="fa fa-angle-right"></span><span class="fa fa-angle-left"></span></div></span>
+<li class="level01" id="machines">
+<a class="menu-link" href="/content/haascnc/en/machines.html">
+<span class="toplevel mobileArrow">machines</span>
+</a>
+<ul class="submenu01">
+<div class="mainsub">
+<div class="mainsub-lt">
+<span class="menu intro ownertitle"></span>
+<li class="level1" id="vertical-mills"><a href="/content/haascnc/en/machines/vertical-mills.html" class="level1-title-link"><img src="/content/dam/haascnc/productivity/navigation-thumbnails/VF4SS_RC_HERO.png/_jcr_content/renditions/cq5dam.thumbnail.319.319.png" alt="Haas Vertical Mills" /><br /><span class="title mobileArrow">Vertical Mills </span></a>
+<ul class="submenu1">
+<li class="level2 categorylink"><a href="/content/haascnc/en/machines/vertical-mills.html" class="level2-category-link"><span class="level2-category-title mobileArrow">Vertical Mills </span></a></li>
+<li class="level2" id="vf-series"><a href="/content/haascnc/en/machines/vertical-mills/vf-series.html" class="level2-title-link"><span class="level2-title mobileArrow">VF Series</span></a></li>
+<li class="level2" id="universal-machine"><a href="/content/haascnc/en/machines/vertical-mills/universal-machine.html" class="level2-title-link"><span class="level2-title mobileArrow">Universal Machines</span></a></li>
+<li class="level2" id="vr-series"><a href="/content/haascnc/en/machines/vertical-mills/vr-series.html" class="level2-title-link"><span class="level2-title mobileArrow">VR Series</span></a></li>
+<li class="level2" id="vc-series"><a href="/content/haascnc/en/machines/vertical-mills/vc-series.html" class="level2-title-link"><span class="level2-title mobileArrow">Pallet-Changing VMCs</span></a></li>
+<li class="level2" id="mini-mills"><a href="/content/haascnc/en/machines/vertical-mills/mini-mills.html" class="level2-title-link"><span class="level2-title mobileArrow">Mini Mills</span></a></li>
+<li class="level2" id="mold-machines"><a href="/content/haascnc/en/machines/vertical-mills/mold-machines.html" class="level2-title-link"><span class="level2-title mobileArrow">Mold Machines</span></a></li>
+<li class="level2" id="drill-tap-mill"><a href="/content/haascnc/en/machines/vertical-mills/drill-tap-mill.html" class="level2-title-link"><span class="level2-title mobileArrow">Drill/ Tap/ Mill Series</span></a></li>
+<li class="level2" id="toolroom-mills"><a href="/content/haascnc/en/machines/vertical-mills/toolroom-mills.html" class="level2-title-link"><span class="level2-title mobileArrow">Toolroom Mills</span></a></li>
+<li class="level2" id="compact-mills"><a href="/content/haascnc/en/machines/vertical-mills/compact-mills.html" class="level2-title-link"><span class="level2-title mobileArrow">Compact Mills</span></a></li>
+<li class="level2" id="gantry"><a href="/content/haascnc/en/machines/vertical-mills/gantry.html" class="level2-title-link"><span class="level2-title mobileArrow">Gantry Series</span></a></li>
+<li class="level2" id="vertical-mill-turn"><a href="/content/haascnc/en/machines/vertical-mills/vertical-mill-turn.html" class="level2-title-link"><span class="level2-title mobileArrow">Vertical Mill/Turn</span></a></li>
+<li class="level2" id="extra-large-vmc"><a href="/content/haascnc/en/machines/vertical-mills/extra-large-vmc.html" class="level2-title-link"><span class="level2-title mobileArrow">Extra-Large VMC</span></a></li>
+<li class="level2" id="desktop-mill"><a href="/content/haascnc/en/machines/vertical-mills/desktop-mill.html" class="level2-title-link"><span class="level2-title mobileArrow">Desktop Mill</span></a></li>
+<li class="level2" id="control-simulator"><a href="/content/haascnc/en/machines/vertical-mills/control-simulator.html" class="level2-title-link"><span class="level2-title mobileArrow">Control Simulator</span></a></li>
+<li class="level2" id="auto-parts-loader-mill"><a href="/content/haascnc/en/machines/vertical-mills/auto-parts-loader-mill.html" class="level2-title-link"><span class="level2-title mobileArrow">Mill Auto Parts Loader</span></a></li>
+ </ul>
+</li>
+<li class="level1" id="multi-axis"><a href="/content/haascnc/en/machines/multi-axis.html" class="level1-title-link"><img src="/content/dam/haascnc/pdp_feed/thumbnail_machine_images/UMC-1500Duo.png" alt="Product Image" /><br /><span class="title mobileArrow">Multi-Axis Solutions</span></a>
+<ul class="submenu1">
+<li class="level2 categorylink"><a href="/content/haascnc/en/machines/multi-axis.html" class="level2-category-link"><span class="level2-category-title mobileArrow">Multi-Axis Solutions</span></a></li>
+<li class="level2" id="5-axis-mills"><a href="/content/haascnc/en/machines/multi-axis/5-axis-mills.html" class="level2-title-link"><span class="level2-title mobileArrow">5-Axis Mills</span></a></li>
+<li class="level2" id="y-axis-lathes"><a href="/content/haascnc/en/machines/multi-axis/y-axis-lathes.html" class="level2-title-link"><span class="level2-title mobileArrow">Y-Axis Lathes</span></a></li>
+</ul>
+</li>
+<li class="level1" id="lathes"><a href="/content/haascnc/en/machines/lathes.html" class="level1-title-link"><img src="/content/dam/haascnc/productivity/navigation-thumbnails/ST25y_RO_HERO.png/_jcr_content/renditions/cq5dam.thumbnail.319.319.png" alt="Haas Lathes" /><br /><span class="title mobileArrow">Lathes</span></a>
+<ul class="submenu1">
+<li class="level2 categorylink"><a href="/content/haascnc/en/machines/lathes.html" class="level2-category-link"><span class="level2-category-title mobileArrow">Lathes</span></a></li>
+<li class="level2" id="st"><a href="/content/haascnc/en/machines/lathes/st.html" class="level2-title-link"><span class="level2-title mobileArrow">ST Series</span></a></li>
+<li class="level2" id="dual-spindle"><a href="/content/haascnc/en/machines/lathes/dual-spindle.html" class="level2-title-link"><span class="level2-title mobileArrow">Dual-Spindle</span></a></li>
+<li class="level2" id="toolroom-lathe"><a href="/content/haascnc/en/machines/lathes/toolroom-lathe.html" class="level2-title-link"><span class="level2-title mobileArrow">Toolroom Lathes</span></a></li>
+<li class="level2" id="chucker-lathe"><a href="/content/haascnc/en/machines/lathes/chucker-lathe.html" class="level2-title-link"><span class="level2-title mobileArrow">Chucker Lathe</span></a></li>
+<li class="level2" id="haas-bar-feeder-v2"><a href="/content/haascnc/en/machines/lathes/haas-bar-feeder-v2.html" class="level2-title-link"><span class="level2-title mobileArrow">Haas Bar Feeder V2</span></a></li>
+<li class="level2" id="auto-parts-loader"><a href="/content/haascnc/en/machines/lathes/auto-parts-loader.html" class="level2-title-link"><span class="level2-title mobileArrow">Lathe Auto Parts Loader</span></a></li>
+</ul>
+</li>
+<li class="level1" id="horizontal-mills"><a href="/content/haascnc/en/machines/horizontal-mills.html" class="level1-title-link"><img src="/content/dam/haascnc/machines/horizontal-mills/ec-series/models/ec-1600zt/assets/Ec1600zt5axRO_Optimized.png" alt="Haas Horizontal Mills" /><br /><span class="title mobileArrow">Horizontal Mills</span></a>
+<ul class="submenu1">
+<li class="level2 categorylink"><a href="/content/haascnc/en/machines/horizontal-mills.html" class="level2-category-link"><span class="level2-category-title mobileArrow">Horizontal Mills</span></a></li>
+<li class="level2" id="ec-series"><a href="/content/haascnc/en/machines/horizontal-mills/ec-series.html" class="level2-title-link"><span class="level2-title mobileArrow">50-Taper</span></a></li>
+<li class="level2" id="40-taper"><a href="/content/haascnc/en/machines/horizontal-mills/40-taper.html" class="level2-title-link"><span class="level2-title mobileArrow">40-Taper</span></a></li>
+</ul>
+</li>
+<li class="level1" id="rotaries-indexers"><a href="/content/haascnc/en/machines/rotaries-indexers.html" class="level1-title-link"><img src="/content/dam/haascnc/machines/rotaries-indexers/models/rotaries/hrt210/assets/4x3hrt-210-R_Optimized.png" alt="Haas Rotaries &amp; Indexers" /><br /><span class="title mobileArrow">Rotaries &amp; Indexers</span></a>
+<ul class="submenu1">
+<li class="level2 categorylink"><a href="/content/haascnc/en/machines/rotaries-indexers.html" class="level2-category-link"><span class="level2-category-title mobileArrow">Rotaries &amp; Indexers</span></a></li>
+<li class="level2" id="rotary-tables"><a href="/content/haascnc/en/machines/rotaries-indexers/rotary-tables.html" class="level2-title-link"><span class="level2-title mobileArrow">Rotary Tables</span></a></li>
+<li class="level2" id="indexers"><a href="/content/haascnc/en/machines/rotaries-indexers/indexers.html" class="level2-title-link"><span class="level2-title mobileArrow">Indexers</span></a></li>
+<li class="level2" id="5-axis-rotaries"><a href="/content/haascnc/en/machines/rotaries-indexers/5-axis-rotaries.html" class="level2-title-link"><span class="level2-title mobileArrow">5-Axis Rotaries</span></a></li>
+<li class="level2" id="extra-large-rotaries"><a href="/content/haascnc/en/machines/rotaries-indexers/extra-large-rotaries.html" class="level2-title-link"><span class="level2-title mobileArrow">Extra-Large Rotaries</span></a></li>
+</ul>
+</li>
+<li class="level1" id="automation-systems"><a href="/content/haascnc/en/machines/automation-systems.html" class="level1-title-link"><img src="/content/dam/haascnc/pdp_feed/thumbnail_machine-rotaries-apl/VF2SS_APL.png" alt="Product Image" /><br /><span class="title mobileArrow">Automation Systems</span></a>
+<ul class="submenu1">
+<li class="level2 categorylink"><a href="/content/haascnc/en/machines/automation-systems.html" class="level2-category-link"><span class="level2-category-title mobileArrow">Automation Systems</span></a></li>
+<li class="level2" id="Robot_integration"><a href="/content/haascnc/en/machines/automation-systems/Robot_integration.html" class="level2-title-link"><span class="level2-title mobileArrow">Robot Systems</span></a></li>
+<li class="level2" id="HAAS_APL"><a href="/content/haascnc/en/machines/automation-systems/HAAS_APL.html" class="level2-title-link"><span class="level2-title mobileArrow">Automatic Parts Loaders</span></a></li>
+<li class="level2" id="pallet-pool-systems"><a href="/content/haascnc/en/machines/automation-systems/pallet-pool-systems.html" class="level2-title-link"><span class="level2-title mobileArrow">Pallet Pool Systems</span></a></li>
+<li class="level2" id="haas-bar-feeder-reference"><a href="/content/haascnc/en/machines/automation-systems/haas-bar-feeder-reference.html" class="level2-title-link"><span class="level2-title mobileArrow">Haas Bar Feeder</span></a></li>
+<li class="level2" id="models"><a href="/content/haascnc/en/machines/automation-systems/models.html" class="level2-title-link"><span class="level2-title mobileArrow">Models</span></a></li>
+</ul>
+</li>
+</div>
+<div class="mainsub-rt level1">
+<div class="m1">
+<span class="title quick-links mobileArrow">QUICK LINKS</span>
+<a id="menulink" class='special-series-btn hidden' href="#">
+<span class="desktop-menu button compare">Special Series&nbsp;<span class="fa fa-angle-right"></span></span>
+<span class="mobile-menu  mobileArrow">Special Series&nbsp;</span>
+</a>
+<a id="menulink" href="/content/haascnc/en/shop/category/pricelist.html">
+<span class="desktop-menu button compare btn-red-on-white">PRICE LIST<span class="fa fa-angle-right"></span></span>
+<span class="mobile-menu mobileArrow">PRICE LIST</span>
+</a>
+<a id="menulink" href="/content/haascnc/en/build-and-price.html">
+<span class="desktop-menu button baq btn-white-on-red">BUILD &amp; PRICE<span class="fa fa-angle-right"></span></span>
+<span class="mobile-menu mobileArrow">BUILD &amp; PRICE</span>
+</a>
+<a id="menulink" href="/content/haascnc/en/Community/Events/new.html">
+<span class="desktop-menu button compare btn-red-on-white">WHAT’S NEW<span class="fa fa-angle-right"></span></span>
+<span class="mobile-menu mobileArrow">WHAT’S NEW</span>
+</a>
+</div>
+<div class="s1">
+<span class="title mobileArrow">SHOPPING TOOLS</span>
+<ul class="linklistx">
+<li><a class="nav_linklist" href="/content/haascnc/en/build-and-price.html">Build &amp; Price a Haas</a>
+</li>
+<li><a class="nav_linklist" href="/content/haascnc/en/shop/category/pricelist.html">Price List</a>
+</li>
+<li><a class="nav_linklist" href="/content/haascnc/en/shop/category/inventory.html">Available Inventory</a>
+</li>
+<li><a class="nav_linklist" href="/content/haascnc/en/owners/Financing.html">CNCA Financing</a>
+</li>
+<li><a class="nav_linklist"></a>
+</li>
+</ul>
+</div>
+<div class="s1"><span class="title mobileArrow">WANT TO TALK TO SOMEONE?</span><p>A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.</p><a href="/content/haascnc/en/about/contact.html">CONTACT YOUR DISTRIBUTOR &gt;</a></div>
+</div>
+</div>
+</ul> 
+</li>
+<li class="level01" id="productivity">
+<a class="menu-link" href="/content/haascnc/en/productivity.html">
+<span class="toplevel mobileArrow">Options</span>
+</a>
+<ul class="submenu01">
+<div class="mainsub">
+<div class="mainsub-lt">
+<span class="menu intro ownertitle"></span>
+<li class="level1" id="spindles"><a href="/content/haascnc/en/productivity/spindles.html" class="level1-title-link"><img src="/content/dam/haascnc/productivity/navigation-thumbnails/2SpindleTypes.jpg/_jcr_content/renditions/cq5dam.thumbnail.319.319.png" alt="Product Image" /><br /><span class="title mobileArrow">Spindles</span></a>
+<ul class="submenu1">
+<li class="level2 categorylink"><a href="/content/haascnc/en/productivity/spindles.html" class="level2-category-link"><span class="level2-category-title mobileArrow">Spindles</span></a></li>
+</ul>
+</li>
+<li class="level1" id="tool-changer"><a href="/content/haascnc/en/productivity/tool-changer.html" class="level1-title-link"><img src="/content/dam/haascnc/productivity/navigation-thumbnails/SMTC.jpg/_jcr_content/renditions/cq5dam.thumbnail.319.319.png" alt="Product Image" /><br /><span class="title mobileArrow">Tool Changers</span></a>
+<ul class="submenu1">
+<li class="level2 categorylink"><a href="/content/haascnc/en/productivity/tool-changer.html" class="level2-category-link"><span class="level2-category-title mobileArrow">Tool Changers</span></a></li>
+</ul>
+</li>
+<li class="level1" id="multi-axis-machining"><a href="/content/haascnc/en/productivity/multi-axis-machining.html" class="level1-title-link"><img src="/content/dam/haascnc/productivity/navigation-thumbnails/RotaryProvision.jpg/_jcr_content/renditions/cq5dam.thumbnail.319.319.png" alt="Product Image" /><br /><span class="title mobileArrow">4th- | 5th-Axis</span></a>
+<ul class="submenu1">
+<li class="level2 categorylink"><a href="/content/haascnc/en/productivity/multi-axis-machining.html" class="level2-category-link"><span class="level2-category-title mobileArrow">4th- | 5th-Axis</span></a></li>
+</ul>
+</li>
+<li class="level1" id="turret"><a href="/content/haascnc/en/productivity/turret.html" class="level1-title-link"><img src="/content/dam/haascnc/productivity/navigation-thumbnails/BMT65_CloseupAngle_4x3.png/_jcr_content/renditions/cq5dam.thumbnail.319.319.png" alt="Product Image" /><br /><span class="title mobileArrow">Turrets &amp; Live Tooling</span></a>
+<ul class="submenu1">
+<li class="level2 categorylink"><a href="/content/haascnc/en/productivity/turret.html" class="level2-category-link"><span class="level2-category-title mobileArrow">Turrets &amp; Live Tooling</span></a></li>
+</ul>
+</li>
+<li class="level1" id="probe-system"><a href="/content/haascnc/en/productivity/probe-system.html" class="level1-title-link"><img src="/content/dam/haascnc/productivity/navigation-thumbnails/Probing.jpg/_jcr_content/renditions/cq5dam.thumbnail.319.319.png" alt="Product Image" /><br /><span class="title mobileArrow">Probing</span></a>
+<ul class="submenu1">
+<li class="level2 categorylink"><a href="/content/haascnc/en/productivity/probe-system.html" class="level2-category-link"><span class="level2-category-title mobileArrow">Probing</span></a></li>
+</ul>
+</li>
+<li class="level1" id="chip-and-coolant-management"><a href="/content/haascnc/en/productivity/chip-and-coolant-management.html" class="level1-title-link"><img src="/content/dam/haascnc/productivity/navigation-thumbnails/ChipsMess.jpg/_jcr_content/renditions/cq5dam.thumbnail.319.319.png" alt="Haas Chip &amp; Coolant Management" /><br /><span class="title mobileArrow">Chip &amp; Coolant Management</span></a>
+<ul class="submenu1">
+<li class="level2 categorylink"><a href="/content/haascnc/en/productivity/chip-and-coolant-management.html" class="level2-category-link"><span class="level2-category-title mobileArrow">Chip &amp; Coolant Management</span></a></li>
+</ul>
+</li>
+<li class="level1" id="control"><a href="/content/haascnc/en/productivity/control.html" class="level1-title-link"><img src="/content/dam/haascnc/productivity/navigation-thumbnails/ControlRender.jpg/_jcr_content/renditions/cq5dam.thumbnail.319.319.png" alt="The Haas Control" /><br /><span class="title mobileArrow">The Haas Control</span></a>
+<ul class="submenu1">
+<li class="level2 categorylink"><a href="/content/haascnc/en/productivity/control.html" class="level2-category-link"><span class="level2-category-title mobileArrow">The Haas Control</span></a></li>
+</ul>
+</li>
+<li class="level1" id="product-options"><a href="/content/haascnc/en/productivity/product-options.html" class="level1-title-link"><img src="/content/dam/haascnc/productivity/navigation-thumbnails/HIL.jpg/_jcr_content/renditions/cq5dam.thumbnail.319.319.png" alt="Product Image" /><br /><span class="title mobileArrow">Product Options</span></a>
+<ul class="submenu1">
+<li class="level2 categorylink"><a href="/content/haascnc/en/productivity/product-options.html" class="level2-category-link"><span class="level2-category-title mobileArrow">Product Options</span></a></li>
+</ul>
+</li>
+<li class="level1" id="tooling-and-fixturing"><a href="/content/haascnc/en/productivity/tooling-and-fixturing.html" class="level1-title-link"><img src="/content/dam/haascnc/productivity/navigation-thumbnails/ToolingAndFixturingNav.jpg/_jcr_content/renditions/cq5dam.thumbnail.319.319.png" alt="Product Image" /><br /><span class="title mobileArrow">Tooling &amp; Fixturing</span></a>
+<ul class="submenu1">
+<li class="level2 categorylink"><a href="/content/haascnc/en/productivity/tooling-and-fixturing.html" class="level2-category-link"><span class="level2-category-title mobileArrow">Tooling &amp; Fixturing</span></a></li>
+</ul>
+</li>
+<li class="level1" id="workholding"><a href="/content/haascnc/en/productivity/workholding.html" class="level1-title-link"><img src="/content/dam/haascnc/productivity/navigation-thumbnails/LiveToolPart_01.jpg/_jcr_content/renditions/cq5dam.thumbnail.319.319.png" alt="Product Image" /><br /><span class="title mobileArrow">Workholding</span></a>
+<ul class="submenu1">
+<li class="level2 categorylink"><a href="/content/haascnc/en/productivity/workholding.html" class="level2-category-link"><span class="level2-category-title mobileArrow">Workholding</span></a></li>
+</ul>
+</li>
+<li class="level1" id="5-Axis-Simplified"><a href="/content/haascnc/en/productivity/5-Axis-Simplified.html" class="level1-title-link"><img src="/content/dam/haascnc/productivity/navigation-thumbnails/JobShopNavigation.jpg/_jcr_content/renditions/cq5dam.thumbnail.319.319.png" alt="Product Image" /><br /><span class="title mobileArrow">5-Axis Solutions</span></a>
+<ul class="submenu1">
+<li class="level2 categorylink"><a href="/content/haascnc/en/productivity/5-Axis-Simplified.html" class="level2-category-link"><span class="level2-category-title mobileArrow">5-Axis Solutions</span></a></li>
+<li class="level2" id="5-Easy-Steps-to-5-Axis"><a href="/content/haascnc/en/productivity/5-Axis-Simplified/5-Easy-Steps-to-5-Axis.html" class="level2-title-link"><span class="level2-title mobileArrow">5 Easy Steps to 5-Axis</span></a></li>
+</ul>
+</li>
+<li class="level1" id="Automation"><a href="/content/haascnc/en/productivity/Automation.html" class="level1-title-link"><img src="/content/dam/haascnc/productivity/navigation-thumbnails/automation_thumb.jpg/_jcr_content/renditions/cq5dam.thumbnail.319.319.png" alt="Product Image" /><br /><span class="title mobileArrow">Automation</span></a>
+<ul class="submenu1">
+<li class="level2 categorylink"><a href="/content/haascnc/en/productivity/Automation.html" class="level2-category-link"><span class="level2-category-title mobileArrow">Automation</span></a></li>
+</ul>
+</li>
+</div>
+<div class="mainsub-rt level1">
+<div class="m1">
+<span class="title quick-links mobileArrow">QUICK LINKS</span>
+<a id="menulink" class='special-series-btn hidden' href="#">
+<span class="desktop-menu button compare">Special Series&nbsp;<span class="fa fa-angle-right"></span></span>
+<span class="mobile-menu  mobileArrow">Special Series&nbsp;</span>
+</a>
+<a id="menulink" href="/content/haascnc/en/shop/category/pricelist.html">
+<span class="desktop-menu button compare btn-red-on-white">PRICE LIST<span class="fa fa-angle-right"></span></span>
+<span class="mobile-menu mobileArrow">PRICE LIST</span>
+</a>
+<a id="menulink" href="/content/haascnc/en/build-and-price.html">
+<span class="desktop-menu button baq btn-white-on-red">BUILD &amp; PRICE<span class="fa fa-angle-right"></span></span>
+<span class="mobile-menu mobileArrow">BUILD &amp; PRICE</span>
+</a>
+<a id="menulink" href="/content/haascnc/en/Community/Events/new.html">
+<span class="desktop-menu button compare btn-red-on-white">WHAT’S NEW<span class="fa fa-angle-right"></span></span>
+<span class="mobile-menu mobileArrow">WHAT’S NEW</span>
+</a>
+</div>
+<div class="s1">
+<span class="title mobileArrow">SHOPPING TOOLS</span>
+<ul class="linklistx">
+<li><a class="nav_linklist" href="/content/haascnc/en/build-and-price.html">Build &amp; Price a Haas</a>
+</li>
+<li><a class="nav_linklist" href="/content/haascnc/en/shop/category/pricelist.html">Price List</a>
+</li>
+<li><a class="nav_linklist" href="/content/haascnc/en/shop/category/inventory.html">Available Inventory</a>
+</li>
+<li><a class="nav_linklist" href="/content/haascnc/en/owners/Financing.html">CNCA Financing</a>
+</li>
+<li><a class="nav_linklist"></a>
+</li>
+</ul>
+</div>
+<div class="s1"><span class="title mobileArrow">WANT TO TALK TO SOMEONE?</span><p>A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.</p><a href="/content/haascnc/en/about/contact.html">CONTACT YOUR DISTRIBUTOR &gt;</a></div>
+</div>
+</div>
+</ul> 
+</li>
+<li class="level01" id="whyhaas">
+<a class="menu-link" href="/content/haascnc/en/whyhaas.html">
+<span class="toplevel mobileArrow">Why Haas</span>
+</a>
+<ul class="submenu01">
+<div class="mainsub">
+<div class='mainsub-lt'>
+<div class="whyhaas-nav-container">
+<span class='title'>Discover the Haas Difference</span>
+<div class='whyhaas-nav-links'>
+<a href="/content/haascnc/en/Community/Events/whyhaas.html">
+<img class="whyhaas-nav-img" src="/content/dam/haascnc/assets/campaigns/whyhaas/WhyHaas_Navbar_WhyHaas.jpg" />
+<span class="whyhaas-nav-title mobileArrow">Why Haas</span>
+</a>
+<a href="/content/haascnc/en/myhaas/MyHaas_Introduction.html">
+<img class="whyhaas-nav-img" src="/content/dam/haascnc/assets/campaigns/myhaas/MyHaas_Navbar_WhyHaas.jpg" />
+<span class="whyhaas-nav-title mobileArrow">MyHaas</span>
+</a>
+<a href="/content/haascnc/en/htec.html">
+<img class="whyhaas-nav-img" src="/content/dam/haascnc/community/htec/HTEC_Navbar_WhyHaas.png" />
+<span class="whyhaas-nav-title mobileArrow">HTEC Network</span>
+</a>
+<a href="/content/haascnc/en/Community/Events/industry4.html">
+<img class="whyhaas-nav-img" src="/content/dam/haascnc/assets/campaigns/industry_4-0/Industry4.0__Navbar_WhyHaas.jpg" />
+<span class="whyhaas-nav-title mobileArrow">Industry 4.0</span>
+</a>
+<a href="/content/haascnc/en/myhaas/haas_certification.html">
+<img class="whyhaas-nav-img" src="/content/dam/haascnc/assets/campaigns/haas_certifications/HaasCertification_Navbar_WhyHaas.jpg" />
+<span class="whyhaas-nav-title mobileArrow">Haas Certification</span>
+</a>
+<a href="/content/haascnc/en/Community/customers/Testimonials/Customer_Success_Stories.html">
+<img class="whyhaas-nav-img" src="/content/dam/haascnc/productivity/navigation-thumbnails/CustomerTestimonials_Navbar.jpg" />
+<span class="whyhaas-nav-title mobileArrow">Customer Testimonials</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</ul>
+</li>
+<li class="level01" id="service">
+<a class="menu-link" href="/content/haascnc/en/service.html">
+<span class="toplevel mobileArrow">Service</span>
+</a>
+<ul class="submenu01">
+<div class="mainsub">
+<div class="mainsub-lt">
+<li class="level1 alarm-quick-search-wrapper">
+<span class="title">SEARCH ALARM CODES</span>
+<div class='service-tmp-redirect-btn'>
+<a><span class='button'>Search</span></a>
+</div>
+
+</li>
+</div>
+<div class="mainsub-rt level1">
+
+<li class="level1 troubleshooting-how-to">
+<span class="title mobileArrow">Troubleshooting Guides and How-To Procedures</span>
+<ul class="submenu1">
+<li class="level2" id="troubleshooting"><a href="/content/haascnc/en/service/troubleshooting-and-how-to/troubleshooting.html"><img src="/content/dam/haascnc/service/troubleshooting_guide.jpg" alt="Product Image" /><br /><span class="service-title mobileArrow">Troubleshooting Guides</span></a>
+</li>
+<li class="level2" id="how-to"><a href="/content/haascnc/en/service/troubleshooting-and-how-to/how-to.html"><img src="/content/dam/haascnc/service/how-to-guide.jpg" alt="Product Image" /><br /><span class="service-title mobileArrow">How To Procedures</span></a>
+</li>
+</ul>
+</li>
+<li class="level1 manuals">
+
+<span class="title mobileArrow">Manuals</span>
+<ul class="submenu1">
+<li class="level2" id="manuals"><a href="/content/haascnc/en/service/manuals.html"><img src="/content/dam/haascnc/service/Lathe-Operator-Manual@2x.jpg/_jcr_content/renditions/cq5dam.thumbnail.319.319.png" alt="Product Image" /><br /><span class="service-title mobileArrow">Operator Manuals</span></a></li>
+<li class="level2" id="manuals"><a href="/service/search-results.manual.html#keywords%3DInteractive%20Service%20Manual%26contentTypes%3DInstruction%20Manual"><img src="/content/dam/haascnc/service/MIll-Operator-Manual@2x.jpg/_jcr_content/renditions/cq5dam.thumbnail.319.319.png" alt="Product Image" /><br /><span class="service-title mobileArrow">Interactive Service Manuals</span></a></li>
+</ul>
+</li>
+</div>
+</div>
+</ul> 
+</li>
+<li class="level01" id="video">
+<a class="menu-link" href="/content/haascnc/en/video.html">
+<span class="toplevel mobileArrow">Videos</span>
+</a>
+</li>
+<li class="level01" id="myhaas">
+<a class="menu-link" href="/content/haascnc/en/myhaas.html">
+<span class="toplevel mobileArrow">MyHaas – One Place for Everything </span>
+</a>
+<ul class="submenu01">
+<div class="mainsub">
+<div class="mainsub-lt">
+<span class="menu intro ownertitle"></span>
+<li class="level1" id="compare-quotes"><a href="/content/haascnc/en/myhaas/compare-quotes.html" class="level1-title-link"><img /><br /><span class="title mobileArrow">Compare Quotes</span></a>
+<ul class="submenu1">
+<li class="level2 categorylink"><a href="/content/haascnc/en/myhaas/compare-quotes.html" class="level2-category-link"><span class="level2-category-title mobileArrow">Compare Quotes</span></a></li>
+</ul>
+</li>
+<li class="level1" id="MyHaas_Introduction"><a href="/content/haascnc/en/myhaas/MyHaas_Introduction.html" class="level1-title-link"><img /><br /><span class="title mobileArrow">About MyHaas</span></a>
+<ul class="submenu1">
+<li class="level2 categorylink"><a href="/content/haascnc/en/myhaas/MyHaas_Introduction.html" class="level2-category-link"><span class="level2-category-title mobileArrow">About MyHaas</span></a></li>
+</ul>
+</li>
+<li class="level1" id="haas_certification_ROW"><a href="/content/haascnc/en/myhaas/haas_certification_ROW.html" class="level1-title-link"><img /><br /><span class="title mobileArrow">Haas CNC Certification Program</span></a>
+<ul class="submenu1">
+<li class="level2 categorylink"><a href="/content/haascnc/en/myhaas/haas_certification_ROW.html" class="level2-category-link"><span class="level2-category-title mobileArrow">Haas CNC Certification Program</span></a></li>
+</ul>
+</li>
+<li class="level1" id="haas_certification"><a href="/content/haascnc/en/myhaas/haas_certification.html" class="level1-title-link"><img /><br /><span class="title mobileArrow">Haas CNC Certification Program-Redirect</span></a>
+<ul class="submenu1">
+<li class="level2 categorylink"><a href="/content/haascnc/en/myhaas/haas_certification.html" class="level2-category-link"><span class="level2-category-title mobileArrow">Haas CNC Certification Program-Redirect</span></a></li>
+</ul>
+</li>
+<li class="level1" id="haas_certification_US"><a href="/content/haascnc/en/myhaas/haas_certification_US.html" class="level1-title-link"><img /><br /><span class="title mobileArrow">Haas CNC Certification Program</span></a>
+<ul class="submenu1">
+<li class="level2 categorylink"><a href="/content/haascnc/en/myhaas/haas_certification_US.html" class="level2-category-link"><span class="level2-category-title mobileArrow">Haas CNC Certification Program</span></a></li>
+</ul>
+</li>
+<li class="level1" id="Haas_Learning_Resources"><a href="/content/haascnc/en/myhaas/Haas_Learning_Resources.html" class="level1-title-link"><img /><br /><span class="title mobileArrow">Haas Learning Resources</span></a>
+<ul class="submenu1">
+<li class="level2 categorylink"><a href="/content/haascnc/en/myhaas/Haas_Learning_Resources.html" class="level2-category-link"><span class="level2-category-title mobileArrow">Haas Learning Resources</span></a></li>
+</ul>
+</li>
+<li class="level1" id="Haas_Learning_Resources_no_cert"><a href="/content/haascnc/en/myhaas/Haas_Learning_Resources_no_cert.html" class="level1-title-link"><img /><br /><span class="title mobileArrow">Haas Global Learning Resources</span></a>
+<ul class="submenu1">
+<li class="level2 categorylink"><a href="/content/haascnc/en/myhaas/Haas_Learning_Resources_no_cert.html" class="level2-category-link"><span class="level2-category-title mobileArrow">Haas Global Learning Resources</span></a></li>
+</ul>
+</li>
+</div>
+<div class="mainsub-rt level1">
+<div class="m1">
+<span class="title quick-links mobileArrow">QUICK LINKS</span>
+<a id="menulink" class='special-series-btn hidden' href="#">
+<span class="desktop-menu button compare">Special Series&nbsp;<span class="fa fa-angle-right"></span></span>
+<span class="mobile-menu  mobileArrow">Special Series&nbsp;</span>
+</a>
+<a id="menulink" href="/content/haascnc/en/shop/category/pricelist.html">
+<span class="desktop-menu button compare btn-red-on-white">PRICE LIST<span class="fa fa-angle-right"></span></span>
+<span class="mobile-menu mobileArrow">PRICE LIST</span>
+</a>
+<a id="menulink" href="/content/haascnc/en/build-and-price.html">
+<span class="desktop-menu button baq btn-white-on-red">BUILD &amp; PRICE<span class="fa fa-angle-right"></span></span>
+<span class="mobile-menu mobileArrow">BUILD &amp; PRICE</span>
+</a>
+<a id="menulink" href="/content/haascnc/en/Community/Events/new.html">
+<span class="desktop-menu button compare btn-red-on-white">WHAT’S NEW<span class="fa fa-angle-right"></span></span>
+<span class="mobile-menu mobileArrow">WHAT’S NEW</span>
+</a>
+</div>
+<div class="s1">
+<span class="title mobileArrow">SHOPPING TOOLS</span>
+<ul class="linklistx">
+<li><a class="nav_linklist" href="/content/haascnc/en/build-and-price.html">Build &amp; Price a Haas</a>
+</li>
+<li><a class="nav_linklist" href="/content/haascnc/en/shop/category/pricelist.html">Price List</a>
+</li>
+<li><a class="nav_linklist" href="/content/haascnc/en/shop/category/inventory.html">Available Inventory</a>
+</li>
+<li><a class="nav_linklist" href="/content/haascnc/en/owners/Financing.html">CNCA Financing</a>
+</li>
+<li><a class="nav_linklist"></a>
+</li>
+</ul>
+</div>
+<div class="s1"><span class="title mobileArrow">WANT TO TALK TO SOMEONE?</span><p>A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.</p><a href="/content/haascnc/en/about/contact.html">CONTACT YOUR DISTRIBUTOR &gt;</a></div>
+</div>
+</div>
+</ul> 
+</li>
+<li class="level01" id="haas-tooling">
+<a class="menu-link" href="/content/haascnc/en/haas-tooling.html">
+<span class="toplevel mobileArrow">Haas Tooling</span>
+</a>
+<ul class="submenu01">
+<div class="mainsub">
+<div class='mainsub-lt'>
+<div class="whyhaas-nav-container">
+<div class="ecomm-nav-container">
+<div class='ecomm-search-container' data-component='EcommerceSearch' data-result-count="10" data-term-proximity="5">
+<div class="ecomm-search-bg"></div>
+<div class='ecomm-searchbar'>
+<div class="cat-dropdown">
+<button click="void(0)" class="cat-dropbtn">All Haas Tooling Products
+<i class="fa fa-caret-down"></i>
+</button>
+<div class="cat-dropdown-content">
+<div class="cat-row">
+<div class="cat-column">
+<a href="/content/haascnc/en/haas-tooling/mill_toolholding.html"><h3><i class="fa fa-caret-right"></i> Mill Toolholding</h3></a>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/mill_toolholding/end_mill_holders.html"><i class="fa fa-square" aria-hidden="true"></i> End Mill Holders</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/mill_toolholding/shell_mill_holders.html"><i class="fa fa-square" aria-hidden="true"></i> Shell Mill Holders</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/mill_toolholding/shrink_fit_holders.html"><i class="fa fa-square" aria-hidden="true"></i> Shrink Fit Holders</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/mill_toolholding/er_collet_chucks.html"><i class="fa fa-square" aria-hidden="true"></i> ER Collet Chucks</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/mill_toolholding/milling_chucks_colle.html"><i class="fa fa-square" aria-hidden="true"></i> Milling Chucks, Collets &amp; Kits</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/mill_toolholding/drill_chucks.html"><i class="fa fa-square" aria-hidden="true"></i> Drill Chucks</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/mill_toolholding/pull_studs.html"><i class="fa fa-square" aria-hidden="true"></i> Pull Studs</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/mill_toolholding/mill_toolholding_kit.html"><i class="fa fa-square" aria-hidden="true"></i> Mill Toolholding Kits</a>
+</div>
+</div>
+<div class="cat-column">
+<a href="/content/haascnc/en/haas-tooling/mill_workholding.html"><h3><i class="fa fa-caret-right"></i> Mill Workholding</h3></a>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/mill_workholding/vises.html"><i class="fa fa-square" aria-hidden="true"></i> Vises</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/mill_workholding/mill_vise_jaws.html"><i class="fa fa-square" aria-hidden="true"></i> Mill Vise Jaws</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/mill_workholding/workholding_accessor.html"><i class="fa fa-square" aria-hidden="true"></i> Workholding Accessories</a>
+</div>
+</div>
+<div class="cat-column">
+<a href="/content/haascnc/en/haas-tooling/milling.html"><h3><i class="fa fa-caret-right"></i> Milling</h3></a>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/milling/shell_mill_bodies.html"><i class="fa fa-square" aria-hidden="true"></i> Shell Mill Bodies</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/milling/milling_inserts.html"><i class="fa fa-square" aria-hidden="true"></i> Milling Inserts</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/milling/end_mills.html"><i class="fa fa-square" aria-hidden="true"></i> End Mills</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/milling/end_mill_kits.html"><i class="fa fa-square" aria-hidden="true"></i> End Mill Kits</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/milling/chamfer_mills_insert.html"><i class="fa fa-square" aria-hidden="true"></i> Chamfer Mills &amp; Inserts</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/milling/indexable_end_mill_b.html"><i class="fa fa-square" aria-hidden="true"></i> Indexable End Mill Bodies</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/milling/ball_end_mills.html"><i class="fa fa-square" aria-hidden="true"></i> Ball End Mills</a>
+</div>
+</div>
+<div class="cat-column">
+<a href="/content/haascnc/en/haas-tooling/hsk_toolholders.html"><h3><i class="fa fa-caret-right"></i> HSK Toolholders</h3></a>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/hsk_toolholders/er_collet_chucks.html"><i class="fa fa-square" aria-hidden="true"></i> HSK ER Collet Chucks</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/hsk_toolholders/shell_mill_holders.html"><i class="fa fa-square" aria-hidden="true"></i> HSK Shell Mill Holders</a>
+</div>
+</div>
+<div class="cat-column">
+<a href="/content/haascnc/en/haas-tooling/lathe_tooling.html"><h3><i class="fa fa-caret-right"></i> Lathe Tooling</h3></a>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/lathe_tooling/cut-off_tooling.html"><i class="fa fa-square" aria-hidden="true"></i> Cut-Off Tooling</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/lathe_tooling/cut-off_tooling_kits.html"><i class="fa fa-square" aria-hidden="true"></i> Cut-Off Tooling Kits</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/lathe_tooling/turning_inserts.html"><i class="fa fa-square" aria-hidden="true"></i> Turning Inserts</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/lathe_tooling/grooving_tools.html"><i class="fa fa-square" aria-hidden="true"></i> Grooving Tools</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/lathe_tooling/small_id_grooving_th.html"><i class="fa fa-square" aria-hidden="true"></i> Small ID Grooving &amp; Threading Tools</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/lathe_tooling/threading_inserts.html"><i class="fa fa-square" aria-hidden="true"></i> Threading Inserts</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/lathe_tooling/threading_toolholding.html"><i class="fa fa-square" aria-hidden="true"></i> Threading Toolholding</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/lathe_tooling/id_toolholding.html"><i class="fa fa-square" aria-hidden="true"></i> ID Toolholding</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/lathe_tooling/od_toolholding.html"><i class="fa fa-square" aria-hidden="true"></i> OD Toolholding</a>
+</div>
+</div>
+<div class="cat-column">
+<a href="/content/haascnc/en/haas-tooling/lathe_workholding.html"><h3><i class="fa fa-caret-right"></i> Lathe Workholding</h3></a>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/lathe_workholding/live_centers.html"><i class="fa fa-square" aria-hidden="true"></i> Live Centers</a>
+</div>
+</div>
+<div class="cat-column">
+<a href="/content/haascnc/en/haas-tooling/er_collet.html"><h3><i class="fa fa-caret-right"></i> ER Collet</h3></a>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/er_collet/er_collet_kits.html"><i class="fa fa-square" aria-hidden="true"></i> ER Collets &amp; Accessories</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/er_collet/er_collet_kits_only.html"><i class="fa fa-square" aria-hidden="true"></i> ER Collet Kits</a>
+</div>
+</div>
+<div class="cat-column">
+<a href="/content/haascnc/en/haas-tooling/holemaking.html"><h3><i class="fa fa-caret-right"></i> Holemaking</h3></a>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/holemaking/carbide_drills.html"><i class="fa fa-square" aria-hidden="true"></i> Carbide Drills</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/holemaking/indexable_drill_bodi.html"><i class="fa fa-square" aria-hidden="true"></i> Indexable Drill Bodies</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/holemaking/indexable_drill_inse.html"><i class="fa fa-square" aria-hidden="true"></i> Indexable Drill Inserts</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/holemaking/indexable_drilling_k.html"><i class="fa fa-square" aria-hidden="true"></i> Indexable Drilling Kits</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/holemaking/modular_drill_bodies.html"><i class="fa fa-square" aria-hidden="true"></i> Modular Drill Bodies</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/holemaking/modular_drill_heads.html"><i class="fa fa-square" aria-hidden="true"></i> Modular Drill Heads</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/holemaking/cobalt_drills_sets.html"><i class="fa fa-square" aria-hidden="true"></i> Cobalt Drills &amp; Sets</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/holemaking/center_drills.html"><i class="fa fa-square" aria-hidden="true"></i> Center Drills</a>
+</div>
+</div>
+<div class="cat-column">
+<a href="/content/haascnc/en/haas-tooling/threading.html"><h3><i class="fa fa-caret-right"></i> Threading</h3></a>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/threading/taps.html"><i class="fa fa-square" aria-hidden="true"></i> Taps</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/threading/threading_inserts.html"><i class="fa fa-square" aria-hidden="true"></i> Threading Inserts</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/threading/thread_mills.html"><i class="fa fa-square" aria-hidden="true"></i> Thread Mills</a>
+</div>
+</div>
+<div class="cat-column">
+<a href="/content/haascnc/en/haas-tooling/tool_management.html"><h3><i class="fa fa-caret-right"></i> Tool Management</h3></a>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/tool_management/tool_presetting_mach.html"><i class="fa fa-square" aria-hidden="true"></i> Tool Presetting Machines</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/tool_management/shrink_fit_machines.html"><i class="fa fa-square" aria-hidden="true"></i> Shrink Fit Machines</a>
+</div>
+</div>
+<div class="cat-column">
+<a href="/content/haascnc/en/haas-tooling/tooling_accessories.html"><h3><i class="fa fa-caret-right"></i> Tooling Accessories</h3></a>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/tooling_accessories/spindle_taper_cleane.html"><i class="fa fa-square" aria-hidden="true"></i> Spindle Taper Cleaner</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/tooling_accessories/spindle_test_bars.html"><i class="fa fa-square" aria-hidden="true"></i> Spindle Test Bars</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/tooling_accessories/haas_shop_lift.html"><i class="fa fa-square" aria-hidden="true"></i> Haas Shop Lift</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/tooling_accessories/toolholder_fixtures.html"><i class="fa fa-square" aria-hidden="true"></i> Toolholder Fixtures</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/tooling_accessories/spare_parts.html"><i class="fa fa-square" aria-hidden="true"></i> </a>
+</div>
+ </div>
+<div class="cat-column">
+<a href="/content/haascnc/en/haas-tooling/tool_kits.html"><h3><i class="fa fa-caret-right"></i> Tool Kits</h3></a>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/tool_kits/end_mill_kits.html"><i class="fa fa-square" aria-hidden="true"></i> End Mill Kits</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/tool_kits/indexable_drilling_k.html"><i class="fa fa-square" aria-hidden="true"></i> Indexable Drilling Kits</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/tool_kits/indexable_milling_ki.html"><i class="fa fa-square" aria-hidden="true"></i> Indexable Milling Kits</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/tool_kits/mill_toolholding_kit.html"><i class="fa fa-square" aria-hidden="true"></i> Mill Toolholding Kits</a>
+</div>
+</div>
+<div class="cat-column">
+<a href="/content/haascnc/en/haas-tooling/apparel_accessories.html"><h3><i class="fa fa-caret-right"></i> Apparel &amp; Accessories</h3></a>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/apparel_accessories/accessories.html"><i class="fa fa-square" aria-hidden="true"></i> Accessories</a>
+</div>
+<div class="mob-subcats">
+<a href="/content/haascnc/en/haas-tooling/apparel_accessories/apparel.html"><i class="fa fa-square" aria-hidden="true"></i> Apparel</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="search-bar-suggestions">
+<input id='ecomm-search-input' type='text' autocomplete="off" placeholder="Search Haas Tooling" /><button class="ecomm-btn" id='ecomm-search-btn' aria-label="Search"><span class="ecomm-search-btn-text">Search</span><span class="fa fa-search fa-currency ecomm-search-btn-icon"></span></button>
+<div id="ecomm-search-suggestions">
+<ul class="suggestions" id="search-suggestions">
+</ul>
+</div>
+</div>
+</div>
+<div id="ecomm-search-results"></div>
+<div id="part-list-item-template">
+<a href="">
+<div class='list-item-img-container'>
+<img />
+</div>
+<div class='list-item-text'>
+<h1></h1>
+<h3>Part # </h3>
+<div class="part-pricing">
+<p><span class='price-span'></span></p>
+<div id="part-promo-price"></div>
+</div>
+</div>
+</a>
+<div class='check-out-container'>
+<div class='action-container'>
+<select id='quantity-select'></select>
+<button id="add-to-cart-btn">ADD TO CART</button>
+</div>
+</div>
+</div>
+<div id="part-list-item-mobile-template">
+<a href="">
+<h1></h1>
+<h3>Part # </h3>
+<div class='list-item-img-container'>
+<img />
+</div>
+<div class='list-item-text'>
+<div class="part-pricing">
+<p><span class='price-span'></span></p>
+<div id="part-promo-price"></div>
+</div>
+</div>
+</a>
+<div class='check-out-container'>
+<div class='action-container'>
+<select id='quantity-select'></select>
+<button id="add-to-cart-btn">ADD TO CART</button>
+</div>
+</div>
+</div>
+</div>
+<div class="ecomm-nav-links">
+<a href="/content/haascnc/en/haas-tooling/mill_toolholding.html">
+<img class="ecomm-nav-img" src="/content/dam/haascnc/assets/haas-tooling/sections/mill_toolholding.jpg" />
+<span class="ecomm-nav-title mobileArrow">Mill Toolholding</span>
+</a>
+<a href="/content/haascnc/en/haas-tooling/mill_workholding.html">
+<img class="ecomm-nav-img" src="/content/dam/haascnc/ecommerce/sections/vises.jpg" />
+<span class="ecomm-nav-title mobileArrow">Mill Workholding</span>
+</a>
+<a href="/content/haascnc/en/haas-tooling/milling.html">
+<img class="ecomm-nav-img" src="/content/dam/haascnc/ecommerce/sections/milling.jpg" />
+<span class="ecomm-nav-title mobileArrow">Milling</span>
+</a>
+<a href="/content/haascnc/en/haas-tooling/hsk_toolholders.html">
+<img class="ecomm-nav-img" src="/content/dam/haascnc/ecommerce/sections/HSK_Toolholders.jpg" />
+<span class="ecomm-nav-title mobileArrow">HSK Toolholders</span>
+</a>
+<a href="/content/haascnc/en/haas-tooling/lathe_tooling.html">
+<img class="ecomm-nav-img" src="/content/dam/haascnc/ecommerce/sections/lathe_tooling.jpg" />
+<span class="ecomm-nav-title mobileArrow">Lathe Tooling</span>
+</a>
+<a href="/content/haascnc/en/haas-tooling/lathe_workholding.html">
+<img class="ecomm-nav-img" src="/content/dam/haascnc/ecommerce/sections/Lathe_Workholding.jpg" />
+<span class="ecomm-nav-title mobileArrow">Lathe Workholding</span>
+</a>
+<a href="/content/haascnc/en/haas-tooling/er_collet.html">
+<img class="ecomm-nav-img" src="/content/dam/haascnc/ecommerce/sections/ER_Collet.jpg" />
+<span class="ecomm-nav-title mobileArrow">ER Collet</span>
+</a>
+<a href="/content/haascnc/en/haas-tooling/holemaking.html">
+<img class="ecomm-nav-img" src="/content/dam/haascnc/assets/haas-tooling/sections/holemaking.jpg" />
+<span class="ecomm-nav-title mobileArrow">Holemaking</span>
+</a>
+<a href="/content/haascnc/en/haas-tooling/threading.html">
+<img class="ecomm-nav-img" src="/content/dam/haascnc/ecommerce/sections/threading.jpg" />
+<span class="ecomm-nav-title mobileArrow">Threading</span>
+</a>
+<a href="/content/haascnc/en/haas-tooling/tool_management.html">
+<img class="ecomm-nav-img" src="/content/dam/haascnc/ecommerce/sections/tool_management.jpg" />
+<span class="ecomm-nav-title mobileArrow">Tool Management</span>
+</a>
+<a href="/content/haascnc/en/haas-tooling/tooling_accessories.html">
+<img class="ecomm-nav-img" src="/content/dam/haascnc/ecommerce/sections/tooling_accessories.jpg" />
+<span class="ecomm-nav-title mobileArrow">Tooling Accessories</span>
+</a>
+<a href="/content/haascnc/en/haas-tooling/tool_kits.html">
+<img class="ecomm-nav-img" src="/content/dam/haascnc/assets/haas-tooling/sections/tool_kits.jpg" />
+<span class="ecomm-nav-title mobileArrow">Tool Kits</span>
+</a>
+<a href="/content/haascnc/en/haas-tooling/apparel_accessories.html">
+<img class="ecomm-nav-img" src="/content/dam/haascnc/ecommerce/sections/apparel_accessories.jpg" />
+<span class="ecomm-nav-title mobileArrow">Apparel &amp; Accessories</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+</ul>
+</li>
+<div class="mobile-contact"><h1>Contact Us</h1><a href="/About/contactus.html"><span class="fa fa-map-marker"></span><span class="fa fa-envelope-o"></span><span class="fa fa-mobile"></span></a></div>
+<div class="clear"></div>
+</ul>
+</div>
+<script type="text/template" id="pageResultTemplate">
+    <li class="bcs-result">
+        <h2><a target="_blank" href="{{=page_link}}">{{=page_title}}</a></h2>
+        <div class="bcs-caption">
+          <div class="bcs-caption-text">
+             <cite>{{=page_link}}</cite>
+             <p>{{=page_caption}}</p>
+          </div>
+        </div>
+    </li>
+</script>
+<script type="text/template" id="imageResultTemplate">
+    <li class="bcs-image-result">
+        <a target="_blank" href="{{=pageLink}}">
+            <img src="{{=thumbSrc}}" height="{{=thumbHeight}}" width="{{=thumbWidth}}">
+        </a>
+    </li>
+</script>
+<script type="text/template" id="pageResultNoResults" data-text="No search results found for">
+    <div class='bcs-noResults'>
+        <h2>{{=result_text}} "{{=search_term}}"</h2>
+    </div>
+</script>
+</div>
+</div>
+<div class="topsub-rt">
+<div class="topsub-rt-icon-links">
+<div id='ecommerce-nav' class='disabled'>
+
+<a>
+<span class="fa fa-shopping-cart"></span>
+<span class="fa fa-circle"></span>
+<span class="icon-text" id="cart-quantity"></span>
+<span class="icon-text">My Cart</span>
+</a>
+</div>
+<span class="myHaas">
+<span onclick="var _gaq = _gaq || []; _gaq.push(['_trackEvent', 'PreMenu', 'MyHaas'])" class="my-haas">
+<span class="fa fa-user"></span>
+<span class="icon-text logged-out">MyHaas</span>
+<span class="icon-text logged-in">Welcome,<br />
+<span class="auth-username"></span>!
+</span>
+<i class="fa fa-angle fa-angle-down"></i>
+<i class="fa fa-angle fa-angle-up"></i>
+<a class="myHaas-signin-link logged-out" id="myhaas-link" href="/content/haascnc/en/myhaas.html#/login"></a>
+<span class="myHaasDropdown">
+<span class="logged-out">
+<span class="logged-in-top-menu">
+<a href="/content/haascnc/en/haas-tooling.html">Haas Tooling</a>
+<a class="indent" href="/ecommpartsstorefront/ecommparts/en/guest">Guest Order History</a>
+<a href="/content/haascnc/en/myhaas.html#/login">MyHaas/HaasConnect</a>
+</span>
+<span class="logged-in-bottom-menu">
+<a href="/ecommpartsstorefront/ecommparts/en/login?referrer=aem">Sign In</a>
+<a href="/content/haascnc/en/myhaas.html#/signup?signupFlag=1">Register</a>
+</span>
+</span>
+<span id="logged-in-ecomm" class="logged-in">
+<span class="logged-in-top-menu">
+<a href="/content/haascnc/en/haas-tooling.html">Haas Tooling</a>
+<a class='indent' href="/ecommpartsstorefront/ecommparts/en/my-account/update-profile">My Account</a>
+<a class='indent' href="/ecommpartsstorefront/ecommparts/en/my-account/orders">Order History</a>
+<a class='indent' href="/ecommpartsstorefront/ecommparts/en/my-account/returns">Return History</a>
+<a href="/content/haascnc/en/myhaas.html#/mymachines">MyHaas/HaasConnect</a>
+</span>
+<span class="logged-in-bottom-menu">
+<a id="myhaas-logout-ecomm" href="/content/haascnc/en/myhaas.html#/logout">Sign Out</a>
+</span>
+</span>
+<span id="logged-in-base" class="logged-in">
+<span class="logged-in-top-menu">
+<span class="mobile-welcome-text">Welcome, <span class="auth-username"></span></span>
+<a href="/content/haascnc/en/myhaas.html#/mymachines">My Machines</a>
+<a href="/content/haascnc/en/myhaas.html#/latest-activity">Latest Activity</a>
+<a href="/content/haascnc/en/myhaas.html#/myquotes" id="my-quotes-link">My Quotes</a>
+</span>
+<span class="logged-in-bottom-menu">
+<a href="/content/haascnc/en/myhaas.html#/account-settings">My Account</a>
+<a href="/content/haascnc/en/myhaas.html#/user-permissions">My Users</a>
+<a id="myhaas-logout-base" href="/content/haascnc/en/myhaas.html#/logout">Sign Out</a>
+</span>
+</span>
+</span>
+</span>
+</span>
+<div id='findADealer-nav'>
+<a href="/content/haascnc/en/about/contact.html" onclick="_gaq.push(['_trackEvent', 'PreMenu', 'Talk to a Distributor'])" class="find-a-dealer">
+<span class="fa fa-map-marker"></span>
+<span class="icon-text">Find A Dealer</span>
+</a>
+</div>
+<div class="language">
+<span class="fa fa-globe"></span>
+<ol class="dropdownStart">
+<li class="dropdownTitle">
+<span class="icon-text">Select Language</span>
+<span class="fa fa-sort"></span>
+</li>
+<ol class="dropdownHidden">
+<li class="active dropdownContent"><a href="/content/haascnc/en/service/troubleshooting-and-how-to/troubleshooting/next-generation-control---power-on-off-circuit--main-transformer.html" class="language-link">English</a></li>
+<li class=" dropdownContent"><a href="/content/haascnc/de/service/troubleshooting-and-how-to/troubleshooting/next-generation-control---power-on-off-circuit--main-transformer.html" class="language-link">Deutsch</a></li>
+<li class=" dropdownContent"><a href="/content/haascnc/es/service/troubleshooting-and-how-to/troubleshooting/next-generation-control---power-on-off-circuit--main-transformer.html" class="language-link">Español</a></li>
+<li class=" dropdownContent"><a href="/content/haascnc/fr/service/troubleshooting-and-how-to/troubleshooting/next-generation-control---power-on-off-circuit--main-transformer.html" class="language-link">Français</a></li>
+<li class=" dropdownContent"><a href="/content/haascnc/it/service/troubleshooting-and-how-to/troubleshooting/next-generation-control---power-on-off-circuit--main-transformer.html" class="language-link">Italiano</a></li>
+<li class=" dropdownContent"><a href="/content/haascnc/pt/service/troubleshooting-and-how-to/troubleshooting/next-generation-control---power-on-off-circuit--main-transformer.html" class="language-link">Português</a></li>
+<li class=" dropdownContent"><a href="/content/haascnc/cs/service/troubleshooting-and-how-to/troubleshooting/next-generation-control---power-on-off-circuit--main-transformer.html" class="language-link">Česky</a></li>
+<li class=" dropdownContent"><a href="/content/haascnc/da/service/troubleshooting-and-how-to/troubleshooting/next-generation-control---power-on-off-circuit--main-transformer.html" class="language-link">Dansk</a></li>
+<li class=" dropdownContent"><a href="/content/haascnc/nl/service/troubleshooting-and-how-to/troubleshooting/next-generation-control---power-on-off-circuit--main-transformer.html" class="language-link">Nederlands</a></li>
+<li class=" dropdownContent"><a href="/content/haascnc/hu/service/troubleshooting-and-how-to/troubleshooting/next-generation-control---power-on-off-circuit--main-transformer.html" class="language-link">Magyar</a></li>
+<li class=" dropdownContent"><a href="/content/haascnc/pl/service/troubleshooting-and-how-to/troubleshooting/next-generation-control---power-on-off-circuit--main-transformer.html" class="language-link">Polski</a></li>
+<li class=" dropdownContent"><a href="/content/haascnc/sv/service/troubleshooting-and-how-to/troubleshooting/next-generation-control---power-on-off-circuit--main-transformer.html" class="language-link">Svenska</a></li>
+<li class=" dropdownContent"><a href="/content/haascnc/ru/service/troubleshooting-and-how-to/troubleshooting/next-generation-control---power-on-off-circuit--main-transformer.html" class="language-link">Русский</a></li>
+<li class=" dropdownContent"><a href="/content/haascnc/tr/service/troubleshooting-and-how-to/troubleshooting/next-generation-control---power-on-off-circuit--main-transformer.html" class="language-link">Türkçe</a></li>
+<li class=" dropdownContent"><a href="/content/haascnc/zh/service/troubleshooting-and-how-to/troubleshooting/next-generation-control---power-on-off-circuit--main-transformer.html" class="language-link">中文</a></li>
+<li class=" dropdownContent"><a href="/content/haascnc/fi/service/troubleshooting-and-how-to/troubleshooting/next-generation-control---power-on-off-circuit--main-transformer.html" class="language-link">Suomi</a></li>
+<li class=" dropdownContent"><a href="/content/haascnc/nb/service/troubleshooting-and-how-to/troubleshooting/next-generation-control---power-on-off-circuit--main-transformer.html" class="language-link">Norsk</a></li>
+<li class=" dropdownContent"><a href="/content/haascnc/ar/service/troubleshooting-and-how-to/troubleshooting/next-generation-control---power-on-off-circuit--main-transformer.html" class="language-link">الإنجليزية</a></li>
+<li class=" dropdownContent"><a href="/content/haascnc/bg/service/troubleshooting-and-how-to/troubleshooting/next-generation-control---power-on-off-circuit--main-transformer.html" class="language-link">Български</a></li>
+<li class=" dropdownContent"><a href="/content/haascnc/hr/service/troubleshooting-and-how-to/troubleshooting/next-generation-control---power-on-off-circuit--main-transformer.html" class="language-link">Hrvatski</a></li>
+<li class=" dropdownContent"><a href="/content/haascnc/el/service/troubleshooting-and-how-to/troubleshooting/next-generation-control---power-on-off-circuit--main-transformer.html" class="language-link">Ελληνικά</a></li>
+<li class=" dropdownContent"><a href="/content/haascnc/ro/service/troubleshooting-and-how-to/troubleshooting/next-generation-control---power-on-off-circuit--main-transformer.html" class="language-link">Română</a></li>
+<li class=" dropdownContent"><a href="/content/haascnc/sk/service/troubleshooting-and-how-to/troubleshooting/next-generation-control---power-on-off-circuit--main-transformer.html" class="language-link">Slovenský</a></li>
+<li class=" dropdownContent"><a href="/content/haascnc/sl/service/troubleshooting-and-how-to/troubleshooting/next-generation-control---power-on-off-circuit--main-transformer.html" class="language-link">Slovenščina</a></li>
+<li class=" dropdownContent"><a href="/content/haascnc/ko/service/troubleshooting-and-how-to/troubleshooting/next-generation-control---power-on-off-circuit--main-transformer.html" class="language-link">한국어</a></li>
+<li class=" dropdownContent"><a href="/content/haascnc/ja/service/troubleshooting-and-how-to/troubleshooting/next-generation-control---power-on-off-circuit--main-transformer.html" class="language-link">日本語</a></li>
+</ol>
+</ol>
+</div>
+<a href="#" class="nav-item-search">
+<span class="fa fa-search fa-currency"></span>
+<span class="icon-text">Search</span>
+</a>
+
+</div>
+</div>
+
+<script type="text/template" id="findADealerNav-hfoAddress">
+    <h1>Your local dealer</h1>
+    <hr>
+    <div class="hfo-column">
+        <span class="name"><b>{{=hfo.HFOName || hfo.Longname}}</b></span><br>
+        {{ if(hfo.Street) { }}
+        <span class="street">{{=hfo.Street}}</span><br>
+        {{ } }}
+        {{ if(hfo.City) { }}
+        <span class="addr">{{=hfo.City}}, {{=hfo.Region}} {{=hfo.ZipCode}}</span><br>
+        {{ } }}
+        {{ if(hfo.HFOCountry) { }}
+        <span class="country">{{=hfo.HFOCountry}}</span><br>
+        {{ } }}
+
+        {{=telephone(hfo)}}
+
+        {{ _.each(hfo.Fax, function(fax) { }}
+            <span class="fax">Fax: {{=fax}}</span><br>
+        {{ }); }}
+    </div>
+
+    {{=email(hfo)}}
+
+    {{ if(hfo.WebUrl) { }}
+        <div class="website">
+            Website:
+            <a href="{{=hfo.WebUrl}}">
+                <span class="email">{{=hfo.WebUrl}}</span>
+            </a>
+        </div>
+    {{ } }}
+
+    {{ if(hfo.City) { }}
+    <div class="map" >
+        <a class="button" href="http://maps.google.com/maps?q={{=hfo.Street}}+{{=hfo.City}}, {{=hfo.Region}}+{{=hfo.ZipCode}}" target="_blank">
+            <span>View Map</span>
+        </a>
+    </div>
+    {{ } }}
+    <div class="clear"></div>
+</script>
+<script type="text/template" id="findADealerNav-hfoEmail">
+    {{ _.each(Email, function(email) { }}
+    <div class="hfo-email">
+        Email:
+        <a href="mailto:{{=email}}">
+            <span class="email">{{=email}}</span>
+        </a>
+    </div>
+    {{ }); }}
+</script>
+<script type="text/template" id="findADealerNav-hfoTelephone">
+    {{ _.each(Telephone, function(telephone) { }}
+    <span class="telephone">Phone: {{=telephone}}</span><br>
+    {{ }); }}
+</script>
+<script type="text/template" id="findADealerNav-hfoNoResults">
+    <h1>Click below to search for your nearest dealer.</h1>
+</script>
+</div>
+</div>
+<div class="search_box_top_wrapper">
+<div id="mobile-search-box-container" class="search_box_top">
+<div class="bcs-container-searchbox">
+<input id="bcs-searchbox" class="bcs-searchbox" placeholder="" autocomplete="off" />
+<button type="button" class="bcs-searchbox-submit">
+<i class='fa fa-search'></i>
+</button>
+<div id="bcsSuggestionsContainer" role="listbox" aria-label="Suggestions">
+</div>
+</div>
+<div class="bcs-modal">
+<div class="bcs-modal-content">
+<div class="bcs-modal-header">
+<span class="bcs-modal-close">×</span>
+<h2>Search Results</h2>
+</div>
+<div class="bcs-modal-body">
+<div class='search-type-header'>
+<div id='bcs-web-search' class='active'>
+<a><h3>Web Pages</h3></a>
+</div>
+<div id='bcs-img-search'>
+<a><h3>Images</h3></a>
+</div>
+</div>
+<ol class="bcs-results">
+
+</ol>
+<ol class='bcs-pagination-container'>
+<li class="bcs-pagination bcs-modal-pagination">
+<ul>
+<li>
+<a>&lt;</a>
+</li>
+<li>
+<a class="bcs-current-page">1</a>
+</li>
+<li>
+<a>&gt;</a>
+</li>
+</ul>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="err"></div>
+<div id="print_logo">
+<div class="print_logo_link">
+<a href="/content/haascnc/en.html" onclick="_gaq.push(['_trackEvent', 'Header Menu', 'Logo - Home'])"><img src="/content/dam/haascnc/haascnc-template/HaasSquareLogo.svg" /></a>
+</div><h3> Power On/Off Circuit - Main Transformer - Troubleshooting Guide - NGC</h3></div>
+<div class="page__main container">
+<div class="page__main--inner">
+<div class="print-only">
+<div>
+<div class="newpar new section">
+</div>
+<div class="par iparys_inherited">
+<div class="reference parbase"><div class="cq-dd-paragraph"><div class="addthis addThis parbase">
+
+<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5b3152088b459bd2"></script>
+</div>
+</div>
+</div>
+<div class="reference parbase"><div class="cq-dd-paragraph"><div class="addthis addThis parbase">
+
+<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5b3152088b459bd2"></script>
+</div>
+</div>
+</div>
+<div class="reference parbase"><div class="cq-dd-paragraph"><div class="addthis addThis parbase">
+
+<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5b3152088b459bd2"></script>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div>
+<div class="grid parbase">
+<div class="gridpad  " style="
+        background-image: url();
+        background-size:cover;
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-10">
+<div class="diyBreadcrumb parbase section">
+<span><a href="/content/haascnc/en/service.html" class="breadcrumb-link">Service</a><span class="separator fa fa-angle-right"></span></span>
+<span><a href="/content/haascnc/en/service/troubleshooting-and-how-to/troubleshooting/next-generation-control---power-on-off-circuit--main-transformer.html" class="breadcrumb-link"><b> Power On/Off Circuit - Main Transformer - Troubleshooting Guide - NGC</b></a></span>
+</div>
+</div>
+<div class="col-md-2">
+<div class="diyPrintCTA parbase section">
+<div class="cq-placeholder diyPrintCTA" data-emptytext="Service Print CTA"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sectionHeader parbase">
+<div class="sectionHeader section-wrapper text-align-center clearfix ">
+<span class="recently-updated-tag hidden" data-recentness-duration="30">Recently Updated</span>
+<span class="last-updated">Last updated: 02/08/2021</span>
+<h2><b>Power On/Off Circuit - Main Transformer</b> - Troubleshooting Guide - NGC</h2>
+<hr />
+</div>
+</div>
+<div class="diySubNavigation parbase">
+<div class="cq-placeholder" data-emptytext="Service Sub Navigation"></div>
+<div id="service-sub-navigation-sticky-wrapper">
+<div id="service-sub-navigation-sticky-nav" class="service-sub-navigation"><h3> Power On/Off Circuit - Main Transformer - Troubleshooting Guide - NGC</h3><div class="select-container">
+<div id="service-sub-navigation-select">
+<div class="option-container">
+<a class="option default" href="#">Jump to Section</a>
+<a href="#" class="back-to-top">Back to Top</a>
+<i class="fa fa-sort" aria-hidden="true"></i>
+</div>
+</div>
+</div>
+<div class="printCTA_container">
+<button class="printCTA"></button>
+</div>
+</div>
+</div>
+</div>
+<div class="reference parbase"><div class="cq-dd-paragraph"><div class="tab_troubleshooting_0 parsys"><div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Introduction">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Introduction</h2><span class="titleLine"> </span>
+</div>
+<div class="diySectionContainerInner">
+<div class="diyStep"><div>
+<div class="diy-step" data-last-modified-timestamp="1530808658887" data-recentness-duration="30">
+<div class="step-text"><p>This document will show you how to troubleshoot the power on/off circuit and the main transformer on a machine with the Next Generation Control.<br />
+</p>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase"><div>
+<div class="diy-section-container" id="Electrical-Safety">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Electrical Safety</h2><span class="titleLine"> </span>
+</div>
+<div class="diySectionContainerInner">
+<div class="reference parbase"><div class="cq-dd-paragraph"><div class="par parsys">
+<div class="diyStep"><div>
+<div class="diy-step" data-last-modified-timestamp="1532016737362" data-recentness-duration="30">
+<div class="step-text"><p><span class="fa fa-warning"></span> <b>Caution:</b> When you do maintenance or repair on CNC machines and their components, you must always follow basic safety precautions. This decreases the risk of injury and mechanical damage.<br />
+</p>
+<ul>
+<li>Set the main circuit breaker to the <b>[OFF]</b> position.</li>
+</ul>
+</div>
+</div>
+</div></div>
+<div class="diyStep"><div>
+<div class="diy-step" data-last-modified-timestamp="1553896415344" data-recentness-duration="30">
+<div class="step-text"><p><span class="fa fa-ambulance"></span> <b>Danger:</b> Before beginning any work inside the control cabinet the High Voltage indicator light on the 320V Power Supply / Vector Drive must have been off for at least 5 minutes.</p>
+<p>Some service procedures can be dangerous or life-threatening. DO NOT attempt a procedure that you do not fully understand. If you have any doubts about doing a procedure contact your Haas Factory Outlet (HFO) and schedule a service visit.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Symptom-Table">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Symptom Table</h2><span class="titleLine"> </span>
+</div>
+<div class="diySectionContainerInner">
+<div class="table parbase">
+<div class="one-px-border-bold-header">
+<table width="100%" cellspacing="0" cellpadding="1" border="2">
+<tbody><tr><td style="text-align: center;"><b>Symptoms</b></td>
+<td style="text-align: center;"><b>Probable Cause</b></td>
+<td style="text-align: center;"><b>Corrective Action</b></td>
+</tr><tr><td rowspan="2"><b>Alarm&nbsp;2095</b>&nbsp;TRANSFORMER OVERHEAT occurs at Power on.</td>
+<td>The machine detected a open circuit from the thermal switch at the transformer.</td>
+<td>Make sure the sensor is connected to the pigtail on P34 on I/O PCB. If is connected, jumper the wires. If alarm goes away check the overheat sensor by measuring the temperature on the transformer the sensor is normally closed until trip point 275F / 135C.</td>
+</tr><tr><td>The transformer overheat cable pins making intermittent contact.</td>
+<td>Check the connector to make sure the connector is crimped correctly.</td>
+</tr><tr><td rowspan="3"><b>Alarm&nbsp;2095</b>&nbsp;TRANSFORMER OVERHEAT occurs after the machine has been on for a long time, or during operation.</td>
+<td>The speeds and feeds are too high.</td>
+<td>Make sure the feeds and speeds are correct for the work.</td>
+</tr><tr><td>The transformer overheat cable pins making intermittent contact.</td>
+<td>Check the connector to make sure the connector is crimped correctly.</td>
+</tr><tr><td>The machine is located in a hot environment.</td>
+<td>Monitor the transformer temperature throughout the day. If the internal transformer exceeds 275F / 135C degrees throughout the day add the CABCOOL option.</td>
+</tr><tr><td><b>Alarm&nbsp;175</b>&nbsp;GROUND FAULT DETECTED.</td>
+<td>There is a short circuit in one of the 115 / 230 VAC components.</td>
+<td>Refer to the&nbsp;Ground Fault Circuit Monitor&nbsp;section in the&nbsp;<a href="/content/haascnc/en/service/troubleshooting-and-how-to/troubleshooting/next-generation-control---i-o-pcb---troubleshooting-guide.html">Next Generation Control - I/O PCB - Troubleshooting Guide</a>.</td>
+</tr><tr><td rowspan="5">The Main Circuit Breaker Trips When you Press the<b> [POWER ON]</b> Button.</td>
+<td>There is a short-circuit in the main transformer.</td>
+<td>To troubleshoot the main transformer follow these simple steps:<ol>
+<li>Turn off the main circuit breaker.</li>
+<li>Disconnect the 120 and 240 VAC output wires from the transformer.</li>
+<li>Turn on the machine. If the breaker trips the transformer is damaged.</li>
+</ol>
+</td>
+</tr><tr><td>The Vector Drive has a short-circuit.</td>
+<td><p>Refer to the:&nbsp;<a href="/content/haascnc/en/service/troubleshooting-and-how-to/troubleshooting/vector-drive---troubleshooting-guide.html">Vector Drive - Troubleshooting Guide</a></p>
+</td>
+</tr><tr><td>The 320 VDC Power Supply has a short circuit. (OM, OL, MM, TM, TL, SR-100 Only)</td>
+<td><p>Refer to the:&nbsp;<a href="/content/haascnc/en/service/troubleshooting-and-how-to/troubleshooting/high-voltage-power-supply--mmps----troubleshooting-guide.html">High Voltage Power Supply (MMPS) Troubleshooting Guide</a>.</p>
+</td>
+</tr><tr><td>One of the servo amplifiers has a short-circuit.</td>
+<td>Refer to the&nbsp;<a href="/content/haascnc/en/service/troubleshooting-and-how-to/troubleshooting/servo-amplifier---troubleshooting-guide---ngc.html" target="_blank">Servo Amplifier - Troubleshooting Guide</a>.</td>
+</tr><tr><td>The incoming voltage is not correct.</td>
+<td><ol>
+<li>Using a volt meter. Measure the incoming voltage at the top of the main circuit breaker.</li>
+<li>Make sure the incoming voltage is within the main transformer tap range.</li>
+</ol>
+</td>
+</tr><tr><td><b>Alarm&nbsp;9100.005</b>&nbsp;POWER SUPPLY UNDEFINED. Pass/Fail lamps lit on PSUP PCB.</td>
+<td>There is a missing phase on the transformer.</td>
+<td>Check the three phase 240 VAC output on the transformer TB2. If there is a missing phase check for a loose connections on the terminal block TB2. Trace the missing phase all the way back to the main circuit breaker.</td>
+</tr><tr><td rowspan="6">The machine will not turn on when the <b>[POWER ON]</b> button is pressed.</td>
+<td>The main circuit or service panel circuit breaker is turned off.</td>
+<td>Make sure the main circuit breaker or service panel breaker is turned on.</td>
+</tr><tr><td>The T5 transformer jumper is not set correctly or the T5 transformer is defective.</td>
+<td>See the T5 transformer troubleshooting section below.</td>
+</tr><tr><td>There is problem with the <b>[POWER ON]</b> or <b>[POWER OFF]</b> circuit.</td>
+<td>Make sure that the wires going to the <b>[POWER ON] [POWER OFF]</b> contactors terminals are secure. Check the cable from SKIBF to PSUP PCB see the above electrical diagrams.</td>
+</tr><tr><td>The main circuit breaker is defective.</td>
+<td><ol>
+<li>Turn off the machine's main circuit breaker.</li>
+<li>Turn off the electrical service to the machine.</li>
+<li>Make sure that there is no voltage to the machine.</li>
+<li>Turn the machine's main circuit breaker to the ON position.</li>
+<li>Measure continuity between the top and bottom poles. If there is no continuity, replace the circuit breaker.</li>
+</ol>
+</td>
+</tr><tr><td>The K1 contactor coil is not receiving power or the wires are not connected on the correct terminals on the coil.</td>
+<td>Check that the K1 contactor is receiving approximately 24 VAC from the T5 transformer. See above diagrams.</td>
+</tr><tr><td>The auto off circuit is open.</td>
+<td>Check the cable connection from the PSUP (P17) to I/O PCB (P56).</td>
+</tr><tr><td>On a 230VAC machine.&nbsp; The machine shuts off when the Cabcool turns on.</td>
+<td>The main transfomer installed on the machine is not compatible with the CABCOOL option.</td>
+<td>Make sure the machine main transformer is part number 32-5830x.</td>
+</tr></tbody></table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="T5-Transformer-Troubleshooting">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">T5 Transformer Troubleshooting</h2><span class="titleLine"> </span>
+</div>
+<div class="diySectionContainerInner">
+<div class="grid parbase">
+<div class="gridpad bg-color-none " style="
+        background-image: url();
+        background-size:cover;
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="expandable-image" src="/content/dam/haascnc/service/guides/troubleshooting/next-generation-control---power-on-off-circuit,-main-transformer---troubleshooting-guide/Measure_voltage_pins_3_and_8_on_T5_transformer.png" style="height:auto; width:100%;" />
+<div class="expand-image-button"></div>
+</div>
+</div>
+<div data-emptytext="Image" class="cq-placeholder"></div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1543589657465" data-recentness-duration="30">
+<div class="step-text"><p>The T5 transformer is a step down transformer that steps down the incomming voltage to approximatly 24VAC. When the <b>[POWER ON]</b>  button is pressed this voltage is applied to the coil on the K1 contactor, then the machine will turn on.</p>
+<p><b>Transformer Primary Check:</b></p>
+<ol>
+<li>Make sure the jumper is in the correct position for the input voltage.</li>
+<li>Disconnect the T5 transformer from the PSUP PCB.</li>
+<li>Find the cable for the T5 transformer. Measure the resistance between pins 3 (black) and 8 (yellow) on the cable. Use a multimeter set to ohms.</li>
+<li>When the T5 transformer operates correctly, you have one of these conditions:</li>
+</ol>
+<p>Low Voltage T5 Transformer (32-1964)</p>
+<ul>
+<li>Jumper at (221-240V) position the multimeter measures between 54 - 66 ohms.</li>
+<li>Jumper at (180-220V) position the multimeter measures between 45 - 55 ohms.</li>
+</ul>
+<p>High Voltage T5 Transformer (32-1965)</p>
+<ul>
+<li>Jumper at (441 - 480V) position the multimeter measures between 216 - 264 ohms.</li>
+<li>Jumper at (381- 440V) position the multimeter measures between 180 - 220 ohms.</li>
+<li>Jumper at (340- 380V) position the multimeter measures between 153 - 187 ohms.</li>
+</ul>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid parbase">
+<div class="gridpad bg-color-none " style="
+        background-image: url();
+        background-size:cover;
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="expandable-image" src="/content/dam/haascnc/service/guides/troubleshooting/next-generation-control---power-on-off-circuit,-main-transformer---troubleshooting-guide/Measure_Voltage_pins_1_5_6_T5_transformer.png" style="height:auto; width:100%;" />
+<div class="expand-image-button"></div>
+</div>
+</div>
+<div data-emptytext="Image" class="cq-placeholder"></div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1530809283341" data-recentness-duration="30">
+<div class="step-text"><p><b>Voltage Check</b></p>
+<ol>
+<li>Make sure the jumper is in the correct position for the input voltage.</li>
+<li>Use a multimeter set to Volts AC mearuse across pins 1 and 5, 1 and 6, 5 and 6.</li>
+</ol>
+<ul>
+<li>You should measure 21.6 - 26.4 VAC between pins 1 and 5.</li>
+<li>You should measure 10.8 - 13.2 VAC between pins 1 and 6.</li>
+<li>You should measure 10.8 - 13.2 VAC between pins 5 and 6.</li>
+</ul>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Electrical-Diagrams">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Electrical Diagrams</h2><span class="titleLine"> </span>
+</div>
+<div class="diySectionContainerInner">
+<div class="image parbase">
+
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="expandable-image" src="/content/dam/haascnc/service/guides/troubleshooting/next-generation-control---power-on-off-circuit,-main-transformer---troubleshooting-guide/electrical_diagram_overview_power_on_off_3.png" style="height:auto; width:100%;" />
+<div class="expand-image-button"></div>
+</div>
+</div>
+<div data-emptytext="Image" class="cq-placeholder"></div>
+</div>
+<div class="text parbase"><div class="text clearfix">
+<div class="text clearfix">
+<div class='text-data-container'>
+</div>
+<div class="text-body">
+<p><b>Machine Power On/Off Diagram</b><br />
+</p>
+</div>
+</div>
+</div>
+</div>
+<div class="image parbase">
+
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="expandable-image" src="/content/dam/haascnc/service/guides/troubleshooting/next-generation-control---power-on-off-circuit,-main-transformer---troubleshooting-guide/skibf_to_psup_diagram_4.png" style="height:auto; width:100%;" />
+<div class="expand-image-button"></div>
+</div>
+</div>
+<div data-emptytext="Image" class="cq-placeholder"></div>
+</div>
+<div class="text parbase"><div class="text clearfix">
+<div class="text clearfix">
+<div class='text-data-container'>
+</div>
+<div class="text-body">
+<p><b>PSUP (P16) to SKIBF (J20) / SKIBF (J5) Detail Diagram</b><br />
+</p>
+</div>
+</div>
+</div>
+</div>
+<div class="image parbase">
+
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="expandable-image" src="/content/dam/haascnc/service/guides/troubleshooting/next-generation-control---power-on-off-circuit,-main-transformer---troubleshooting-guide/psup_to_io_4.png" style="height:auto; width:100%;" />
+<div class="expand-image-button"></div>
+</div>
+</div>
+<div data-emptytext="Image" class="cq-placeholder"></div>
+</div>
+<div class="text parbase"><div class="text clearfix">
+<div class="text clearfix">
+<div class='text-data-container'>
+</div>
+<div class="text-body">
+<p><b>PSUP (P17) to I/O PCB (P56) Detail Diagram</b><br />
+</p>
+</div>
+</div>
+</div>
+</div>
+<div class="image parbase">
+
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="expandable-image" src="/content/dam/haascnc/service/guides/troubleshooting/next-generation-control---power-on-off-circuit,-main-transformer---troubleshooting-guide/k1_t5_to_psup.png" style="height:auto; width:100%;" />
+<div class="expand-image-button"></div>
+</div>
+</div>
+<div data-emptytext="Image" class="cq-placeholder"></div>
+</div>
+<div class="text parbase"><div class="text clearfix">
+<div class="text clearfix">
+<div class='text-data-container'>
+</div>
+<div class="text-body">
+<p><b>T5 to PSUP (P13) / K1 to PSUP (P12) Detail Diagram</b><br />
+</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+<div class="reference parbase"><div class="cq-dd-paragraph"><div class="addthis addThis parbase">
+
+<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5b3152088b459bd2"></script>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cookie-alert-modal cq-placeholder" data-component="CookieAlertModal" data-emptytext="Cookie Alert Modal">
+<div class="cookie-alert-modal-output" data-ref="$output"></div>
+<template data-id="acceptCookieTemplate">
+<div class="cookie-modal">
+<div class="row">
+<div class="col-lg-12 text-center">
+<h2>Cookies</h2>
+<p>To make this site work properly, we sometimes place small data files called cookies on your device. Most big websites do this too.</p>
+<h3>What are cookies?</h3>
+<p>A cookie is a small text file that a website saves on your computer or mobile device when you visit the site. It enables the website to remember your actions and preferences (such as login, language, font size and other display preferences) over a period of time, so you don’t have to keep re-entering them whenever you come back to the site or browse from one page to another.</p>
+<p>
+<a href="#" data-link-stub="/about/terms/privacy.html" id="terms-link">View Privacy and Cookie Notice</a>
+</p>
+</div>
+</div>
+<div class="row">
+<div class="col-lg-12 text-center">
+<button id="acceptCookies" class="btn btn-primary">I accept cookies</button>&nbsp;&nbsp;
+<button id="declineCookies" class="btn btn-primary">I refuse cookies</button>
+</div>
+</div>
+</div>
+</template>
+</div>
+</div>
+</div>
+<div id="footer">
+<div class="footer-contact-wrapper" data-component="ContactButton">
+<a href="/content/haascnc/en/about/contact.html" class="footer-contact-btn is-sticky" data-ref="$button">FIND DISTRIBUTOR</a>
+</div>
+<div class="wrapper">
+<div class="gototop">
+<i class="fa fa-angle-up"></i>
+</div>
+<a class="logo" href="/content/haascnc/en.html" onclick="_gaq.push(['_trackEvent', 'Footer Menu', 'Logo - Home'])"><img src="/content/dam/haascnc/assets/haaslogos/HaasF1TeamLogo-White.png" alt="Haas Logo" /></a>
+<div class="newsletter_bar">
+<div class='newsletter-left'>
+<div class="currency-warning-container">
+<div class="usd-warning">
+<span class="fa fa-asterisk"></span>
+<p class="pl-usd">美元价格不包括关税、报关费用、保险费、增值税及运费。<br />USD prices DO NOT include customs duty, customs fees, insurance, VAT, or freight.</p>
+</div>
+<div class="cny-warning">
+<span class="fa fa-thumbs-up"></span>
+<p class="pl-cny">人民币价格包含关税、报关费用、货运保险和增值税, 但不包括运费。<br />CNY prices include customs duty, customs fees, insurance, and VAT. DOES NOT include freight.</p>
+</div>
+</div>
+<div class="haas-delivered-message footer-msg">
+<div class='icon-container'>
+<span class="fa fa-truck"></span>
+</div>
+<div class="hdm-text-container">
+<h3>Haas Delivered Price</h3>
+<p>This price includes shipping cost, export and import duties, insurance, and any other expenses incurred during shipping to a location in France agreed with you as a buyer. No other mandatory costs can be added to the delivery of a Haas CNC Product.</p>
+<button>Click for details</button>
+</div>
+</div>
+<p>KEEP UP WITH THE LATEST HAAS TIPS AND TECHNOLOGY...</p>
+<p><a href="/content/haascnc/en/about/Newletter_Signup.html"><span class="button ">Sign up now!&nbsp;&nbsp;&nbsp;<i class="fa fa-envelope" aria-hidden="true"></i></span></a></p>
+</div>
+<div class='newsletter-right'>
+<p>HAAS TOOLING ACCEPTS THE FOLLOWING:</p>
+<img src="/content/dam/haascnc/assets/haas-tooling/payment_types.png" />
+</div>
+
+</div>
+<div class="clear"></div>
+<div class="navi_b">
+
+<div>
+<div class="ll-data-container text-align-center" style="background-color: transparent">
+<ul>
+<li>Service &amp; Support</li>
+<li style="border-right-color: #cb2c31">
+<a class="navigation_link" href="/content/haascnc/en/service.html" style="font-size: px">
+Owners
+</a>
+</li>
+<li style="border-right-color: #cb2c31">
+<a class="navigation_link" href="/content/haascnc/en/owners/Service.html" style="font-size: px">
+Request Service
+</a>
+</li>
+<li style="border-right-color: #cb2c31">
+<a class="navigation_link" href="/content/haascnc/en/service/search-results.manual.html" style="font-size: px">
+Operator Manuals
+</a>
+</li>
+<li style="border-right-color: #cb2c31">
+<a class="navigation_link" href="https://parts.haascnc.com" style="font-size: px">
+Haas Parts
+</a>
+</li>
+<li style="border-right-color: #cb2c31">
+<a class="navigation_link" href="/content/haascnc/en/owners/Service/Rotary-Repair-RMA.html" style="font-size: px">
+Rotary Repair Request
+</a>
+</li>
+<li style="border-right-color: #cb2c31">
+<a class="navigation_link" href="/content/haascnc/en/Community/pre-install-guide.html" style="font-size: px">
+Pre-Install Guides
+</a>
+</li>
+</ul>
+</div>
+</div>
+<div>
+<div class="ll-data-container text-align-center" style="background-color: transparent">
+<ul>
+<li>Shopping Tools</li>
+<li style="border-right-color: #cb2c31">
+<a class="navigation_link" href="/content/haascnc/en/build-and-price.html" style="font-size: px">
+Build &amp; Price a New Haas
+</a>
+</li>
+<li style="border-right-color: #cb2c31">
+<a class="navigation_link" href="/content/haascnc/en/shop/category/inventory-redirect.html" style="font-size: px">
+Available Inventory
+</a>
+</li>
+<li style="border-right-color: #cb2c31">
+<a class="navigation_link" href="/content/haascnc/en/shop/category/pricelist.html" style="font-size: px">
+The Haas Price List
+</a>
+</li>
+<li style="border-right-color: #cb2c31">
+<a class="navigation_link" href="/content/haascnc/en/owners/Financing.html" style="font-size: px">
+CNCA Financing
+</a>
+</li>
+</ul>
+</div>
+</div>
+<div>
+<div class="ll-data-container text-align-" style="background-color: transparent">
+<ul>
+<li>About Haas</li>
+<li style="border-right-color: #cb2c31">
+<a class="navigation_link" href="/content/haascnc/en/about/careers.html" style="font-size: px">
+Careers
+</a>
+</li>
+<li style="border-right-color: #cb2c31">
+<a class="navigation_link" href="/content/haascnc/en/about/certifications.html" style="font-size: px">
+Certifications &amp; Safety
+</a>
+</li>
+<li style="border-right-color: #cb2c31">
+<a class="navigation_link" href="/content/haascnc/en/about/contact.html" style="font-size: px">
+Contact Us
+</a>
+</li>
+<li style="border-right-color: #cb2c31">
+<a class="navigation_link" href="/content/haascnc/en/about/history.html" style="font-size: px">
+History
+</a>
+</li>
+<li style="border-right-color: #cb2c31">
+<a class="navigation_link" href="/content/haascnc/en/about/terms/terms_and_conditions.html" style="font-size: px">
+Terms &amp; Conditions
+</a>
+</li>
+<li style="border-right-color: #cb2c31">
+<a class="navigation_link" href="/content/haascnc/en/about/haas-shop-terms-and-conditions.html" style="font-size: px">
+Haas Tooling Terms &amp; Conditions
+</a>
+</li>
+<li style="border-right-color: #cb2c31">
+<a class="navigation_link" href="/content/haascnc/en/about/terms/privacy.html" style="font-size: px">
+Privacy
+</a>
+</li>
+<li style="border-right-color: #cb2c31">
+<a class="navigation_link" href="/content/haascnc/en/about/warranty.html" style="font-size: px">
+Warranty
+</a>
+</li>
+</ul>
+</div>
+</div>
+<div>
+<div class="ll-data-container text-align-" style="background-color: transparent">
+<ul>
+<li>Haas Community</li>
+<li style="border-right-color: #cb2c31">
+<a class="navigation_link" href="/content/haascnc/en/myhaas/haas_certification.html" style="font-size: px">
+Haas Certification Program
+</a>
+</li>
+<li style="border-right-color: #cb2c31">
+<a class="navigation_link" href="/content/haascnc/en/Community/Motorsports.html" style="font-size: px">
+Haas Motorsports
+</a>
+</li>
+<li style="border-right-color: #cb2c31">
+<a class="navigation_link" href="http://ghaasfoundation.org" style="font-size: px">
+Gene Haas Foundation
+</a>
+</li>
+<li style="border-right-color: #cb2c31">
+<a class="navigation_link" href="/content/haascnc/en/htec.html" style="font-size: px">
+HTEC Network
+</a>
+</li>
+<li style="border-right-color: #cb2c31">
+<a class="navigation_link" href="/content/haascnc/en/Community/Events.html" style="font-size: px">
+Events
+</a>
+</li>
+</ul>
+</div>
+</div>
+<div class="last">
+<div class="ll-data-container text-align-" style="background-color: transparent">
+<ul>
+<li>Join the Conversation</li>
+<li style="border-right-color: #cb2c31">
+<a class="navigation_link" href="http://www.facebook.com/pages/Oxnard-CA/Haas-Automation-Inc/177787316584" style="font-size: px">
+<span class="fa fa-facebook"></span>
+Facebook
+</a>
+</li>
+<li style="border-right-color: #cb2c31">
+<a class="navigation_link" href="http://twitter.com/Haas_Automation" style="font-size: px">
+<span class="fa fa-twitter"></span>
+Twitter
+</a>
+</li>
+<li style="border-right-color: #cb2c31">
+<a class="navigation_link" href="http://www.flickr.com/photos/haasautomation" style="font-size: px">
+<span class="fa fa-flickr"></span>
+Flickr
+</a>
+</li>
+<li style="border-right-color: #cb2c31">
+<a class="navigation_link" href="http://www.youtube.com/user/haasautomation" style="font-size: px">
+<span class="fa fa-youtube-play"></span>
+YouTube
+</a>
+</li>
+<li style="border-right-color: #cb2c31">
+<a class="navigation_link" href="https://www.linkedin.com/company/haas-automation" style="font-size: px">
+<span class="fa fa-linkedin"></span>
+LinkedIn
+</a>
+</li>
+<li style="border-right-color: #cb2c31">
+<a class="navigation_link" href="http://instagram.com/haas_automation" style="font-size: px">
+<span class="fa fa-instagram"></span>
+Instagram
+</a>
+</li>
+</ul>
+</div>
+</div>
+<span class="stretch"></span>
+</div>
+<div class="footer_b">
+<div class="footerLT">
+&copy;&nbsp;2021&nbsp;<span class="copy-text">Haas Automation, Inc – CNC Machine Tools</span>
+<br />
+</div>
+<div class="footerRT">
+<p>2800 Sturgis Rd., Oxnard, CA 93030 / Toll Free: 800-331-6746<br />
+Phone: 805-278-1800 / Fax: 805-278-2255<br />
+</p>
+</div>
+<div class="clear"></div>
+</div>
+<div class="clear"></div>
+</div>
+<div class="clear"></div>
+</div>
+<div id="print-footer"></div>
+<div class="haas-modal" data-component="Modal">
+<div class="component-output" data-ref="$output"></div>
+<template data-id="modal">
+<div class="haas-modal-wrapper {{=isOpen ? ' open' : ' '}} {{=loading ? '' : 'modal-closer'}}">
+{{ if (loading) { }}
+{{=loadingSpinner}}
+{{ } else { }}
+<div class="haas-modal-body">
+<div class="modal-close-btn">&times;</div>
+{{=content}}
+</div>
+{{ } }}
+</div>
+</template>
+</div>
+<div id="acceptCookieModalTemplate">
+<div class="cookie-footer hidden">
+<div class="close-cookie-footer-btn-container"><i class="fa fa-window-close" aria-hidden="true"></i></div>
+<div class="cookie-footer-left">
+<h2>Cookie Notice</h2>
+<p class='cookie-text'>
+<span>We use cookies to improve your user experience.</span>
+<a class='privacy-page-link' href='/content/haascnc/en/about/terms/cookie.html'>Our Cookie Notice</a>
+<span>describes which cookies we use, why we use them, and how you can find more information about them. Please confirm you consent to us using analytics cookies. If you do not consent, you may still use our website with a reduced user experience.</span>
+</p>
+</div>
+<div class="cookie-footer-right">
+<button id="acceptAllCookies" class="acceptCookies btn btn-primary">Accept All Cookies</button>
+<div>
+<a id="settings-btn"><span>Manage Settings</span></a>
+</div>
+</div>
+</div>
+<div class="haas-modal-wrapper modal-closer">
+<div class="haas-modal-body cookie-modal-body">
+<div class="cookie-modal">
+<div class="close-cookie-modal-btn-container"><i class="fa fa-window-close" aria-hidden="true"></i></div>
+<div class="row">
+<div class="col-lg-12 text-center">
+<h2>Cookie Notice</h2>
+</div>
+</div>
+<div class="row">
+<div class="col-lg-12 text-center">
+<p class='cookie-text'>
+<span>We use cookies to improve your user experience.</span>
+<a class='privacy-page-link' href='/content/haascnc/en/about/terms/cookie.html'>Our Cookie Notice</a>
+<span>describes which cookies we use, why we use them, and how you can find more information about them. Please confirm you consent to us using analytics cookies. If you do not consent, you may still use our website with a reduced user experience.</span>
+</p>
+</div>
+</div>
+<div id="cookie-settings" class="row">
+<div class="col-lg-12 text-center">
+<div class='toggle-row'>
+<h2>Functional Cookies</h2>
+<label class="switch cookie-switch">
+<input type="checkbox" class="switch-toggle" checked="checked" disabled />
+</label>
+</div>
+<div class='toggle-row'>
+<h2>Analytics Cookies</h2>
+<label class="switch cookie-switch">
+<input id="tracking-cookie-switch" type="checkbox" class="switch-toggle" checked="checked" />
+</label>
+</div>
+<button id="acceptCookieSettings" class="acceptCookies btn btn-primary">Save and Close</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.1.4/js.cookie.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/waypoints/4.0.1/noframework.waypoints.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.touchswipe/1.6.18/jquery.touchSwipe.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
+
+<script type="text/javascript" src="/etc/clientlibs/haascnc/haasfoot.min.ACSHASH8471cf4911514a15d2b2e2f54b9efb7b.js"></script>
+<script type="text/javascript">
+        haas.init({
+            'enable_region_redirect': false,
+            'page_regions': '',
+            'page_region_redirect': '/content/haascnc/en.html'
+        });
+    </script>
+
+<script type="text/javascript" src="/etc/clientlibs/haascnc/haascomponents.min.ACSHASH7d3277624cf0417eecfe973cb51120f4.js"></script>
+<script type="text/javascript" src="/etc.clientlibs/haascnc/clientlibs/core.min.ACSHASH9cdb9c0d33d4d96626c7ce85be87bcc5.js"></script>
+</body>
+</html>

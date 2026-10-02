@@ -1,0 +1,593 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MTConnectStreams xmlns:m="urn:mtconnect.org:MTConnectStreams:1.3" xmlns="urn:mtconnect.org:MTConnectStreams:1.3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:x="urn:mazakusa.com:MazakStreams:1.3" xsi:schemaLocation="urn:mazakusa.com:MazakStreams:1.3 /schemas/MazakStreams_1.3.xsd">
+  <Header creationTime="2026-10-01T11:40:52Z" sender="DMZ-MTCNCT" instanceId="1789533892" version="1.4.0.12" bufferSize="8192" nextSequence="4890941" firstSequence="4882749" lastSequence="4890940"/>
+  <Streams>
+    <DeviceStream name="MFMS10-MC2" uuid="9617890b-7526-9f6b-214f-0c860ace6485">
+      <ComponentStream component="Controller" name="controller" componentId="cont">
+        <Condition>
+          <Warning dataItemId="system" timestamp="2026-10-01T11:20:24.644980Z" name="system_cond" sequence="4882812" nativeCode="131" nativeSeverity="25" type="SYSTEM">CUTTING FEED OVERRIDE SET AT 0 ( , ,  )</Warning>
+          <Normal dataItemId="system" timestamp="2026-10-01T11:20:24.644980Z" name="system_cond" sequence="4882813" nativeCode="1104" type="SYSTEM"/>
+          <Normal dataItemId="system" timestamp="2026-10-01T11:20:26.785617Z" name="system_cond" sequence="4882825" nativeCode="131" type="SYSTEM"/>
+          <Warning dataItemId="system" timestamp="2026-10-01T11:20:27.535605Z" name="system_cond" sequence="4882832" nativeCode="131" nativeSeverity="25" type="SYSTEM">CUTTING FEED OVERRIDE SET AT 0 ( , ,  )</Warning>
+          <Normal dataItemId="system" timestamp="2026-10-01T11:20:29.644989Z" name="system_cond" sequence="4882844" nativeCode="131" type="SYSTEM"/>
+          <Fault dataItemId="system" timestamp="2026-10-01T11:24:51.634513Z" name="system_cond" sequence="4885297" nativeCode="128" nativeSeverity="90" type="SYSTEM">OUTSIDE INTERLOCK AXIS ( B, ,  )</Fault>
+          <Normal dataItemId="system" timestamp="2026-10-01T11:24:52.712642Z" name="system_cond" sequence="4885300" nativeCode="128" type="SYSTEM"/>
+        </Condition>
+      </ComponentStream>
+      <ComponentStream component="Path" name="path" componentId="path1">
+        <Events>
+          <Execution dataItemId="exec" timestamp="2026-10-01T11:18:49.519111Z" name="execution" sequence="4882780">WAIT</Execution>
+          <Execution dataItemId="exec" timestamp="2026-10-01T11:20:26.785617Z" name="execution" sequence="4882817">ACTIVE</Execution>
+          <LineLabel dataItemId="linelabel" timestamp="2026-10-01T11:24:51.634513Z" sequence="4885288">3</LineLabel>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:20:27.535605Z" sequence="4882826" subType="INCREMENTAL">29</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:20:29.644989Z" sequence="4882838" subType="INCREMENTAL">30</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:20:32.519994Z" sequence="4882859" subType="INCREMENTAL">31</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:20:36.098107Z" sequence="4882903" subType="INCREMENTAL">32</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:20:38.238726Z" sequence="4882915" subType="INCREMENTAL">33</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:20:41.879356Z" sequence="4882935" subType="INCREMENTAL">34</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:20:43.676244Z" sequence="4882952" subType="INCREMENTAL">35</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:20:46.519991Z" sequence="4882970" subType="INCREMENTAL">37</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:20:47.613740Z" sequence="4882984" subType="INCREMENTAL">38</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:20:48.316853Z" sequence="4883001" subType="INCREMENTAL">39</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:20:49.380071Z" sequence="4883007" subType="INCREMENTAL">40</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:20:51.176932Z" sequence="4883030" subType="INCREMENTAL">41</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:20:52.974414Z" sequence="4883045" subType="INCREMENTAL">42</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:20:57.599395Z" sequence="4883067" subType="INCREMENTAL">43</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:20:58.677525Z" sequence="4883076" subType="INCREMENTAL">44</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:21:01.521272Z" sequence="4883093" subType="INCREMENTAL">46</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:21:02.630658Z" sequence="4883110" subType="INCREMENTAL">47</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:21:03.349420Z" sequence="4883122" subType="INCREMENTAL">48</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:21:04.443144Z" sequence="4883128" subType="INCREMENTAL">49</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:21:07.318145Z" sequence="4883157" subType="INCREMENTAL">50</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:21:08.052524Z" sequence="4883167" subType="INCREMENTAL">51</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:21:12.771274Z" sequence="4883201" subType="INCREMENTAL">52</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:21:13.849418Z" sequence="4883211" subType="INCREMENTAL">53</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:21:16.740024Z" sequence="4883233" subType="INCREMENTAL">54</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:21:17.443169Z" sequence="4883251" subType="INCREMENTAL">55</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:21:18.552526Z" sequence="4883268" subType="INCREMENTAL">57</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:21:20.333774Z" sequence="4883290" subType="INCREMENTAL">58</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:21:22.130676Z" sequence="4883312" subType="INCREMENTAL">59</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:21:23.943150Z" sequence="4883328" subType="INCREMENTAL">60</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:21:28.584349Z" sequence="4883356" subType="INCREMENTAL">61</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:21:29.662465Z" sequence="4883365" subType="INCREMENTAL">62</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:21:32.506237Z" sequence="4883384" subType="INCREMENTAL">64</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:21:33.224958Z" sequence="4883401" subType="INCREMENTAL">65</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:21:34.287486Z" sequence="4883413" subType="INCREMENTAL">66</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:21:35.365595Z" sequence="4883421" subType="INCREMENTAL">67</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:21:37.896832Z" sequence="4883453" subType="INCREMENTAL">68</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:21:39.771846Z" sequence="4883470" subType="INCREMENTAL">69</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:21:43.693711Z" sequence="4883497" subType="INCREMENTAL">70</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:21:45.443730Z" sequence="4883515" subType="INCREMENTAL">71</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:21:48.303085Z" sequence="4883534" subType="INCREMENTAL">73</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:21:49.021852Z" sequence="4883548" subType="INCREMENTAL">74</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:21:50.084333Z" sequence="4883565" subType="INCREMENTAL">75</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:21:51.163328Z" sequence="4883572" subType="INCREMENTAL">76</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:21:54.084338Z" sequence="4883602" subType="INCREMENTAL">77</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:21:54.803084Z" sequence="4883612" subType="INCREMENTAL">78</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:21:59.443720Z" sequence="4883646" subType="INCREMENTAL">79</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:22:01.224980Z" sequence="4883662" subType="INCREMENTAL">80</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:22:03.365589Z" sequence="4883676" subType="INCREMENTAL">81</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:22:04.099976Z" sequence="4883693" subType="INCREMENTAL">82</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:22:05.178096Z" sequence="4883710" subType="INCREMENTAL">84</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:22:06.974961Z" sequence="4883731" subType="INCREMENTAL">85</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:22:09.834336Z" sequence="4883761" subType="INCREMENTAL">86</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:22:10.553099Z" sequence="4883771" subType="INCREMENTAL">87</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:22:15.569366Z" sequence="4883804" subType="INCREMENTAL">88</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:22:16.288156Z" sequence="4883813" subType="INCREMENTAL">89</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:22:19.147561Z" sequence="4883834" subType="INCREMENTAL">90</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:22:20.225670Z" sequence="4883851" subType="INCREMENTAL">92</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:22:20.944428Z" sequence="4883868" subType="INCREMENTAL">93</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:22:22.725676Z" sequence="4883889" subType="INCREMENTAL">94</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:22:25.600661Z" sequence="4883922" subType="INCREMENTAL">95</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:22:26.678781Z" sequence="4883933" subType="INCREMENTAL">96</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:22:31.335058Z" sequence="4883966" subType="INCREMENTAL">97</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:22:32.038151Z" sequence="4883976" subType="INCREMENTAL">98</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:22:34.913337Z" sequence="4883996" subType="INCREMENTAL">99</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:22:36.006930Z" sequence="4884014" subType="INCREMENTAL">100</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:22:36.694427Z" sequence="4884031" subType="INCREMENTAL">102</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:22:38.835034Z" sequence="4884051" subType="INCREMENTAL">103</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:22:41.366286Z" sequence="4884077" subType="INCREMENTAL">104</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:22:42.444402Z" sequence="4884088" subType="INCREMENTAL">105</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:22:47.100665Z" sequence="4884124" subType="INCREMENTAL">106</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:22:48.194418Z" sequence="4884134" subType="INCREMENTAL">107</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:22:51.022537Z" sequence="4884150" subType="INCREMENTAL">108</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:22:51.772529Z" sequence="4884167" subType="INCREMENTAL">110</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:22:52.819412Z" sequence="4884184" subType="INCREMENTAL">111</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:22:54.600662Z" sequence="4884204" subType="INCREMENTAL">112</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:22:57.506904Z" sequence="4884235" subType="INCREMENTAL">113</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:22:58.210031Z" sequence="4884247" subType="INCREMENTAL">114</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:23:03.241287Z" sequence="4884280" subType="INCREMENTAL">115</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:23:03.975671Z" sequence="4884289" subType="INCREMENTAL">116</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:23:06.803813Z" sequence="4884306" subType="INCREMENTAL">117</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:23:07.944413Z" sequence="4884323" subType="INCREMENTAL">119</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:23:08.616299Z" sequence="4884340" subType="INCREMENTAL">120</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:23:10.397534Z" sequence="4884359" subType="INCREMENTAL">121</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:23:13.288183Z" sequence="4884391" subType="INCREMENTAL">122</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:23:14.350665Z" sequence="4884401" subType="INCREMENTAL">123</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:23:19.053781Z" sequence="4884433" subType="INCREMENTAL">124</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:23:20.835027Z" sequence="4884451" subType="INCREMENTAL">125</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:23:22.632383Z" sequence="4884466" subType="INCREMENTAL">126</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:23:23.726119Z" sequence="4884481" subType="INCREMENTAL">127</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:23:24.413626Z" sequence="4884498" subType="INCREMENTAL">129</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:23:26.554254Z" sequence="4884521" subType="INCREMENTAL">130</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:23:29.413638Z" sequence="4884558" subType="INCREMENTAL">131</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:23:31.226122Z" sequence="4884576" subType="INCREMENTAL">132</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:23:34.835503Z" sequence="4884602" subType="INCREMENTAL">133</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:23:36.616755Z" sequence="4884619" subType="INCREMENTAL">134</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:23:39.491758Z" sequence="4884639" subType="INCREMENTAL">136</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:23:40.585516Z" sequence="4884652" subType="INCREMENTAL">137</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:23:41.288629Z" sequence="4884670" subType="INCREMENTAL">138</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:23:43.101122Z" sequence="4884681" subType="INCREMENTAL">139</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:23:45.991746Z" sequence="4884709" subType="INCREMENTAL">140</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:23:47.054252Z" sequence="4884719" subType="INCREMENTAL">141</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:23:51.742543Z" sequence="4884756" subType="INCREMENTAL">142</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:23:52.508177Z" sequence="4884766" subType="INCREMENTAL">143</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:23:55.351927Z" sequence="4884785" subType="INCREMENTAL">144</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:23:56.430035Z" sequence="4884802" subType="INCREMENTAL">146</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:23:57.148804Z" sequence="4884818" subType="INCREMENTAL">147</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:23:58.961283Z" sequence="4884837" subType="INCREMENTAL">148</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:24:01.820697Z" sequence="4884867" subType="INCREMENTAL">149</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:24:02.914434Z" sequence="4884878" subType="INCREMENTAL">150</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:24:07.601932Z" sequence="4884911" subType="INCREMENTAL">151</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:24:09.383158Z" sequence="4884926" subType="INCREMENTAL">152</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:24:11.523795Z" sequence="4884938" subType="INCREMENTAL">153</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:24:12.258160Z" sequence="4884955" subType="INCREMENTAL">154</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:24:13.336290Z" sequence="4884971" subType="INCREMENTAL">156</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:24:16.180040Z" sequence="4884996" subType="INCREMENTAL">157</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:24:17.976917Z" sequence="4885018" subType="INCREMENTAL">158</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:24:19.789431Z" sequence="4885032" subType="INCREMENTAL">159</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:24:24.398872Z" sequence="4885057" subType="INCREMENTAL">160</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:24:25.476997Z" sequence="4885067" subType="INCREMENTAL">161</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:24:28.398856Z" sequence="4885087" subType="INCREMENTAL">163</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:24:29.102688Z" sequence="4885100" subType="INCREMENTAL">164</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:24:30.165212Z" sequence="4885118" subType="INCREMENTAL">165</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:24:31.978134Z" sequence="4885126" subType="INCREMENTAL">166</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:24:34.822011Z" sequence="4885155" subType="INCREMENTAL">167</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:24:35.931386Z" sequence="4885163" subType="INCREMENTAL">168</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:24:40.572012Z" sequence="4885187" subType="INCREMENTAL">169</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:24:41.306402Z" sequence="4885197" subType="INCREMENTAL">170</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:24:44.165776Z" sequence="4885217" subType="INCREMENTAL">171</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:24:45.228274Z" sequence="4885234" subType="INCREMENTAL">173</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:24:45.947435Z" sequence="4885242" subType="INCREMENTAL">174</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:24:47.009522Z" sequence="4885250" subType="INCREMENTAL">175</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:24:50.572031Z" sequence="4885276" subType="INCREMENTAL">176</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:24:51.634513Z" sequence="4885289" subType="INCREMENTAL">5</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:24:56.275134Z" sequence="4885301" subType="INCREMENTAL">6</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:24:58.056419Z" sequence="4885325" subType="INCREMENTAL">7</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:25:00.197024Z" sequence="4885345" subType="INCREMENTAL">9</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:25:03.040788Z" sequence="4885371" subType="INCREMENTAL">10</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:25:03.775153Z" sequence="4885379" subType="INCREMENTAL">11</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:25:44.151253Z" sequence="4885570" subType="INCREMENTAL">12</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:25:45.932507Z" sequence="4885585" subType="INCREMENTAL">13</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:25:48.791873Z" sequence="4885608" subType="INCREMENTAL">15</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:25:50.588763Z" sequence="4885625" subType="INCREMENTAL">16</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:25:51.666888Z" sequence="4885637" subType="INCREMENTAL">18</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:25:53.448141Z" sequence="4885660" subType="INCREMENTAL">19</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:25:55.229421Z" sequence="4885673" subType="INCREMENTAL">20</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:26:35.635981Z" sequence="4885851" subType="INCREMENTAL">21</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:26:36.354715Z" sequence="4885860" subType="INCREMENTAL">22</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:26:39.214310Z" sequence="4885882" subType="INCREMENTAL">24</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:26:42.089326Z" sequence="4885905" subType="INCREMENTAL">27</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:26:44.933500Z" sequence="4885930" subType="INCREMENTAL">28</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:26:46.714722Z" sequence="4885943" subType="INCREMENTAL">29</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:27:26.732166Z" sequence="4886134" subType="INCREMENTAL">30</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:27:27.810302Z" sequence="4886143" subType="INCREMENTAL">31</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:27:30.685315Z" sequence="4886161" subType="INCREMENTAL">33</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:27:32.466560Z" sequence="4886178" subType="INCREMENTAL">34</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:27:33.529059Z" sequence="4886185" subType="INCREMENTAL">36</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:27:36.372794Z" sequence="4886210" subType="INCREMENTAL">37</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:27:37.091572Z" sequence="4886218" subType="INCREMENTAL">38</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:28:17.545707Z" sequence="4886400" subType="INCREMENTAL">39</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:28:19.342573Z" sequence="4886416" subType="INCREMENTAL">40</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:28:22.248814Z" sequence="4886437" subType="INCREMENTAL">42</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:28:24.061323Z" sequence="4886455" subType="INCREMENTAL">43</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:28:25.108201Z" sequence="4886467" subType="INCREMENTAL">45</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:28:27.967561Z" sequence="4886497" subType="INCREMENTAL">46</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:28:28.655858Z" sequence="4886507" subType="INCREMENTAL">47</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:29:09.781325Z" sequence="4886704" subType="INCREMENTAL">48</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:29:10.500066Z" sequence="4886713" subType="INCREMENTAL">49</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:29:13.359426Z" sequence="4886732" subType="INCREMENTAL">51</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:29:16.250080Z" sequence="4886753" subType="INCREMENTAL">53</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:29:17.296928Z" sequence="4886765" subType="INCREMENTAL">54</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:29:19.078177Z" sequence="4886787" subType="INCREMENTAL">55</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:29:20.875055Z" sequence="4886803" subType="INCREMENTAL">56</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:30:00.984436Z" sequence="4886989" subType="INCREMENTAL">57</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:30:02.062575Z" sequence="4886998" subType="INCREMENTAL">58</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:30:04.921942Z" sequence="4887020" subType="INCREMENTAL">60</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:30:07.796922Z" sequence="4887044" subType="INCREMENTAL">62</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:30:08.515700Z" sequence="4887057" subType="INCREMENTAL">63</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:30:11.359420Z" sequence="4887086" subType="INCREMENTAL">64</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:30:12.421935Z" sequence="4887095" subType="INCREMENTAL">65</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:30:52.627666Z" sequence="4887284" subType="INCREMENTAL">66</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:30:54.424562Z" sequence="4887302" subType="INCREMENTAL">67</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:30:56.565208Z" sequence="4887316" subType="INCREMENTAL">68</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:30:57.283957Z" sequence="4887332" subType="INCREMENTAL">69</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:30:59.065179Z" sequence="4887349" subType="INCREMENTAL">71</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:31:00.846938Z" sequence="4887366" subType="INCREMENTAL">72</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:31:02.987528Z" sequence="4887388" subType="INCREMENTAL">73</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:31:04.784434Z" sequence="4887403" subType="INCREMENTAL">74</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:31:44.784961Z" sequence="4887587" subType="INCREMENTAL">75</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:31:45.863136Z" sequence="4887598" subType="INCREMENTAL">76</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:31:48.738103Z" sequence="4887621" subType="INCREMENTAL">78</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:31:51.613101Z" sequence="4887645" subType="INCREMENTAL">80</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:31:52.347555Z" sequence="4887657" subType="INCREMENTAL">81</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:31:55.191306Z" sequence="4887691" subType="INCREMENTAL">82</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:31:56.972585Z" sequence="4887705" subType="INCREMENTAL">83</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:32:37.410520Z" sequence="4887898" subType="INCREMENTAL">84</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:32:38.160534Z" sequence="4887908" subType="INCREMENTAL">85</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:32:41.019886Z" sequence="4887927" subType="INCREMENTAL">87</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:32:43.863644Z" sequence="4887951" subType="INCREMENTAL">89</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:32:44.941763Z" sequence="4887963" subType="INCREMENTAL">90</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:32:47.785518Z" sequence="4887992" subType="INCREMENTAL">91</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:32:48.519890Z" sequence="4888000" subType="INCREMENTAL">92</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:33:29.662028Z" sequence="4888157" subType="INCREMENTAL">93</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:33:30.724540Z" sequence="4888168" subType="INCREMENTAL">94</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:33:33.240543Z" sequence="4888191" subType="INCREMENTAL">96</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:33:35.053034Z" sequence="4888207" subType="INCREMENTAL">97</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:33:36.131168Z" sequence="4888215" subType="INCREMENTAL">98</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:33:38.990533Z" sequence="4888240" subType="INCREMENTAL">99</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:33:40.053026Z" sequence="4888250" subType="INCREMENTAL">100</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:34:21.007532Z" sequence="4888500" subType="INCREMENTAL">101</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:35:06.836672Z" sequence="4888769" subType="INCREMENTAL">102</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:35:08.664798Z" sequence="4888788" subType="INCREMENTAL">103</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:35:11.524182Z" sequence="4888811" subType="INCREMENTAL">105</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:35:13.305408Z" sequence="4888831" subType="INCREMENTAL">106</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:35:14.367924Z" sequence="4888848" subType="INCREMENTAL">108</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:35:17.227308Z" sequence="4888877" subType="INCREMENTAL">109</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:35:18.289784Z" sequence="4888886" subType="INCREMENTAL">110</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:36:01.789776Z" sequence="4889139" subType="INCREMENTAL">111</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:36:47.884824Z" sequence="4889394" subType="INCREMENTAL">112</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:36:49.681687Z" sequence="4889411" subType="INCREMENTAL">113</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:36:52.603557Z" sequence="4889435" subType="INCREMENTAL">115</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:36:55.447328Z" sequence="4889465" subType="INCREMENTAL">118</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:36:58.322315Z" sequence="4889492" subType="INCREMENTAL">119</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:37:00.103554Z" sequence="4889506" subType="INCREMENTAL">120</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:37:44.009813Z" sequence="4889760" subType="INCREMENTAL">121</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:38:29.744180Z" sequence="4890010" subType="INCREMENTAL">122</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:38:31.556684Z" sequence="4890026" subType="INCREMENTAL">123</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:38:34.416071Z" sequence="4890047" subType="INCREMENTAL">125</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:38:36.228556Z" sequence="4890068" subType="INCREMENTAL">126</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:38:37.306682Z" sequence="4890085" subType="INCREMENTAL">128</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:38:40.134828Z" sequence="4890114" subType="INCREMENTAL">129</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:38:41.994213Z" sequence="4890127" subType="INCREMENTAL">130</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:39:25.931695Z" sequence="4890378" subType="INCREMENTAL">131</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:40:11.683297Z" sequence="4890645" subType="INCREMENTAL">132</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:40:12.792662Z" sequence="4890654" subType="INCREMENTAL">133</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:40:16.386403Z" sequence="4890684" subType="INCREMENTAL">135</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:40:18.184302Z" sequence="4890703" subType="INCREMENTAL">137</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:40:19.246819Z" sequence="4890720" subType="INCREMENTAL">138</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:40:21.762429Z" sequence="4890747" subType="INCREMENTAL">139</LineNumber>
+          <LineNumber dataItemId="linenumber" timestamp="2026-10-01T11:40:23.934302Z" sequence="4890760" subType="INCREMENTAL">140</LineNumber>
+          <PathFeedrateOverride dataItemId="pfo" timestamp="2026-10-01T11:20:25.004353Z" name="Fovr" sequence="4882814" subType="PROGRAMMED">0</PathFeedrateOverride>
+          <PathFeedrateOverride dataItemId="pfo" timestamp="2026-10-01T11:20:26.785617Z" name="Fovr" sequence="4882823" subType="PROGRAMMED">30</PathFeedrateOverride>
+          <PathFeedrateOverride dataItemId="pfo" timestamp="2026-10-01T11:20:27.863732Z" name="Fovr" sequence="4882833" subType="PROGRAMMED">10</PathFeedrateOverride>
+          <PathFeedrateOverride dataItemId="pfo" timestamp="2026-10-01T11:20:29.644989Z" name="Fovr" sequence="4882842" subType="PROGRAMMED">0</PathFeedrateOverride>
+          <PathFeedrateOverride dataItemId="pfo" timestamp="2026-10-01T11:20:30.707495Z" name="Fovr" sequence="4882851" subType="PROGRAMMED">40</PathFeedrateOverride>
+          <PathFeedrateOverride dataItemId="pfo" timestamp="2026-10-01T11:20:31.816855Z" name="Fovr" sequence="4882856" subType="PROGRAMMED">50</PathFeedrateOverride>
+          <PathFeedrateOverride dataItemId="pfo" timestamp="2026-10-01T11:20:34.676233Z" name="Fovr" sequence="4882893" subType="PROGRAMMED">80</PathFeedrateOverride>
+          <PathFeedrateOverride dataItemId="pfo" timestamp="2026-10-01T11:20:35.379365Z" name="Fovr" sequence="4882901" subType="PROGRAMMED">90</PathFeedrateOverride>
+          <PathFeedrateOverride dataItemId="pfo" timestamp="2026-10-01T11:34:02.663055Z" name="Fovr" sequence="4888392" subType="PROGRAMMED">80</PathFeedrateOverride>
+          <PathFeedrateOverride dataItemId="pfr" timestamp="2026-10-01T11:20:25.004353Z" name="Frapidovr" sequence="4882815" subType="RAPID">5</PathFeedrateOverride>
+          <PathFeedrateOverride dataItemId="pfr" timestamp="2026-10-01T11:20:26.066868Z" name="Frapidovr" sequence="4882816" subType="RAPID">25</PathFeedrateOverride>
+        </Events>
+      </ComponentStream>
+      <ComponentStream component="Linear" name="X" componentId="x">
+        <Events>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:20:32.519994Z" sequence="4882864">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:20:38.238726Z" sequence="4882920">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:20:41.879356Z" sequence="4882940">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:20:47.613740Z" sequence="4882989">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:20:49.380071Z" sequence="4883012">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:20:52.974414Z" sequence="4883049">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:20:57.599395Z" sequence="4883072">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:21:01.521272Z" sequence="4883098">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:21:04.443144Z" sequence="4883133">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:21:08.052524Z" sequence="4883172">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:21:12.771274Z" sequence="4883206">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:21:16.740024Z" sequence="4883238">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:21:17.443169Z" sequence="4883256">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:21:18.552526Z" sequence="4883273">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:21:20.333774Z" sequence="4883295">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:21:23.943150Z" sequence="4883333">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:21:28.584349Z" sequence="4883361">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:21:32.506237Z" sequence="4883389">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:21:35.365595Z" sequence="4883426">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:21:39.771846Z" sequence="4883474">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:21:43.693711Z" sequence="4883502">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:21:49.021852Z" sequence="4883553">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:21:51.163328Z" sequence="4883577">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:21:54.803084Z" sequence="4883617">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:21:59.443720Z" sequence="4883651">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:22:03.365589Z" sequence="4883681">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:22:04.099976Z" sequence="4883698">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:22:05.178096Z" sequence="4883715">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:22:06.974961Z" sequence="4883736">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:22:10.553099Z" sequence="4883776">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:22:15.569366Z" sequence="4883809">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:22:19.147561Z" sequence="4883839">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:22:20.225670Z" sequence="4883856">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:22:20.944428Z" sequence="4883873">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:22:22.725676Z" sequence="4883894">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:22:26.678781Z" sequence="4883938">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:22:31.335058Z" sequence="4883971">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:22:34.913337Z" sequence="4884001">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:22:36.006930Z" sequence="4884019">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:22:36.694427Z" sequence="4884036">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:22:38.835034Z" sequence="4884056">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:22:42.444402Z" sequence="4884093">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:22:47.100665Z" sequence="4884129">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:22:51.022537Z" sequence="4884155">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:22:51.772529Z" sequence="4884172">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:22:52.819412Z" sequence="4884189">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:22:54.600662Z" sequence="4884209">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:22:58.210031Z" sequence="4884251">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:23:03.241287Z" sequence="4884285">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:23:06.803813Z" sequence="4884311">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:23:07.944413Z" sequence="4884328">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:23:08.616299Z" sequence="4884345">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:23:10.397534Z" sequence="4884364">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:23:14.350665Z" sequence="4884406">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:23:19.053781Z" sequence="4884438">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:23:22.632383Z" sequence="4884470">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:23:23.726119Z" sequence="4884486">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:23:24.413626Z" sequence="4884503">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:23:26.554254Z" sequence="4884526">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:23:31.226122Z" sequence="4884581">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:23:34.835503Z" sequence="4884607">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:23:40.585516Z" sequence="4884657">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:23:43.101122Z" sequence="4884686">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:23:47.054252Z" sequence="4884724">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:23:51.742543Z" sequence="4884761">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:23:55.351927Z" sequence="4884790">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:23:56.430035Z" sequence="4884807">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:23:57.148804Z" sequence="4884823">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:23:58.961283Z" sequence="4884842">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:24:02.914434Z" sequence="4884883">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:24:07.601932Z" sequence="4884916">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:24:11.523795Z" sequence="4884943">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:24:12.258160Z" sequence="4884960">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:24:13.336290Z" sequence="4884976">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:24:16.180040Z" sequence="4885001">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:24:19.789431Z" sequence="4885037">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:24:24.398872Z" sequence="4885062">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:24:29.102688Z" sequence="4885105">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:24:31.978134Z" sequence="4885131">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:24:35.931386Z" sequence="4885168">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:24:40.572012Z" sequence="4885192">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:24:44.165776Z" sequence="4885222">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:24:50.572031Z" sequence="4885281">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:24:51.634513Z" sequence="4885294">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:24:56.275134Z" sequence="4885306">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:24:58.056419Z" sequence="4885330">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:25:00.197024Z" sequence="4885350">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:25:03.775153Z" sequence="4885383">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:25:44.151253Z" sequence="4885575">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:25:48.791873Z" sequence="4885613">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:25:51.666888Z" sequence="4885642">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:25:55.229421Z" sequence="4885677">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:26:35.635981Z" sequence="4885856">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:26:39.214310Z" sequence="4885887">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:26:42.089326Z" sequence="4885910">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:26:46.714722Z" sequence="4885948">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:27:26.732166Z" sequence="4886139">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:27:30.685315Z" sequence="4886166">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:27:33.529059Z" sequence="4886190">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:27:37.091572Z" sequence="4886223">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:28:17.545707Z" sequence="4886405">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:28:22.248814Z" sequence="4886442">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:28:25.108201Z" sequence="4886472">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:28:29.764446Z" sequence="4886520">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:29:09.781325Z" sequence="4886709">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:29:13.359426Z" sequence="4886737">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:29:17.296928Z" sequence="4886770">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:29:20.875055Z" sequence="4886807">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:30:00.984436Z" sequence="4886994">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:30:04.921942Z" sequence="4887025">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:30:08.515700Z" sequence="4887062">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:30:12.421935Z" sequence="4887099">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:30:52.627666Z" sequence="4887289">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:30:56.565208Z" sequence="4887321">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:31:00.846938Z" sequence="4887371">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:31:04.784434Z" sequence="4887407">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:31:44.784961Z" sequence="4887592">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:31:48.738103Z" sequence="4887626">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:31:52.347555Z" sequence="4887662">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:31:56.972585Z" sequence="4887709">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:32:37.410520Z" sequence="4887903">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:32:41.019886Z" sequence="4887932">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:32:44.941763Z" sequence="4887968">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:32:48.519890Z" sequence="4888004">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:33:29.662028Z" sequence="4888162">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:33:40.053026Z" sequence="4888255">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:34:21.007532Z" sequence="4888505">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:35:13.305408Z" sequence="4888836">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:35:14.367924Z" sequence="4888853">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:35:18.289784Z" sequence="4888891">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:36:01.789776Z" sequence="4889144">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:37:00.103554Z" sequence="4889511">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:37:44.009813Z" sequence="4889765">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:38:36.228556Z" sequence="4890073">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:38:37.306682Z" sequence="4890090">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:38:41.994213Z" sequence="4890132">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:39:25.931695Z" sequence="4890383">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:40:18.184302Z" sequence="4890708">STOPPED</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:40:19.246819Z" sequence="4890725">TRAVEL</AxisState>
+          <AxisState dataItemId="xaxisstate" timestamp="2026-10-01T11:40:23.934302Z" sequence="4890764">STOPPED</AxisState>
+        </Events>
+      </ComponentStream>
+      <ComponentStream component="Linear" name="Y" componentId="y">
+        <Events>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:20:32.519994Z" sequence="4882869">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:20:47.613740Z" sequence="4882994">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:20:49.380071Z" sequence="4883017">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:21:01.521272Z" sequence="4883103">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:21:04.443144Z" sequence="4883138">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:21:16.740024Z" sequence="4883243">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:21:17.443169Z" sequence="4883261">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:21:18.552526Z" sequence="4883278">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:21:20.333774Z" sequence="4883300">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:21:32.506237Z" sequence="4883394">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:21:35.365595Z" sequence="4883431">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:21:49.021852Z" sequence="4883558">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:21:51.163328Z" sequence="4883582">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:22:03.365589Z" sequence="4883686">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:22:04.099976Z" sequence="4883703">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:22:05.178096Z" sequence="4883720">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:22:06.974961Z" sequence="4883741">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:22:19.147561Z" sequence="4883844">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:22:20.225670Z" sequence="4883861">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:22:20.944428Z" sequence="4883878">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:22:22.725676Z" sequence="4883899">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:22:34.913337Z" sequence="4884006">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:22:36.006930Z" sequence="4884024">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:22:36.694427Z" sequence="4884041">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:22:38.835034Z" sequence="4884061">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:22:51.022537Z" sequence="4884160">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:22:51.772529Z" sequence="4884177">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:22:52.819412Z" sequence="4884194">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:22:54.600662Z" sequence="4884214">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:23:06.803813Z" sequence="4884316">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:23:07.944413Z" sequence="4884333">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:23:08.616299Z" sequence="4884350">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:23:10.397534Z" sequence="4884369">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:23:22.632383Z" sequence="4884475">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:23:23.726119Z" sequence="4884491">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:23:24.413626Z" sequence="4884508">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:23:26.554254Z" sequence="4884531">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:23:40.585516Z" sequence="4884662">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:23:43.101122Z" sequence="4884691">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:23:55.351927Z" sequence="4884795">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:23:56.430035Z" sequence="4884812">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:23:57.148804Z" sequence="4884828">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:23:58.961283Z" sequence="4884847">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:24:11.523795Z" sequence="4884948">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:24:12.258160Z" sequence="4884965">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:24:13.336290Z" sequence="4884981">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:24:16.180040Z" sequence="4885006">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:24:29.102688Z" sequence="4885110">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:24:31.978134Z" sequence="4885136">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:24:44.165776Z" sequence="4885227">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:24:47.009522Z" sequence="4885255">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:24:50.572031Z" sequence="4885286">HOME</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:24:56.275134Z" sequence="4885311">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:24:58.056419Z" sequence="4885335">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:25:00.197024Z" sequence="4885355">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:25:50.588763Z" sequence="4885630">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:25:51.666888Z" sequence="4885647">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:28:24.061323Z" sequence="4886460">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:28:25.108201Z" sequence="4886477">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:29:16.250080Z" sequence="4886758">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:29:17.296928Z" sequence="4886775">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:30:07.796922Z" sequence="4887049">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:30:08.515700Z" sequence="4887067">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:30:56.565208Z" sequence="4887326">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:30:57.283957Z" sequence="4887338">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:30:59.065179Z" sequence="4887354">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:31:00.846938Z" sequence="4887376">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:31:51.613101Z" sequence="4887650">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:31:52.347555Z" sequence="4887667">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:32:43.863644Z" sequence="4887956">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:32:44.941763Z" sequence="4887973">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:34:21.007532Z" sequence="4888510">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:35:06.836672Z" sequence="4888778">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:35:13.305408Z" sequence="4888841">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:35:14.367924Z" sequence="4888858">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:36:01.789776Z" sequence="4889149">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:36:47.884824Z" sequence="4889403">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:37:44.009813Z" sequence="4889770">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:38:29.744180Z" sequence="4890018">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:38:36.228556Z" sequence="4890078">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:38:37.306682Z" sequence="4890095">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:39:25.931695Z" sequence="4890388">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:40:11.683297Z" sequence="4890653">TRAVEL</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:40:18.184302Z" sequence="4890713">STOPPED</AxisState>
+          <AxisState dataItemId="yaxisstate" timestamp="2026-10-01T11:40:19.246819Z" sequence="4890730">TRAVEL</AxisState>
+        </Events>
+      </ComponentStream>
+      <ComponentStream component="Linear" name="Z" componentId="z">
+        <Events>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:20:26.785617Z" sequence="4882822">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:20:27.535605Z" sequence="4882831">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:20:30.707495Z" sequence="4882850">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:20:33.238751Z" sequence="4882886">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:20:47.613740Z" sequence="4882999">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:20:49.380071Z" sequence="4883022">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:21:01.521272Z" sequence="4883108">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:21:04.443144Z" sequence="4883143">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:21:16.740024Z" sequence="4883248">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:21:17.443169Z" sequence="4883266">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:21:18.552526Z" sequence="4883282">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:21:20.333774Z" sequence="4883305">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:21:32.506237Z" sequence="4883399">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:21:36.068716Z" sequence="4883447">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:21:49.021852Z" sequence="4883563">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:21:51.163328Z" sequence="4883587">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:22:03.365589Z" sequence="4883691">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:22:04.099976Z" sequence="4883708">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:22:05.178096Z" sequence="4883725">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:22:06.974961Z" sequence="4883746">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:22:19.147561Z" sequence="4883849">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:22:20.225670Z" sequence="4883866">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:22:20.944428Z" sequence="4883882">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:22:22.725676Z" sequence="4883904">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:22:34.913337Z" sequence="4884011">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:22:36.006930Z" sequence="4884029">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:22:36.694427Z" sequence="4884046">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:22:38.835034Z" sequence="4884065">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:22:51.022537Z" sequence="4884165">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:22:51.772529Z" sequence="4884182">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:22:52.819412Z" sequence="4884199">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:22:54.600662Z" sequence="4884219">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:23:06.803813Z" sequence="4884321">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:23:07.944413Z" sequence="4884338">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:23:08.616299Z" sequence="4884355">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:23:10.397534Z" sequence="4884374">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:23:22.632383Z" sequence="4884479">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:23:23.726119Z" sequence="4884496">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:23:24.413626Z" sequence="4884513">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:23:27.288621Z" sequence="4884549">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:23:40.585516Z" sequence="4884667">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:23:43.101122Z" sequence="4884695">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:23:55.351927Z" sequence="4884800">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:23:56.430035Z" sequence="4884817">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:23:57.148804Z" sequence="4884833">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:23:58.961283Z" sequence="4884852">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:24:11.523795Z" sequence="4884953">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:24:12.258160Z" sequence="4884970">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:24:13.336290Z" sequence="4884986">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:24:16.180040Z" sequence="4885011">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:24:29.102688Z" sequence="4885115">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:24:31.978134Z" sequence="4885141">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:24:44.165776Z" sequence="4885232">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:24:45.228274Z" sequence="4885239">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:24:45.947435Z" sequence="4885247">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:24:47.009522Z" sequence="4885260">HOME</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:24:58.056419Z" sequence="4885340">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:25:00.197024Z" sequence="4885360">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:25:50.588763Z" sequence="4885635">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:25:51.666888Z" sequence="4885652">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:28:24.061323Z" sequence="4886465">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:28:25.108201Z" sequence="4886482">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:29:16.250080Z" sequence="4886763">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:29:17.296928Z" sequence="4886779">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:30:07.796922Z" sequence="4887054">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:30:08.515700Z" sequence="4887071">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:30:56.565208Z" sequence="4887330">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:30:57.283957Z" sequence="4887343">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:30:59.065179Z" sequence="4887359">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:31:00.846938Z" sequence="4887381">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:31:51.613101Z" sequence="4887655">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:31:53.394437Z" sequence="4887684">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:32:43.863644Z" sequence="4887961">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:32:44.941763Z" sequence="4887978">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:35:13.305408Z" sequence="4888846">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:35:14.367924Z" sequence="4888863">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:38:36.228556Z" sequence="4890083">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:38:37.306682Z" sequence="4890100">STOPPED</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:40:18.184302Z" sequence="4890718">TRAVEL</AxisState>
+          <AxisState dataItemId="zaxisstate" timestamp="2026-10-01T11:40:19.246819Z" sequence="4890734">STOPPED</AxisState>
+        </Events>
+      </ComponentStream>
+    </DeviceStream>
+  </Streams>
+</MTConnectStreams>

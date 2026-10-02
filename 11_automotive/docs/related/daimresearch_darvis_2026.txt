@@ -1,0 +1,109 @@
+SOURCE: https://www.venturesquare.net/1109135/
+FETCHED: 2026-10-02
+
+ 
+ “멈춘 로봇 몇 대?”…다임리서치, 공장 데이터 읽는 AI 에이전트 만든다 
+ -->
+ StartupSquare 
+ Startup News 
+ Venturesquare 투자(200+) 
+ FAQ 
+ k 
+ ch 
+ bl 
+ fb 
+ fd 
+ ml 
+ Search 
+-->
+ -->
+ × 
+ 검색하기 
+ Ventursquare news 
+ 2026년 10월 02일 (금) 
+ Venturesquare 투자(200+) 
+ 투자포트폴리오 & 관련기사 
+ FAQ 
+ 보도자료 접수/게재 등 
+ 광고문의/광고상품소개서 
+ 문의하기 
+ “멈춘 로봇 몇 대?”…다임리서치, 공장 데이터 읽는 AI 에이전트 만든다 
+ 이호림 기자 2026년 8월 27일 
+ 중기부·인텔 ‘인지니어스’ 선정…인텔 AI 추론 최적화 기술 적용한 ‘다비스’ 개발 
+ 30개 고객사·50여 개 제조 공정 데이터 활용…2027년 상반기 출시 후 북미·아시아 진출 
+ 반도체와 2차전지 공장에서는 수백 대에서 수천 대의 물류로봇과 자동화 설비가 동시에 움직인다. 로봇 한 대가 멈추거나 특정 설비에 장애가 발생하면 뒤따르는 작업과 생산 일정도 영향을 받을 수 있다. 운영 인력이 수많은 장비의 상태와 작업 이력, 장애 데이터를 일일이 확인해 원인을 찾는 데에는 시간과 경험이 필요하다. 다임리서치는 현장 관리자가 자연어로 질문하면 실제 공장 데이터를 분석해 답변하고 장애 원인과 대응 방안을 제시하는 제조·물류 AI 에이전트를 개발한다. 
+ 피지컬 AI 전문기업 다임리서치는 중소벤처기업부의 글로벌 기업 협업 프로그램 가운데 인텔과 연계해 운영되는 AI 오픈이노베이션 프로그램 ‘인지니어스(InGenius)’에 최종 선정됐다. 인지니어스는 AI 분야의 기술기업을 발굴해 인텔의 플랫폼과 기술을 활용한 제품 고도화와 해외시장 진출을 지원하는 프로그램이다. 다임리서치는 인텔의 AI 추론 최적화 기술을 적용해 제조·물류 현장에 특화된 AI 에이전트 ‘다비스(DARVIS)’를 개발한다. 
+ 다임리서치, AI 오픈이노베이션 프로그램 ‘인지니어스’ 최종 선정 (자료 제공: 다임리서치) 
+ 다비스는 공장 외부의 클라우드로 데이터를 전송하지 않고 현장 내부에서 구동하는 온프레미스 방식으로 설계된다. 생산설비와 로봇의 운영 데이터를 내부에 유지하면서 AI 분석 기능을 사용할 수 있어 데이터 보안이 중요한 제조기업의 요구에 대응한다. 
+ 다임리서치는 다비스 개발에 앞서 서로 다른 물류로봇을 하나의 시스템에서 관리하는 통합관제 솔루션 ‘xMS’를 구축했다. xMS는 제조 공정에 투입된 로봇의 위치와 상태, 작업 배정, 이동 경로, 가동 이력 등을 수집하고 여러 장비의 움직임을 통합 관리한다. 
+ 현재 xMS는 국내 30개 고객사의 50여 개 제조 공정에 적용되거나 실증을 진행했다. 다임리서치는 이 과정에서 로봇 상태와 작업 이력, 설비 가동 정보, 장애 기록 등 제조·물류 현장의 운영 데이터를 축적했다. 
+ 개별 로봇의 움직임만 제어하는 방식과 달리 공장 전체의 생산 흐름을 기준으로 경로와 작업, 운행 일정을 계산하는 것이 다임리서치 로봇 관제 기술의 특징이다. 반도체·2차전지처럼 다수의 로봇이 동시에 움직이는 환경에서 충돌과 대기시간, 작업 병목을 줄이는 데 활용된다. 
+ 로봇 상태 확인에서 생산 차질 예측까지 
+ 다비스는 xMS에 축적된 운영 데이터를 AI로 분석해 현장 관리자의 판단을 지원한다. 관리자가 “현재 멈춰 있는 로봇은 몇 대인가”라고 질문하면 개별 장비의 상태를 조회해 답변하고, 정지한 로봇과 발생한 오류를 구분해 제시한다. 
+ “특정 설비가 멈추면 생산라인에 어떤 영향을 미치는가”와 같은 질문에도 작업 흐름과 설비 데이터를 바탕으로 관련 공정과 예상되는 영향을 설명한다. 장애가 발생하면 운영 이력과 상태 정보를 분석해 원인 후보와 담당자가 확인해야 할 대응 방안을 제안한다. 
+ 관리자는 여러 화면과 로그를 각각 확인하는 대신 자연어 질의를 통해 필요한 정보를 찾을 수 있다. 다임리서치는 반복적인 상태 점검과 장애 원인 분석 시간을 줄이고, 다수의 로봇과 설비가 연결된 현장에서 관리자가 우선 대응할 작업을 정하도록 지원한다는 구상이다. 
+ 향후에는 자체 제조·물류 디지털트윈 시뮬레이터 ‘xSIM’과 다비스를 연결한다. 현재와 과거의 운영 데이터를 설명하는 기능에서 나아가 생산량 변화나 설비 장애가 전체 공정에 미칠 영향을 가상환경에서 미리 분석하는 방식이다. 
+ 예를 들어 생산계획이 달라지거나 설비 한 대가 멈췄을 때 로봇의 이동과 작업 배정, 후속 공정의 처리량이 어떻게 변하는지 시뮬레이션한다. 분석 결과를 바탕으로 대체 작업 경로와 설비 운영 방안까지 제시할 수 있도록 예측 기능을 고도화할 계획이다. 
+ 다임리서치는 기존 고객사의 제조·물류 현장에서 다비스를 실증한 뒤 2027년 상반기 ‘다비스 1.0’을 정식 출시할 예정이다. 이후 디지털트윈 기반 예측 기능을 단계적으로 추가하고 인텔의 글로벌 네트워크를 활용해 북미와 아시아 제조시장 진출을 추진한다. 
+ 다임리서치는 삼성전자와 LG전자, SK온, 포스코DX 등과 제조·물류 자동화 프로젝트를 수행해 왔다. 기존 통합관제와 디지털트윈 사업에서 확보한 현장 적용 경험을 다비스의 학습·검증 기반으로 활용한다. 
+ 다임리서치 관계자는 “로봇과 자동화 설비가 빠르게 늘어나면서 사람이 모든 운영 데이터를 확인하고 판단하는 기존 방식에는 한계가 있다”며 “인텔의 AI 기술과 다임리서치가 축적한 제조·물류 데이터 및 로봇 관제 기술을 결합해 실제 제조 현장에서 활용할 수 있는 산업용 AI 에이전트를 구현하겠다”고 말했다. 
+ Facebook Twitter LinkedIn Print Like this: Like Loading... 
+ Related 
+ DARVIS 다비스 다임리서치 디지털트윈 물류로봇 인지니어스 인텔 자율제조 제조AI 피지컬AI 
+ “How many stopped robots?”… Dime Research to develop AI agent that reads factory data 
+ In semiconductor and secondary battery factories, hundreds to thousands of logistics robots and automated equipment operate simultaneously. If a single robot stops or a specific piece of equipment fails, subsequent tasks and production schedules can be affected. It requires time and experience for operational personnel to manually check the status, work history, and failure data of numerous pieces of equipment to identify the cause. Daim Research is developing a manufacturing and logistics AI agent that analyzes actual factory data to respond to questions asked by field managers in natural language, and suggests the cause of the failure and countermeasures. 
+ Dime Research, a company specializing in physical AI, has been finally selected for 'InGenius,' an AI open innovation program operated in partnership with Intel as part of the Ministry of SMEs and Startups' global corporate collaboration program. InGenius is a program designed to discover technology companies in the AI field and support product enhancement and entry into overseas markets by leveraging Intel's platforms and technologies. Dime Research will develop 'DARVIS,' an AI agent specialized for manufacturing and logistics environments, by applying Intel's AI inference optimization technology. 
+ Dime Research Selected for AI Open Innovation Program 'Ingenious' (Source: Dime Research) 
+ Davis is designed as an on-premise system that operates within the factory site without transmitting data to an external cloud. By maintaining operational data from production equipment and robots internally while enabling the use of AI analysis capabilities, it meets the requirements of manufacturing companies where data security is critical. 
+ Prior to the development of Davis, Daim Research established 'xMS,' an integrated control solution that manages different logistics robots within a single system. xMS collects data on the location, status, task assignments, movement paths, and operational history of robots deployed in manufacturing processes, and provides integrated management of the movements of various equipment. 
+ Currently, xMS has been applied to or demonstrated in over 50 manufacturing processes at 30 domestic client companies. During this process, Daim Research has accumulated operational data from manufacturing and logistics sites, including robot status, work history, equipment operation information, and fault records. 
+ Unlike methods that control only the movement of individual robots, Daim Research's robot control technology is characterized by calculating paths, tasks, and operation schedules based on the entire factory's production flow. It is utilized to reduce collisions, waiting times, and operational bottlenecks in environments where multiple robots move simultaneously, such as in the semiconductor and secondary battery industries. 
+ From checking robot status to predicting production disruptions 
+ Davis supports field managers' decision-making by analyzing operational data accumulated in xMS using AI. When a manager asks, "How many robots are currently stopped?", it checks the status of individual equipment to provide an answer, distinguishing between stopped robots and errors that have occurred. 
+ For questions such as “What impact does a specific piece of equipment have on the production line?”, it explains the relevant processes and expected effects based on workflow and equipment data. In the event of a failure, it analyzes operational history and status information to propose potential causes and response measures that the responsible personnel must verify. 
+ Instead of checking multiple screens and logs individually, managers can find necessary information through natural language queries. Dime Research envisions reducing the time spent on repetitive status checks and fault analysis, and supporting managers in determining priority tasks in field environments where multiple robots and equipment are connected. 
+ In the future, Davis will be connected with the proprietary manufacturing and logistics digital twin simulator, 'xSIM'. This goes beyond the function of explaining current and historical operational data to a method that analyzes in advance, within a virtual environment, the impact of changes in production volume or equipment failures on the entire process. 
+ For example, it simulates how robot movement, work assignment, and the throughput of subsequent processes change when production plans change or a piece of equipment stops. Based on the analysis results, we plan to enhance the prediction function to suggest alternative work paths and equipment operation plans. 
+ Dime Research plans to officially launch 'Davis 1.0' in the first half of 2027 after demonstrating Davis at the manufacturing and logistics sites of existing clients. Subsequently, it will gradually add digital twin-based prediction capabilities and pursue entry into the North American and Asian manufacturing markets by leveraging Intel's global network. 
+ Daim Research has been carrying out manufacturing and logistics automation projects with companies such as Samsung Electronics, LG Electronics, SK On, and POSCO DX. It leverages the field application experience acquired from its existing integrated control and digital twin businesses as the learning and verification foundation for Davis. 
+ "As robots and automation facilities rapidly increase, the existing method of humans reviewing and judging all operational data has its limitations," said a Dime Research official. "By combining Intel's AI technology with Dime Research's accumulated manufacturing and logistics data and robot control technology, we aim to implement an industrial AI agent that can be utilized in actual manufacturing sites." 
+ 「止まったロボットは何台？」…ダイムリサーチ、工場データを読むAIエージェントを作る 
+ 半導体と二次電池工場では、数百台から数千台の物流ロボットと自動化設備が同時に動く。ロボット1台が停止したり、特定の設備に障害が発生した場合、後続の作業や生産スケジュールも影響を受ける可能性がある。運営人員が数多くの機器の状態や作業履歴、障害データを毎日確認して原因を探すには時間と経験が必要だ。ダイムリサーチは、現場管理者が自然言語で質問すると、実際の工場データを分析して回答し、障害原因と対応方案を提示する製造・物流AIエージェントを開発する。 
+ フィジカルAI専門企業ダイムリサーチは、中小ベンチャー企業部のグローバル企業協業プログラムの中で、インテルと連携して運営されるAIオープンイノベーションプログラム「InGenius(InGenius)」に最終選定された。インジニアスはAI分野の技術企業を発掘し、インテルのプラットフォームと技術を活用した製品の高度化と海外市場進出を支援するプログラムだ。ダイムリサーチはインテルのAI推論最適化技術を適用し、製造・物流現場に特化したAIエージェント「DARVIS」を開発する。 
+ ダイムリサーチ、AIオープンイノベーションプログラム「インジニアス」最終選定（資料提供：ダイムリサーチ） 
+ ダビスは、工場外のクラウドにデータを転送せずに現場内で駆動するオンプレミス方式で設計されています。生産設備とロボットの運用データを内部に維持しながらAI分析機能を使用することができ、データセキュリティが重要な製造企業のニーズに対応する。 
+ ダイムリサーチは、ダビス開発に先立ち、異なる物流ロボットを一つのシステムで管理する統合管制ソリューション「xMS」を構築した。 xMSは製造工程に投入されたロボットの位置と状態、作業配分、移動経路、可動履歴などを収集し、複数の機器の動きを統合管理する。 
+ 現在、xMSは国内30社の顧客会社の50社以上の製造工程に適用されるか、実証を進めている。ダイムリサーチはこの過程でロボットの状態と作業履歴、設備稼働情報、障害記録など製造・物流現場の運営データを蓄積した。 
+ 個々のロボットの動きだけを制御する方式とは異なり、工場全体の生産フローを基準に経路と作業、運行スケジュールを計算することがダイムリサーチロボット管制技術の特徴だ。半導体・二次電池のように多数のロボットが同時に動く環境で衝突や待ち時間、作業ボトルネックを減らすのに活用される。 
+ ロボット状態確認から生産支障予測まで 
+ ダビスはxMSに蓄積された運営データをAIで分析し、現場管理者の判断を支援する。管理者が「現在停止しているロボットは何台か」と質問すると、個別装備の状態を照会して回答し、停止したロボットと発生したエラーを区別して提示する。 
+ 「特定の設備が停止すると生産ラインにどのような影響を及ぼすのか」などの質問にも、ワークフローと設備データに基づいて関連工程と予想される影響について説明する。障害が発生した場合、運営履歴と状態情報を分析し、原因候補と担当者が確認すべき対応策を提案する。 
+ 管理者は、複数の画面とログをそれぞれ確認するのではなく、自然言語クエリを通じて必要な情報を見つけることができます。ダイムリサーチは、繰り返しの状態チェックと障害原因分析時間を短縮し、多数のロボットと設備が接続された現場で管理者がまず対応する作業を定めるように支援するという構想だ。 
+ 今後は自社製造・物流デジタルツインシミュレータ「xSIM」とダビスを連結する。現在と過去の運用データを説明する機能から、生産量の変化や設備障害が全工程に与える影響を仮想環境であらかじめ分析する方式だ。 
+ 例えば、生産計画が変わったり、設備一台が停止したときにロボットの移動と作業配分、後続工程のスループットがどのように変化するかシミュレーションする。分析結果をもとに代替作業経路と設備運営方案まで提示できるように予測機能を高度化する計画だ。 
+ ダイムリサーチは既存の顧客会社の製造・物流現場でダビスを実証した後、2027年上半期「ダビス1.0」を正式発売する予定だ。その後、デジタルツインベースの予測機能を段階的に追加し、インテルのグローバルネットワークを活用して北米とアジアの製造市場への進出を推進する。 
+ ダイムリサーチはサムスン電子とLG電子、SKオン、ポスコDXなどと製造・物流自動化プロジェクトを行ってきた。既存統合管制とデジタルツイン事業で確保した現場適用経験をダビスの学習・検証基盤として活用する。 
+ ダイムリサーチ関係者は「ロボットと自動化設備が急速に増え、人がすべての運用データを確認して判断する既存の方式には限界がある」とし「インテルのAI技術とダイムリサーチが蓄積した製造・物流データおよびロボット管制技術を組み合わせて、実際の製造現場で活用できる産業用AIエージェントを実装した」 
+ “有多少机器人停工了？”……Dime Research公司将开发一款能够读取工厂数据的AI代理。 
+ 在半导体和二次电池工厂中，成百上千台物流机器人和自动化设备同时运行。如果一台机器人停止工作或某台设备发生故障，后续任务和生产计划都会受到影响。操作人员需要花费大量时间和经验，手动检查众多设备的状态、工作历史记录和故障数据，才能找出故障原因。Daim Research 正在开发一款制造和物流人工智能代理，该代理能够分析实际工厂数据，以自然语言回答现场管理人员提出的问题，并给出故障原因和应对措施。 
+ 专注于物理人工智能的Dime Research公司最终入选“InGenius”项目。“InGenius”是由中小企业和创业部与英特尔合作推出的人工智能开放创新计划，也是其全球企业合作项目的一部分。该计划旨在发掘人工智能领域的技术公司，并利用英特尔的平台和技术，支持其产品改进和海外市场拓展。Dime Research将运用英特尔的人工智能推理优化技术，开发一款名为“DARVIS”的人工智能代理，该代理专为制造和物流环境而设计。 
+ Dime Research入选人工智能开放创新计划“Ingenious”（来源：Dime Research） 
+ Davis 是一款本地部署系统，无需将数据传输到外部云端即可在工厂内部运行。它通过在内部维护生产设备和机器人的运行数据，同时启用人工智能分析功能，满足了对数据安全要求极高的制造企业的需求。 
+ 在Davis机器人问世之前，Daim Research公司开发了名为“xMS”的集成控制解决方案，该方案可在单一系统中管理不同的物流机器人。xMS能够收集制造过程中部署的机器人的位置、状态、任务分配、移动路径和运行历史记录等数据，并对各种设备的移动进行集成管理。 
+ 目前，xMS已在30家国内客户企业的50多个制造流程中得到应用或验证。在此过程中，大盟研究积累了来自制造和物流现场的运行数据，包括机器人状态、工作历史记录、设备运行信息和故障记录。 
+ 与仅控制单个机器人运动的方法不同，Daim Research 的机器人控制技术以整个工厂的生产流程为基础，计算路径、任务和作业计划。该技术用于减少多台机器人同时运行环境中的碰撞、等待时间和作业瓶颈，例如半导体和二次电池行业。 
+ 从检查机器人状态到预测生产中断 
+ Davis 利用人工智能分析 xMS 中积累的运行数据，从而辅助现场管理人员进行决策。例如，当管理人员询问“当前有多少台机器人处于停止状态？”时，系统会检查每台设备的状态，并区分停止运行的机器人和发生的故障，从而给出答案。 
+ 对于诸如“特定设备对生产线有何影响？”之类的问题，它会根据工作流程和设备数据解释相关流程和预期影响。如果发生故障，它会分析运行历史记录和状态信息，提出潜在原因和应对措施，供相关人员核实。 
+ 管理人员无需逐个查看多个屏幕和日志，即可通过自然语言查询找到所需信息。Dime Research 旨在减少重复性状态检查和故障分析所花费的时间，并帮助管理人员在多个机器人和设备互联的现场环境中确定优先事项。 
+ 未来，戴维斯将与专有的制造和物流数字孪生模拟器“xSIM”连接起来。这不仅能够解释当前和历史运营数据，还能在虚拟环境中预先分析生产量变化或设备故障对整个流程的影响。 
+ 例如，它可以模拟生产计划变更或设备停机时，机器人运动、工作分配以及后续工序吞吐量的变化情况。基于分析结果，我们计划增强预测功能，以便推荐替代的工作路径和设备运行方案。 
+ Dime Research计划在2027年上半年正式发布“Davis 1.0”，此前该公司已在现有客户的制造和物流场所演示了Davis。随后，该公司将逐步增加基于数字孪生的预测功能，并借助英特尔的全球网络进军北美和亚洲制造业市场。 
+ Daim Research 一直与三星电子、LG 电子、SK On 和 POSCO DX 等公司合作开展制造和物流自动化项目。它将从现有的集成控制和数字孪生业务中获得的现场应用经验作为 Davis 的学习和验证基础。 
+ “随着机器人和自动化设施的快速增长，目前由人工审核和判断所有运营数据的方法存在局限性，”Dime Research的一位负责人表示。“通过将英特尔的人工智能技术与Dime Research积累的制造和物流数据以及机器人控制技术相结合，我们旨在开发一种可在实际制造现场使用的工业人工智能代理。” 
+ « Combien de robots ont été arrêtés ? »… Dime Research va développer un agent d'IA capable de lire les données d'usine. 
+ Dans les usines de semi-conducteurs et de batteries secondaires, des centaines, voire des milliers, de robots logistiques et d'équipements automatisés fonctionnent simultanément. L'arrêt d'un seul robot ou la défaillance d'un équipement peuvent impacter les tâches suivantes et les plannings de production. Le personnel d'exploitation doit consacrer du temps et de l'expérience à la vérification manuelle de l'état, de l'historique de fonctionnement et des données de panne de nombreux équipements afin d'en identifier la cause. Daim Research développe un agent d'IA pour la production et la logistique, capable d'analyser les données réelles de l'usine pour répondre aux questions posées par les responsables de terrain en langage naturel, et de suggérer la cause de la panne ainsi que des solutions. 
+ Dime Research, une entreprise spécialisée en intelligence artificielle physique, a été sélectionnée pour « InGenius », un programme d'innovation ouverte en IA mené en partenariat avec Intel dans le cadre du programme de collaboration internationale du ministère des PME et des Startups. InGenius vise à identifier les entreprises technologiques du secteur de l'IA et à les accompagner dans l'amélioration de leurs produits et leur entrée sur les marchés internationaux grâce aux plateformes et technologies d'Intel. Dime Research développera « DARVIS », un agent d'IA spécialisé dans les environnements de production et de logistique, en appliquant la technologie d'optimisation de l'inférence d'IA d'Intel. 
+ Dime Research sélectionnée pour le programme d'innovation ouverte en IA « Ingenious » (Source : Dime Research) 
+ Davis est conçu comme un système sur site fonctionnant directement au sein de l'usine, sans transmission de données vers un cloud externe. En conservant en interne les données opérationnelles des équipements de production et des robots, tout en permettant l'utilisation de capacités d'analyse par IA, il répond aux exigences des entreprises manufacturières pour lesquelles la sécurité des données est primordiale. 
+ Avant le développement de Davis, Daim Research a créé « xMS », une solution de contrôle intégrée qui gère différents robots logistiques au sein d'un système unique. xMS collecte des données sur la localisation, l'ét

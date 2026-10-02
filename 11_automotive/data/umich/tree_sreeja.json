@@ -1,0 +1,39 @@
+{
+  "sha": "143c6707faed0047d0a15fde49ef692092acf983",
+  "url": "https://api.github.com/repos/sreeja-s-ds/CNC-Mill-Tool-wear_dataset/git/trees/143c6707faed0047d0a15fde49ef692092acf983",
+  "tree": [
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a8f541a30edc1587e86b305adc80a7c0dc388fe4",
+      "size": 1313,
+      "url": "https://api.github.com/repos/sreeja-s-ds/CNC-Mill-Tool-wear_dataset/git/blobs/a8f541a30edc1587e86b305adc80a7c0dc388fe4"
+    },
+    {
+      "path": "experiment_01.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f44a85853910f53d9e6e4a3d9a3a58a7eb247db9",
+      "size": 467193,
+      "url": "https://api.github.com/repos/sreeja-s-ds/CNC-Mill-Tool-wear_dataset/git/blobs/f44a85853910f53d9e6e4a3d9a3a58a7eb247db9"
+    },
+    {
+      "path": "experiment_18.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6d28ce88da86bbd231172809542e9742589b8750",
+      "size": 996061,
+      "url": "https://api.github.com/repos/sreeja-s-ds/CNC-Mill-Tool-wear_dataset/git/blobs/6d28ce88da86bbd231172809542e9742589b8750"
+    },
+    {
+      "path": "train.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "653a3409942384a1ef7f0bee107e4730b9042d13",
+      "size": 547,
+      "url": "https://api.github.com/repos/sreeja-s-ds/CNC-Mill-Tool-wear_dataset/git/blobs/653a3409942384a1ef7f0bee107e4730b9042d13"
+    }
+  ],
+  "truncated": false
+}

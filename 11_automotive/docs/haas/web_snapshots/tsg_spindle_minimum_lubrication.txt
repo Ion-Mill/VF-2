@@ -1,0 +1,572 @@
+Spindle Minimum Lubrication System - Troubleshooting Guide - TG0135
+My Haas
+Welcome,
+! 
+Haas Tooling
+MyHaas/HaasConnect
+Sign In
+Register
+Haas Tooling
+MyHaas/HaasConnect
+Sign Out
+Welcome, 
+My Machines
+Latest Activity
+My Quotes
+My Account
+My Users
+Sign Out
+Find Your Distributor
+Select Language
+English
+Deutsch
+Español - España
+Español - México
+Français
+Italiano
+Português
+Český
+Dansk
+Nederlands
+Magyar
+Polski
+Svenska
+Türkçe
+中文
+Suomi
+Norsk
+الإنجليزية
+български
+Hrvatski
+Ελληνικά
+Română
+Slovenský
+Slovenščina
+한국어
+日本語
+Українська
+machines
+Main Menu
+Vertical Mills 
+Vertical Mills 
+Vertical Mills 
+View All
+Vertical Mills 
+VF Series
+Universal Machines
+VR Series
+VP-5 Prismatic
+Pallet-Changing VMCs
+Mini Mills
+Mold Machines
+High-Speed Drill Centers
+Drill/Tap/ Mill Series
+Toolroom Mills
+Compact Mills
+Gantry Series
+SR Sheet Routers
+Extra-Large VMC
+Double-Column Mills
+Pocket Mill
+Multi-Axis Solutions
+Multi-Axis Solutions
+Multi-Axis Solutions
+View All
+Multi-Axis Solutions
+Y-Axis Lathes
+5-Axis Mills
+Lathes
+Lathes
+Lathes
+View All
+Lathes
+ST Series
+Dual-Spindle
+Box Way Series
+Toolroom Lathes
+Chucker Lathe
+Haas Bar Feeder V2
+Haas Bar Feeder 12
+Horizontal Mills
+Horizontal Mills
+Horizontal Mills
+View All
+Horizontal Mills
+50-Taper
+40-Taper
+Rotaries & Indexers
+Rotaries & Indexers
+Rotaries & Indexers
+View All
+Rotaries & Indexers
+Rotary Tables
+Indexers
+5-Axis Rotaries
+Extra-Large Rotaries
+Special Series
+Special Series
+Special Series
+View All
+Special Series
+EU_Series_Redirect
+Automation Systems
+Automation Systems
+Automation Systems
+View All
+Automation Systems
+Mill Automation
+Lathe Automation
+Automatic Parts Loaders
+Automation Models
+Desktop Machines
+Desktop Machines
+Desktop Machines
+View All
+Desktop Machines
+Desktop Mill
+Desktop Lathe
+Control Simulator, Standard
+Control Simulator, Premium
+Shop Equipment
+Shop Equipment
+Shop Equipment
+View All
+Shop Equipment
+Bandsaw
+Vertical Saw
+Miter Saw
+Knee Mill
+Manual Lathe
+Laser Cutting Machines
+Pocket Machines
+Pocket Machines
+Pocket Machines
+View All
+Pocket Machines
+Pocket Mill
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Options
+Main Menu
+Value Option Packages
+Value Option Packages
+Value Option Packages
+View All
+Value Option Packages
+Spindles
+Spindles
+Spindles
+View All
+Spindles
+Tool Changers
+Tool Changers
+Tool Changers
+View All
+Tool Changers
+4th- | 5th-Axis
+4th- | 5th-Axis
+4th- | 5th-Axis
+View All
+4th- | 5th-Axis
+Turrets & Live Tooling
+Turrets & Live Tooling
+Turrets & Live Tooling
+View All
+Turrets & Live Tooling
+Probing
+Probing
+Probing
+View All
+Probing
+Chip & Coolant Management
+Chip & Coolant Management
+Chip & Coolant Management
+View All
+Chip & Coolant Management
+The Haas Control
+The Haas Control
+The Haas Control
+View All
+The Haas Control
+Product Options
+Product Options
+Product Options
+View All
+Product Options
+Tooling & Fixturing
+Tooling & Fixturing
+Tooling & Fixturing
+View All
+Tooling & Fixturing
+Workholding
+Workholding
+Workholding
+View All
+Workholding
+5-Axis Solutions
+5-Axis Solutions
+5-Axis Solutions
+View All
+5-Axis Solutions
+5 Easy Steps to 5-Axis
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Why Haas
+Main Menu
+Discover the Haas Difference
+Why Haas
+MyHaas
+Education Community
+Industry 4.0
+Haas Certification
+Customer Testimonials
+Service
+Main Menu
+Welcome to Haas Service
+SERVICE HOME
+Operator’s Manuals
+How-To Procedures
+Troubleshooting Guides
+Preventive Maintenance
+Haas Parts
+Haas Tooling
+Videos
+Videos
+Main Menu
+Main Menu
+View All
+View All
+View All
+View All
+HTEC Curriculum Support
+View All
+Haas 10 kg Cobot Package
+Cobot Kits
+DC-1 Drill Center
+CNC Sales News
+View All
+View All
+contact-us-test
+4 - AUTOMATION SYSTEMS
+Carousel-V2
+expert test
+Demo_Day_Trident-test
+Link Test
+image-sale-tag-test
+View All
+Choose Options
+View All
+View All
+View All
+View All
+View All
+calc-test
+View All
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Haas Tooling
+Main Menu
+Haas Service Parts
+Main Menu
+My Haas
+Welcome,
+! 
+Haas Tooling
+MyHaas/HaasConnect
+Sign In
+Register
+Haas Tooling
+MyHaas/HaasConnect
+Sign Out
+Welcome, 
+My Machines
+Latest Activity
+My Quotes
+My Account
+My Users
+Sign Out
+Find Your Distributor
+Select Language
+English
+Deutsch
+Español - España
+Español - México
+Français
+Italiano
+Português
+Český
+Dansk
+Nederlands
+Magyar
+Polski
+Svenska
+Türkçe
+中文
+Suomi
+Norsk
+الإنجليزية
+български
+Hrvatski
+Ελληνικά
+Română
+Slovenský
+Slovenščina
+한국어
+日本語
+Українська
+×
+Search Results
+Web Pages
+Images
+<
+1
+>
+Spindle Minimum Lubrication System - Troubleshooting Guide - TG0135
+Service Home
+Spindle Minimum Lubrication System - Troubleshooting Guide - TG0135
+Your document is ready for download, please click below to download your document.
+Download Document
+Error processing this document, please try again or 
+Contact Us
+.
+Please wait while your document is being loaded.
+Recently Updated
+Last updated: 10/15/2025
+Spindle Minimum Lubrication System
+ - Troubleshooting Guide
+TG0135
+Revision A - 6/2025
+Spindle Minimum Lubrication System - Troubleshooting Guide - TG0135
+Jump to Section
+1. 
+Introduction 
+2. 
+Spindle Troubleshooting Video 
+3. 
+Symptom Table 
+4. 
+Oil Level 
+5. 
+Sensor 
+6. 
+Leaks 
+7. 
+Lubrication Tube 
+8. 
+Voltage 
+9. 
+Oil Collection Test 
+Back to Top
+Your document is ready for download, please click below to download your document.
+Download Document
+Error processing this document, please try again or 
+Contact Us
+.
+Please wait while your document is being loaded.
+Introduction
+Spindle Troubleshooting Video
+The following service video shows how to troubleshoot the spindle lubrication system.
+NOTE: 
+This service video is for reference only and does not replace the written procedure.
+Symptom Table
+Symptom
+Possible Cause
+Corrective Action
+Low Lube Icon
+The Low Spindle Lube Oil Level sensor input was 1 more that 75% of the time when the Spindle Lube pump was On.
+Make sure the reservoir has enough oil. Inspect the Oil level sensor on the tank. Go to 
+DIAGNOSTIC>I/O tab
+. Search for 
+Input 49 LOW_SPINDLE _LUBE_OIL_LEVEL
+, make sure the bit toggles when the oil level sensor is tripped.
+Alarm 
+805
+ LOW SPINDLE LUBRICATION.
+The reservoir oil level is low.
+Refill the reservoir.
+The oil level sensor is faulty.
+Test the oil level sensor.
+Hot, Noisy, or Failed Spindle
+The reservoir is filled with the incorrect oil type.
+Refill the reservoir.
+There are leaks in the fittings.
+Inspect the fittings for leaks.
+The lubrication tube is damaged.
+Inspect the lubrication tube for damage.
+A solenoid is not functioning.
+Test the air and lubrication solenoids.
+Incorrect oil flow.
+Perform an oil collection test.
+When testing the spindle lubrication, there are inconsistent drops or no drops.
+There is a leak in the oil pump fittings.
+Inspect all the fittings for leaks. Refer to the leaks section below.
+The pump has not been primed.
+Ensure that the lubrication pump has been fully primed. There should not be any air on the line that feeds the sightglass with oil.
+Oil Level
+Corrective Action:
+Refill the oil reservoir with Mobil SHC 625. If Mobil SHC 625 is not available, use Mobil 1 5W-20 or Mobil 1 10W-30.
+Refer to the 
+lubricant tables
+.
+Sensor
+Corrective Action:
+Make sure the oil float [1] moves freely.
+Go to 
+Proximity Sensor - Troubleshooting Guide
+ to troubleshoot the proximity sensor [2].
+Leaks
+Corrective Action:
+Examine the fittings [1,2] on top of the oil pump tank. The oil collects on top of the oil pump tank [3] either behind or in front of the sight glass bracket, underneath the leaking fitting. Fully seat the hose(s) into the fitting(s). Check the end of the hoses to make sure they are cleanly cut. Tighten or replace any leaking fittings.
+ Note: 
+Do not disconnect the oil filled hoses unless there are still leaks after re-seating the hoses into the fittings as this can introduce air in hoses which will need to be purged before checking for correct pump operation.
+Lubrication Tube
+Corrective Action:
+Examine the lubrication tube between the lube panel and the spindle for kinks, splits, or pinches.
+Make sure you can see oil droplets in the tube.
+Replace the tube if it is damaged.
+Voltage
+Corrective Action:
+Use a multimeter or voltage detector to measure voltage at the solenoid connector while you do the Spindle Lubrication Test:
+Next Generation Control:
+ Press 
+[DIAGNOSTIC]
+. Cursor to the Maintenance and Lube tabs.
+Classic Haas Control:
+ Press
+ [PARAM DGNOS]
+ (2) times and cursor to the LUBE tab.
+Press
+ [F3]
+ to start the 30 second Spindle Lubrication Test.
+If the multimeter or voltage detector does not show 120 VAC during the test, refer to:
+Next Generation Control - I/O PCB - Troubleshooting Guide
+I/O PCB - Troubleshooting Guide (Classic Haas Control)
+Oil Collection Test
+Corrective Action:
+Perform an oil collection test [1]. Refer to 
+Mill - Spindle - Lubrication Oil - Collection Test
+.
+If the oil supply is insufficient, and all other functions have been checked, replace the flow meter [2] in the oil pump.
+ Note:
+ Make sure to assemble the flow meter with the arrow pointing toward the hose as shown.
+Recently Viewed Items
+Clear Items
+You Have No Recently Viewed Items Yet
+ Feedback 
+Haas Delivered Price
+This price includes shipping cost, export and import duties, insurance, and any other expenses incurred during shipping to a location in France agreed with you as a buyer. No other mandatory costs can be added to the delivery of a Haas CNC Product.
+Click for details
+KEEP UP WITH THE LATEST HAAS TIPS AND TECHNOLOGY...
+Sign up now! 
+HAAS TOOLING ACCEPTS THE FOLLOWING:
+Service & Support
+Owners
+Request Service
+Operator Manuals
+Haas Parts
+Rotary Repair Request
+Pre-Install Guides
+Shopping Tools
+Build & Price a New Haas
+Available Inventory
+The Haas Price List
+CNCA Financing
+About Haas
+DNSH Statement
+Export Compliance
+Careers
+Certifications & Safety
+Contact Us
+History
+Terms & Conditions
+Haas Tooling Terms & Conditions
+Privacy
+Warranty
+Haas Community
+Haas Certification Program
+Haas Motorsports
+Gene Haas Foundation
+Haas Technical Education Community
+Events
+Join the Conversation
+Facebook
+X
+Flickr
+YouTube
+LinkedIn
+Instagram
+TikTok
+ © 2026 
+Haas Automation, Inc – CNC Machine Tools
+ This site is protected by reCAPTCHA and the Google 
+Privacy Policy
+ and 
+Terms of Service
+ apply. 
+2800 Sturgis Rd., Oxnard, CA 93030
+ Toll Free: (888) 817-4446 / Fax: 805-278-8554
+ {{ if (loading) { }} {{=loadingSpinner}} {{ } else { }} 
+×
+ {{=content}} 
+ {{ } }} 
+ {{ if (loading) { }} {{=loadingSpinner}} {{ } else { }} 
+×
+ {{=content}} 
+ {{ } }} 

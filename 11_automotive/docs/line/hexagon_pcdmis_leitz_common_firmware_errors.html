@@ -1,0 +1,2360 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="OriginalFile" content="LEITZ-COMMON FIRMWARE.DOC" />
+<meta name="generator" content="Adobe RoboHelp 2017" />
+ <title>Common Firmware Errors</title>
+<link rel="StyleSheet" href="../Common_Web.css" type="text/css" />
+<script type="text/javascript" language="JavaScript">
+//<![CDATA[
+function reDo() {
+  if (innerWidth != origWidth || innerHeight != origHeight)
+     location.reload();
+}
+if ((parseInt(navigator.appVersion) == 4) && (navigator.appName == "Netscape")) {
+	origWidth = innerWidth;
+	origHeight = innerHeight;
+	onresize = reDo;
+}
+onerror = null; 
+//]]>
+</script>
+<style type="text/css">
+<!--
+div.WebHelpPopupMenu { position:absolute;
+left:0px;
+top:0px;
+z-index:4;
+visibility:hidden; }
+p.WebHelpNavBar { text-align:right; }
+-->
+</style>
+
+<script type="text/javascript" src="../template/scripts/rh.min.js"></script>
+<script type="text/javascript" src="../template/scripts/common.min.js"></script>
+<script type="text/javascript" src="../template/scripts/topic.min.js"></script>
+<script type="text/javascript" src="../template/scripts/constants.js"></script>
+<script type="text/javascript" src="../template/scripts/utils.js"></script>
+<script type="text/javascript" src="../template/scripts/mhutils.js"></script>
+<script type="text/javascript" src="../template/scripts/mhlang.js"></script>
+<script type="text/javascript" src="../template/scripts/mhver.js"></script>
+<script type="text/javascript" src="../template/scripts/settings.js"></script>
+<script type="text/javascript" src="../template/scripts/XmlJsReader.js"></script>
+<script type="text/javascript" src="../template/scripts/loadparentdata.js"></script>
+<script type="text/javascript" src="../template/scripts/loadscreen.js"></script>
+<script type="text/javascript" src="../template/scripts/loadprojdata.js"></script>
+<script type="text/javascript" src="../template/scripts/mhtopic.js"></script>
+ <link rel="stylesheet" type="text/css" href="../template/styles/widgets.min.css">
+ <link rel="stylesheet" type="text/css" href="../template/styles/topic.min.css">
+<script type="text/javascript" >
+gRootRelPath = "..";
+gCommonRootRelPath = "..";
+gTopicId = "1.1.7.1_4";
+</script>
+ <meta name="brsprev" value="Leitz-Common_Firmware_Interface/Note_on_CW43L_Probe_Changer.htm">
+ <meta name="brsnext" value="LK_Direct_Serial_GPIB/LK_Direct_Serial_GPIB_Interface.htm">
+ <meta name="topic-breadcrumbs" content="Machine Interface Installation Manual (MIIM) > CMM Supported Interfaces > Leitz-Common Firmware Interface" />
+<link rel="stylesheet" type="text/css" href="./../cookieconsent.min.css" />
+<script src="./../cookieconsent.js"></script>
+<script src="./../js.cookie.js"></script>
+<script src="./../docucookie.js"></script></head>
+
+<body>
+<script type="text/javascript" src="../ehlpdhtm.js" data-rhtags="1" class="rh-hide"></script>
+
+<div id="header" data-rhtags="1" class="rh-hide">
+<a id="top"></a>
+	<script src="../twisty.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../jquery.js" type="text/javascript" style="x-condition: Online;"></script>
+	<script language="Javascript" type="text/javascript" src="../documancers.js"></script>
+	<script type="text/javascript" language="javascript" src="../externallink.js" charset="utf-8"></script>
+
+	<div class="product">
+ </div>
+	
+	<div class="projectdirectory" style="display: none;">miim
+ </div>
+	
+	<div data-rhtags="1" class="rh-hide"><script type="text/javascript" language="javascript">//<![CDATA[
+document.write("<p  style=\"text-align:right;\">");
+AddMasterBreadcrumbs("../index.htm", "", "&gt;", "<span id='hometextarea'></span>", "../MIIM_Overview.htm");
+document.write("<a href=\"../MIIM_Overview.htm\">Machine Interface Installation Manual (MIIM)<\/a> &gt; <a href=\"../CMM_Supported_Interfaces.htm\">CMM Supported Interfaces<\/a> &gt; <a href=\"Leitz-Common_Firmware_Interface.htm\">Leitz-Common Firmware Interface<\/a> &gt; Common Firmware Errors<\/p>");
+//]]></script>
+ </div>
+	
+	<script language="javascript" type="text/javascript">
+$(window).on("load",function() {
+   var productName = ($('div.product').text());
+   //
+   var hometext = "Home";
+   $('#hometextarea').append(hometext);
+	 var str_prepend = GetPrependForSubfolders();
+	 var str_href = str_prepend + "../core/PC-DMIS_Core.htm";
+   var PcdmisHeaderCode = '<?rh-cbt_start condition="Online" ?><p id="headercolored">Current Help System: PC-DMIS ' + productName + '(<?rh-cbt_start condition="Online" ?><a id="headerlink" title="View Core Help" href="'+ str_href +'">View Core Help</a><?rh-cbt_end ?>)</p><?rh-cbt_end ?>';
+
+   	var TwistyCode = '<?rh-cbt_start condition="Online" ?><p name="header2" style="text-align: left;"><a class="headinglink" href="#" id="showhidelink" onclick="javascript:toggleShowHide()" title="Shows/Hides hidden content" >Expand all</a> </p><?rh-cbt_end ?>';
+
+   if ($(".dropspot").length) {
+	  $("#header").append(PcdmisHeaderCode, TwistyCode);
+
+	  $(function() {
+	     /* This fixes the # hrefs to point to an absolute named anchor of "#header2". These were bogus links anyway and only needed for chm hover styling. Otherwise they end up with something like "../#" in subfolder htms and the header links don't work */
+	     $(".headinglink").attr("href","#header2");})
+
+   } else {
+      $("#header").append(PcdmisHeaderCode);
+   }
+});
+</script>
+
+</div>
+
+
+<h3 data-rhtags="1" class="rh-hide">Common Firmware Errors</h3>
+<p class="BodyText rh-hide" data-rhtags="1">You can diagnose errors and failures that may occur 
+ during the operation of the Common Firmware as follows:</p>
+<ul style="list-style: disc;">
+	<li data-rhtags="1" class="rh-hide"><p class="BodyText">If an error occurs during the execution of 
+	 a command, review the error message that the controller immediately 
+	 sends.</p></li>
+	<li data-rhtags="1" class="rh-hide"><p class="BodyText">If the interface software is active, review 
+	 the error message that appears.</p></li>
+<?rh-cbt_end ?>
+</ul>
+<p class="BodyText rh-hide" style="margin-left: 40px;" data-rhtags="1">The right-hand columns in 
+ the tables below list the error messages that may appear.</p>
+<p class="BodyText rh-hide" data-rhtags="1">The controller's firmware stores the last error condition 
+ until you reapply power. You can then analyze the condition. To analyze 
+ it, you need to connect to the controller through the HyperTerminal application 
+ and <span class="CODECharacter">STATUS</span> command, or use the TESTSOFT 
+ program and function <span class="CODECharacter">1 SYSTEM STATUS</span>. 
+ A series of informational messages appears and displays an "Error" field 
+ that contains a STATUS label with the type of error. The left-hand columns 
+ in the tables below list the STATUS labels that may appear.</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText"><span class="CODECharacter">excess_lag 
+		 :</span></p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_RE,S%1,TR_FG002,Excess 
+		 Lag Error</p></td>
+		<td class="last"><p class="TableText">The firmware detected that 
+		 the position (the real axis position with respect to the position 
+		 set) exceeded the maximum limit. This error may be due to one 
+		 of the following:</p>
+		<ul style="list-style: disc;">
+			<li><p class="TableText">A motor overload due to obstacles 
+			 to motion (such as a collision or friction)</p></li>
+			<li><p class="TableText">A motor failure</p></li>
+			<li><p class="TableText">A failure of the motion mechanical 
+			 system, servo driver, position transducers, or tacho</p></li>
+			<li><p class="TableText">When the controller first connects 
+			 to a machine, the cause may be a wrong servo adjustment, or 
+			 the parameter MAX_LAG of the CONSTANT has a small value</p></li>
+		</ul></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">x_oversp_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR X_OVSPD ,S%1 ,TR_FG16e, 
+		 Overspeed Error</p></td>
+		<td rowspan="6" class="last"><p class="TableText">The firmware 
+		 detected that the speed (the speed obtained from the counts with 
+		 respect to the speed command sent to the D/A) exceeded the maximum 
+		 limit. This error may be due to one of the following:</p>
+		<ul style="list-style: disc;">
+			<li><p class="TableText">A motor overload due to obstacles 
+			 to motion (such as a collision or friction)</p></li>
+			<li><p class="TableText">A motor failure</p></li>
+			<li><p class="TableText">A failure of the motion mechanical 
+			 system, servo driver, position transducers, or tacho</p></li>
+			<li><p class="TableText">When the controller first connects 
+			 to a machine, the cause may be a wrong servo adjustment, or 
+			 the parameter MAX_LAG of the CONSTANT has a small value</p></li>
+		</ul></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">y_oversp_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR Y_OVSPD ,S%1 ,TR_FG16e, 
+		 Overspeed Error</p></td>
+		
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">z_oversp_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR Z_OVSPD ,S%1 ,TR_FG16e, 
+		 Overspeed Error</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">w_oversp_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR W_OVSPD ,S%1 ,TR_FG16e, 
+		 Overspeed Error</p></td>
+		
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">a_oversp_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR A_OVSPD ,S%1 ,TR_FG16e, 
+		 Overspeed Error</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">b_oversp_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR B_OVSPD ,S%1 ,TR_FG16e, 
+		 Overspeed Error</p></td>
+		
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">excess_prb_dfl :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_RE,S%1,TR_FG003,Excess 
+		 Probe Deflection</p></td>
+		<td class="last"><p>Excessive probe deflection occurred.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">x_pos_hw_limit :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_X+,S%1,TR_FG004,Plus 
+		 Hardware Limit Error</p></td>
+		<td class="last" rowspan="12"><p class="TableText">The firmware 
+		 detected that the hardware travel limit is not in the expected 
+		 position, or it is in an unexpected position. The position transducer 
+		 may be defective, or the travel limit position for the M_HWLIM 
+		 and P_HWLIM parameters of the CONSTANT is incorrect.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">y_pos_hw_limit :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_Y+,S%1,TR_FG004,Plus 
+		 Hardware Limit Error</p></td>
+		
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">z_pos_hw_limit :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_Z+,S%1,TR_FG004,Plus 
+		 Hardware Limit Error</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">w_pos_hw_limit :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_W+,S%1,TR_FG004,Plus 
+		 Hardware Limit Error</p></td>
+		
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">a_pos_hw_limit :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_A+,S%1,TR_FG004,Plus 
+		 Hardware Limit Error</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">b_pos_hw_limit :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_B+,S%1,TR_FG004,Plus 
+		 Hardware Limit Error</p></td>
+		
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">x_neg_hw_limit :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_X-,S%1,TR_FG005,Minus 
+		 Hardware Limit Error</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">y_neg_hw_limit :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_Y-,S%1,TR_FG005,Minus 
+		 Hardware Limit Error</p></td>
+		
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">z_neg_hw_limit :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_Z-,S%1,TR_FG005,Minus 
+		 Hardware Limit Error</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">w_neg_hw_limit :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_W-,S%1,TR_FG005,Minus 
+		 Hardware Limit Error</p></td>
+		
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">a_neg_hw_limit :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_A-,S%1,TR_FG005,Minus 
+		 Hardware Limit Error</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">b_neg_hw_limit :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_B+,S%1,TR_FG004,Plus 
+		 Hardware Limit Error</p></td>
+		
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">x_both_hw_limit :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_X?,S%2,TR_FG004,Plus 
+		 Hardware Limit Error</p></td>
+		<td class="last" rowspan="6"><p class="TableText">Both hardware 
+		 travel limits are active.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">y_both_hw_limit :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_Y?,S%2,TR_FG004,Plus 
+		 Hardware Limit Error</p></td>
+		
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">z_both_hw_limit :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_Z?,S%2,TR_FG004,Plus 
+		 Hardware Limit Error</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">w_both_hw_limit :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_W?,S%2,TR_FG004,Plus 
+		 Hardware Limit Error</p></td>
+		
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">a_both_hw_limit :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_A?,S%2,TR_FG004,Plus 
+		 Hardware Limit Error</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">b_both_hw_limit :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_B?,S%2,TR_FG004,Plus 
+		 Hardware Limit Error</p></td>
+		
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st" style="height: 40px;">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row" style="height: 39px;">
+		<td class="t1st"><p class="TableText">x_pos_sw_limit :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_X+,S%3,TR_FG030,Plus 
+		 Software Limit Error</p></td>
+		<td class="last" rowspan="12"><p class="TableText">The software 
+		 travel limit was reached.</p></td>
+	</tr>
+	<tr class="t1Row" style="height: 39px;">
+		<td class="t1st"><p class="TableText">y_pos_sw_limit :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_Y+,S%3,TR_FG030,Plus 
+		 Software Limit Error</p></td>
+		
+	</tr>
+	<tr class="t2Row" style="height: 39px;">
+		<td class="t1st"><p class="TableText">z_pos_sw_limit :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_Z+,S%3,TR_FG030,Plus 
+		 Software Limit Error</p></td>
+		
+	</tr>
+	<tr class="t1Row" style="height: 39px;">
+		<td class="t1st"><p class="TableText">w_pos_sw_limit :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_W+,S%3,TR_FG030,Plus 
+		 Software Limit Error</p></td>
+		
+	</tr>
+	<tr class="t2Row" style="height: 39px;">
+		<td class="t1st"><p class="TableText">a_pos_sw_limit :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_A+,S%3,TR_FG030,Plus 
+		 Software Limit Error</p></td>
+		
+	</tr>
+	<tr class="t1Row" style="height: 39px;">
+		<td class="t1st"><p class="TableText">b_pos_sw_limit :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_B+,S%3,TR_FG030,Plus 
+		 Software Limit Error</p></td>
+		
+	</tr>
+	<tr class="t2Row" style="height: 39px;">
+		<td class="t1st"><p class="TableText">x_neg_sw_limit :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_X-,S%3,TR_FG031,Minus 
+		 Software Limit Error</p></td>
+		
+	</tr>
+	<tr class="t1Row" style="height: 39px;">
+		<td class="t1st"><p class="TableText">y_neg_sw_limit :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_Y-,S%3,TR_FG031,Minus 
+		 Software Limit Error</p></td>
+		
+	</tr>
+	<tr class="t2Row" style="height: 5px;">
+		<td class="t1st"><p class="TableText">z_neg_sw_limit :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_Z-,S%3,TR_FG031,Minus 
+		 Software Limit Error</p></td>
+		
+	</tr>
+	<tr class="t1Row" style="height: 39px;">
+		<td class="t1st"><p class="TableText">w_neg_sw_limit :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_W-,S%3,TR_FG031,Minus 
+		 Software Limit Error</p></td>
+		
+	</tr>
+	<tr class="t2Row" style="height: 39px;">
+		<td class="t1st"><p class="TableText">a_neg_sw_limit :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_A-,S%3,TR_FG031,Minus 
+		 Software Limit Error</p></td>
+		
+	</tr>
+	<tr class="t1Row" style="height: 39px;">
+		<td class="t1st"><p class="TableText">b_neg_sw_limit :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_B-,S%3,TR_FG031,Minus 
+		 Software Limit Error</p></td>
+		
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">e_stop_p_b :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_RE,S%1,TR_FG013,E-Stop 
+		 Push-Button Pressed</p></td>
+		<td class="last"><p class="TableText">The emergency (mushroom-shaped) 
+		 pushbutton was pressed.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">PH9_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_RE,S%1,TR_FG014,Wrist 
+		 Error</p></td>
+		<td class="last"><p class="TableText">An error on the PH9 or PH10 
+		 probe head occurred.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">Wrist_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_RE,S%1,TR_FG014,Wrist 
+		 Error</p></td>
+		<td class="last"><p class="TableText">An error on the PHS or CW43 
+		 probe head occurred.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">e_stop_relay :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_RE,S%1,TR_FG015,E-Stop 
+		 Relay Open</p></td>
+		<td class="last"><p class="TableText">The motor relay is open.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">home_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_RE,S%1,TR_FG018,Homing 
+		 Cycle Error</p></td>
+		<td class="last"><p class="TableText">An error in the reset cycle 
+		 occurred.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">air_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_RE,S%1,TR_FG023,Machine 
+		 Air Pressure or Lube Fault</p></td>
+		<td class="last"><p class="TableText">Air is missing.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">Mach Temp fault :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_RE,S%1,TR_FG024,Machine 
+		 or Controller Temperature Fault</p></td>
+		<td class="last"><p class="TableText">The temperature in the cabinet 
+		 is too high.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">Illegal Unlock :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_RE,S%1,TR_FG025,Illegal 
+		 Unlock Condition</p></td>
+		<td class="last"><p class="TableText">The &quot;Unlock&quot; input 
+		 condition is not allowed.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">No Constant File :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_RE,S%1,TR_FG020,CONSTANT.ASC 
+		 file read Error</p></td>
+		<td class="last"><p class="TableText">The CONSTANT file is missing<span 
+		 style="font-size: 9.0pt;">.</span></p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">Drive Fault:</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_RE,S%1,TR_SERVO,Servo 
+		 Amplifier Not Ready!</p></td>
+		<td class="last"><p class="TableText">The servodrivers are not 
+		 ready.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">InPosition Error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_RE,S%1,TR_FG028,In-Position 
+		 error time-out</p></td>
+		<td class="last"><p class="TableText">The axes do not reach the 
+		 position set on time. This error may be due to one of the following:</p>
+		<ul style="list-style: disc;">
+			<li><p class="TableText">A mechanical defect of the motion 
+			 system</p></li>
+			<li><p class="TableText">A defect of the servo adjustment</p></li>
+			<li><p class="TableText">The value of the CONSTANT in the IN_POS_Z 
+			 parameter is too low</p></li>
+		</ul></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">Host Stop Demand :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_RE,S%1,TR_FG029,Stop 
+		 Requested by Host</p></td>
+		<td class="last"><p class="TableText">The host sent an abort request.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">Jogbox Fault :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_RE,S%1,TR_FG032,Jogbox 
+		 Fault</p></td>
+		<td class="last"><p class="TableText">A jog box error occurred.</p></td>
+	</tr>
+</table>
+<p class="TableText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">Ram_Collision :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR B3C_Ram,S%1,TR_BUE04,Ram 
+		 Collision!</p></td>
+		<td class="last"><p class="TableText">The anti-crash device operates.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">X_Counter_Error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR X_CNTR,S%1,TR_FG100,X 
+		 Counter Error</p></td>
+		<td class="last" rowspan="6"><p class="TableText">The error of 
+		 the digital count signals; the switching gap of the count signals 
+		 is too narrow.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">Y_Counter_Error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR Y_CNTR,S%1,TR_FG101,Y 
+		 Counter Error</p></td>
+		
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">Z_Counter_Error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR Z_CNTR,S%1,TR_FG102,Z 
+		 Counter Error</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">W_Counter_Error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR W_CNTR,S%1,TR_FG103,W 
+		 Counter Error</p></td>
+		
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">A_Counter_Error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR A_CNTR,S%1,TR_FG104,A 
+		 Counter Error</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">B_Counter_Error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR B_CNTR,S%1,TR_FG105,B 
+		 Counter Error</p></td>
+		
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">X_Traser_Error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR X_Traser,S%1,TR_FG106,X 
+		 Traser Error</p></td>
+		<td class="last" rowspan="6"><p class="TableText">The transducers 
+		 signaled an error.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">Y_Traser_Error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR Y_Traser,S%1,TR_FG107,Y 
+		 Traser Error</p></td>
+		
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">Z_Traser_Error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR Z_Traser,S%1,TR_FG108,Z 
+		 Traser Error</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">W_Traser_Error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR W_Traser,S%1,TR_FG109,W 
+		 Traser Error</p></td>
+		
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">A_Traser_Error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR A_Traser,S%1,TR_FG10a,A 
+		 Traser Error</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">B_Traser_Error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR B_Traser,S%1,TR_FG10b,B 
+		 Traser Error</p></td>
+		
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">X_Flet_Error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR X_FLET,S%1,TR_FG110,X 
+		 Flet Error</p></td>
+		<td class="last" rowspan="6"><p class="TableText">The digital count 
+		 signal is missing.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">Y_Flet_Error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR Y_FLET,S%1,TR_FG111,Y 
+		 Flet Error</p></td>
+		
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">Z_Flet_Error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR Z_FLET,S%1,TR_FG112,Z 
+		 Flet Error</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">W_Flet_Error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR W_FLET,S%1,TR_FG113,W 
+		 Flet Error</p></td>
+		
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">A_Flet_Error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR A_FLET,S%1,TR_FG114,A 
+		 Flet Error</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">B_Flet_Error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR B_FLRT,S%1,TR_FG115,B 
+		 Flet Error</p></td>
+		
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">X_AmplitudeError :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR X_Amplit,S%1,TR_FG116,X 
+		 Amplitude Error</p></td>
+		<td class="last" rowspan="6"><p class="TableText">The width of 
+		 the analog count signal is wrong.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">Y_AmplitudeError :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR Y_Amplit,S%1,TR_FG117,Y 
+		 Amplitude Error</p></td>
+		
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">Z_AmplitudeError :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR Z_Amplit,S%1,TR_FG118,Z 
+		 Amplitude Error</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">W_AmplitudeError :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR W_Amplit,S%1,TR_FG119,W 
+		 Amplitude Error</p></td>
+		
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">A_AmplitudeError :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR A_Amplit,S%1,TR_FG11a,A 
+		 Amplitude Error</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">B_AmplitudeError :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR B_Amplit,S%1,TR_FG11b,B 
+		 Amplitude Error</p></td>
+		
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">X_Phase_Error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR X_Phase ,S%1,TR_FG120,X 
+		 Phase Error</p></td>
+		<td class="last" rowspan="6"><p class="TableText">Count error. 
+		 The digital count and the value of the analog signal do not match.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">Y_Phase_Error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR Y_Phase ,S%1,TR_FG121,Y 
+		 Phase Error</p></td>
+		
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">Z_Phase_Error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR Z_Phase ,S%1,TR_FG122,Z 
+		 Phase Error</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">W_Phase_Error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR W_Phase ,S%1,TR_FG123,W 
+		 Phase Error</p></td>
+		
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">A_Phase_Error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR A_Phase ,S%1,TR_FG124,A 
+		 Phase Error</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">B_Phase_Error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR B_Phase ,S%1,TR_FG125,B 
+		 Phase Error</p></td>
+		
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">BadModeSwitch :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR BadSwtch,S%1,TR_FG130,Bad 
+		 Mode Switch Selection</p></td>
+		<td class="last"><p class="TableText">The MAN/AUTO selector switch 
+		 is in an undefined position. </p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">ModeSelFailure :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR ModFail ,S%1,TR_FG131,Mode 
+		 Selection Fatal Failure</p></td>
+		<td class="last"><p class="TableText">The MAN/AUTO switching was 
+		 done while the axes are moving.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">JogKeybdFailure :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR JogKeybd,S%1,TR_FG132,JogBox 
+		 Key Fatal Failure</p></td>
+		<td class="last"><p class="TableText">A jog box keyboard error 
+		 occurred.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">D_Drive Err_set :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR DualDriv,S%1,TR_FG16f,Dual 
+		 Drive Settings Error</p></td>
+		<td class="last"><p class="TableText">An error in the definition 
+		 of the Dual Drive parameters in the CONSTANT.ASC file occurred 
+		 (the type is not recognized, or the slave axis is incompatible).</p></td>
+	</tr>
+</table>
+<p class="TableText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">D_Drive Err_LVDT :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR DualDriv,S%1,TR_FG170,Dual 
+		 Drive LVDT Error</p></td>
+		<td class="last"><p class="TableText">On an axis of the Dual Drive 
+		 type, this error signals that the hardware detected an excessive 
+		 difference in scale information between LVDT’s.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">DualDrive :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR DualDriv,S%1,TR_FG133,Dual 
+		 Drive Disalignment Error</p></td>
+		<td class="last"><p class="TableText">On an axis of the Dual Drive 
+		 type, this error signals that the firmware detected a misalignment 
+		 between the master and slave axes.</p></td>
+	</tr>
+</table>
+<p class="TableText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">Power_Failure :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR PowrFail,S%1,TR_FG134,Power 
+		 Check Fatal Failure</p></td>
+		<td class="last"><p class="TableText">The power relay status disagrees 
+		 with the command.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">X_Overcurrent :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR XOvrCurr,S%1,TR_FG140,X 
+		 Overcurrent Error</p></td>
+		<td class="last" rowspan="6"><p class="TableText">A quick-acting 
+		 circuit detected an anomalous input of the final stages of the 
+		 servodrivers. This error may be due to a short circuit, such as 
+		 on the motor cable.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">Y_Overcurrent :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR YOvrCurr,S%1,TR_FG141,Y 
+		 Overcurrent Error</p></td>
+		
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">Z_Overcurrent :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR ZOvrCurr,S%1,TR_FG142,Z 
+		 Overcurrent Error</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">W_Overcurrent :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR WOvrCurr,S%1,TR_FG143,W 
+		 Overcurrent Error</p></td>
+		
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">A_Overcurrent :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR AOvrCurr,S%1,TR_FG144,A 
+		 Overcurrent Error</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">B_Overcurrent :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR BOvrCurr,S%1,TR_FG145,B 
+		 Overcurrent Error</p></td>
+		
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">X_Tacho_Fault :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR X_Tacho,S%1,TR_FG146,X 
+		 Tacho Error</p></td>
+		<td class="last" rowspan="6"><p class="TableText">During operation 
+		 in Manual mode, a circuit on the servodriver detected that the 
+		 tacho (speed) exceeded the maximum level.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">Y_Tacho_Fault :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR Y_Tacho,S%1,TR_FG147,Y 
+		 Tacho Error</p></td>
+		
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">Z_Tacho_Fault :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR Z_Tacho,S%1,TR_FG148,Z 
+		 Tacho Error</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">W_Tacho_Fault :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR W_Tacho,S%1,TR_FG149,W 
+		 Tacho Error</p></td>
+		
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">A_Tacho_Fault :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR A_Tacho,S%1,TR_FG14a,A 
+		 Tacho Error</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">B_Tacho_Fault :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR B_Tacho,S%1,TR_FG14b,B 
+		 Tacho Error</p></td>
+		
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">X_IxT :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR X_IxT,S%1,TR_FG150,X 
+		 IxT Error</p></td>
+		<td class="last" rowspan="6"><p class="TableText">A circuit on 
+		 the servodriver detected saturation (that is, the peak level) 
+		 of the motor current for a time that is longer than allowed. This 
+		 error may be due to one of the following:</p>
+		<ul style="list-style: disc;">
+			<li><p class="TableText">A motor overload due to obstacles 
+			 to motion (a collision or friction)</p></li>
+			<li><p class="TableText">A motor failure</p></li>
+			<li><p class="TableText">A failure of the mechanical motion 
+			 system or servodriver</p></li>
+		</ul></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">Y_IxT :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR Y_IxT,S%1,TR_FG151,Y 
+		 IxT Error</p></td>
+		
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">Z_IxT :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR Z_IxT,S%1,TR_FG152,Z 
+		 IxT Error</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">W_IxT :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR W_IxT,S%1,TR_FG153,W 
+		 IxT Error</p></td>
+		
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">A_IxT :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR A_IxT,S%1,TR_FG154,A 
+		 IxT Error</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">B_IxT :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR B_IxT,S%1,TR_FG155,B 
+		 IxT Error</p></td>
+		
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">PWM_CnctFailure :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR PWM_Cnt,S%1,TR_FG160,PWM 
+		 Connector Failure</p></td>
+		<td class="last"><p class="TableText">The connection of the analog 
+		 connectors of the PWM card failed.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">PWM_PowerFail :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR PWM_Pwr,S%1,TR_FG161,PWM 
+		 Power Failure</p></td>
+		<td class="last"><p class="TableText">A circuit on the servodriver 
+		 detected errors on some internal supply voltages.</p></td>
+	</tr>
+</table>
+<p class="Heading4B rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">PWM_VpHihg :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR PWMVpHig,S%1,TR_FG162,PWM 
+		 VpHigh</p></td>
+		<td class="last"><p class="TableText">The voltage to the servodrivers 
+		 is too high.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">PWM_VpLow :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR PWMVpLow,S%1,TR_FG163,PWM 
+		 VpLow</p></td>
+		<td class="last"><p class="TableText">The voltage to the servodrivers 
+		 is too low.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">PWM_OverTemp :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR PWMOvTmp,S%1,TR_FG164,PWM 
+		 Over Temperature</p></td>
+		<td class="last"><p class="TableText">The servodriver temperature 
+		 is too high.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">PWM_Refer :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR PWMRef,S%1,TR_FG165,PWM 
+		 Refer Error</p></td>
+		<td class="last"><p class="TableText">A circuit on the servodriver 
+		 detected that the reference voltage 5 Volt is incorrect.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">PWM_NoMotor :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR PWMNoMot,S%1,TR_FG166,PWM 
+		 No Motor Error</p></td>
+		<td class="last"><p class="TableText">A circuit on the servodriver 
+		 detected that the tacho connector is not inserted.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">PWM_NoRpwm :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR PWMNoRpw,S%1,TR_FG167,PWM 
+		 no RPWM Error</p></td>
+		<td class="last"><p class="TableText">The READY signals from servodrivers 
+		 are missing. This error is a general error signaling that the 
+		 servodriver detected without any further explanation.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">X_RefMark_Error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR X_RefMrk,S%1,TR_FG168,X 
+		 Reference Mark Synchro Error</p></td>
+		<td class="last" rowspan="6"><p class="TableText">The firmware 
+		 did not detect a zero notch where it should be, or it detected 
+		 a notch in an unexpected position. The position transducer may 
+		 be faulty, or the ZER_PER or ZER_PREC parameters of the CONSTANT 
+		 are incorrect.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">Y_RefMark_Error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR Y_RefMrk,S%1,TR_FG169,Y 
+		 Reference Mark Synchro Error</p></td>
+		
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">Z_RefMark_Error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR Z_RefMrk,S%1,TR_FG16a,Z 
+		 Reference Mark Synchro Error</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">W_RefMark_Error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR W_RefMrk,S%1,TR_FG16b,W 
+		 Reference Mark Synchro Error</p></td>
+		
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">A_RefMark_Error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR A_RefMrk,S%1,TR_FG16c,A 
+		 Reference Mark Synchro Error</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">B_RefMark_Error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR B_RefMrk,S%1,TR_FG16d,B 
+		 Reference Mark Synchro Error</p></td>
+		
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">SafSys_Violation :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_RE,S%1,TR_SAF00,Safety 
+		 System Violation</p></td>
+		<td class="last"><p class="TableText">The guards are open.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">Illegal_cha_mode :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_RE,S%1,TR_SAF01,Illegal 
+		 Change Mode [Single/Double Arm]</p></td>
+		<td class="last"><p class="TableText">A fault on the single arm/dual 
+		 arm switching occurred.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">Eme_from_f2 :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_RE,S%1,TR_SAF02,Error 
+		 Induced from the other Arm!</p></td>
+		<td class="last"><p class="TableText">The other arm caused an emergency.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">HoldPanel_NotOk :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_RE,S%1,TR_SAF03,Hold 
+		 button on Panel not Ok!</p></td>
+		<td class="last"><p class="TableText">The panel's "Hold" pushbutton 
+		 was mistakenly activated.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">StartPanel_NotOk :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_RE,S%1,TR_SAF04,Start 
+		 button on Panel not Ok!</p></td>
+		<td class="last"><p class="TableText">The panel's "Run" pushbutton 
+		 was mistakenly activated.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">MotonPanel_NotOk :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_RE,S%1,TR_SAF05,Motor 
+		 On button on Panel not Ok!</p></td>
+		<td class="last"><p class="TableText">The panel's "Start" pushbutton 
+		 was mistakenly activated.</p></td>
+	</tr>
+</table>
+<p class="TableText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">PWM_PwS2Rack :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR PwS2Rack,S%1,TR_FG171,Power 
+		 Supply on rack 2</p></td>
+		<td class="last"><p class="TableText">An error on the motor power 
+		 supply of the second rack occurred.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">PWM_BrakeResi :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR BrkResi,S%1,TR_FG172,Motor 
+		 Braking Resistor</p></td>
+		<td class="last"><p class="TableText">A braking resistance failure 
+		 occurred.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">PWM_OvcAllAx :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR OvcAllAx,S%1,TR_FG173,Overcurrent 
+		 in 1 of the 3 axes</p></td>
+		<td class="last"><p class="TableText">This error applies only to 
+		 the PWM3.28 card. This error is signaled when one of the three 
+		 axis servodrivers is faulty. It signals that a quick-acting circuit 
+		 has detected a wrong input of the final stages of the servodrivers. 
+		 It may be due to a short circuit, such as on the motor cable.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">FDG_CYC :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_RE,S%1,TR_SAF07,FDG 
+		 cycle error</p></td>
+		<td class="last"><p class="TableText">The ENABLE CYCLE device of 
+		 the FDG indicates that the part did not load correctly while an 
+		 automatic measuring cycle was starting; this error never generates 
+		 if the modal selector is in the "MAN" position. This diagnostic 
+		 test is only enabled if the constant HAVE_FDG parameter is set 
+		 to 1.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">no_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR MOTOR_RE,S%1,TR_FG001,E-Stop 
+		 - waiting for machine start</p></td>
+		<td class="last"><p class="TableText">The machine is in an E-Stop 
+		 condition.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">no_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR CYGPRCH,S%1,TR_NZERO,Machine 
+		 not zeroed!</p></td>
+		<td class="last"><p class="TableText">The machine did not complete 
+		 the axes zero presetting procedure.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">no_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR LTC86,S%1,TR_FG020,CONSTANT.ASC 
+		 file read Error</p></td>
+		<td class="last"><p class="TableText">An error in the CONSTANT 
+		 file reading occurred.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">no_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR SET_PAR,S%1,TR_NOCON,CONSTANT.ASC 
+		 missing, must be downloaded</p></td>
+		<td class="last"><p class="TableText">The CONSTANT file does not 
+		 exist.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">no_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR LTC86,S%1,TR_TSENS,Temperature 
+		 Sensor defect, Temp Corr off!</p></td>
+		<td class="last"><p class="TableText">An error on a temperature 
+		 sensor occurred, and temperature compensation was deactivated.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">no_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR LTC86,S%1,TR_EXE00,invalid 
+		 Command</p></td>
+		<td class="last"><p class="TableText">A command is invalid.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">no_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR LTC86,S%1,TR_EXE01,invalid 
+		 Parameter!</p></td>
+		<td class="last"><p class="TableText">A parameter is invalid.</p></td>
+	</tr>
+</table>
+<p class="TableText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">no_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR LTC86,S%1,TR_NOTIM,Command 
+		 not implemented!</p></td>
+		<td class="last"><p class="TableText">The command does not exist.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st">no_error :</td>
+		<td class="t2Col">ERROR CNVSTREA,S%1,TR_LIB04,Conversion Error 
+		 String -&gt; Number!</td>
+		<td class="last">An error in the string-number conversion occurred.</td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">no_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR PULT_PAR,S%1,TR_LIB01,Syntax 
+		 Error!</p></td>
+		<td class="last"><p class="TableText">A command syntax error occurred.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">no_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR PULT_PAR,S%1,TR_LIB06,too 
+		 many Parameters!</p></td>
+		<td class="last"><p class="TableText">The number of parameters 
+		 is too high.</p></td>
+	</tr>
+</table>
+<p class="TableText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">no_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR ABORT,S%1,TR_MOV01,Movement 
+		 Interrupted!</p></td>
+		<td class="last"><p class="TableText">The movement (no fly) was 
+		 interrupted due to probe deflection. </p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">no_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR FLY,S%1,TR_MOV01,Movement 
+		 Interupted!</p></td>
+		<td class="last"><p class="TableText">The movement (fly) was interrupted 
+		 due to probe deflection.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">no_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR &lt;X_LIMIT&gt;,S%1,TR_OUTOL,Machine 
+		 Parameter out of tolerance!</p></td>
+		<td class="last" rowspan="5"><p class="TableText">The specified 
+		 stroke is beyond the limits of the axis.</p></td>
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">no_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR &lt;Y_LIMIT&gt;,S%1,TR_OUTOL,Machine 
+		 Parameter out of tolerance!</p></td>
+		
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">no_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR &lt;Z_LIMIT&gt;,S%1,TR_OUTOL,Machine 
+		 Parameter out of tolerance!</p></td>
+		
+	</tr>
+	<tr class="t1Row">
+		<td class="t1st"><p class="TableText">no_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR &lt;A_LIMIT&gt;,S%1,TR_OUTOL,Machine 
+		 Parameter out of tolerance!</p></td>
+		
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">no_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR &lt;B_LIMIT&gt;,S%1,TR_OUTOL,Machine 
+		 Parameter out of tolerance!</p></td>
+		
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">no_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR PROBE,S%1,TR_PRB01,no 
+		 Probing within Probelimit!</p></td>
+		<td class="last"><p class="TableText">There is no measurement within 
+		 the space.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">no_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR GET_PARA,S%1,TR_MINM2,Machine 
+		 Parameter larger than permitted</p></td>
+		<td class="last"><p class="TableText">The value of a specified 
+		 parameter is greater than the maximum limit.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">no_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR GET_PARA,S%1,TR_MINM1,Machine 
+		 Parameter smaller than permitted</p></td>
+		<td class="last"><p class="TableText">The value of a specified 
+		 parameter is smaller than the minimum limit.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">no_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR GET_PARA,S%1,TR_SCA01,Too 
+		 many scan control points (max. 8)!</p></td>
+		<td class="last"><p class="TableText">A specified number of scanning 
+		 reference points is too high (the maximum is 8).</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">no_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR FSCAN,S%1,TR_CEN02,Workpiece 
+		 contact lost!</p></td>
+		<td class="last"><p class="TableText">Contact was lost during scanning.</p></td>
+	</tr>
+</table>
+<p class="TableText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">no_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR TRANSFOR,S%1,TR_SCA03,Scanning 
+		 Direction ambiguous!</p></td>
+		<td class="last"><p class="TableText">The scanning direction is 
+		 undefined.</p></td>
+	</tr>
+</table>
+<p class="TableText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">no_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR SET_PAR,S%1,TR_SPMTX,Prb 
+		 deflection(s) too large for sp6_mtrx</p></td>
+		<td class="last"><p class="TableText">There is excessive SP600 
+		 deflection.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">no_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR WRIST,S%1,TR_PH902,Illegal 
+		 Wrist Angle Commanded</p></td>
+		<td class="last"><p class="TableText">The wrist position is not 
+		 allowed.</p></td>
+	</tr>
+</table>
+<p class="TableText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">no_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR WRIST,S%1,TR_PH901,Wrist 
+		 Not in Configuration</p></td>
+		<td class="last"><p class="TableText">A wrist is not present in 
+		 the configuration.</p></td>
+	</tr>
+</table>
+<p class="TableText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">no_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR LOAD_EEP,W%1,TR_LOADK,No 
+		 machine correction data available!</p></td>
+		<td class="last"><p class="TableText">Geometric compensation data 
+		 is unavailable.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">no_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR READ_LIN,W%1,TR_TRMI1,RS232 
+		 ERROR : BUFFER OVERFLOW</p></td>
+		<td class="last"><p class="TableText">An error of the serial line 
+		 occurred.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">no_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR DEACOMP,S%1,TR_DEACT,Wrong 
+		 temp for DEA Activ, Temp Corr off!</p></td>
+		<td class="last"><p class="TableText">One or more pairs of thermal 
+		 sensors that Active compensation uses indicates a difference in 
+		 temperature that is incompatible with the limits that the algorithm 
+		 set. You should use the function "Board sub-menu" -&gt; "Test 
+		 Temp Board" -&gt; "Display DEA Activ" of TestSoft to have information 
+		 on which sensors caused the problem.</p></td>
+	</tr>
+</table>
+<p class="BodyText rh-hide" data-rhtags="1">&#160;</p>
+<table class="TableHeadingOnTop rh-hide" cellspacing="0px" data-rhtags="1">
+	<col />
+	<col />
+	<col />
+	<tr class="t1st">
+		<td><p class="TableText"><span class="bold">STATUS Label</span></p></td>
+		<td><p class="TableText"><span class="bold">Error Message</span></p></td>
+		<td><p class="TableText"><span class="bold">Cause</span></p></td>
+	</tr>
+	<tr class="t2Row">
+		<td class="t1st"><p class="TableText">no_error :</p></td>
+		<td class="t2Col"><p class="TableText">ERROR DEACOMP,S%1,TR_NOTER,Sensor 
+		 bank not termin., Temp Corr off!</p></td>
+		<td class="last"><p class="TableText">On one of the banks of thermal 
+		 sensors that Active compensation uses, an error occurred in the 
+		 termination resistors that close the unused channels. You should 
+		 use the function "Board sub-menu" -&gt; "Test Temp Board" -&gt; 
+		 "Display Data" of TestSoft to have information on which termination 
+		 resistors caused the problem.</p></td>
+	</tr>
+</table>
+<div style="width: 100%; position: relative;" id="footer" data-rhtags="1" class="rh-hide">
+	
+ <div data-rhtags="1" class="rh-hide">
+<script src="../jquery.js" type="text/javascript" style="x-condition: Online;"></script>
+<script src="../documancers.js" type="text/javascript" language="javascript" style="x-condition: Online;"></script>
+
+<div class="version">
+	<span data-rhtags="1" class="rh-hide">2019 R1</span> 
+	 
+</div>
+<div class="product">
+	<span data-rhtags="1" class="rh-hide">Machine Interface Installation Manual</span> 
+	 
+</div>
+<hr id="beforefooter" align="center" />
+<div class="footersection rh-hide" data-rhtags="1">
+<p class="footerpar" style="text-align: right;"><a class="footerheadinglink" id="backtotop" href="../#top">>> Back to Top</a></p>	
+	<p class="footerheading" state="hide" name="1"><a href="../#1" class="footerheadinglink">Contact 
+	 the Documentation Team</a></p>
+	<div id="item1">
+		<a name="1"></a> <script type="text/javascript" style="x-condition: Online; x-condition: Online, ;">var versionNum = ($('div.version').text());
+	var productName = ($('div.product').text());
+	var str_filename = location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
+	var mailSubject = ("PC-DMIS " + versionNum + "Documentation Feedback - " + str_filename);
+	var blank_lines = escape("\n") + escape("\n");
+	var mailBody = '[Type your comments here in English]' + blank_lines + 'My comments apply to this page: ' + location.href;
+	var mailDisplay = '>> Send Feedback on Topic <a href="#info2" class="info2"> &#9679;</a>'; 
+	document.write('<p class="footerpar"><a class="footerlink" href="mailto:mi-msi-documentation@hexagon.com' + '?subject=' + mailSubject + '&body=' + mailBody + '">' + mailDisplay + '</a></p>');
+	var versionNum = ($("div.version").hide());
+	var productName = ($("div.product").hide());</script>
+		<hr align="center" />
+	</div>
+	<p class="footerheading" state="hide" name="2"><a href="../#2" class="footerheadinglink">PDF 
+	 Documentation</a></p>
+	<div id="item2">
+		<a name="2"></a> 
+		<p class="footerpar"><a href="../../helpcentertopics/Printable_Manuals.htm#Readme" class="footerlink">&gt;&gt; Readme.pdf</a></p>
+		<p class="footerpar"><a href="../../helpcentertopics/Printable_Manuals.htm#Printable_Manuals" class="footerlink">&gt;&gt; Printable 
+		 Manuals</a></p>
+		<hr align="center" />
+	</div>
+	<p class="footerheading" state="hide" name="3"><a href="../#3" class="footerheadinglink">Support Links</a></p>
+	<div id="item3">
+		<p class="footerpar"><a href="https://support.hexagonmi.com/s/articles" target="_blank" class="footerlink">&gt;&gt; Knowledge Base</a>&#160;&#160;<a href="../#info1" class="info1">●</a></p>
+<script type="text/javascript">
+$(document).ready(function() {
+	var lang_pathname = location.pathname;
+	lang_pathname = lang_pathname.toLowerCase();
+	
+	// link1 = Service and Support
+	// link2 = Training
+	// link3 = Contact Us - Locations
+	// link4 = Main Regional Site
+	// link5 = Products/Software
+	var lang_links = lang_FolderFinder(lang_pathname);
+	
+	document.getElementById("link1").href = lang_links[0];
+	document.getElementById("link2").href = lang_links[1];
+	document.getElementById("link3").href = lang_links[2];
+	document.getElementById("link4").href = lang_links[3];
+	document.getElementById("link5").href = lang_links[4];
+});
+</script>
+		<p class="footerpar"><a id="link1" href="https://support.hexagonmi.com/s/" target="_blank" class="footerlink">&gt;&gt; Hexagon Technical Support</a>&#160;&#160;<a href="../#info1" class="info1">●</a></p>
+		<p class="footerpar"><a href="http://www.pcdmisforum.com/forum.php" target="_blank" class="footerlink">&gt;&gt; Forum</a>&#160;&#160;<a href="../#info1" class="info1">●</a></p>
+		<p class="footerpar"><a href="https://hexagonmi.userecho.com/" target="_blank" class="footerlink">&gt;&gt; Ideas </a>&#160;&#160;<a href="../#info1" class="info1">●</a></p>
+		<p class="footerpar"><a id="link2" href="http://hexagonmi.com/en-US/service-and-support/training" target="_blank"	 class="footerlink">&gt;&gt; Training</a>&#160;&#160;<a href="../#info1" class="info1">●</a></p>
+		<p class="footerpar"><a id="link3" href="http://hexagonmi.com/contact-us/locations" target="_blank" class="footerlink">&gt;&gt; Regional Offices</a>&#160;&#160;<a href="../#info1" class="info1">●</a></p>
+		<hr align="center" />
+	</div>
+	<p class="footerheading" state="hide" name="4"><a href="../#4" class="footerheadinglink">Company 
+	 Information</a></p>
+	<div id="item4">
+		<p class="footerpar">Hexagon Manufacturing Intelligence</p>
+		<p class="footerpar"><a id="link4" href="http://hexagonmi.com" class="footerlink" 
+								 target="_blank">&gt;&gt; http://hexagonmi.com</a>&#160;&#160;<a href="../#info1" class="info1">●</a></p>
+		<hr align="center" />
+	</div>
+	<p class="footerheading" state="hide" name="5"><a href="../#5" class="footerheadinglink">Product 
+	 Information</a></p>
+	<div id="item5">
+		<p class="footerpar">PC-DMIS  
+		 2019 R1</p>
+		<p class="footerpar">Copyright © 2019 
+		 Hexagon Manufacturing Intelligence – Metrology Software, Inc.</p>
+		<p class="footerpar">Help System last generated on <span data-rhtags="1" class="rh-hide">29 March 2019</span><?rh-variable_end ?></p data-rhtags="1" class="rh-hide">
+		<p class="footerpar rh-hide" data-rhtags="1"><a id="link5" href="http://hexagonmi.com/products/software/pc-dmis" 
+								 class="footerlink" target="_blank">&gt;&gt; 
+		 http://www.pc-dmis.com</a>&#160;&#160;<a href="../#info1" class="info1">●</a></p>
+	</div data-rhtags="1" class="rh-hide">
+</div data-rhtags="1" class="rh-hide">
+<p>&#160;</p>
+<script type="text/javascript">// ================================================================================
+	// ==== This script block is for custom drop-down items in the footer.=============
+	// ================================================================================
+	var str_filename = window.location.pathname;
+	var str_prepend = GetPrependForSubfolders();
+
+	// Chms contain ::/ in their pathnames
+	var arr = str_filename.split('::/');
+		//document.write ("<br>testing... projdir is " + str_projdir);
+		//document.write ("<br>testing... first item is " + arr[0]);
+		//document.write ("<br>testing... second item is " + arr[1]);
+
+	//Test for a chm. If second array in the list the arr[1] is not empty, it means we're in a chm.
+	if (arr[1] != null){
+			//document.write ("testing...chm");
+			// This counts the number of subfolders the topic is in
+			// This checks if the topic is within a subfolder to give carets diff urls.
+			var count = arr[1].split("/").length-1;
+			if (count >= 1) {
+			// When in a sub folder, we have to make it an absolute link.
+				var caret_down = '/caret_down.png';
+				var caret_right = '/caret_right.png';
+				var caret_right_hover = '/caret_right_hover.png';
+				var caret_down_hover = '/caret_down_hover.png';
+
+			// This replaces all heading hrefs in subfolders so the links aren't broken
+			} else {
+			var caret_down = 'caret_down.png';
+			var caret_right = 'caret_right.png';
+			var caret_right_hover = 'caret_right_hover.png';
+			var caret_down_hover = 'caret_down_hover.png';
+		}
+
+	}
+
+	else {
+	    //...otherwise, we're in either a local help or webhelp....
+			var caret_down = str_prepend + 'caret_down.png';
+			var caret_right = str_prepend + 'caret_right.png';
+			var caret_right_hover = str_prepend + 'caret_right_hover.png';
+			var caret_down_hover = str_prepend + 'caret_down_hover.png';
+		}
+
+	$("div#item1").hide();
+	$("div#item2").hide();
+	$("div#item3").hide();
+	$("div#item4").hide();
+	$("div#item5").hide();
+
+	$(".info1").mouseenter(function() {
+		$(this).append('<span class="trash">&nbsp;&nbsp;(Opens in your Internet browser.)</span>');
+		});
+
+	$(".info1").mouseleave(function() {
+		$(".trash").remove();
+		});
+
+	$(".info2").mouseenter(function() {
+		$(this).append('<span class="trash">&nbsp;&nbsp;(Opens your email client. Only send documentation feedback.)</span>');
+		});
+
+	$(".info2").mouseleave(function() {
+		$(".trash").remove();
+		});
+
+
+	// When your pointer enters a heading in the footer, it shows the hover image
+		$(".footerheading").mouseenter(function(){
+		  var thisname = $(this).attr("name");
+		  if ($(this).attr("state") == "hide"){
+			imageUrl = caret_right_hover;
+			}
+		  else {
+			imageUrl = caret_down_hover;
+		  };
+			$(this).css('background-image', 'url(' + imageUrl + ')');
+		});
+
+	// When you pointer leaves a heading in the footer, it shows the non-hover image
+		$(".footerheading").mouseleave(function(){
+		  var thisname = $(this).attr("name");
+		  if ($(this).attr("state") == "hide"){
+			imageUrl = caret_right;
+			}
+		  else {
+			imageUrl = caret_down;
+		  };
+			$(this).css('background-image', 'url(' + imageUrl + ')');
+		});
+
+	// When you click on a heading in the footer, it shows the hover image
+		$(".footerheading").click(function(){
+
+			// Run the resize function to check the size when a heading expands or collapses.
+			resizeFunc();
+
+		  $(this).toggleClass('footerheading_expanded');
+		  var thisname = $(this).attr("name");
+		  if ($(this).attr("state") == "hide"){
+			$("div#item" + thisname).show();
+			imageUrl = caret_down_hover;
+			$(this).css('background-image', 'url(' + imageUrl + ')');
+			$(this).attr("state","show");
+		  } else {
+			$("div#item" + thisname).hide();
+			$(this).attr("state","hide");
+			imageUrl = caret_right_hover;
+			$(this).css('background-image', 'url(' + imageUrl + ')');
+		}
+		});
+
+	/* This fixes the #1, #2, #3, and so on hrefs to point to an absolute named anchor of "#footer".
+	   These were bogus links anyway and only needed for chm hover styling.
+	   Otherwise they end up with something like "../../#1" and the footer heading links don't work */
+	$('.footerheadinglink').attr("href","#footer");
+
+	// This function dynamically shows the 'Back to Top' text based on document and window size. It must remain near the bottom of this script portion. It also needs to remain after the Back to Top paragraph of text.
+		function resizeFunc() {
+			var d_height = $(document).height();
+			var w_height = "innerHeight" in window
+				? window.innerHeight
+				: document.documentElement.offsetHeight;
+			var w_height = w_height;
+			$('#backtotop').toggle(d_height > w_height);
+			$('#backtotop2').toggle(d_height > w_height);
+			// For Testing:
+			// $('#test').html("Doc Height: " + d_height + "<br>Window Height: " + w_height);
+		}
+		$( window ).resize(resizeFunc);
+		//resizeFunc();
+
+	/* This fixes the back to top links within sub folders so that they point to an absolute link instead of a relative link. */
+	$('#backtotop').attr("href","#top");
+
+</script>
+</div>
+</div>
+</body>
+</html>

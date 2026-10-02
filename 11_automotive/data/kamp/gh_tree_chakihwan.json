@@ -1,0 +1,782 @@
+{
+  "sha": "375ce638bb89fae6bcc0649d1d73b66541f9441d",
+  "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/trees/375ce638bb89fae6bcc0649d1d73b66541f9441d",
+  "tree": [
+    {
+      "path": ".devcontainer",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "d3ebdf95e0528236ae5149d66b95e1390b0e0adf",
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/trees/d3ebdf95e0528236ae5149d66b95e1390b0e0adf"
+    },
+    {
+      "path": ".devcontainer/devcontainer.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "de837c57e81eb853bdf79de32fb40935861bc772",
+      "size": 700,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/de837c57e81eb853bdf79de32fb40935861bc772"
+    },
+    {
+      "path": ".gitignore",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ca0b2be0e9477269da59c585f732c2444b5561fa",
+      "size": 248,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/ca0b2be0e9477269da59c585f732c2444b5561fa"
+    },
+    {
+      "path": "CLAUDE.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "da91e761734b7f855c6b4ee3f666e1c8ec7049fd",
+      "size": 2587,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/da91e761734b7f855c6b4ee3f666e1c8ec7049fd"
+    },
+    {
+      "path": "Dockerfile",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "28f61dd4e3aa4c2a36d8c96204c5f4cb79b90aef",
+      "size": 1011,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/28f61dd4e3aa4c2a36d8c96204c5f4cb79b90aef"
+    },
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f2eb3b31937d4f74d60586ad60bba6ef917242e0",
+      "size": 438,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/f2eb3b31937d4f74d60586ad60bba6ef917242e0"
+    },
+    {
+      "path": "cnc_ai",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "37658b6fc9f439841f26bdf1fff30fc09fed3c27",
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/trees/37658b6fc9f439841f26bdf1fff30fc09fed3c27"
+    },
+    {
+      "path": "cnc_ai/CLAUDE.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "78502f97de3b01f35c3eca8dbb6618a4311e24d2",
+      "size": 3684,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/78502f97de3b01f35c3eca8dbb6618a4311e24d2"
+    },
+    {
+      "path": "cnc_ai/README.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a72d08f2eb33ba64e7a54e16a56dd67f0b531831",
+      "size": 4249,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/a72d08f2eb33ba64e7a54e16a56dd67f0b531831"
+    },
+    {
+      "path": "cnc_ai/README_data.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5d39c8b9e0e0690f1e77b95a9cb895b40c8a74d0",
+      "size": 3527,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/5d39c8b9e0e0690f1e77b95a9cb895b40c8a74d0"
+    },
+    {
+      "path": "cnc_ai/data",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "c631be3af2404e576abf4d40efa6bafd62022bcd",
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/trees/c631be3af2404e576abf4d40efa6bafd62022bcd"
+    },
+    {
+      "path": "cnc_ai/data/processed",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "eccfdf165ef371238b9869cc2b8f3482bb01f398",
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/trees/eccfdf165ef371238b9869cc2b8f3482bb01f398"
+    },
+    {
+      "path": "cnc_ai/data/processed/dataset_task_a.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "df914ba666b3afba20810efaed88b597729c12ea",
+      "size": 65264,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/df914ba666b3afba20810efaed88b597729c12ea"
+    },
+    {
+      "path": "cnc_ai/data/processed/dataset_task_b.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1b25ed7d2a9f195bb13d4cee079a76afaa9dc3a5",
+      "size": 65140,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/1b25ed7d2a9f195bb13d4cee079a76afaa9dc3a5"
+    },
+    {
+      "path": "cnc_ai/data/processed/oof_dnn_task_a.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0457e66de6bb704b138f1b94277eb450d3e86b68",
+      "size": 864,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/0457e66de6bb704b138f1b94277eb450d3e86b68"
+    },
+    {
+      "path": "cnc_ai/data/processed/oof_dnn_task_b.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "cc2c801c6b0d40d100011018470f360de168bfa2",
+      "size": 857,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/cc2c801c6b0d40d100011018470f360de168bfa2"
+    },
+    {
+      "path": "cnc_ai/data/processed/oof_xgb_task_a.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "db73e63c87c76d36b2e347bbf164bd0bbb04be06",
+      "size": 860,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/db73e63c87c76d36b2e347bbf164bd0bbb04be06"
+    },
+    {
+      "path": "cnc_ai/data/processed/oof_xgb_task_b.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e2a51418e340bd1319f18e20de43c3db1ac7e9a3",
+      "size": 854,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/e2a51418e340bd1319f18e20de43c3db1ac7e9a3"
+    },
+    {
+      "path": "cnc_ai/data/raw",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "36bbd21c407cb17272bbf901def3ca7b7666cac6",
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/trees/36bbd21c407cb17272bbf901def3ca7b7666cac6"
+    },
+    {
+      "path": "cnc_ai/data/raw/experiment_01.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "18c4a87dcf5b93ade4ea19984efc336c90db83ec",
+      "size": 228132,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/18c4a87dcf5b93ade4ea19984efc336c90db83ec"
+    },
+    {
+      "path": "cnc_ai/data/raw/experiment_02.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "63f0149ad95babac173fa5b4b1ea257e288c451f",
+      "size": 324450,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/63f0149ad95babac173fa5b4b1ea257e288c451f"
+    },
+    {
+      "path": "cnc_ai/data/raw/experiment_03.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fd11e38218c627a63aa43f2a97bf20807f13a0ca",
+      "size": 322424,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/fd11e38218c627a63aa43f2a97bf20807f13a0ca"
+    },
+    {
+      "path": "cnc_ai/data/raw/experiment_04.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "96619aa4bde22c6c763b98e0fc121162f10b8473",
+      "size": 107529,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/96619aa4bde22c6c763b98e0fc121162f10b8473"
+    },
+    {
+      "path": "cnc_ai/data/raw/experiment_05.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "563f1abc01eabbb6ee39d97b79be8c4342c9dd3d",
+      "size": 92359,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/563f1abc01eabbb6ee39d97b79be8c4342c9dd3d"
+    },
+    {
+      "path": "cnc_ai/data/raw/experiment_06.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "69b0642116f269fb65158ac3dc39009185d3657a",
+      "size": 280342,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/69b0642116f269fb65158ac3dc39009185d3657a"
+    },
+    {
+      "path": "cnc_ai/data/raw/experiment_07.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f6742cf2c409a813917b7860a9a9b64ae9ac7963",
+      "size": 120531,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/f6742cf2c409a813917b7860a9a9b64ae9ac7963"
+    },
+    {
+      "path": "cnc_ai/data/raw/experiment_08.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f60dd6dbbc13afab94494ed8b2796768eeb3fc07",
+      "size": 130588,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/f60dd6dbbc13afab94494ed8b2796768eeb3fc07"
+    },
+    {
+      "path": "cnc_ai/data/raw/experiment_09.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dd0b6fc15d11d62504c5bc3390ccd0715e15cf08",
+      "size": 160070,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/dd0b6fc15d11d62504c5bc3390ccd0715e15cf08"
+    },
+    {
+      "path": "cnc_ai/data/raw/experiment_10.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "56b61af6f1519a8b576a3ead80b81f43491d58a4",
+      "size": 272497,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/56b61af6f1519a8b576a3ead80b81f43491d58a4"
+    },
+    {
+      "path": "cnc_ai/data/raw/experiment_11.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "58edf8d57b693101b947d1469e13d27c2184ff23",
+      "size": 496286,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/58edf8d57b693101b947d1469e13d27c2184ff23"
+    },
+    {
+      "path": "cnc_ai/data/raw/experiment_12.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "31761263ee85cf2d59e68fa330d093c2b5969880",
+      "size": 491356,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/31761263ee85cf2d59e68fa330d093c2b5969880"
+    },
+    {
+      "path": "cnc_ai/data/raw/experiment_13.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2a8c6361e7fb469c2645fb68f911b59ed54cdd69",
+      "size": 479809,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/2a8c6361e7fb469c2645fb68f911b59ed54cdd69"
+    },
+    {
+      "path": "cnc_ai/data/raw/experiment_14.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0c05b31cd8de6326881232162a8fe676702d067a",
+      "size": 503655,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/0c05b31cd8de6326881232162a8fe676702d067a"
+    },
+    {
+      "path": "cnc_ai/data/raw/experiment_15.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a9bad714257a30eba6027e4dfb39fdf2624675c0",
+      "size": 295358,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/a9bad714257a30eba6027e4dfb39fdf2624675c0"
+    },
+    {
+      "path": "cnc_ai/data/raw/experiment_16.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2d5a3e6990f8bde4587148055f80f59533353c28",
+      "size": 119022,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/2d5a3e6990f8bde4587148055f80f59533353c28"
+    },
+    {
+      "path": "cnc_ai/data/raw/experiment_17.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1c8489779780fb7232d96f581931915065184080",
+      "size": 461776,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/1c8489779780fb7232d96f581931915065184080"
+    },
+    {
+      "path": "cnc_ai/data/raw/experiment_18.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a3dcac5e1c13c2160d21aa5b36815eababe06e39",
+      "size": 487853,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/a3dcac5e1c13c2160d21aa5b36815eababe06e39"
+    },
+    {
+      "path": "cnc_ai/data/raw/experiment_19.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8444ada083f282afb534f8ec3d23920dbbea3305",
+      "size": 135632,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/8444ada083f282afb534f8ec3d23920dbbea3305"
+    },
+    {
+      "path": "cnc_ai/data/raw/experiment_20.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1b43b71a2ddb8a0635d0ffbca98b77913d1edbd4",
+      "size": 144982,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/1b43b71a2ddb8a0635d0ffbca98b77913d1edbd4"
+    },
+    {
+      "path": "cnc_ai/data/raw/experiment_21.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4ca3a181c42bec41cfafe7a379367c74c5041977",
+      "size": 408490,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/4ca3a181c42bec41cfafe7a379367c74c5041977"
+    },
+    {
+      "path": "cnc_ai/data/raw/experiment_22.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "800fd46788cef3f6cf7cfff39bea16084edfc2ba",
+      "size": 136281,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/800fd46788cef3f6cf7cfff39bea16084edfc2ba"
+    },
+    {
+      "path": "cnc_ai/data/raw/experiment_23.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bfa4aaa26b08ec77ecd3768575c45308a30a1d7a",
+      "size": 105353,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/bfa4aaa26b08ec77ecd3768575c45308a30a1d7a"
+    },
+    {
+      "path": "cnc_ai/data/raw/experiment_24.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0c05b31cd8de6326881232162a8fe676702d067a",
+      "size": 503655,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/0c05b31cd8de6326881232162a8fe676702d067a"
+    },
+    {
+      "path": "cnc_ai/data/raw/experiment_25.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8444ada083f282afb534f8ec3d23920dbbea3305",
+      "size": 135632,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/8444ada083f282afb534f8ec3d23920dbbea3305"
+    },
+    {
+      "path": "cnc_ai/data/raw/train.csv",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4a1b8962a51deb49110765d42ae087eb28691ed2",
+      "size": 848,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/4a1b8962a51deb49110765d42ae087eb28691ed2"
+    },
+    {
+      "path": "cnc_ai/models",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "41ce8ce6c3462e42206c618671338d4ec7a08326",
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/trees/41ce8ce6c3462e42206c618671338d4ec7a08326"
+    },
+    {
+      "path": "cnc_ai/models/dnn_task_a.pt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dc160a3c4d48a118c4de0fb120729284658015df",
+      "size": 63221,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/dc160a3c4d48a118c4de0fb120729284658015df"
+    },
+    {
+      "path": "cnc_ai/models/dnn_task_b.pt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b8b740d7cbdb76e904039847ed015a21b132aed8",
+      "size": 62965,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/b8b740d7cbdb76e904039847ed015a21b132aed8"
+    },
+    {
+      "path": "cnc_ai/models/xgb_task_a.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5ee74c52fad914417c6176e0714f2373c553c6a6",
+      "size": 57722,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/5ee74c52fad914417c6176e0714f2373c553c6a6"
+    },
+    {
+      "path": "cnc_ai/models/xgb_task_a_features.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2eb00e34ba1b9456cad50ed2f98b17adfb6eaf40",
+      "size": 5275,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/2eb00e34ba1b9456cad50ed2f98b17adfb6eaf40"
+    },
+    {
+      "path": "cnc_ai/models/xgb_task_b.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "35d7bbf0173e3c091dbfdc6594babd962b16422d",
+      "size": 57504,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/35d7bbf0173e3c091dbfdc6594babd962b16422d"
+    },
+    {
+      "path": "cnc_ai/models/xgb_task_b_features.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e75e5a41c76fc0823108711301defc4e0f19cfa8",
+      "size": 5260,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/e75e5a41c76fc0823108711301defc4e0f19cfa8"
+    },
+    {
+      "path": "cnc_ai/reports",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "74ea795c9ac9282b6b11215e11cebd1a9fb046d6",
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/trees/74ea795c9ac9282b6b11215e11cebd1a9fb046d6"
+    },
+    {
+      "path": "cnc_ai/reports/eda_report.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f266936f2716c915e42cff0e774db00e3cf62219",
+      "size": 11588,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/f266936f2716c915e42cff0e774db00e3cf62219"
+    },
+    {
+      "path": "cnc_ai/reports/field_guide.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "22b82c01eb4d6ea184591202babf0ab90a1378c5",
+      "size": 12264,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/22b82c01eb4d6ea184591202babf0ab90a1378c5"
+    },
+    {
+      "path": "cnc_ai/reports/figures",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "9864dee5ec7fe5af6dfea9f073eb801a8af950b4",
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/trees/9864dee5ec7fe5af6dfea9f073eb801a8af950b4"
+    },
+    {
+      "path": "cnc_ai/reports/figures/01_target_distribution.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f4636550b4fe2ece936885365c33429266afe44b",
+      "size": 30303,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/f4636550b4fe2ece936885365c33429266afe44b"
+    },
+    {
+      "path": "cnc_ai/reports/figures/02_feature_distribution.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8c9e3c985d2226c53c7f4222d7127ad1e2c59ac7",
+      "size": 31155,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/8c9e3c985d2226c53c7f4222d7127ad1e2c59ac7"
+    },
+    {
+      "path": "cnc_ai/reports/figures/03_feature_vs_task_a.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "aff2b04ad6987b679da5d1e560c38c9f18887eb5",
+      "size": 46529,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/aff2b04ad6987b679da5d1e560c38c9f18887eb5"
+    },
+    {
+      "path": "cnc_ai/reports/figures/04_feature_vs_task_b.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "abd0909f3eb6f9d3fad8ff5e6f38ee6af6ef3a25",
+      "size": 43504,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/abd0909f3eb6f9d3fad8ff5e6f38ee6af6ef3a25"
+    },
+    {
+      "path": "cnc_ai/reports/figures/05_sensor_boxplot_task_a.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "79a8c313a00936aa0882fb9695d953afaefedabf",
+      "size": 129336,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/79a8c313a00936aa0882fb9695d953afaefedabf"
+    },
+    {
+      "path": "cnc_ai/reports/figures/06_sensor_boxplot_task_b.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0fc15ac032efd7b434d498dac473d4ea64c7d925",
+      "size": 130836,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/0fc15ac032efd7b434d498dac473d4ea64c7d925"
+    },
+    {
+      "path": "cnc_ai/reports/figures/07_stage_sensor_avg.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "952bea19095c172abdbe1373d0ec4b47e35d4bd2",
+      "size": 124964,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/952bea19095c172abdbe1373d0ec4b47e35d4bd2"
+    },
+    {
+      "path": "cnc_ai/reports/figures/08_correlation_heatmap.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a5adf8b22f833c85911fc6e3bf4a26390b945f86",
+      "size": 131751,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/a5adf8b22f833c85911fc6e3bf4a26390b945f86"
+    },
+    {
+      "path": "cnc_ai/reports/figures/09_cutting_current_task_a.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "42ffc7d6de82d7a711e2bc0f28fcdcf5e774c5b3",
+      "size": 76307,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/42ffc7d6de82d7a711e2bc0f28fcdcf5e774c5b3"
+    },
+    {
+      "path": "cnc_ai/reports/figures/10_cm_xgb_task_a.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3d10e0efab85d04a813da51dc7127b23614ee4c5",
+      "size": 24795,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/3d10e0efab85d04a813da51dc7127b23614ee4c5"
+    },
+    {
+      "path": "cnc_ai/reports/figures/11_cm_xgb_task_b.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b2ad1404fce65fa216100be3963797d69be10318",
+      "size": 27888,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/b2ad1404fce65fa216100be3963797d69be10318"
+    },
+    {
+      "path": "cnc_ai/reports/figures/12_shap_summary_task_a.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "16b51eac1ed9a95b7f367d56b16ff30162419790",
+      "size": 132413,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/16b51eac1ed9a95b7f367d56b16ff30162419790"
+    },
+    {
+      "path": "cnc_ai/reports/figures/13_shap_bar_task_a.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "eb72642cd9790b38d46008a72362101637f7db30",
+      "size": 104065,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/eb72642cd9790b38d46008a72362101637f7db30"
+    },
+    {
+      "path": "cnc_ai/reports/figures/14_shap_waterfall_fn_task_a_1.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ef7ae0190dd3d38c4a9c4fb480765f7ee15d01a0",
+      "size": 129085,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/ef7ae0190dd3d38c4a9c4fb480765f7ee15d01a0"
+    },
+    {
+      "path": "cnc_ai/reports/figures/14_shap_waterfall_fn_task_a_2.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7ea12692e989fbba88fc1e9561faaa9f6c8198f6",
+      "size": 130981,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/7ea12692e989fbba88fc1e9561faaa9f6c8198f6"
+    },
+    {
+      "path": "cnc_ai/reports/figures/14_shap_waterfall_fn_task_a_3.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fafa4d06cdf5641bbf07637b4f530dc986555e5d",
+      "size": 132585,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/fafa4d06cdf5641bbf07637b4f530dc986555e5d"
+    },
+    {
+      "path": "cnc_ai/reports/figures/15_shap_summary_task_b.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "faa5f5b63ba4b8f06b35ca3e19a4d21818673afa",
+      "size": 139626,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/faa5f5b63ba4b8f06b35ca3e19a4d21818673afa"
+    },
+    {
+      "path": "cnc_ai/reports/figures/16_shap_bar_task_b.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7d386968fbbb695f3cd464617cca84d1b0a04946",
+      "size": 113715,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/7d386968fbbb695f3cd464617cca84d1b0a04946"
+    },
+    {
+      "path": "cnc_ai/reports/figures/17_shap_waterfall_fn_task_b_1.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ecc9685b78aef84c576f9a6c801c80ec425ecf81",
+      "size": 129357,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/ecc9685b78aef84c576f9a6c801c80ec425ecf81"
+    },
+    {
+      "path": "cnc_ai/reports/figures/17_shap_waterfall_fn_task_b_2.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8c52fb28df0e12ad2fdf06bb8fbbc9a2130d9fd5",
+      "size": 132635,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/8c52fb28df0e12ad2fdf06bb8fbbc9a2130d9fd5"
+    },
+    {
+      "path": "cnc_ai/reports/figures/17_shap_waterfall_fn_task_b_3.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c660c25c6aa0f4856a0ec6aceef55105bce4265e",
+      "size": 134010,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/c660c25c6aa0f4856a0ec6aceef55105bce4265e"
+    },
+    {
+      "path": "cnc_ai/reports/figures/18_cm_dnn_task_a.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0ed5080d6a2102fea397fc46cb07be83a4a81834",
+      "size": 24488,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/0ed5080d6a2102fea397fc46cb07be83a4a81834"
+    },
+    {
+      "path": "cnc_ai/reports/figures/19_cm_dnn_task_b.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a16789e5e68a1f9ffacf2816b9018e1b8a7dc754",
+      "size": 27789,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/a16789e5e68a1f9ffacf2816b9018e1b8a7dc754"
+    },
+    {
+      "path": "cnc_ai/reports/figures/20_model_comparison_bar.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8d60b8651a9c3cb41e990765b0d5759771b0e09a",
+      "size": 61550,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/8d60b8651a9c3cb41e990765b0d5759771b0e09a"
+    },
+    {
+      "path": "cnc_ai/reports/figures/21_roc_curve_comparison.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d1f91f3d478563515d34bd71759576cdf12edd9b",
+      "size": 64023,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/d1f91f3d478563515d34bd71759576cdf12edd9b"
+    },
+    {
+      "path": "cnc_ai/reports/figures/22_confusion_matrix_all.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "66014b9f21939d4927f958d1af14b4124db3c4d0",
+      "size": 48675,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/66014b9f21939d4927f958d1af14b4124db3c4d0"
+    },
+    {
+      "path": "cnc_ai/reports/figures/23_proba_scatter.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "39e04ad2097bde220e4a8d61885762aef23b5fdd",
+      "size": 60019,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/39e04ad2097bde220e4a8d61885762aef23b5fdd"
+    },
+    {
+      "path": "cnc_ai/reports/figures/24_threshold_task_a_xgb.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3b3134f235902d8a3902527d4b8720281a20e97f",
+      "size": 94100,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/3b3134f235902d8a3902527d4b8720281a20e97f"
+    },
+    {
+      "path": "cnc_ai/reports/figures/25_threshold_task_a_dnn.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "12986b000bb43b24ec697717becf988eaa31fc87",
+      "size": 80685,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/12986b000bb43b24ec697717becf988eaa31fc87"
+    },
+    {
+      "path": "cnc_ai/reports/figures/26_threshold_task_b_xgb.png",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "614c5daa4ad4b3dd158176b3b490baf135024f33",
+      "size": 81020,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/614c5daa4ad4b3dd158176b3b490baf135024f33"
+    },
+    {
+      "path": "cnc_ai/reports/modeling_report.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1a7e0f0dac0142a154160d3bd85f800f7716e923",
+      "size": 18695,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/1a7e0f0dac0142a154160d3bd85f800f7716e923"
+    },
+    {
+      "path": "cnc_ai/src",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "7070927a56f781484d2a62e0f737bd958f0237b1",
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/trees/7070927a56f781484d2a62e0f737bd958f0237b1"
+    },
+    {
+      "path": "cnc_ai/src/eda.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0929e7a941c63a668b6136ca2283dafb90e3808f",
+      "size": 10687,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/0929e7a941c63a668b6136ca2283dafb90e3808f"
+    },
+    {
+      "path": "cnc_ai/src/evaluate.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "98068a96cf1ede7f54eaccc7fde792df6f6d310c",
+      "size": 7659,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/98068a96cf1ede7f54eaccc7fde792df6f6d310c"
+    },
+    {
+      "path": "cnc_ai/src/explore_data.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "760bc44bd4e30fa255e88d217e3565ebd0020aa3",
+      "size": 6068,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/760bc44bd4e30fa255e88d217e3565ebd0020aa3"
+    },
+    {
+      "path": "cnc_ai/src/preprocessing.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d87fc77bbe9817582b5a1cfb4e0b87bc246ce12b",
+      "size": 4996,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/d87fc77bbe9817582b5a1cfb4e0b87bc246ce12b"
+    },
+    {
+      "path": "cnc_ai/src/shap_analysis.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1b35882445ffafac5005459456d9ad5ccbe0d7c6",
+      "size": 5940,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/1b35882445ffafac5005459456d9ad5ccbe0d7c6"
+    },
+    {
+      "path": "cnc_ai/src/threshold_analysis.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c162b593ad78363348030b9fb6e2432d1bafed46",
+      "size": 6897,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/c162b593ad78363348030b9fb6e2432d1bafed46"
+    },
+    {
+      "path": "cnc_ai/src/train_dnn.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2eb2fb796d9b7ac1d24510dfbf3fb0aa6757e13e",
+      "size": 10430,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/2eb2fb796d9b7ac1d24510dfbf3fb0aa6757e13e"
+    },
+    {
+      "path": "cnc_ai/src/train_xgboost.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "840887e97841081a61a3609bba13a8ed12f09bc4",
+      "size": 7209,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/840887e97841081a61a3609bba13a8ed12f09bc4"
+    },
+    {
+      "path": "docker-compose.yml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "8f717bebc691163460f11be62e3c8da89d9e14e2",
+      "size": 470,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/8f717bebc691163460f11be62e3c8da89d9e14e2"
+    },
+    {
+      "path": "requirements.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "72726879b1fa587b9e661ed32737feff49c03748",
+      "size": 68,
+      "url": "https://api.github.com/repos/chakihwan/DataAnalysis_projects/git/blobs/72726879b1fa587b9e661ed32737feff49c03748"
+    }
+  ],
+  "truncated": false
+}

@@ -1,0 +1,310 @@
+SOURCE: https://tulip.co/blog/frontline-copilot-update-spring-2024/
+FETCHED: 2026-10-02
+
+ 
+ What’s new with Frontline Copilot™ – Chat with tables, AI… | Tulip 
+ Skip to content 
+ Tulip 
+ Platform
+ Get to Know Tulip
+ Explore the Platform
+ See how Tulip brings together app creation, integrations, and real-time analytics into one platform.
+ Core Capabilities
+ Apps, Agents, and Automations
+ Native AI and ML
+ Edge and Open Connectivity
+ Scalability, Governance, and Insights
+ Security and Compliance
+ Expert Professional Services
+ Advanced Features
+ Automations
+ Computer Vision
+ Hardware and Device Integrations
+ GxP Validation
+ See What's New
+ Solutions
+ By Solution
+ MES for Discrete
+ MES for Pharmaceuticals
+ MES for Medical Device
+ MES for Aerospace and Defense
+ Connected Worker
+ Laboratory Operations
+ By Industry
+ Discrete Manufacturing
+ Pharmaceutical
+ Medical Device
+ Aerospace and Defense
+ Luxury Goods
+ See more
+ By Use Case
+ Production Management
+ Digital Workflows
+ Quality
+ Inventory Management
+ Traceability
+ Resources
+ Discover
+ Augmented Ops Podcast
+ Hear from operations and industry leaders
+ AI Process Engineers
+ Lead the revolution with your expertise for the future of manufacturing
+ Operations Calling
+ Join our waitlist to be notified when registration opens for Ops Calling 2026
+ Learn
+ What's New?
+ Customer Stories
+ Community
+ University
+ Knowledge Base
+ Blog
+ Connect
+ Partners
+ Join a growing ecosystem of technology and go-to-market partners
+ Events
+ Catch us at upcoming shows, events, and conferences
+ Education Program
+ Discover support for workforce development, learning, and training
+ Library
+ button>.dropdown-arrow]:tw-rotate-180"
+ data-type="desktop"
+>
+ Language
+ Select a language 
+ Search our site
+ button>.dropdown-arrow]:tw-rotate-180"
+ data-type="desktop"
+>
+ About Us
+ Careers
+ Press
+ Contact Us
+ Trust Center
+ Professional Services
+ Login
+ Schedule a Demo 
+ Menu 
+ Submit 
+ button]:tw-bg-[#F2F2F3] [&.js-accordion-expanded>button]:tw-text-[#485663] [&.js-accordion-expanded>button>svg]:tw-rotate-180 [&.js-accordion-expanded&_.js-accordion-content]:tw-h-full">
+ Platform
+ Get to Know Tulip 
+ Explore the Platform
+ Core Capabilities 
+ Apps, Agents, and Automations
+ Native AI and ML
+ Edge and Open Connectivity
+ Scalability, Governance, and Insights
+ Security and Compliance
+ Expert Professional Services
+ Advanced Features 
+ Automations
+ Computer Vision
+ Hardware and Device Integrations
+ GxP Validation
+ See What's New
+ button]:tw-bg-[#F2F2F3] [&.js-accordion-expanded>button]:tw-text-[#485663] [&.js-accordion-expanded>button>svg]:tw-rotate-180 [&.js-accordion-expanded&_.js-accordion-content]:tw-h-full">
+ Solutions
+ By Solution 
+ MES for Discrete
+ MES for Pharmaceuticals
+ MES for Medical Device
+ MES for Aerospace and Defense
+ Connected Worker
+ Laboratory Operations
+ By Industry 
+ Discrete Manufacturing
+ Pharmaceutical
+ Medical Device
+ Aerospace and Defense
+ Luxury Goods
+ See more
+ By Use Case 
+ Production Management
+ Digital Workflows
+ Quality
+ Inventory Management
+ Traceability
+ button]:tw-bg-[#F2F2F3] [&.js-accordion-expanded>button]:tw-text-[#485663] [&.js-accordion-expanded>button>svg]:tw-rotate-180 [&.js-accordion-expanded&_.js-accordion-content]:tw-h-full">
+ Resources
+ Discover 
+ Augmented Ops Podcast
+ Hear from operations and industry leaders
+ AI Process Engineers
+ Lead the revolution with your expertise for the future of manufacturing
+ Operations Calling
+ Join our waitlist to be notified when registration opens for Ops Calling 2026
+ Learn 
+ What's New?
+ Customer Stories
+ Community
+ University
+ Knowledge Base
+ Blog
+ Connect 
+ Partners
+ Join a growing ecosystem of technology and go-to-market partners
+ Events
+ Catch us at upcoming shows, events, and conferences
+ Education Program
+ Discover support for workforce development, learning, and training
+ Library
+ About Us
+ Our Story
+ Press
+ Careers
+ Trust Center
+ button>.dropdown-arrow]:tw-rotate-180"
+ data-type="mobile"
+>
+ Language
+ Back
+ Select a language 
+ Website Terms of Use
+ Privacy Policy
+ Terms of Service
+ Support Policy
+ Acceptable Use Policy
+ Product
+ What’s new with Frontline Copilot™ – Chat with tables, AI actions in Automations, and more 
+ Jemma Dupuis 
+ Jan 29, 2024 
+ Jump to section 
+ Chat with Tables is now available 
+ Translate your data with AI translation in Automations 
+ Build AI powered apps to guide your operators 
+ Share on Social! 
+ Share on Twitter 
+ Share on LinkedIn 
+ Over the past few months, Tulip users around the world have been adopting Frontline Copilot™ and integrating AI into their workflows through our beta program. We recently rolled out exciting updates that bring Frontline Copilot™ to more areas of the platform, making it easier than ever to bring AI into your operations. 
+ Chat with Tables is now available to ask your production data and generate analytics AI Translation has arrived in Automations with the new Translate action block AI Trigger Actions have been updated, making it easier to build AI-powered apps for your operators Speech to Text lets operators ask questions and transcribe data hands-free Frontline Copilot, simplifies development, makes it easier to explore your data, and empowers frontline operators to diagnose, search, or learn to overcome challenges. 
+ We've gathered feedback from our beta users and are working hard to deliver more AI solutions that make your job easier without taking away the human element of operations. 
+ Chat with Tables is now available 
+ With the Frontline Copilot™ beta, users can gain deeper insights into their tables and production data through a chatbot interface and generate valuable analytics using simple language. If you have a question about completed work orders, patterns in shift data, or want to understand your downtime, simply ask a question and drill down to find the answer. Tulip can understand your tables and generate analytics that can be saved for use in apps and dashboards with a single click. 
+ See how it works: 
+ Translate your data with AI translation in Automations 
+ Automations are a powerful feature within Tulip for building logic independent of applications. Automations make it easy to build workflows for transforming data, sending alerts, and responding to events as they happen. 
+ The new Translate block uses AI to translate data, so you can spend less time managing translations or having your employees translate documents themselves, and more time empowering your team to get the job done with instructions and apps they can use with confidence. We're excited to see if this new action block can help you reduce the time it takes to build and deploy AI-based solutions across your facilities. 
+ Unfamiliar with Automations? Not sure where to start? We've got resources to help . 
+ Build AI powered apps to guide your operators 
+ We've refined the AI trigger actions in Frontline Copilot™ to make it easier to identify which trigger to use when building your app logic. Extract text from image with OCR 
+ OCR, or Optical Character Recognition, enables Tulip to read and digitize paper documents, PDF files or images captured by a camera into editable and searchable data. It can extract some or all of the text and answer questions about images you upload or capture with Tulip. 
+ Teams use OCR with Tulip in a variety of ways to manage quality and extract data from labels or products to identify discrepancies, to automate data entry and read invoices, work orders or packing slips. This can reduce the time it takes to manually enter information, and scan documents at the touch of a button. OCR can even be used to read machine UIs or equipment gauges. 
+ Answer questions from documents and data 
+ Operations and manufacturing are filled with documents and manuals, and sorting through that information can extend downtime and reduce efficiency. With Tulip, the Answer Questions From Documents and Data triggers can be used to build AI search functionality into your apps. 
+ Technicians can search through maintenance documents and manuals along with their work instructions and return summarized answers, and references to original documents. Operators and temps can quickly find what they need in SOPs or manuals without leaving their station or asking for help. 
+ These no-code triggers make it easy to take advantage of world-class LLMs within your organization without having to set up connectors or manage third-party systems. Simply add a trigger to your app to get started. 
+ In many manufacturing environments, keyboard-based input is considered impractical or simply too slow. AI Triggers can be combined with the new speech-to-text input widget, saving your operators time by allowing them to speak aloud to their Tulip apps to ask questions and transcribe data. 
+ We have an exciting roadmap to share with you in the coming months as we work to integrate AI into workflows and make it easier to build apps without code. 
+ As we build AI capabilities into the platform, data privacy, security, and the reliability of our answers are paramount to Tulip. Frontline Copilot™ is human-centric from the start, and the AI tools we build are designed to augment the people on your team, not replace them. Learn more about our principles here . 
+ Join the beta by emailing us at copilot@tulip.co Learn more about Frontline Copilot Get started with Translation and Trigger Actions Get started with the Speech-to-Text widget 
+ Related 
+ Announcing Frontline Copilot™ – AI Tools in Tulip To Assist Your Team in Running Your Operations 
+ Sep 26, 2023 
+ Tulip Showcases New AI Copilot for Frontline Operations with Microsoft and DMG MORI at EMO Hannover 2023 
+ Sep 27, 2023 
+ Chat With Documents and Translate Text in Tulip Apps: Introducing AI Trigger Actions 
+ Aug 22, 2023 
+ Tulip 
+ Company
+ Company 
+ About Us 
+ Tulip Experience Center 
+ Careers 
+ Press 
+ Partners 
+ Trust Center 
+ Legal 
+ Data Subprocessors 
+ Education Partnerships 
+ Developer Program 
+ Contact Us 
+ Digital Guidance
+ Digital Guidance 
+ Digital Work Instructions 
+ Manufacturing Training Software 
+ Kitting Solutions 
+ Traceability & Compliance
+ Traceability & Compliance 
+ Electronic Batch Records 
+ Device History Records 
+ Weigh & Dispense 
+ Equipment Logbooks 
+ Line Clearance Software 
+ Genealogy & Traceability 
+ Production Management
+ Production Management 
+ Production Tracking Software 
+ Manufacturing Dashboards 
+ OEE Tracking Software 
+ Sample Management 
+ Quality
+ Quality 
+ Non-Conformance Management 
+ Inline Quality Inspection 
+ Visual Quality Inspection 
+ Platform
+ Platform 
+ Platform Overview 
+ Native AI and ML 
+ Data & Analytics 
+ Connectors and Integrations 
+ Computer Vision 
+ Scalability & Governance 
+ Professional Services 
+ Edge Devices 
+ Library
+ Library 
+ Overview Videos 
+ Common Data Model 
+ Device Library 
+ Composable App Suites 
+ Apps 
+ Connectors 
+ Widgets 
+ Resources
+ Resources 
+ University 
+ Webinars 
+ Ebooks 
+ Community 
+ Knowledge Base 
+ Blog 
+ Events 
+ Case Studies 
+ Operations Calling 2025 
+ Pricing 
+ Tulip 
+ LinkedIn 
+ YouTube 
+ Instagram 
+ TikTok 
+ Twitter 
+ Facebook 
+ Company
+ Company 
+ About Us 
+ Tulip Experience Center 
+ Careers 
+ Press 
+ Partners 
+ Trust Center 
+ Legal 
+ Data Subprocessors 
+ Education Partnerships 
+ Developer Program 
+ Contact Us 
+ LinkedIn 
+ YouTube 
+ Instagram 
+ TikTok 
+ Twitter 
+ Facebook 
+ Policies
+ Policies 
+ Website Terms of Use 
+ Privacy Policy 
+ Terms of Service 
+ Support Policy 
+ Acceptable Use Policy 
+ Cookie Preferences & Personal Information
+ Copyright © 2026 Tulip Interfaces, Inc.

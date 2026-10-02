@@ -1,0 +1,1078 @@
+
+ Standard Coolant - Troubleshooting Guide - NGC 
+ MyHaas 
+ Welcome,
+ !
+ Haas Tooling 
+ Guest Order History 
+ MyHaas/HaasConnect 
+ Sign In 
+ Register 
+ Haas Tooling 
+ My Account 
+ Order History 
+ Return History 
+ MyHaas/HaasConnect 
+ Sign Out 
+ Welcome, 
+ My Machines 
+ Latest Activity 
+ My Quotes 
+ My Account 
+ My Users 
+ Sign Out 
+ Find Your Distributor 
+ Select Language 
+ English 
+ Deutsch 
+ Español - España 
+ Español - México 
+ Français 
+ Italiano 
+ Português 
+ Český 
+ Dansk 
+ Nederlands 
+ Magyar 
+ Polski 
+ Svenska 
+ Türkçe 
+ 中文 
+ Suomi 
+ Norsk 
+ الإنجليزية 
+ български 
+ Hrvatski 
+ Ελληνικά 
+ Română 
+ Slovenský 
+ Slovenščina 
+ 한국어 
+ 日本語 
+ Українська 
+ machines 
+ Main Menu 
+ Vertical Mills 
+ Vertical Mills 
+ Vertical Mills 
+ View All 
+ Vertical Mills 
+ VF Series 
+ Universal Machines 
+ VR Series 
+ VP-5 Prismatic 
+ Pallet-Changing VMCs 
+ Mini Mills 
+ Mold Machines 
+ High-Speed Drill Centers 
+ Drill/Tap/ Mill Series 
+ Toolroom Mills 
+ Compact Mills 
+ Gantry Series 
+ SR Sheet Routers 
+ Extra-Large VMC 
+ Double-Column Mills 
+ Control Simulator 
+ Mill Automatic Parts Loader 
+ VMC/UMC Side-Loading Automatic Parts Loader 
+ Compact Automatic Parts Loader 
+ Multi-Axis Solutions 
+ Multi-Axis Solutions 
+ Multi-Axis Solutions 
+ View All 
+ Multi-Axis Solutions 
+ Y-Axis Lathes 
+ 5-Axis Mills 
+ Lathes 
+ Lathes 
+ Lathes 
+ View All 
+ Lathes 
+ ST Series 
+ Dual-Spindle 
+ Box Way Series 
+ Toolroom Lathes 
+ Chucker Lathe 
+ Haas Bar Feeder V2 
+ Lathe Automatic Parts Loader 
+ Horizontal Mills 
+ Horizontal Mills 
+ Horizontal Mills 
+ View All 
+ Horizontal Mills 
+ 50-Taper 
+ 40-Taper 
+ Rotaries & Indexers 
+ Rotaries & Indexers 
+ Rotaries & Indexers 
+ View All 
+ Rotaries & Indexers 
+ Rotary Tables 
+ Indexers 
+ 5-Axis Rotaries 
+ Extra-Large Rotaries 
+ Special Series 
+ Special Series 
+ Special Series 
+ View All 
+ Special Series 
+ EU_Series_Redirect 
+ Automation Systems 
+ Automation Systems 
+ Automation Systems 
+ View All 
+ Automation Systems 
+ Mill Automation 
+ Lathe Automation 
+ Automation Models 
+ Desktop Machines 
+ Desktop Machines 
+ Desktop Machines 
+ View All 
+ Desktop Machines 
+ Desktop Mill 
+ Desktop Lathe 
+ Shop Equipment 
+ Shop Equipment 
+ Shop Equipment 
+ View All 
+ Shop Equipment 
+ Bandsaw 
+ Knee Mill 
+ Surface Grinder, 2550 
+ Laser Cutting Machine 
+ QUICK LINKS 
+ Special Series  
+ Special Series  
+ EU SERIES 
+ EU SERIES 
+ BUILD & PRICE | PRICE LIST 
+ BUILD & PRICE | PRICE LIST 
+ In-Stock Machines 
+ In-Stock Machines 
+ WHAT’S NEW 
+ WHAT’S NEW 
+ YOUR FIRST CNC 
+ YOUR FIRST CNC 
+ SHOPPING TOOLS 
+ Build & Price a Haas 
+ Price List 
+ Available Inventory 
+ CNCA Financing 
+ WANT TO TALK TO SOMEONE? A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+ CONTACT YOUR DISTRIBUTOR > 
+ Options 
+ Main Menu 
+ Spindles 
+ Spindles 
+ Spindles 
+ View All 
+ Spindles 
+ Tool Changers 
+ Tool Changers 
+ Tool Changers 
+ View All 
+ Tool Changers 
+ 4th- | 5th-Axis 
+ 4th- | 5th-Axis 
+ 4th- | 5th-Axis 
+ View All 
+ 4th- | 5th-Axis 
+ Turrets & Live Tooling 
+ Turrets & Live Tooling 
+ Turrets & Live Tooling 
+ View All 
+ Turrets & Live Tooling 
+ Probing 
+ Probing 
+ Probing 
+ View All 
+ Probing 
+ Chip & Coolant Management 
+ Chip & Coolant Management 
+ Chip & Coolant Management 
+ View All 
+ Chip & Coolant Management 
+ The Haas Control 
+ The Haas Control 
+ The Haas Control 
+ View All 
+ The Haas Control 
+ Product Options 
+ Product Options 
+ Product Options 
+ View All 
+ Product Options 
+ Tooling & Fixturing 
+ Tooling & Fixturing 
+ Tooling & Fixturing 
+ View All 
+ Tooling & Fixturing 
+ Workholding 
+ Workholding 
+ Workholding 
+ View All 
+ Workholding 
+ 5-Axis Solutions 
+ 5-Axis Solutions 
+ 5-Axis Solutions 
+ View All 
+ 5-Axis Solutions 
+ 5 Easy Steps to 5-Axis 
+ QUICK LINKS 
+ Special Series  
+ Special Series  
+ EU SERIES 
+ EU SERIES 
+ BUILD & PRICE | PRICE LIST 
+ BUILD & PRICE | PRICE LIST 
+ In-Stock Machines 
+ In-Stock Machines 
+ WHAT’S NEW 
+ WHAT’S NEW 
+ YOUR FIRST CNC 
+ YOUR FIRST CNC 
+ SHOPPING TOOLS 
+ Build & Price a Haas 
+ Price List 
+ Available Inventory 
+ CNCA Financing 
+ WANT TO TALK TO SOMEONE? A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+ CONTACT YOUR DISTRIBUTOR > 
+ Why Haas 
+ Main Menu 
+ Discover the Haas Difference 
+ Why Haas 
+ MyHaas 
+ Education Community 
+ Industry 4.0 
+ Haas Certification 
+ Customer Testimonials 
+ Service 
+ Main Menu 
+ Welcome to Haas Service 
+ SERVICE HOME 
+ Operator’s Manuals 
+ How-To Procedures 
+ Troubleshooting Guides 
+ Preventive Maintenance 
+ Haas Parts 
+ Haas Tooling 
+ Videos 
+ Videos 
+ Main Menu 
+ Main Menu 
+ View All 
+ View All 
+ Fiber Laser 
+ View All 
+ View All 
+ HTEC Curriculum Support 
+ View All 
+ Haas 10 kg Cobot Package 
+ Cobot Kits 
+ View All 
+ View All 
+ 4 - AUTOMATION SYSTEMS 
+ View All 
+ View All 
+ View All 
+ VF-4SS 
+ View All 
+ QUICK LINKS 
+ Special Series  
+ Special Series  
+ EU SERIES 
+ EU SERIES 
+ BUILD & PRICE | PRICE LIST 
+ BUILD & PRICE | PRICE LIST 
+ In-Stock Machines 
+ In-Stock Machines 
+ WHAT’S NEW 
+ WHAT’S NEW 
+ YOUR FIRST CNC 
+ YOUR FIRST CNC 
+ SHOPPING TOOLS 
+ Build & Price a Haas 
+ Price List 
+ Available Inventory 
+ CNCA Financing 
+ WANT TO TALK TO SOMEONE? A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+ CONTACT YOUR DISTRIBUTOR > 
+ Haas Tooling 
+ Main Menu 
+ Automation Accessories 
+ Shop Support 
+ Mill Toolholding 
+ Mill Cutting Tools 
+ Boring Systems 
+ Mill Workholding 
+ Lathe Toolholding 
+ Lathe Cutting Tools 
+ Lathe Workholding 
+ Package Kits 
+ ER Collets & Chucks 
+ Holemaking 
+ Threading 
+ Broaching 
+ Tombstones & Kits 
+ Manual Chucks For Milling 
+ Deburring & Abrasives 
+ Tool Presetter & Heat Shrinkers 
+ Storage & Handling 
+ Machine Maintenance 
+ Tooling Accessories 
+ Apparel & Accessories 
+ Measuring & Inspection 
+ Winner's Circle 
+ Winner's Circle 
+ Clearance 
+ Today's Hot Deals 
+ Haas Tooling 
+ Winner's Circle 
+ Winner's Circle 
+ Shop All 
+ WINNERS_CIRCLE-1Y 
+ Winner's Circle 
+ Winner's Circle 
+ Shop All 
+ WC-1Y-EU 
+ Today’s Hot Deals 
+ Today’s Hot Deals 
+ Shop All 
+ Mill Toolholding 
+ Mill Tooling 
+ Measuring & Inspection 
+ Boring Systems 
+ Mill Workholding 
+ Shell Mill Kits 
+ Lathe Toolholding 
+ Lathe Tooling 
+ Lathe Workholding 
+ ER Collets & Chucks 
+ Holemaking 
+ Threading 
+ Broaching 
+ Tool Storage 
+ Apparel & Accessories 
+ Clearance 
+ Clearance 
+ Shop All 
+ Measuring & Inspection 
+ Measuring & Inspection 
+ Shop All 
+ Probe Kits & Accessories 
+ Edge & Center Finders 
+ Comparative Measuring Gauges 
+ Height Gauges 
+ Calipers 
+ Threaded Plug & Ring Gauges 
+ Gauge Blocks 
+ Pin Gauges 
+ Drop Indicators 
+ Dial Test Indicators 
+ Bore Gauges 
+ Indicator Accessories 
+ V Blocks 
+ Setup Blocks 
+ Depth Measuring 
+ Micrometers 
+ Micrometer Accessories 
+ Micrometer Kits 
+ Bore Gauge Kits 
+ Starter Kits 
+ Indicator Kits 
+ Caliper Kits 
+ Toolholder Check Station 
+ Height Setters 
+ Coordinate Measuring Machines 
+ Automation Accessories 
+ Automation Accessories 
+ Shop All 
+ Cobot Kits 
+ Cobot Kits 
+ Protective Barriers 
+ Grippers 
+ Robot Cell Accessories 
+ Shop Support 
+ Shop Support 
+ Shop All 
+ Air Compressors 
+ Laser Marking Machines 
+ Bandsaw Blades 
+ Bandsaw Accessories 
+ Surface Grinding Wheels 
+ Mill Toolholding 
+ Mill Toolholding 
+ Shop All 
+ End Mill Holders 
+ Shell Mill Holders 
+ Shrink Fit Holders 
+ ER Collet Chucks 
+ Milling Chucks & Collets 
+ NC Drilling Chucks 
+ Pull Studs / Retention Knobs 
+ Rotary Tool Holder & Tool Chuck Kits 
+ Hydraulic Milling Chucks & Collets 
+ Toolholder Attachments & Wrenches 
+ Mill Broaching Holders 
+ Mill Tooling 
+ Mill Tooling 
+ Shop All 
+ Shell Mill Bodies 
+ Milling Inserts 
+ End Mills 
+ Chamfer Mills & Inserts 
+ Indexable End Mill Bodies 
+ Ball End Mills 
+ Chamfer End Mills 
+ Roughing End Mills 
+ Indexable Ball End Mills & Inserts 
+ Shell Mill Kits 
+ Chamfer Mill Kits 
+ Indexable End Mill Kits 
+ Dovetail Cutters 
+ Indexable Dovetail Cutters 
+ Engraving End Mills 
+ Rotary Burrs / Die Grinding Bits 
+ Keyseat Cutters 
+ Corner Rounding End Mills 
+ Slot Mill Bodies 
+ CNC Router Bits For Wood 
+ Boring Systems 
+ Boring Systems 
+ Shop All 
+ Boring Heads & Cartridges 
+ Boring Holders & Extensions 
+ Mill Workholding 
+ Mill Workholding 
+ Shop All 
+ Fixed-Jaw Vises 
+ Self-Centering Vises 
+ Adapter Plates 
+ Vise Jaws 
+ Vise Mounts & Fixtures 
+ Vise Kits 
+ Vise Parallels 
+ Rotary Vise Kits 
+ Fixture Clamps 
+ Automated Workholding Kits 
+ Tooling Fixture Subplates 
+ Toolmakers' Vises 
+ Clamp Force Gauges 
+ Collet Fixtures 
+ Angle Plates 
+ Lathe Toolholding 
+ Lathe Toolholding 
+ Shop All 
+ TL & CL Static Turning Holders 
+ BOT Static Turning Holders 
+ BMT Static Turning Holders 
+ Live / Driven Turning Holders 
+ Turning Holder Reduction Sleeves / Bushings 
+ VDI Static Turning Holders 
+ Turning Holder Accessories 
+ Lathe Tooling 
+ Lathe Tooling 
+ Shop All 
+ Cut-Off Tool Blocks & Blades 
+ Cut-Off Tooling Kits 
+ Turning Inserts 
+ Grooving & Cut-Off Tools 
+ Internal (ID) Grooving & Threading Tools 
+ Threading Inserts 
+ Threading Tools 
+ Boring Bars / Internal (ID) Turning Tools 
+ External (OD) Turning Tools 
+ Cermet Turning Inserts 
+ CBN Turning Inserts 
+ Haas Notch Grooving & Threading Inserts 
+ Haas Notch Grooving & Threading Tools 
+ Micro Turning Tools 
+ Desktop Lathe Tools 
+ Lathe Workholding 
+ Lathe Workholding 
+ Shop All 
+ Live Centers 
+ Spindle Reduction Sleeves / Liners 
+ Quick-Change Collets 
+ Quick-Change Collet Chucks 
+ 5C Collets 
+ 5C Collet Sets 
+ Lathe Jaw Boring Rings 
+ Lathe Jaws 
+ Bar Pullers 
+ Scroll Chucks 
+ Guide Pins 
+ Collet Accessories 
+ Package Kits 
+ Package Kits 
+ Shop All 
+ Chip Clearing Fan Kits 
+ Cutting Tool Kits 
+ Indexable End Mill Kits 
+ Cut-Off Tool Block & Blade Kits 
+ Drill & Tap Kits 
+ Indexable Drilling Kits 
+ Shell Mill Kits 
+ Chamfer Mill Kits 
+ Rotary Tool Holder & Tool Chuck Kits 
+ Lathe Starter Kits 
+ Workholding Kits 
+ Rotary Vise Kits 
+ Vise Kits 
+ 3-Jaw Chuck Kits for Mills 
+ Tombstone Kits 
+ Reduction Sleeve Kits 
+ Automated Workholding Kits 
+ Measuring & Inspection Kits 
+ Starter Kits 
+ Bore Gauge Kits 
+ Caliper Kits 
+ Indicator Kits 
+ Micrometer Kits 
+ ER Collets & Chucks 
+ ER Collets & Chucks 
+ Shop All 
+ ER Straight-Bore Collets 
+ ER Sealed Collets 
+ ER Tap Collets 
+ ER Collet Sets & Accessories 
+ ER Collet Chucks 
+ Straight Shank ER Collet Chucks 
+ Straight Shank Keyless NC Drilling Chucks 
+ Holemaking 
+ Holemaking 
+ Shop All 
+ Carbide Drills 
+ Indexable Drill Bodies 
+ Indexable Drill Inserts 
+ Modular Drill Bodies 
+ Modular Drill Heads 
+ Cobalt Drills & Sets 
+ Center Drills 
+ Reamers 
+ Indexable Drilling Kits 
+ Spot Drills 
+ Spade Drill Bodies 
+ Spade Drill Inserts 
+ Countersinks 
+ Threading 
+ Threading 
+ Shop All 
+ Taps 
+ Threading Inserts 
+ Threading Tools 
+ Thread Mills 
+ Pipe Taps 
+ Drill Tap Kits 
+ Broaching 
+ Broaching 
+ Shop All 
+ Broaching Tools 
+ Broaching Inserts 
+ Tombstones 
+ Tombstones 
+ Shop All 
+ Tombstones 
+ Tombstone Kits 
+ Vise Cluster Towers 
+ Manual Chucks For Milling 
+ Manual Chucks For Milling 
+ Shop All 
+ 3-Jaw Chucks & Mounts for Mills 
+ Deburring & Abrasives 
+ Deburring & Abrasives 
+ Shop All 
+ Abrasive Pads 
+ Deburr Tools 
+ Deburr Wheels 
+ Abrasive Sheets & Rolls 
+ Sharpening / Lapping Stones 
+ Tool Presetter & Heat Shrinkers 
+ Tool Presetter & Heat Shrinkers 
+ Shop All 
+ Tool Presetting Machines 
+ Shrink Fit Machines 
+ Tool Storage 
+ Tool Storage 
+ Shop All 
+ Tool Carts 
+ Tool Tray 
+ Tool Bags 
+ Machine Maintenance 
+ Machine Maintenance 
+ Shop All 
+ Spindle Test Bars 
+ Levels 
+ Refractometers 
+ Machine Additives & Supplies 
+ Machine Accessories 
+ Machine Maintenance Kits 
+ Tooling Accessories 
+ Tooling Accessories 
+ Shop All 
+ Spindle & Toolholder Taper Cleaners 
+ Haas Shop Lift 
+ Toolholder Fixtures 
+ CNC Chip Clearing Fans 
+ Hammers & Mallets 
+ Anti-Fatigue Mats 
+ Layout Tools 
+ Wrenches 
+ Magnetic Tools 
+ Torque Screwdrivers 
+ Hand Cutting Tools 
+ Shop Stools 
+ Lifting Magnets 
+ Safety Apparel 
+ Apparel & Accessories 
+ Apparel & Accessories 
+ Shop All 
+ Accessories 
+ Apparel 
+ HAAS TOOLING QUICK LINKS 
+ NEW PRODUCTS 
+ NEW PRODUCTS 
+ NEW PRODUCTS 
+ NEW PRODUCTS 
+ MOST POPULAR 
+ MOST POPULAR 
+ TOOLING PROMOS 
+ TOOLING PROMOS 
+ FINANCING & OPEN TERMS 
+ FINANCING & OPEN TERMS 
+ PAY BY INVOICE 
+ PAY BY INVOICE 
+ FAQs 
+ FAQs 
+ KITS CREATED FOR YOU 
+ KITS CREATED FOR YOU 
+ Haas Service Parts 
+ Main Menu 
+ Automatic Pallet Changer 
+ Lathe Turret 
+ Tool Changer 
+ Chip Management 
+ Coolant 
+ Counterbalance 
+ Electrical Cabinet 
+ Enclosure 
+ Hydraulics 
+ Lubrication 
+ Maintenance 
+ Pendant 
+ Probing 
+ Rotary 
+ Spindle 
+ Tailstock 
+ Haas Service Parts 
+ Automatic Pallet Changer 
+ Automatic Pallet Changer 
+ Shop All 
+ HMC - Automatic Pallet Changer 
+ VMC - Automatic Pallet Changer 
+ Lathe Turret 
+ Lathe Turret 
+ Shop All 
+ Lathe - Turret 
+ Live Tooling 
+ Tool Changer 
+ Tool Changer 
+ Shop All 
+ Side Mount 
+ Umbrella 
+ Chip Management 
+ Chip Management 
+ Shop All 
+ Multi Auger 
+ Single Auger 
+ Coolant 
+ Coolant 
+ Shop All 
+ Auxiliary Filter 
+ HPC-300 (Lathe) 
+ HPC-1000 (Lathe) 
+ Oil Skimmer 
+ Standard Coolant 
+ TSC-300 (Mill) 
+ TSC-1000 (Mill) 
+ Coolant Refill 
+ Loc-Line 
+ Counterbalance 
+ Counterbalance 
+ Shop All 
+ Charge & Discharge Hose 
+ Electrical Cabinet 
+ Electrical Cabinet 
+ Shop All 
+ Fans 
+ Filters 
+ Upgrade Kits 
+ Enclosure 
+ Enclosure 
+ Shop All 
+ Accessories 
+ Air Nozzle 
+ Decals 
+ Door Bumpers 
+ Lighting 
+ Windows, Gaskets, & Weather Strip 
+ Chip & Coolant Management 
+ Hydraulics 
+ Hydraulics 
+ Shop All 
+ Filters 
+ Gauges 
+ Heat Exchanger 
+ Hoses 
+ Lubrication 
+ Lubrication 
+ Shop All 
+ Bijur Mechanical Lubrication 
+ Minimum Lubrication 
+ Maintenance 
+ Maintenance 
+ Shop All 
+ Grease, Oil, & Sealants 
+ Pendant 
+ Pendant 
+ Shop All 
+ Floppy Disk & USB 
+ Keypad 
+ Keys 
+ Lens 
+ Gaskets & Seals 
+ Probing 
+ Probing 
+ Shop All 
+ Mill Probing 
+ Lathe Tool Presetter 
+ Rotary 
+ Rotary 
+ Shop All 
+ Rotary Gaskets & Seals 
+ Spindles 
+ Spindles 
+ Shop All 
+ Couplings 
+ Gaskets & Seals 
+ Spindle Motor Drive 
+ Gearbox Drive 
+ Tool Release Piston 
+ Tailstock 
+ Tailstock 
+ Shop All 
+ Handles 
+ × 
+ Search Results
+ Web Pages
+ Images
+ < 
+ 1 
+ > 
+ MyHaas 
+ Welcome,
+ !
+ Haas Tooling 
+ Guest Order History 
+ MyHaas/HaasConnect 
+ Sign In 
+ Register 
+ Haas Tooling 
+ My Account 
+ Order History 
+ Return History 
+ MyHaas/HaasConnect 
+ Sign Out 
+ Welcome, 
+ My Machines 
+ Latest Activity 
+ My Quotes 
+ My Account 
+ My Users 
+ Sign Out 
+ Find Your Distributor 
+ Select Language 
+ English 
+ Deutsch 
+ Español - España 
+ Español - México 
+ Français 
+ Italiano 
+ Português 
+ Český 
+ Dansk 
+ Nederlands 
+ Magyar 
+ Polski 
+ Svenska 
+ Türkçe 
+ 中文 
+ Suomi 
+ Norsk 
+ الإنجليزية 
+ български 
+ Hrvatski 
+ Ελληνικά 
+ Română 
+ Slovenský 
+ Slovenščina 
+ 한국어 
+ 日本語 
+ Українська 
+ × 
+ Search Results
+ Web Pages
+ Images
+ < 
+ 1 
+ > 
+ Standard Coolant - Troubleshooting Guide - NGC
+ -->
+ -->
+ -->
+ Service Home 
+ Standard Coolant - Troubleshooting Guide - NGC 
+ Your document is ready for download, please click below to download your document.
+ Download Document 
+ Error processing this document, please try again or Contact Us .
+ Please wait while your document is being loaded.
+ Standard Coolant - Troubleshooting Guide - NGC
+ - Jump to Cause - 
+ Back to Top 
+ Your document is ready for download, please click below to download your document.
+ Download Document 
+ Error processing this document, please try again or Contact Us .
+ Please wait while your document is being loaded.
+ 3.6 Standard Coolant - Troubleshooting
+ Recently Updated 
+ Last updated: 08/02/2022 
+ Standard Coolant - Troubleshooting Guide - NGC
+ Download and fill out the coolant pump Inspection Report Checklist below before replacing any parts. 
+ Coolant pump Inspection Report Checklist
+ Introduction
+ The following service video shows how to troubleshoot a standard flood coolant pump
+ NOTE:  This video is for reference only and does not replace the written procedure.
+ This troubleshooting guide applies to both 1-Phase and 3-Phase pumps.
+ In this image, the following components are shown.
+ Coolant Pump Motor
+ Coolant Outlet
+ Pump Body
+ Impeller Cap
+ Impeller
+ NOTE:  For troubleshooting information on the coolant float sensor, refer to the Coolant Level Float Sensor - Troubleshooting Guide for more information. 
+ NOTE : Coolant Pumps with   PN: 30-14261 (1HP, 3-Phase without VFD) will follow the same installation process for non-VFD applications across all machines, with the exception of VF's VP-5, VM's, ST/DS, and UMC's.
+ ID0013 Coolant Pump Inspection Report Checklist requires the pump's serial number to be completed. 
+ The serial number can be found on the side of the pump [1] in the box labeled serial number [2]
+ Symptom Table
+ Symptom 
+ Possible Cause 
+ Corrective Action 
+ Machine with Variable Frequency Drive - The coolant takes too long to flow out the nozzles or Pcool.
+ The variable frequency drive has an incorrect acceleration parameter value.
+ Refer to the Coolant VFD - Troubleshooting Guide .
+ Noisy pump or cavitation
+ Poor Coolant flow through enclosure
+ Remove chip buildup.
+ Low Coolant Level
+ Fill coolant tank.
+ Impeller contamination, or impeller damage
+ Inspect impeller for damage or debris. Clean impeller or order kit  93-2609 to replace impeller. Follow  Impeller Replacement Procedure  to replace. 
+ Motor bearing failure.
+ Rotate the shaft by hand
+ Low coolant flow.
+ Poor Coolant flow through enclosure
+ Remove chip buildup.
+ Low coolant level in coolant tank
+ Fill coolant tank.
+ Impeller contamination, or impeller damage
+ Refer to the  Coolant Pump Impeller Damage/Contamination  section below to check the impeller in the pump.
+ Filter or pump intake blockage.
+ Clean filter, check pump intake for blockage.
+ Pump intake or coolant output hose blockage
+ Remove coolant check-valve and coolant output hose blockage.
+ Coolant nozzle blockage
+ Remove blockage from coolant nozzles
+ The coolant pump is not building pressure.
+ The motor shaft may be slipping due to the coupling not being fastened all the way.
+ Thoroughly inspect the pump assembly and verify the motor shaft coupling is fastened down all the way.
+ No coolant flow and coolant circuit breaker did not trip.
+ Setting 32  COOLANT OVERRIDE is set to IGNORE.
+ Set Setting 32  COOLANT OVERRIDE to NORMAL.
+ Coolant pump motor does not receive voltage.
+ See the No Voltage at the Pump Motor section below.
+ Incorrect power phasing - pump motor is running backward.
+ Correct phasing
+ Impeller contamination or damage
+ Refer to the  Coolant Pump Impeller Damage/Contamination  section below to check the impeller in the pump.
+ No coolant flow and the coolant circuit breaker tripped.
+ Coolant pump motor short to ground.
+ Measure coolant pump motor resistance to ground.
+ (Single-phase machines only), Alarm 552 TRIPPED CIRCUIT BREAKER occurs when the coolant pump gets commanded to turn on.
+ Note:  The circuit breaker did not tripped.
+ The 240 VAC input cable connected to the PSUP at P11 is not correct.
+ Verify the cable pinout for the cable that connects from the main circuit breaker to the PSUP at P11.  Refer to Incorrectly pinned power cable (Single-Phase) section.
+ Alarm 552   TRIPPED CIRCUIT BREAKER 
+ Refer to:  Next Generation Control - Power Distribution PCB and PFDM - Troubleshooting Guide .
+ Coolant leaking from machine enclosure onto floor.
+ This applies to ST-20 reboot enclosures only. The grommet that seals the Sub-Spindle Hydraulic Union drain line fails to seal due to the hose pulling on the grommet.
+ Install the ST-20 Sub-Spindle Hose Routing Retrofit Kit Part Number: 93-3127. This reroutes the drain hose and clamps the hose limiting the movement and ability to pull on the grommet. Follow the Installation Guide to retrofit your machine.
+ Alarm 9823  Coolant VFD Fault
+ Alarm 9824  Shower Coolant VFD Fault
+ There is a problem with the Coolant / Shower VFD.
+ Refer to the  Coolant VFD - Troubleshooting Guide .
+ Coolant pump with an Aux filter is splashing on the floor when pump is commanded off
+ When pump is commanded to stop coolant left over in the line returns through the pump and splashes into the tank.
+ Install a check valve on the output side of the aux filter to stop the coolant from returning and splashing. Please refer to Aux Filter Check Valve section for installation.
+ Please contact Haas Service if a check valve is installed to the output of the aux filter.
+ Motor hums when commanded to turn on
+ Note: For pumps dated DEC-2019 to FEB-2020
+ Coolant pump start capacitor failed.
+ Refer to the Coolant Pump - Start Capacitor - Replacement procedure. 
+ Turns slowly, drawing higher than normal current and eventually trips the breaker
+ Turns backwards
+ Alarm 9823 COOLANT VFD FAULT
+ The flood coolant pump has seized up.
+ Refer to the  Coolant Pump Impeller Damage/Contamination  section below to check the impeller in the pump.
+ Alarm 552 TRIPPED CIRCUIT
+ BREAKER 
+ and 
+ The CB3 on the PSUP PCB has tripped on machines without a VFD.
+ The 5/8" coolant hose leaks at the fittings or the hose pops off the fittings.
+ The 5/8" Hose Clamp [1]  PN:  59-1524  installed on the coolant hose is oversized and does not clamp the hose correctly.
+ Replace the oversized hose clamp with PN:  59-2107  HOSE CLAMP EAR 20.1 - 23.3 MM. Use a  Crimping Tool  to secure the new hose clamp.
+ Poor coolant flow through enclosure
+ Remove all chips from the the auger trough [1], and the coolant return drain [2].
+ Remove chips from the coolant tank. Excessive chips in the coolant tank reduce the amount of coolant the tank can store. Watch the video  Machine Tool Coolant - Cleaning Your Tank - Video .
+ Fill the coolant tank. Watch the video  Standard Coolant – Simplified - Filling your Tank … and More .
+ Make sure the coolant level sensor operates correctly.
+ Coolant Pump Impeller Damage/Contamination
+ Remove the impeller cap [1] from the bottom of the pump. Remove the screw that connects the impeller [2] to the shaft. Steel impellers have left-hand threads [3].
+ Carefully remove and clean the impeller [2]. Check for wear, damage, or cracking of the impeller [2].
+ If the impeller is damaged or cracked, order a replacement impeller, service part  93-2609 . Follow Impeller Replacement Procedure to replace. 
+ Rotate the coolant pump shaft by hand. If the shaft does not turn freely, the motor bearings are damaged.
+ Install the impeller [2]. Rotate the coolant pump shaft by hand, and make sure the impeller does not rub on the pump body [4]. If the impeller rubs against the pump body, install shims between the impeller [2] and the coolant pump shaft. Install the impeller cap [1]. If the impeller [2] rubs against the impeller cap [1], remove one shim at a time until it does not rub.
+ There are several filters that keep chips out of the coolant pump. Refer to Section 3 for filter maintenance information.
+ Aux Filter Check Valve Install
+ Place the check valve [1] on the outlet side of the auxiliary filter as shown.
+ NOTE: Please contact Haas Service if this is done. 
+ Filter or pump blockage
+ Clean or replace the filter element. Check the area around the coolant pump intake for chips.
+ Auxiliary Filter - The bag filters in Auxiliary Filter tanks need to be cleaned or replaced. The Auxiliary Filter is an option. Your machine might not have this option.
+ Standard Filter - Standard Filters need to be cleaned.
+ Disconnect both ends of the coolant hoses. Remove any kinks. In the opposite direction of the coolant flow, blow air through the hoses to remove any chips. If you find chips in the hoses, check the coolant nozzles and washdown hoses for chip buildup. Connect the coolant hoses.
+ Remove chips from the basket filter in the coolant tank. For maintenance instructions, refer to the  Coolant Tank ‑ Maintenance  procedure.
+ Check valve blockage (Coolant filter and Haas Chip Seperator)
+ Remove the coolant check-valve. Check it for blockage [1]. Make sure the trap door opens and closes freely. If the trap door does not close, coolant flows back into the tank. This delays the flow of coolant by a few seconds.
+ Disconnect both ends of the coolant hoses. Remove any kinks. In the opposite direction of the coolant flow, blow air through the hoses to remove any chips. If you find chips in the hoses, check the coolant nozzles and washdown hoses for chip buildup. Connect the coolant hoses.
+ Coolant nozzle blockage
+ Remove and clean the coolant nozzles.
+ Cycle the pump power to flush the coolant lines.
+ Make sure the coolant tank is free of chips and contamination.
+ Defective pump
+ Disconnect the pump cable from the machine.
+ With a ohm-meter measure each leg tab to the ground tab.
+  Note:  The ground tab has a bent. The example shown is a 3-phase pump with 4 tabs (L1, L2, L3 + Ground), single phase pumps have 3 tabs (L1, L2 + Ground).
+ If all the legs test open (O.L) to the ground tab then the pump and cable do not have a short circuit, see the next section.
+ If the motor cable leads [3] indicate a short, remove the motor cable cover and disconnect the cable from the motor.
+ Measure the motor cable leads [5] to ground [6] terminal screw or chassis. If any lead tests short, the pump is at fault. If none of the leads [5] test short, the cable is at fault.
+ If all the leads test OK, check the coolant pump for binding that could cause an over amperage condition.
+ No voltage at pump motor
+ First inspect the pump motor for a short circuit see section  Defective Pump .
+ Make sure the coolant pump cable is connected to the machine.
+  Important : Do not disconnect the coolant pump from the machine, doing this test without a load will give you false readings.
+ Remove the pump motor cover and locate the white, black, red wires for 3-phase motor or white and black for a single-phase.
+ Verify that coolant circuit breaker is set to on and setting 32  COOLANT OVERRIDE is set to NORMAL.
+ Press the [COOLANT] button to turn on the coolant pump.
+ Measure the voltage at the motor from lead to lead [1]. The reading must be 240 VAC. The motor shown is a 3-phase motor. 
+ If you read 240 VAC, the coolant pump motor is damaged.
+ If you do not read 240 VAC, check at the I/O PCB coolant output. If there is still no voltage check the 240 VAC source from the PSUP PCB to I/O PCB.
+ Incorrect phasing
+ The power supply PCB has a phase detect with neon indicators on the top center portion of the board. Make sure that the electrical power is phased correctly:
+ Green Light:  The incoming power is phased correctly.
+ Orange Light:  The incoming power is incorrectly phased.
+ Both Lights:  A phase is missing (there is a loose cable in the system).
+ If the electrical power is phased incorrectly:
+ Set the main circuit breaker to the OFF position.
+ Lock the main circuit breaker. Use an approved lock with an approved safety tag.
+ Swap the #74 and #75 incoming power cables at the main transformer.
+ Incorrectly pinned power cable (Single-Phase)
+ Correct the pinnout on cable P/N 33-0197C, PSUP P11 (NGC).
+ The cable should match the drawing shown.
+ Coolant Hose Clamp Failure
+ Problem:  The 5/8" coolant hose leaks at the fittings or the hose pops off the fittings.
+ Cause:  The 5/8" Hose Clamp [1]  PN:  59-1524  installed on the coolant hose is oversized and does not clamp the hose correctly.
+ Solution:  Replace the oversized hose clamp with PN:  59-2107  HOSE CLAMP EAR 20.1 - 23.3 MM. Use a  Crimping Tool  to secure the new hose clamp.
+ Electrical Diagrams
+ Use this electrical diagram for coolant pumps that are being driven by the I/O PCB. 
+ Recently Viewed Items
+ Clear Items 
+ You Have No Recently Viewed Items Yet
+ Feedback
+ 美元价格不包括关税、报关费用、保险费、增值税及运费。
+USD prices DO NOT include customs duty, customs fees, insurance, VAT, or freight.
+ 人民币价格包含关税、报关费用、货运保险和增值税, 但不包括运费。
+CNY prices include customs duty, customs fees, insurance, and VAT. DOES NOT include freight.
+ Haas Delivered Price
+ This price includes shipping cost, export and import duties, insurance, and any other expenses incurred during shipping to a location in France agreed with you as a buyer. No other mandatory costs can be added to the delivery of a Haas CNC Product.
+ Click for details 
+ KEEP UP WITH THE LATEST HAAS TIPS AND TECHNOLOGY...
+ Sign up now!    
+ HAAS TOOLING ACCEPTS THE FOLLOWING:
+ -->
+-->
+ Service & Support
+ Owners 
+ Request Service 
+ Operator Manuals 
+ Haas Parts 
+ Rotary Repair Request 
+ Pre-Install Guides 
+ Shopping Tools
+ Build & Price a New Haas 
+ Available Inventory 
+ The Haas Price List 
+ CNCA Financing 
+ About Haas
+ DNSH Statement 
+ Careers 
+ Certifications & Safety 
+ Contact Us 
+ History 
+ Terms & Conditions 
+ Haas Tooling Terms & Conditions 
+ Privacy 
+ Warranty 
+ Haas Community
+ Haas Certification Program 
+ Haas Motorsports 
+ Gene Haas Foundation 
+ Haas Technical Education Community 
+ Events 
+ Join the Conversation
+ Facebook 
+ X 
+ Flickr 
+ YouTube 
+ LinkedIn 
+ Instagram 
+ TikTok 
+ © 2025  Haas Automation, Inc – CNC Machine Tools 
+ This site is protected by reCAPTCHA and the Google
+ Privacy Policy and
+ Terms of Service apply.
+ 2800 Sturgis Rd., Oxnard, CA 93030
+Toll Free: (888) 817-4446 / Fax: 805-278-8554
+ {{ if (loading) { }}
+ {{=loadingSpinner}}
+ {{ } else { }}
+ ×
+ {{=content}}
+ {{ } }}
+ {{ if (loading) { }}
+ {{=loadingSpinner}}
+ {{ } else { }}
+ ×
+ {{=content}}
+ {{ } }}

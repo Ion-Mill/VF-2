@@ -1,0 +1,97 @@
+SOURCE: https://press.siemens.com/global/en/pressrelease/siemens-expands-industrial-copilot-new-generative-ai-powered-maintenance-offering
+FETCHED: 2026-10-02
+
+ 
+ Siemens expands Industrial Copilot with New generative AI-powered Maintenance Offering | Press | Company | Siemens 
+ Skip to main content
+ [{"name":"Home","site_name":"Press | Company | Siemens","description":"","url_str":"\/global\/","level":0,"image":"","base_root":"https:\/\/press.siemens.com","base_nid":"5","base_nodepath":"\/node\/5","base_path":"\/global\/","base_secure_url":"https:\/\/press.siemens.com\/global","current_language_id":"en","nav_path":"\/global\/en","children":[],"home_url":"https:\/\/www.siemens.com\/en-us","search_url":"https:\/\/www.siemens.com\/en-us\/search.html?query="}]
+ 1234567890 
+-->
+ Search 
+ Contact 
+ English 
+ Set this page to 
+ Deutsch 
+ Siemens press pages in your region 
+ Austria 
+ Belgium 
+ Brazil 
+ Bulgaria 
+ Denmark 
+ Finland 
+ France 
+ Germany 
+ Global 
+ Greece 
+ India 
+ Italy 
+ Japan 
+ Malaysia 
+ Middle East 
+ Netherlands 
+ Norway 
+ Portugal 
+ Singapore 
+ South Africa 
+ South Korea 
+ Spain 
+ Sweden 
+ Switzerland 
+ Ukraine 
+ Search xxx 
+ Set this page to
+ German 
+ Go to
+ Press 
+ [{"nid":0,"name":"\/bg","tid":3,"url_str":"https:\/\/www.siemens.com\/en-us","alias":"https:\/\/www.siemens.com\/en-us","level":1,"image":{"fid":false,"furl":""},"options":{"menu_icon":{"fid":false},"external":true},"depth":1,"parent":false,"children":[]},{"nid":0,"name":"\/br\/pt","tid":4,"url_str":"https:\/\/www.siemens.com\/pt-br","alias":"https:\/\/www.siemens.com\/pt-br","level":1,"image":{"fid":false,"furl":""},"options":{"menu_icon":{"fid":false},"external":true},"depth":1,"parent":false,"children":[]},{"nid":0,"name":"\/ch\/de","tid":5,"url_str":"https:\/\/www.siemens.com\/de-ch","alias":"https:\/\/www.siemens.com\/de-ch","level":1,"image":{"fid":false,"furl":""},"options":{"menu_icon":{"fid":false},"external":true},"depth":1,"parent":false,"children":[]},{"nid":0,"name":"\/da","tid":6,"url_str":"https:\/\/www.siemens.com\/da-dk","alias":"https:\/\/www.siemens.com\/da-dk","level":1,"image":{"fid":false,"furl":""},"options":{"menu_icon":{"fid":false},"external":true},"depth":1,"parent":false,"children":[]},{"nid":0,"name":"\/de","tid":7,"url_str":"https:\/\/www.siemens.com\/de-de","alias":"https:\/\/www.siemens.com\/de-de","level":1,"image":{"fid":false,"furl":""},"options":{"menu_icon":{"fid":false},"external":true},"depth":1,"parent":false,"children":[]},{"nid":0,"name":"\/el","tid":8,"url_str":"https:\/\/www.siemens.com\/el-gr","alias":"https:\/\/www.siemens.com\/el-gr","level":1,"image":{"fid":false,"furl":""},"options":{"menu_icon":{"fid":false},"external":true},"depth":1,"parent":false,"children":[]},{"nid":0,"name":"\/en","tid":9,"url_str":"https:\/\/www.siemens.com\/en-us","alias":"https:\/\/www.siemens.com\/en-us","level":1,"image":{"fid":false,"furl":""},"options":{"menu_icon":{"fid":false},"external":true},"depth":1,"parent":false,"children":[]},{"nid":0,"name":"\/es","tid":10,"url_str":"https:\/\/www.siemens.com\/es-es","alias":"https:\/\/www.siemens.com\/es-es","level":1,"image":{"fid":false,"furl":""},"options":{"menu_icon":{"fid":false},"external":true},"depth":1,"parent":false,"children":[]},{"nid":0,"name":"\/fi","tid":11,"url_str":"https:\/\/www.siemens.com\/fi-fi","alias":"https:\/\/www.siemens.com\/fi-fi","level":1,"image":{"fid":false,"furl":""},"options":{"menu_icon":{"fid":false},"external":true},"depth":1,"parent":false,"children":[]},{"nid":0,"name":"\/fr","tid":12,"url_str":"https:\/\/www.siemens.com\/fr-fr","alias":"https:\/\/www.siemens.com\/fr-fr","level":1,"image":{"fid":false,"furl":""},"options":{"menu_icon":{"fid":false},"external":true},"depth":1,"parent":false,"children":[]},{"nid":0,"name":"\/it","tid":13,"url_str":"https:\/\/www.siemens.com\/it-it","alias":"https:\/\/www.siemens.com\/it-it","level":1,"image":{"fid":false,"furl":""},"options":{"menu_icon":{"fid":false},"external":true},"depth":1,"parent":false,"children":[]},{"nid":0,"name":"\/ja","tid":14,"url_str":"https:\/\/www.siemens.com\/ja-jp","alias":"https:\/\/www.siemens.com\/ja-jp","level":1,"image":{"fid":false,"furl":""},"options":{"menu_icon":{"fid":false},"external":true},"depth":1,"parent":false,"children":[]},{"nid":0,"name":"\/kr","tid":15,"url_str":"https:\/\/www.siemens.com\/ko-kr","alias":"https:\/\/www.siemens.com\/ko-kr","level":1,"image":{"fid":false,"furl":""},"options":{"menu_icon":{"fid":false},"external":true},"depth":1,"parent":false,"children":[]},{"nid":0,"name":"\/nl","tid":16,"url_str":"https:\/\/www.siemens.com\/nl-nl","alias":"https:\/\/www.siemens.com\/nl-nl","level":1,"image":{"fid":false,"furl":""},"options":{"menu_icon":{"fid":false},"external":true},"depth":1,"parent":false,"children":[]},{"nid":0,"name":"\/no","tid":17,"url_str":"https:\/\/www.siemens.com\/no-no","alias":"https:\/\/www.siemens.com\/no-no","level":1,"image":{"fid":false,"furl":""},"options":{"menu_icon":{"fid":false},"external":true},"depth":1,"parent":false,"children":[]},{"nid":0,"name":"\/pt","tid":18,"url_str":"https:\/\/www.siemens.com\/pt-pt","alias":"https:\/\/www.siemens.com\/pt-pt","level":1,"image":{"fid":false,"furl":""},"options":{"menu_icon":{"fid":false},"external":true},"depth":1,"parent":false,"children":[]},{"nid":0,"name":"\/sv","tid":19,"url_str":"https:\/\/www.siemens.com\/sv-se","alias":"https:\/\/www.siemens.com\/sv-se","level":1,"image":{"fid":false,"furl":""},"options":{"menu_icon":{"fid":false},"external":true},"depth":1,"parent":false,"children":[]},{"nid":0,"name":"\/sv","tid":20,"url_str":"https:\/\/www.siemens.com\/sv-se","alias":"https:\/\/www.siemens.com\/sv-se","level":1,"image":{"fid":false,"furl":""},"options":{"menu_icon":{"fid":false},"external":true},"depth":1,"parent":false,"children":[]},{"nid":0,"name":"\/uk","tid":21,"url_str":"https:\/\/www.siemens.com\/uk-ua","alias":"https:\/\/www.siemens.com\/uk-ua","level":1,"image":{"fid":false,"furl":""},"options":{"menu_icon":{"fid":false},"external":true},"depth":1,"parent":false,"children":[]}] 
+ Please use another Browser 
+ It looks like you are using a browser that is not fully supported. Please note that there might be constraints on site display and
+ usability.
+ For the best experience we suggest that you download the newest version of a supported browser:
+ Internet Explorer ,
+ Chrome Browser ,
+ Firefox Browser ,
+ Safari Browser Continue with the current browser Press Release 24 March 2025 Digital Industries Nuremberg Siemens expands Industrial Copilot with New generative AI-powered Maintenance Offering 
+ The Siemens Industrial Copilot, a generative AI-based assistant, is empowering customers across the entire value chain – from design and planning to engineering, operations, and services 
+ Siemens expands its Industrial Copilot offering with extended capabilities for Senseye Predictive Maintenance 
+ The generative AI-powered solution will support every stage of the maintenance cycle, from repair and prevention to prediction and optimization 
+ The Siemens Industrial Copilot, a generative AI-based assistant, is empowering customers across the entire value chain – from design and planning to engineering, operations, and services 
+ Siemens expands its Industrial Copilot offering with extended capabilities for Senseye Predictive Maintenance 
+ The generative AI-powered solution will support every stage of the maintenance cycle, from repair and prevention to prediction and optimization 
+ Siemens expands Industrial Copilot with New generative AI-powered
+Maintenance Offering (Source: Siemens AG) The Siemens Industrial Copilot is revolutionizing industry by enabling customers to leverage generative AI across the entire value chain – from design and planning to engineering, operations, and services. For example, the generative AI-powered assistant empowers engineering teams to generate code for programmable logic controllers using their native language, speeding-up SCL code generation while minimizing errors and reducing the need for specialized knowledge. This in turn reduces development time and boosts quality and productivity over the long term. Siemens is developing a full suite of copilots to industrial-grade standards for the discrete and process manufacturing industries – and is now strengthening its Industrial Copilot offerings with the launch of an advanced maintenance solution, designed to redefine industrial maintenance strategies. Siemens brings generative AI to the entire maintenance cycle The new generative AI-powered solution will support every stage of the maintenance cycle, by helping industries move beyond traditional maintenance practices toward an intelligent, data-driven approach. To realize this, the Senseye Predictive Maintenance solution powered by Microsoft Azure will be extended with two new offerings: 
+ Entry Package: This solution provides an accessible and cost-effective introduction to predictive maintenance, combining AI-powered repair guidance with basic predictive capabilities. It helps businesses transition from reactive to condition-based maintenance by offering limited connectivity for sensor data collection and real-time condition monitoring. With AI-assisted troubleshooting and minimal infrastructure requirements, companies can reduce downtime, improve maintenance efficiency, and lay the foundation for full predictive maintenance.
+ Scale Package: Designed for enterprises looking to fully transform their maintenance strategy, this package integrates Senseye Predictive Maintenance with the full Maintenance Copilot functionality. It enables customers to predict failures before they happen, maximize uptime, and reduce costs with AI-driven insights. Offering enterprise-wide scalability, automated diagnostics, and sustainable business outcomes, this solution helps companies move beyond traditional maintenance, optimizing operations across multiple sites while supporting long-term efficiency and resilience.
+ The new offering enables comprehensive
+coverage of the entire maintenance cycle – from reactive repair to predictive
+and preventive strategies – by leveraging generative AI-driven insights that enhance
+decision-making and efficiency across industrial environments. As industries increasingly seek ways to
+enhance reliability and reduce costs, maintenance operations are evolving from
+reactive to proactive approaches. Traditional maintenance strategies often lead
+to costly downtime and other inefficiencies. Siemens addresses this challenge
+by integrating AI-driven maintenance solutions that help companies optimize their
+asset performance and maximize operational uptime. The fusion of generative AI
+and predictive maintenance allows customers harness real-time data and advanced
+analytics that ensure timely interventions and strategic planning.
+First pilot use cases have shown that the Industrial
+Copilot for maintenance helps save on average 25% reactive maintenance time. This
+expansion of our Industrial Copilot marks a significant step in our mission to
+transform maintenance operations,” said Margherita Adragna, CEO Customer
+Services at Siemens Digital Industries. “By extending our predictive
+maintenance solutions, we’re enabling industries to seamlessly shift from
+reactive to proactive maintenance strategies and drive efficiency and
+resilience in an increasingly complex industrial landscape.” With this innovation, Siemens continues to
+advance its vision of a digitalized industry, by providing customers with an
+intelligent and integrated approach to maintenance that ensures long-term
+operational success. For this press release PDF Download Links Siemens’ Industrial Copilots Senseye Predictive Maintenance Follow us on X @siemens_press 
+ Siemens Digital Industries (DI) empowers companies of all sizes within the process and discrete manufacturing industries to accelerate their digital and sustainability transformation across the entire value chain. Siemens’ cutting-edge automation and software portfolio revolutionizes the design, realization and optimization of products and production. And with Siemens Xcelerator – the open digital business platform – this process is made even easier, faster, and scalable. Together with our partners and ecosystem, Siemens Digital Industries enables customers to become a sustainable Digital Enterprise. Siemens Digital Industries has a workforce of around 70,000 people worldwide.
+ Read more Siemens AG (Berlin and Munich) is a leading technology company focused on industry, infrastructure, mobility, and healthcare. The company’s purpose is to create technology to transform the everyday, for everyone. By combining the real and the digital worlds, Siemens empowers customers to accelerate their digital and sustainability transformations, making factories more efficient, cities more livable, and transportation more sustainable. Siemens also owns a majority stake in the publicly listed company Siemens Healthineers, a leading global medical technology provider pioneering breakthroughs in healthcare. For everyone. Everywhere. Sustainably. 
+In fiscal 2024, which ended on September 30, 2024, the Siemens Group generated revenue of €75.9 billion and net income of €9.0 billion. As of September 30, 2024, the company employed around 312,000 people worldwide on the basis of continuing operations. Further information is available on the Internet at www.siemens.com . Read more Reference Number: Contact Evelyne Kadel Siemens AG +49 173-56 49 708 Evelyne.Kadel@siemens.com Contact Siemens Get in touch Follow our global channels Follow Change region   Global | English 
+ HQDIPR202503217126EN 
+ Press | Company | Siemens 
+ © Siemens 1996 – 2026 
+ Corporate Information 
+ Privacy Notice 
+ Cookie Notice 
+ Terms of Use 
+ Digital ID 

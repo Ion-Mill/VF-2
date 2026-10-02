@@ -1,0 +1,1189 @@
+15" LCD Main Processor PCB - Troubleshooting Guide - NGC
+MyHaas
+Welcome,
+! 
+Haas Tooling
+Guest Order History
+MyHaas/HaasConnect
+Sign In
+Register
+Haas Tooling
+My Account
+Order History
+Return History
+MyHaas/HaasConnect
+Sign Out
+Welcome, 
+My Machines
+Latest Activity
+My Quotes
+My Account
+My Users
+Sign Out
+Find Your Distributor
+Select Language
+English
+Deutsch
+Español - España
+Español - México
+Français
+Italiano
+Português
+Český
+Dansk
+Nederlands
+Magyar
+Polski
+Svenska
+Türkçe
+中文
+Suomi
+Norsk
+الإنجليزية
+български
+Hrvatski
+Ελληνικά
+Română
+Slovenský
+Slovenščina
+한국어
+日本語
+Українська
+machines
+Main Menu
+Vertical Mills 
+Vertical Mills 
+Vertical Mills 
+View All
+Vertical Mills 
+VF Series
+Universal Machines
+VR Series
+VP-5 Prismatic
+Pallet-Changing VMCs
+Mini Mills
+Mold Machines
+High-Speed Drill Centers
+Drill/Tap/ Mill Series
+Toolroom Mills
+Compact Mills
+Gantry Series
+SR Sheet Routers
+Extra-Large VMC
+Double-Column Mills
+Control Simulator
+Mill Automatic Parts Loader
+VMC/UMC Side-Loading Automatic Parts Loader
+Compact Automatic Parts Loader
+Multi-Axis Solutions
+Multi-Axis Solutions
+Multi-Axis Solutions
+View All
+Multi-Axis Solutions
+Y-Axis Lathes
+5-Axis Mills
+Lathes
+Lathes
+Lathes
+View All
+Lathes
+ST Series
+Dual-Spindle
+Box Way Series
+Toolroom Lathes
+Chucker Lathe
+Haas Bar Feeder V2
+Lathe Automatic Parts Loader
+Horizontal Mills
+Horizontal Mills
+Horizontal Mills
+View All
+Horizontal Mills
+50-Taper
+40-Taper
+Rotaries & Indexers
+Rotaries & Indexers
+Rotaries & Indexers
+View All
+Rotaries & Indexers
+Rotary Tables
+Indexers
+5-Axis Rotaries
+Extra-Large Rotaries
+Special Series
+Special Series
+Special Series
+View All
+Special Series
+EU_Series_Redirect
+Automation Systems
+Automation Systems
+Automation Systems
+View All
+Automation Systems
+Mill Automation
+Lathe Automation
+Automation Models
+Desktop Machines
+Desktop Machines
+Desktop Machines
+View All
+Desktop Machines
+Desktop Mill
+Desktop Lathe
+Shop Equipment
+Shop Equipment
+Shop Equipment
+View All
+Shop Equipment
+Bandsaw
+Knee Mill
+Surface Grinder
+Laser Cutting Machine
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+HAAS SIX PACK
+HAAS SIX PACK
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Options
+Main Menu
+Spindles
+Spindles
+Spindles
+View All
+Spindles
+Tool Changers
+Tool Changers
+Tool Changers
+View All
+Tool Changers
+4th- | 5th-Axis
+4th- | 5th-Axis
+4th- | 5th-Axis
+View All
+4th- | 5th-Axis
+Turrets & Live Tooling
+Turrets & Live Tooling
+Turrets & Live Tooling
+View All
+Turrets & Live Tooling
+Probing
+Probing
+Probing
+View All
+Probing
+Chip & Coolant Management
+Chip & Coolant Management
+Chip & Coolant Management
+View All
+Chip & Coolant Management
+The Haas Control
+The Haas Control
+The Haas Control
+View All
+The Haas Control
+Product Options
+Product Options
+Product Options
+View All
+Product Options
+Tooling & Fixturing
+Tooling & Fixturing
+Tooling & Fixturing
+View All
+Tooling & Fixturing
+Workholding
+Workholding
+Workholding
+View All
+Workholding
+5-Axis Solutions
+5-Axis Solutions
+5-Axis Solutions
+View All
+5-Axis Solutions
+5 Easy Steps to 5-Axis
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+HAAS SIX PACK
+HAAS SIX PACK
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Why Haas
+Main Menu
+Discover the Haas Difference
+Why Haas
+MyHaas
+Education Community
+Industry 4.0
+Haas Certification
+Customer Testimonials
+Service
+Main Menu
+Welcome to Haas Service
+SERVICE HOME
+Operator’s Manuals
+How-To Procedures
+Troubleshooting Guides
+Preventive Maintenance
+Haas Parts
+Haas Tooling
+Videos
+Videos
+Main Menu
+Main Menu
+View All
+View All
+Fiber Laser
+View All
+View All
+HTEC Curriculum Support
+View All
+Haas 10 kg Cobot Package
+Cobot Kits
+View All
+View All
+4 - AUTOMATION SYSTEMS
+View All
+View All
+View All
+VF-4SS
+View All
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+HAAS SIX PACK
+HAAS SIX PACK
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Haas Tooling
+Main Menu
+Automation Accessories
+Shop Support
+Mill Toolholding
+Mill Cutting Tools
+Boring Systems
+Mill Workholding
+Lathe Toolholding
+Lathe Cutting Tools
+Lathe Workholding
+Package Kits
+ER Collets & Chucks
+Holemaking
+Threading
+Broaching
+Tombstones & Kits
+Manual Chucks For Milling
+Deburring & Abrasives
+Tool Presetter & Heat Shrinkers
+Storage & Handling
+Machine Maintenance
+Tooling Accessories
+Apparel & Accessories
+Measuring & Inspection
+Winner's Circle
+Winner's Circle
+Clearance
+Today's Hot Deals
+Haas Tooling
+Winner's Circle
+Winner's Circle
+Shop All
+WINNERS_CIRCLE-1Y
+Winner's Circle
+Winner's Circle
+Shop All
+WC-1Y-EU
+Today’s Hot Deals
+Today’s Hot Deals
+Shop All
+Mill Toolholding
+Mill Tooling
+Measuring & Inspection
+Boring Systems
+Mill Workholding
+Shell Mill Kits
+Lathe Toolholding
+Lathe Tooling
+Lathe Workholding
+ER Collets & Chucks
+Holemaking
+Threading
+Broaching
+Tool Storage
+Apparel & Accessories
+Clearance
+Clearance
+Shop All
+Measuring & Inspection
+Measuring & Inspection
+Shop All
+Probe Kits & Accessories
+Edge & Center Finders
+Comparative Measuring Gauges
+Height Gauges
+Calipers
+Threaded Plug & Ring Gauges
+Gauge Blocks
+Pin Gauges
+Drop Indicators
+Dial Test Indicators
+Bore Gauges
+Indicator Accessories
+V Blocks
+Setup Blocks
+Depth Measuring
+Micrometers
+Micrometer Accessories
+Micrometer Kits
+Bore Gauge Kits
+Starter Kits
+Indicator Kits
+Caliper Kits
+Toolholder Check Station
+Height Setters
+Coordinate Measuring Machines
+Automation Accessories
+Automation Accessories
+Shop All
+Cobot Kits
+Cobot Kits
+Protective Barriers
+Grippers
+Robot Cell Accessories
+Shop Support
+Shop Support
+Shop All
+Air Compressors
+Laser Marking Machines
+Bandsaw Blades
+Bandsaw Accessories
+Surface Grinding Wheels
+Mill Toolholding
+Mill Toolholding
+Shop All
+End Mill Holders
+Shell Mill Holders
+Shrink Fit Holders
+ER Collet Chucks
+Milling Chucks & Collets
+NC Drilling Chucks
+Pull Studs / Retention Knobs
+Rotary Tool Holder & Tool Chuck Kits
+Hydraulic Milling Chucks & Collets
+Toolholder Attachments & Wrenches
+Mill Broaching Holders
+Mill Tooling
+Mill Tooling
+Shop All
+Shell Mill Bodies
+Milling Inserts
+End Mills
+Chamfer Mills & Inserts
+Indexable End Mill Bodies
+Ball End Mills
+Chamfer End Mills
+Roughing End Mills
+Indexable Ball End Mills & Inserts
+Shell Mill Kits
+Chamfer Mill Kits
+Indexable End Mill Kits
+Dovetail Cutters
+Indexable Dovetail Cutters
+Engraving End Mills
+Rotary Burrs / Die Grinding Bits
+Keyseat Cutters
+Corner Rounding End Mills
+Slot Mill Bodies
+Boring Systems
+Boring Systems
+Shop All
+Boring Heads & Cartridges
+Boring Holders & Extensions
+Mill Workholding
+Mill Workholding
+Shop All
+Fixed-Jaw Vises
+Self-Centering Vises
+Adapter Plates
+Vise Jaws
+Vise Mounts & Fixtures
+Vise Kits
+Vise Parallels
+Rotary Vise Kits
+Fixture Clamps
+Automated Workholding Kits
+Tooling Fixture Subplates
+Toolmakers' Vises
+Clamp Force Gauges
+Collet Fixtures
+Angle Plates
+Lathe Toolholding
+Lathe Toolholding
+Shop All
+TL & CL Static Turning Holders
+BOT Static Turning Holders
+BMT Static Turning Holders
+Live / Driven Turning Holders
+Turning Holder Reduction Sleeves / Bushings
+VDI Static Turning Holders
+Turning Holder Accessories
+Lathe Tooling
+Lathe Tooling
+Shop All
+Cut-Off Tool Blocks & Blades
+Cut-Off Tooling Kits
+Turning Inserts
+Grooving & Cut-Off Tools
+Internal (ID) Grooving & Threading Tools
+Threading Inserts
+Threading Tools
+Boring Bars / Internal (ID) Turning Tools
+External (OD) Turning Tools
+Cermet Turning Inserts
+CBN Turning Inserts
+Haas Notch Grooving & Threading Inserts
+Haas Notch Grooving & Threading Tools
+Micro Turning Tools
+Desktop Lathe Tools
+Lathe Workholding
+Lathe Workholding
+Shop All
+Live Centers
+Spindle Reduction Sleeves / Liners
+Quick-Change Collets
+Quick-Change Collet Chucks
+5C Collets
+5C Collet Sets
+Lathe Jaw Boring Rings
+Lathe Jaws
+Bar Pullers
+Scroll Chucks
+Guide Pins
+Package Kits
+Package Kits
+Shop All
+Chip Clearing Fan Kits
+Cutting Tool Kits
+Indexable End Mill Kits
+Cut-Off Tool Block & Blade Kits
+Drill & Tap Kits
+Indexable Drilling Kits
+Shell Mill Kits
+Chamfer Mill Kits
+Rotary Tool Holder & Tool Chuck Kits
+Lathe Starter Kits
+Workholding Kits
+Rotary Vise Kits
+Vise Kits
+3-Jaw Chuck Kits for Mills
+Tombstone Kits
+Reduction Sleeve Kits
+Automated Workholding Kits
+Measuring & Inspection Kits
+Starter Kits
+Bore Gauge Kits
+Caliper Kits
+Indicator Kits
+Micrometer Kits
+ER Collets & Chucks
+ER Collets & Chucks
+Shop All
+ER Straight-Bore Collets
+ER Sealed Collets
+ER Tap Collets
+ER Collet Sets & Accessories
+ER Collet Chucks
+Straight Shank ER Collet Chucks
+Straight Shank Keyless NC Drilling Chucks
+Holemaking
+Holemaking
+Shop All
+Carbide Drills
+Indexable Drill Bodies
+Indexable Drill Inserts
+Modular Drill Bodies
+Modular Drill Heads
+Cobalt Drills & Sets
+Center Drills
+Reamers
+Indexable Drilling Kits
+Spot Drills
+Spade Drill Bodies
+Spade Drill Inserts
+Countersinks
+Threading
+Threading
+Shop All
+Taps
+Threading Inserts
+Threading Tools
+Thread Mills
+Pipe Taps
+Drill Tap Kits
+Broaching
+Broaching
+Shop All
+Broaching Tools
+Broaching Inserts
+Tombstones
+Tombstones
+Shop All
+Tombstones
+Tombstone Kits
+Vise Cluster Towers
+Manual Chucks For Milling
+Manual Chucks For Milling
+Shop All
+3-Jaw Chucks & Mounts for Mills
+Deburring & Abrasives
+Deburring & Abrasives
+Shop All
+Abrasive Pads
+Deburr Tools
+Deburr Wheels
+Abrasive Sheets & Rolls
+Sharpening / Lapping Stones
+Tool Presetter & Heat Shrinkers
+Tool Presetter & Heat Shrinkers
+Shop All
+Tool Presetting Machines
+Shrink Fit Machines
+Tool Storage
+Tool Storage
+Shop All
+Tool Carts
+Tool Tray
+Tool Bags
+Machine Maintenance
+Machine Maintenance
+Shop All
+Spindle Test Bars
+Levels
+Refractometers
+Machine Additives & Supplies
+Machine Accessories
+Machine Maintenance Kits
+Tooling Accessories
+Tooling Accessories
+Shop All
+Spindle & Toolholder Taper Cleaners
+Haas Shop Lift
+Toolholder Fixtures
+CNC Chip Clearing Fans
+Hammers & Mallets
+Anti-Fatigue Mats
+Layout Tools
+Wrenches
+Magnetic Tools
+Torque Screwdrivers
+Hand Cutting Tools
+Shop Stools
+Lifting Magnets
+Safety Apparel
+Apparel & Accessories
+Apparel & Accessories
+Shop All
+Accessories
+Apparel
+HAAS TOOLING QUICK LINKS
+NEW PRODUCTS 
+NEW PRODUCTS 
+NEW PRODUCTS 
+NEW PRODUCTS 
+MOST POPULAR 
+MOST POPULAR 
+TOOLING PROMOS
+TOOLING PROMOS
+FINANCING & OPEN TERMS
+FINANCING & OPEN TERMS
+PAY BY INVOICE
+PAY BY INVOICE
+FAQs 
+FAQs 
+KITS CREATED FOR YOU
+KITS CREATED FOR YOU
+Haas Service Parts
+Main Menu
+Automatic Pallet Changer
+Lathe Turret
+Tool Changer
+Chip Management
+Coolant
+Counterbalance
+Electrical Cabinet
+Enclosure
+Hydraulics
+Lubrication
+Maintenance
+Pendant
+Probing
+Rotary
+Spindle
+Tailstock
+Haas Service Parts
+Automatic Pallet Changer
+Automatic Pallet Changer
+Shop All
+HMC - Automatic Pallet Changer
+VMC - Automatic Pallet Changer
+Lathe Turret
+Lathe Turret
+Shop All
+Lathe - Turret
+Live Tooling
+Tool Changer
+Tool Changer
+Shop All
+Side Mount
+Umbrella
+Chip Management
+Chip Management
+Shop All
+Multi Auger
+Single Auger
+Coolant
+Coolant
+Shop All
+Auxiliary Filter
+HPC-300 (Lathe)
+HPC-1000 (Lathe)
+Oil Skimmer
+Standard Coolant
+TSC-300 (Mill)
+TSC-1000 (Mill)
+Coolant Refill
+Loc-Line
+Counterbalance
+Counterbalance
+Shop All
+Charge & Discharge Hose
+Electrical Cabinet
+Electrical Cabinet
+Shop All
+Fans
+Filters
+Upgrade Kits
+Enclosure
+Enclosure
+Shop All
+Accessories
+Air Nozzle
+Decals
+Door Bumpers
+Lighting
+Windows, Gaskets, & Weather Strip
+Chip & Coolant Management
+Hydraulics
+Hydraulics
+Shop All
+Filters
+Gauges
+Heat Exchanger
+Hoses
+Lubrication
+Lubrication
+Shop All
+Bijur Mechanical Lubrication
+Minimum Lubrication
+Maintenance
+Maintenance
+Shop All
+Grease, Oil, & Sealants
+Pendant
+Pendant
+Shop All
+Floppy Disk & USB
+Keypad
+Keys
+Lens
+Gaskets & Seals
+Probing
+Probing
+Shop All
+Mill Probing
+Lathe Tool Presetter
+Rotary
+Rotary
+Shop All
+Rotary Gaskets & Seals
+Spindles
+Spindles
+Shop All
+Couplings
+Gaskets & Seals
+Spindle Motor Drive
+Gearbox Drive
+Tool Release Piston
+Tailstock
+Tailstock
+Shop All
+Handles
+×
+Search Results
+Web Pages
+Images
+<
+1
+>
+MyHaas
+Welcome,
+! 
+Haas Tooling
+Guest Order History
+MyHaas/HaasConnect
+Sign In
+Register
+Haas Tooling
+My Account
+Order History
+Return History
+MyHaas/HaasConnect
+Sign Out
+Welcome, 
+My Machines
+Latest Activity
+My Quotes
+My Account
+My Users
+Sign Out
+Find Your Distributor
+Select Language
+English
+Deutsch
+Español - España
+Español - México
+Français
+Italiano
+Português
+Český
+Dansk
+Nederlands
+Magyar
+Polski
+Svenska
+Türkçe
+中文
+Suomi
+Norsk
+الإنجليزية
+български
+Hrvatski
+Ελληνικά
+Română
+Slovenský
+Slovenščina
+한국어
+日本語
+Українська
+×
+Search Results
+Web Pages
+Images
+<
+1
+>
+15" LCD Main Processor PCB - Troubleshooting Guide - NGC
+Service Home
+15" LCD Main Processor PCB - Troubleshooting Guide - NGC
+Your document is ready for download, please click below to download your document.
+Download Document
+Error processing this document, please try again or 
+Contact Us
+.
+Please wait while your document is being loaded.
+15" LCD Main Processor PCB - Troubleshooting Guide - NGC
+Jump to Section
+Back to Top
+Your document is ready for download, please click below to download your document.
+Download Document
+Error processing this document, please try again or 
+Contact Us
+.
+Please wait while your document is being loaded.
+Recently Updated
+Last updated: 03/12/2025
+15" LCD Main Processor PCB
+ - Troubleshooting Guide - NGC
+Introduction
+Use this document to troubleshoot the Maincon PCB problems on a machine with the Next Generation Control. If you can not find the scenario that matches your situation, please submit an error log (
+[SHIFT]
+ +
+ [F3]
+) to 
+[email protected]
+.
+ Note
+: If necessary the error log command (
+[SHIFT]
+ +
+ [F3]
+) can be initiated while the program is running.
+ Download and fill out the Main Processor PCB Inspection Report Checklist below before replacing any parts.
+ Main Processor PCB Inspection Report Checklist 
+15" LCD Main Processor PCB - Overview
+The Next Generation Control 15" LCD Main Processor PCB includes the units for Video, Main, and Motion controller. It accommodates 16 motion control channels. No need to add extra MOCON for the applications that require more channels. This board communicates with the I/O PCB via serial communication through a single RJ45 cable using the RS422 system. The Next Generation Control includes ports for linear scale encoders. Communication with the front panel is done via RJ45 cable and includes the video signals for the 15" LCD display.
+J3
+ is the power input connector where +5VDC and +/- 12VDC and a voltage monitor signal is delivered from the PSUP PCB.
+J7
+ is a RJ45 ethernet connector and a dual USB hub.
+The RJ45 ethernet connector is the input from the control cabinet sidewall sheet metal for a wired ethernet connection.
+The top USB port is connected to the SKBIF PCB at 
+J9
+.
+The bottom USB port is not used at this time.
+J8
+ is a dual USB hub. It is not used at this time.
+J9
+ is a RJ45 ethernet connector. This is connected to the SKBIF PCB at 
+J28
+.
+J14
+ is a RJ45 ethernet connector. This is connected to the I/O PCB at 
+J4
+.
+J13
+ is not used at this time.
+J2
+ is a RP-SMA (Reverse-Polarity Sub-Miniature Version A) coaxial connector. This is connected to the WiFi Antenna.
+J16
+ is the Voltage Monitor input from the Vector Drive.
+P1
+-
+P16
+ are the Amplifier Command connections. These are connected to the Axis Servo Amplifiers.
+P17
+-
+P32
+ are the Axis Encoder input connections. These are the inputs for the Axis Servo motor encoders, axis home sensors, and some rotary air pressure sensors.
+P33
+-
+P37
+ are the Axis Scale Encoder inputs. These are connected to the secondary scale encoders.
+BT1
+ is the System Battery. This provides power to store the date and time memory.
+The 
+Q7
+Module
+ is the Processor board. This module should not be removed.
+J12
+ is the WiFi module USB connector. This is connected to the WiFi Module PCB.
+J20
+ is a UMCC (Ultra Miniature Coaxial Connector). This is connected to the WiFi Module by a jumper cable.
+PCB serial number
+Note:
+ The PCB's serial number must be included in the inspection report checklist. The serial number is on a sticker [1] on the top of the inspection checklist. 
+The serial number will start with two letters, followed by eight digits. Include both the letters and numbers on the inspection report. 
+15" LCD Main Processor PCB Troubleshooting - Boot Up
+1
+When powering on the machine the control screen does not boot up and displays a black screen and the LCD backlight is not lit.
+Check the following:
+Check the power input connector at J3 and measure the +5VDC at the connector. The correct voltage will be between +4.90VDC to +5.20VDC.
+Power off/on the machine a few times and check that the measured voltage stays consistent.
+If the voltage levels are not consistent. Troubleshoot the PSUP PCB, LVPS, and cables to find the power issue.
+Caution:
+ When testing for voltage be careful not to short out the red and black leads. This can cause damage to the Main Processor PCB or the low volt power supply.
+2
+If you measure the correct voltage consistently at boot up but the control does not boot up and the screen is black. Check the following with the machine powered off:
+Check the RJ45 ethernet cable and connector from the Main Processor PCB at J9 to the SKBIF PCB at J28. Test the cable, refer to the Network Cable - Tester Tool procedure.
+Check the connections to the LCD. The LCD data cable at J16 on the SKBIF to the LCD. The LCD Backlight cable from J13 to the LCD. Do not unplug the connections but make check that they are plugged in all the way.
+With the machine powered on:
+Check the Power Input connector at J20 and measure the voltage at the +3.3VDC, +5VDC, and +12VDC test points on the SKBIF. The correct voltages will be between +3.10VDC to +3.50VDC, +4.90VDC to +5.20VDC, and +11.85VDC to +12.40VDC.
+3
+If the cable connections and measured voltages are correct but the control does not boot up and the screen is black. Perform the following:
+Update the machine software by holding the U button when powering on the machine.
+The USB should have your service key, the latest software, and the machine configurations.
+If the machine boots up and you get the Haas Software Updater screen. Perform an Option 2 software update.
+If that fails perform an Option 5 software update.
+If that fails perform a SOFTWARE UPDATE RECOVERY by holding the E button when powering on the machine. This boots from the USB rather than the processor.
+If the machine does not boot up and display the Haas Software Updater screen. Replace the Main Processor PCB.
+4
+If the control screen powers on but stops at steps 2-8, this is not a power issue or RJ45 video connection issue, but a Main Processor boot up issue.
+ This can happen every time at boot up or intermittently. Check the following:
+Check the Main Processor/Software compatibility table below and upgrade to the latest software.
+Note:
+ Do not upgrade to the current software from software version 100.16.000.1020 or lower. You need to upgrade to 100.16.000.1021 first then you can upgrade to the current software version.
+Perform an Option 2 software update first.
+If this fails perform an Option 5 software update. If that fails perform a SOFTWARE UPDATE RECOVERY by holding the E button when powering on the machine.
+If the machine does not boot up and display the Haas Software Updater screen. Replace the Main Processor PCB.
+Hardware and Software Version Compatibility Table
+NGC Main PCB
+Compatible Software Version
+Hardware PN#
+TP#
+NGC Maincon PCB with Q7_4GB eMMC module.
+100.16.000.1011 and higher (see note*)
+32-4250A, 32-4250B, 32-4251B, 32-4252F, 32-4253F
+N/A
+NGC Maincon PCB with Q7_8GB eMMC module.
+100.17.000.1018 and higher
+32-4250C, 32-4250D, 32-4251C, 32-4252A, 32-4253A
+20433
+NGC Maincon PCB with Q7_16GB eMMC module.
+100.17.000.2034 and higher
+32-4252B, 32-4253B
+20566
+NGC Maincon PCB with IWAVE Q7_16GB eMMC module.
+100.20.000.1200 and higher 
+32-4256, 32-4257
+N/A
+NGC Maincon PCB with C7 (1GB, 32GB, and 64GB)
+100.22.000.1010 and higher
+32-4290, 32-4291
+56810
+NGC Maincon PCB with Xilinx Q7 
+100.23.000.1000 and higher
+32-4254, 32-4255, 32-4266, 32-4268
+N/A
+NGC Maincon PCB with Xilinx Q7 
+100.24.000.1000 and higher
+ 32-4266A, 32-4268A
+N/A
+NGC Maincon PCB with iMX8 Q7 
+100.25.001.1000
+32-4272, 32-4273
+N/A
+Y/D Contactor
+Y/D contactor with feedback cables.
+100.17.000.2034 and higher
+32-5280A, 32-5281A
+20007
+ Note:
+ Do not upgrade to the current software from software version 
+100.16.000.1020 or lower
+. You need to upgrade to 
+100.16.000.1021
+ first then you can upgrade to the current software version.
+Symptom Table
+Symptom
+Possible Cause
+Corrective Action
+The Time/Date or Activation will reset intermittently.
+The system battery is defective.
+Measure the system battery voltage, if the voltage is below 3.0 VDC replace the battery. Refer to 
+Next Generation Control - Main Control PCB - Battery Replacement
+.
+Leave the machine powered on for at least 4 hours to recharge the battery. If the machine Date/Time to resets the battery may need to be replaced.
+Maincon PCB is not outputting the correct voltage. 
+Refer to the 
+PCB Battery Inspection
+ section below for the corrective action. 
+The machine display will not turn on.
+The Low Volt Power Supply is not outputting the correct voltage.
+Check the power input connector at J3 and measure the +5VDC at the connector. The correct voltage will be between +4.90VDC to +5.20VDC.
+Power off/on the machine a few times and check that the measured voltage stays consistent.
+A loose cable connection to the WIFI module PCB is causing the processor to hang.
+Power Off the machine.
+Disconnect the WIFI module connector at J12.
+Power On the machine. If the machine boots correctly, reseat the WIFI module connector at J12 and also on the WIFI module PCB [1].
+The cable from the SKBIF to the Maincon PCB is defective.
+Refer to the 
+Next Generation Control - SKBIF / LCD Monitor - Troubleshooting Guide
+ for more troubleshooting information.
+The screen on the control flickers or goes blank when the servos are on.
+The cable from the SKBIF to the Maincon PCB is defective.
+Test the RJ-45 cable that connects to J28 on the SKBIF PCB and J9 on the Maincon PCB using a network cable tester. Refer to 
+Network Cable Tester Tool
+ procedure.
+The connector on the SKBIF PCB has a broken solder joint or is not soldered correctly.
+Check the solder on the J28 header connector on the SKBIF PCB. Make sure that it is soldered correctly. Replace the SKBIF PCB if the connector is not soldered correctly.
+The connector on the Maincon PCB has a broken solder joint or is not soldered correctly.
+Check the solder on the J9 header connector on the Maincon PCB. Make sure that it is soldered correctly. Replace the Maincon PCB if the connector is not soldered correctly.
+Machines with software version prior to 100.17.000.2034. The control freezes, blank monitor, black screen, keypad not working, won't boot sometimes, random shutdowns, or software alarms.
+The parameters for the Q7 module on the Maincon PCB are outdated.
+The updated parameters have been incorporated into the software version 100.17.000.2034 (TP 21894). Update the software to the latest version. If the symptoms continue after updating the software, download the error log with 
+[SHIFT]
+ +
+ [F3]
+ and e-mail it to Haas Service Department.
+Machines with 100.17.000.2040 of later, during a software update you get the following USB error: "The system check detected the USB connector is inserted into the wrong port on the skbif or main board......"
+The USB cable on the Maincon or SKIBF PCB is connected to the wrong location.
+Make sure the USB cable going to the SKIBF PCB is connected to the correct location, #2, on the Maincon PCB (See above diagram).
+Alarm 488
+ INTERMITTENT USB ERROR
+A communication timeout due to a faulty USB device.
+Try a different USB device to see if the issue continues. Programs should be run from the control memory and not from the USB. Update the machine to the latest software.
+If the alarms continues to generate, take an error report with the alarm present and submit it to Haas Service. Remove the USB device from the side of the pendant. If the alarm does not continue to generate, plug the USB directly into the SKBIF PCB or Main Processor PCB to find the faulty cable or PCB. If it does continue to generate, disconnect the other USB devices. See the Alarms 9100.017 & 9100.018 section below for steps.
+Watch the video below and follow the troubleshooting done.
+USB Cable - Troubleshooting
+The control freezes.
+Faulty USB stick or USB hub on the Main Processor PCB or SKBIF PCB.
+Try a different USB device to see if the issue continues. Programs should be run from the control memory and not from the USB.
+If the control freezes and the machine is unresponsive, Cycle Power the machine and take an error report and submit it to Haas Service. If it does not continue, install the USB to the bottom port of J21 on the SKBIF PCB. If the issue continues, take an error report at the time of the issue and submit it to Haas Service. If it doesnt continue replace the cable from the pendant to the SKBIF PCB.
+The control has a laggy/delayed response.
+Faulty USB stick or USB hub on the Main Processor PCB or SKBIF PCB.
+Try a different USB device to see if the issue continues. Programs should be run from the control memory and not from the USB.
+If the control is laggy, remove the USB stick from the side of the pendant. If the issue continues, take an error report at the time of the issue and submit it to Haas Service. If it does not continue, install the USB to the bottom port of J21 on the SKBIF PCB. If the issue continues, take an error report at the time of the issue and submit it to Haas Service. If it doesnt continue replace the cable from the pendant to the SKBIF PCB.
+Alarms 9100.017
+ or 
+9100.018
+ NON RESETTABLE SOFTWARE ERROR is generated on machines with software version 100.21.000.1133 and lower.
+A communication timeout due to a faulty USB component.
+Update the machine to the latest software. If the alarms continues to generate, take an error report with the alarm present and submit it to Haas Service. Disconnect the following USB devices to troubleshoot the USB device causing the alarm:
+•USB drive on pendant.
+ •Touchscreen and disable the setting
+ •Wi-Fi and disable the Wireless Connection
+ •Robot Signal and disable the setting
+See the Alarms 9100.017 & 9100.018 section below for steps.
+Alarm 9011
+ WIFI MODULE ERROR
+A communication timeout due to a faulty Wi-Fi USB device.
+If installed, remove the USB device from the side of the pendant. Update the machine to the latest software. If the alarms continues to generate, take an error report with the alarm present and submit it to Haas Service.
+Disconnect the Wi-Fi at J12 on the Main Processor PCB and Disable the Wireless Connection in Settings > Network > Wireless Connection and press F1 to Disconnect. Cycle power the machine. Does the alarm continue to generate?
+•If no, replace the Main Processor PCB.
+ •If yes, disconnect the other USB devices.
+Alarm 9012
+ ETHERNET ADAPTER ERROR
+A communication timeout due to a faulty Robot signal USB device.
+If installed, remove the USB device from the side of the pendant. Update the machine to the latest software. If the alarms continues to generate, take an error report with the alarm present and submit it to Haas Service.
+Disconnect the Robot Signal cable at J8 on the Main Processor PCB and disable the Robot by changing Setting 372 – Part Loader Type to 0: Off.
+•Does the alarm continue to generate? If no, replace the Main Processor PCB.
+ •If yes, disconnect the other USB devices.
+PCB Component Inspection
+Intermittent symptoms or alarms can be caused by component failure. Below is a list of possible failures:
+Missing solder on all or some components pins
+Poor solder
+Solder bridges
+Wrong component installation (orientation)
+Missing components
+ Note: 
+Some PCB's have unused circuits and are missing components intentionally, look for broken off components.
+Broken components
+Broken pins on IC's
+Bent pins on the connectors
+Use a magnifying glass to inspect the circuit components on the front and back of the Maincon PCB. Below are the circuit component zones to inspect:
+Inspect for bent pins inside the connectors, also look for loose header connectors.
+Inspect for a loose battery, broken battery tabs, repair if needed.
+ Note:
+ Do not replace the Maincon PCB. Refer to 
+Next Generation Control - Main Control PCB - Battery Replacement
+ for repair instructions.
+Inspect for bent or missing pins inside the connectors, also look for loose header connectors.
+Inspect the E-net module for loose connections or broken wires.
+Inspect all solder joints and surface mount components on the back of the Maincon PCB.
+PCB Battery Inspection
+Corrective Action
+: Use a multimeter to test the voltage of the following points 
+[1] 
+while the battery is in its holder. 
+Note:
+ Test the battery independently with a multimeter to ensure that it is producing a voltage of 4.06. 
+The voltage of the PCB should match the battery voltage. If it is lower, the Maincon PCB will need to be replaced.
+Recently Viewed Items
+Clear Items
+You Have No Recently Viewed Items Yet
+ Feedback 
+美元价格不包括关税、报关费用、保险费、增值税及运费。
+USD prices DO NOT include customs duty, customs fees, insurance, VAT, or freight.
+人民币价格包含关税、报关费用、货运保险和增值税, 但不包括运费。
+CNY prices include customs duty, customs fees, insurance, and VAT. DOES NOT include freight.
+Haas Delivered Price
+This price includes shipping cost, export and import duties, insurance, and any other expenses incurred during shipping to a location in France agreed with you as a buyer. No other mandatory costs can be added to the delivery of a Haas CNC Product.
+Click for details
+KEEP UP WITH THE LATEST HAAS TIPS AND TECHNOLOGY...
+Sign up now! 
+HAAS TOOLING ACCEPTS THE FOLLOWING:
+Service & Support
+Owners
+Request Service
+Operator Manuals
+Haas Parts
+Rotary Repair Request
+Pre-Install Guides
+Shopping Tools
+Build & Price a New Haas
+Available Inventory
+The Haas Price List
+CNCA Financing
+About Haas
+DNSH Statement
+Careers
+Certifications & Safety
+Contact Us
+History
+Terms & Conditions
+Haas Tooling Terms & Conditions
+Privacy
+Warranty
+Haas Community
+Haas Certification Program
+Haas Motorsports
+Gene Haas Foundation
+Haas Technical Education Community
+Events
+Join the Conversation
+Facebook
+X
+Flickr
+YouTube
+LinkedIn
+Instagram
+TikTok
+ © 2025 
+Haas Automation, Inc – CNC Machine Tools
+ This site is protected by reCAPTCHA and the Google 
+Privacy Policy
+ and 
+Terms of Service
+ apply. 
+2800 Sturgis Rd., Oxnard, CA 93030
+ Toll Free: (888) 817-4446 / Fax: 805-278-8554
+ {{ if (loading) { }} {{=loadingSpinner}} {{ } else { }} 
+×
+ {{=content}} 
+ {{ } }} 
+ {{ if (loading) { }} {{=loadingSpinner}} {{ } else { }} 
+×
+ {{=content}} 
+ {{ } }} 

@@ -1,0 +1,1169 @@
+NGC Software - Troubleshooting Guide
+MyHaas
+Welcome,
+! 
+Haas Tooling
+Guest Order History
+MyHaas/HaasConnect
+Sign In
+Register
+Haas Tooling
+My Account
+Order History
+Return History
+MyHaas/HaasConnect
+Sign Out
+Welcome, 
+My Machines
+Latest Activity
+My Quotes
+My Account
+My Users
+Sign Out
+Find Your Distributor
+Select Language
+English
+Deutsch
+Español - España
+Español - México
+Français
+Italiano
+Português
+Český
+Dansk
+Nederlands
+Magyar
+Polski
+Svenska
+Türkçe
+中文
+Suomi
+Norsk
+الإنجليزية
+български
+Hrvatski
+Ελληνικά
+Română
+Slovenský
+Slovenščina
+한국어
+日本語
+Українська
+machines
+Main Menu
+Vertical Mills 
+Vertical Mills 
+Vertical Mills 
+View All
+Vertical Mills 
+VF Series
+Universal Machines
+VR Series
+VP-5 Prismatic
+Pallet-Changing VMCs
+Mini Mills
+Mold Machines
+High-Speed Drill Centers
+Drill/Tap/ Mill Series
+Toolroom Mills
+Compact Mills
+Gantry Series
+SR Sheet Routers
+Extra-Large VMC
+Double-Column Mills
+Control Simulator
+Mill Automatic Parts Loader
+VMC/UMC Side-Loading Automatic Parts Loader
+Compact Automatic Parts Loader
+Multi-Axis Solutions
+Multi-Axis Solutions
+Multi-Axis Solutions
+View All
+Multi-Axis Solutions
+Y-Axis Lathes
+5-Axis Mills
+Lathes
+Lathes
+Lathes
+View All
+Lathes
+ST Series
+Dual-Spindle
+Box Way Series
+Toolroom Lathes
+Chucker Lathe
+Haas Bar Feeder V2
+Lathe Automatic Parts Loader
+Horizontal Mills
+Horizontal Mills
+Horizontal Mills
+View All
+Horizontal Mills
+50-Taper
+40-Taper
+Rotaries & Indexers
+Rotaries & Indexers
+Rotaries & Indexers
+View All
+Rotaries & Indexers
+Rotary Tables
+Indexers
+5-Axis Rotaries
+Extra-Large Rotaries
+Special Series
+Special Series
+Special Series
+View All
+Special Series
+EU_Series_Redirect
+Automation Systems
+Automation Systems
+Automation Systems
+View All
+Automation Systems
+Mill Automation
+Lathe Automation
+Automation Models
+Desktop Machines
+Desktop Machines
+Desktop Machines
+View All
+Desktop Machines
+Desktop Mill
+Desktop Lathe
+Shop Equipment
+Shop Equipment
+Shop Equipment
+View All
+Shop Equipment
+Bandsaw
+Knee Mill
+Surface Grinder
+Laser Cutting Machine
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Options
+Main Menu
+Spindles
+Spindles
+Spindles
+View All
+Spindles
+Tool Changers
+Tool Changers
+Tool Changers
+View All
+Tool Changers
+4th- | 5th-Axis
+4th- | 5th-Axis
+4th- | 5th-Axis
+View All
+4th- | 5th-Axis
+Turrets & Live Tooling
+Turrets & Live Tooling
+Turrets & Live Tooling
+View All
+Turrets & Live Tooling
+Probing
+Probing
+Probing
+View All
+Probing
+Chip & Coolant Management
+Chip & Coolant Management
+Chip & Coolant Management
+View All
+Chip & Coolant Management
+The Haas Control
+The Haas Control
+The Haas Control
+View All
+The Haas Control
+Product Options
+Product Options
+Product Options
+View All
+Product Options
+Tooling & Fixturing
+Tooling & Fixturing
+Tooling & Fixturing
+View All
+Tooling & Fixturing
+Workholding
+Workholding
+Workholding
+View All
+Workholding
+5-Axis Solutions
+5-Axis Solutions
+5-Axis Solutions
+View All
+5-Axis Solutions
+5 Easy Steps to 5-Axis
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Why Haas
+Main Menu
+Discover the Haas Difference
+Why Haas
+MyHaas
+Education Community
+Industry 4.0
+Haas Certification
+Customer Testimonials
+Service
+Main Menu
+Welcome to Haas Service
+SERVICE HOME
+Operator’s Manuals
+How-To Procedures
+Troubleshooting Guides
+Preventive Maintenance
+Haas Parts
+Haas Tooling
+Videos
+Videos
+Main Menu
+Main Menu
+View All
+View All
+Fiber Laser
+View All
+View All
+HTEC Curriculum Support
+View All
+Haas 10 kg Cobot Package
+Cobot Kits
+View All
+View All
+4 - AUTOMATION SYSTEMS
+View All
+View All
+View All
+VF-4SS
+View All
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Haas Tooling
+Main Menu
+Automation Accessories
+Shop Support
+Mill Toolholding
+Mill Cutting Tools
+Boring Systems
+Mill Workholding
+Lathe Toolholding
+Lathe Cutting Tools
+Lathe Workholding
+Package Kits
+ER Collets & Chucks
+Holemaking
+Threading
+Broaching
+Tombstones & Kits
+Manual Chucks For Milling
+Deburring & Abrasives
+Tool Presetter & Heat Shrinkers
+Storage & Handling
+Machine Maintenance
+Tooling Accessories
+Apparel & Accessories
+Measuring & Inspection
+Winner's Circle
+Winner's Circle
+Clearance
+Today's Hot Deals
+Haas Tooling
+Winner's Circle
+Winner's Circle
+Shop All
+WINNERS_CIRCLE-1Y
+Winner's Circle
+Winner's Circle
+Shop All
+WC-1Y-EU
+Today’s Hot Deals
+Today’s Hot Deals
+Shop All
+Mill Toolholding
+Mill Tooling
+Measuring & Inspection
+Boring Systems
+Mill Workholding
+Shell Mill Kits
+Lathe Toolholding
+Lathe Tooling
+Lathe Workholding
+ER Collets & Chucks
+Holemaking
+Threading
+Broaching
+Tool Storage
+Apparel & Accessories
+Clearance
+Clearance
+Shop All
+Measuring & Inspection
+Measuring & Inspection
+Shop All
+Probe Kits & Accessories
+Edge & Center Finders
+Comparative Measuring Gauges
+Height Gauges
+Calipers
+Threaded Plug & Ring Gauges
+Gauge Blocks
+Pin Gauges
+Drop Indicators
+Dial Test Indicators
+Bore Gauges
+Indicator Accessories
+V Blocks
+Setup Blocks
+Depth Measuring
+Micrometers
+Micrometer Accessories
+Micrometer Kits
+Bore Gauge Kits
+Starter Kits
+Indicator Kits
+Caliper Kits
+Toolholder Check Station
+Height Setters
+Coordinate Measuring Machines
+Automation Accessories
+Automation Accessories
+Shop All
+Cobot Kits
+Cobot Kits
+Protective Barriers
+Grippers
+Robot Cell Accessories
+Shop Support
+Shop Support
+Shop All
+Air Compressors
+Laser Marking Machines
+Bandsaw Blades
+Bandsaw Accessories
+Surface Grinding Wheels
+Mill Toolholding
+Mill Toolholding
+Shop All
+End Mill Holders
+Shell Mill Holders
+Shrink Fit Holders
+ER Collet Chucks
+Milling Chucks & Collets
+NC Drilling Chucks
+Pull Studs / Retention Knobs
+Rotary Tool Holder & Tool Chuck Kits
+Hydraulic Milling Chucks & Collets
+Toolholder Attachments & Wrenches
+Mill Broaching Holders
+Mill Tooling
+Mill Tooling
+Shop All
+Shell Mill Bodies
+Milling Inserts
+End Mills
+Chamfer Mills & Inserts
+Indexable End Mill Bodies
+Ball End Mills
+Chamfer End Mills
+Roughing End Mills
+Indexable Ball End Mills & Inserts
+Shell Mill Kits
+Chamfer Mill Kits
+Indexable End Mill Kits
+Dovetail Cutters
+Indexable Dovetail Cutters
+Engraving End Mills
+Rotary Burrs / Die Grinding Bits
+Keyseat Cutters
+Corner Rounding End Mills
+Slot Mill Bodies
+Boring Systems
+Boring Systems
+Shop All
+Boring Heads & Cartridges
+Boring Holders & Extensions
+Mill Workholding
+Mill Workholding
+Shop All
+Fixed-Jaw Vises
+Self-Centering Vises
+Adapter Plates
+Vise Jaws
+Vise Mounts & Fixtures
+Vise Kits
+Vise Parallels
+Rotary Vise Kits
+Fixture Clamps
+Automated Workholding Kits
+Tooling Fixture Subplates
+Toolmakers' Vises
+Clamp Force Gauges
+Collet Fixtures
+Angle Plates
+Lathe Toolholding
+Lathe Toolholding
+Shop All
+TL & CL Static Turning Holders
+BOT Static Turning Holders
+BMT Static Turning Holders
+Live / Driven Turning Holders
+Turning Holder Reduction Sleeves / Bushings
+VDI Static Turning Holders
+Turning Holder Accessories
+Lathe Tooling
+Lathe Tooling
+Shop All
+Cut-Off Tool Blocks & Blades
+Cut-Off Tooling Kits
+Turning Inserts
+Grooving & Cut-Off Tools
+Internal (ID) Grooving & Threading Tools
+Threading Inserts
+Threading Tools
+Boring Bars / Internal (ID) Turning Tools
+External (OD) Turning Tools
+Cermet Turning Inserts
+CBN Turning Inserts
+Haas Notch Grooving & Threading Inserts
+Haas Notch Grooving & Threading Tools
+Micro Turning Tools
+Desktop Lathe Tools
+Lathe Workholding
+Lathe Workholding
+Shop All
+Live Centers
+Spindle Reduction Sleeves / Liners
+Quick-Change Collets
+Quick-Change Collet Chucks
+5C Collets
+5C Collet Sets
+Lathe Jaw Boring Rings
+Lathe Jaws
+Bar Pullers
+Scroll Chucks
+Guide Pins
+Collet Accessories
+Package Kits
+Package Kits
+Shop All
+Chip Clearing Fan Kits
+Cutting Tool Kits
+Indexable End Mill Kits
+Cut-Off Tool Block & Blade Kits
+Drill & Tap Kits
+Indexable Drilling Kits
+Shell Mill Kits
+Chamfer Mill Kits
+Rotary Tool Holder & Tool Chuck Kits
+Lathe Starter Kits
+Workholding Kits
+Rotary Vise Kits
+Vise Kits
+3-Jaw Chuck Kits for Mills
+Tombstone Kits
+Reduction Sleeve Kits
+Automated Workholding Kits
+Measuring & Inspection Kits
+Starter Kits
+Bore Gauge Kits
+Caliper Kits
+Indicator Kits
+Micrometer Kits
+ER Collets & Chucks
+ER Collets & Chucks
+Shop All
+ER Straight-Bore Collets
+ER Sealed Collets
+ER Tap Collets
+ER Collet Sets & Accessories
+ER Collet Chucks
+Straight Shank ER Collet Chucks
+Straight Shank Keyless NC Drilling Chucks
+Holemaking
+Holemaking
+Shop All
+Carbide Drills
+Indexable Drill Bodies
+Indexable Drill Inserts
+Modular Drill Bodies
+Modular Drill Heads
+Cobalt Drills & Sets
+Center Drills
+Reamers
+Indexable Drilling Kits
+Spot Drills
+Spade Drill Bodies
+Spade Drill Inserts
+Countersinks
+Threading
+Threading
+Shop All
+Taps
+Threading Inserts
+Threading Tools
+Thread Mills
+Pipe Taps
+Drill Tap Kits
+Broaching
+Broaching
+Shop All
+Broaching Tools
+Broaching Inserts
+Tombstones
+Tombstones
+Shop All
+Tombstones
+Tombstone Kits
+Vise Cluster Towers
+Manual Chucks For Milling
+Manual Chucks For Milling
+Shop All
+3-Jaw Chucks & Mounts for Mills
+Deburring & Abrasives
+Deburring & Abrasives
+Shop All
+Abrasive Pads
+Deburr Tools
+Deburr Wheels
+Abrasive Sheets & Rolls
+Sharpening / Lapping Stones
+Tool Presetter & Heat Shrinkers
+Tool Presetter & Heat Shrinkers
+Shop All
+Tool Presetting Machines
+Shrink Fit Machines
+Tool Storage
+Tool Storage
+Shop All
+Tool Carts
+Tool Tray
+Tool Bags
+Machine Maintenance
+Machine Maintenance
+Shop All
+Spindle Test Bars
+Levels
+Refractometers
+Machine Additives & Supplies
+Machine Accessories
+Machine Maintenance Kits
+Tooling Accessories
+Tooling Accessories
+Shop All
+Spindle & Toolholder Taper Cleaners
+Haas Shop Lift
+Toolholder Fixtures
+CNC Chip Clearing Fans
+Hammers & Mallets
+Anti-Fatigue Mats
+Layout Tools
+Wrenches
+Magnetic Tools
+Torque Screwdrivers
+Hand Cutting Tools
+Shop Stools
+Lifting Magnets
+Safety Apparel
+Apparel & Accessories
+Apparel & Accessories
+Shop All
+Accessories
+Apparel
+HAAS TOOLING QUICK LINKS
+NEW PRODUCTS 
+NEW PRODUCTS 
+NEW PRODUCTS 
+NEW PRODUCTS 
+MOST POPULAR 
+MOST POPULAR 
+TOOLING PROMOS
+TOOLING PROMOS
+FINANCING & OPEN TERMS
+FINANCING & OPEN TERMS
+PAY BY INVOICE
+PAY BY INVOICE
+FAQs 
+FAQs 
+KITS CREATED FOR YOU
+KITS CREATED FOR YOU
+Haas Service Parts
+Main Menu
+Automatic Pallet Changer
+Lathe Turret
+Tool Changer
+Chip Management
+Coolant
+Counterbalance
+Electrical Cabinet
+Enclosure
+Hydraulics
+Lubrication
+Maintenance
+Pendant
+Probing
+Rotary
+Spindle
+Tailstock
+Haas Service Parts
+Automatic Pallet Changer
+Automatic Pallet Changer
+Shop All
+HMC - Automatic Pallet Changer
+VMC - Automatic Pallet Changer
+Lathe Turret
+Lathe Turret
+Shop All
+Lathe - Turret
+Live Tooling
+Tool Changer
+Tool Changer
+Shop All
+Side Mount
+Umbrella
+Chip Management
+Chip Management
+Shop All
+Multi Auger
+Single Auger
+Coolant
+Coolant
+Shop All
+Auxiliary Filter
+HPC-300 (Lathe)
+HPC-1000 (Lathe)
+Oil Skimmer
+Standard Coolant
+TSC-300 (Mill)
+TSC-1000 (Mill)
+Coolant Refill
+Loc-Line
+Counterbalance
+Counterbalance
+Shop All
+Charge & Discharge Hose
+Electrical Cabinet
+Electrical Cabinet
+Shop All
+Fans
+Filters
+Upgrade Kits
+Enclosure
+Enclosure
+Shop All
+Accessories
+Air Nozzle
+Decals
+Door Bumpers
+Lighting
+Windows, Gaskets, & Weather Strip
+Chip & Coolant Management
+Hydraulics
+Hydraulics
+Shop All
+Filters
+Gauges
+Heat Exchanger
+Hoses
+Lubrication
+Lubrication
+Shop All
+Bijur Mechanical Lubrication
+Minimum Lubrication
+Maintenance
+Maintenance
+Shop All
+Grease, Oil, & Sealants
+Pendant
+Pendant
+Shop All
+Floppy Disk & USB
+Keypad
+Keys
+Lens
+Gaskets & Seals
+Probing
+Probing
+Shop All
+Mill Probing
+Lathe Tool Presetter
+Rotary
+Rotary
+Shop All
+Rotary Gaskets & Seals
+Spindles
+Spindles
+Shop All
+Couplings
+Gaskets & Seals
+Spindle Motor Drive
+Gearbox Drive
+Tool Release Piston
+Tailstock
+Tailstock
+Shop All
+Handles
+×
+Search Results
+Web Pages
+Images
+<
+1
+>
+MyHaas
+Welcome,
+! 
+Haas Tooling
+Guest Order History
+MyHaas/HaasConnect
+Sign In
+Register
+Haas Tooling
+My Account
+Order History
+Return History
+MyHaas/HaasConnect
+Sign Out
+Welcome, 
+My Machines
+Latest Activity
+My Quotes
+My Account
+My Users
+Sign Out
+Find Your Distributor
+Select Language
+English
+Deutsch
+Español - España
+Español - México
+Français
+Italiano
+Português
+Český
+Dansk
+Nederlands
+Magyar
+Polski
+Svenska
+Türkçe
+中文
+Suomi
+Norsk
+الإنجليزية
+български
+Hrvatski
+Ελληνικά
+Română
+Slovenský
+Slovenščina
+한국어
+日本語
+Українська
+×
+Search Results
+Web Pages
+Images
+<
+1
+>
+NGC Software - Troubleshooting Guide
+Service Home
+NGC Software - Troubleshooting Guide
+Your document is ready for download, please click below to download your document.
+Download Document
+Error processing this document, please try again or 
+Contact Us
+.
+Please wait while your document is being loaded.
+NGC Software - Troubleshooting Guide
+- Jump to Cause -
+Back to Top
+Your document is ready for download, please click below to download your document.
+Download Document
+Error processing this document, please try again or 
+Contact Us
+.
+Please wait while your document is being loaded.
+Recently Updated
+Last updated: 02/07/2024
+NGC Software
+ - Troubleshooting Guide
+Introduction
+Use this document to troubleshoot software issues and update problems on a machine with the Next Generation Control. If you can not find the scenario that matches your situation, please submit an error log (
+[SHIFT]
+ +
+ [F3]
+) to 
+[email protected]
+.
+ Note
+: If necessary the error log command (
+[SHIFT]
+ +
+ [F3]
+) can be initiated while the program is running.
+Symptom Table
+Symptom
+Possible Cause
+Corrective Action
+Alarm 9191 Machine Moved
+N/A
+Contact your HFO. 
+Find Your Distributor
+After a software update, the control won't boot up or hangs at the Haas logo.
+The software version is not compatible with the processor installed.
+Check the processor part number and ensure the correct software version was installed. For more information, see the Hardware and 
+Software Version Compatibility Table
+.
+The software did not load correctly.
+Use a SanDisk Extreme USB 3.0 USB device to load the software. Reload the software using option 5) Perform Clean Software Install. Refer to 
+Next Generation Control - Software Update - Clean Installation
+.
+Machine delivered in factory mode./The machine arrives at the customer activated.
+Machine shipping is faster than expected.
+The machine must exit Factory mode. To exit factory mode, do the following. 
+To enter service mode, insert a USB stick with a service key. Then, press 
+[Alarms]
+, type in "Debug" and press
+ [Enter]
+.
+Remain on the Alarms page and type in "FMTIME60". 
+Wait 3 minutes. 
+After existing factory mode and will need to be activated. 
+Go the the section "Factory Mode" Below for more details. 
+The machine will not boot to the software updater screen when powering on and holding the U button.
+The machine lost power during a software update.
+Do not replace the processor. Try to recover the software using the 
+Software Update Recovery - NGC
+ procedure.
+The software files are corrupted.
+The USB device failed during a software update.
+Machines with software version prior to 100.17.000.2034. The control freezes, there is a blank monitor, a black screen, the keypad does not work, won't boot sometimes, random shutdowns, or software alarms.
+The parameters for the Q7 module on the Maincon PCB are outdated.
+The updated parameters have been incorporated into the software version 100.17.000.2034 (TP 21894). Update the software to the latest version. If the symptoms continue after updating the software, download the error log with 
+[SHIFT]
+ +
+ [F3]
+ and e-mail it to Haas Service Department.
+Changing direction or changing axis while jogging has the potential of generating jerky motion that intermittently may lead to excessive acceleration or alarm 
+549
+ INTERNAL MOTION ERROR DETECTED.
+Software issue since release 
+100.22.000.1011
+.
+Update the machine to the latest software version and download and load the latest configuration files from the service portal.
+ (TP#: 66384) (Bug#: 2631)
+Alarm 9100.021
+ NON RESETTABLE SOFTWARE ERROR
+Alarm 9101.011
+ RESETTABLE SOFTWARE ERROR
+Alarm 9101.019
+ RESETTABLE SOFTWARE ERROR
+The software encountered an error.
+Download the error log with 
+[SHIFT]
+ + 
+[F3]
+ and e-mail it to Haas Service Department.
+Alarm 9972
+ FPGA CONFIGURATION FAULT.
+The FPGA software did not get loaded correctly during the software update.
+Use a SanDisk Extreme USB 3.0 USB device to load the software. Reload the software using option 5) Perform Clean Software Install. Refer to: 
+Next Generation Control - Software Update - Clean Installation
+.
+Alarm 9933
+ - SOFTWARE VERSION MISMATCH
+The configuration files loaded to the control do not match the software version on the machine.
+Make sure the configuration file that is being loaded matches the software version on the machine.
+Download the configuration file from the portal
+Add the .zip extension and unzip the files.
+open the _cv.xml file in notepad
+search for keyword: Software Version make sure the software version matches the software version on the machine.
+ If the configuration file is correct:
+Try reloading the configuration files again. Refer to: 
+Next Generation Control - Configuration File - Download/Load
+If that does not work reload the software using option 5) Perform Clean Software Install. Refer to: 
+Next Generation Control - Software Update - Clean Installation
+.
+Alarm 9934 - 
+INTERNAL VARIABLE NOT INITIALIZED
+The configuration files loaded on the control do not have all settings that the new software has.
+Make sure you load the latest configuration file for the software version you have on the control.
+The Z Axis does not jog and can not do a tool change after a software update.
+Option 5 Clean Software Install was selected for software update and theserial_number.fs file in the configuration folder is missing.
+Make sure the Factory Settings File box is checked when you download the configuration files. Make sure theserial_number.fs file is in the configuration folder.
+The software was updated to the latest version from a machine that had software version 100.16.000.1020 or lower.
+Load software 
+100.16.000.1021
+ first then you can upgrade to the current software version. This version is located on the portal.
+Alarm 9915
+ - IO BOARD CONFIGURATION MISMATCH
+Alarm 9100.006
+ - NON RESETTABLE SOFTWARE ERROR
+The new configuration files were not updated before the software update.
+Press 
+[POWER OFF]
+.
+Put the USB memory device into the control.
+Note:
+ The USB memory device must contain your 
+Haas Control Key
+ and the correct configuration files.
+Press 
+[POWER ON]
+.
+Press 
+[DIAGNOSTIC]
+.
+Use the arrow keys to go to I/O Config [2] in the Diagnostics tab [1].
+Press 
+[F3]
+ to Update Config Table [4].
+Press 
+[RESET]
+ to continue. If the alarm does not clear, cycle the machine power.
+The Main Crc and the Factory Crc [3] are now the same.
+[ERROR] 
+appears during a software update or platform version update.
+The USB is not being read.
+Press 
+[POWER OFF]
+.
+Do the software update again with a different USB memory device.
+The software binary is corrupted.
+Re-download the software from the portal and try the update with the new files.
+Machines with 100.17.000.2040 of later, during a software update you get the following USB error: "The system check detected the USB connector is inserted into the wrong port on the skbif or main board......"
+The USB cable on the Maincon or SKIBF PCB is connected to the wrong location.
+Make sure the USB cable going to the SKIBF PCB is connected to the correct location, #2, on the Maincon PCB (See above diagram).
+Alarm 120 LOW AIR PRESSURE OR FLOW
+ and inputs are not being read after software update to 100.20.000.1110 or higher.
+The I/O configuration file did not got loaded correctly. 
+Reload the software using option 5) Perform Clean Software Install. Refer to: 
+Next Generation Control - Software Update - Clean Installation
+.
+No Media Loaded
+ or 
+Error Reading File 
+messages when using M130 / M98.
+The file path is incorrect.
+Check the file path. The file path is case sensitive.
+Alarm 9927 
+Motion Channel Unable To Initialize
+The software encountered an error.
+If the machine does not have the latest sofware: Cycle power the machine, is the alarm present? If no, continue to use the machine. If yes, update the machine software to the latest.
+If the machine has the latest software or alarm is generated again after updating software. Send an error report to the Haas Service Department. Cycle power the machine, is the alarm present? If no, continue to use the machine. If yes, cycle power machine until alarm is no longer present. If the alarm does not go away contact the Haas Service Department. 
+Alarm 9909 
+SPINDLES SPEED SYNCHRONIZATION ERROR Occurs when running G14 after G199 (TP#31701)
+The software is outdated.
+Update the software to the latest version. Contact your local Haas Factory Outlet.
+Alarm 9981 
+TAILSTOCK MOTION PROHIBITED gets generated when the G28 button is pressed with the ATP in the down position. (TP#30998)
+The software is outdated.
+Update the software to the latest version. Contact your local Haas Factory Outlet.
+Alarm 311
+ UNKNOWN CODE and 
+339
+ MULTIPLE CODES is generated when running a VPS program in MDI. 
+The software is outdated.
+Update the software to the latest version. Contact your local Haas Factory Outlet.
+Alarm 861
+ SPINDLES PHASE SYNCHRONIZATION LOST is generated when using G199 with no R code, during spindle synchronization. (TP#36107)
+The software is outdated.
+Update the software to the latest version. Contact your local Haas Factory Outlet.
+Alarm 10.116
+ LT (LIVE TOOL) Spindle Orientation Fault when pressing feed hold. (TP#34939))
+The software is outdated.
+Update the software to the latest version. Contact your local Haas Factory Outlet.
+Alarm 12.108
+ SS (2ND SPINDLE) AXIS SERVO OVERLOAD when clamping both spindle chuck on the part hile G199 is active. (TP#37122)
+The software is outdated.
+Update the software to the latest version. Contact your local Haas Factory Outlet.
+Alarm 12.9126
+ SS (2ND SPINDLE) SPINDLE CHUCK CLAMPED when M299 is immediately preceded by clamping sub-spindle chuck command. (TP#35674)
+The software is outdated.
+Update the software to the latest version. Contact your local Haas Factory Outlet.
+Alarm 9996
+ MORE THAN ONE SPINDLE IS TURNING when the live tool spindle was stopped by an orient, subsequent canned cycles using the main spindle. (TP#36892)
+The software is outdated.
+Update the software to the latest version. Contact your local Haas Factory Outlet.
+Alarm 981
+ PALLET CHANGER INTERNAL ERROR if an axis was not at zero when a pallet change was requested. (TP#37996)
+The software is outdated.
+Update the software to the latest version. Contact your local Haas Factory Outlet.
+Alarm 9100.018
+ JAVA RX MSG TIMEOUT (TP#42389)
+The software is outdated.
+Update the software to the latest version. Contact your local Haas Factory Outlet.
+Alarm 370
+ CANNED CYCLE GEOMETRY ERROR when the feedrate is not specified while in a G71/G72 Canned Cycle. (TP#40690)
+The software is outdated.
+Update the software to the latest version. Contact your local Haas Factory Outlet.
+Alarm 174
+ TOOL LOAD EXCEEDED generated erronously when tool RPM i s ramping up. (TP#43268)
+The software is outdated.
+Update the software to the latest version. Contact your local Haas Factory Outlet.
+Alarm 9971
+ EXCESSIVE AXIS SPEED OR ACCELERATION and 
+549
+ INTERNAL MOTION ERROR DETECTED with incorrect cutter compensation mode work in G112 mode. (TP#44276)
+The software is outdated.
+Update the software to the latest version. Contact your local Haas Factory Outlet.
+UMC-350 machines are getting 
+Alarm 1.9107 X Check Your Home Switch
+ and not allowing x-axis movement after configuration files were reloaded or an option 5 update.
+Parameter 
+1.036 X-Axis Negative Max Travel
+ has been reset to a value of 1.
+A Haas Service Technician will need to reference the service alert that was posted about this issue:
+HSG-A 05-16-2023
+Factory Mode
+ Note:
+ Do not attempt to put a machine in factory mode. This is only for machines in the factory that are being assembled. 
+To see if a machine is in factory mode, go to 
+[Diagnostics]
+ -> 
+[Parameters]
+ -> 
+[Activation]
+. If the machine is in factory mode, it will say "Factory Mode On" [1] at the bottom of the activation page.
+1
+If a machine is in factory mode, the service technician must exit factory mode before starting the installation. 
+To exit factory mode, do the following. 
+To enter service mode, insert a USB stick with a service key. Then, press 
+[Alarms]
+, type in "Debug" and press
+ [Enter]
+.
+Stay on the Alarms page and type in "FMTIME60". 
+Wait 3 minutes. 
+After the existing factory mode, the machine will need to be activated. 
+Recently Viewed Items
+Clear Items
+You Have No Recently Viewed Items Yet
+ Feedback 
+美元价格不包括关税、报关费用、保险费、增值税及运费。
+USD prices DO NOT include customs duty, customs fees, insurance, VAT, or freight.
+人民币价格包含关税、报关费用、货运保险和增值税, 但不包括运费。
+CNY prices include customs duty, customs fees, insurance, and VAT. DOES NOT include freight.
+Haas Delivered Price
+This price includes shipping cost, export and import duties, insurance, and any other expenses incurred during shipping to a location in France agreed with you as a buyer. No other mandatory costs can be added to the delivery of a Haas CNC Product.
+Click for details
+KEEP UP WITH THE LATEST HAAS TIPS AND TECHNOLOGY...
+Sign up now! 
+HAAS TOOLING ACCEPTS THE FOLLOWING:
+Service & Support
+Owners
+Request Service
+Operator Manuals
+Haas Parts
+Rotary Repair Request
+Pre-Install Guides
+Shopping Tools
+Build & Price a New Haas
+Available Inventory
+The Haas Price List
+CNCA Financing
+About Haas
+DNSH Statement
+Careers
+Certifications & Safety
+Contact Us
+History
+Terms & Conditions
+Haas Tooling Terms & Conditions
+Privacy
+Warranty
+Haas Community
+Haas Certification Program
+Haas Motorsports
+Gene Haas Foundation
+Haas Technical Education Community
+Events
+Join the Conversation
+Facebook
+X
+Flickr
+YouTube
+LinkedIn
+Instagram
+TikTok
+ © 2025 
+Haas Automation, Inc – CNC Machine Tools
+ This site is protected by reCAPTCHA and the Google 
+Privacy Policy
+ and 
+Terms of Service
+ apply. 
+2800 Sturgis Rd., Oxnard, CA 93030
+ Toll Free: (888) 817-4446 / Fax: 805-278-8554
+ {{ if (loading) { }} {{=loadingSpinner}} {{ } else { }} 
+×
+ {{=content}} 
+ {{ } }} 
+ {{ if (loading) { }} {{=loadingSpinner}} {{ } else { }} 
+×
+ {{=content}} 
+ {{ } }} 
