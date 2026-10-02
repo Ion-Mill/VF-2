@@ -1,0 +1,488 @@
+[
+  {
+    "file": "haas/en_electrical_service_manual_2011.pdf",
+    "pages": 375,
+    "chars": 858777,
+    "mb": 17.2
+  },
+  {
+    "file": "haas/en_mechanical_service_manual_2011.pdf",
+    "pages": 720,
+    "chars": 1092435,
+    "mb": 79.9
+  },
+  {
+    "file": "haas/en_mill_ngc_operators_manual_2025.pdf",
+    "pages": 588,
+    "chars": 762599,
+    "mb": 22.0
+  },
+  {
+    "file": "haas/en_mill_service_manual_2005.pdf",
+    "pages": 435,
+    "chars": 734407,
+    "mb": 37.0
+  },
+  {
+    "file": "haas/en_service_manual_information.pdf",
+    "pages": 1,
+    "chars": 227,
+    "mb": 2.1
+  },
+  {
+    "file": "haas/ko_96-KO8210_Mill.pdf",
+    "pages": 498,
+    "chars": 411937,
+    "mb": 96.9
+  },
+  {
+    "file": "haas/ko_mill_operators_manual_2015.pdf",
+    "pages": 402,
+    "chars": 354497,
+    "mb": 30.3
+  },
+  {
+    "file": "kosha/KOSHA_A-53-2018_금속가공유에 대한 작업환경측정·분석 기술지침.pdf",
+    "pages": 14,
+    "chars": 13849,
+    "mb": 0.3
+  },
+  {
+    "file": "kosha/KOSHA_A-G-12-2026 개인보호구의 사용 및 관리에 관한 기술지원규정.pdf",
+    "pages": 25,
+    "chars": 17425,
+    "mb": 0.7
+  },
+  {
+    "file": "kosha/KOSHA_A-G-17-2026 인력운반작업에 관한 기술지원규정.pdf",
+    "pages": 44,
+    "chars": 29079,
+    "mb": 2.0
+  },
+  {
+    "file": "kosha/KOSHA_B-M-14-2025 연삭기 안전작업에 관한 기술지원규정.pdf",
+    "pages": 22,
+    "chars": 2587,
+    "mb": 4.4
+  },
+  {
+    "file": "kosha/KOSHA_B-M-25-2026 에너지 차단장치의 잠금·표지에 관한 기술지원규정.pdf",
+    "pages": 19,
+    "chars": 15331,
+    "mb": 0.4
+  },
+  {
+    "file": "kosha/KOSHA_B-M-34-2026 크레인 안전작업에 관한 기술지원규정.pdf",
+    "pages": 33,
+    "chars": 25496,
+    "mb": 0.8
+  },
+  {
+    "file": "kosha/KOSHA_C-C-49-2026 안전작업허가에 관한 기술지원규정.pdf",
+    "pages": 30,
+    "chars": 25937,
+    "mb": 0.6
+  },
+  {
+    "file": "kosha/KOSHA_C-C-67-2026 작업위험성평가에 관한 기술지원규정.pdf",
+    "pages": 45,
+    "chars": 37411,
+    "mb": 0.9
+  },
+  {
+    "file": "kosha/KOSHA_E-91-2016 에너지 차단장치의 잠금·표지에 관한 기술지침.pdf",
+    "pages": 15,
+    "chars": 11050,
+    "mb": 0.1
+  },
+  {
+    "file": "kosha/KOSHA_E-M-1-2025 청력보존프로그램의 수립.시행에 관한 기술지원규정.pdf",
+    "pages": 21,
+    "chars": 16803,
+    "mb": 0.5
+  },
+  {
+    "file": "kosha/KOSHA_G-17-2017 압축공기의 안전한 사용에 관한 기술지침.pdf",
+    "pages": 15,
+    "chars": 9875,
+    "mb": 0.4
+  },
+  {
+    "file": "kosha/KOSHA_H-160-2014 청력보호구의 착용방법 및 관리에 관한 지침.pdf",
+    "pages": 12,
+    "chars": 7665,
+    "mb": 0.2
+  },
+  {
+    "file": "kosha/KOSHA_H-42-2021 피부보호구의 사용 지침, 보호용 장갑.pdf",
+    "pages": 18,
+    "chars": 12481,
+    "mb": 0.2
+  },
+  {
+    "file": "kosha/KOSHA_M-1-2013 CNC 선반의 날아오는 가공물 등에 의한 위험방지 기술지침.pdf",
+    "pages": 13,
+    "chars": 9747,
+    "mb": 0.1
+  },
+  {
+    "file": "kosha/KOSHA_M-123-2012 기계류의 위험성평가 지침.pdf",
+    "pages": 23,
+    "chars": 10735,
+    "mb": 0.1
+  },
+  {
+    "file": "kosha/KOSHA_M-21-2012 금속 절삭유 사용에 관한 기술지침.pdf",
+    "pages": 10,
+    "chars": 5817,
+    "mb": 0.1
+  },
+  {
+    "file": "kosha/KOSHA_M-4-2016 다목적 금속 가공기 사용에 관한 기술지침.pdf",
+    "pages": 10,
+    "chars": 4708,
+    "mb": 0.3
+  },
+  {
+    "file": "kosha/KOSHA_M-9-2023 금속 가공용 수동 둥근톱 사용 시 안전에 관한 기술지침.pdf",
+    "pages": 11,
+    "chars": 7365,
+    "mb": 0.2
+  },
+  {
+    "file": "kosha/KOSHA_M-96-2012 선반 방호조치에 관한 기술지침.pdf",
+    "pages": 21,
+    "chars": 6756,
+    "mb": 1.0
+  },
+  {
+    "file": "kosha/KOSHA_M-98-2012 드릴기 방호조치에 관한 기술지침.pdf",
+    "pages": 26,
+    "chars": 7810,
+    "mb": 1.3
+  },
+  {
+    "file": "kosha/KOSHA_M-99-2012 보링기 방호조치에 관한 기술지침.pdf",
+    "pages": 15,
+    "chars": 4866,
+    "mb": 1.0
+  },
+  {
+    "file": "kosha/KOSHA_P-128-2012 금속분진 취급 공정의 화재폭발예방에 관한 기술지침.pdf",
+    "pages": 12,
+    "chars": 9399,
+    "mb": 0.2
+  },
+  {
+    "file": "kosha/KOSHA_P-68-2012 알루미늄 분진의 폭발방지에 관한 기술지침.pdf",
+    "pages": 14,
+    "chars": 10801,
+    "mb": 0.4
+  },
+  {
+    "file": "kosha/KOSHAMEDIA_30251_2011-교육미디어-1606_18_02_머시닝 센터.pdf",
+    "pages": 4,
+    "chars": 2213,
+    "mb": 2.2
+  },
+  {
+    "file": "kosha/KOSHAMEDIA_31276_2012-교육미디어-766_공구제작-CNC.pdf",
+    "pages": 2,
+    "chars": 671,
+    "mb": 1.9
+  },
+  {
+    "file": "kosha/KOSHAMEDIA_31376_2012-교육미디어-890_기계공구-밀링기.pdf",
+    "pages": 2,
+    "chars": 576,
+    "mb": 2.0
+  },
+  {
+    "file": "kosha/KOSHAMEDIA_35705_2015-교육미디어-729_업-2-729-선반-최종.pdf",
+    "pages": 2,
+    "chars": 1861,
+    "mb": 0.2
+  },
+  {
+    "file": "kosha/KOSHAMEDIA_37482_2016-교육미디어-924_금속절삭유사용시안전사고예방.pdf",
+    "pages": 2,
+    "chars": 1510,
+    "mb": 0.4
+  },
+  {
+    "file": "kosha/KOSHAMEDIA_40456_2019-경남동부지사-273_끼임재해 4대 위험설비 재해사례 및 자율안전점검표_밀링기(웹용).pdf",
+    "pages": 2,
+    "chars": 448,
+    "mb": 3.2
+  },
+  {
+    "file": "kosha/KOSHAMEDIA_41938_2020-기술총괄본부-69_2020-기술총괄본부-69_LOTO 작업절차 바로알기_OPS_제조업_제2유형_(붙임1) LOTO(잠금장치, 표지판) 바로알기 .pdf",
+    "pages": 2,
+    "chars": 584,
+    "mb": 1.7
+  },
+  {
+    "file": "kosha/KOSHAMEDIA_43303_2021-교육혁신실-360__끼임사고예방 안전수칙_포스터(웹용).pdf",
+    "pages": 1,
+    "chars": 126,
+    "mb": 1.7
+  },
+  {
+    "file": "kosha/KOSHAMEDIA_43561_2021-교육혁신실-615__18호_공작기계에 의한 사고 연속 발생 속보.pdf",
+    "pages": 1,
+    "chars": 1165,
+    "mb": 0.9
+  },
+  {
+    "file": "kosha/KOSHAMEDIA_45769_2023-교육혁신실-918_밀링기계_OPS_관리자.pdf",
+    "pages": 4,
+    "chars": 3082,
+    "mb": 2.8
+  },
+  {
+    "file": "kosha/KOSHAMEDIA_45770_2023-교육혁신실-919_밀링기계_OPS_근로자.pdf",
+    "pages": 2,
+    "chars": 1890,
+    "mb": 1.6
+  },
+  {
+    "file": "kosha/KOSHAMEDIA_45849_2023-교육혁신실-993_240109 [안전보건공단] 직업계고 카드북4_금속절삭기계_웹용.pdf",
+    "pages": 2,
+    "chars": 3335,
+    "mb": 1.7
+  },
+  {
+    "file": "kosha/KOSHAMEDIA_46875_2024-교육혁신실-840_기계_공작기계.pdf",
+    "pages": 2,
+    "chars": 1087,
+    "mb": 0.7
+  },
+  {
+    "file": "line/branson_bransonic_manual_en_5410610.pdf",
+    "pages": 78,
+    "chars": 81521,
+    "mb": 4.1
+  },
+  {
+    "file": "line/cosen_C510MNC_manual.pdf",
+    "pages": 130,
+    "chars": 132576,
+    "mb": 9.2
+  },
+  {
+    "file": "line/ls_G100C_manual_KR_V4.03_250829.pdf",
+    "pages": 415,
+    "chars": 332755,
+    "mb": 17.0
+  },
+  {
+    "file": "line/ls_INV_G100_Troubleshooting_Rev1.0_KR.pdf",
+    "pages": 41,
+    "chars": 25578,
+    "mb": 2.2
+  },
+  {
+    "file": "line/ls_iS7_Troubleshooting_KOR_Rev1.0_150812.pdf",
+    "pages": 49,
+    "chars": 28777,
+    "mb": 2.9
+  },
+  {
+    "file": "line/ls_XDL-L7S_200V_manual_KR_V2.5.pdf",
+    "pages": 280,
+    "chars": 226060,
+    "mb": 10.2
+  },
+  {
+    "file": "line/mitsubishi_m800_m80_alarm_param_ib1501279engr.pdf",
+    "pages": 754,
+    "chars": 1549426,
+    "mb": 3.9
+  },
+  {
+    "file": "line/renishaw_phc10-3_install.pdf",
+    "pages": 67,
+    "chars": 76262,
+    "mb": 1.0
+  },
+  {
+    "file": "line/siemens_802Dsl_DIA_0311_en.pdf",
+    "pages": 394,
+    "chars": 819354,
+    "mb": 1.3
+  },
+  {
+    "file": "line/siemens_808D_ADVANCED_Diagnostics_Manual_022016_eng.pdf",
+    "pages": 582,
+    "chars": 1284672,
+    "mb": 13.8
+  },
+  {
+    "file": "line/siemens_840Dsl_alarms_diagnostics_man_0818_en-US.pdf",
+    "pages": 1536,
+    "chars": 3550835,
+    "mb": 4.0
+  },
+  {
+    "file": "line/siemens_840Dsl_alarms_diagnostics_man_0818_ko-KR.pdf",
+    "pages": 1478,
+    "chars": 2170402,
+    "mb": 5.6
+  },
+  {
+    "file": "line/yaskawa_GA500_SIEPC71061752.pdf",
+    "pages": 836,
+    "chars": 1789336,
+    "mb": 32.6
+  },
+  {
+    "file": "line/yaskawa_YNX1000_alarm_codes_201283-1CD.pdf",
+    "pages": 722,
+    "chars": 1665683,
+    "mb": 7.4
+  },
+  {
+    "file": "line/yaskawa_YRC1000_alarm_codes_178644-1CD.pdf",
+    "pages": 1250,
+    "chars": 2808412,
+    "mb": 13.4
+  },
+  {
+    "file": "quality/05_NIST_ISO22400_KPI_paper_2016.pdf",
+    "pages": 19,
+    "chars": 55650,
+    "mb": 1.4
+  },
+  {
+    "file": "quality/cummins_supplier_handbook_csr.pdf",
+    "pages": 37,
+    "chars": 100350,
+    "mb": 0.6
+  },
+  {
+    "file": "quality/danfoss_sqm_AH492546005846.pdf",
+    "pages": 44,
+    "chars": 68204,
+    "mb": 10.3
+  },
+  {
+    "file": "quality/diehl_sqm.pdf",
+    "pages": 22,
+    "chars": 50629,
+    "mb": 0.3
+  },
+  {
+    "file": "quality/emile_maurin_iso_tolerances.pdf",
+    "pages": 2,
+    "chars": 6989,
+    "mb": 0.1
+  },
+  {
+    "file": "quality/enerpac_supplier_ppap_manual.pdf",
+    "pages": 36,
+    "chars": 107347,
+    "mb": 2.4
+  },
+  {
+    "file": "quality/enersys_general_tolerances_iso2768.pdf",
+    "pages": 6,
+    "chars": 11554,
+    "mb": 0.3
+  },
+  {
+    "file": "quality/ford_csr_via_motherson.pdf",
+    "pages": 14,
+    "chars": 26932,
+    "mb": 0.5
+  },
+  {
+    "file": "quality/iatf_ford_csr_2026-06.pdf",
+    "pages": 44,
+    "chars": 98183,
+    "mb": 0.6
+  },
+  {
+    "file": "quality/iatf_ford_ppap_specifics_2026-06.pdf",
+    "pages": 31,
+    "chars": 72498,
+    "mb": 0.8
+  },
+  {
+    "file": "quality/iatf_gm_csr_2025-10.pdf",
+    "pages": 29,
+    "chars": 46926,
+    "mb": 0.6
+  },
+  {
+    "file": "quality/iatf_maqmsr_subtier_2nd_ed.pdf",
+    "pages": 8,
+    "chars": 8581,
+    "mb": 0.1
+  },
+  {
+    "file": "quality/iatf_stellantis_csr_2025-06.pdf",
+    "pages": 15,
+    "chars": 33998,
+    "mb": 0.5
+  },
+  {
+    "file": "quality/innio_cleanliness_JWN890115.pdf",
+    "pages": 8,
+    "chars": 13698,
+    "mb": 0.1
+  },
+  {
+    "file": "quality/kalmar_cleanliness_326097.pdf",
+    "pages": 2,
+    "chars": 3742,
+    "mb": 0.1
+  },
+  {
+    "file": "quality/melecs_special_characteristics.pdf",
+    "pages": 1,
+    "chars": 4788,
+    "mb": 0.3
+  },
+  {
+    "file": "quality/misumi_uk_surface_roughness_09_mo1517.pdf",
+    "pages": 2,
+    "chars": 5364,
+    "mb": 0.1
+  },
+  {
+    "file": "quality/motherson_hyundai_kia_csr_R02.pdf",
+    "pages": 5,
+    "chars": 5244,
+    "mb": 0.1
+  },
+  {
+    "file": "quality/nist_ams200-1.pdf",
+    "pages": 37,
+    "chars": 87780,
+    "mb": 1.6
+  },
+  {
+    "file": "quality/nist_jres124_004.pdf",
+    "pages": 4,
+    "chars": 8363,
+    "mb": 0.1
+  },
+  {
+    "file": "quality/rightonblackburns_6061T6_extrusions.pdf",
+    "pages": 1,
+    "chars": 3003,
+    "mb": 0.1
+  },
+  {
+    "file": "quality/smp_greenville_sqm_2018.pdf",
+    "pages": 7,
+    "chars": 16393,
+    "mb": 0.3
+  },
+  {
+    "file": "quality/yg1_threading_troubleshooting.pdf",
+    "pages": 1,
+    "chars": 2158,
+    "mb": 0.3
+  }
+]

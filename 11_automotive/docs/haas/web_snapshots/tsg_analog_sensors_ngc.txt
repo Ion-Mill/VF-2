@@ -1,0 +1,652 @@
+Analog Sensors - Troubleshooting Guide - NGC
+My Haas
+Welcome,
+! 
+Haas Tooling
+MyHaas/HaasConnect
+Sign In
+Register
+Haas Tooling
+MyHaas/HaasConnect
+Sign Out
+Welcome, 
+My Machines
+Latest Activity
+My Quotes
+My Account
+My Users
+Sign Out
+Find Your Distributor
+Select Language
+English
+Deutsch
+Español - España
+Español - México
+Français
+Italiano
+Português
+Český
+Dansk
+Nederlands
+Magyar
+Polski
+Svenska
+Türkçe
+中文
+Suomi
+Norsk
+الإنجليزية
+български
+Hrvatski
+Ελληνικά
+Română
+Slovenský
+Slovenščina
+한국어
+日本語
+Українська
+machines
+Main Menu
+Vertical Mills 
+Vertical Mills 
+Vertical Mills 
+View All
+Vertical Mills 
+VF Series
+Universal Machines
+VR Series
+VP-5 Prismatic
+Pallet-Changing VMCs
+Mini Mills
+Mold Machines
+High-Speed Drill Centers
+Drill/Tap/ Mill Series
+Toolroom Mills
+Compact Mills
+Gantry Series
+SR Sheet Routers
+Extra-Large VMC
+Double-Column Mills
+Pocket Mill
+Mill Automatic Parts Loader
+VMC/UMC Side-Loading Automatic Parts Loader
+Compact Automatic Parts Loader
+Multi-Axis Solutions
+Multi-Axis Solutions
+Multi-Axis Solutions
+View All
+Multi-Axis Solutions
+Y-Axis Lathes
+5-Axis Mills
+Lathes
+Lathes
+Lathes
+View All
+Lathes
+ST Series
+Dual-Spindle
+Box Way Series
+Toolroom Lathes
+Chucker Lathe
+Haas Bar Feeder V2
+Haas Bar Feeder 12
+Horizontal Mills
+Horizontal Mills
+Horizontal Mills
+View All
+Horizontal Mills
+50-Taper
+40-Taper
+Rotaries & Indexers
+Rotaries & Indexers
+Rotaries & Indexers
+View All
+Rotaries & Indexers
+Rotary Tables
+Indexers
+5-Axis Rotaries
+Extra-Large Rotaries
+Special Series
+Special Series
+Special Series
+View All
+Special Series
+EU_Series_Redirect
+Automation Systems
+Automation Systems
+Automation Systems
+View All
+Automation Systems
+Mill Automation
+Lathe Automation
+Automation Models
+Desktop Machines
+Desktop Machines
+Desktop Machines
+View All
+Desktop Machines
+Desktop Mill
+Desktop Lathe
+Control Simulator
+Shop Equipment
+Shop Equipment
+Shop Equipment
+View All
+Shop Equipment
+Bandsaw
+Knee Mills
+Manual Lathe
+Vertical Saw
+Miter Saw
+Pocket Machines
+Pocket Machines
+Pocket Machines
+View All
+Pocket Machines
+Pocket Mill
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Options
+Main Menu
+Value Option Packages
+Value Option Packages
+Value Option Packages
+View All
+Value Option Packages
+Spindles
+Spindles
+Spindles
+View All
+Spindles
+Tool Changers
+Tool Changers
+Tool Changers
+View All
+Tool Changers
+4th- | 5th-Axis
+4th- | 5th-Axis
+4th- | 5th-Axis
+View All
+4th- | 5th-Axis
+Turrets & Live Tooling
+Turrets & Live Tooling
+Turrets & Live Tooling
+View All
+Turrets & Live Tooling
+Probing
+Probing
+Probing
+View All
+Probing
+Chip & Coolant Management
+Chip & Coolant Management
+Chip & Coolant Management
+View All
+Chip & Coolant Management
+The Haas Control
+The Haas Control
+The Haas Control
+View All
+The Haas Control
+Product Options
+Product Options
+Product Options
+View All
+Product Options
+Tooling & Fixturing
+Tooling & Fixturing
+Tooling & Fixturing
+View All
+Tooling & Fixturing
+Workholding
+Workholding
+Workholding
+View All
+Workholding
+5-Axis Solutions
+5-Axis Solutions
+5-Axis Solutions
+View All
+5-Axis Solutions
+5 Easy Steps to 5-Axis
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Why Haas
+Main Menu
+Discover the Haas Difference
+Why Haas
+MyHaas
+Education Community
+Industry 4.0
+Haas Certification
+Customer Testimonials
+Service
+Main Menu
+Welcome to Haas Service
+SERVICE HOME
+Operator’s Manuals
+How-To Procedures
+Troubleshooting Guides
+Preventive Maintenance
+Haas Parts
+Haas Tooling
+Videos
+Videos
+Main Menu
+Main Menu
+View All
+View All
+View All
+View All
+HTEC Curriculum Support
+View All
+Haas 10 kg Cobot Package
+Cobot Kits
+View All
+View All
+4 - AUTOMATION SYSTEMS
+Mill Toolholding
+Carousel-V2
+expert test
+Demo_Day_Trident-test
+View All
+Choose Options
+View All
+View All
+View All
+View All
+View All
+calc-test
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Haas Tooling
+Main Menu
+Haas Service Parts
+Main Menu
+×
+Search Results
+Web Pages
+Images
+<
+1
+>
+My Haas
+Welcome,
+! 
+Haas Tooling
+MyHaas/HaasConnect
+Sign In
+Register
+Haas Tooling
+MyHaas/HaasConnect
+Sign Out
+Welcome, 
+My Machines
+Latest Activity
+My Quotes
+My Account
+My Users
+Sign Out
+Find Your Distributor
+Select Language
+English
+Deutsch
+Español - España
+Español - México
+Français
+Italiano
+Português
+Český
+Dansk
+Nederlands
+Magyar
+Polski
+Svenska
+Türkçe
+中文
+Suomi
+Norsk
+الإنجليزية
+български
+Hrvatski
+Ελληνικά
+Română
+Slovenský
+Slovenščina
+한국어
+日本語
+Українська
+×
+Search Results
+Web Pages
+Images
+<
+1
+>
+Analog Sensors - Troubleshooting Guide - NGC
+Service Home
+Analog Sensors - Troubleshooting Guide - NGC
+Your document is ready for download, please click below to download your document.
+Download Document
+Error processing this document, please try again or 
+Contact Us
+.
+Please wait while your document is being loaded.
+Recently Updated
+Last updated: 09/04/2024
+Analog Sensors
+ - Troubleshooting Guide - NGC
+Analog Sensors - Troubleshooting Guide - NGC
+- Jump to Cause -
+Back to Top
+Your document is ready for download, please click below to download your document.
+Download Document
+Error processing this document, please try again or 
+Contact Us
+.
+Please wait while your document is being loaded.
+Recently Updated
+Last updated: 09/04/2024
+Analog Sensors
+ - Troubleshooting Guide - NCG
+Revision A - 06/2025
+Analog Input Troubleshooting Video
+The following service video provides information on troubleshooting analog inputs.
+Note: 
+This service video is for reference only and does not replace the written procedure. 
+A Haas machine, depending on the vintage, has anywhere between one and eight analog sensors in various systems throughout the machine. All of these sensors share a common ground. A problem with one of these sensors could potentially affect the signal from all of them, making troubleshooting difficult. If you are troubleshooting a problem with any of these sensors, their cables or the Maincon/ I/O PCB follow these simple steps:
+Look at the gauge page and identify the readings that look unreasonable. For example, if the spindle motor temperature [1] reads 0-degrees Fahrenheit and the shop is at 77-degrees this is not reasonable.
+If one of these cables or sensors has a short-circuit. The gauge display will show several readings that are not reasonable.
+Unplug each analog sensor one at a time. Look for the other gauge readings to return to something reasonable.
+ Note:
+ Some signals may take up to 30 seconds to react.
+When you find the sensor that is causing the inaccurate readings you have most likely found the problem. Check the cable for damage. Check the sensor.
+ Note:
+ The cable or the sensor are more likely to be the cause of the problem than the Maincon / I/O PCB.
+Symptom Table
+Symptom
+Possible Cause
+Corrective Action
+Alarm 120 
+Low Air Pressure Or Flow
+The compressed air supplied to the machine is below the minimum pressure or flow required. 
+Check for contamination in air pressure sensor. If contamination is found, sensor must be replaced.
+Important: 
+Ensure that air supply to the machine is clean and dry to avoid repeat failures. 
+Alarm 9916
+ EXCESSIVE THERMAL COMPENSATION DISTANCE
+There is electrical noise on the signal or the thermal sensor is faulty.
+Check the thermal sensor input in diagnostics and see if the signal is fluctuating. If signal is fluctuating, inspect the amplifiers and make sure there is a ferrite bead on ALL axis power cables. Check for loose connection or damage to the thermal sensor cable. If all checks have been done the thermal sensor is faulty.
+Alarm 9940
+ AXIS THERMAL SENSOR FAULT
+There is electrical noise on the signal or the thermal sensor is faulty.
+Check the thermal sensor input in diagnostics and see if the signal is fluctuating. If signal is fluctuating, inspect the amplifiers and make sure there is a ferrite bead on ALL axis power cables. Check for loose connection or damage to the thermal sensor cable. If all checks have been done the thermal sensor is faulty.
+The cable or sensor is disconnected.
+Check for loose connection or damage to the thermal sensor cable. 
+At Power On:
+Alarm 4.9940 
+AXIS THERMAL SENSOR FAULT
+Is generated.
+The I/O Main Firmware is outdated.
+Make sure the I/O Main Firmware is version 4.09 or higher. Refer to the 
+I/O Firmware Upgrade
+ procedure.
+After software update machine generates 
+Alarm 4.9916 / 9916 
+EXCESSIVE THERMAL COMPENSATION DISTANCE
+OR
+4.9940 / 9940 
+AXIS THERMAL SENSOR FAULT
+Invalid I/O configuration files.
+Make sure that the thermal sensor is mapped to the correct I/O analog input.
+This applies to UMC machines: Axis thermal sensor cable is plugged into the wrong analog input.
+Make sure the axis thermal sensor cable is plugged into P45 on the I/O PCB.
+There is electrical noise on the signal or the thermal sensor is faulty.
+Check the thermal sensor input in diagnostics and see if the signal is fluctuating. If signal is fluctuating, inspect the amplifiers and make sure there is a ferrite bead on ALL axis power cables. Check for loose connection or damage to the thermal sensor cable. If all checks have been done the thermal sensor is faulty.
+ALARM 9941
+ CRASH DETECTED (spindle head accelerometer) 
+The machine detected a crash
+Verify the program machine movements to make sure the machine does not crash
+The Accelerometer unit, cable or spindle head CAN board is damaged
+Verify analog inputs are not 0 (cable unplugged)
+I/O board minimum version 4.09 (update to latest if possible)
+Spindle head CAN board minimum 1.10 (update to latest if possible
+Make sure to take an error report 
+(SHIFT+F3)
+, error reports will have information about the crash direction and magnitude in the JavaConsoleLog.txt file (refer to 
+Crash Detection Section 
+in the 
+Accelerometer Troubleshooting Guide
+ for further information)
+ALARM 966
+ EXCESSIVE TOOL IMBALANCE (board accelerometer)
+Excessive tool vibration is generated by on board accelerometer
+Verify that everything is properly balanced, such as tools and spindles
+Reduce sensitivity using 
+Setting 245
+Setting 245
+ = Normal: Means that parameter 856 is directly used
+Setting 245
+ = Low: Means that parameter 856 is multiplied by 1.5
+Setting 245
+ = Off: Alarm 966 will not be thrown. 
+NOTE: Setting 245 will not persist when the power is cycled
+Please refer to the 
+Accelerometer Troubleshooting Guide
+ for further information
+Spindle motor temperature sensor fluctuating
+Electrical noise around that area.
+A ground wire should added from the motor lift bracket to the spindle heat shield. Refer to: 
+HSG-N 08-23-2024
+.
+NGC - Analog Sensor Information
+Note: 
+The connector location of these sensors can change, please check the location on the screen. Press
+ [DIAGNOSTIC]
+ and go to the
+ I/O 
+tab and search for keyword 
+"ANALOG"
+ and press 
+[F1]
+.
+The raw data analog sensors that are connected to the Maincon PCB, can be view under the Mocon tab.
+Gauge Name / Analog Sensor
+Analog Sensor Location
+Analog Sensor Connector Location*
+Alarm / Warning
+Mills: 
+TSC Pressure
+Lathe: 
+HPC Pressure
+Mills: 
+On the TSC pump.
+Lathe: 
+On the HPC pump.
+I/O PCB P39.21
+Mills: 
+Alarm 151 LOW THRU-SPINDLE COOLANT
+Lathe: 
+Alarm 8151 HPC LOW PRESSURE.
+EC-1600: 
+Y-axis temperature sensor.
+On the Y-axis column.
+I/O PCB P39.19
+N/A
+Lathe: 
+X-axis temperature sensor.
+On the X-axis ballscrew ballnut.
+I/O PCB P2.14
+N/A
+Coolant Level
+On the coolant level float.
+I/O PCB P43.1
+Low coolant Icon will apper when the coolant level is low. The Low Coolant Concentrate icon will appear when machine is equipped with the Coolant Refill option.
+Coolant Temperature
+On the coolant filter.
+I/O PCB P44.1
+This temperature is for display purposes only and is shown on the gauge tab if the hardware is installed and enabled.
+HPU Low Hydraulic Pressure
+On the hydraulic power unit.
+I/O PCB P48.7
+Alarm 8134
+ LOW HYDRAULIC PRESSURE ON START
+Note:
+ UMC's that are equipped with Hydraulic Brakes for the B and C-axis can generate this alarm after a software upgrade if the hydraulic analog pressure sensor input is not mapped correctly. Make sure the IO Configuration file has the correct mapping.
+HPU Oil Temperature
+On the hydraulic power unit.
+I/O PCB P46.1
+Alarm 2096 HPU OIL TEMPERATURE TOO HIGH
+Spindle Temperature
+On the spindle head.
+I/O PCB P39.24
+This temperature is for display purposes only and is shown on the gauge tab if the hardware is installed and enabled.
+Spindle Motor Temperature
+On the spindle motor .
+I/O PCB P39.22
+Alarm 254 SPINDLE MOTOR OVERHEAT
+Analog Air Pressure
+On the air-lube cabinet.
+I/O PCB P34.5
+Alarm 120 LOW AIR PRESSURE
+Ambient Temperature
+On the base casting.
+I/O PCB P51.1
+This temperature is for display purposes only and is shown on the gauge tab if the hardware is installed and enabled.
+DC Voltage
+Inside the vector drive (the sensor is not serviceable).
+Maincon PCB J16
+Alarm 160 LOW INCOMING LINE VOLTAGE
+AC Line Voltage
+On the power-fail-detect-module (the sensor is not serviceable).
+Maincon PCB J3
+Alarm 937 INPUT LINE POWER FAULT
+Electronics Temperature
+On the Maincon PCB (the sensor is not serviceable).
+N/A
+Alarm 253 ELECTRONICS OVERHEAT
+Recently Viewed Items
+Clear Items
+You Have No Recently Viewed Items Yet
+ Feedback 
+美元价格不包括关税、报关费用、保险费、增值税及运费。
+USD prices DO NOT include customs duty, customs fees, insurance, VAT, or freight.
+人民币价格包含关税、报关费用、货运保险和增值税, 但不包括运费。
+CNY prices include customs duty, customs fees, insurance, and VAT. DOES NOT include freight.
+Haas Delivered Price
+This price includes shipping cost, export and import duties, insurance, and any other expenses incurred during shipping to a location in France agreed with you as a buyer. No other mandatory costs can be added to the delivery of a Haas CNC Product.
+Click for details
+KEEP UP WITH THE LATEST HAAS TIPS AND TECHNOLOGY...
+Sign up now! 
+HAAS TOOLING ACCEPTS THE FOLLOWING:
+Service & Support
+Owners
+Request Service
+Operator Manuals
+Haas Parts
+Rotary Repair Request
+Pre-Install Guides
+Shopping Tools
+Build & Price a New Haas
+Available Inventory
+The Haas Price List
+CNCA Financing
+About Haas
+DNSH Statement
+Export Compliance
+Careers
+Certifications & Safety
+Contact Us
+History
+Terms & Conditions
+Haas Tooling Terms & Conditions
+Privacy
+Warranty
+Haas Community
+Haas Certification Program
+Haas Motorsports
+Gene Haas Foundation
+Haas Technical Education Community
+Events
+Join the Conversation
+Facebook
+X
+Flickr
+YouTube
+LinkedIn
+Instagram
+TikTok
+ © 2025 
+Haas Automation, Inc – CNC Machine Tools
+ This site is protected by reCAPTCHA and the Google 
+Privacy Policy
+ and 
+Terms of Service
+ apply. 
+2800 Sturgis Rd., Oxnard, CA 93030
+ Toll Free: (888) 817-4446 / Fax: 805-278-8554
+ {{ if (loading) { }} {{=loadingSpinner}} {{ } else { }} 
+×
+ {{=content}} 
+ {{ } }} 
+ {{ if (loading) { }} {{=loadingSpinner}} {{ } else { }} 
+×
+ {{=content}} 
+ {{ } }} 

@@ -1,0 +1,530 @@
+{
+  "alarm_135": [
+    {
+      "type": "CHC-Lathe",
+      "code": "135.0000",
+      "title": "X-AXIS MOTOR OVERHEAT",
+      "description": " Servo motor overheat. The temperature sensor in the motor indicates over 150F (65 C). This can be caused by an extended overload of the motor; such as leaving the slide at the stops for several minutes.",
+      "title_ko": "X축 모터 과열",
+      "description_ko": " 서보 모터 과열. 모터의 온도 센서가 65℃(150℉)를 초과하였음을 표시합니다. 이것은 예를 들어, 슬라이드를 몇 분 동안 정지 위치에 그대로 두는 것과 같은 모터의 늘어난 과부하가 원인일 수 있습니다."
+    },
+    {
+      "type": "CHC-Mill",
+      "code": "135.0000",
+      "title": "X–AXIS MOTOR OVERHEAT",
+      "description": "The X–axis motor has overheated. – Allow the motor to cool. Reduce the load on the motor.",
+      "title_ko": "X축 모터 과열",
+      "description_ko": "X축 모터가 과열되었습니다. -모터가 냉각되도록 하십시오. 모터의 부하를 줄이십시오."
+    }
+  ],
+  "alarm_179": [
+    {
+      "type": "CHC-Mill",
+      "code": "179.0000",
+      "title": "LOW GEARBOX OIL PRESSURE",
+      "description": "This alarm occurs when the gearbox oil is low or the oil pressure does not meet factory specifications.  Add oil to the gearbox.",
+      "title_ko": "낮은 기어박스 오일 압력",
+      "description_ko": "기어박스 오일이 낮거나 오일 압력이 공장 규격에 맞지 않을 경우 경보가 발생합니다. 기어박스에 오일을 추가하십시오."
+    },
+    {
+      "type": "CHC-Lathe",
+      "code": "179.0000",
+      "title": "LOW PRESSURE TRANS OIL",
+      "description": " Transmission oil is low or low pressure condition in oil lines.",
+      "title_ko": "저압 변속기 오일",
+      "description_ko": " 변속기 오일이 오일 라인에서 낮거나 또는 저압 상태입니다."
+    }
+  ],
+  "alarm_992": [
+    {
+      "type": "CHC-Mill",
+      "code": "992.0000",
+      "title": "AMPLIFIER OVER CURRENT",
+      "description": "An Amplifier has sensed excessive current going to the motor. – A preceding axis alarm will indicate which axis amplifier had the fault. This can be caused by a stalled motor, a high motor load for a short duration, Entering a heavy cut with a dull or broken tool can cause this alarm. Check your tools. Check your speeds and feeds.\n",
+      "title_ko": "전류가 높은 증폭기(AMPLIFIER OVER CURRENT)",
+      "description_ko": "증폭기가 모터에 지나친 전류가 흐르는지를 감지했습니다. – 선행 축 경보는 어떤 축 증폭기에 오류가 있었는지를 나타냅니다. 이것은 정지된 모터, 짧은 시간 동안 높은 모터 부하가 원인일 수 있습니다. 무뎌졌거나 부러진 공구로 무거운 절단을 입력하면 이 경보가 발생할 수 있습니다. 공구를 확인하십시오. 속도와 이송을 확인하십시오.\n"
+    },
+    {
+      "type": "NGC",
+      "code": "992.0000",
+      "title": "AMPLIFIER OVER CURRENT",
+      "description": "An Amplifier has sensed excessive current going to the motor. – A preceding axis alarm will indicate which axis amplifier had the fault. This can be caused by a stalled motor, a high motor load for a short duration, Entering a heavy cut with a dull or broken tool can cause this alarm. Check your tools. Check your speeds and feeds. ",
+      "title_ko": "전류가 높은 증폭기(AMPLIFIER OVER CURRENT)",
+      "description_ko": "증폭기가 모터에 지나친 전류가 흐르는지를 감지했습니다. – 선행 축 경보는 어떤 축 증폭기에 오류가 있었는지를 나타냅니다. 이것은 정지된 모터, 짧은 시간 동안 높은 모터 부하가 원인일 수 있습니다. 무뎌졌거나 부러진 공구로 무거운 절단을 입력하면 이 경보가 발생할 수 있습니다. 공구를 확인하십시오. 속도와 이송을 확인하십시오."
+    },
+    {
+      "type": "CHC-Lathe",
+      "code": "992.0000",
+      "title": "AMPLIFIER OVER CURRENT",
+      "description": "An Amplifier has sensed excessive current going to the motor. – A preceding axis alarm will indicate which axis amplifier had the fault. This can be caused by a stalled motor, a high motor load for a short duration, Entering a heavy cut with a dull or broken tool can cause this alarm. Check your tools. Check your speeds and feeds.\n",
+      "title_ko": "전류가 높은 증폭기(AMPLIFIER OVER CURRENT)",
+      "description_ko": "증폭기가 모터에 지나친 전류가 흐르는지를 감지했습니다. – 선행 축 경보는 어떤 축 증폭기에 오류가 있었는지를 나타냅니다. 이것은 정지된 모터, 짧은 시간 동안 높은 모터 부하가 원인일 수 있습니다. 무뎌졌거나 부러진 공구로 무거운 절단을 입력하면 이 경보가 발생할 수 있습니다. 공구를 확인하십시오. 속도와 이송을 확인하십시오.\n"
+    }
+  ],
+  "alarm_645": [
+    {
+      "type": "NGC",
+      "code": "645.0000",
+      "title": "AMPLIFIER GROUND FAULT",
+      "description": "Axis amplifier or vector drive detected a ground fault. Check wiring to the servo or spindle motor. ",
+      "title_ko": "증폭기 접지 고장",
+      "description_ko": "축 증폭기 또는 벡터 드라이브가 접지 고장을 감지했습니다. 서보 또는 스핀들 모터의 배선을 점검하십시오."
+    }
+  ],
+  "alarm_2011": [
+    {
+      "type": "NGC",
+      "code": "2011.0000",
+      "title": "SPINDLE GEARBOX OIL LEVEL IS LOW",
+      "description": "The spindle gear-box oil-level is too low. Add 500mL of approved oil (SHC 625) into the gearbox oil reservoir. Push the RESET button and continue operation. If the spindle gearbox oil level indicator remains after 10 minutes, add another 500mL of oil. ",
+      "title_ko": "스핀들 기어 박스 오일 레벨이 부족",
+      "description_ko": "스핀들 기어 박스 오일 레벨이 너무 낮습니다. 승인된 오일(SHC 625) 500mL를 기어박스 오일탱크에 추가하십시오. RESET(리셋) 버튼을 눌러 작동을 계속하십시오. 스핀들 기어박스 오일 레벨 표시장치가 10분 후에도 그대로 있으면 500mL의 오일을 또 한번 추가합니다. "
+    }
+  ],
+  "alarm_2012": [
+    {
+      "type": "CHC-Mill",
+      "code": "2012.0000",
+      "title": "INSUFFICIENT SPINDLE GEAR BOX OIL FLOW",
+      "description": "Add recommended oil to the gear box. Press the RESET button.  For 50T - Look at the corresponding troubleshooting guide below:",
+      "title_ko": "불충분한 스핀들 기어 박스 오일 흐름",
+      "description_ko": "권장 오일을 기어박스에 추가하십시오. RESET(리셋) 버튼을 누르십시오. 50T-아래에서 상응하는 고장 수리 가이드를 보십시오."
+    },
+    {
+      "type": "NGC",
+      "code": "2012.0000",
+      "title": "INSUFFICIENT SPINDLE GEAR BOX OIL FLOW",
+      "description": "Add recommended oil to the gear box. Press the RESET button. ",
+      "title_ko": "불충분한 스핀들 기어 박스 오일 흐름",
+      "description_ko": "권장 오일을 기어박스에 추가하십시오. RESET(리셋) 버튼을 누르십시오."
+    }
+  ],
+  "alarm_991": [
+    {
+      "type": "CHC-Lathe",
+      "code": "991.0000",
+      "title": "AMPLIFIER OVER TEMPERATURE",
+      "description": "The amplifier/vector drive temperature sensor indicates over 90C near the power transistors. This can be caused by an extended overload condition of the amplifier/vector drive, a stopped fan or high room temperature. Verify that the amplifier/vector drive fans are working.",
+      "title_ko": "온도가 초과한 증폭기(AMPLIFIER OVER TEMPERATURE)",
+      "description_ko": "증폭기 벡터 드라이브 온도 센서가 전원 트랜지스터 근처의 90℃를 초과했음을 표시합니다. 이는 증폭기 벡터 드라이브의 확장된 과부하 상태, 팬 정지 또는 높은 실내 온도가 원인일 수 있습니다. 증폭기 벡터 드라이브 팬이 작동하는지 확인하십시오."
+    },
+    {
+      "type": "NGC",
+      "code": "991.0000",
+      "title": "AMPLIFIER OVER TEMPERATURE",
+      "description": "An Amplifier's temperature is above it's limit.  – A preceding alarm will indicate which amplifier is above it's temperature limit.  This can be caused by high axis load for an extended period of time.  High shop temperature can cause this alarm to occur more often.  Allow time for the amplifier to cool.  Adjust your program to reduce axis loads.  Clear all alarms. ",
+      "title_ko": "온도가 초과한 증폭기",
+      "description_ko": "증폭기의 온도가 한계를 초과했습니다. -선행 경보가 어떤 증폭기가 온도 한계를 초과하는지 나타냅니다. 이것은 연장된 시간 동안 축에 고부하가 걸린 것이 원인일 수 있습니다. 높은 온도가 이 경보를 더 자주 발생하게 한 원인일 수 있습니다. 증폭기에 냉각될 수 있는 시간을 주십시오. 프로그램을 조정하여 축 부하를 줄이십시오. 모든 경보를 삭제하십시오."
+    },
+    {
+      "type": "CHC-Mill",
+      "code": "991.0000",
+      "title": "AMPLIFIER OVER TEMPERATURE",
+      "description": "An Amplifier's temperature is above it's limit. – A preceding alarm will indicate which amplifier is above it's temperature limit. This can be caused by high axis load for an extended period of time. High shop temperature can cause this alarm to occur more often. Allow time for the amplifier to cool. Adjust your program to reduce axis loads. Clear all alarms.",
+      "title_ko": "온도가 초과한 증폭기(AMPLIFIER OVER TEMPERATURE)",
+      "description_ko": "증폭기의 온도가 한계를 초과했습니다. -선행 경보가 어떤 증폭기가 온도 한계를 초과하는지 나타냅니다. 이것은 연장된 시간 동안 축에 고부하가 걸린 것이 원인일 수 있습니다. 높은 온도가 이 경보를 더 자주 발생하게 한 원인일 수 있습니다. 증폭기에 냉각될 수 있는 시간을 주십시오. 프로그램을 조정하여 축 부하를 줄이십시오. 모든 경보를 삭제하십시오."
+    }
+  ],
+  "alarm_993": [
+    {
+      "type": "NGC",
+      "code": "993.0000",
+      "title": "AMPLIFIER SHORT CIRCUIT",
+      "description": "An amplifier short has been reported on the specified axis. This can be caused by any of the motor leads being shorted together or shorted to the 320V return.  – A preceding alarm will indicate the axis which has a short circuit. ",
+      "title_ko": "단락",
+      "description_ko": "단락이 감지되었습니다. - 선행 경보가 단락이 있는 축을 표시합니다."
+    },
+    {
+      "type": "CHC-Lathe",
+      "code": "993.0000",
+      "title": "AMPLIFIER SHORT CIRCUIT",
+      "description": "This can be caused by any of the motor leads shorted to each other or shorted to the 320V return. This can also be caused by a faulty amplifier. Check all of the motor leads and make sure they are properly connected. This can also be caused by a faulty amplifier",
+      "title_ko": "증폭기 단락(AMPLIFIER SHORT CIRCUIT)",
+      "description_ko": "이것은 모터 리드가 서로 단락되거나 320V 리턴으로 단락되어 발생할 수 있습니다. 이것은 고장난 증폭기 또는 고장난 Mocon이 원인일 수도 있습니다. 모든 모터 리드를 확인하고 적절하게 연결되었는지 확인하십시오. 이것은 고장난 증폭기가 원인일 수도 있습니다."
+    },
+    {
+      "type": "CHC-Mill",
+      "code": "993.0000",
+      "title": "SHORT CIRCUIT",
+      "description": "A short–circuit has been sensed. – A preceding alarm will indicate the axis which has a short circuit.",
+      "title_ko": "단락",
+      "description_ko": "단락이 감지되었습니다. - 선행 경보가 단락이 있는 축을 표시합니다."
+    }
+  ],
+  "alarm_994": [
+    {
+      "type": "CHC-Mill",
+      "code": "994.0000",
+      "title": "AMPLIFIER OVERLOAD",
+      "description": "The Amplifier has sensed a high load for an extended period of time. This can be caused by running the amplifier at high loads for an excessive amount of time. – A preceding alarm will indicate which axis has overloaded. Check that your program has the correct speeds and feeds for the material and the cutting tool. Make sure the correct tool for the application is being used. Check for dull or broken tools.",
+      "title_ko": "증폭기 과부하",
+      "description_ko": "증폭기가 연장된 시간 동안 높은 부하를 감지하였습니다. 이것은 과도한 시간 동안 높은 부하에서의 증폭기 작동이 원인일 수 있습니다. – 선행 경보가 축에 과부하가 걸렸음을 표시합니다. 재료 및 절삭 공구에 대한 사용자 프로그램의 정확한 속도 및 이송을 갖고 있는지 확인하십시오. 응용 장치에 대한 정확한 공구가 사용되고 있는지 확인하십시오. 무뎌졌거나 부서진 공구를 확인하십시오."
+    },
+    {
+      "type": "NGC",
+      "code": "994.0000",
+      "title": "AMPLIFIER OVERLOAD",
+      "description": "The Amplifier has sensed a high load for an extended period of time. This can be caused by running the amplifier at high loads for an excessive amount of time.  – A preceding alarm will indicate which axis has overloaded. Check that your program has the correct speeds and feeds for the material and the cutting tool. Make sure the correct tool for the application is being used. Check for dull or broken tools. ",
+      "title_ko": "증폭기 과부하",
+      "description_ko": "증폭기가 연장된 시간 동안 높은 부하를 감지하였습니다. 이것은 과도한 시간 동안 높은 부하에서의 증폭기 작동이 원인일 수 있습니다. – 선행 경보가 축에 과부하가 걸렸음을 표시합니다. 재료 및 절삭 공구에 대한 사용자 프로그램의 정확한 속도 및 이송을 갖고 있는지 확인하십시오. 응용 장치에 대한 정확한 공구가 사용되고 있는지 확인하십시오. 무뎌졌거나 부서진 공구를 확인하십시오."
+    },
+    {
+      "type": "CHC-Lathe",
+      "code": "994.0000",
+      "title": "AMPLIFIER OVERLOAD",
+      "description": "The amplifier has detected a high load for an extended period of time. This can be caused by running the amplifier at more than 100% load for an excessive amount of time. Check the programmed feeds and spindle speed, and for dull tools. This can also be caused by a faulty amplifier.",
+      "title_ko": "증폭기 과부하",
+      "description_ko": "증폭기가 연장된 시간 동안 높은 부하를 감지하였습니다. 이것은 과도한 시간 동안 100%를 초과한 부하에서의 증폭기를 작동한 것이 원인일 수 있습니다. 프로그래밍된 이송 및 스핀들 회전수 그리고 무뎌진 공구를 확인하십시오. 이것은 고장난 증폭기가 원인일 수도 있습니다."
+    }
+  ],
+  "alarm_2001_manual": {
+    "135": "X Motor Over Heat Servo motor overheat. The temperature sensor in the motor indicates over 150 degrees F. This can be caused by an extended overload of the motor such as leaving the slide at the stops for several minutes. (PDF 60쪽)",
+    "179": "Low Pressure Transmission Oil S pindle coolant oil is low or low pressure condition in lines. (PDF 63쪽)",
+    "992": "없음"
+  },
+  "threshold_135C": {},
+  "threshold_150F": {
+    "haas/en_electrical_service_manual_2011.pdf": {
+      "count": 17,
+      "first": [
+        "p145: MOTOR OVERHEAT - Servo motor overheat. The temperature sensor in the motor indicates over 150° F (65° C). This can be caused by an extended overload of the motor; such as leaving the sli",
+        "p145: MOTOR OVERHEAT - Servo motor overheat. The temperature sensor in the motor indicates over 150° F (65° C). This can be caused by an extended overload of the motor; such as leaving the sli",
+        "p145: MOTOR OVERHEAT - Servo motor overheat. The temperature sensor in the motor indicates over 150° F (65° C). This can be caused by an extended overload of the motor; such as leaving the sli"
+      ]
+    },
+    "haas/en_mill_service_manual_2005.pdf": {
+      "count": 10,
+      "first": [
+        "p51: S MOTOR OVERHEAT Servo motor overheat. The temperature sensor in the motor indicates over 150 degrees F (65 deg. C). This can be caused by an extended overload of the motor such as leaving the ",
+        "p51: S MOTOR OVERHEAT Servo motor overheat. The temperature sensor in the motor indicates over 150 degrees F (65 deg. C). This can be caused by an extended overload of the motor such as leaving the ",
+        "p51: S MOTOR OVERHEAT Servo motor overheat. The temperature sensor in the motor indicates over 150 degrees F (65 deg. C). This can be caused by an extended overload of the motor such as leaving the "
+      ]
+    },
+    "haas/en_mechanical_service_manual_2011.pdf": {
+      "count": 2,
+      "first": [
+        "p52: ion of the Operator manual. Start over from the beginning. If the temperature rises above 150°F (65°C) a second time, call the Haas fac- tory. NOTE: Once the run-in program is complete,",
+        "p53: rob- lem in the spindle head on the machine. • Ensure the spindle is not running too hot (150°F [65°C] or above). • Check air supply. Max air pressure drop of 10 psi [69 kilopascals] du"
+      ]
+    },
+    "alarm_list": {
+      "count": 6,
+      "first": [
+        "CHC-Lathe 189.0000 B-AXIS MOTOR OVERHEAT: Servo motor overheat. The motor's temperature sensor indicates over 150F. This can be caused by an extended overload of the motor; such as leaving the slide at ",
+        "CHC-Lathe 137.0000 Z-AXIS MOTOR OVERHEAT: Servo motor overheat. The temperature sensor in the motor indicates over 150F (65C). This can be caused by an extended overload of the motor; such as leaving th",
+        "CHC-Lathe 724.0000 Sp MOTOR OVERHEAT:  Servo motor overheat. Sensor in motor indicates over 150F (65C). Can be caused by motor overload; such as leaving slide at stops for several minutes."
+      ]
+    }
+  },
+  "threshold_2.5bar": {},
+  "threshold_60A": {
+    "haas/en_electrical_service_manual_2011.pdf": {
+      "count": 5,
+      "first": [
+        "p204: imum peak current provided by the amplifier. 4095 = 30A (small amp), 45A (Medium amp), or 60A (large amp). 106 Y MAX CURRENT See Parameter 105 (M) for description. 107 Z MAX CURRENT S",
+        "p234: imum peak current provided by the amplifier. 4095 = 30A (small amp), 45A (Medium amp), or 60A (large amp). 406 V D*D GAIN Second derivative gain in servo loop. 407 V ACC/DEC T CONST E",
+        "p238: imum peak current provided by the amplifier. 4095 = 30A (small amp), 45A (Medium amp), or 60A (large amp). 442 W D*D GAIN Second derivative gain in servo loop. 443 W ACC/DEC T CONST E"
+      ]
+    },
+    "haas/en_mill_service_manual_2005.pdf": {
+      "count": 1,
+      "first": [
+        "p285: o maximum peak current provided by the amplifier. 4095 = 30A (small amp) 45A (Medium amp) 60A (large amp). 106 Y AXIS MAX CURRENT See Parameter 105 for description 107 Z AXIS MAX CURR"
+      ]
+    },
+    "web/tsg_servo_amplifier_ngc.txt": {
+      "count": 4,
+      "first": [
+        "ion B - 5/2025 Introduction There are four versions of Haas amplifiers. 30A [1], 45A [2], 60A [3], and 90A [4]. All four operate the same way. Smart Amplifier assemblies are powered f",
+        "hine again . Refer to the HBC-N-03/14/2025 for more details. NGC machines equipped with a 60A servo amplifier Alarm 3.991 Z-AXIS AMPLIFIER OVER TEMPERATURE. Erroneous alarm generated "
+      ]
+    }
+  },
+  "quote_pins_ABC": {
+    "web/tsg_servo_amplifier_ngc.txt": {
+      "count": 1,
+      "first": [
+        "tamination can cause this alarm and damage the amplifier. Measure the resistance from the pins labeled A, B and C at the motor connector to chassis ground. The reading should show an open circuit. If the"
+      ]
+    },
+    "web/tsg_sigma1_axis_servo_motor_cables.txt": {
+      "count": 1,
+      "first": [
+        "can generate drive fault alarms and damage the amplifier. Measure the resistance from the pins labeled A, B and C at the motor connector to chassis ground. The reading must show an open circuit. If the r"
+      ]
+    },
+    "web/tsg_sigma5_axis_servo_motor_cables.txt": {
+      "count": 1,
+      "first": [
+        "can generate drive fault alarms and damage the amplifier. Measure the resistance from the pins labeled A, B and C at the motor connector to chassis ground. The reading must show an open circuit. If the r"
+      ]
+    },
+    "web/tsg_sigma5_axis_servo_motor_cables_ngc.txt": {
+      "count": 2,
+      "first": [
+        "able is connected to the corresponding amplifier as well. Measure the resistance from the pins Labeled A, B, and C at the motor connector to the chassis ground. The reading must show an open circuit If th",
+        "tinuity, otherwise then there is a short in the motor. Measure the resistance between the pins labeled A, B and C, refere to the table below for the resistance values. NOTE: Nominal winding resistance ha"
+      ]
+    }
+  },
+  "wait_5_minutes": {
+    "haas/en_electrical_service_manual_2011.pdf": {
+      "count": 4,
+      "first": [
+        "p305:  primed. There are two ways to do this. The first is to run the standard coolant pump for 5 minutes. This will fill the auxiliary tank, through the priming hose. The second method is to att",
+        "p344:  primed. There are two ways to do this. The first is to run the standard coolant pump for 5 minutes. This will fill the auxiliary tank through the priming hose. The second method is to atta",
+        "p369: the 1000psi system the auxiliary filter must be primed. Run the standard coolant pump for 5 minutes, this will fill the auxiliary tank, through the priming hose. To reduce wear and prolong "
+      ]
+    },
+    "haas/en_mill_service_manual_2005.pdf": {
+      "count": 2,
+      "first": [
+        "p115: of 1000 rpm, the motor mounting bolts are to be left loose. Let the spindle run for about 5 minutes, this allows the spindle assembly to seat and will help the final alignment. Snug bolts w",
+        "p204:  0.1 increments. Verify full Z travel. 12. Cycle Z-axis, using the following program, for five minutes and check for oil leaking at top of cylinder and cylinder rod. G28, G54, Z-14. M99 50% Ra"
+      ]
+    },
+    "haas/en_mechanical_service_manual_2011.pdf": {
+      "count": 8,
+      "first": [
+        "p63: F 1 1 (verify setting) 117 LUBE CYCLE TIME 0 108000* 208 SPIN. FAN OFF DELAY 15000 15000 (5 Minutes) 734 LOW LUBE PRESS. 1 0 *Note: The pump is powered only when the spindle moves. Pump cyc",
+        "p123:  speed of 1000 RPM, leaving the motor mounting bolts loose. Let the spindle run for about 5 minutes, to allow the spindle assembly to seat and help the final alignment. Snug bolts while spi",
+        "p308:  0.1 increments. Verify full Z travel. 12. Cycle Z-axis, using the following program, for five minutes, and check for oil leaking at top of cylinder and cylinder rod. G28, G54, Z-14. M99 50% R"
+      ]
+    },
+    "web/tsg_320v_power_supply_ngc.txt": {
+      "count": 1,
+      "first": [
+        "gh Voltage indicator light on the 320V Power Supply / Vector Drive must have been off for at least 5 minutes. Some service procedures can be dangerous or life-threatening. DO NOT attempt a procedure"
+      ]
+    },
+    "web/tsg_regen_vector_drive_ngc.txt": {
+      "count": 1,
+      "first": [
+        "gh Voltage indicator light on the 320V Power Supply / Vector Drive must have been off for at least 5 minutes. Some service procedures can be dangerous or life-threatening. DO NOT attempt a procedure"
+      ]
+    },
+    "web/tsg_servo_amplifier_ngc.txt": {
+      "count": 1,
+      "first": [
+        "gh Voltage indicator light on the 320V Power Supply / Vector Drive must have been off for at least 5 minutes. Some service procedures can be dangerous or life-threatening. DO NOT attempt a procedure"
+      ]
+    },
+    "web/tsg_sigma1_axis_servo_motor_cables.txt": {
+      "count": 1,
+      "first": [
+        "gh Voltage indicator light on the 320V Power Supply / Vector Drive must have been off for at least 5 minutes. Some service procedures can be dangerous or life-threatening. DO NOT attempt a procedure"
+      ]
+    },
+    "web/tsg_sigma5_axis_servo_motor_cables.txt": {
+      "count": 1,
+      "first": [
+        "gh Voltage indicator light on the 320V Power Supply / Vector Drive must have been off for at least 5 minutes. Some service procedures can be dangerous or life-threatening. DO NOT attempt a procedure"
+      ]
+    },
+    "web/tsg_sigma5_axis_servo_motor_cables_ngc.txt": {
+      "count": 1,
+      "first": [
+        "gh Voltage indicator light on the 320V Power Supply / Vector Drive must have been off for at least 5 minutes. Some service procedures can be dangerous or life-threatening. DO NOT attempt a procedure"
+      ]
+    }
+  },
+  "wait_10_minutes": {
+    "haas/en_mill_service_manual_2005.pdf": {
+      "count": 1,
+      "first": [
+        "p45: OTING CAUTION!Before working on any electrical components, power off the machine and wait approximately 10 minutes. This will allow the high voltage power on the brushless amplifiers to be discharged. ELE"
+      ]
+    }
+  },
+  "lockout": {
+    "haas/en_electrical_service_manual_2011.pdf": {
+      "count": 2,
+      "first": [
+        "p6: 1 Electrical Service96-0284D © Haas Automation June 2011 SAFETY 40 Install lock-out clasp and lock with padlock to secure Circuit Breaker in the OFF position. ON OFF RED WHT",
+        "p261: (Office Lathes) it must be set to 3. On all other lathes, set to 1. 737 COMMON SWITCH 5 0 LOCK OUT KBD TL CHG - When set to 1, no tool change performed when Power-Up-Restart is pressed. Al"
+      ]
+    },
+    "haas/en_mill_service_manual_2005.pdf": {
+      "count": 1,
+      "first": [
+        "p221: 224 Electrical Service 96-8100 rev L June 2005 4. ELECTRICAL SERVICE 40 Install lock-out clasp and lock with paddlock to secure Circuit Breaker in the OFF position Make sure the "
+      ]
+    },
+    "haas/en_mechanical_service_manual_2011.pdf": {
+      "count": 10,
+      "first": [
+        "p64:  spindle from falling if the brake fails while power is off. 4. Power off the machine and lock out the circuit breaker. EC-630 Geared Head (Rear View) T ail Bracket 5. At the rear of the s",
+        "p97: Remove the right side cover screws and remove the right side cover. CAUTION! Turn off and lock out system power. Remove Motor and Encoder Belts 12. Relieve the tension on the encoder belt ",
+        "p198:  the main air pressure regulator until pressure gauges reads 0 psi. CAUTION! Turn off and lock out system power. Remove Tool Changer Cover 1. Remove the tool changer back cover. Remove Coo"
+      ]
+    },
+    "haas/en_mill_ngc_operators_manual_2025.pdf": {
+      "count": 13,
+      "first": [
+        "p29: 474 9.1.9 15 - H and T Code Agreement. . . . . . . . . . . . . . 475 9.1.10 17 - Opt Stop Lock Out . . . . . . . . . . . . . . . . . 475 9.1.11 18 - Block Delete Lock Out . . . . . . . . .",
+        "p29: .10 17 - Opt Stop Lock Out . . . . . . . . . . . . . . . . . 475 9.1.11 18 - Block Delete Lock Out . . . . . . . . . . . . . . . 475 9.1.12 19 - Feedrate Override Lock. . . . . . . . . . .",
+        "p30: 1.45 75 - 9xxxx Progs Single BLK . . . . . . . . . . . . . . 484 9.1.46 76 - Tool Release Lock Out . . . . . . . . . . . . . . . 484 9.1.47 77 - Scale Integer F . . . . . . . . . . . . . ."
+      ]
+    },
+    "web/op_mill_safety.txt": {
+      "count": 1,
+      "first": [
+        "automatic motion). Machining job set-up – When set-up is complete, turn the set-up key to lock out set-mode and remove the key. Maintenance / Machine Cleaner– Press [EMERGENCY STOP] or [PO"
+      ]
+    }
+  },
+  "operator_manual_2025_chapters": [],
+  "operator_manual_2025_pages": 588,
+  "operator_manual_has_alarm_chapter": false,
+  "hcs80": {
+    "mentions_HCS-80": 83,
+    "intro": "HCS-80 - Introduction Revision A - 07/2026 Overview This operator’s manual supplement describes the unique features and functions of the HAAS Cold Saw 80. This service manual provides the information necessary to safely install, operate, maintain, and troubleshoot the machine. This chapter includes details on the machine and blade specifications, along with the machine dimensions and layout. For the latest details ab",
+    "alarm_codes": 30,
+    "alarm_codes_ko_page": 30
+  },
+  "vf2_specs": {
+    "travel": "X Axis 30.00 in 762 mm Y Axis 16.00 in 406 mm Z Axis 20.00 in 508 mm Spindle Nose to Table (~ max) 24.0 in 610 mm Spindle Nose to Table (~ min",
+    "spindle_speed": "Max Speed 8100 rpm",
+    "air_required": null,
+    "air_min": "Air Pressure Min 80 psi 5.5 bar ",
+    "tool_changer": "Capacity 20 20 "
+  },
+  "kosha_guides_saved": [
+    "KOSHA_A-53-2018_금속가공유에 대한 작업환경측정·분석 기술지침.pdf",
+    "KOSHA_A-G-12-2026 개인보호구의 사용 및 관리에 관한 기술지원규정.pdf",
+    "KOSHA_A-G-17-2026 인력운반작업에 관한 기술지원규정.pdf",
+    "KOSHA_B-M-14-2025 연삭기 안전작업에 관한 기술지원규정.pdf",
+    "KOSHA_B-M-25-2026 에너지 차단장치의 잠금·표지에 관한 기술지원규정.pdf",
+    "KOSHA_B-M-34-2026 크레인 안전작업에 관한 기술지원규정.pdf",
+    "KOSHA_C-C-49-2026 안전작업허가에 관한 기술지원규정.pdf",
+    "KOSHA_C-C-67-2026 작업위험성평가에 관한 기술지원규정.pdf",
+    "KOSHA_E-91-2016 에너지 차단장치의 잠금·표지에 관한 기술지침.pdf",
+    "KOSHA_E-M-1-2025 청력보존프로그램의 수립.시행에 관한 기술지원규정.pdf",
+    "KOSHA_G-17-2017 압축공기의 안전한 사용에 관한 기술지침.pdf",
+    "KOSHA_H-160-2014 청력보호구의 착용방법 및 관리에 관한 지침.pdf",
+    "KOSHA_H-42-2021 피부보호구의 사용 지침, 보호용 장갑.pdf",
+    "KOSHA_M-1-2013 CNC 선반의 날아오는 가공물 등에 의한 위험방지 기술지침.pdf",
+    "KOSHA_M-123-2012 기계류의 위험성평가 지침.pdf",
+    "KOSHA_M-21-2012 금속 절삭유 사용에 관한 기술지침.pdf",
+    "KOSHA_M-4-2016 다목적 금속 가공기 사용에 관한 기술지침.pdf",
+    "KOSHA_M-9-2023 금속 가공용 수동 둥근톱 사용 시 안전에 관한 기술지침.pdf",
+    "KOSHA_M-96-2012 선반 방호조치에 관한 기술지침.pdf",
+    "KOSHA_M-98-2012 드릴기 방호조치에 관한 기술지침.pdf",
+    "KOSHA_M-99-2012 보링기 방호조치에 관한 기술지침.pdf",
+    "KOSHA_P-128-2012 금속분진 취급 공정의 화재폭발예방에 관한 기술지침.pdf",
+    "KOSHA_P-68-2012 알루미늄 분진의 폭발방지에 관한 기술지침.pdf"
+  ],
+  "kosha_title_contains": {
+    "머시닝": [
+      "KOSHAMEDIA_30251_2011-교육미디어-1606_18_02_머시닝 센터.pdf"
+    ],
+    "밀링": [
+      "KOSHAMEDIA_31376_2012-교육미디어-890_기계공구-밀링기.pdf",
+      "KOSHAMEDIA_40456_2019-경남동부지사-273_끼임재해 4대 위험설비 재해사례 및 자율안전점검표_밀링기(웹용).pdf",
+      "KOSHAMEDIA_45769_2023-교육혁신실-918_밀링기계_OPS_관리자.pdf",
+      "KOSHAMEDIA_45770_2023-교육혁신실-919_밀링기계_OPS_근로자.pdf"
+    ],
+    "정비": [],
+    "잠금": [
+      "KOSHAMEDIA_41938_2020-기술총괄본부-69_2020-기술총괄본부-69_LOTO 작업절차 바로알기_OPS_제조업_제2유형_(붙임1) LOTO(잠금장치, 표지판) 바로알기 .pdf",
+      "KOSHA_B-M-25-2026 에너지 차단장치의 잠금·표지에 관한 기술지원규정.pdf",
+      "KOSHA_E-91-2016 에너지 차단장치의 잠금·표지에 관한 기술지침.pdf"
+    ],
+    "LOTO": [
+      "KOSHAMEDIA_41938_2020-기술총괄본부-69_2020-기술총괄본부-69_LOTO 작업절차 바로알기_OPS_제조업_제2유형_(붙임1) LOTO(잠금장치, 표지판) 바로알기 .pdf"
+    ]
+  },
+  "loto_guide_pages": 19,
+  "loto_guide_steps": [],
+  "law_제92조": "제92조(정비 등의 작업 시의 운전정지 등) ① 사업주는 동력으로 작동되는 기계의 정비ㆍ청소ㆍ급유ㆍ검사ㆍ수리ㆍ교체 또는 조정 작업 또는 그 밖에 이와 유사한 작업을 할 때에 근로자가 위험해질 우려가 있으면 해당 기계의 운전을 정지하여야 한다. 다만, 덮개가 설치되어 있는 등 기계의 구조상 근로자가 위험해질 우려가 없는 경우에는 그렇지 않다. <개정 2024. 6. 28.> ② 사업주는 제1항에 따라 기계의 운전을 정지한 경우에 다른 사람이 그 기계를 운전하는 것을 방지하기 위하여 기계의 기동장치에 잠금장치를 하고 그 열쇠를 별도 관리하거나 표지판을 설치하는 등 필요한 방호 조치를 하여야 한다. ③ 사업주는 작업하는 과정에서 적절하지 아니한 작업방법으로 인하여 기계가 갑자기 가동될 우려가 있는 경우 작업지휘자를 배치하는 등 필요한 조치를 하여야 한다. ④ 사업주는 기계ㆍ기구 및 설비 등의 내부에 압축된 기체 또는 액체 등이 방출되어 근로자가 위험해질 우려가 있는 경우에 제1항부터 제3항까지의 규정 따른 조치 외에도 압축된 기체 또는 액체 등을 미리 방출시키는 등 위험 방지를 위하여 필요한 조치를 하여야 한다. 제93조(방호장치의 해체 금지) ① 사업주는 기계ㆍ기구 또는 설비에 설치한 방호장치를 해체하거나 사용을 정지해서는 아니 된다. 다만, 방호장치의 수리ㆍ조정 및 교체 등의 작업을 하는 경우에는 그러하지 아니하다.",
+  "law_제95조": "제95조(장갑의 사용 금지) 사업주는 근로자가 날ㆍ공작물 또는 축이 회전하는 기계를 취급하는 경우 그 근로자의 손에 밀착이 잘되는 가죽 장갑 등과 같이 손이 말려 들어갈 위험이 없는 장갑을 사용하도록 하여야 한다. 제96조(작업도구 등의 목적 외 사용 금지 등) ① 사업주는 기계ㆍ기구ㆍ설비 및 수공구 등을 제조 당시의 목적 외의 용도로 사용하도록 해서는 아니 된다. ② 사업주는 레버풀러(lever puller) 또는 체인블록(chain block)을 사용하는 경우 다음 각 호의 사항을 준수하여야 한다. <개정 2024. 6. 28.> 1. 정격하중을 초과하여 사용하지 말 것 2. 레버풀러 작업 중 훅이 빠져 튕길 우려가 있을 경우에는 훅을 대상물에 직접 걸지 말고 피벗클램프(pivot clamp)나 러그(lug)를 연결하여 사용할 것 3. 레버풀러의 레버에 파이프 등을 끼워서 사용하지 말 것 4. 체인블록의 상부 훅(top hook)은 인양하중에 충분히 견디는 강도를 갖고, 정확히 지탱될 수 있는 곳에 걸어서 사용할 것 5. 훅의 입구(hook mouth) 간격이 제조자가 제공하는 제품사양서 기준으로 10퍼센트 이상 벌어진 것은 폐기할 것 6. 체인블록은 체인의 꼬임과 헝클어지지 않도록 할 것 7. 훅은 변형, 파손, 부식, 마모되거나 균열된 것을 사용하지 않도록 조치할 것 8. 다음 각 목의 어느",
+  "law_제32조": "제32조(보호구의 지급 등) ① 사업주는 다음 각 호의 어느 하나에 해당하는 작업을 하는 근로자에 대해서는 다음 각 호의 구분에 따라 그 작업조건에 맞는 보호구를 작업하는 근로자 수 이상으로 지급하고 착용하도록 하여야 한다. <개정 2017. 3. 3., 2024. 6. 28.> 1. 물체가 떨어지거나 날아올 위험 또는 근로자가 추락할 위험이 있는 작업: 안전모 2. 높이 또는 깊이 2미터 이상의 추락할 위험이 있는 장소에서 하는 작업: 안전대(安全帶) 3. 물체의 낙하ㆍ충격, 물체에의 끼임, 감전 또는 정전기의 대전(帶電)에 의한 위험이 있는 작업: 안전화 4. 물체가 흩날릴 위험이 있는 작업: 보안경 5. 용접 시 불꽃이나 물체가 흩날릴 위험이 있는 작업: 보안면 6. 감전의 위험이 있는 작업: 절연용 보호구 7. 고열에 의한 화상 등의 위험이 있는 작업: 방열복 8. 선창 등에서 분진(粉塵)이 심하게 발생하는 하역작업: 방진마스크 9. 섭씨 영하 18도 이하인 급냉동어창에서 하는 하역작업: 방한모ㆍ방한복ㆍ방한화ㆍ방한장갑 10. 물건을 운반하거나 수거ㆍ배달하기 위하여 「도로교통법」 제2조제18호가목5)에 따른 이륜자동차 또는 같은 법 제2조제19호에 따른 원동기장치자전거를 운행하는 작업: 「도로교통법 시행규칙」 제32조제1항 각 호의 기준에 적합한 승차용 안전모 11. 물건을 운반하거나 수거",
+  "kosha_word_면장갑": {
+    "KOSHAMEDIA_35705_2015-교육미디어-729_업-2-729-선반-최종.pdf": 2,
+    "KOSHAMEDIA_45769_2023-교육혁신실-918_밀링기계_OPS_관리자.pdf": 1,
+    "KOSHAMEDIA_45770_2023-교육혁신실-919_밀링기계_OPS_근로자.pdf": 1,
+    "KOSHAMEDIA_45849_2023-교육혁신실-993_240109 [안전보건공단] 직업계고 카드북4_금속절삭기계_웹용.pdf": 2,
+    "KOSHA_H-42-2021 피부보호구의 사용 지침, 보호용 장갑.pdf": 2
+  },
+  "kosha_word_NBR": {},
+  "kosha_word_니트릴": {
+    "KOSHA_H-42-2021 피부보호구의 사용 지침, 보호용 장갑.pdf": 24
+  },
+  "kosha_word_맨손": {
+    "KOSHAMEDIA_35705_2015-교육미디어-729_업-2-729-선반-최종.pdf": 1,
+    "KOSHAMEDIA_37482_2016-교육미디어-924_금속절삭유사용시안전사고예방.pdf": 1,
+    "KOSHAMEDIA_45849_2023-교육혁신실-993_240109 [안전보건공단] 직업계고 카드북4_금속절삭기계_웹용.pdf": 1,
+    "KOSHA_M-21-2012 금속 절삭유 사용에 관한 기술지침.pdf": 1
+  },
+  "kosha_word_방유": {},
+  "kosha_word_보안경": {
+    "KOSHAMEDIA_31276_2012-교육미디어-766_공구제작-CNC.pdf": 1,
+    "KOSHAMEDIA_31376_2012-교육미디어-890_기계공구-밀링기.pdf": 2,
+    "KOSHAMEDIA_35705_2015-교육미디어-729_업-2-729-선반-최종.pdf": 3,
+    "KOSHAMEDIA_43561_2021-교육혁신실-615__18호_공작기계에 의한 사고 연속 발생 속보.pdf": 1,
+    "KOSHAMEDIA_45769_2023-교육혁신실-918_밀링기계_OPS_관리자.pdf": 3,
+    "KOSHAMEDIA_45770_2023-교육혁신실-919_밀링기계_OPS_근로자.pdf": 1,
+    "KOSHAMEDIA_45849_2023-교육혁신실-993_240109 [안전보건공단] 직업계고 카드북4_금속절삭기계_웹용.pdf": 6,
+    "KOSHA_A-G-12-2026 개인보호구의 사용 및 관리에 관한 기술지원규정.pdf": 12,
+    "KOSHA_C-C-67-2026 작업위험성평가에 관한 기술지원규정.pdf": 1,
+    "KOSHA_E-M-1-2025 청력보존프로그램의 수립.시행에 관한 기술지원규정.pdf": 1,
+    "KOSHA_H-160-2014 청력보호구의 착용방법 및 관리에 관한 지침.pdf": 1
+  },
+  "kosha_word_귀마개": {
+    "KOSHAMEDIA_35705_2015-교육미디어-729_업-2-729-선반-최종.pdf": 1,
+    "KOSHAMEDIA_45849_2023-교육혁신실-993_240109 [안전보건공단] 직업계고 카드북4_금속절삭기계_웹용.pdf": 1,
+    "KOSHA_A-G-12-2026 개인보호구의 사용 및 관리에 관한 기술지원규정.pdf": 6,
+    "KOSHA_E-M-1-2025 청력보존프로그램의 수립.시행에 관한 기술지원규정.pdf": 10,
+    "KOSHA_H-160-2014 청력보호구의 착용방법 및 관리에 관한 지침.pdf": 48,
+    "KOSHA_M-9-2023 금속 가공용 수동 둥근톱 사용 시 안전에 관한 기술지침.pdf": 1
+  },
+  "kosha_word_청력보호구": {
+    "KOSHAMEDIA_45769_2023-교육혁신실-918_밀링기계_OPS_관리자.pdf": 1,
+    "KOSHAMEDIA_45770_2023-교육혁신실-919_밀링기계_OPS_근로자.pdf": 1,
+    "KOSHA_A-G-12-2026 개인보호구의 사용 및 관리에 관한 기술지원규정.pdf": 2,
+    "KOSHA_E-M-1-2025 청력보존프로그램의 수립.시행에 관한 기술지원규정.pdf": 44,
+    "KOSHA_H-160-2014 청력보호구의 착용방법 및 관리에 관한 지침.pdf": 62
+  },
+  "kosha_word_안전화": {
+    "KOSHAMEDIA_30251_2011-교육미디어-1606_18_02_머시닝 센터.pdf": 2,
+    "KOSHAMEDIA_31376_2012-교육미디어-890_기계공구-밀링기.pdf": 2,
+    "KOSHAMEDIA_43561_2021-교육혁신실-615__18호_공작기계에 의한 사고 연속 발생 속보.pdf": 1,
+    "KOSHAMEDIA_45849_2023-교육혁신실-993_240109 [안전보건공단] 직업계고 카드북4_금속절삭기계_웹용.pdf": 1,
+    "KOSHA_A-G-12-2026 개인보호구의 사용 및 관리에 관한 기술지원규정.pdf": 19,
+    "KOSHA_C-C-67-2026 작업위험성평가에 관한 기술지원규정.pdf": 2
+  },
+  "kosha_no_text_pdfs": [
+    "KOSHAMEDIA_31276_2012-교육미디어-766_공구제작-CNC.pdf",
+    "KOSHAMEDIA_31376_2012-교육미디어-890_기계공구-밀링기.pdf",
+    "KOSHAMEDIA_40456_2019-경남동부지사-273_끼임재해 4대 위험설비 재해사례 및 자율안전점검표_밀링기(웹용).pdf",
+    "KOSHAMEDIA_41938_2020-기술총괄본부-69_2020-기술총괄본부-69_LOTO 작업절차 바로알기_OPS_제조업_제2유형_(붙임1) LOTO(잠금장치, 표지판) 바로알기 .pdf",
+    "KOSHAMEDIA_43303_2021-교육혁신실-360__끼임사고예방 안전수칙_포스터(웹용).pdf",
+    "KOSHAMEDIA_43561_2021-교육혁신실-615__18호_공작기계에 의한 사고 연속 발생 속보.pdf",
+    "KOSHAMEDIA_46875_2024-교육혁신실-840_기계_공작기계.pdf"
+  ],
+  "ford_csr_Ppk": [
+    "p35:  A for ongoing process capability requirements. The organization shall maintain ongoing process capability at Ppk > 1.33. The requirement for maintenance of ongoing process capability is to be included in the production Control Pl"
+  ],
+  "ford_ppap_Ppk": [
+    "p17: l process capability” (Phase 1 and Phase 2) and “final process capability” demonstration with PPAP Phase 3 is Ppk > 1.67. Demonstration of process capability for both “Initial” and “Final” Process Capability (Acceptance Criteria) ",
+    "p17: process capability for both “Initial” and “Final” Process Capability (Acceptance Criteria) Acceptable levels: Ppk ≥ 1.67 Demonstration of process capability (When the Ppk data set requirements are not met) If part size or other fa"
+  ],
+  "cummins_Ppk": [
+    "p17: tic Symbol Interpretation Safety Critical Cummins requires a Performance Index, Ppk, greater than or equal to 1.67 as acceptance criteria for initial studies at the time of PPAP On-going SPC analyses (Long Term Process Studi",
+    "p17: itial studies at the time of PPAP On-going SPC analyses (Long Term Process Studies) demonstrating an index of 1.33 minimum over time. Control plan documentation to ensure SPC results are monitored and maintained. Suppliers s",
+    "p17:  elements of their control plan. Critical Cummins requires a Performance Index, Ppk, greater than or equal to 1.67 as acceptance criteria for initial studies at the time of PPAP On-going SPC analyses (Long Term Process Studi",
+    "p17: itial studies at the time of PPAP On-going SPC analyses (Long Term Process Studies) demonstrating an index of 1.33 minimum over time. Control plan documentation to ensure SPC results are monitored and maintained. Major Cummi"
+  ],
+  "danfoss_Cpk": [
+    "p17: performance shall be determined prior to production. Based on a capability study analysis, a minimum value of Cpk (short term) 1.67 and Ppk (long term) 1.33 is required unless otherwise speciﬁed by Danfoss. Any exception must be approved by "
+  ],
+  "general_tolerance": [
+    "p3:  3.00 - 6.00 ±0.05 ±0.10 ±0.20 ±0.50 > 6.00 - 30 ±0.10 ±0.20 ±0.50 ±1.00 > 30 - 120 ±0.15 ±0.30 ±0.80 ±1.50 > 120 - 400 ±0.20 ±0.50 ±1.20 ±2.50 > 400 - 1000 ±0.30 ±0.80 ±2.00 ±4.00 > 1000 - 2000 ±0.50 ±1.20 ±3.00 ±6.00 2000 4000 - ±2.00 ±4.00 ±8.00",
+    "p4: Tolerances Tolerances Tolerances up to 10 ±1° ±1.5° ±3° > 10 - 50 ±0.5° ±1° ±2° > 50 - 120 ±0.33° ±0.5° ±1° > 120 - 400 ±0.17° ±0.25° ±0.5° > 400 ±0.08° ±0.17° ±0.33° Table 2.4: General Tolerances for Angular Dimensions (Metric Dimensioning), sheet metal bending Limit Deviations in degree"
+  ],
+  "misumi_kr_general_tolerance_excerpt": "보통 허용차 (!) Microsoft사의 Windows7은 2020년 1월 14일부터 서비스 종료 예정으로, 본 사이트에서는 2019년 12월 15일부터 권장 환경 대상에서 제외됨을 알려드립니다. (!) 보안상의 문제로 Windows XP환경 혹은 Internet Explorer 6 브라우저에서는 검색 및 열람은 가능하지만 로그인, 견적, 주문은 이용할 수 없습니다. 본 사이트 권장 환경은 Windows 10, Internet Explorer 11 이상으로, 사용 중이신 환경의 버전을 확인하시고 업그레이드 후 사용 부탁드립니다. Successful Business & Life Patner 다양하고 편리한 서비스를 위해 한국미스미와 업무 제휴를 시작합니다. 상품을 선택(Check-Out)하시면, 빠른 등록이 가능합니다. 웹페이지 단가는 시장가로, 최종 단가는 서브원 Mall에서 확인 가능합니다. 사업의 성공 파트너 코리아e플랫폼 보다 다양하고 편리한 서비스를 위해 한국미스미와 업무제휴를 시작 합니다. 본 서비스 이용에 있어 궁금한 사항은 코리아e플랫폼 웹사이트의 고객 도우미에게 문의하시기 바랍니다. MISUMI | Your Time, Our Priority 모",
+  "kpi_Availability (A)": "Availability (A): The percentage of actual time a machine is available, i.e. the APT among the PBT for a machine. It represents the portion of time used for processing compared to the total time that includes AUST, delay time and down time. A = APT PBT · 100%. (10) The availability is similar to the so called efﬁciency. Based on",
+  "kpi_Mean time to failure": "Mean time to failure (MTTF) or Mean time between failure (MTBF): The average TTF or TBF over a long time period. • Mean time to repair (MTTR): The average TTR over a long time period. • Mean operating time between failures (MOTBF): The average OTBF over a long time period. • Mean delay time (MDET): The average ADET over a long t",
+  "kpi_MTBF = MOTBF": "MTBF = MOTBF + MDET + MSET. (33) Moreover, the maintenance ratio is deﬁned as: • Corrective maintenance ratio (CMR): The magnitude of corrective tasks with all maintenance activities performed in a work unit, calculated as the ratio of total corrective maintenance time (CMT) to the sum of CMT and preventive maintenance time (PMT",
+  "kpi_Mean time to repair": "Mean time to repair (MTTR): The average TTR over a long time period. • Mean operating time between failures (MOTBF): The average OTBF over a long time period. • Mean delay time (MDET): The average ADET over a long time period. • Mean setup time (MSET): The average AUST over a long time period. Then the average performance will a"
+}

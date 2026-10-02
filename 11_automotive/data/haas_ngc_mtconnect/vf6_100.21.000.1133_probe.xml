@@ -1,0 +1,955 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MTConnectDevices xmlns:m="urn:mtconnect.org:MTConnectDevices:1.2" xmlns="urn:mtconnect.org:MTConnectDevices:1.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:mtconnect.org:MTConnectDevices:1.2 http://www.mtconnect.org/schemas/MTConnectDevices_1.2.xsd">
+	<Header creationTime="2022-10-10T19:49:50.384Z" sender="NGC" instanceId="9999999999" version="1.2.0.1.2" assetBufferSize="0" assetCount="0" bufferSize="333"/>
+
+	<Devices>
+		<Device id="dev1" name="VF-6/40" uuid="000" sampleInterval="1000">
+			<Description manufacturer="Haas" model="VF-6/40" serialNumber="9999999" softwareVersion="REL-100.21.000.1133" netshareHostname="HaasCNC9999999" machineType="MILL" definitionFileVersion="1.1"/>
+			<DataItems>
+				<DataItem id="avail" category="EVENT" type="AVAILABILITY" name="Availability"/>
+			</DataItems>
+			<Components>
+				<Controller id="cont1" name="MachineController">
+					<DataItems>
+						<DataItem id="mcond" category="CONDITION" type="SYSTEM" name="MachineCondition">
+							<Source>Any Non Operational Condition</Source>
+						</DataItem>
+						<DataItem id="elog" category="EVENT" type="MESSAGE" name="EventLog">
+							<Source>Last 10 Events</Source>
+						</DataItem>
+						<DataItem id="aalarms" category="EVENT" type="MESSAGE" name="ActiveAlarms">
+							<Source>List Of All Active Alarms</Source>
+						</DataItem>
+						<DataItem id="mode" category="EVENT" type="CONTROLLER_MODE" name="Mode">
+							<Source>Machine Mode</Source>
+						</DataItem>
+						<DataItem id="rstat" category="EVENT" type="EXECUTION" name="RunStatus">
+							<Source>Run Status</Source>
+						</DataItem>
+						<DataItem id="ncprog" category="EVENT" type="PROGRAM" name="Program">
+							<Source>Active Program O-number and Filename</Source>
+						</DataItem>
+						<DataItem id="lpremain" category="EVENT" type="MESSAGE" name="LoopsRemaining">
+							<Source>Loops Remaining Counter</Source>
+						</DataItem>
+						<DataItem id="m30c1" category="EVENT" type="MESSAGE" name="M30Counter1">
+							<Source>M30 Counter #1</Source>
+						</DataItem>
+						<DataItem id="m30c2" category="EVENT" type="MESSAGE" name="M30Counter2">
+							<Source>M30 Counter #2</Source>
+						</DataItem>
+						<DataItem id="macdsp1" category="EVENT" type="MESSAGE" name="MacroDispl1">
+							<Source>Macro Variable Display #1</Source>
+						</DataItem>
+						<DataItem id="macdsp2" category="EVENT" type="MESSAGE" name="MacroDispl2">
+							<Source>Macro Variable Display #2</Source>
+						</DataItem>
+						<DataItem id="estop" category="EVENT" type="EMERGENCY_STOP" name="EmergencyStop">
+							<Source>Emergency Stop</Source>
+						</DataItem>
+						<DataItem id="rovrd" category="SAMPLE" type="AXIS_FEEDRATE" name="RapidOverride" subType="OVERRIDE" units="PERCENT" nativeUnits="PERCENT">
+							<Source>Rapid Override</Source>
+						</DataItem>
+						<DataItem id="fdovrd" category="SAMPLE" type="PATH_FEEDRATE" name="FeedrateOverride" subType="OVERRIDE" units="PERCENT" nativeUnits="PERCENT">
+							<Source>Feedrate Override</Source>
+						</DataItem>
+						<DataItem id="tcycle" category="SAMPLE" type="ACCUMULATED_TIME" name="ThisCycle" units="SECOND" nativeUnits="SECOND">
+							<Source>This Cycle</Source>
+						</DataItem>
+						<DataItem id="lcycle" category="SAMPLE" type="ACCUMULATED_TIME" name="LastCycle" units="SECOND" nativeUnits="SECOND">
+							<Source>Last Cycle</Source>
+						</DataItem>
+						<DataItem id="cyremtim" category="SAMPLE" type="ACCUMULATED_TIME" name="CycleRemainingTime" units="SECOND" nativeUnits="SECOND">
+							<Source>Last Cycle Time Remaining</Source>
+						</DataItem>
+						<DataItem id="sspeed" category="SAMPLE" type="SPINDLE_SPEED" name="SpindleSpeed" subType="ACTUAL" units="REVOLUTION/MINUTE" nativeUnits="REVOLUTION/MINUTE">
+							<Source>Spindle Speed</Source>
+						</DataItem>
+						<DataItem id="ssovrd" category="SAMPLE" type="SPINDLE_SPEED" name="SpindleSpeedOverride" subType="OVERRIDE" units="PERCENT" nativeUnits="PERCENT">
+							<Source>Spindle Speed Override</Source>
+						</DataItem>
+					</DataItems>
+				</Controller>
+				<Contourcontrol id="cc" name="ContourControl">
+					<DataItems>
+						<DataItem id="mfdrate" category="EVENT" type="PATH_FEEDRATE" name="MaximumFeedRate" nativeUnits="MILLIMETER/MINUTE">
+							<Source>Maximum Feed Rate</Source>
+						</DataItem>
+						<DataItem id="smooth" category="EVENT" type="PATH_FEEDRATE_OVERRIDE" name="Smoothness">
+							<Source>Default Smoothness</Source>
+						</DataItem>
+						<DataItem id="contrtimecons" category="EVENT" type="PATH_FEEDRATE_OVERRIDE" name="ContourTimeConstant" units="SECOND" nativeUnits="SECOND">
+							<Source>Contour Time Constant</Source>
+						</DataItem>
+						<DataItem id="contrmaxaccl" category="EVENT" type="PATH_FEEDRATE_OVERRIDE" name="ContourMaxAccel" units="MILLIMETER" nativeUnits="MILLIMETER">
+							<Source>Contour Maximum Accel</Source>
+						</DataItem>
+						<DataItem id="maxcrnrrnd" category="EVENT" type="PATH_FEEDRATE_OVERRIDE" name="MaxCornerRound" units="MILLIMETER" nativeUnits="MILLIMETER">
+							<Source>Maximum Corner Rounding</Source>
+						</DataItem>
+						<DataItem id="fdeltav" category="EVENT" type="PATH_FEEDRATE_OVERRIDE" name="FeedDeltaV" units="MILLIMETER" nativeUnits="MILLIMETER">
+							<Source>Contour Time Constant</Source>
+						</DataItem>
+					</DataItems>
+				</Contourcontrol>
+				<Axes id="axes" name="Axes">
+					<DataItems>
+						<DataItem id="xyzabc" category="EVENT" type="ACTIVE_AXES" name="Active_Axes">
+							<Source>A list of axes that are both Enabled and Visible.</Source>
+						</DataItem>
+					</DataItems>
+					<Components>
+						<Axis_coupling id="axis_coupling" name="Axis_Coupling">
+							<DataItems>
+								<DataItem id="acpln" category="EVENT" type="AXIS_COUPLING" name="A_Axis_Coupling">
+									<Source>Master Axis. (A CPLN stands for A Coupling.)</Source>
+								</DataItem>
+								<DataItem id="bcpln" category="EVENT" type="AXIS_COUPLING" name="B_Axis_Coupling">
+									<Source>Slave Axis. (B CLPN stands for B Coupling.)</Source>
+								</DataItem>
+							</DataItems>
+						</Axis_coupling>
+						<Mrzp id="mrzp" name="MRZP">
+							<DataItems>
+								<DataItem id="amrzpx" category="EVENT" type="AXIS_COUPLING" name="A_MRZP_X">
+									<Source>Master Table Axis Rotation Center X</Source>
+								</DataItem>
+								<DataItem id="amrzpy" category="EVENT" type="AXIS_COUPLING" name="A_MRZP_Y">
+									<Source>Master Table Axis Rotation Center Y</Source>
+								</DataItem>
+								<DataItem id="amrzpz" category="EVENT" type="AXIS_COUPLING" name="A_MRZP_Z">
+									<Source>Master Table Axis Rotation Center Z</Source>
+								</DataItem>
+								<DataItem id="bmrzpx" category="EVENT" type="AXIS_COUPLING" name="B_MRZP_X">
+									<Source>Slave Table Axis Rotation Center X</Source>
+								</DataItem>
+								<DataItem id="bmrzpy" category="EVENT" type="AXIS_COUPLING" name="B_MRZP_Y">
+									<Source>Slave Table Axis Rotation Center Y</Source>
+								</DataItem>
+								<DataItem id="bmrzpz" category="EVENT" type="AXIS_COUPLING" name="B_MRZP_Z">
+									<Source>Slave Table Axis Rotation Center Z</Source>
+								</DataItem>
+							</DataItems>
+						</Mrzp>
+						<Axis id="x_axis" name="X">
+							<DataItems>
+								<DataItem id="x_axis_name" category="EVENT" type="MESSAGE" name="X_Axis_Name">
+									<Source>The Axis Name of the X Axis</Source>
+								</DataItem>
+								<DataItem id="x_axis_number" category="EVENT" type="MESSAGE" name="X_Axis_Number">
+									<Source>The Axis Number of the X Axis</Source>
+								</DataItem>
+								<DataItem id="x_axis_type" category="EVENT" type="MESSAGE" name="X_Axis_Type">
+									<Source>The Axis Type of the X Axis</Source>
+								</DataItem>
+								<DataItem id="x_axis_enabled" category="EVENT" type="MESSAGE" name="X_Axis_Enabled">
+									<Source>Whether or not the X Axis is Enabled</Source>
+								</DataItem>
+								<DataItem id="x_axis_linear_limit_positive" category="EVENT" type="MESSAGE" name="X_Axis_Linear_Limit_Positive" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>The Positive Linear Travel Limit for the X Axis</Source>
+								</DataItem>
+								<DataItem id="x_axis_linear_limit_negative" category="EVENT" type="MESSAGE" name="X_Axis_Linear_Limit_Negative" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>The Negative Linear Travel Limit for the X Axis</Source>
+								</DataItem>
+								<DataItem id="x_axis_acceleration_time_constant" category="EVENT" type="MESSAGE" name="X_Axis_Acceleration_Time_Constant" units="SECOND" nativeUnits="SECOND">
+									<Source>X Axis Acceleration Time Constant</Source>
+								</DataItem>
+								<DataItem id="x_axis_max_acceleration" category="EVENT" type="MESSAGE" name="X_Axis_Max_Acceleration" units="MILLIMETER/SECOND^2" nativeUnits="MILLIMETER/SECOND^2">
+									<Source>X Axis Maximum Acceleration</Source>
+								</DataItem>
+								<DataItem id="x_axis_max_speed" category="EVENT" type="MESSAGE" name="X_Axis_Maximum_Speed" units="MILLIMETER/SECOND" nativeUnits="MILLIMETER/SECOND">
+									<Source>The Maximum Speed of the X Axis</Source>
+								</DataItem>
+								<DataItem id="x_axis_actual_position" category="SAMPLE" type="PATH_POSITION" name="X_Axis_Actual_Position" subType="ACTUAL" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>The Current Position (Actual Position) of the X Axis</Source>
+								</DataItem>
+							</DataItems>
+						</Axis>
+						<Axis id="y_axis" name="Y">
+							<DataItems>
+								<DataItem id="y_axis_name" category="EVENT" type="MESSAGE" name="Y_Axis_Name">
+									<Source>The Axis Name of the Y Axis</Source>
+								</DataItem>
+								<DataItem id="y_axis_number" category="EVENT" type="MESSAGE" name="Y_Axis_Number">
+									<Source>The Axis Number of the Y Axis</Source>
+								</DataItem>
+								<DataItem id="y_axis_type" category="EVENT" type="MESSAGE" name="Y_Axis_Type">
+									<Source>The Axis Type of the Y Axis</Source>
+								</DataItem>
+								<DataItem id="y_axis_enabled" category="EVENT" type="MESSAGE" name="Y_Axis_Enabled">
+									<Source>Whether or not the Y Axis is Enabled</Source>
+								</DataItem>
+								<DataItem id="y_axis_linear_limit_positive" category="EVENT" type="MESSAGE" name="Y_Axis_Linear_Limit_Positive" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>The Positive Linear Travel Limit for the Y Axis</Source>
+								</DataItem>
+								<DataItem id="y_axis_linear_limit_negative" category="EVENT" type="MESSAGE" name="Y_Axis_Linear_Limit_Negative" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>The Negative Linear Travel Limit for the Y Axis</Source>
+								</DataItem>
+								<DataItem id="y_axis_acceleration_time_constant" category="EVENT" type="MESSAGE" name="Y_Axis_Acceleration_Time_Constant" units="SECOND" nativeUnits="SECOND">
+									<Source>Y Axis Acceleration Time Constant</Source>
+								</DataItem>
+								<DataItem id="y_axis_max_acceleration" category="EVENT" type="MESSAGE" name="Y_Axis_Max_Acceleration" units="MILLIMETER/SECOND^2" nativeUnits="MILLIMETER/SECOND^2">
+									<Source>Y Axis Maximum Acceleration</Source>
+								</DataItem>
+								<DataItem id="y_axis_max_speed" category="EVENT" type="MESSAGE" name="Y_Axis_Maximum_Speed" units="MILLIMETER/SECOND" nativeUnits="MILLIMETER/SECOND">
+									<Source>The Maximum Speed of the Y Axis</Source>
+								</DataItem>
+								<DataItem id="y_axis_actual_position" category="SAMPLE" type="PATH_POSITION" name="Y_Axis_Actual_Position" subType="ACTUAL" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>The Current Position (Actual Position) of the Y Axis</Source>
+								</DataItem>
+							</DataItems>
+						</Axis>
+						<Axis id="z_axis" name="Z">
+							<DataItems>
+								<DataItem id="z_axis_name" category="EVENT" type="MESSAGE" name="Z_Axis_Name">
+									<Source>The Axis Name of the Z Axis</Source>
+								</DataItem>
+								<DataItem id="z_axis_number" category="EVENT" type="MESSAGE" name="Z_Axis_Number">
+									<Source>The Axis Number of the Z Axis</Source>
+								</DataItem>
+								<DataItem id="z_axis_type" category="EVENT" type="MESSAGE" name="Z_Axis_Type">
+									<Source>The Axis Type of the Z Axis</Source>
+								</DataItem>
+								<DataItem id="z_axis_enabled" category="EVENT" type="MESSAGE" name="Z_Axis_Enabled">
+									<Source>Whether or not the Z Axis is Enabled</Source>
+								</DataItem>
+								<DataItem id="z_axis_linear_limit_positive" category="EVENT" type="MESSAGE" name="Z_Axis_Linear_Limit_Positive" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>The Positive Linear Travel Limit for the Z Axis</Source>
+								</DataItem>
+								<DataItem id="z_axis_linear_limit_negative" category="EVENT" type="MESSAGE" name="Z_Axis_Linear_Limit_Negative" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>The Negative Linear Travel Limit for the Z Axis</Source>
+								</DataItem>
+								<DataItem id="z_axis_acceleration_time_constant" category="EVENT" type="MESSAGE" name="Z_Axis_Acceleration_Time_Constant" units="SECOND" nativeUnits="SECOND">
+									<Source>Z Axis Acceleration Time Constant</Source>
+								</DataItem>
+								<DataItem id="z_axis_max_acceleration" category="EVENT" type="MESSAGE" name="Z_Axis_Max_Acceleration" units="MILLIMETER/SECOND^2" nativeUnits="MILLIMETER/SECOND^2">
+									<Source>Z Axis Maximum Acceleration</Source>
+								</DataItem>
+								<DataItem id="z_axis_max_speed" category="EVENT" type="MESSAGE" name="Z_Axis_Maximum_Speed" units="MILLIMETER/SECOND" nativeUnits="MILLIMETER/SECOND">
+									<Source>The Maximum Speed of the Z Axis</Source>
+								</DataItem>
+								<DataItem id="z_axis_actual_position" category="SAMPLE" type="PATH_POSITION" name="Z_Axis_Actual_Position" subType="ACTUAL" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>The Current Position (Actual Position) of the Z Axis</Source>
+								</DataItem>
+							</DataItems>
+						</Axis>
+						<Axis id="a_axis" name="A">
+							<DataItems>
+								<DataItem id="a_axis_name" category="EVENT" type="MESSAGE" name="A_Axis_Name">
+									<Source>The Axis Name of the A Axis</Source>
+								</DataItem>
+								<DataItem id="a_axis_number" category="EVENT" type="MESSAGE" name="A_Axis_Number">
+									<Source>The Axis Number of the A Axis</Source>
+								</DataItem>
+								<DataItem id="a_axis_type" category="EVENT" type="MESSAGE" name="A_Axis_Type">
+									<Source>The Axis Type of the A Axis</Source>
+								</DataItem>
+								<DataItem id="a_axis_enabled" category="EVENT" type="MESSAGE" name="A_Axis_Enabled">
+									<Source>Whether or not the A Axis is Enabled</Source>
+								</DataItem>
+								<DataItem id="a_axis_of_rotation" category="EVENT" type="MESSAGE" name="A_Axis_Of_Rotation">
+									<Source>The Axis of Rotation for the A Axis</Source>
+								</DataItem>
+								<DataItem id="a_axis_linear_limit_positive" category="EVENT" type="MESSAGE" name="A_Axis_Linear_Limit_Positive" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>The Positive Linear Travel Limit for the A Axis</Source>
+								</DataItem>
+								<DataItem id="a_axis_linear_limit_negative" category="EVENT" type="MESSAGE" name="A_Axis_Linear_Limit_Negative" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>The Negative Linear Travel Limit for the A Axis</Source>
+								</DataItem>
+								<DataItem id="a_axis_rotary_limit_positive" category="EVENT" type="MESSAGE" name="A_Axis_Rotary_Limit_Positive" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>The Positive Rotary Travel Limit for the A Axis</Source>
+								</DataItem>
+								<DataItem id="a_axis_rotary_limit_negative" category="EVENT" type="MESSAGE" name="A_Axis_Rotary_Limit_Negative" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>The Negative Rotary Travel Limit for the A Axis</Source>
+								</DataItem>
+								<DataItem id="a_axis_acceleration_time_constant" category="EVENT" type="MESSAGE" name="A_Axis_Acceleration_Time_Constant" units="SECOND" nativeUnits="SECOND">
+									<Source>A Axis Acceleration Time Constant</Source>
+								</DataItem>
+								<DataItem id="a_axis_max_acceleration" category="EVENT" type="MESSAGE" name="A_Axis_Max_Acceleration" units="MILLIMETER/SECOND^2" nativeUnits="MILLIMETER/SECOND^2">
+									<Source>A Axis Maximum Acceleration</Source>
+								</DataItem>
+								<DataItem id="a_axis_max_speed" category="EVENT" type="MESSAGE" name="A_Axis_Maximum_Speed" units="MILLIMETER/SECOND" nativeUnits="MILLIMETER/SECOND">
+									<Source>The Maximum Speed of the A Axis</Source>
+								</DataItem>
+								<DataItem id="a_axis_actual_position" category="SAMPLE" type="PATH_POSITION" name="A_Axis_Actual_Position" subType="ACTUAL" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>The Current Position (Actual Position) of the A Axis</Source>
+								</DataItem>
+							</DataItems>
+						</Axis>
+						<Axis id="b_axis" name="B">
+							<DataItems>
+								<DataItem id="b_axis_name" category="EVENT" type="MESSAGE" name="B_Axis_Name">
+									<Source>The Axis Name of the B Axis</Source>
+								</DataItem>
+								<DataItem id="b_axis_number" category="EVENT" type="MESSAGE" name="B_Axis_Number">
+									<Source>The Axis Number of the B Axis</Source>
+								</DataItem>
+								<DataItem id="b_axis_type" category="EVENT" type="MESSAGE" name="B_Axis_Type">
+									<Source>The Axis Type of the B Axis</Source>
+								</DataItem>
+								<DataItem id="b_axis_enabled" category="EVENT" type="MESSAGE" name="B_Axis_Enabled">
+									<Source>Whether or not the B Axis is Enabled</Source>
+								</DataItem>
+								<DataItem id="b_axis_of_rotation" category="EVENT" type="MESSAGE" name="B_Axis_Of_Rotation">
+									<Source>The Axis of Rotation for the B Axis</Source>
+								</DataItem>
+								<DataItem id="b_axis_linear_limit_positive" category="EVENT" type="MESSAGE" name="B_Axis_Linear_Limit_Positive" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>The Positive Linear Travel Limit for the B Axis</Source>
+								</DataItem>
+								<DataItem id="b_axis_linear_limit_negative" category="EVENT" type="MESSAGE" name="B_Axis_Linear_Limit_Negative" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>The Negative Linear Travel Limit for the B Axis</Source>
+								</DataItem>
+								<DataItem id="b_axis_rotary_limit_positive" category="EVENT" type="MESSAGE" name="B_Axis_Rotary_Limit_Positive" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>The Positive Rotary Travel Limit for the B Axis</Source>
+								</DataItem>
+								<DataItem id="b_axis_rotary_limit_negative" category="EVENT" type="MESSAGE" name="B_Axis_Rotary_Limit_Negative" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>The Negative Rotary Travel Limit for the B Axis</Source>
+								</DataItem>
+								<DataItem id="b_axis_acceleration_time_constant" category="EVENT" type="MESSAGE" name="B_Axis_Acceleration_Time_Constant" units="SECOND" nativeUnits="SECOND">
+									<Source>B Axis Acceleration Time Constant</Source>
+								</DataItem>
+								<DataItem id="b_axis_max_acceleration" category="EVENT" type="MESSAGE" name="B_Axis_Max_Acceleration" units="MILLIMETER/SECOND^2" nativeUnits="MILLIMETER/SECOND^2">
+									<Source>B Axis Maximum Acceleration</Source>
+								</DataItem>
+								<DataItem id="b_axis_max_speed" category="EVENT" type="MESSAGE" name="B_Axis_Maximum_Speed" units="MILLIMETER/SECOND" nativeUnits="MILLIMETER/SECOND">
+									<Source>The Maximum Speed of the B Axis</Source>
+								</DataItem>
+								<DataItem id="b_axis_actual_position" category="SAMPLE" type="PATH_POSITION" name="B_Axis_Actual_Position" subType="ACTUAL" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>The Current Position (Actual Position) of the B Axis</Source>
+								</DataItem>
+							</DataItems>
+						</Axis>
+						<Axis id="c_axis" name="C">
+							<DataItems>
+								<DataItem id="c_axis_name" category="EVENT" type="MESSAGE" name="C_Axis_Name">
+									<Source>The Axis Name of the C Axis</Source>
+								</DataItem>
+								<DataItem id="c_axis_number" category="EVENT" type="MESSAGE" name="C_Axis_Number">
+									<Source>The Axis Number of the C Axis</Source>
+								</DataItem>
+								<DataItem id="c_axis_type" category="EVENT" type="MESSAGE" name="C_Axis_Type">
+									<Source>The Axis Type of the C Axis</Source>
+								</DataItem>
+								<DataItem id="c_axis_enabled" category="EVENT" type="MESSAGE" name="C_Axis_Enabled">
+									<Source>Whether or not the C Axis is Enabled</Source>
+								</DataItem>
+								<DataItem id="c_axis_of_rotation" category="EVENT" type="MESSAGE" name="C_Axis_Of_Rotation">
+									<Source>The Axis of Rotation for the C Axis</Source>
+								</DataItem>
+								<DataItem id="c_axis_linear_limit_positive" category="EVENT" type="MESSAGE" name="C_Axis_Linear_Limit_Positive" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>The Positive Linear Travel Limit for the C Axis</Source>
+								</DataItem>
+								<DataItem id="c_axis_linear_limit_negative" category="EVENT" type="MESSAGE" name="C_Axis_Linear_Limit_Negative" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>The Negative Linear Travel Limit for the C Axis</Source>
+								</DataItem>
+								<DataItem id="c_axis_rotary_limit_positive" category="EVENT" type="MESSAGE" name="C_Axis_Rotary_Limit_Positive" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>The Positive Rotary Travel Limit for the C Axis</Source>
+								</DataItem>
+								<DataItem id="c_axis_rotary_limit_negative" category="EVENT" type="MESSAGE" name="C_Axis_Rotary_Limit_Negative" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>The Negative Rotary Travel Limit for the C Axis</Source>
+								</DataItem>
+								<DataItem id="c_axis_acceleration_time_constant" category="EVENT" type="MESSAGE" name="C_Axis_Acceleration_Time_Constant" units="SECOND" nativeUnits="SECOND">
+									<Source>C Axis Acceleration Time Constant</Source>
+								</DataItem>
+								<DataItem id="c_axis_max_acceleration" category="EVENT" type="MESSAGE" name="C_Axis_Max_Acceleration" units="MILLIMETER/SECOND^2" nativeUnits="MILLIMETER/SECOND^2">
+									<Source>C Axis Maximum Acceleration</Source>
+								</DataItem>
+								<DataItem id="c_axis_max_speed" category="EVENT" type="MESSAGE" name="C_Axis_Maximum_Speed" units="MILLIMETER/SECOND" nativeUnits="MILLIMETER/SECOND">
+									<Source>The Maximum Speed of the C Axis</Source>
+								</DataItem>
+								<DataItem id="c_axis_actual_position" category="SAMPLE" type="PATH_POSITION" name="C_Axis_Actual_Position" subType="ACTUAL" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>The Current Position (Actual Position) of the C Axis</Source>
+								</DataItem>
+							</DataItems>
+						</Axis>
+					</Components>
+				</Axes>
+				<Settings id="settings" name="Settings">
+					<Components>
+						<Setting id="setting" name="Setting">
+							<Components>
+								<General id="general" name="General">
+									<DataItems>
+										<DataItem id="dimensioning" category="EVENT" type="MESSAGE" name="Dimensioning" units="MILLIMETER" nativeUnits="MILLIMETER">
+											<Source>Dimensioning</Source>
+										</DataItem>
+										<DataItem id="rmovetype" category="EVENT" type="MESSAGE" name="RapidMoveType">
+											<Source>Rapid Move Type</Source>
+										</DataItem>
+									</DataItems>
+								</General>
+								<Miscellaneous id="miscellaneous" name="Miscellaneous">
+									<DataItems>
+										<DataItem id="negworkoffset" category="EVENT" type="MESSAGE" name="NegWorkOffsets">
+											<Source>Negative WorkOffsets</Source>
+										</DataItem>
+										<DataItem id="caxisdiam" category="EVENT" type="MESSAGE" name="CAxisDiameter" units="MILLIMETER" nativeUnits="MILLIMETER">
+											<Source>C Axis Diameter</Source>
+										</DataItem>
+									</DataItems>
+								</Miscellaneous>
+								<Compensation id="compensation" name="Compensation">
+									<DataItems>
+										<DataItem id="warmuptimemin" category="EVENT" type="MESSAGE" name="WarmUpTimeMinutes" units="SECOND" nativeUnits="SECOND">
+											<Source>Warmup Time Minutes</Source>
+										</DataItem>
+										<DataItem id="warmupxdistan" category="EVENT" type="MESSAGE" name="WarmupXDistance" units="MILLIMETER" nativeUnits="MILLIMETER">
+											<Source>Warmup X Distance</Source>
+										</DataItem>
+										<DataItem id="warmupydistan" category="EVENT" type="MESSAGE" name="WarmupYDistance" units="MILLIMETER" nativeUnits="MILLIMETER">
+											<Source>Warmup Y Distance</Source>
+										</DataItem>
+										<DataItem id="warmupzdistan" category="EVENT" type="MESSAGE" name="WarmupZDistance" units="MILLIMETER" nativeUnits="MILLIMETER">
+											<Source>Warmup Z Distance</Source>
+										</DataItem>
+									</DataItems>
+								</Compensation>
+								<Spindlecenterline id="spindleCenterline" name="SpindleCenterline">
+									<DataItems>
+										<DataItem id="vdix" category="EVENT" type="POSITION" name="VdiX" units="MILLIMETER" nativeUnits="MILLIMETER">
+											<Source>VDI Spindle Center Line X</Source>
+										</DataItem>
+										<DataItem id="botx" category="EVENT" type="POSITION" name="Botx" units="MILLIMETER" nativeUnits="MILLIMETER">
+											<Source>BOT Spindle Center Line X</Source>
+										</DataItem>
+										<DataItem id="centerliney" category="EVENT" type="POSITION" name="CenterLineY" units="MILLIMETER" nativeUnits="MILLIMETER">
+											<Source>Spindle Center Line Y</Source>
+										</DataItem>
+									</DataItems>
+								</Spindlecenterline>
+								<Program id="program" name="Program">
+									<DataItems>
+										<DataItem id="diam5thaxis" category="EVENT" type="MESSAGE" name="5thAxisDiameter" units="MILLIMETER" nativeUnits="MILLIMETER">
+											<Source>5th Axis Diameter</Source>
+										</DataItem>
+										<DataItem id="diam4thaxis" category="EVENT" type="MESSAGE" name="4thAxisDiameter" units="MILLIMETER" nativeUnits="MILLIMETER">
+											<Source>4th Axis Diameter</Source>
+										</DataItem>
+										<DataItem id="cancyclewoxy" category="EVENT" type="MESSAGE" name="CanCycle_w/o_XY">
+											<Source>Can Cycle Activate  Without XY</Source>
+										</DataItem>
+										<DataItem id="pgmpointerresets" category="EVENT" type="MESSAGE" name="PgmPointerResets">
+											<Source>Reset Program Pointer</Source>
+										</DataItem>
+										<DataItem id="coolantoverride" category="EVENT" type="MESSAGE" name="CoolantOverride">
+											<Source>Coolant Override</Source>
+										</DataItem>
+										<DataItem id="cuttercomptype" category="EVENT" type="MESSAGE" name="CutterCompType">
+											<Source>Cutter Comp Type</Source>
+										</DataItem>
+										<DataItem id="minfeedradiuspct" category="EVENT" type="MESSAGE" name="MinF_RadiusCC_Percent" units="PERCENT" nativeUnits="PERCENT">
+											<Source>Min F in Radius Circular Cut %</Source>
+										</DataItem>
+										<DataItem id="mirrorimagex" category="EVENT" type="MESSAGE" name="MirrorImageX">
+											<Source>Mirror Image X</Source>
+										</DataItem>
+										<DataItem id="mirrorimagey" category="EVENT" type="MESSAGE" name="MirrorImageY">
+											<Source>Mirror Image Y</Source>
+										</DataItem>
+										<DataItem id="mirrorimagez" category="EVENT" type="MESSAGE" name="MirrorImageZ">
+											<Source>Mirror Image Z</Source>
+										</DataItem>
+										<DataItem id="mirrorimagea" category="EVENT" type="MESSAGE" name="MirrorImageA">
+											<Source>Mirror Image A</Source>
+										</DataItem>
+										<DataItem id="mirrorimageb" category="EVENT" type="MESSAGE" name="MirrorImageB">
+											<Source>Mirror Image B</Source>
+										</DataItem>
+										<DataItem id="mirrorimagec" category="EVENT" type="MESSAGE" name="MirrorImageC">
+											<Source>Mirror Image C</Source>
+										</DataItem>
+										<DataItem id="m30restoresgcodes" category="EVENT" type="MESSAGE" name="M30RestoresGCodes">
+											<Source>M30 Restores G Codes</Source>
+										</DataItem>
+										<DataItem id="exactstopcannedxy" category="EVENT" type="MESSAGE" name="ExactStopCannedXY">
+											<Source>Exact Stop Canned XY</Source>
+										</DataItem>
+										<DataItem id="cuttercomp" category="EVENT" type="MESSAGE" name="CutterComp">
+											<Source>Cutter Compensation</Source>
+										</DataItem>
+										<DataItem id="toffsetmeas" category="EVENT" type="MESSAGE" name="T_OffsetMeasUsesWork">
+											<Source>T Offset Measure Uses Work</Source>
+										</DataItem>
+										<DataItem id="defaultg51scaling" category="EVENT" type="MESSAGE" name="DefaultG51Scaling">
+											<Source>Default G51 Scaling</Source>
+										</DataItem>
+										<DataItem id="defaultg68rotation" category="EVENT" type="MESSAGE" name="DefaultG68Rotation" units="DEGREE" nativeUnits="DEGREE">
+											<Source>Default G68 Rotation</Source>
+										</DataItem>
+										<DataItem id="threadchamfersize" category="EVENT" type="MESSAGE" name="ThreadChamferSize">
+											<Source>Thread Chamfer Size</Source>
+										</DataItem>
+										<DataItem id="threadchamferangle" category="EVENT" type="MESSAGE" name="ThreadChamferAngle" units="DEGREE" nativeUnits="DEGREE">
+											<Source>Thread Chamfer Angle</Source>
+										</DataItem>
+										<DataItem id="minthreadcut" category="EVENT" type="MESSAGE" name="MinThreadCut" units="MILLIMETER" nativeUnits="MILLIMETER">
+											<Source>Minimum Thread Cut</Source>
+										</DataItem>
+										<DataItem id="mainspssvvar" category="EVENT" type="MESSAGE" name="MainSpindleSSVvariation" nativeUnits="REVOLUTION/MINUTE">
+											<Source>Main Spindle SSV Variation</Source>
+										</DataItem>
+										<DataItem id="mainspssvcycle" category="EVENT" type="MESSAGE" name="MainSpindleSSVcycle" units="SECOND" nativeUnits="SECOND">
+											<Source>Main Spindle SSV Cycle</Source>
+										</DataItem>
+										<DataItem id="cancyclecutretract" category="EVENT" type="MESSAGE" name="CanCycleCutRetraction" units="MILLIMETER" nativeUnits="MILLIMETER">
+											<Source>Canned Cycle Cut Retraction</Source>
+										</DataItem>
+										<DataItem id="mainspspeedlimit" category="EVENT" type="MESSAGE" name="MainSpindleSpeedLimit" nativeUnits="REVOLUTION/MINUTE">
+											<Source>Main Spindle Speed Limit</Source>
+										</DataItem>
+										<DataItem id="ltspspeedlimit" category="EVENT" type="MESSAGE" name="LTSpindleSpeedLimit" nativeUnits="REVOLUTION/MINUTE">
+											<Source>Live Tooling Speed Limit</Source>
+										</DataItem>
+										<DataItem id="ssspeedlimit" category="EVENT" type="MESSAGE" name="SSSpindleSpeedLimit" nativeUnits="REVOLUTION/MINUTE">
+											<Source>Sub Spindle Speed Limit</Source>
+										</DataItem>
+									</DataItems>
+								</Program>
+							</Components>
+						</Setting>
+					</Components>
+				</Settings>
+				<Spindles id="spindles" name="Spindles">
+					<DataItems>
+						<DataItem id="sp1number" category="EVENT" type="MESSAGE" name="SpindleNumber">
+							<Source>Spindle Number</Source>
+						</DataItem>
+						<DataItem id="sp1enabled" category="EVENT" type="MESSAGE" name="SpindleEnabled">
+							<Source>Spindle Enabled</Source>
+						</DataItem>
+						<DataItem id="sp1maxpwr" category="EVENT" type="MESSAGE" name="SpindleMaxPower" nativeUnits="KILOWATT">
+							<Source>Spindle Maximum Power</Source>
+						</DataItem>
+						<DataItem id="sp2number" category="EVENT" type="MESSAGE" name="SubSpindleNumber">
+							<Source>SubSpindle Number</Source>
+						</DataItem>
+						<DataItem id="sp2enabled" category="EVENT" type="MESSAGE" name="SubSpindleEnabled">
+							<Source>SubSpindle Enabled</Source>
+						</DataItem>
+						<DataItem id="sp2maxpwr" category="EVENT" type="MESSAGE" name="SubSpindleMaxPower" nativeUnits="KILOWATT">
+							<Source>SubSpindle Maximum Power</Source>
+						</DataItem>
+						<DataItem id="sp3number" category="EVENT" type="MESSAGE" name="LiveToolNumber">
+							<Source>Live Tool Number</Source>
+						</DataItem>
+						<DataItem id="sp3enabled" category="EVENT" type="MESSAGE" name="LiveToolEnabled">
+							<Source>Live Tool Enabled</Source>
+						</DataItem>
+						<DataItem id="sp3maxpwr" category="EVENT" type="MESSAGE" name="LiveToolMaxPower" nativeUnits="KILOWATT">
+							<Source>Live Tool Maximum Power</Source>
+						</DataItem>
+					</DataItems>
+				</Spindles>
+				<Toolchangeposition id="toolchangeposition" name="ToolChangePosition">
+					<DataItems>
+						<DataItem id="milltcxpos" category="EVENT" type="POSITION" name="MillTcXPos" units="MILLIMETER" nativeUnits="MILLIMETER">
+							<Source>Mill Tool Change X Position</Source>
+						</DataItem>
+						<DataItem id="lathetcxpos" category="EVENT" type="POSITION" name="LatheTcXPos" units="MILLIMETER" nativeUnits="MILLIMETER">
+							<Source>Lathe Tool Change X Position</Source>
+						</DataItem>
+						<DataItem id="milltcypos" category="EVENT" type="POSITION" name="MillTcYPos" units="MILLIMETER" nativeUnits="MILLIMETER">
+							<Source>Mill Tool Change Y Position</Source>
+						</DataItem>
+						<DataItem id="lathetcypos" category="EVENT" type="POSITION" name="LatheTcYPos" units="MILLIMETER" nativeUnits="MILLIMETER">
+							<Source>Lathe Tool Change Y Position</Source>
+						</DataItem>
+						<DataItem id="milltczpos" category="EVENT" type="POSITION" name="MillTcZPos" units="MILLIMETER" nativeUnits="MILLIMETER">
+							<Source>Mill Tool Change Z Position</Source>
+						</DataItem>
+						<DataItem id="lathetczpos" category="EVENT" type="POSITION" name="LatheTczPos" units="MILLIMETER" nativeUnits="MILLIMETER">
+							<Source>Lathe Tool Change Z Position</Source>
+						</DataItem>
+					</DataItems>
+				</Toolchangeposition>
+				<Secondarysafetyposition id="secondarysafetyposition" name="SecondarySafetyPosition">
+					<DataItems>
+						<DataItem id="tcmidposx" category="EVENT" type="POSITION" name="TcMidPositionX" units="MILLIMETER" nativeUnits="MILLIMETER">
+							<Source>Tool Change Mid Position X</Source>
+						</DataItem>
+						<DataItem id="tcmidposy" category="EVENT" type="POSITION" name="TcMidPositionY" units="MILLIMETER" nativeUnits="MILLIMETER">
+							<Source>Tool Change Mid Position Y</Source>
+						</DataItem>
+						<DataItem id="tcmidposz" category="EVENT" type="POSITION" name="TcMidPositionZ" units="MILLIMETER" nativeUnits="MILLIMETER">
+							<Source>Tool Change Mid Position Z</Source>
+						</DataItem>
+					</DataItems>
+				</Secondarysafetyposition>
+				<Userposition id="userposition" name="UserPosition">
+					<Components>
+						<Tailstock id="tailstock" name="TailStock">
+							<DataItems>
+								<DataItem id="tailstockxclearance" category="EVENT" type="MESSAGE" name="TailstockXClearance" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>Tailstock X Clearance</Source>
+								</DataItem>
+								<DataItem id="tailstockzclearance" category="EVENT" type="MESSAGE" name="TailstockZClearance" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>Tailstock Z Clearance</Source>
+								</DataItem>
+							</DataItems>
+						</Tailstock>
+					</Components>
+				</Userposition>
+				<Capability id="capability" name="Capability">
+					<DataItems>
+						<DataItem id="caxiscapable" category="EVENT" type="MESSAGE" name="CAxisCapable">
+							<Source>C Axis Capable</Source>
+						</DataItem>
+						<DataItem id="mainspthreadingcapable" category="EVENT" type="MESSAGE" name="MainSpThreadingCapable">
+							<Source>Main Spindle Threading Capable</Source>
+						</DataItem>
+						<DataItem id="ltspthreadingcapable" category="EVENT" type="MESSAGE" name="LtSpThreadingCapable">
+							<Source>Lt Spindle Threading Capable</Source>
+						</DataItem>
+						<DataItem id="ssspthreadingcapable" category="EVENT" type="MESSAGE" name="SsSpThreadingCapable">
+							<Source>Ss Spindle Threading Capable</Source>
+						</DataItem>
+						<DataItem id="mainspmaxopenloopspeed" category="EVENT" type="MESSAGE" name="MainSpMaxOpenLoopSpeed" units="REVOLUTION/MINUTE" nativeUnits="REVOLUTION/MINUTE">
+							<Source>Main Spindle Maximum Speed Open Loop</Source>
+						</DataItem>
+						<DataItem id="ltspmaxopenloopspeed" category="EVENT" type="MESSAGE" name="LtSpMaxOpenLoopSpeed" units="REVOLUTION/MINUTE" nativeUnits="REVOLUTION/MINUTE">
+							<Source>Lt Spindle Maximum Speed Open Loop</Source>
+						</DataItem>
+						<DataItem id="ssspmaxopenloopspeed" category="EVENT" type="MESSAGE" name="SsSpMaxOpenLoopSpeed" units="REVOLUTION/MINUTE" nativeUnits="REVOLUTION/MINUTE">
+							<Source>Ss Spindle Maximum Speed Open Loop</Source>
+						</DataItem>
+						<DataItem id="mainspmaxopenloopacceleration" category="EVENT" type="MESSAGE" name="MainSpMaxOpenLoopAcceleration" units="MILLIMETER/SECOND^2" nativeUnits="MILLIMETER/SECOND^2">
+							<Source>Main Spindle Max Acceleration Closed Loop</Source>
+						</DataItem>
+						<DataItem id="ltspmaxopenloopacceleration" category="EVENT" type="MESSAGE" name="LtSpMaxOpenLoopAcceleration" units="MILLIMETER/SECOND^2" nativeUnits="MILLIMETER/SECOND^2">
+							<Source>Lt Spindle Max Acceleration Closed Loop</Source>
+						</DataItem>
+						<DataItem id="ssspmaxopenloopacceleration" category="EVENT" type="MESSAGE" name="SsSpMaxOpenLoopAcceleration" units="MILLIMETER/SECOND^2" nativeUnits="MILLIMETER/SECOND^2">
+							<Source>Ss Spindle Max Acceleration Closed Loop</Source>
+						</DataItem>
+					</DataItems>
+				</Capability>
+				<Activeport id="activeport" name="Activeport">
+					<DataItems>
+						<DataItem id="dprint" category="EVENT" type="MESSAGE" name="DPRINT">
+							<Source>DPRINT</Source>
+						</DataItem>
+					</DataItems>
+				</Activeport>
+				<Numberofstationstools id="numberofstationstools" name="Numberofstationstools">
+					<DataItems>
+						<DataItem id="pockets" category="EVENT" type="MESSAGE" name="STATION">
+							<Source>Number Of Tools</Source>
+						</DataItem>
+					</DataItems>
+				</Numberofstationstools>
+				<Rotarymodel id="rotarymodel" name="RotaryModel">
+					<DataItems>
+						<DataItem id="rotarymodel4th" category="EVENT" type="MESSAGE" name="RotaryModel4th">
+							<Source>Rotary Model4th</Source>
+						</DataItem>
+						<DataItem id="rotarymodel5th" category="EVENT" type="MESSAGE" name="RotaryModel5th">
+							<Source>Rotary Model5th</Source>
+						</DataItem>
+					</DataItems>
+				</Rotarymodel>
+				<Maxfeedvelocity id="maxfeedvelocity" name="Maxfeedvelocity">
+					<DataItems>
+						<DataItem id="maxfeedvel" category="EVENT" type="MESSAGE" name="MaxFeedVel" nativeUnits="MILLIMETER/MINUTE">
+							<Source>Max Feed Velocity</Source>
+						</DataItem>
+					</DataItems>
+				</Maxfeedvelocity>
+				<Maxfeedacceleration id="maxfeedacceleration" name="Maxfeedacceleration">
+					<DataItems>
+						<DataItem id="maxfeedaccel" category="EVENT" type="MESSAGE" name="MaxFeedAccel" units="MILLIMETER/SECOND^2" nativeUnits="MILLIMETER/SECOND^2">
+							<Source>Max Feed Acceleration</Source>
+						</DataItem>
+					</DataItems>
+				</Maxfeedacceleration>
+				<Controloptionsfeatures id="cof" name="ControlOptionsFeatures">
+					<DataItems>
+						<DataItem id="rigidtapping" category="EVENT" type="MESSAGE" name="RigidTappingEnabled">
+							<Source>Rigid Tapping Enabled</Source>
+						</DataItem>
+						<DataItem id="tcpcdwo" category="EVENT" type="MESSAGE" name="TcpcDwoEnabled">
+							<Source>Tcpc Dwo Enabled</Source>
+						</DataItem>
+						<DataItem id="twp" category="EVENT" type="MESSAGE" name="TwpEnabled">
+							<Source>Tilted Working Plane Enabled</Source>
+						</DataItem>
+						<DataItem id="rtcp" category="EVENT" type="MESSAGE" name="RtcpEnabled">
+							<Source>Reverse TCP Enabled</Source>
+						</DataItem>
+						<DataItem id="macro" category="EVENT" type="MESSAGE" name="MacroEnabled">
+							<Source>Macro Enabled</Source>
+						</DataItem>
+						<DataItem id="polar" category="EVENT" type="MESSAGE" name="PolarEnabled">
+							<Source>Polar Enabled</Source>
+						</DataItem>
+						<DataItem id="rotateandscaling" category="EVENT" type="MESSAGE" name="RotateAndScalingEnabled">
+							<Source>Rotation And Scaling Enabled</Source>
+						</DataItem>
+						<DataItem id="m19sporient" category="EVENT" type="MESSAGE" name="M19SpindleOrientEnabled">
+							<Source>M19 Spindle Orient Enabled</Source>
+						</DataItem>
+						<DataItem id="hispdmachine" category="EVENT" type="MESSAGE" name="HiSpeedMachiningEnabled">
+							<Source>High Speed Machining Enabled</Source>
+						</DataItem>
+						<DataItem id="vpsedit" category="EVENT" type="MESSAGE" name="VPSEditEnabled">
+							<Source>VPS Edit Enabled</Source>
+						</DataItem>
+						<DataItem id="mediadisplay" category="EVENT" type="MESSAGE" name="MediaDisplayEnabled">
+							<Source>Media Display Enabled</Source>
+						</DataItem>
+						<DataItem id="fourthaxis" category="EVENT" type="MESSAGE" name="FourthAxisEnabled">
+							<Source>Fourth Axis Enabled</Source>
+						</DataItem>
+						<DataItem id="fifthaxis" category="EVENT" type="MESSAGE" name="FifthAxisEnabled">
+							<Source>Fifth Axis Enabled</Source>
+						</DataItem>
+						<DataItem id="customrot" category="EVENT" type="MESSAGE" name="CustomRotariesEnabled">
+							<Source>Custom Rotaries Enabled</Source>
+						</DataItem>
+						<DataItem id="maxmempurchased" category="EVENT" type="MESSAGE" name="MaxMemPurchased">
+							<Source>Maximum Memory Purchased</Source>
+						</DataItem>
+						<DataItem id="wirelessnetwork" category="EVENT" type="MESSAGE" name="WirelessNetworkEnabled">
+							<Source>WirelessNetworkEnabled</Source>
+						</DataItem>
+						<DataItem id="comptable" category="EVENT" type="MESSAGE" name="CompTablesEnabled">
+							<Source>Compensation Tables Enabled</Source>
+						</DataItem>
+						<DataItem id="tscpurchased" category="EVENT" type="MESSAGE" name="TSCPurchased">
+							<Source>TSC Purchased</Source>
+						</DataItem>
+						<DataItem id="maxpurchspindlesp" category="EVENT" type="MESSAGE" name="MaxPurchSpindleSpeed" units="REVOLUTION/MINUTE" nativeUnits="REVOLUTION/MINUTE">
+							<Source>Max Purchased Spindle Speed</Source>
+						</DataItem>
+					</DataItems>
+				</Controloptionsfeatures>
+				<Auxiliaryequipment id="aux" name="AuxiliaryEquipment">
+					<DataItems>
+						<DataItem id="palletsystem" category="EVENT" type="MESSAGE" name="PalletSystemEnabled">
+							<Source>Pallet System Enabled</Source>
+						</DataItem>
+						<DataItem id="robot" category="EVENT" type="MESSAGE" name="RobotEnabled">
+							<Source>Not available</Source>
+						</DataItem>
+						<DataItem id="conveyer" category="EVENT" type="MESSAGE" name="ConveyerEnabled">
+							<Source>Conveyer Enabled</Source>
+						</DataItem>
+					</DataItems>
+				</Auxiliaryequipment>
+				<Coolant id="coolant" name="Coolant">
+					<DataItems>
+						<DataItem id="tsc" category="EVENT" type="MESSAGE" name="TscEnabled">
+							<Source>Tsc Enabled</Source>
+						</DataItem>
+						<DataItem id="hpc" category="EVENT" type="MESSAGE" name="HpcEnabled">
+							<Source>HPC Enabled</Source>
+						</DataItem>
+						<DataItem id="clntspigot" category="EVENT" type="MESSAGE" name="CoolantSpigotEnabled">
+							<Source>Coolant Spigot Enabled</Source>
+						</DataItem>
+						<DataItem id="showerclnt" category="EVENT" type="MESSAGE" name="ShowerCoolantEnabled">
+							<Source>Shower Coolant Enabled</Source>
+						</DataItem>
+						<DataItem id="pulsejet" category="EVENT" type="MESSAGE" name="PulseJet">
+							<Source>Oil Enabled</Source>
+						</DataItem>
+						<DataItem id="mist" category="EVENT" type="MESSAGE" name="MistEnabled">
+							<Source>Mist Enabled</Source>
+						</DataItem>
+						<DataItem id="tab" category="EVENT" type="MESSAGE" name="TabEnabled">
+							<Source>Tab Enabled</Source>
+						</DataItem>
+					</DataItems>
+				</Coolant>
+				<Workoffset id="workoffset" name="WorkOffset">
+					<Components>
+						<Gcodeoffset id="gcodeoffset" name="GCodeOffset">
+							<DataItems>
+								<DataItem id="comm" category="EVENT" type="WORK_OFFSET" name="Comm" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>Work Offset COMM</Source>
+								</DataItem>
+								<DataItem id="g50" category="EVENT" type="WORK_OFFSET" name="G50" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>Work Offset G50</Source>
+								</DataItem>
+								<DataItem id="g52" category="EVENT" type="WORK_OFFSET" name="G52" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>Work Offset G52</Source>
+								</DataItem>
+								<DataItem id="g54" category="EVENT" type="WORK_OFFSET" name="G54" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>Work Offset G54</Source>
+								</DataItem>
+								<DataItem id="g55" category="EVENT" type="WORK_OFFSET" name="G55" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>Work Offset G55</Source>
+								</DataItem>
+								<DataItem id="g56" category="EVENT" type="WORK_OFFSET" name="G56" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>Work Offset G56</Source>
+								</DataItem>
+								<DataItem id="g57" category="EVENT" type="WORK_OFFSET" name="G57" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>Work Offset G57</Source>
+								</DataItem>
+								<DataItem id="g58" category="EVENT" type="WORK_OFFSET" name="G58" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>Work Offset G58</Source>
+								</DataItem>
+								<DataItem id="g59" category="EVENT" type="WORK_OFFSET" name="G59" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>Work Offset G59</Source>
+								</DataItem>
+								<DataItem id="workmaterial" category="EVENT" type="MATERIAL" name="WorkMaterial">
+									<Source>Work Material Type</Source>
+								</DataItem>
+								<DataItem id="g92" category="EVENT" type="WORK_OFFSET" name="G92" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>Work Offset G92</Source>
+								</DataItem>
+								<DataItem id="g154" category="EVENT" type="WORK_OFFSET" name="G154" units="MILLIMETER" nativeUnits="MILLIMETER">
+									<Source>Work Offset G154</Source>
+								</DataItem>
+							</DataItems>
+						</Gcodeoffset>
+					</Components>
+				</Workoffset>
+				<Activecodes id="activecodes" name="ActiveCodes">
+					<DataItems>
+						<DataItem id="gcodes" category="EVENT" type="MESSAGE" name="Gcodes">
+							<Source>G Codes</Source>
+						</DataItem>
+						<DataItem id="addresscodes" category="EVENT" type="MESSAGE" name="AddressCodes">
+							<Source>Address Codes</Source>
+						</DataItem>
+						<DataItem id="dhmtcodes" category="EVENT" type="MESSAGE" name="DHMT_Codes">
+							<Source>D, H, M, T, Codes</Source>
+						</DataItem>
+					</DataItems>
+				</Activecodes>
+				<Toolinformation id="toolinformation" name="ToolInformation">
+					<Components>
+						<Tooloffsetmill id="tooloffsetmill" name="ToolOffsetMill">
+							<Components>
+								<Lengthandwear id="lengthandwearmill" name="LengthAndWearMill">
+									<DataItems>
+										<DataItem id="toolid" category="EVENT" type="MESSAGE" name="TOOL_ASSET_ID">
+											<Source>Tool Number</Source>
+										</DataItem>
+										<DataItem id="cintpos" category="EVENT" type="MESSAGE" name="CoolantPosition">
+											<Source>Coolant Position</Source>
+										</DataItem>
+										<DataItem id="lengthgeo" category="EVENT" type="MESSAGE" name="LengthGeometry" units="MILLIMETER" nativeUnits="MILLIMETER">
+											<Source>Length Geometry</Source>
+										</DataItem>
+										<DataItem id="lengthwear" category="EVENT" type="MESSAGE" name="LengthWear" units="MILLIMETER" nativeUnits="MILLIMETER">
+											<Source>Length Wear</Source>
+										</DataItem>
+										<DataItem id="diamgeo" category="EVENT" type="MESSAGE" name="DiameterGeometry" units="MILLIMETER" nativeUnits="MILLIMETER">
+											<Source>Diameter Geometry</Source>
+										</DataItem>
+										<DataItem id="diamwear" category="EVENT" type="MESSAGE" name="DiameterWear" units="MILLIMETER" nativeUnits="MILLIMETER">
+											<Source>Diameter Wear</Source>
+										</DataItem>
+										<DataItem id="flutes" category="EVENT" type="MESSAGE" name="Flutes">
+											<Source>Flutes</Source>
+										</DataItem>
+										<DataItem id="actualdiam" category="EVENT" type="MESSAGE" name="ActualDiameter" units="MILLIMETER" nativeUnits="MILLIMETER">
+											<Source>Actual Diameter</Source>
+										</DataItem>
+										<DataItem id="tooltype" category="EVENT" type="MESSAGE" name="ToolType">
+											<Source>Tool Type</Source>
+										</DataItem>
+										<DataItem id="toolmaterial" category="EVENT" type="MESSAGE" name="ToolMaterial">
+											<Source>Tool Material</Source>
+										</DataItem>
+										<DataItem id="approxlength" category="EVENT" type="MESSAGE" name="ApproxLength" units="MILLIMETER" nativeUnits="MILLIMETER">
+											<Source>Approx Length</Source>
+										</DataItem>
+										<DataItem id="approxdiam" category="EVENT" type="MESSAGE" name="ApproxDiameter" units="MILLIMETER" nativeUnits="MILLIMETER">
+											<Source>Approx Diameter</Source>
+										</DataItem>
+										<DataItem id="edgemeasure" category="EVENT" type="MESSAGE" name="EdgeMeasure" units="MILLIMETER" nativeUnits="MILLIMETER">
+											<Source>Edge Measure</Source>
+										</DataItem>
+										<DataItem id="toolclearance" category="EVENT" type="MESSAGE" name="ToolClearance" units="MILLIMETER" nativeUnits="MILLIMETER">
+											<Source>Tool Clearance</Source>
+										</DataItem>
+										<DataItem id="probetype" category="EVENT" type="MESSAGE" name="ProbeType">
+											<Source>Probe Type</Source>
+										</DataItem>
+										<DataItem id="pocket" category="EVENT" type="MESSAGE" name="Pocket">
+											<Source>Pocket</Source>
+										</DataItem>
+									</DataItems>
+								</Lengthandwear>
+							</Components>
+						</Tooloffsetmill>
+						<Tooloffsetlathe id="tooloffsetlathe" name="ToolOffsetLathe">
+							<Components>
+								<Lengthandwear id="lengthandwearlathe" name="LengthAndWearLathe">
+									<DataItems>
+										<DataItem id="toolidlathe" category="EVENT" type="MESSAGE" name="TOOL_ASSET_ID">
+											<Source>Tool Number</Source>
+										</DataItem>
+										<DataItem id="xgeometry" category="EVENT" type="MESSAGE" name="XGeometry" units="MILLIMETER" nativeUnits="MILLIMETER">
+											<Source>X Geometry</Source>
+										</DataItem>
+										<DataItem id="xwear" category="EVENT" type="MESSAGE" name="XGeometryWear" units="MILLIMETER" nativeUnits="MILLIMETER">
+											<Source>X Geometry Wear</Source>
+										</DataItem>
+										<DataItem id="ygeometry" category="EVENT" type="MESSAGE" name="YGeometry" units="MILLIMETER" nativeUnits="MILLIMETER">
+											<Source>Y Geometry</Source>
+										</DataItem>
+										<DataItem id="ywear" category="EVENT" type="MESSAGE" name="YGeometryWear" units="MILLIMETER" nativeUnits="MILLIMETER">
+											<Source>Y Geometry Wear</Source>
+										</DataItem>
+										<DataItem id="zgeometry" category="EVENT" type="MESSAGE" name="ZGeometry" units="MILLIMETER" nativeUnits="MILLIMETER">
+											<Source>Z Geometry</Source>
+										</DataItem>
+										<DataItem id="zwear" category="EVENT" type="MESSAGE" name="ZGeometryWear" units="MILLIMETER" nativeUnits="MILLIMETER">
+											<Source>Z Geometry Wear</Source>
+										</DataItem>
+										<DataItem id="diamgeolathe" category="EVENT" type="MESSAGE" name="DiameterGeometry" units="MILLIMETER" nativeUnits="MILLIMETER">
+											<Source>Diameter Geometry</Source>
+										</DataItem>
+										<DataItem id="diamwearlathe" category="EVENT" type="MESSAGE" name="DiameterWear" units="MILLIMETER" nativeUnits="MILLIMETER">
+											<Source>Diameter Wear</Source>
+										</DataItem>
+										<DataItem id="taper" category="EVENT" type="MESSAGE" name="Taper">
+											<Source>Taper</Source>
+										</DataItem>
+										<DataItem id="tip" category="EVENT" type="MESSAGE" name="Tip">
+											<Source>Tip</Source>
+										</DataItem>
+										<DataItem id="tooltypelathe" category="EVENT" type="MESSAGE" name="ToolType">
+											<Source>Tool Type</Source>
+										</DataItem>
+										<DataItem id="toolmateriallathe" category="EVENT" type="MESSAGE" name="ToolMaterial">
+											<Source>Tool Material</Source>
+										</DataItem>
+										<DataItem id="pocketlathe" category="EVENT" type="MESSAGE" name="Pocket">
+											<Source>Pocket</Source>
+										</DataItem>
+									</DataItems>
+								</Lengthandwear>
+							</Components>
+						</Tooloffsetlathe>
+					</Components>
+				</Toolinformation>
+				<Macrovariablestart id="macrovariablestart" name="MacroVariableStart">
+					<DataItems>
+						<DataItem id="macrorange1" category="EVENT" type="MESSAGE" name="MacroRange1">
+							<Source>Macros 1 to 33</Source>
+						</DataItem>
+						<DataItem id="macrorange2" category="EVENT" type="MESSAGE" name="MacroRange2">
+							<Source>Macros 10000 to 10199</Source>
+						</DataItem>
+						<DataItem id="macrorange3" category="EVENT" type="MESSAGE" name="MacroRange3">
+							<Source>Macros 10200 to 10399</Source>
+						</DataItem>
+						<DataItem id="macrorange4" category="EVENT" type="MESSAGE" name="MacroRange4">
+							<Source>Macros 10400 to 10599</Source>
+						</DataItem>
+						<DataItem id="macrorange5" category="EVENT" type="MESSAGE" name="MacroRange5">
+							<Source>Macros 10600 to 10799</Source>
+						</DataItem>
+						<DataItem id="macrorange6" category="EVENT" type="MESSAGE" name="MacroRange6">
+							<Source>Macros 10800 to 10999</Source>
+						</DataItem>
+					</DataItems>
+				</Macrovariablestart>
+			</Components>
+		</Device>
+	</Devices>
+</MTConnectDevices>

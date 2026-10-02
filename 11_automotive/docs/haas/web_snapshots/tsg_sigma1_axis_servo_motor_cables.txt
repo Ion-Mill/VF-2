@@ -1,0 +1,985 @@
+
+ Sigma 1 - Axis Servo Motor and Cables - Troubleshooting Guide - CHC 
+ MyHaas 
+ Welcome,
+ !
+ Haas Tooling 
+ Guest Order History 
+ MyHaas/HaasConnect 
+ Sign In 
+ Register 
+ Haas Tooling 
+ My Account 
+ Order History 
+ Return History 
+ MyHaas/HaasConnect 
+ Sign Out 
+ Welcome, 
+ My Machines 
+ Latest Activity 
+ My Quotes 
+ My Account 
+ My Users 
+ Sign Out 
+ Find Your Distributor 
+ Select Language 
+ English 
+ Deutsch 
+ Español - España 
+ Español - México 
+ Français 
+ Italiano 
+ Português 
+ Český 
+ Dansk 
+ Nederlands 
+ Magyar 
+ Polski 
+ Svenska 
+ Türkçe 
+ 中文 
+ Suomi 
+ Norsk 
+ الإنجليزية 
+ български 
+ Hrvatski 
+ Ελληνικά 
+ Română 
+ Slovenský 
+ Slovenščina 
+ 한국어 
+ 日本語 
+ Українська 
+ machines 
+ Main Menu 
+ Vertical Mills 
+ Vertical Mills 
+ Vertical Mills 
+ View All 
+ Vertical Mills 
+ VF Series 
+ Universal Machines 
+ VR Series 
+ VP-5 Prismatic 
+ Pallet-Changing VMCs 
+ Mini Mills 
+ Mold Machines 
+ High-Speed Drill Centers 
+ Drill/ Tap/ Mill Series 
+ Toolroom Mills 
+ Compact Mills 
+ Gantry Series 
+ SR Sheet Routers 
+ Extra-Large VMC 
+ Double-Column Mills 
+ Desktop Mill 
+ Control Simulator 
+ Mill Automatic Parts Loader 
+ Compact Automatic Parts Loader 
+ Multi-Axis Solutions 
+ Multi-Axis Solutions 
+ Multi-Axis Solutions 
+ View All 
+ Multi-Axis Solutions 
+ Y-Axis Lathes 
+ 5-Axis Mills 
+ Lathes 
+ Lathes 
+ Lathes 
+ View All 
+ Lathes 
+ ST Series 
+ Dual-Spindle 
+ Toolroom Lathes 
+ Chucker Lathe 
+ Desktop Lathe 
+ Haas Bar Feeder 
+ Lathe Automatic Parts Loader 
+ Horizontal Mills 
+ Horizontal Mills 
+ Horizontal Mills 
+ View All 
+ Horizontal Mills 
+ 50-Taper 
+ 40-Taper 
+ Rotaries & Indexers 
+ Rotaries & Indexers 
+ Rotaries & Indexers 
+ View All 
+ Rotaries & Indexers 
+ Rotary Tables 
+ Indexers 
+ 5-Axis Rotaries 
+ Extra-Large Rotaries 
+ Automation Systems 
+ Automation Systems 
+ Automation Systems 
+ View All 
+ Automation Systems 
+ Mill Automation 
+ Lathe Automation 
+ Automation Models 
+ Desktop Machines 
+ Desktop Machines 
+ Desktop Machines 
+ View All 
+ Desktop Machines 
+ Desktop Mill 
+ Desktop Lathe 
+ Shop Equipment 
+ Shop Equipment 
+ Shop Equipment 
+ View All 
+ Shop Equipment 
+ Band Saw 
+ Knee Mill 
+ Surface Grinder 
+ QUICK LINKS 
+ Special Series  
+ Special Series  
+ EU SERIES 
+ EU SERIES 
+ BUILD & PRICE | PRICE LIST 
+ BUILD & PRICE | PRICE LIST 
+ In-Stock Machines 
+ In-Stock Machines 
+ WHAT’S NEW 
+ WHAT’S NEW 
+ YOUR FIRST CNC 
+ YOUR FIRST CNC 
+ HAAS SIX PACK 
+ HAAS SIX PACK 
+ SHOPPING TOOLS 
+ Build & Price a Haas 
+ Price List 
+ Available Inventory 
+ CNCA Financing 
+ WANT TO TALK TO SOMEONE? A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+ CONTACT YOUR DISTRIBUTOR > 
+ Options 
+ Main Menu 
+ Spindles 
+ Spindles 
+ Spindles 
+ View All 
+ Spindles 
+ Tool Changers 
+ Tool Changers 
+ Tool Changers 
+ View All 
+ Tool Changers 
+ 4th- | 5th-Axis 
+ 4th- | 5th-Axis 
+ 4th- | 5th-Axis 
+ View All 
+ 4th- | 5th-Axis 
+ Turrets & Live Tooling 
+ Turrets & Live Tooling 
+ Turrets & Live Tooling 
+ View All 
+ Turrets & Live Tooling 
+ Probing 
+ Probing 
+ Probing 
+ View All 
+ Probing 
+ Chip & Coolant Management 
+ Chip & Coolant Management 
+ Chip & Coolant Management 
+ View All 
+ Chip & Coolant Management 
+ The Haas Control 
+ The Haas Control 
+ The Haas Control 
+ View All 
+ The Haas Control 
+ Product Options 
+ Product Options 
+ Product Options 
+ View All 
+ Product Options 
+ Tooling & Fixturing 
+ Tooling & Fixturing 
+ Tooling & Fixturing 
+ View All 
+ Tooling & Fixturing 
+ Workholding 
+ Workholding 
+ Workholding 
+ View All 
+ Workholding 
+ 5-Axis Solutions 
+ 5-Axis Solutions 
+ 5-Axis Solutions 
+ View All 
+ 5-Axis Solutions 
+ 5 Easy Steps to 5-Axis 
+ QUICK LINKS 
+ Special Series  
+ Special Series  
+ EU SERIES 
+ EU SERIES 
+ BUILD & PRICE | PRICE LIST 
+ BUILD & PRICE | PRICE LIST 
+ In-Stock Machines 
+ In-Stock Machines 
+ WHAT’S NEW 
+ WHAT’S NEW 
+ YOUR FIRST CNC 
+ YOUR FIRST CNC 
+ HAAS SIX PACK 
+ HAAS SIX PACK 
+ SHOPPING TOOLS 
+ Build & Price a Haas 
+ Price List 
+ Available Inventory 
+ CNCA Financing 
+ WANT TO TALK TO SOMEONE? A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+ CONTACT YOUR DISTRIBUTOR > 
+ Why Haas 
+ Main Menu 
+ Discover the Haas Difference 
+ Why Haas 
+ MyHaas 
+ Education Community 
+ Industry 4.0 
+ Haas Certification 
+ Customer Testimonials 
+ Service 
+ Main Menu 
+ Welcome to Haas Service 
+ SERVICE HOME 
+ Operator’s Manuals 
+ How-To Procedures 
+ Troubleshooting Guides 
+ Preventive Maintenance 
+ Haas Parts 
+ Haas Tooling 
+ Videos 
+ Videos 
+ Main Menu 
+ Main Menu 
+ View All 
+ View All 
+ Haas 10 kg Cobot Package 
+ View All 
+ View All 
+ View All 
+ Haas 10 kg Cobot Package 
+ Cobot Kits 
+ View All 
+ View All 
+ 4 - AUTOMATION SYSTEMS 
+ View All 
+ QUICK LINKS 
+ Special Series  
+ Special Series  
+ EU SERIES 
+ EU SERIES 
+ BUILD & PRICE | PRICE LIST 
+ BUILD & PRICE | PRICE LIST 
+ In-Stock Machines 
+ In-Stock Machines 
+ WHAT’S NEW 
+ WHAT’S NEW 
+ YOUR FIRST CNC 
+ YOUR FIRST CNC 
+ HAAS SIX PACK 
+ HAAS SIX PACK 
+ SHOPPING TOOLS 
+ Build & Price a Haas 
+ Price List 
+ Available Inventory 
+ CNCA Financing 
+ WANT TO TALK TO SOMEONE? A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+ CONTACT YOUR DISTRIBUTOR > 
+ Haas Tooling 
+ Main Menu 
+ Automation Accessories 
+ Shop Support 
+ Mill Toolholding 
+ Mill Cutting Tools 
+ Boring Systems 
+ Mill Workholding 
+ Lathe Toolholding 
+ Lathe Cutting Tools 
+ Lathe Workholding 
+ Package Kits 
+ ER Collets & Chucks 
+ Holemaking 
+ Threading 
+ Broaching 
+ Tombstones & Kits 
+ Manual Chucks For Milling 
+ Deburring & Abrasives 
+ Tool Presetter & Heat Shrinkers 
+ Storage & Handling 
+ Machine Maintenance 
+ Tooling Accessories 
+ Apparel & Accessories 
+ Measuring & Inspection 
+ Winner's Circle 
+ Winner's Circle 
+ Clearance 
+ Today's Hot Deals 
+ Haas Tooling 
+ Winner's Circle 
+ Winner's Circle 
+ Shop All 
+ WINNERS_CIRCLE-1Y 
+ Winner's Circle 
+ Winner's Circle 
+ Shop All 
+ WC-1Y-EU 
+ Today’s Hot Deals 
+ Today’s Hot Deals 
+ Shop All 
+ Mill Toolholding 
+ Mill Tooling 
+ Measuring & Inspection 
+ Boring Systems 
+ Mill Workholding 
+ Shell Mill Kits 
+ Lathe Toolholding 
+ Lathe Tooling 
+ Lathe Workholding 
+ ER Collets & Chucks 
+ Holemaking 
+ Threading 
+ Broaching 
+ Tool Storage 
+ Apparel & Accessories 
+ Clearance 
+ Clearance 
+ Shop All 
+ Measuring & Inspection 
+ Measuring & Inspection 
+ Shop All 
+ Probe Kits & Accessories 
+ Edge & Center Finders 
+ Comparative Measuring Gauges 
+ Height Gauges 
+ Calipers 
+ Threaded Plug & Ring Gauges 
+ Gauge Blocks 
+ Pin Gauges 
+ Drop Indicators 
+ Dial Test Indicators 
+ Bore Gauges 
+ Indicator Accessories 
+ V Blocks 
+ Setup Blocks 
+ Depth Measuring 
+ Micrometers 
+ Micrometer Accessories 
+ Micrometer Kits 
+ Bore Gauge Kits 
+ Starter Kits 
+ Indicator Kits 
+ Caliper Kits 
+ Toolholder Check Station 
+ Height Setters 
+ Coordinate Measuring Machines 
+ Automation Accessories 
+ Automation Accessories 
+ Shop All 
+ Cobot Kits 
+ Cobot Kits 
+ Protective Barriers 
+ Grippers 
+ Robot Cell Accessories 
+ Shop Support 
+ Shop Support 
+ Shop All 
+ Air Compressors 
+ Laser Marking Machines 
+ Mill Toolholding 
+ Mill Toolholding 
+ Shop All 
+ End Mill Holders 
+ Shell Mill Holders 
+ Shrink Fit Holders 
+ ER Collet Chucks 
+ Milling Chucks & Collets 
+ NC Drilling Chucks 
+ Pull Studs / Retention Knobs 
+ Rotary Tool Holder & Tool Chuck Kits 
+ Hydraulic Milling Chucks & Collets 
+ Toolholder Attachments & Wrenches 
+ Mill Broaching Holders 
+ Mill Tooling 
+ Mill Tooling 
+ Shop All 
+ Shell Mill Bodies 
+ Milling Inserts 
+ End Mills 
+ Chamfer Mills & Inserts 
+ Indexable End Mill Bodies 
+ Ball End Mills 
+ Chamfer End Mills 
+ Roughing End Mills 
+ Indexable Ball End Mills & Inserts 
+ Shell Mill Kits 
+ Chamfer Mill Kits 
+ Indexable End Mill Kits 
+ Dovetail Cutters 
+ Indexable Dovetail Cutters 
+ Engraving End Mills 
+ Rotary Burrs / Die Grinding Bits 
+ Keyseat Cutters 
+ Corner Rounding End Mills 
+ Slot Mill Bodies 
+ Boring Systems 
+ Boring Systems 
+ Shop All 
+ Boring Heads & Cartridges 
+ Boring Holders & Extensions 
+ Mill Workholding 
+ Mill Workholding 
+ Shop All 
+ Fixed-Jaw Vises 
+ Self-Centering Vises 
+ Adapter Plates 
+ Vise Jaws 
+ Vise Mounts & Fixtures 
+ Vise Kits 
+ Vise Parallels 
+ Rotary Vise Kits 
+ Fixture Clamps 
+ Automated Workholding Kits 
+ Tooling Plates 
+ Toolmakers' Vises 
+ Clamp Force Gauges 
+ Collet Fixtures 
+ Angle Plates 
+ Lathe Toolholding 
+ Lathe Toolholding 
+ Shop All 
+ TL & CL Static Turning Holders 
+ BOT Static Turning Holders 
+ BMT Static Turning Holders 
+ Live / Driven Turning Holders 
+ Turning Holder Reduction Sleeves / Bushings 
+ VDI Static Turning Holders 
+ Turning Holder Accessories 
+ Lathe Tooling 
+ Lathe Tooling 
+ Shop All 
+ Cut-Off Tool Blocks & Blades 
+ Cut-Off Tooling Kits 
+ Turning Inserts 
+ Grooving & Cut-Off Tools 
+ Internal (ID) Grooving & Threading Tools 
+ Threading Inserts 
+ Threading Tools 
+ Boring Bars / Internal (ID) Turning Tools 
+ External (OD) Turning Tools 
+ Cermet Turning Inserts 
+ CBN Turning Inserts 
+ Haas Notch Grooving & Threading Inserts 
+ Haas Notch Grooving & Threading Tools 
+ Micro Turning Tools 
+ Desktop Lathe Tools 
+ Lathe Workholding 
+ Lathe Workholding 
+ Shop All 
+ Live Centers 
+ Spindle Reduction Sleeves / Liners 
+ Quick-Change Collets 
+ Quick-Change Collet Chucks 
+ 5C Collets 
+ 5C Collet Sets 
+ Lathe Jaw Boring Rings 
+ Lathe Jaws 
+ Bar Pullers 
+ Scroll Chucks 
+ Package Kits 
+ Package Kits 
+ Shop All 
+ Chip Clearing Fan Kits 
+ Cutting Tool Kits 
+ Indexable End Mill Kits 
+ Cut-Off Tool Block & Blade Kits 
+ Drill & Tap Kits 
+ Indexable Drilling Kits 
+ Shell Mill Kits 
+ Chamfer Mill Kits 
+ Rotary Tool Holder & Tool Chuck Kits 
+ Lathe Starter Kits 
+ Workholding Kits 
+ Rotary Vise Kits 
+ Vise Kits 
+ 3-Jaw Chuck Kits for Mills 
+ Tombstone Kits 
+ Reduction Sleeve Kits 
+ Automated Workholding Kits 
+ Measuring & Inspection Kits 
+ Starter Kits 
+ Bore Gauge Kits 
+ Caliper Kits 
+ Indicator Kits 
+ Micrometer Kits 
+ ER Collets & Chucks 
+ ER Collets & Chucks 
+ Shop All 
+ ER Straight-Bore Collets 
+ ER Sealed Collets 
+ ER Tap Collets 
+ ER Collet Sets & Accessories 
+ ER Collet Chucks 
+ Straight Shank ER Collet Chucks 
+ Straight Shank Keyless NC Drilling Chucks 
+ Holemaking 
+ Holemaking 
+ Shop All 
+ Carbide Drills 
+ Indexable Drill Bodies 
+ Indexable Drill Inserts 
+ Modular Drill Bodies 
+ Modular Drill Heads 
+ Cobalt Drills & Sets 
+ Center Drills 
+ Reamers 
+ Indexable Drilling Kits 
+ Spot Drills 
+ Spade Drill Bodies 
+ Spade Drill Inserts 
+ Countersinks 
+ Threading 
+ Threading 
+ Shop All 
+ Taps 
+ Threading Inserts 
+ Threading Tools 
+ Thread Mills 
+ Pipe Taps 
+ Drill Tap Kits 
+ Broaching 
+ Broaching 
+ Shop All 
+ Broaching Tools 
+ Broaching Inserts 
+ Tombstones 
+ Tombstones 
+ Shop All 
+ Tombstones 
+ Tombstone Kits 
+ Manual Chucks For Milling 
+ Manual Chucks For Milling 
+ Shop All 
+ 3-Jaw Chucks & Mounts for Mills 
+ Deburring & Abrasives 
+ Deburring & Abrasives 
+ Shop All 
+ Abrasive Pads 
+ Deburr Tools 
+ Deburr Wheels 
+ Abrasive Sheets & Rolls 
+ Sharpening / Lapping Stones 
+ Tool Presetter & Heat Shrinkers 
+ Tool Presetter & Heat Shrinkers 
+ Shop All 
+ Tool Presetting Machines 
+ Shrink Fit Machines 
+ Tool Storage 
+ Tool Storage 
+ Shop All 
+ Tool Carts 
+ Machine Maintenance 
+ Machine Maintenance 
+ Shop All 
+ Spindle Test Bars 
+ Levels 
+ Refractometers 
+ Machine Additives & Supplies 
+ Machine Accessories 
+ Machine Maintenance Kits 
+ Tooling Accessories 
+ Tooling Accessories 
+ Shop All 
+ Spindle & Toolholder Taper Cleaners 
+ Haas Shop Lift 
+ Toolholder Fixtures 
+ CNC Chip Clearing Fans 
+ Hammers & Mallets 
+ Anti-Fatigue Mats 
+ Layout Tools 
+ Wrenches 
+ Magnetic Tools 
+ Torque Screwdrivers 
+ Hand Cutting Tools 
+ Shop Stools 
+ Apparel & Accessories 
+ Apparel & Accessories 
+ Shop All 
+ Accessories 
+ Apparel 
+ HAAS TOOLING QUICK LINKS 
+ NEW PRODUCTS 
+ NEW PRODUCTS 
+ NEW PRODUCTS 
+ NEW PRODUCTS 
+ MOST POPULAR 
+ MOST POPULAR 
+ TOOLING PROMOS 
+ TOOLING PROMOS 
+ FINANCING & OPEN TERMS 
+ FINANCING & OPEN TERMS 
+ PAY BY INVOICE 
+ PAY BY INVOICE 
+ FAQs 
+ FAQs 
+ KITS CREATED FOR YOU 
+ KITS CREATED FOR YOU 
+ Haas Service Parts 
+ Main Menu 
+ Automatic Pallet Changer 
+ Lathe Turret 
+ Tool Changer 
+ Chip Management 
+ Coolant 
+ Counterbalance 
+ Electrical Cabinet 
+ Enclosure 
+ Hydraulics 
+ Lubrication 
+ Maintenance 
+ Pendant 
+ Probing 
+ Rotary 
+ Spindle 
+ Tailstock 
+ Haas Service Parts 
+ Automatic Pallet Changer 
+ Automatic Pallet Changer 
+ Shop All 
+ HMC - Automatic Pallet Changer 
+ VMC - Automatic Pallet Changer 
+ Lathe Turret 
+ Lathe Turret 
+ Shop All 
+ Lathe - Turret 
+ Live Tooling 
+ Tool Changer 
+ Tool Changer 
+ Shop All 
+ Side Mount 
+ Umbrella 
+ Chip Management 
+ Chip Management 
+ Shop All 
+ Multi Auger 
+ Single Auger 
+ Coolant 
+ Coolant 
+ Shop All 
+ Auxiliary Filter 
+ HPC-300 (Lathe) 
+ HPC-1000 (Lathe) 
+ Oil Skimmer 
+ Standard Coolant 
+ TSC-300 (Mill) 
+ TSC-1000 (Mill) 
+ Coolant Refill 
+ Loc-Line 
+ Counterbalance 
+ Counterbalance 
+ Shop All 
+ Charge & Discharge Hose 
+ Electrical Cabinet 
+ Electrical Cabinet 
+ Shop All 
+ Fans 
+ Filters 
+ Upgrade Kits 
+ Enclosure 
+ Enclosure 
+ Shop All 
+ Accessories 
+ Air Nozzle 
+ Decals 
+ Door Bumpers 
+ Lighting 
+ Windows, Gaskets, & Weather Strip 
+ Chip & Coolant Management 
+ Hydraulics 
+ Hydraulics 
+ Shop All 
+ Filters 
+ Gauges 
+ Heat Exchanger 
+ Hoses 
+ Lubrication 
+ Lubrication 
+ Shop All 
+ Bijur Mechanical Lubrication 
+ Minimum Lubrication 
+ Maintenance 
+ Maintenance 
+ Shop All 
+ Grease, Oil, & Sealants 
+ Pendant 
+ Pendant 
+ Shop All 
+ Floppy Disk & USB 
+ Keypad 
+ Keys 
+ Lens 
+ Gaskets & Seals 
+ Probing 
+ Probing 
+ Shop All 
+ Mill Probing 
+ Lathe Tool Presetter 
+ Rotary 
+ Rotary 
+ Shop All 
+ Rotary Gaskets & Seals 
+ Spindles 
+ Spindles 
+ Shop All 
+ Couplings 
+ Gaskets & Seals 
+ Spindle Motor Drive 
+ Gearbox Drive 
+ Tool Release Piston 
+ Tailstock 
+ Tailstock 
+ Shop All 
+ Handles 
+ × 
+ Search Results
+ Web Pages
+ Images
+ < 
+ 1 
+ > 
+ MyHaas 
+ Welcome,
+ !
+ Haas Tooling 
+ Guest Order History 
+ MyHaas/HaasConnect 
+ Sign In 
+ Register 
+ Haas Tooling 
+ My Account 
+ Order History 
+ Return History 
+ MyHaas/HaasConnect 
+ Sign Out 
+ Welcome, 
+ My Machines 
+ Latest Activity 
+ My Quotes 
+ My Account 
+ My Users 
+ Sign Out 
+ Find Your Distributor 
+ Select Language 
+ English 
+ Deutsch 
+ Español - España 
+ Español - México 
+ Français 
+ Italiano 
+ Português 
+ Český 
+ Dansk 
+ Nederlands 
+ Magyar 
+ Polski 
+ Svenska 
+ Türkçe 
+ 中文 
+ Suomi 
+ Norsk 
+ الإنجليزية 
+ български 
+ Hrvatski 
+ Ελληνικά 
+ Română 
+ Slovenský 
+ Slovenščina 
+ 한국어 
+ 日本語 
+ Українська 
+ × 
+ Search Results
+ Web Pages
+ Images
+ < 
+ 1 
+ > 
+ Sigma 1 - Axis Servo Motor and Cables - Troubleshooting Guide - CHC
+ -->
+ -->
+ -->
+ Service Home 
+ Sigma 1 - Axis Servo Motor and Cables - Troubleshooting Guide - CHC 
+ Your document is ready for download, please click below to download your document.
+ Download Document 
+ Error processing this document, please try again or Contact Us .
+ Please wait while your document is being loaded.
+ Recently Updated 
+ Last updated: 01/31/2022 
+ Sigma 1 - Axis Servo Motor and Cables - Troubleshooting Guide - CHC
+ Sigma 1 - Axis Servo Motor and Cables - Troubleshooting Guide - CHC
+ Jump to Section 
+ 1.  Electrical Safety 
+ 2.  Symptom Table 
+ 3.  Power Cable 
+ 4.  Servo Motor 
+ 5.  Main Processor/Encoder Cable/Encoder 
+ 6.  Motor Brake 
+ 7.  Electrical Diagrams 
+ Back to Top 
+ Your document is ready for download, please click below to download your document.
+ Download Document 
+ Error processing this document, please try again or Contact Us .
+ Please wait while your document is being loaded.
+ Electrical Safety
+   Caution:  When you do maintenance or repair on CNC machines and their components, you must always follow basic safety precautions. This decreases the risk of injury and mechanical damage.
+ Set the main circuit breaker to the  [OFF]  position.
+   Danger:  Before beginning any work inside the control cabinet the High Voltage indicator light on the 320V Power Supply / Vector Drive must have been off for at least 5 minutes.
+ Some service procedures can be dangerous or life-threatening. DO NOT attempt a procedure that you do not fully understand. If you have any doubts about doing a procedure contact your Haas Factory Outlet (HFO) and schedule a service visit.
+ Symptom Table
+ Symptom 
+ Probable Cause 
+ Corrective Action 
+ Alarm 161 - 164  AXIS DRIVE FAULT. Alarm 993  AMPLIFIER SHORT CIRCUIT
+ Faulty servo amplifier.
+ Check the corresponding amplifier assembly. Refer to  Servo Amplifier - Troubleshooting Guide  to troubleshoot the amplifier.
+ Faulty power cable.
+ Inspect the cables and connectors. Refer to the Power Cable section below.
+ Faulty servo motor.
+ Check the corresponding servo motor. Refer to Servo Motor section below.
+ Alarm 103 - 105, 270, 709  AXIS SERVO ERROR TOO LARGE.
+ Faulty encoder cable/connection or faulty encoder.
+ Inspect the cables and connectors. Refer to the Main Processor/Encoder Cable section below. Check the encoder steps/revolution versus and ball screw pitch and verify the encoder counts are accurate per each rotation.
+ The axis motor brake, is not disengaging when servos are enabled.
+ See the Motor Brake section below:
+ The axis ballscrew is damaged.
+ Check the corresponding axis ballscrew. Refer to  Ballscrew - Troubleshooting Guide  to troubleshoot the ballscrew.
+ Classic Haas Control Only - The machine parameters are not correct.
+ Make sure you have the correct parameters for the type of axis motor. 
+ Determine if machine has Sigma-1 or Sigma-5 motors. Note:  The Sigma-5 axis motor have a push-lock connector for the encoder plug.
+ Run parameter checker and select either Sigma-1 or Sigma-5 option.
+ Alarm 103 - 105  AXIS SERVO ERROR TOO LARGE, during the zero return process. The axis zero returns in the wrong direction.
+ The home sensor is being made during the zero return process causing the axis to zero return in the opposite direction.
+ Check the axis home switch to make sure there are no metal chips on top of the sensor.
+ Alarm 135 - 137  AXIS MOTOR OVERHEAT.
+ Faulty encoder cable/connection or faulty encoder.
+ Inspect the cables and connectors. Refer to the Main Processor/Encoder Cable section below. Check the encoder steps/revolution versus and ball screw pitch and verify the encoder counts are accurate per each rotation..
+ The Mocon/Maincon PCB axis channel is defective.
+ Swap the Encoder/Drive channels with another axis, if the alarm stays with the encoder/drive channel then the Mocon/Maincon PCB is defective.
+ The low-volt-power-supply is defective.
+ Check the +5V / +12V / -12V DC voltages going to the Mocon/ Maincon PCB.
+ The parameter OVER TEMP NC bit 14 for the axis is incorrect.
+ Make sure this parameter bit is set correctly. This is normally a 1.
+ Alarm 139 - 142 190, 273  MOTOR Z FAULT.
+ Alarm 153 - 156  Z CHANNEL MISSING
+ Alarm 182 - 185, 194, 278  AXIS ENCODER CABLE FAULT.
+ Alarm 217, 218, 219  AXIS PHASE ERROR
+ Alarm 224 - 228  AXIS TRANSITION FAULT
+ Faulty encoder cable or connection.
+ Inspect the cables and connectors. Refer to the Main Processor/Encoder Cable section below.
+ Faulty encoder on servo motor.
+ Check the motor for coolant contamination. Check the encoder steps/revolution versus and ball screw pitch and verify the encoder counts are accurate per each rotation.
+ Power Cable
+ Corrective Action: 
+ Make sure the cables are connected correctly to the corresponding amplifier. Inspect the connector at the motor. Look for loose connections or contamination.
+ Look for signs of damage or stiffness on the cable. Disconnect the power cable from the amplifier and motor. Measure the resistance from leg to leg, and from leg to ground. Make sure the measurements result in an open connection. Check each leg from one end of the cable to the corresponding leg on the other end of the cable for continuity. If there is an open connection, there is a problem with the cable.
+ Servo Motor
+ Corrective Action: 
+ Make sure the motor's connectors are not contaminated. Disconnect and inspect the power cable connector at the motor. Make sure that there is no coolant contamination. Coolant contamination can generate drive fault alarms and damage the amplifier. Measure the resistance from the pins labeled A, B and C at the motor connector to chassis ground.
+ The reading must show an open circuit.
+ If the reading does not show an open circuit, the servo motor is at fault.
+ Main Processor/Encoder Cable/Encoder
+ Corrective Action - Main Processor/Cable: 
+ Examine the connector [1] on the Maincon or MOCON PCB. Make sure it is not damaged.
+ Examine the cable. Look for signs of damage or stiffness. The connector [4] has two housings [2,3] for the cable pins.
+ Measure the resistance on the encoder cable from leg to leg, and from leg to ground. Make sure each measurement results in an open connection.
+ Make sure the cable is firmly connected at both ends. Reseat both connections. Make sure the cable is installed in the correct connector at the Maincon or MOCON PCB.
+ Corrective Action - Servo Motor Encoder: 
+ Check the encoder steps/revolution in the configuration file. Jog the axis and based on the distance the ball screw travels per revolution (ball screw pitch), verify the encoder counts are accurate per each rotation. View the diagnostic>axis page as you jog the axis. The raw encoder count will show you how many encoder steps have been counted.  The z axis channel will also show how many steps have been counted, but will reset each time the z-pulse is passed.  The z-pulse is the encoder zero point, so it will reset every time the encoder does one revolution. Based on this information, you will know if the encoder works if the correct amount of steps per revolution are counted each time you jog the axis the distance of the ball screw pitch length.  If the numbers do not match up, you have a problem.
+ Motor Brake
+ Corrective Action: 
+ Reseat the the connection for connectors P79 or P78 [1] on the I/O PCB.
+ Measure the voltage across the red and black cables.
+ Press [EMERGENCY STOP] . There should be no voltage.
+ Press [RESET] to clear the alarms. The voltage should be between 20-30 VDC.
+ Examine the connection at the motor's brake [2] and power connectors [3] for contamination. Reseat the connections.
+ If no voltage is present, refer to:
+   I/O PCB -Troubleshooting Guide (Classic Haas Control) 
+ -->
+ Electrical Diagrams
+ Recently Viewed Items
+ Clear Items 
+ You Have No Recently Viewed Items Yet
+ Feedback
+ 美元价格不包括关税、报关费用、保险费、增值税及运费。
+USD prices DO NOT include customs duty, customs fees, insurance, VAT, or freight.
+ 人民币价格包含关税、报关费用、货运保险和增值税, 但不包括运费。
+CNY prices include customs duty, customs fees, insurance, and VAT. DOES NOT include freight.
+ Haas Delivered Price
+ This price includes shipping cost, export and import duties, insurance, and any other expenses incurred during shipping to a location in France agreed with you as a buyer. No other mandatory costs can be added to the delivery of a Haas CNC Product.
+ Click for details 
+ KEEP UP WITH THE LATEST HAAS TIPS AND TECHNOLOGY...
+ Sign up now!    
+ HAAS TOOLING ACCEPTS THE FOLLOWING:
+ -->
+-->
+ Service & Support
+ Owners 
+ Request Service 
+ Operator Manuals 
+ Haas Parts 
+ Rotary Repair Request 
+ Pre-Install Guides 
+ Shopping Tools
+ Build & Price a New Haas 
+ Available Inventory 
+ The Haas Price List 
+ CNCA Financing 
+ About Haas
+ Careers 
+ Certifications & Safety 
+ Contact Us 
+ History 
+ Terms & Conditions 
+ Haas Tooling Terms & Conditions 
+ Privacy 
+ Warranty 
+ Haas Community
+ Haas Certification Program 
+ Haas Motorsports 
+ Gene Haas Foundation 
+ Haas Technical Education Community 
+ Events 
+ Join the Conversation
+ Facebook 
+ X 
+ Flickr 
+ YouTube 
+ LinkedIn 
+ Instagram 
+ TikTok 
+ © 2024  Haas Automation, Inc – CNC Machine Tools 
+ This site is protected by reCAPTCHA and the Google
+ Privacy Policy and
+ Terms of Service apply.
+ 2800 Sturgis Rd., Oxnard, CA 93030 / Toll Free: 800-331-6746
+Phone: 805-278-1800 / Fax: 805-278-8554
+ {{ if (loading) { }}
+ {{=loadingSpinner}}
+ {{ } else { }}
+ ×
+ {{=content}}
+ {{ } }}
+ {{ if (loading) { }}
+ {{=loadingSpinner}}
+ {{ } else { }}
+ ×
+ {{=content}}
+ {{ } }}

@@ -1,0 +1,664 @@
+
+ Haas Axis Lubrication Oil - Troubleshooting Guide - TG0075 
+ My Haas 
+ Welcome,
+ !
+ Haas Tooling 
+ Guest Order History -->
+ MyHaas/HaasConnect 
+ Sign In 
+ Register 
+ Haas Tooling 
+ My Account 
+ Order History 
+ Return History -->
+ MyHaas/HaasConnect 
+ Sign Out 
+ Welcome, 
+ My Machines 
+ Latest Activity 
+ My Quotes 
+ My Account 
+ My Users 
+ Sign Out 
+ Find Your Distributor 
+ Select Language 
+ English 
+ Українська 
+ machines 
+ Main Menu 
+ Vertical Mills 
+ Vertical Mills 
+ Vertical Mills 
+ View All 
+ Vertical Mills 
+ VF Series 
+ Universal Machines 
+ VR Series 
+ VP-5 Prismatic 
+ Pallet-Changing VMCs 
+ Mini Mills 
+ Mold Machines 
+ High-Speed Drill Centers 
+ Drill/Tap/ Mill Series 
+ Toolroom Mills 
+ Compact Mills 
+ Gantry Series 
+ SR Sheet Routers 
+ Extra-Large VMC 
+ Double-Column Mills 
+ Pocket Mill 
+ Multi-Axis Solutions 
+ Multi-Axis Solutions 
+ Multi-Axis Solutions 
+ View All 
+ Multi-Axis Solutions 
+ Y-Axis Lathes 
+ 5-Axis Mills 
+ Lathes 
+ Lathes 
+ Lathes 
+ View All 
+ Lathes 
+ ST Series 
+ Dual-Spindle 
+ Box Way Series 
+ Toolroom Lathes 
+ Chucker Lathe 
+ Haas Bar Feeder V2 
+ Haas Bar Feeder 12 
+ Horizontal Mills 
+ Horizontal Mills 
+ Horizontal Mills 
+ View All 
+ Horizontal Mills 
+ 50-Taper 
+ 40-Taper 
+ Rotaries & Indexers 
+ Rotaries & Indexers 
+ Rotaries & Indexers 
+ View All 
+ Rotaries & Indexers 
+ Rotary Tables 
+ Indexers 
+ 5-Axis Rotaries 
+ Extra-Large Rotaries 
+ Special Series 
+ Special Series 
+ Special Series 
+ View All 
+ Special Series 
+ EU_Series_Redirect 
+ Automation Systems 
+ Automation Systems 
+ Automation Systems 
+ View All 
+ Automation Systems 
+ Mill Automation 
+ Lathe Automation 
+ Automatic Parts Loaders 
+ Automation Models 
+ Desktop Machines 
+ Desktop Machines 
+ Desktop Machines 
+ View All 
+ Desktop Machines 
+ Desktop Mill 
+ Desktop Lathe 
+ Control Simulator, Standard 
+ Control Simulator, Premium 
+ Shop Equipment 
+ Shop Equipment 
+ Shop Equipment 
+ View All 
+ Shop Equipment 
+ Bandsaw 
+ Vertical Saw 
+ Miter Saw 
+ Knee Mill 
+ Manual Lathe 
+ Laser Cutting Machines 
+ Pocket Machines 
+ Pocket Machines 
+ Pocket Machines 
+ View All 
+ Pocket Machines 
+ Pocket Mill 
+ QUICK LINKS 
+ Special Series  
+ Special Series  
+ EU SERIES 
+ EU SERIES 
+ BUILD & PRICE | PRICE LIST 
+ BUILD & PRICE | PRICE LIST 
+ In-Stock Machines 
+ In-Stock Machines 
+ WHAT’S NEW 
+ WHAT’S NEW 
+ YOUR FIRST CNC 
+ YOUR FIRST CNC 
+ SHOPPING TOOLS 
+ Build & Price a Haas 
+ Price List 
+ Available Inventory 
+ CNCA Financing 
+ WANT TO TALK TO SOMEONE? 
+ A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+ CONTACT YOUR DISTRIBUTOR > 
+ Options 
+ Main Menu 
+ Value Option Packages 
+ Value Option Packages 
+ Value Option Packages 
+ View All 
+ Value Option Packages 
+ Spindles 
+ Spindles 
+ Spindles 
+ View All 
+ Spindles 
+ Tool Changers 
+ Tool Changers 
+ Tool Changers 
+ View All 
+ Tool Changers 
+ 4th- | 5th-Axis 
+ 4th- | 5th-Axis 
+ 4th- | 5th-Axis 
+ View All 
+ 4th- | 5th-Axis 
+ Turrets & Live Tooling 
+ Turrets & Live Tooling 
+ Turrets & Live Tooling 
+ View All 
+ Turrets & Live Tooling 
+ Probing 
+ Probing 
+ Probing 
+ View All 
+ Probing 
+ Chip & Coolant Management 
+ Chip & Coolant Management 
+ Chip & Coolant Management 
+ View All 
+ Chip & Coolant Management 
+ The Haas Control 
+ The Haas Control 
+ The Haas Control 
+ View All 
+ The Haas Control 
+ Product Options 
+ Product Options 
+ Product Options 
+ View All 
+ Product Options 
+ Tooling & Fixturing 
+ Tooling & Fixturing 
+ Tooling & Fixturing 
+ View All 
+ Tooling & Fixturing 
+ Workholding 
+ Workholding 
+ Workholding 
+ View All 
+ Workholding 
+ 5-Axis Solutions 
+ 5-Axis Solutions 
+ 5-Axis Solutions 
+ View All 
+ 5-Axis Solutions 
+ 5 Easy Steps to 5-Axis 
+ QUICK LINKS 
+ Special Series  
+ Special Series  
+ EU SERIES 
+ EU SERIES 
+ BUILD & PRICE | PRICE LIST 
+ BUILD & PRICE | PRICE LIST 
+ In-Stock Machines 
+ In-Stock Machines 
+ WHAT’S NEW 
+ WHAT’S NEW 
+ YOUR FIRST CNC 
+ YOUR FIRST CNC 
+ SHOPPING TOOLS 
+ Build & Price a Haas 
+ Price List 
+ Available Inventory 
+ CNCA Financing 
+ WANT TO TALK TO SOMEONE? 
+ A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+ CONTACT YOUR DISTRIBUTOR > 
+ Why Haas 
+ Main Menu 
+ Discover the Haas Difference 
+ Why Haas 
+ MyHaas 
+ Education Community 
+ Industry 4.0 
+ Haas Certification 
+ Customer Testimonials 
+ Service 
+ Main Menu 
+ Welcome to Haas Service 
+ SERVICE HOME 
+ Operator’s Manuals 
+ How-To Procedures 
+ Troubleshooting Guides 
+ Preventive Maintenance 
+ Haas Parts 
+ Haas Tooling 
+ Videos 
+ Videos 
+ Main Menu 
+ Main Menu 
+ View All 
+ View All 
+ View All 
+ View All 
+ HTEC Curriculum Support 
+ View All 
+ Haas 10 kg Cobot Package 
+ Cobot Kits 
+ DC-1 Drill Center 
+ View All 
+ View All 
+ contact-us-test 
+ 4 - AUTOMATION SYSTEMS 
+ Carousel-V2 
+ expert test 
+ Demo_Day_Trident-test 
+ Link Test 
+ View All 
+ Choose Options 
+ View All 
+ View All 
+ View All 
+ View All 
+ View All 
+ calc-test 
+ View All 
+ QUICK LINKS 
+ Special Series  
+ Special Series  
+ EU SERIES 
+ EU SERIES 
+ BUILD & PRICE | PRICE LIST 
+ BUILD & PRICE | PRICE LIST 
+ In-Stock Machines 
+ In-Stock Machines 
+ WHAT’S NEW 
+ WHAT’S NEW 
+ YOUR FIRST CNC 
+ YOUR FIRST CNC 
+ SHOPPING TOOLS 
+ Build & Price a Haas 
+ Price List 
+ Available Inventory 
+ CNCA Financing 
+ WANT TO TALK TO SOMEONE? 
+ A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+ CONTACT YOUR DISTRIBUTOR > 
+ Haas Tooling 
+ Main Menu 
+ Coming
+ Soon! 
+ Haas Tooling 
+ Shop All 
+ HAAS TOOLING QUICK LINKS 
+ NEW PRODUCTS 
+ NEW PRODUCTS 
+ NEW PRODUCTS 
+ NEW PRODUCTS 
+ MOST POPULAR 
+ MOST POPULAR 
+ TOOLING PROMOS 
+ TOOLING PROMOS 
+ FINANCING & OPEN TERMS 
+ FINANCING & OPEN TERMS 
+ PAY BY INVOICE 
+ PAY BY INVOICE 
+ FAQs 
+ FAQs 
+ KITS CREATED FOR YOU 
+ KITS CREATED FOR YOU 
+ HAAS TOOLING QUICK LINKS 
+ NEW PRODUCTS 
+ NEW PRODUCTS 
+ MOST POPULAR 
+ MOST POPULAR 
+ TOOLING PROMOS 
+ TOOLING PROMOS 
+ FINANCING & OPEN TERMS 
+ FINANCING & OPEN TERMS 
+ FAQs 
+ FAQs 
+ KITS CREATED FOR YOU 
+ KITS CREATED FOR YOU 
+ /* Hack until we can rewrite navigation * 
+ -->
+ Haas Service Parts 
+ Main Menu 
+ Coming
+ Soon! 
+ Haas Service Parts 
+ Shop All 
+ /* Hack until we can rewrite navigation */ 
+ -->
+ My Haas 
+ Welcome,
+ !
+ Haas Tooling 
+ Guest Order History -->
+ MyHaas/HaasConnect 
+ Sign In 
+ Register 
+ Haas Tooling 
+ My Account 
+ Order History 
+ Return History -->
+ MyHaas/HaasConnect 
+ Sign Out 
+ Welcome, 
+ My Machines 
+ Latest Activity 
+ My Quotes 
+ My Account 
+ My Users 
+ Sign Out 
+ Find Your Distributor 
+ Select Language 
+ English 
+ Українська 
+ × 
+ Search Results
+ Web Pages
+ Images
+ < 
+ 1 
+ > 
+ Haas Axis Lubrication Oil - Troubleshooting Guide - TG0075
+ Service Home 
+ Haas Axis Lubrication Oil - Troubleshooting Guide - TG0075 
+ Your document is ready for download, please click below to download your document.
+ Download Document 
+ Error processing this document, please try again or Contact Us .
+ Please wait while your document is being loaded.
+ Haas Axis Lubrication Oil - Troubleshooting Guide - TG0075
+ - Jump to Cause - 
+ Back to Top 
+ Your document is ready for download, please click below to download your document.
+ Download Document 
+ Error processing this document, please try again or Contact Us .
+ Please wait while your document is being loaded.
+ Recently Updated 
+ Last updated: 10/10/2025 
+ Haas Axis Lubrication Oil - Troubleshooting Guide
+ TG0075 
+ Introduction
+ Axis-Lube Air Solenoid
+ Metal Canister Oil Reservoir
+ Air Pressure Gauge
+ HALO Manifold
+ Ballnut
+ Linear Guide Truck
+ Axis Oil Manifold
+ Orifice Fitting - Oil flows in a helical shape around a set screw and oversize drilled thread. Do not remove the set screw from the orifice fitting.
+ Pressure Sensor: 4 PSI switch, normally open (not shown, located behind [4])
+ Alarm 2075 Checklist
+ System Operation Overview
+ The Haas Axis lubrication Oil system utilizes shop air pressure to pressurize the HALO reservoir via a 120VAC solenoid. Both components are located inside the air/lube cabinet
+ The lubrication cycle will be initiated when:
+ The axes have been in motion for the time specified in  Setting 277 (3 hours by default).
+ The machine has been idle for 12 hours (specified in Parameter 1401 ).
+ If the user presses [F2] while in the LUBE MAINTENANCE section of the DIAGNOSTIC display.
+ The HALO manifold has two internal check valves [1] and [2]; internal snubber before the check valve [2]; the pressure gauge and the 4 PSI normally open pressure switch [3]. There are multiple lubrication lines coming out of the HALO manifold depending on the machine type and configuration. The lubrication lines that are routed above the air/oil pump will have a check valve [4] at the HALO manifold to prevent the oil from draining from the lines back to the reservoir between the lubrication cycles.
+ When a lubrication cycle is commanded, the solenoid applies air pressure to the HALO reservoir for 3 seconds (specified in  Parameter 2027 ), which forces the oil to move up the pick-up tube [5] and into the HALO manifold. The oil flows through the lubrication lines to the lubrication points where it gets pushed through the restrictors into the components that require the lubrication (ballscrew, linear guides pads, etc). Once the cycle ends, the pressure from the HALO reservoir is vented to the atmosphere, the check valve [1] traps the pressurized oil in the manifold and it will start to flow through the snubber and the check valve [2] back to the HALO canister until the pressure in the manifold drops to 0 PSI.
+ During the lubrication cycle the control monitors the pressure in the lubrication manifold in order to detect a failure of the lubrication system.
+ When the solenoid is commanded to turn on, the control begins to monitor the status of the pressure switch [3]. The switch is expected to close within 3 seconds (specified in Parameter 1374 ) from the moment that the solenoid was commanded ON. Once the pressure is detected it is expected to stay for at least 15 seconds (specified in  Parameter 1375 ). If all of the above statements were satisfied during the cycle then the lubrication cycle is considered successful.
+ If pressure in the system was not detected within 3 seconds (specified in the Parameter 1374 ) the control will stop monitoring the pressure and display the “Low Lube” warning icon until the next lube cycle. If such a condition was detected for 5 consecutive lube cycles, then the control will generate the Alarm 2073 AXIS LUBRICATION PRESSURE NOT DETECTED. The alarm will not be generated during a program execution, it will only be generated after the program execution ends or after pressing a [RESET] button.
+ If the pressure in the system drops below 4 PSI before 15 seconds (specified in Parameter 1375 ), the control will display “Low Lube” warning icon until the next lube cycle. If such a condition is detected for the next 4 consecutive lube cycles (5 total cycles) the control will generate the  Alarm 2075 AXIS LUBRICATION RESERVOIR IS EMPTY. The alarm will not be generated during a program execution. It will be generated after the program execution ends or after pressing a [RESET] button.
+ Symptom Table
+ Symptom 
+ Possible Cause 
+ Corrective Action 
+ Low Lube Icon 
+ When the axis lube solenoid was commanded the system never detected pressure or the pressure duration was too short.
+ Inspect the reservoir assembly and make sure the check valves are not stuck or sticking. Also refer to the  Check Valve O-rings  section below to verify the o-rings are seated properly.
+ Alarm 2075  AXIS LUBRICATION RESERVOIR EMPTY
+ Air in axis lubrication line.
+ The reason for the air in the lines needs to be identified and corrected. See the  ALARM 2075: AXIS LUBRICATION RESERVIOR EMPTY section.
+ The check valves may be sticking and causing excessive oil usage.
+ Inspect the reservoir assembly and make sure the check valves are not stuck or sticking. Also refer to the Check Valve O-rings section below to verify the o-rings are seated properly.
+ There may be debris in the HALO manifold and/or in front of the pressure sensor.
+ Clean out the HALO manifold and clean around the pressure switch.
+ There may be air in the lube lines.
+ Prime the lube lines and make sure no air is leaking from the HALO manifold when the system is pressurized.
+ Lathes  do not have an added check valve on their x-axis and y-axis (if applicable) lubrication lines.
+ Verify the lathe has the correct amount of check valves on its lubrication lines, the configurations can be seen below in the  HALO Lubrication Lines Configurations section.
+ UMC's do not have the added check valves to their lubrication lines . 
+ Verify the UMC has the correct amount of check valves on its lubrication lines, the configurations can be seen below in the  HALO Lubrication Lines Configurations section.
+ The correct configuration of check valves needed may not be installed in the HALO manifold.
+ Verify the correct amount of check valves are on the lubrication lines, the configurations can be seen below in the  HALO Lubrication Lines Configurations  section.
+ Alarm 2073  AXIS LUBRICATIONPRESSURE NOT DETECTED
+ Solenoid not supplying air to HALO system.
+ See solemoid troubleshooting section in the Alarm 2075 section below.
+ Pressure switch not changing states.
+ See section 4-5 of the Alarm 2075 troubleshooting guide
+ When refilling the oil reservoir, the filter is found to be crushed at the bottom.
+ The pressure in the oil reservoir can cause the bottom of the filter to crush.
+ A new filter that is reinforced has been created and can replace the old crushed filter. Order part number 58-2072A to replace a crushed filter.
+ HALO Lubrication Lines Configurations
+ Mill Lubrication Lines 
+ Note:  UMC's will now need  three (3)  of kit  93-3610  to add check valves to all of the lubrication lines, the check valves are grey in image [2] to show where they need to be added.
+ Mills with a  SMTC  will need to add a .02" orifice (shown as the red component in the images) to their lube lines on the oil reservoir. Use the numbered images and the following list to see where the orifice needs to be added on the following machines:
+ SMTC:  VF - 1-9, DT, DM, VR-8, VM - 2/3/6, VC-400
+ UMC 350-1600
+ EC-400/500/500-50T/630/630-50T
+ GM-2, GM-2-5AX
+ VF - 10/11/12/13/14, VR - 9/10/11/12/13/14
+ VMT-750
+ VS-1/3
+ Note:  A small amount of SMTC's do not have a servo carousel and therefore will  not  need the additional orifice. This means that any mills that only have 3 oil lines on the lubrication reservoir do  not  need the additional orifice.
+ Note: Not all lubrication configurations are shown, only configurations that are adding new fittings in the conversion process are shown for reference on where the new fitting goes. 
+ Lathe Lubrication Lines 
+ Note:  Every Lathe will need at least  one (1)  of kit  93-3610 . Lathes that also have a Y-Axis will need to order  two (2)  of kit  93-3610 .
+  Note:  Tail stock fittings are shown as the blue component in the images. 
+ Lathes with a  C-Axis  will need to add a .02" orifice (shown as the red component in the images) to their lube lines on the oil reservoir. Lathes will also need to add an extra check valve and nipple fitting to the  X-Axis  and the  Y-Axis  if it has one (the X and Y axes are labeled in the image to the right). Use the numbered images and the following list to see where the orifice and fittings need to be added on the following machines:
+ 8.  Longbed & Non-longbed:  CL, ST-10/15/20/25/28/30/35
+ 9.  Y-Axis Longbed & Non-longbed:  ST-10Y/ 15Y/20Y/25Y/28Y/30Y/35Y, ST-10LY/15LY/20LY/25LY/28LY/30LY/35LY
+ 10.  C-Axis  Longbed & Non-longbed :  ST-10/ 15/20/25/28/30/35
+ 11.  C-Axis & Y-Axis  Longbed & Non-longbed:   ST-10Y/ 15Y/20Y/25Y/30Y/35Y
+ 12.  Longbed & C-Axis & Y-Axis & Sub-Spindle:  DS-30Y, ST-10LY/ 15LY/20LY/25LY/28LY/30LY/35LY
+ 13.  Longbed & Tail Stock:  ST-40/40L/45/45L/50/55
+ 14.  Longbed & C-Axis & Tail Stock:  ST-40/45/50/55
+ 15.  Longbed/Non-Longbed & Tail Stock:   ST-30/35
+ 16.   Longbed/Non-Longbed & Tail Stock & Y-Axis:   ST-30Y/35Y
+ Note: Not all lubrication configurations are shown, only configurations that are adding new fittings in the conversion process are shown for reference on where the new fitting goes. 
+ ALARM 2075: AXIS LUBRICATION RESERVIOR EMPTY
+  Note:  The specification for Haas Axis Lubrication Oil changed as of 2/2025 . It is highly reccommended that HALO systems be converted to the current standard to prevent alarm 2075.
+ Lubricant, Grease, and Sealant Tables for Haas Machine Components 
+ OIL REFILL, AXIS LUBE OIL - 1 GL / 3.78 L 
+ 1
+ Verify that the oil reservoir  [A]  is full.
+ Verify the machine is getting correct air pressure on the gauge [7], and on the gauges page on the Haas control.
+ Verify that air is being delivered to the HALO manifold [1 & 2] by manually triggering the solenoid. 
+ Verify that there are no leaks on the air line [5] between the solenoid and the HALO manifold.
+ Verify that the solenoid [6] works properly. Remove the air line [5] from the HALO manifold and run an axis lubrication cycle. 
+    DIAGNOSTIC > MAINTENCANCE > LUBE     
+  Note:  If your machine has had an upgrade from the Haas liquid Grease (HLG) to the Haas Axis Lubrication Oil (HALO) then you must ensure you also apply the relating patch which modifies lubrication parameters.
+ Axis Lubrication Has Changed From Grease to Oil 
+  Note: Monthly maintenance procedures state that the axis lubrication oil should be checked once a month. Neglecting the alarm can cause air to be introduced into the lines affecting the function of the system. 
+ VMC Maintenance Schedule 
+ Lathe - Maintenance - Haas Service Manual 
+ SOLENOID TROUBLESHOOTING
+ 2
+ Inspect the axis-lube air solenoid.
+ Do the Axis Lubrication Test and make sure the voltage to the HALO solenoid is 120 VAC.
+  Note:  Do not measure the voltage with the HALO solenoid disconnected from the connector.
+ Refer to the  I/O PCB - Troubleshooting Guide (Classic Haas Control)  to troubleshoot the I/O PCB.
+ Refer to the  Solenoid Troubleshooting Guide  to troubleshoot the solenoid.
+ If the solenoid is not activating when commanded, check for:
+ The connector being in the correct location.
+ Loose or broken wires.
+ Air coming out of the solenoid without the tube connected.
+ Firm solenoid cable connection at the I/O board.
+ 3
+ Verify that the manifold is configured properly, reference the HALO LUBRICATION LINES CONFIGURATIONS section above.
+ Verify that the HALO manifold and reservoir [2] are not leaking. 
+ Verify that all lines are properly secured into their push connect fittings [1] and that the threaded fittings are fastened tightly.
+  Note:  Vertical axes and SMTC lines will likely include check valves.
+ 4
+ Check the states on the I/O tab for the solenoid output and the pressure gauge input. 
+ Run the axis lubrication cycle.
+     DIAGNOSTIC > MAINTENCANCE > LUBE   
+ Observe the value changes in the I/O tab while the cycle takes place to verify the bits are changing.
+ The pressure gauge input should change from a 1 to 0 and back to 1 during the cycle.
+ The  solenoid output should change from a 0 to 1 and back to 0 during the cycle.
+ NAME 
+ P#
+ TYPE 
+ SW# 
+ HW# 
+ CONNECTOR 
+ INITIAL VALUE 
+ LOW_AXIS_GREASE_PRESSURE
+ P48
+ INPUT
+ 24
+ IO20
+ P48.47
+ 1
+ AXIS_GREASE_PUMP
+ P17, P15
+ OUTPUT
+ 68
+ O003
+ P35.2, P17.2
+ 0
+ PRESSURE SWITCH TROUBLESHOOTING
+ 5
+ If the LOW_AXIS_GREASE_PRESSURE input does not change states.
+  Note: For   NGC check the software version on the machine. The machine must have software version 100.16.000.1020 or higher. Update the machine software if necessary.
+ Disconnect the cables from the pressure switch and use a jumper to connect them as shown. The pressure switch is behind the grease manifold
+ If the input changes from a 1 to a 0, the pressure switch is working properly.
+ Measure continuity from the IO board to the switch.
+ If there is no continuity then the cable may be bad.
+ Measure the resistance across the the pressure switch terminals while running the lube cycle.
+ If the resistance reads 'OL' then measures a value of resistance then reads 'OL' again the pressure switch is working properly. If it does not then the pressure switch may be faulty.
+ MANIFOLD TROUBLESHOOTING
+ 6
+ Remove all oil lines and plug (PN: 58-1365) all ports [1] on the HALO manifold and activate the lube cycle.
+     DIAGNOSTIC > MAINTENCANCE > LUBE   
+ If the pressure drop at the HALO manifold gauge [2] is less than 15 seconds it will generate the low lube icon, this indicates that there is a leak in manifold and requires further troubleshooting.
+ If the manifold holds pressure for longer than 15 seconds and no icon shows on the monitor, it is working as intended, and the rest of the system needs to be troubleshot.
+ 7
+ If the HALO manifold pressure falls rapidly remove and check the condition of the manifold's check valves [1 & 2] located at the top and bottom.
+ Inspect the assembly and make sure the check valves are not stuck or sticking. Clean and replace where necessary.
+ Check for air and oil leaks around all connections and ports.
+ LUBRICATION LINE TROUBLESHOOTING
+ 8
+ To test for a failed line that is leaking:
+ Choose one non-check valve port to test with [1]. For UMC machines a push connect fitting can be installed on one of the unused ports [4] at the bottom of the HALO manifold.
+ Remove and mark the position of the oil lines.
+ Plug all ports except the chosen non-check valve port [2] on the HALO  manifold. 
+ Pick a line to test and connect it into the chosen non-check valve port. Manually actuate the solenoid for 10 seconds and wait for the pressure guage to drop to zero psi. Repeat this step until the line holds for longer than 15 seconds.
+ Activate the axis lubrication cycle with the chosen line to determine if the system will generate low reservoir icon or the 2075 alarm.
+   Run the axis lubrication cycle.
+         DIAGNOSTIC > MAINTENCANCE > LUBE 
+ If the machine generates the 2075 alarm or Low lube icon message, this can indicate that the system is not fully purged. Continue manual actuation of the solenoid. 
+ If the pressure is consistently dropping rapidly this indicates an issue down the line and it needs to be fully troubleshot.
+ If it does not generate the alarm or the low lube icon message move on to the next line, removing the previously tested line from the chosen non-check valve port and plugging the new line into that same port.
+ Repeat this process for all oil lines connected to the HALO manifold until the lines which generate the alarm or icon have been identified.   
+ 9
+ If the alarm is generated on a single axis this may indicate that this line is causing the alarm.
+ The assembly being fed by this line must then be examined.
+ If the line has a check valve at the HALO manifold, verify that it is in working condition.
+ To verify if a linear axis has a leak or not, the axis oil manifold and its connections to the trucks and ball nut must be observed.
+ Clean these components and run the lubrication cycle looking for leaks.
+ PRIMING THE HALO SYSTEM
+ 10
+ If no leaks are found after troubleshooting the HALO manifold and the axis oil lines, perform the following steps.
+  Note:  An empty HALO reservoir is the most common way to introduce air into the lines. 
+ Reconnect all lines to the HALO manifold and verify the reservoir is full.
+ To purge the system:
+ Gain access the axis oil manifolds [3] and the  tool changer port. C-axis port for lathes.
+ Remove an axis line [2] individually from an axis oil manifold [3] at the barb fitting.
+ Manually actuate the lubrication solenoid until the line is individually purged of air. Air trapped in the middle of the lines is a large concern.
+  Note:  If the reservoir runs empty during this step air will be introduced into the system and the step will have to be repeated. Large machines will be more vulnerable to this case.
+ Reinstall the primed line onto the axis manifold [3].
+ Manually actuate the lubrication solenoid five times for 10 seconds at 15 second intervals to purge the axis lube assembly.
+ Refill the oil reservoir [1] if needed.
+ Activate the axis lubrication cycle to determine if the system will generate low reservoir icon or the 2075 alarm.
+                         DIAGNOSTIC > MAINTENCANCE > LUBE 
+ Repeat for all lines.
+  Note:  Observing the mill or lathe maintenance schedule will reduce the risk of air intrusion. An empty HALO reservoir is the most common way to introduce air into the lines. 
+ VMC Maintenance Schedule 
+ Lathe - Maintenance - Haas Service Manual 
+ Recently Viewed Items
+ Clear Items 
+ You Have No Recently Viewed Items Yet
+ Feedback
+ Haas Delivered Price
+ This price includes shipping cost, export and import duties, insurance, and any other expenses incurred during shipping to a location in France agreed with you as a buyer. No other mandatory costs can be added to the delivery of a Haas CNC Product.
+ Click for details 
+ KEEP UP WITH THE LATEST HAAS TIPS AND TECHNOLOGY...
+ Sign up now!    
+ HAAS TOOLING ACCEPTS THE FOLLOWING:
+ -->
+-->
+ Service & Support
+ Owners 
+ Request Service 
+ Operator Manuals 
+ Haas Parts 
+ Rotary Repair Request 
+ Pre-Install Guides 
+ Shopping Tools
+ Build & Price a New Haas 
+ Available Inventory 
+ The Haas Price List 
+ CNCA Financing 
+ About Haas
+ DNSH Statement 
+ Export Compliance 
+ Careers 
+ Certifications & Safety 
+ Contact Us 
+ History 
+ Terms & Conditions 
+ Haas Tooling Terms & Conditions 
+ Privacy 
+ Warranty 
+ Haas Community
+ Haas Certification Program 
+ Haas Motorsports 
+ Gene Haas Foundation 
+ Haas Technical Education Community 
+ Events 
+ Join the Conversation
+ Facebook 
+ X 
+ Flickr 
+ YouTube 
+ LinkedIn 
+ Instagram 
+ TikTok 
+ © 2026  Haas Automation, Inc – CNC Machine Tools 
+ This site is protected by reCAPTCHA and the Google
+ Privacy Policy and
+ Terms of Service apply.
+ 2800 Sturgis Rd., Oxnard, CA 93030
+Toll Free: (888) 817-4446 / Fax: 805-278-8554
+ {{ if (loading) { }}
+ {{=loadingSpinner}}
+ {{ } else { }}
+ ×
+ {{=content}}
+ {{ } }}
+ {{ if (loading) { }}
+ {{=loadingSpinner}}
+ {{ } else { }}
+ ×
+ {{=content}}
+ {{ } }}

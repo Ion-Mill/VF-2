@@ -1,0 +1,96 @@
+SOURCE: https://papers.phmsociety.org/index.php/phmap/article/view/4480
+FETCHED: 2026-10-02
+
+
+ LLM-based multi-agent system for autonomous maintenance process of machine tools
+ | PHM Society Asia-Pacific Conference
+ PHMSociety.org 
+ Conferences 
+ North America 
+ Asia-Pacific 
+ Europe 
+ Publications 
+ Journal 
+ North America Conference 
+ Europe Conference 
+ Asia-Pacific Conference 
+ Data 
+ Publication Home 
+ -->
+ PHM Society Asia-Pacific Conference 
+ Advance search -->
+ Register
+ Login
+ Publication Home 
+ Home
+ About
+ About the Journal
+ Submissions
+ Contact
+ Current
+ Archives
+ Register
+ Login
+ Home
+ Archives
+ Vol. 5 No. 1 (2025): Proceedings of the Asia Pacific Conference of the PHM Society 2025
+ Regular Session Papers
+ LLM-based multi-agent system for autonomous maintenance process of machine tools
+ ##plugins.themes.bootstrap3.article.main## 
+ ##plugins.themes.bootstrap3.article.sidebar## 
+ PDF
+ Published 
+ Jan 13, 2026
+ DOI 
+ https://doi.org/10.36001/phmap.2025.v5i1.4480
+ Jongsu Park 
+ a:1:{s:5:"en_US";s:20:"Kyung Hee University";}
+ Seongwoo Cho 
+ Yoonji Chae 
+ Sena Nur Durgunlu 
+ Jumyung Um 
+ Abstract 
+ This paper presents a large language model (LLM)-based system for autonomous maintenance in manufacturing facilities. While many machine alarms are interpreted with existing manuals, understqanding and acting on these instructions of all facilities remains a challenge for operators. The proposed system processes user inputs including error codes, identifies corresponding procedures from manuals, and decomposes them into structured action sequences. These sequences include action, user interface target, preconditions, and expected outcomes, and are executed by agent capable of interacting with Human–Machine Interfaces (HMIs). The proposed system is built on an LLM-powered multi-agent framework comprising four agents: a chatbot, solution_finder, actor, and supervisor. Each agent operates based on role-specific prompts that define their responsibilities and decision rules. Instead of relying on predefined rule sets, the system interprets unfamiliar or previously unseen alarms by reasoning over machine manuals and context, enabling flexible and scalable maintenance. The system was implemented on a HMI system of CNC machine tools and successfully performed automatic responses to selected alarms. Prompt-based control ensure adaptability to other machines, and the use of a local LLM maintains data security. This approach enables general-purpose, self-directed maintenance with minimal operator intervention. 
+ Abstract 3206 |
+ PDF Downloads 1075
+ ##plugins.themes.bootstrap3.article.details## 
+ Keywords
+ Autonomous manufacturing, Autonomous Maintenance, Multi agent frame work, Large Language Models, Agentic Artificial Intelligence 
+ References
+ Achiam, J., Adler, S., Agarwal, S., Ahmad, L., Akkaya, I., Aleman, F. L., . . . others (2023). Gpt-4 technical report. arXiv preprint arXiv:2303.08774. 
+Cho, S., Park, J., & Um, J. (2024). Development of fifine-tuned retrieval augmented language model specialized to manual books on machine tools. IFACPapersOnLine, 58(19), 187–192. 
+Garcia, J., Rios-Colque, L., Pena, A., & Rojas, L. (2025). Condition monitoring and predictive maintenance in industrial equipment: An nlp-assisted review of signal processing, hybrid models, and implementation challenges. Applied Sciences (2076-3417), 15(10). 
+Hardt, F., Kotyrba, M., Volna, E., & Jarusek, R. (2021). Innovative approach to preventive maintenance of production equipment based on a modified tpm methodology for industry 4.0. Applied Sciences, 11(15), 6953. 
+He, J., Treude, C., & Lo, D. (2025). Llm-based multi-agent systems for software engineering: Literature review, vision, and the road ahead. ACM Transactions on Software Engineering and Methodology, 34(5), 1–30. 
+Jin, A., Ye, Y., Lee, B., & Qiao, Y. (2024). Decoagent: Large language model empowered decentralized autonomous collaboration agents based on smart contracts. IEEE Access. 
+Lewis, P., Perez, E., Piktus, A., Petroni, F., Karpukhin, V., Goyal, N., . . . others (2020). Retrieval-augmented generation for knowledge-intensive nlp tasks. Advances in neural information processing systems, 33, 9459–9474. 
+Malhotra, R., Bansal, A., & Kessentini, M. (2024). A systematic literature review on maintenance of software containers. ACM Computing Surveys, 56(8), 1–38. 
+Pinciroli, L., Baraldi, P., & Zio, E. (2023). Maintenance optimization in industry 4.0. Reliability Engineering & System Safety, 234, 109204. 
+Shao, M., Basit, A., Karri, R., & Shafique, M. (2024). Survey of different large language model architectures: Trends, benchmarks, and challenges. IEEE Access. 
+Tezel, B. T., & Kardas, G. (2025). Debugging in the domainspecific modeling languages for multi-agent systems. Journal of Computer Languages, 83, 101325. 
+Vyas, J., & Mercangoz, M. (2024). Autonomous industrial control using an agentic framework with large language 
+models. arXiv preprint arXiv:2411.05904. 
+Wang, Z., Lo, F. P. W., Chen, Q., Zhang, Y., Lin, C., Chen, X., Lo, B. P. (2025). An llm-enabled multi-agent autonomous mechatronics design framework. In Proceedings of the computer vision and pattern recognition conference (pp. 4205–4215). 
+Yang, A., Li, A., Yang, B., Zhang, B., Hui, B., Zheng, B., others (2025). Qwen3 technical report. arXiv preprint arXiv:2505.09388. 
+Zahedifar, R., Mirghasemi, S. A., Baghshah, M. S., & Taheri, A. (2025). Llm-agent-controller: A universal multiagent large language model system as a control engineer. arXiv preprint arXiv:2505.19567.
+ Issue
+ Vol. 5 No. 1 (2025): Proceedings of the Asia Pacific Conference of the PHM Society 2025
+ Section
+ Regular Session Papers
+ This work is licensed under a Creative Commons Attribution 3.0 Unported License . 
+ Journal Content 
+ Make a Submission
+ Make a Submission
+ Information 
+ For Readers
+ For Authors
+ For Librarians
+ Terms of Use 
+ Privacy and Security Statement 
+ PHM Community Rules 
+ Back to top 
+ © The Prognostics and Health Management Society 2009 - 2026 
+PHM Society is a non-profit organization dedicated to the advancement of PHM as an engineering discipline.
+ × 
+ Modal Header 
+ Close 

@@ -1,0 +1,585 @@
+Way Cover - Troubleshooting Guide - TG0159
+My Haas
+Welcome,
+! 
+Haas Tooling
+MyHaas/HaasConnect
+Sign In
+Register
+Haas Tooling
+MyHaas/HaasConnect
+Sign Out
+Welcome, 
+My Machines
+Latest Activity
+My Quotes
+My Account
+My Users
+Sign Out
+Find Your Distributor
+Select Language
+English
+Deutsch
+Español - España
+Español - México
+Français
+Italiano
+Português
+Český
+Dansk
+Nederlands
+Magyar
+Polski
+Svenska
+Türkçe
+中文
+Suomi
+Norsk
+الإنجليزية
+български
+Hrvatski
+Ελληνικά
+Română
+Slovenský
+Slovenščina
+한국어
+日本語
+Українська
+machines
+Main Menu
+Vertical Mills 
+Vertical Mills 
+Vertical Mills 
+View All
+Vertical Mills 
+VF Series
+Universal Machines
+VR Series
+VP-5 Prismatic
+Pallet-Changing VMCs
+Mini Mills
+Mold Machines
+High-Speed Drill Centers
+Drill/Tap/ Mill Series
+Toolroom Mills
+Compact Mills
+Gantry Series
+SR Sheet Routers
+Extra-Large VMC
+Double-Column Mills
+Pocket Mill
+Multi-Axis Solutions
+Multi-Axis Solutions
+Multi-Axis Solutions
+View All
+Multi-Axis Solutions
+Y-Axis Lathes
+5-Axis Mills
+Lathes
+Lathes
+Lathes
+View All
+Lathes
+ST Series
+Dual-Spindle
+Box Way Series
+Toolroom Lathes
+Chucker Lathe
+Haas Bar Feeder V2
+Haas Bar Feeder 12
+Horizontal Mills
+Horizontal Mills
+Horizontal Mills
+View All
+Horizontal Mills
+50-Taper
+40-Taper
+Rotaries & Indexers
+Rotaries & Indexers
+Rotaries & Indexers
+View All
+Rotaries & Indexers
+Rotary Tables
+Indexers
+5-Axis Rotaries
+Extra-Large Rotaries
+Special Series
+Special Series
+Special Series
+View All
+Special Series
+EU_Series_Redirect
+Automation Systems
+Automation Systems
+Automation Systems
+View All
+Automation Systems
+Mill Automation
+Lathe Automation
+Automatic Parts Loaders
+Automation Models
+Desktop Machines
+Desktop Machines
+Desktop Machines
+View All
+Desktop Machines
+Desktop Mill
+Desktop Lathe
+Control Simulator, Standard
+Control Simulator, Premium
+Shop Equipment
+Shop Equipment
+Shop Equipment
+View All
+Shop Equipment
+Bandsaw
+Vertical Saw
+Miter Saw
+Knee Mill
+Manual Lathe
+Laser Cutting Machines
+Pocket Machines
+Pocket Machines
+Pocket Machines
+View All
+Pocket Machines
+Pocket Mill
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Options
+Main Menu
+Value Option Packages
+Value Option Packages
+Value Option Packages
+View All
+Value Option Packages
+Spindles
+Spindles
+Spindles
+View All
+Spindles
+Tool Changers
+Tool Changers
+Tool Changers
+View All
+Tool Changers
+4th- | 5th-Axis
+4th- | 5th-Axis
+4th- | 5th-Axis
+View All
+4th- | 5th-Axis
+Turrets & Live Tooling
+Turrets & Live Tooling
+Turrets & Live Tooling
+View All
+Turrets & Live Tooling
+Probing
+Probing
+Probing
+View All
+Probing
+Chip & Coolant Management
+Chip & Coolant Management
+Chip & Coolant Management
+View All
+Chip & Coolant Management
+The Haas Control
+The Haas Control
+The Haas Control
+View All
+The Haas Control
+Product Options
+Product Options
+Product Options
+View All
+Product Options
+Tooling & Fixturing
+Tooling & Fixturing
+Tooling & Fixturing
+View All
+Tooling & Fixturing
+Workholding
+Workholding
+Workholding
+View All
+Workholding
+5-Axis Solutions
+5-Axis Solutions
+5-Axis Solutions
+View All
+5-Axis Solutions
+5 Easy Steps to 5-Axis
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Why Haas
+Main Menu
+Discover the Haas Difference
+Why Haas
+MyHaas
+Education Community
+Industry 4.0
+Haas Certification
+Customer Testimonials
+Service
+Main Menu
+Welcome to Haas Service
+SERVICE HOME
+Operator’s Manuals
+How-To Procedures
+Troubleshooting Guides
+Preventive Maintenance
+Haas Parts
+Haas Tooling
+Videos
+Videos
+Main Menu
+Main Menu
+View All
+View All
+View All
+View All
+HTEC Curriculum Support
+View All
+Haas 10 kg Cobot Package
+Cobot Kits
+DC-1 Drill Center
+CNC Sales News
+View All
+View All
+contact-us-test
+4 - AUTOMATION SYSTEMS
+Carousel-V2
+expert test
+Demo_Day_Trident-test
+Link Test
+View All
+Choose Options
+View All
+View All
+View All
+View All
+View All
+calc-test
+View All
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Haas Tooling
+Main Menu
+Haas Service Parts
+Main Menu
+My Haas
+Welcome,
+! 
+Haas Tooling
+MyHaas/HaasConnect
+Sign In
+Register
+Haas Tooling
+MyHaas/HaasConnect
+Sign Out
+Welcome, 
+My Machines
+Latest Activity
+My Quotes
+My Account
+My Users
+Sign Out
+Find Your Distributor
+Select Language
+English
+Deutsch
+Español - España
+Español - México
+Français
+Italiano
+Português
+Český
+Dansk
+Nederlands
+Magyar
+Polski
+Svenska
+Türkçe
+中文
+Suomi
+Norsk
+الإنجليزية
+български
+Hrvatski
+Ελληνικά
+Română
+Slovenský
+Slovenščina
+한국어
+日本語
+Українська
+×
+Search Results
+Web Pages
+Images
+<
+1
+>
+Way Cover - Troubleshooting Guide - TG0159
+Service Home
+Way Cover - Troubleshooting Guide - TG0159
+Your document is ready for download, please click below to download your document.
+Download Document
+Error processing this document, please try again or 
+Contact Us
+.
+Please wait while your document is being loaded.
+Recently Updated
+Last updated: 10/15/2025
+Way Cover
+ - Troubleshooting Guide
+TG0159
+Way Cover - Troubleshooting Guide - TG0159
+Jump to Section
+1. 
+Introduction 
+2. 
+Symptom Table 
+3. 
+Way cover Galvanneal Coating Removal 
+4. 
+The Wipers are Worn or Damaged 
+5. 
+The Way Covers are Damaged or Worn 
+6. 
+Way Covers "Pop" or Do Not Move Evenly 
+7. 
+Way Cover has Trouble Extending or Retracting 
+8. 
+The Way Covers are Rusty or make Excessive Noise 
+Back to Top
+Your document is ready for download, please click below to download your document.
+Download Document
+Error processing this document, please try again or 
+Contact Us
+.
+Please wait while your document is being loaded.
+Introduction
+Way covers keep chips and coolant away from the ballscrew, guiderails, and home switch. Machines can have three types of way covers.
+Telescopic Style:
+ Telescopic way covers use interlocking sheet metal sections with wipers at the joints.
+Shielded Style:
+ Shielded way covers use rubber straps to connect sheet metal shield strips that overlaying each other.
+Roll Shade Style - EC Machines:
+ Roll shade way covers use a tensioner to keep the rubber sheet rolled up on a spool. The spools rotate with tension to allow the sheet to be pulled out and retracted back in.
+Symptom Table
+Symptom
+Possible Cause
+Corrective Action
+The wipers are worn or damaged.
+Normal wear on wipers.
+Replace the wipers.
+Incorrect coolant being used.
+Refer to the 
+Improper Coolants
+ section in the manual.
+The way covers are damaged or worn.
+A part or other heavy object dropped on the way cover.
+Remove the dents from the way cover.
+Cutting abrasive or absorbent materials.
+Extra protection is necessary when you cut abrasive or absorbent materials.
+The way covers are not lubricated correctly.
+Chip build-up around the base of roll shade way covers.
+Clear debris from the base of the covers and adjust the tension on the spring-loaded canisters.
+Way covers "pop," or do not move evenly.
+Normal operation.
+These symptoms are normal during operation and do not require troubleshooting.
+Way cover has trouble extendening or retracting.
+Way cover is full of chips.
+Perform normal machine maintenance.
+The way covers are rusty or make excessive noise.
+There is a low coolant concentration.
+Increase the coolant concentration.
+Way cover movement during dry machine operation creates friction.
+Lube the way covers with oil.
+The rail screws are loose.
+Tighten the loose rail screws.
+Way cover Galvanneal Coating Removal
+The Wipers are Worn or Damaged
+Symptom:
+ The wipers are worn or damaged.
+Possible Cause:
+ Normal wear on wipers.
+Corrective Action:
+Replace the damaged wipers where possible.
+Replace the damaged wipers on telescopic way covers with the correct kit for your machine. Go to 
+parts.haascnc.com
+.
+The Way Covers are Damaged or Worn
+Symptom:
+ The way covers are damaged or worn.
+Possible Cause:
+ A part or other heavy object fell on the way cover. Cutting abrasive or absorbant materials. The way covers are not lubricated correctly. Chip build-up around the base of roll shade way covers.
+Corrective Action:
+Remove the way cover and hammer out the dents with a rubber mallet. Replace the way cover if the dents are too severe. Go to 
+diy.haascnc.com
+, and search for the way cover replacement procedure that is correct for your machine.
+Cutting abrasive materials:
+ Haas machines are designed and built to cut metal. If you cut abrasive or absorbant material, it causes premature wear of the way covers. This is not covered under warranty. Install aftermarket bellows that wrap around the way covers to protect them from abrasive material.
+The shielded way cover sections are separated:
+ There is a rubber link between the shielded way cover sections. If one of these links is broken, the shielded way cover sections separate. Replace way covers that have broken rubber links.
+Roll Shade Way Covers - EC machines:
+ Both sides of the spindle are covered by heavy roll shade way covers [1,2]. The shades are kept taut by spring-loaded canisters [3, 4]. Chip build up around the bottom of the spring loaded canisters causes insufficient tension on the roll shade way covers. This causes the components to be contaminated by coolant.
+Remove the chips on and around the shades.
+To re-tension the way covers:
+Clamp the flat section of the steel shaft [8] with clamping pliers or a clamp. This holds the shaft when you adjust the spring tension. Loosen the set screw [7]. The shaft rotates when the set screw is loose. Rotate the shaft one complete revolution against the force of the spring.
+ Note:
+ Rotate the shaft counter clockwise [5] for the left canister [3] and clockwise [6] for the right canister [4].
+Tighten the set screw. Make sure the set screw [7] is seated on the flat section of the steel shaft. Check the tension of the roll shade way covers. Repeat this process as needed one revolution at a time. Do not over-tighten the spring.
+Way Covers "Pop" or Do Not Move Evenly
+Symptom:
+ Way covers "pop," or do not move evenly.
+Possible Cause:
+ Normal operation.
+Corrective Action:
+Tight way covers can sometimes make a "popping" noise when they move. This is normal, and does not require troubleshooting.
+If there is an excessive amount of noise from friction, go to Section 4 to troubleshoot the "excessive noise" symptom.
+Way Cover has Trouble Extending or Retracting
+Symptom: 
+Way cover has trouble extendening or retracting. Way cover sections may pop apart.
+Possible Cause:
+ Way cover is full of chips.
+Corrective Action: 
+Perform normal machine maintenance.
+Remove way cover and clean out the chips. Re-assemble way cover once clean if necessary. Re-install way cover when finished.
+The Way Covers are Rusty or make Excessive Noise
+Symptom:
+ The way covers are rusty or make excessive noise.
+Possible Cause:
+ The coolant concentration is low. Way cover movement during dry machine operation creates friction. The rail bolts are loose.
+Corrective Action:
+When the machine operates normally, way covers are lubricated by the coolant. It is critical to maintain the correct coolant concentration. For instructions, refer to the link for 
+Standard Coolant – Maintaining Your Coolant Mixture
+Dry machining
+: If you cut parts without flood coolant, make sure that you lubricate all of the way covers with lightweight oil. Fully extend the way cover. Spray an even coat of lightweight oil on the way cover.
+The way covers slide on the rails that are attached to the casting. If you lubricate the way cover on the outside, and it still makes noise, apply grease to the rails.
+The way cover rails are loose:
+ Tighten loose rail bolts.
+If the bolts [1] that hold the way cover rails to the casting are loose, the way covers make "popping" noises when they move. This eventually damages the plastic tabs [2] that slide on the rails. This causes sections of the way cover to separate and to leak coolant.
+As soon as the way covers start to make "popping" noises, inspect the rails for loose screws. Tighten the loose screws to prevent damage to the tabs.
+Recently Viewed Items
+Clear Items
+You Have No Recently Viewed Items Yet
+ Feedback 
+Haas Delivered Price
+This price includes shipping cost, export and import duties, insurance, and any other expenses incurred during shipping to a location in France agreed with you as a buyer. No other mandatory costs can be added to the delivery of a Haas CNC Product.
+Click for details
+KEEP UP WITH THE LATEST HAAS TIPS AND TECHNOLOGY...
+Sign up now! 
+HAAS TOOLING ACCEPTS THE FOLLOWING:
+Service & Support
+Owners
+Request Service
+Operator Manuals
+Haas Parts
+Rotary Repair Request
+Pre-Install Guides
+Shopping Tools
+Build & Price a New Haas
+Available Inventory
+The Haas Price List
+CNCA Financing
+About Haas
+DNSH Statement
+Export Compliance
+Careers
+Certifications & Safety
+Contact Us
+History
+Terms & Conditions
+Haas Tooling Terms & Conditions
+Privacy
+Warranty
+Haas Community
+Haas Certification Program
+Haas Motorsports
+Gene Haas Foundation
+Haas Technical Education Community
+Events
+Join the Conversation
+Facebook
+X
+Flickr
+YouTube
+LinkedIn
+Instagram
+TikTok
+ © 2026 
+Haas Automation, Inc – CNC Machine Tools
+ This site is protected by reCAPTCHA and the Google 
+Privacy Policy
+ and 
+Terms of Service
+ apply. 
+2800 Sturgis Rd., Oxnard, CA 93030
+ Toll Free: (888) 817-4446 / Fax: 805-278-8554
+ {{ if (loading) { }} {{=loadingSpinner}} {{ } else { }} 
+×
+ {{=content}} 
+ {{ } }} 
+ {{ if (loading) { }} {{=loadingSpinner}} {{ } else { }} 
+×
+ {{=content}} 
+ {{ } }} 

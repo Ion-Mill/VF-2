@@ -1,0 +1,68 @@
+SOURCE: https://www.rockwellautomation.com/en-us/company/news/press-releases/Rockwell-Automation-and-Microsoft-Deliver-on-a-Shared-Vision-to-Accelerate-Industrial-Transformation.html
+FETCHED: 2026-10-02
+
+ 
+ Rockwell Automation and Microsoft Deliver on a Shared Vision to Accelerate Industrial Transformation | Rockwell Automation | US 
+ Loading
+ Press Release | November 19, 2024
+ -->
+ Rockwell Automation and Microsoft Deliver on a Shared Vision to Accelerate Industrial Transformation 
+ Share This: 
+ LinkedIn LinkedIn 
+ X X 
+ Facebook Facebook 
+ Print Print 
+ Email Email 
+ Collaboration to deliver advanced cloud and AI solutions, empowering manufacturers with enhanced data insights and operational efficiency 
+ MILWAUKEE--(BUSINESS WIRE)-- 
+ Rockwell Automation , Inc. (NYSE: ROK), the world's largest company dedicated to industrial automation and digital transformation, and 
+ Microsoft Corp. , a leading global technology company, are proud to announce an expanded strategic collaboration aimed at revolutionizing industrial transformation. Together, the companies will provide manufacturing customers with advanced cloud and AI solutions that deliver powerful data insights, streamline operations and enhance scalability – driving operational efficiency and sustainable growth across the industry.
+ This shared vision is supported by several new releases that will be previewed this week as Microsoft joins Rockwell as an exhibiting sponsor at the highly anticipated 
+ Automation Fair® from Nov. 18-21 in Anaheim, Calif . This relationship uniquely combines Rockwell’s deep industrial automation expertise with Microsoft’s cutting-edge cloud and AI capabilities. Together, the companies will bridge the gap between traditional industrial practices and modern digital applications, creating integrated solutions designed to unlock the full potential of industrial data.
+"We are excited to strengthen our partnership with Microsoft as we work to meet the evolving challenges faced by today’s manufacturers,” said Jessica Korpela, director, global customer innovation at Rockwell Automation. “This enhanced collaboration fuses cloud and AI technologies with our extensive expertise in industrial automation, enabling our customers to reach unprecedented levels of efficiency, innovation and resilience in their operations.”
+The Rockwell-Microsoft partnership represents a bold step forward in the digital transformation of the manufacturing sector, setting a new standard for connected, AI-driven operations that empower both companies and their customers to thrive in a rapidly changing world.
+ Unlocking the Power of Data for Enhanced Efficiency 
+ At Automation Fair, Microsoft will debut its latest solution, Azure IoT Operations, which integrates with Rockwell's digital offerings, including 
+ FactoryTalk® Optix™ . This newly available combined solution will allow manufacturers and production companies to capture critical insights from existing sites without extensive retrofitting. The adaptive cloud approach will simplify the integration of shop-floor data with cloud-based applications, enabling advanced analytics and improving scalability across multi-site environments. By leveraging this streamlined integration, customers can gain actionable insights to optimize production and drive data-informed decisions across their operations.
+ FactoryTalk Design Studio Copilot, Powered by Microsoft AI, Enhances PLC Code Creation and User Management 
+Rockwell has expanded its FactoryTalk Design Studio software-as-a-service design software with a new Generative AI Copilot, developed in partnership with Microsoft. The latest feature, powered by Microsoft Azure OpenAI Service, enables engineers to use natural language prompts for tasks like product guidance, code generation, troubleshooting and code explanations, making system design faster and more intuitive. Accessible through a web browser without downloads or installs, FactoryTalk Design Studio provides a collaborative, multi-user environment with integrated version control and is continuously updated with new capabilities to enhance productivity and efficiency in industrial automation system design.
+ Enhancing Digital Applications with AI to Empower the Workforce 
+The collaboration will also introduce Rockwell’s FT Optix Food & Beverage model, enabled through Rockwell’s digital and service offerings, into the Microsoft AI model catalog, The model brings the power of AI and Generative AI (GenAI) directly to the manufacturing floor. The adapted AI model, which leverages the power of Microsoft’s Phi-3 small language models (SLM), will provide machine operators with AI-guided instructions, assisting in process and device operations via the familiar FactoryTalk Optix interface. With specifically trained models, workers can easily access contextualized AI guidance to enhance productivity, reduce errors, and accelerate decision-making.
+“We are thrilled to continue our work with Rockwell Automation to help customers accelerate their industrial transformation journey,” said Kam VedBrat, General Manager, Azure IoT, Microsoft. “By combining Rockwell’s industry-leading automation solutions with Microsoft Azure IoT Operations, and through our collaboration on an adapted AI model based on Phi-3, we are enabling customers to unlock new levels of efficiency and innovation.”
+ Driving Industry Impact and Value 
+This strategic partnership will deliver substantial benefits to manufacturers, helping to navigate the challenges of today’s rapidly evolving industrial landscape. Through these advanced digital solutions, companies can drive greater efficiency, reduce operational costs, and increase productivity, ultimately empowering organizations to realize the full potential of their digital transformation journey.
+ About Rockwell Automation 
+ Rockwell Automation, Inc. (NYSE: ROK), is a global leader in industrial automation and digital transformation. We connect the imaginations of people with the potential of technology to expand what is humanly possible, making the world more productive and more sustainable. Headquartered in Milwaukee, Wisconsin, Rockwell Automation employs approximately 27,000 problem solvers dedicated to our customers in more than 100 countries as of fiscal year end 2024. To learn more about how we are bringing the Connected Enterprise to life across industrial enterprises, visit 
+ www.rockwellautomation.com .
+ Chaya Jacobs, PR & Social Media Director
+ Rockwell Automation
+ CJacobs@rockwellautomation.com 
+ Source: Rockwell Automation, Inc. 
+ Published November 19, 2024 
+ About Rockwell Automation 
+ Rockwell Automation, Inc.  (NYSE: ROK), is a global leader in industrial automation and digital transformation. We connect the imaginations of people with the potential of technology to expand what is humanly possible, making the world more productive and more sustainable. Headquartered in Milwaukee, Wisconsin, Rockwell Automation employs approximately 26,000 problem solvers dedicated to our customers in more than 100 countries as of fiscal year end 2025. To learn more about how we are bringing the Connected Enterprise® to life across industrial enterprises, visit  www.rockwellautomation.com . 
+ About the Rockwell Automation PartnerNetwork 
+ Rockwell Automation believes we're better together—and we do our part by delivering an expansive, global partner ecosystem of market-leading technology, superior support and services, and an integrated and streamlined approach to business. Succeed on an international scale by utilizing our network's breadth of innovative technologies and services that no single vendor can provide alone. To learn more about how the PartnerNetwork is helping to deliver the value of The Connected Enterprise, visit  PartnerNetwork Program . 
+ Chevron Left Chevron Left 
+ Rockwell Automation Home 
+ Chevron Left Chevron Left 
+ Com... 
+ Chevron Left Chevron Left 
+ News 
+ Chevron Left Chevron Left 
+ Press Releases 
+ Chevron Left Chevron Left 
+ Rockwell Automation and Microsoft Deliver on a Shared Vision to Accelerate Industrial Transformation 
+ ✕ 
+ Please update your cookie preferences to continue.
+ This feature requires cookies to enhance your experience. Please update your preferences to allow for these cookies:
+ Social Media Cookies
+ Functional Cookies
+ Performance Cookies
+ Marketing Cookies
+ All Cookies
+ You can update your preferences at any time. For more information please see our {0}
+ Privacy Policy 
+ Cancel 
+ Go to Cookie Settings 
+ Close Close 

@@ -1,0 +1,56 @@
+Activity,events,done,rejected,hours,reject_pct
+Turning & Milling Q.C.,522,12641,246,797.1,1.91
+Final Inspection Q.C.,550,12053,233,1052.4,1.9
+Round Grinding - Q.C.,59,1329,27,142.9,1.99
+Round Grinding - Machine 2,267,3169,16,1038.9,0.5
+Laser Marking - Machine 7,252,12934,14,242.6,0.11
+Turning & Milling - Machine 5,259,4237,13,1394.9,0.31
+Turn & Mill. & Screw Assem - Machine 10,28,258,10,164.2,3.73
+Turning & Milling - Machine 10,149,1027,8,839.6,0.77
+Turning Q.C.,55,2088,6,80.7,0.29
+Turning & Milling - Machine 6,261,3019,6,1328.4,0.2
+Round Grinding - Machine 3,273,4762,5,1046.5,0.1
+Lapping - Machine 1,370,9178,5,657.0,0.05
+Round  Q.C.,2,29,2,2.2,6.45
+Flat Grinding - Machine 11,113,3005,2,176.1,0.07
+Turning & Milling - Machine 4,262,3986,0,1457.2,0.0
+Packing,277,12090,0,277.0,0.0
+Turning - Machine 21,1,6,0,4.5,0.0
+Turning - Machine 8,83,760,0,322.6,0.0
+Fix - Machine 15,2,0,0,2.7,NaN
+Milling - Machine 8,1,5,0,8.0,0.0
+Round Grinding - Machine 23,3,17,0,7.7,0.0
+Turn & Mill. & Screw Assem - Machine 9,7,24,0,22.1,0.0
+Turning & Milling - Machine 9,158,1163,0,761.4,0.0
+Round Grinding - Machine 19,6,98,0,13.6,0.0
+Turning - Machine 4,8,300,0,51.9,0.0
+Setup - Machine 8,1,0,0,1.3,NaN
+Fix EDM,4,4,0,11.0,0.0
+Milling - Machine 16,10,35,0,76.2,0.0
+Final Inspection - Weighting,1,3,0,1.2,0.0
+Deburring - Manual,9,142,0,19.5,0.0
+Grinding Rework - Machine 12,11,0,0,22.5,NaN
+Nitration Q.C.,4,663,0,1.8,0.0
+Grinding Rework - Machine 27,69,0,0,180.6,NaN
+Round Grinding - Machine 12,82,376,0,236.8,0.0
+Milling Q.C.,1,1,0,1.2,0.0
+Turning Rework - Machine 21,3,16,0,7.5,0.0
+Grinding Rework,11,30,0,18.1,0.0
+Turning - Machine 9,33,223,0,142.5,0.0
+Fix - Machine 3,2,0,0,2.6,NaN
+Fix - Machine 15M,1,0,0,1.6,NaN
+Milling - Machine 10,1,1,0,1.2,0.0
+Milling - Machine 14,18,65,0,78.9,0.0
+Wire Cut - Machine 13,21,664,0,118.4,0.0
+SETUP     Turning & Milling - Machine 5,3,0,0,10.0,NaN
+Wire Cut - Machine 18,6,45,0,30.0,0.0
+Fix - Machine 19,1,0,0,6.8,NaN
+Turning & Milling - Machine 8,180,1158,0,668.0,0.0
+Stress Relief,3,90,0,6.0,0.0
+Round Grinding - Manual,84,597,0,302.0,0.0
+Grinding Rework - Machine 2,6,42,0,34.5,0.0
+Turning - Machine 5,2,13,0,7.3,0.0
+Flat Grinding - Machine 26,1,26,0,4.5,0.0
+Setup - Machine 4,1,0,0,1.9,NaN
+Change Version - Machine 22,4,147,0,32.8,0.0
+Rework Milling - Machine 28,2,0,0,3.5,NaN

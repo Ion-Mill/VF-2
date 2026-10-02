@@ -1,0 +1,132 @@
+SOURCE: https://arxiv.org/abs/2506.09247
+FETCHED: 2026-10-02
+
+ 
+ [2506.09247] Agent-based Condition Monitoring Assistance with Multimodal Industrial Database Retrieval Augmented Generation 
+ Skip to main content 
+ Search
+ Submit 
+ Donate 
+ Log in 
+ Search arXiv 
+ Press Enter to search · Advanced search 
+--> 
+ Computer Science > Machine Learning 
+ arXiv:2506.09247 (cs)
+ [Submitted on 10 Jun 2025] 
+ Title: Agent-based Condition Monitoring Assistance with Multimodal Industrial Database Retrieval Augmented Generation 
+ Authors: Karl Löwenmark , Daniel Strömbergsson , Chang Liu , Marcus Liwicki , Fredrik Sandin View a PDF of the paper titled Agent-based Condition Monitoring Assistance with Multimodal Industrial Database Retrieval Augmented Generation, by Karl L\"owenmark and 4 other authors 
+ View PDF 
+ HTML (experimental) 
+ Abstract: Condition monitoring (CM) plays a crucial role in ensuring reliability and efficiency in the process industry. Although computerised maintenance systems effectively detect and classify faults, tasks like fault severity estimation, and maintenance decisions still largely depend on human expert analysis. The analysis and decision making automatically performed by current systems typically exhibit considerable uncertainty and high false alarm rates, leading to increased workload and reduced efficiency.
+ This work integrates large language model (LLM)-based reasoning agents with CM workflows to address analyst and industry needs, namely reducing false alarms, enhancing fault severity estimation, improving decision support, and offering explainable interfaces. We propose MindRAG, a modular framework combining multimodal retrieval-augmented generation (RAG) with novel vector store structures designed specifically for CM data. The framework leverages existing annotations and maintenance work orders as surrogates for labels in a supervised learning protocol, addressing the common challenge of training predictive models on unlabelled and noisy real-world datasets.
+ The primary contributions include: (1) an approach for structuring industry CM data into a semi-structured multimodal vector store compatible with LLM-driven workflows; (2) developing multimodal RAG techniques tailored for CM data; (3) developing practical reasoning agents capable of addressing real-world CM queries; and (4) presenting an experimental framework for integrating and evaluating such agents in realistic industrial scenarios. Preliminary results, evaluated with the help of an experienced analyst, indicate that MindRAG provide meaningful decision support for more efficient management of alarms, thereby improving the interpretability of CM systems.
+ Subjects: 
+ Machine Learning (cs.LG) 
+ Cite as: 
+ arXiv:2506.09247 [cs.LG] 
+ (or 
+ arXiv:2506.09247v1 [cs.LG] for this version)
+ https://doi.org/10.48550/arXiv.2506.09247 
+ Focus to learn more 
+ arXiv-issued DOI via DataCite 
+ Submission history From: Karl Löwenmark Dr. [ view email ] [v1] 
+ Tue, 10 Jun 2025 21:04:18 UTC (2,774 KB) 
+ Full-text links: 
+ Access Paper: 
+View a PDF of the paper titled Agent-based Condition Monitoring Assistance with Multimodal Industrial Database Retrieval Augmented Generation, by Karl L\"owenmark and 4 other authors View PDF HTML (experimental) TeX Source
+ view license 
+ Current browse context: 
+ cs.LG 
+ < prev 
+   |   
+ next > 
+ new 
+ | 
+ recent 
+ | 2025-06 
+ Change to browse by:
+ cs 
+ References & Citations 
+ NASA ADS Google Scholar 
+ Semantic Scholar 
+ export BibTeX citation 
+ Loading... 
+ BibTeX formatted citation 
+ × 
+ loading... 
+ Data provided by: 
+ Bookmark 
+ Bibliographic Tools 
+ Bibliographic and Citation Tools 
+ Bibliographic Explorer Toggle 
+ Bibliographic Explorer ( What is the Explorer? ) 
+ Connected Papers Toggle 
+ Connected Papers ( What is Connected Papers? ) 
+ Litmaps Toggle 
+ Litmaps ( What is Litmaps? ) 
+ scite.ai Toggle 
+ scite Smart Citations ( What are Smart Citations? ) 
+ Code, Data, Media 
+ Code, Data and Media Associated with this Article 
+ alphaXiv Toggle 
+ alphaXiv ( What is alphaXiv? ) 
+ Links to Code Toggle 
+ CatalyzeX Code Finder for Papers ( What is CatalyzeX? ) 
+ DagsHub Toggle 
+ DagsHub ( What is DagsHub? ) 
+ GotitPub Toggle 
+ Gotit.pub ( What is GotitPub? ) 
+ Huggingface Toggle 
+ Hugging Face ( What is Huggingface? ) 
+ ScienceCast Toggle 
+ ScienceCast ( What is ScienceCast? ) 
+ Demos 
+ Demos 
+ Replicate Toggle 
+ Replicate ( What is Replicate? ) 
+ Spaces Toggle 
+ Hugging Face Spaces ( What is Spaces? ) 
+ Spaces Toggle 
+ TXYZ.AI ( What is TXYZ.AI? ) 
+ Related Papers 
+ Recommenders and Search Tools 
+ Link to Influence Flower 
+ Influence Flower ( What are Influence Flowers? ) 
+ Core recommender toggle 
+ CORE Recommender ( What is CORE? ) 
+ IArxiv recommender toggle 
+ IArxiv Recommender 
+ ( What is IArxiv? ) 
+ Author 
+ Venue 
+ Institution 
+ Topic 
+ About arXivLabs
+ arXivLabs: experimental projects with community collaborators 
+ arXivLabs is a framework that allows collaborators to develop and share new arXiv features directly on our website. 
+ Both individuals and organizations that work with arXivLabs have embraced and accepted our values of openness, community, excellence, and user data privacy. arXiv is committed to these values and only works with partners that adhere to them. 
+ Have an idea for a project that will add value for arXiv's community? Learn more about arXivLabs . 
+ Which authors of this paper are endorsers? |
+ Disable MathJax ( What is MathJax? )
+ We gratefully acknowledge support from
+ our major funders ,
+ member institutions , ,
+ and all contributors.
+ About 
+ · 
+ Help 
+ · 
+ Contact 
+ · 
+ Subscribe 
+ · 
+ Copyright 
+ · 
+ Privacy 
+ · 
+ Accessibility 
+ · 
+ Operational Status (opens in new tab) 
+ Major funding support from 
+ 

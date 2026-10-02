@@ -1,0 +1,914 @@
+Spindle Encoder - Troubleshooting Guide - NGC
+×
+Search Results
+Web Pages
+Images
+<
+1
+>
+machines
+Main Menu
+Vertical Mills 
+Vertical Mills 
+Vertical Mills 
+View All
+Vertical Mills 
+VF Series
+Universal Machines
+VR Series
+Pallet-Changing VMCs
+Mini Mills
+Mold Machines
+Drill/ Tap/ Mill Series
+Toolroom Mills
+Compact Mills
+Gantry Series
+Extra-Large VMC
+Double-Column Mills
+Desktop Mill
+Mill Auto Parts Loader
+Compact Automatic Parts Loader
+Multi-Axis Solutions
+Multi-Axis Solutions
+Multi-Axis Solutions
+View All
+Multi-Axis Solutions
+Y-Axis Lathes
+5-Axis Mills
+Lathes
+Lathes
+Lathes
+View All
+Lathes
+ST Series
+Dual-Spindle
+Toolroom Lathes
+Chucker Lathe
+Haas Bar Feeder V2
+Lathe Auto Parts Loader
+Horizontal Mills
+Horizontal Mills
+Horizontal Mills
+View All
+Horizontal Mills
+50-Taper
+40-Taper
+Rotaries & Indexers
+Rotaries & Indexers
+Rotaries & Indexers
+View All
+Rotaries & Indexers
+Rotary Tables
+Indexers
+5-Axis Rotaries
+Extra-Large Rotaries
+Automation Systems
+Automation Systems
+Automation Systems
+View All
+Automation Systems
+Robot Systems
+Automatic Parts Loaders
+Pallet-Pool Systems
+Haas Bar Feeder
+Models
+QUICK LINKS
+Special Series 
+Special Series 
+HAAS CAREERS
+HAAS CAREERS
+BUILD & PRICE
+BUILD & PRICE
+PRICE LIST
+PRICE LIST
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+HAAS SIX PACK
+HAAS SIX PACK
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Options
+Main Menu
+Spindles
+Spindles
+Spindles
+View All
+Spindles
+Tool Changers
+Tool Changers
+Tool Changers
+View All
+Tool Changers
+4th- | 5th-Axis
+4th- | 5th-Axis
+4th- | 5th-Axis
+View All
+4th- | 5th-Axis
+Turrets & Live Tooling
+Turrets & Live Tooling
+Turrets & Live Tooling
+View All
+Turrets & Live Tooling
+Probing
+Probing
+Probing
+View All
+Probing
+Chip & Coolant Management
+Chip & Coolant Management
+Chip & Coolant Management
+View All
+Chip & Coolant Management
+The Haas Control
+The Haas Control
+The Haas Control
+View All
+The Haas Control
+Product Options
+Product Options
+Product Options
+View All
+Product Options
+Tooling & Fixturing
+Tooling & Fixturing
+Tooling & Fixturing
+View All
+Tooling & Fixturing
+Workholding
+Workholding
+Workholding
+View All
+Workholding
+5-Axis Solutions
+5-Axis Solutions
+5-Axis Solutions
+View All
+5-Axis Solutions
+5 Easy Steps to 5-Axis
+Automation
+Automation
+Automation
+View All
+Automation
+QUICK LINKS
+Special Series 
+Special Series 
+HAAS CAREERS
+HAAS CAREERS
+BUILD & PRICE
+BUILD & PRICE
+PRICE LIST
+PRICE LIST
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+HAAS SIX PACK
+HAAS SIX PACK
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Why Haas
+Main Menu
+Discover the Haas Difference
+Why Haas
+MyHaas
+Education Community
+Industry 4.0
+Haas Certification
+Customer Testimonials
+Service
+Main Menu
+Welcome to Haas Service
+SERVICE HOME
+Operator’s Manuals
+How-To Procedures
+Troubleshooting Guides
+Preventive Maintenance
+Haas Parts
+Haas Tooling
+Videos
+Videos
+Main Menu
+Haas Tooling
+Main Menu
+Mill Toolholding
+Mill Workholding
+Milling
+Lathe Tooling
+Lathe Toolholding
+Lathe Workholding
+ER Collets & Chucks
+Holemaking
+Threading
+Tool Management
+Tooling Accessories
+Package Kits
+Apparel & Accessories
+Storage & Handling
+Measuring & Inspection
+Haas Tooling
+Mill Toolholding
+Mill Toolholding
+Shop All
+End Mill Holders
+Shell Mill Holders
+Shrink Fit Holders
+ER Collet Chucks
+Milling Chucks & Collets
+Drill Chucks
+Pull Studs
+Mill Toolholding Kits
+Mill Workholding
+Mill Workholding
+Shop All
+Fixed Jaw Vises
+Self-Centering Vises
+Adapter Plates
+Mill Vise Jaws
+Workholding Accessories
+Vise Kits
+Milling
+Milling
+Shop All
+Shell Mill Bodies
+Milling Inserts
+End Mills
+Chamfer Mills & Inserts
+Indexable End Mill Bodies
+Ball End Mills
+Chamfer End Mills
+Roughing End Mills
+Indexable Ball End Mills & Inserts
+Shell Mill Kits
+Chamfer Mill Kits
+Indexable End Mill Kits
+Dovetail Cutters
+Indexable Dovetail Cutters
+Engraving End Mills
+Burrs
+Lathe Tooling
+Lathe Tooling
+Shop All
+Cut-Off Tooling
+Cut-Off Tooling Kits
+Turning Inserts
+Grooving Tools
+Small ID Grooving & Threading Tools
+Threading Inserts
+Threading Toolholders
+ID Toolholders
+OD Toolholders
+Cermet Turning Inserts
+CBN Turning Inserts
+ Haas Notch Groove and Thread Inserts
+Haas Notch Groove and Thread Toolholders
+Broaching Toolholders
+Broaching Inserts
+Lathe Toolholding
+Lathe Toolholding
+Shop All
+TL & CL Toolholding
+BOT Toolholding
+BMT Toolholding
+Live Toolholding
+Reduction Sleeves
+VDI Toolholding
+Lathe Workholding
+Lathe Workholding
+Shop All
+Live Centers
+Spindle Liners
+Quick-Change Collets
+Lathe Collet Chucks
+5C Collets
+5C Collet Sets
+Lathe Boring Rings
+ER Collets & Chucks
+ER Collets & Chucks
+Shop All
+ER Collets
+ER Sealed Collets
+ER Tap Collets
+ER Collet Sets & Accessories
+ER Collet Chucks
+Straight Shank ER Collet Chucks
+Straight Shank Keyless Drill Chucks
+Holemaking
+Holemaking
+Shop All
+Carbide Drills
+Indexable Drill Bodies
+Indexable Drill Inserts
+Modular Drill Bodies
+Modular Drill Heads
+Cobalt Drills & Sets
+Center Drills
+Reamers
+Indexable Drilling Kits
+Spot Drills
+Threading
+Threading
+Shop All
+Taps
+Threading Inserts
+Threading Toolholders
+Thread Mills
+Pipe Taps
+Drill Tap Kits
+Tool Management
+Tool Management
+Shop All
+Tool Presetting Machines
+Shrink Fit Machines
+Tooling Accessories
+Tooling Accessories
+Shop All
+Spindle Taper Cleaner
+Haas Shop Lift
+Toolholder Fixtures
+Deburr Wheels
+CNC Clearing Fans
+Package Kits
+Package Kits
+Shop All
+Chip Clearing Fan Kits
+Cutting Tool Kits
+Indexable End Mill Kits
+Cut-Off Tooling Kits
+Drill Tap Kits
+Indexable Drilling Kits
+Shell Mill Kits
+Chamfer Mill Kits
+Mill Toolholding Kits
+Workholding Kits
+Vise Kits
+Apparel & Accessories
+Apparel & Accessories
+Shop All
+Accessories
+Apparel
+Storage & Handling
+Storage & Handling
+Shop All
+Tool Carts
+Measuring & Inspection
+Measuring & Inspection
+Shop All
+7-Piece Measuring Kit
+3D Sensor Kit, Inch, CT40
+3D Sensor Kit, Metric, SK40/DIN
+3D Sensor Kit, Metric, BT40
+3D Sensor Kit, Inch, HSK63A
+3D Sensor Kit, Metric, HSK63A
+3D Sensor, Inch
+3D Sensor, Metric
+WIPS Stylus, 3-Pack
+WIPS Replacement Stylus
+Spindle Test Bar
+Coolant Refractometer
+Clamp Force Gauge
+HAAS TOOLING QUICK LINKS
+NEW PRODUCTS 
+NEW PRODUCTS 
+MOST POPULAR 
+MOST POPULAR 
+OPEN TERMS 
+OPEN TERMS 
+FINANCING 
+FINANCING 
+FAQs 
+FAQs 
+KITS CREATED FOR YOU
+KITS CREATED FOR YOU
+Haas Service Parts
+Main Menu
+Automatic Pallet Changer
+Lathe Turret
+Tool Changer
+Chip Management
+Coolant
+Counterbalance
+Electrical Cabinet
+Enclosure
+Hydraulics
+Lubrication
+Maintenance
+Pendant
+Probing
+Rotary
+Spindle
+Tailstock
+Haas Service Parts
+Automatic Pallet Changer
+Automatic Pallet Changer
+Shop All
+HMC - Automatic Pallet Changer
+VMC - Automatic Pallet Changer
+Lathe Turret
+Lathe Turret
+Shop All
+Lathe - Turret
+Live Tooling
+Tool Changer
+Tool Changer
+Shop All
+Side Mount
+Umbrella
+Chip Management
+Chip Management
+Shop All
+Multi Auger
+Single Auger
+Coolant
+Coolant
+Shop All
+Auxiliary Filter
+HPC-300 (Lathe)
+HPC-1000 (Lathe)
+Oil Skimmer
+Standard Coolant
+TSC-300 (Mill)
+TSC-1000 (Mill)
+Coolant Refill
+Loc-Line
+Counterbalance
+Counterbalance
+Shop All
+Charge & Discharge Hose
+Electrical Cabinet
+Electrical Cabinet
+Shop All
+Fans
+Filters
+Upgrade Kits
+Enclosure
+Enclosure
+Shop All
+Accessories
+Air Nozzle
+Decals
+Door Bumpers
+Lighting
+Windows, Gaskets, & Weather Strip
+Chip & Coolant Management
+Hydraulics
+Hydraulics
+Shop All
+Filters
+Gauges
+Heat Exchanger
+Hoses
+Lubrication
+Lubrication
+Shop All
+Bijur Mechanical Lubrication
+Minimum Lubrication
+Maintenance
+Maintenance
+Shop All
+Grease, Oil, & Sealants
+Pendant
+Pendant
+Shop All
+Floppy Disk & USB
+Keypad
+Keys
+Lens
+Gaskets & Seals
+Probing
+Probing
+Shop All
+Mill Probing
+Lathe Tool Presetter
+Rotary
+Rotary
+Shop All
+Rotary Gaskets & Seals
+Spindles
+Spindles
+Shop All
+Couplings
+Gaskets & Seals
+Spindle Motor Drive
+Gearbox Drive
+Tool Release Piston
+Tailstock
+Tailstock
+Shop All
+Handles
+Contact Us
+My Cart
+MyHaas
+Welcome,
+! 
+Haas Tooling
+Guest Order History
+MyHaas/HaasConnect
+Sign In
+Register
+Haas Tooling
+My Account
+Order History
+Return History
+MyHaas/HaasConnect
+Sign Out
+Welcome, 
+My Machines
+Latest Activity
+My Quotes
+My Account
+My Users
+Sign Out
+Find A Dealer
+Select Language
+English
+Deutsch
+Español - España
+Español - Méjico
+Français
+Italiano
+Português
+Český
+Dansk
+Nederlands
+Magyar
+Polski
+Svenska
+Русский
+Türkçe
+中文
+Suomi
+Norsk
+الإنجليزية
+български
+Hrvatski
+Ελληνικά
+Română
+Slovenský
+Slovenščina
+한국어
+日本語
+Search
+×
+Search Results
+Web Pages
+Images
+<
+1
+>
+Spindle Encoder - Troubleshooting Guide - NGC
+Service Home
+Spindle Encoder - Troubleshooting Guide - NGC
+Recently Updated
+Last updated: 06/30/2022
+Spindle Encoder
+ - Troubleshooting Guide - NGC
+Spindle Encoder - Troubleshooting Guide - NGC
+Jump to Section
+1. 
+Introduction 
+2. 
+Non-Contact Encoder Troubleshooting 
+3. 
+Symptom Table 
+4. 
+Main Processor/Encoder Cable 
+5. 
+Non-Contact Encoder Read Head Grounding 
+6. 
+Mill Encoder Ring to Read Head Alignment 
+7. 
+Lathe Encoder Ring to Read Head Alignment 
+8. 
+Ferrite Filters on Vector Drive 
+9. 
+Non-Contact Encoder Cable Connection 
+(1 step)
+10. 
+Spindle Encoder Cable Rubbing 
+11. 
+Electrical Diagram 
+Back to Top
+Introduction
+Encoders are used on Haas Machines to give feedback to the control about the direction and speed of the spindle. A Haas machine will alarm if any of the encoder signals are lost or are not responding to machine inputs. If the encoder is not generating an alarm it does not usually need to be replaced. Use this guide to troubleshoot spindle encoder related symptoms and alarms.
+Non-Contact Encoder Troubleshooting
+ Download and fillout the Non Contact Encoder Inspection Report Checklist below before replacing any parts.
+ Non Contact Encoder Inspection Report Checklist 
+Symptom Table
+Symptom / Alarms
+Possible Cause
+Corrective Action
+The Spindle Motor Does Not Turn, and The Load Meter Stays at Maximum.
+The Wye-Delta contactors are not operating correctly.
+Command a spindle speed of 50 RPM, make sure the Wye contactor engages, if not refer to the 
+Wye-Delta Contactor - Troubleshooting Guide - NGC
+The Spindle Turns at The Low RPM and The Load Meter Stays Near The Maximum
+Encoder Alignment is not correct
+Inspect the Radial runout, the encoder gapping and the axial position of the read head relative to the encoder ring. See the 
+Encoder Ring to Read Head Alignment
+ section below.
+Alarm 4.9930
+ S (SPINDLE) SERIAL ENCODER POOR COMMUNICATION
+The spindle encoder cable (M8) metal threaded ferrule is not connected to the cable shield.
+Look at the spindle encoder cable M8 connector. Replace the encoder cable if the metal ferrule is not connected to the cable shield.
+Loose encoder cable connection. The encoder cable is damaged.
+Check the encoder cable and connection. See the 
+Main Processor/Encoder Cable 
+section below.
+The encoder read-head is not grounded correctly.
+See the 
+Non-Contact Encoder Read Head Grounding
+ section below.
+The encoder cable is missing the ferrite filter.
+Make sure the spindle encoder cable has a ferrite filter installed.
+The Non Contact Encoder mounting plate is poorly grounded.
+Verify that the NCE mounting plate is grounded. If the alarm is intermittent check that the mounting plate is made out of steel, if the mounting plate is made out of aluminium contact the service department for the part number to upgrade to steel..
+The encoder cable connection has been contaminated.
+See the 
+Non-Contact Encoder Cable Connection
+ section below.
+contamination at connection joint between 33-1168A & 32-1168A cable assemblies 
+(GM-Series Only)
+If 
+33-1168A and 32-1168A
+ require to be replaced due to contamination then replace with 
+32-1190. NOTE: 
+Replacement cable will come with connection made and heat Shrink around the connectors.
+Alarm 4.9959
+ S (SPINDLE) SERIAL ENCODER DISCONNECT
+Loose encoder cable connection. The encoder cable is damaged.
+Check the encoder cable and connection. See the 
+Main Processor/Encoder Cable 
+section below.
+The encoder cable connection has been contaminated.
+See the 
+Non-Contact Encoder Cable Connection
+ section below.
+contamination at connection joint between 33-1168A & 32-1168A cable assemblies 
+(GM-Series Only)
+If 
+33-1168A and 32-1168A
+ require to be replaced due to contamination then replace with 32-1190. 
+NOTE:
+ Replacement cable will come with connection made and heat Shrink around the connectors.
+Alarm 4.9918
+ S (SPINDLE) SERIAL ENCODER INTERNAL DATA ERROR
+Encoder Alignment is not correct
+Inspect the Radial runout, the encoder gapping and the axial position of the read head relative to the encoder ring. See the 
+Encoder Ring to Read Head Alignment
+ section below.
+The encoder read-head is not grounded correctly.
+See the 
+Non-Contact Encoder Read Head Grounding
+ section below.
+Bearingless TSC union carbides are worn out and no longer parallel which flexes the read-head away from the ring.
+Replace the bearingless union
+.
+The encoder cable connection has been contaminated.
+See the 
+Non-Contact Encoder Cable Connection
+ section below.
+ contamination at connection joint between 33-1168A & 32-1168A cable assemblies 
+(GM-Series Only)
+If 
+33-1168A and 32-1168A
+ require to be replaced due to contamination then replace with 32-1190. 
+NOTE:
+ Replacement cable will come with connection made and heat Shrink around the connectors.
+Alarm 4.103
+ S (SPINDLE) AXIS SERVO ERROR TOO LARGE
+Encoder Alignment is not correct
+Inspect the Radial runout, the encoder gapping and the axial position of the read head relative to the encoder ring. See the 
+Encoder Ring to Read Head Alignment
+ section below.
+The encoder ring is damaged.
+Use a magnetic field viewer card to check the encoder ring. These can be found online. See the 
+Non-Contact
+ troubleshooting video.
+The encoder cable connection has been contaminated.
+See the 
+Non-Contact Encoder Cable Connection
+ section below.
+ contamination at connection joint between 33-1168A & 32-1168A cable assemblies 
+(GM-Series Only)
+If 
+33-1168A and 32-1168A
+ require to be replaced due to contamination then replace with 32-1190. 
+NOTE: 
+Replacement cable will come with connection made and heat Shrink around the connectors.
+Alarm 4.153
+ SP-AXIS ZERO CHANNEL MISSING
+Encoder Alignment is not correct
+Inspect the Radial runout, the encoder gapping and the axial position of the read head relative to the encoder ring. See the 
+Encoder Ring to Read Head Alignment
+ section below.
+The encoder ring is damaged.
+Use a magnetic field viewer card to check the encoder ring. These can be found online. See the 
+Non-Contact
+ troubleshooting video.
+The encoder cable connection has been contaminated.
+See the 
+Non-Contact Encoder Cable Connection
+ section below.
+Alarm 4.182 
+S (SPINDLE) AXIS ENCODER CABLE FAULT
+The Vector Drive cables are missing the ferrite filter or wrong filters nstalled.
+The Vector Drive should have no ferrite filter on the ground cable at Vector Drive terminal, one small ferrite filter over the White and Black Regen cable to the Vector Drive terminals. One large ferrite filter over the motor output cables to the Vector terminals. See the 
+Ferrite Filters on Vector Drive 
+section below.
+Vector Drive ground cable is routed in the large ferrite filter
+Vector Drive should have no ferrite filter on the ground cable at terminal 8. See the 
+Ferrite Filters on Vector Drive 
+section below.
+contamination at connection joint between 33-1168A & 32-1168A cable assemblies 
+(GM-Series Only)
+If 
+33-1168A and 32-1168A
+ require to be replaced due to contamination then replace with 32-1190. 
+NOTE:
+ Replacement cable will come with connection made and heat Shrink around the connectors.
+Spindle encoder cable has broke due to rubbing against the spindle belt
+Replace the cable and add a cable clamp and zip tie to move the cable out of the spindle belt path. See 
+Spindle Encoder Cable Rubbing
+ section for further information. 
+Alarm 4.116 
+S (SPINDLE) SPINDLE ORIENTATION FAULT
+Encoder Alignment is not correct
+Inspect the Radial runout, the encoder gapping and the axial position of the read head relative to the encoder ring. See the 
+Encoder Ring to Read Head Alignment
+ section below.
+Positioning error are occuring 
+Check the spindle encoder cable to see if it is damaged from rubbing against the spindle belt.
+Replace the cable and add a cable clamp and zip tie to move the cable out of the spindle belt path. See 
+Spindle Encoder Cable Rubbing
+ section for further information. 
+Main Processor/Encoder Cable
+Corrective Action:
+Examine the connector [1] on the Maincon PCB. Make sure it is not damaged.
+Examine the cable. Look for signs of damage or stiffness. The connector [4] has two housings [2,3] for the cable pins.
+Measure the resistance on the encoder cable from leg to leg, and from leg to ground. Make sure each measurement results in an open connection.
+Make sure the cable is firmly connected at both ends. Reseat both connections. Make sure the cable is installed in the correct connector at the Maincon PCB.
+Non-Contact Encoder Read Head Grounding
+Read Head and Casting
+Disconnect the cable from the encoder read head.
+Use a multimeter and check the continuity between the read-head screw and the casting.
+If there is little or no continuity:
+make sure the grounding cable to the spindle head casting is secured.
+make sure the mounting screws are making contact with bare metal and not the anodized layer.
+Connector Case and Read Head
+Check the continuity between the read head connector case [2] and the read head [1].
+If there is little or no continuity:
+remove the jamnut from the M8 connector and install an M8 internal star washer onto the connector.
+install and tighten the jamnut over the M8 star washer and install the read-head back onto the mounting bracket.
+Mill Encoder Ring to Read Head Alignment
+Proper alignment of the read head to the encoder ring is critical. The alignment will vary based on the brand of encoder. Use the chart provided to make sure the encoder ring and read head are properly aligned.
+VENDOR RLS BAUMER
+A 0.020" +0.020 / -0.039 0.0453" +/- 0.019
+B 0.0118" +0.0079 / -0.0039 0.0118" +/- 0.0039
+C 0.362" .0360"
+Incorrect installation of the spindle may axially misalign the motor shaft. Measure the distance from the top of the motor shaft to the top of the motor TSC mounting hole surfaces. It should be 1.291 ± .005.
+If the shaft is axially misaligned the spindle motor must be replaced.
+Lathe Encoder Ring to Read Head Alignment
+Proper alignment of the read head to the encoder ring is critical. The alignment will vary based on the brand of encoder. Use the chart provided to make sure the encoder ring and read head are properly aligned.
+ VENDOR RLS
+ A 0.0118" +0.0079 / -0.0039
+ B 0.0591" +0.059 / -0.019
+ C (0.0197")
+Proper alignment of the read head to the encoder ring is critical. The alignment will vary based on the brand of encoder. Use the chart provided to make sure the encoder ring and read head are properly aligned.
+ VENDOR BAUMER
+ A 0.0118" +/-0.004
+ B 0.045" +/-0.019
+ C (0.305")
+Ferrite Filters on Vector Drive
+Incorrect placement of the ferrite filter or incorrect ferrite filters can result in the control reading the Z-pulse as 2 or 3 different pulses or none. This causes the control to think the communication between the spindle encoder and processor has been lost, making the machine to alarm.
+Top image show the correct installation of the ferrite filters on the vector drive:
+One ferrite filter on the Black and White cables from the Regen terminals 1 and 2 with one large ferrite filter on the motor leads at terminals 9, 10 and 11. making sure ground in out side of the Ferrite filter.
+Lower image show two examples of incorrect installation of ferrite filters;
+image 1 : Large ferrite filter over motor leads at terminals 9, 10 and 11. with no ferrite filter on the regen cable at terminals 1 and 2
+Image 2: No ferrite filter on the regen cable at terminals 1 and 2 and three small ferrite filters on the motor leads at terminals 9, 10 and 11.
+Non-Contact Encoder Cable Connection
+1
+Follow the steps below to clean the encoder cable connection:
+Power
+ [OFF] 
+the control.
+Remove the spindle head cover. 
+Wipe down the read head [1] and ring [2] to prevent any chips and coolant from entering the exposed connectors.
+Disconnect the encoder cable [4] from the connection [3] on the read head and spray WD40 in both connectors to displace any coolant.
+Apply dielectric grease on the read head connector.
+Slowly push and rotate the connector nut so that you don't force the pins apart during this re-attachment process.
+Power 
+[ON] 
+ the control and test spindle for previous spindle encoder alarms.
+Spindle Encoder Cable Rubbing 
+This section only applies to machines built after 2020 and before the time frames listed below:
+ST-10
+ built before 2/17/2022
+ST-15
+ built before 2/15/2022
+ST-20/25
+ built before 4/4/2022
+ST-20L/25L
+ built before 10/10/2022
+ST-30
+ built before 10/10/2022
+ST-30L
+ built before 11/16/2022
+Order and install 
+59-2042
+ CABLE CLAMP 11/16 RICHCO SPNW-11 
+in the location shown in the image. Using a zip tie move the cable out of the path of the spindle belt, the cable will not be able to go in the cable clamp as it is not long enough to reach. 
+Electrical Diagram
+Cookies
+To make this site work properly, we sometimes place small data files called cookies on your device. Most big websites do this too.
+What are cookies?
+A cookie is a small text file that a website saves on your computer or mobile device when you visit the site. It enables the website to remember your actions and preferences (such as login, language, font size and other display preferences) over a period of time, so you don’t have to keep re-entering them whenever you come back to the site or browse from one page to another.
+View Privacy and Cookie Notice
+I accept cookies
+I refuse cookies
+FIND DISTRIBUTOR
+ Feedback 
+美元价格不包括关税、报关费用、保险费、增值税及运费。
+USD prices DO NOT include customs duty, customs fees, insurance, VAT, or freight.
+人民币价格包含关税、报关费用、货运保险和增值税, 但不包括运费。
+CNY prices include customs duty, customs fees, insurance, and VAT. DOES NOT include freight.
+Haas Delivered Price
+This price includes shipping cost, export and import duties, insurance, and any other expenses incurred during shipping to a location in France agreed with you as a buyer. No other mandatory costs can be added to the delivery of a Haas CNC Product.
+Click for details
+KEEP UP WITH THE LATEST HAAS TIPS AND TECHNOLOGY...
+Sign up now! 
+HAAS TOOLING ACCEPTS THE FOLLOWING:
+Service & Support
+ Owners 
+ Request Service 
+ Operator Manuals 
+ Haas Parts 
+ Rotary Repair Request 
+ Pre-Install Guides 
+Shopping Tools
+ Build & Price a New Haas 
+ Available Inventory 
+ The Haas Price List 
+ CNCA Financing 
+About Haas
+ Careers 
+ Certifications & Safety 
+ Contact Us 
+ History 
+ Terms & Conditions 
+ Haas Tooling Terms & Conditions 
+ Privacy 
+ Warranty 
+Haas Community
+ Haas Certification Program 
+ Haas Motorsports 
+ Gene Haas Foundation 
+ Haas Technical Education Community 
+ Events 
+Join the Conversation
+ Facebook 
+ Twitter 
+ Flickr 
+ YouTube 
+ LinkedIn 
+ Instagram 
+ TikTok 
+ © 2022 
+Haas Automation, Inc – CNC Machine Tools
+2800 Sturgis Rd., Oxnard, CA 93030 / Toll Free: 800-331-6746
+ Phone: 805-278-1800 / Fax: 805-278-2255
+ {{ if (loading) { }} {{=loadingSpinner}} {{ } else { }} 
+×
+ {{=content}} 
+ {{ } }} 
+ {{ if (loading) { }} {{=loadingSpinner}} {{ } else { }} 
+×
+ {{=content}} 
+ {{ } }} 
+Cookie Notice
+We use cookies to improve your user experience.
+Our Cookie Notice
+describes which cookies we use, why we use them, and how you can find more information about them. Please confirm you consent to us using analytics cookies. If you do not consent, you may still use our website with a reduced user experience.
+Accept All Cookies
+Manage Settings
+Cookie Notice
+We use cookies to improve your user experience.
+Our Cookie Notice
+describes which cookies we use, why we use them, and how you can find more information about them. Please confirm you consent to us using analytics cookies. If you do not consent, you may still use our website with a reduced user experience.
+Functional Cookies
+Analytics Cookies
+Save and Close

@@ -1,0 +1,1904 @@
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    
+
+<meta name="robots" content="noindex">
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+<meta http-equiv="Expires" content="-1"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="cache-control" content="no-cache"/>
+<link rel="stylesheet" type="text/css" href="/css/main/common.css">
+<script src="/js/main/jquery-3.4.1.min.js"></script>
+
+
+
+
+
+
+    <title>인공지능 제조 플랫폼</title>
+
+    <script type="text/javascript" src="/js/main/module.all.js"></script>
+    <script type="text/javascript" src="/js/main/module.bui.js"></script>
+    <script type="text/javascript" defer src="/js/main/module.bui.template.js"></script>
+    <script>
+        $(document).ready(function () {
+            hideReasonBox();
+        });
+
+        function doList() {
+            $("#frm").attr('action', '/aidataList')
+            $("#frm").attr('method', 'get');
+            $("#frm").submit();
+        }
+
+        function doList2(AI_SEARCH) {
+            $("#AI_SEARCH").val(AI_SEARCH);
+            $("#EQUIP_SEL").val("");
+            $("#FILE_TYPE_SEL").val("");
+            $("#GUBUN_SEL").val("");
+
+            $("#frm").attr('action', '/aidataList')
+            $("#frm").attr('method', 'get');
+            $("#frm").submit();
+        }
+
+        function doDataPop() {
+        	const userSeq = '';
+            if (userSeq === null || userSeq === '') {
+            	alert("로그인 후 사용 가능합니다");
+                location.href = "/login";
+            } else {
+                layerPopupTypeB.toggle('findId');
+            }
+        }
+
+        function doGuidePop() {
+        	const userSeq = '';
+            if (userSeq === null || userSeq === '') {
+            	alert("로그인 후 사용 가능합니다");
+                location.href = "/login";
+            } else {
+                layerPopupTypeB.toggle('findGd');
+            }
+        }
+        
+        /// 데이터셋 다운로드
+        function doDataDown() {
+            // 20231201 김정호 활용 목적 선택X 반환
+            if ($('#DATASET_USE_CASE_SEL').val() === "" || $('#DATASET_USE_CASE_SEL').val() === null) {
+                alert("활용 목적을 선택해주세요.")
+                return;
+            // 20231206 김정호 활용 목적이 "기타" 일 경우 활용목적 텍스트 검사
+            } else if ($('#DATASET_USE_CASE_SEL').val() === 'C029006') {
+                if (!checkReason('DS')) return;
+            }
+            
+            const params = {
+                "datasetSeq": 3,
+                "usecaseSel": $('#DATASET_USE_CASE_SEL').val(),
+                "etcReason" : $('#DSetcReason').val()
+            };
+            
+            location.href = '/datasetDownload?' + new URLSearchParams(params);
+            $('#DATASET_USE_CASE_SEL').val("");
+        	hideReasonBox();
+        	layerPopupTypeB.toggle('findId');
+        }
+
+        /// 가이드북 다운로드
+        function doGuideDown() {
+            // 20231201 김정호 활용 목적 선택X 반환
+            if ($('#GUIDE_USE_CASE_SEL').val() === "" || $('#GUIDE_USE_CASE_SEL').val() === null) {
+                alert("활용 목적을 선택해주세요.")
+                return;
+            // 20231206 김정호 활용 목적이 "기타" 일 경우 활용목적 텍스트 검사
+            } else if ($('#GUIDE_USE_CASE_SEL').val() === 'C029006') {
+                if (!checkReason('GD')) return;
+            }
+            
+            const params = {
+            	"datasetSeq": 3,
+                "usecaseSel": $('#GUIDE_USE_CASE_SEL').val(),
+                "etcReason" : $('#GDetcReason').val()
+            };
+            
+            location.href = '/guideDownload?' + new URLSearchParams(params);
+            $('#GUIDE_USE_CASE_SEL').val("");
+            hideReasonBox();
+            layerPopupTypeB.toggle('findGd');
+        }
+
+        // 빅데이터셋 다운로드
+        function doBigDown() {
+            // 20231201 김정호 활용 목적 선택X 반환
+            if ($('#DATASET_USE_CASE_SEL').val() === "" || $('#DATASET_USE_CASE_SEL').val() === null) {
+                alert("활용 목적을 선택해주세요.")
+                return;
+            // 20231206 김정호 활용 목적이 "기타" 일 경우 활용목적 텍스트 검사
+            } else if ($('#DATASET_USE_CASE_SEL').val() === 'C029006') {
+                if (!checkReason('DS')) return;
+            }
+            
+            const params = {
+                "datasetSeq": 3,
+                "usecaseSel": $('#DATASET_USE_CASE_SEL').val(),
+                "etcReason" : $('#DSetcReason').val()
+            };
+            
+            location.href = '/bigDatasetDownload?' + new URLSearchParams(params);
+            $('#DATASET_USE_CASE_SEL').val("");
+        	hideReasonBox();
+        	layerPopupTypeB.toggle('findId');
+        }
+
+        // 20231206 김정호 활용 목적 select box 변경 시 "기타"일 경우 활용 목적 Text 활성화
+        function changeUsecaseSel() {
+            if($('#DATASET_USE_CASE_SEL').val() === 'C029006' || $('#GUIDE_USE_CASE_SEL').val() === 'C029006') {
+                showReasonBox();
+            } else {
+                hideReasonBox();
+            }
+        }
+
+        function closePop(pop) {
+            if(pop === 'DATASET') {
+                $('#DATASET_USE_CASE_SEL').val("");
+                layerPopupTypeB.toggle('findId');
+            } else {
+                $('#GUIDE_USE_CASE_SEL').val("");
+                layerPopupTypeB.toggle('findGd');
+            }
+            hideReasonBox();
+        }
+        // 20231206 김정호 활용 목적 Text 활성화
+        function showReasonBox() {
+            $('#DSetcReason').show().prop('disabled',false);
+            $('#GDetcReason').show().prop('disabled',false);
+        }
+        // 20231206 김정호 활용 목적 Text 비활성화
+        function hideReasonBox() {
+            $("#DSetcReason").val("");
+            $("#GDetcReason").val("");
+            $("#DSetcReason").hide().prop("disabled", true);
+            $("#GDetcReason").hide().prop("disabled", true);
+        }
+        // 20231206 김정호 활용 목적 Text 화면단 검사
+        function checkReason(category) {
+            if($('#'+category+'etcReason').val() === '' || $('#'+category+'etcReason').val() === undefined) {
+                alert("활용 목적을 작성해주세요.");
+                return false;
+            }
+            return true;
+        }
+    </script>
+    <link rel="stylesheet" type="text/css" href="/css/main/jquery.bxslider.css">
+    <script src="/js/main/jquery-ui.js"></script>
+</head>
+<body>
+<!-- wrap-->
+<div id="wrap">
+    <!-- header -->
+    
+
+
+
+
+<link href='https://fonts.googleapis.com/css?family=Roboto:300' rel='stylesheet' type='text/css'>
+<script type="text/javascript" src="/js/main/cryptoJS.js"></script>
+<script type="text/javascript" src="/js/aceCounter/environment/login.js"></script>
+<script>
+    var USER_NAME = "null";
+    var USER_SEQ = "null";
+    var PERMISSION_ID = "null";
+
+    //context.xml parameter값 - sso 개발/운영 구분 (개발:D 운영:P)
+    
+    
+
+    // 20231107 김정호 소속기관값 체크 후 팝업창 띄우기
+    $(document).ready(function () {
+        
+
+
+        $("#top").click(function () {
+            location.href = "/main";
+
+        });
+        doUrlClick();
+        countUserLogin();
+    });
+
+    var userId = null;
+
+  	//SSO 로그인 여부 check
+    
+
+    // SNS LOGIN CHECK
+    
+
+	function execCountLogin() {
+        if(userId == null) {
+            userId = 'null';
+            countUserLogin(userId);
+        }
+    }
+
+    function doUrlClick() {
+        var cookieRe = getCookie("KAMP_RE");
+        var cookieNew = getCookie("KAMP_NEW");
+        var url = document.location.href.split("?")[0];
+
+        if (typeof cookieNew != "undefined") {
+            deleteCookie("KAMP_NEW");
+            setCookieMin("KAMP_NEW", "Y", 30);
+
+            $.ajax({
+                url: "/logUrlInsert",
+                type: "POST",
+                data: {"PAGE_URL": url, "REVISIT": "N"},
+                dataType: "json",
+                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                success: function (data) {
+
+                }
+            });
+        } else {
+            deleteCookie("KAMP_RE");
+            setCookieMin("KAMP_RE", "Y", 30);
+
+
+            $.ajax({
+                url: "/logUrlInsert",
+                type: "POST",
+                data: {"PAGE_URL": url, "REVISIT": "Y"},
+                dataType: "json",
+                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                success: function (data) {
+
+                }
+            });
+        }
+        cookieRe = getCookie("KAMP_RE");
+        cookieNew = getCookie("KAMP_NEW");
+    }
+
+    function goURL(url) {
+        window.open(url);
+    }
+
+    // function CryptoJS(USER_SEQ) {
+    //     let encrypt = CryptoJS.AES.encrypt(USER_SEQ, "kamp-market");
+    //     return encrypt.toString()
+    // }
+
+    function encodeByAES56(USER_SEQ) {
+        let cipher = CryptoJS.AES.encrypt(String(USER_SEQ), "kamp-market");
+        return cipher.toString()
+    }
+
+    function goSigmaChain(url, param) {
+
+        var form = document.createElement("form");
+
+        form.setAttribute("method", "post");
+        form.setAttribute("id", "instantForm");
+        form.setAttribute("action", url);
+        form.setAttribute("style", "display: none");
+
+        $.each(param, function (key, val) {
+            var hiddenField = document.createElement("input");
+            hiddenField.setAttribute("name", key);
+            hiddenField.setAttribute("value", val);
+            form.appendChild(hiddenField);
+        });
+        var hiddenField = document.createElement("input");
+        form.appendChild(hiddenField);
+        document.body.appendChild(form);
+        form.submit();
+
+    }
+
+    function goMenu(url) {
+        if (USER_NAME == "null") {
+            alert("로그인 후 사용 가능합니다");
+            location.href = "/login";
+        } else {
+
+            location.href = url;
+
+        }
+    }
+
+    function getCookie(name) {
+        var cookie = document.cookie;
+        if (document.cookie != "") {
+            var cookie_array = cookie.split("; ");
+            for (var index in cookie_array) {
+                var cookie_name = cookie_array[index].split("=");
+                if (cookie_name[0] == name) {
+                    return cookie_name[1];
+                }
+            }
+        }
+        return;
+    }
+
+    function setCookieMin(name, value, expiremin) {
+        var date = new Date();
+        date.setDate(date.getMinutes() + expiremin);
+        document.cookie = escape(name) + "=" + escape(value) + "; expires=" + date.toUTCString();
+    }
+
+    var deleteCookie = function (name) {
+        document.cookie = name + '=; expires=Thu, 01 Jan 1999 00:00:10 GMT;';
+    }
+
+
+    /// 250924 / 박성준 / /logout API 수정으로 data 속성 제거
+    function logout() {
+//         $.ajax({
+//             url: "/logout",
+//             type: "POST",
+//             contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+//             success: function () {
+//                 alert("정상적으로 로그아웃 되었습니다.");
+//                 location.reload();
+//             }
+
+//         });
+		if(confirm("로그아웃 하시겠습니까?")) {
+				
+		        location.href = "/logout";
+		    }
+    }
+</script>
+
+<div class="header-wrap type02" style="background: rgba(0, 0, 0, 0.70);">
+    <!-- 2021-12-6 오류수정 -->
+    <div class="header-box">
+        <div class="member-area">
+            <ul>
+                <li>
+                    
+                    	
+                    		<a href="https://mdata.kamp-ai.kr"><strong>제조데이터 라이브러리</strong></a>
+                    	
+                    	
+					
+                </li>
+                <li>
+                    <a href="http://aisquare.kamp-ai.kr">
+                        <strong>AI스퀘어</strong>
+                    </a>
+                </li>
+                <li style="margin-right: 20px;">
+                    
+				        <a href="/GMAClogin"><strong>GMAC</strong></a>
+				    
+                </li>
+                
+                
+                    <li><a href="/login"><strong>로그인</strong></a></li>
+                    <li><a href="/ssoLoginServlet"><strong>통합회원 로그인</strong></a></li>
+                
+            </ul>
+        </div>
+    </div>
+    <!-- // 2021-12-6 오류수정 -->
+    <div class="header">
+        <h1 style="padding-bottom: 45px;" >
+            <img src="/images/main/중기부_가로_W.svg" alt="중소벤처기업부" style="height: 31px;">
+            <img src="/images/main/logo.png" id="top" alt="KAMP 인공지능 제조 플랫폼" style="cursor:pointer; height: 31px;" >
+        </h1>
+        <div class="menu-wrap">
+            <ul class="menu" style="gap:10px">
+                <li class=""><a
+                        href="/intro"><span class="f-eng">KAMP 소개</span></a></li>
+
+                <li class="active"><a
+                        href="/aidataList"><span class="f-eng">제조AI데이터셋</span></a></li>
+
+                <li class=""><a
+                        href="javascript:void(0)" onClick="goMenu('/analysis')"><span>제조AI분석</span></a></li>
+
+                <li class=""><a
+                        href="/usecaseList"><span>제조AI USE-CASE</span></a></li>
+
+                <li class=""><a
+               			href="/dataRefer"><span>제조데이터 표준화</span></a></li>
+
+                <li class=""><a
+                        href="/noticeList"><span>알림마당</span></a></li>
+            </ul>
+        </div>
+    </div>
+    <!-- sub menu-->
+    <div class="sub-menu" style="background: rgba(0, 0, 0, 0.80);border:none">
+        <div class="menu-box" >
+            <div class="menu mCheck_1">
+                <strong class="tit">KAMP 소개</strong>
+                <ul>
+                    <li><a href="/intro"><span>KAMP란?</span></a></li>
+                    <li><a href="/newsList"><span>언론보도</span></a></li>
+                    
+                    
+                </ul>
+            </div>
+            <div class="menu mCheck_2">
+                <strong class="tit"><span>제조AI데이터셋</span></strong>
+                <ul>
+                    <li><a href="/aidataList"><span>무료 제조AI데이터셋</span></a></li>
+                    <li>
+                        
+					        
+					            <a href="https://mdata.kamp-ai.kr"><span>유료 제조AI데이터셋<br/>(제조데이터 라이브러리)</span></a>
+					        
+					        
+					    
+                    </li>
+                    <li><a href="/proveDataList"><span>실증 제조AI데이터셋</span></a></li>
+                    <li><a href="/regionDataList"><span>지역 제조AI데이터셋</span></a></li>
+                </ul>
+            </div>
+            <div class="menu mCheck_3">
+                <strong class="tit">제조AI분석</strong>
+                <ul>
+                    <li><a href="javascript:void(0)" onClick="goMenu('/analysis')"><span>제조AI 분석도구</span></a></li>
+                    <li><a href="javascript:void(0)" onClick="goMenu('/expCnc01')"><span>제조AI 분석체험</span></a></li>
+                    <li><a href="/eduList"><span>제조AI 교육동영상</span></a></li>
+                </ul>
+            </div>
+            <div class="menu mCheck_4">
+                <strong class="tit">제조AI Use-Case</strong>
+                <ul>
+                    <li><a href="/usecaseList"><span>제조AI 적용 우수사례<br/>(Best-Practice)</span></a></li>
+                    <li><a href="javascript:void(0)" onClick="goMenu('/daedong')"><span>제조AI 대동여지도</span></a></li>
+                    <li><a href="/involveList"><span>AI솔루션 실증사례</span></a></li>
+                    <li><a href="javascript:void(0)" onClick="goMenu('/pressAnalysis')"><span>제조AI 기술 트렌드 분석</span></a></li>
+                </ul>
+            </div>
+            <div class="menu mCheck_5">
+                <strong class="tit">제조데이터 표준화</strong>
+                <ul>
+                	<li><a href="/dataRefer"><span>제조데이터 표준화란?</span></a></li>
+                    <li><a href="/dataReferenceList"><span>제조데이터 참조모델</span></a></li>
+
+                </ul>
+            </div>
+            <div class="menu mCheck_6">
+                <strong class="tit">알림마당</strong>
+                <ul>
+                    <li><a href="/noticeList"><span>공지사항</span></a></li>
+                    
+                    <li><a href="/contestMain"><span>KAMP 경진대회</span></a></li>
+                    <li><a href="/vendorpoolList"><span>제조AI 솔루션 공급기업 Pool</span></a></li>
+                    <li><a href="/userguide"><span>이용안내</span></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- // sub menu-->
+</div>
+
+
+<!-- 스크립트 영역 -->
+<script type="text/javascript">
+    // 2020-12-02 javascript 추가
+    var objFn = {
+        fn3: function () {
+            const menuParent = document.querySelector(".menu-wrap");
+            const submenu = document.querySelector('.sub-menu');
+
+            // 페이지 로드 시 기본 active 상태(서버에서 설정한 active)를 저장
+            const defaultActive = document.querySelector('.menu-wrap > .menu > li.active');
+
+            // 메인메뉴
+            menuParent.onmouseover = menuParent.onmouseout = eventHandler;
+
+            function eventHandler(e) {
+                e.preventDefault();
+                if (e.type === "mouseover") {
+                    submenu.style.display = 'block';
+                } else if (e.type === "mouseout") {
+                    submenu.style.display = 'none';
+                }
+            }
+
+            // 서브메뉴
+            submenu.onmouseover = submenu.onmouseout = event2Handler;
+
+            /// 250116 / 박성준 / 마우스포인터 일치 (대분류 hover 버그 수정)
+            function event2Handler(e) {
+                e.preventDefault();
+
+                // 현재 요소 또는 부모 요소 중에서 "mCheck_" 클래스를 가진 요소 탐색
+                let targetElement = e.target.closest("[class*='mCheck_']");
+
+                if (targetElement) {
+                    // 기존 활성 상태 제거
+                    let menuItems = document.querySelectorAll('.menu-wrap > .menu > li');
+                    menuItems.forEach(item => {
+                        item.classList.remove("active");
+                    });
+
+                    // "mCheck_" 뒤의 숫자를 이용해 해당 메뉴를 활성화
+                    let classList = targetElement.className.split(" ");
+                    classList.forEach(cls => {
+                        if (cls.startsWith("mCheck_")) {
+                            let checkItem = parseInt(cls.substr(7)) - 1; // "mCheck_X"에서 숫자 추출
+                            document.querySelector(".menu-wrap .menu").children.item(checkItem).classList.add("active");
+                        }
+                    });
+                }
+                if (e.type === "mouseover") {
+                    submenu.style.display = 'block';
+                } else if (e.type === "mouseout") {
+                    submenu.style.display = 'none';
+                    // mouseout 시 전체 active 제거 후 기본(active) 상태 복원
+                    let menuItems = document.querySelectorAll('.menu-wrap > .menu > li');
+                    menuItems.forEach(item => {
+                        item.classList.remove("active");
+                    });
+                    if (defaultActive) {
+                        defaultActive.classList.add("active");
+                    }
+                }
+            }
+
+
+        }
+
+    }
+    objFn.fn3();
+
+</script>
+<!-- 스크립트 영역 -->
+
+    <!-- // header -->
+    <div class="container pt">
+        <form id="frm">
+            <input type="hidden" name="AI_SEARCH" id="AI_SEARCH" value="">
+            <input type="hidden" name="EQUIP_SEL" id="EQUIP_SEL" value="">
+            <input type="hidden" name="FILE_TYPE_SEL" id="FILE_TYPE_SEL" value="">
+            <input type="hidden" name="GUBUN_SEL" id="GUBUN_SEL" value="">
+            <input type="hidden" name="page" id="page" value="1">
+            <input type="hidden" name="WDATE_SEL" id="WDATE_SEL" value="">
+            <input type="hidden" name="DISPLAY_MODE_SEL" id="DISPLAY_MODE_SEL" value="CARD">
+        </form>
+        <!-- 상단 네비게이터 -->
+        <div class="path">
+            <ul>
+                <li>무료 제조<span class="f-eng">AI</span>데이터셋</li>
+            </ul>
+        </div>
+        <!-- // 상단 네비게이터 -->
+        <h2 class="h2-title">CNC 머신 AI 데이터셋</h2>
+        <!--content-body-->
+        <div class="scope t02">
+            <div class="txt">최적 가공조건 분석을 위한 CNC 머신 데이터</div>
+            <div class="item-box">
+            	
+                	<button type="text" class="button icon icon02" id="dataset_down" onClick="doDataPop()">제조AI데이터셋</button>
+                
+                
+                	<button type="text" class="button icon icon02" id="guide_down" onClick="doGuidePop()">가이드북</button>
+		        
+            </div>
+        </div>
+        <div class="table-type">
+            <table class="table-detail-type">
+                <colgroup>
+                    <col width="8%">
+                    <col width="15%">
+                    <col width="*">
+                    <col width="20%">
+                    <col width="*">
+                </colgroup>
+                <tbody>
+	                <tr>
+	                    <th colspan="2">업종</th>
+	                    <td>정밀가공</td>
+	                    <th>유형</th>
+	                    <td>csv</td>
+	                </tr>
+	                <tr>
+	                    <th colspan="2">목적</th>
+	                    <td>생산공정 최적화</td>
+	                    <th>제조데이터 등록일</th>
+	                    <td>Mon Dec 14 00:00:00 KST 2020</td>
+	                </tr>
+	                <tr>
+	                    <th colspan="2">사용조건</th>
+	                    <td>콘텐츠 변경허용</td>
+	                    <th>최종 수정일자</th>
+	                    <td>Wed Apr 02 14:30:49 KST 2025</td>
+	                </tr>
+	                <tr>
+	                    <th colspan="2">제공기관</th>
+	                    <td colspan="3">
+	                    	KAIST
+	                        <p class="t-text">
+	                        	(수행기관: 울산과학기술원/㈜이피엠솔루션즈)
+	                        </p>
+	                    </td>
+	                </tr>
+	                <tr>
+	                    <th colspan="2">태그</th>
+	                    <td colspan="3">
+	                    	
+		                        
+		                    		<a href="javascript:void(0)" onClick="doList2('정밀가공')">
+		                    			<span class="t-tag">#정밀가공,&nbsp;&nbsp;</span>
+		                    		</a>
+		                    	
+		                    		<a href="javascript:void(0)" onClick="doList2('수치제어')">
+		                    			<span class="t-tag">#수치제어,&nbsp;&nbsp;</span>
+		                    		</a>
+		                    	
+		                    		<a href="javascript:void(0)" onClick="doList2('절삭')">
+		                    			<span class="t-tag">#절삭,&nbsp;&nbsp;</span>
+		                    		</a>
+		                    	
+		                    		<a href="javascript:void(0)" onClick="doList2('표면처리')">
+		                    			<span class="t-tag">#표면처리,&nbsp;&nbsp;</span>
+		                    		</a>
+		                    	
+		                    		<a href="javascript:void(0)" onClick="doList2('밀링')">
+		                    			<span class="t-tag">#밀링,&nbsp;&nbsp;</span>
+		                    		</a>
+		                    	
+		                    		<a href="javascript:void(0)" onClick="doList2('선반')">
+		                    			<span class="t-tag">#선반,&nbsp;&nbsp;</span>
+		                    		</a>
+		                    	
+		                    		<a href="javascript:void(0)" onClick="doList2('CNC 머신')">
+		                    			<span class="t-tag">#CNC 머신,&nbsp;&nbsp;</span>
+		                    		</a>
+		                    	
+		                    		<a href="javascript:void(0)" onClick="doList2('Deep neural network')">
+		                    			<span class="t-tag">#Deep neural network</span>
+		                    		</a>
+		                    	
+	                    	
+	                    </td>
+	                </tr>
+	                <tr>
+	                    <th rowspan="2">내용</th>
+	                    <th>적용공정</th>
+	                    <td colspan="3">CNC 가공공정</td>
+	                </tr>
+	                <tr>
+	                    <th>제조AI데이터셋 소개</th>
+	                    <td colspan="3">가공불량을 예측하기위한 제조 AI 분석과정을 담은 데이터셋과 가이드북입니다. CNC 머신 부품들의 위치, 속도, 가속도, 전압, 전류 등의 데이터를 수집하고 딥뉴럴네트워크 알고리즘을 사용하여 불량품을 예측하는 것을 도모합니다.</td>
+	                </tr>
+                </tbody>
+            </table>
+        </div>
+
+		<!-- 참고 이미지 -->
+		
+			<div class="title-wrap">
+            	<h3 class="h3-title">참고이미지</h3>
+        	</div>
+        	<!-- 슬라이더 -->
+        	<div class="slider-area subSlider">
+            	<div class="bxslider slider">
+					
+						<div class="item"><img src="/mnt/dataset/3/images/1.bmp" alt=""></div>
+					
+						<div class="item"><img src="/mnt/dataset/3/images/드릴.bmp" alt=""></div>
+					
+						<div class="item"><img src="/mnt/dataset/3/images/슬롯커터.bmp" alt=""></div>
+					
+						<div class="item"><img src="/mnt/dataset/3/images/탭.bmp" alt=""></div>
+					
+						<div class="item"><img src="/mnt/dataset/3/images/페이스밀링커터.bmp" alt=""></div>
+					
+						<div class="item"><img src="/mnt/dataset/3/images/헤드.bmp" alt=""></div>
+					
+				</div>
+			</div>
+		
+
+		<!-- 제조AI데이터셋 요약 -->
+		<div class="title-wrap">
+            <h3 class="h3-title">제조AI데이터셋 요약</h3>
+        </div>
+        <div class="table-type">
+            <table class="table-list-type">
+                <colgroup>
+                    <col width="8%">
+                    <col width="13%">
+                    <col width="10%">
+                    <col width="*">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>NO</th>
+                    <th colspan="2">구분</th>
+                    <th>내용</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>1</td>
+                    <td colspan="2" class="txt-l">분석 목적(현장이슈, 목적)</td>
+                    <td class="txt-l">CNC가공 공정의 데이터 분석을 통한 품질 문제 해결과 생산성 향상은 스마트팩토리 부분의 필수적인 요소로 자리 잡고 있다. CNC 설비와 네트워크 연결을 통해 생산데이터를 수집하고 가공조건에 따른 가공불량 예측과정을 학습할 수 있다.</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td colspan="2" class="txt-l">
+                        제조데이터셋 형태 및 수집방법<br>
+                        (csv, json, image 파일 등)
+                    </td>
+                    <td class="txt-l">분석에 사용된 변수명 : X,Y,Z, 스핀등의 변수 총 48가지<BR><BR>수집 방법 : CNC 프로그램, 파이썬 <BR><BR>확장자 : csv</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td colspan="2" class="txt-l">제조데이터 개수 / 제조데이터셋 총량</td>
+                    <td class="txt-l">데이터 개수 : 96,169개<BR><BR>데이터셋 총량 : 14.62 MB</td>
+                </tr>
+                <tr>
+                    <td rowspan="2">4</td>
+                    <td rowspan="2" class="txt-l">분석적용 알고리즘</td>
+                    <td class="txt-l">알고리즘</td>
+                    <td class="txt-l">딥뉴럴네트워크 (Deep Neural Network)</td>
+                </tr>
+                <tr>
+                    <td class="txt-l">간략소개</td>
+                    <td class="txt-l">지도학습(Supervised learning) 중 하나인, 딥뉴럴네트워크(Deep Neural Network)는 다수의 신경망을 연속적으로 쌓고, 최종적으로 각 라벨별 확률을 출력하도록 그 특징을 학습하고 업데이트를 반복하는 모델이다. 이를 통해 가공한 데이터를 학습 및 테스트할 수 있다.</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td colspan="2" class="txt-l">
+                        분석결과 및 시사점
+                    </td>
+                    <td class="txt-l">CNC공정의 생산데이터에 따른 제품의 불량을 예측할 수 있는 AI기법을 적용하여 CNC 가공공정의 양품과 불량품을 분류 할 수 있는 모델을 도출하였다.<BR><BR>CNC 머신의 변수 48가지를 사용하여 양품과 불량품을 판별하기 위해, 데이터를 가공/전처리 후 학습된 AI모델을 통해 유사한 CNC 가공 설비에 테스트 후 활용 할 수 있을 것으로 기대된다.</td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td colspan="2" class="txt-l">
+                        제조데이터셋 활용(분석)을 위한 <br>
+                        최소 요구환경
+                    </td>
+                    <td class="txt-l">필요 SW : Python <BR><BR>필요 패키지 : Tensorflow, Keras, numpy, padas, glob, sklearn, scipy<BR><BR>[CPU]: Intel(R) Xeon(R) Gold 6126 @ 2.60Hz<BR><BR>[GPU] : NVIDIA GeForce RTX 2080 Ti<BR><BR>[Memory] : 32GB</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- 제조AI데이터셋 형태 미리보기 -->
+		
+		
+		
+			<div class="title-wrap">
+	            <h3 class="h3-title">제조AI데이터셋 형태 미리보기</h3>
+	        </div>
+	        
+	        
+	        	
+		            <div class='code-list type02'>
+						<div class='table-type'>
+							<table class='table-list-type' style='width: 2000px'>
+				   				<colgroup><col width='*'> </colgroup>
+				     			
+			                    	
+				                    	<thead>
+					     					<tr>
+					     						
+							                        <th>idx</th>
+							                    
+							                        <th>Machine_Name</th>
+							                    
+							                        <th>Item No</th>
+							                    
+							                        <th>working time</th>
+							                    
+							                        <th>Thickness 1(mm)</th>
+							                    
+							                        <th>Thickness 2(mm)</th>
+							                    
+							                        <th>weld force(bar)</th>
+							                    
+							                        <th>weld current(kA)</th>
+							                    
+							                        <th>weld Voltage(v)</th>
+							                    
+							                        <th>weld time(ms)</th>
+							                    
+					     					</tr>
+					     				</thead>
+			                    	
+			                    	
+			                    
+			                    	
+			                    	
+					     				<tr>
+					     					
+					     						<td>1</td>
+							                
+					     						<td>Spot-01</td>
+							                
+					     						<td>65235-25800</td>
+							                
+					     						<td>3/24/2020 0:00</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>2.33</td>
+							                
+					     						<td>14.57</td>
+							                
+					     						<td>2.7</td>
+							                
+					     						<td>72</td>
+							                
+					     				</tr>
+			                    	
+			                    
+			                    	
+			                    	
+					     				<tr>
+					     					
+					     						<td>2</td>
+							                
+					     						<td>Spot-01</td>
+							                
+					     						<td>65235-25800</td>
+							                
+					     						<td>3/24/2020 0:00</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>2.36</td>
+							                
+					     						<td>14.57</td>
+							                
+					     						<td>2.7</td>
+							                
+					     						<td>72</td>
+							                
+					     				</tr>
+			                    	
+			                    
+			                    	
+			                    	
+					     				<tr>
+					     					
+					     						<td>3</td>
+							                
+					     						<td>Spot-01</td>
+							                
+					     						<td>65235-25800</td>
+							                
+					     						<td>3/24/2020 0:00</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>2.37</td>
+							                
+					     						<td>14.54</td>
+							                
+					     						<td>2.7</td>
+							                
+					     						<td>71</td>
+							                
+					     				</tr>
+			                    	
+			                    
+			                    	
+			                    	
+					     				<tr>
+					     					
+					     						<td>4</td>
+							                
+					     						<td>Spot-01</td>
+							                
+					     						<td>65235-25800</td>
+							                
+					     						<td>3/24/2020 0:00</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>2.37</td>
+							                
+					     						<td>14.54</td>
+							                
+					     						<td>2.7</td>
+							                
+					     						<td>72</td>
+							                
+					     				</tr>
+			                    	
+			                    
+			                    	
+			                    	
+					     				<tr>
+					     					
+					     						<td>5</td>
+							                
+					     						<td>Spot-01</td>
+							                
+					     						<td>65235-25800</td>
+							                
+					     						<td>3/24/2020 0:00</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>2.36</td>
+							                
+					     						<td>14.56</td>
+							                
+					     						<td>2.7</td>
+							                
+					     						<td>72</td>
+							                
+					     				</tr>
+			                    	
+			                    
+			                    	
+			                    	
+					     				<tr>
+					     					
+					     						<td>6</td>
+							                
+					     						<td>Spot-01</td>
+							                
+					     						<td>65235-25800</td>
+							                
+					     						<td>3/24/2020 0:00</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>2.34</td>
+							                
+					     						<td>14.56</td>
+							                
+					     						<td>2.7</td>
+							                
+					     						<td>71</td>
+							                
+					     				</tr>
+			                    	
+			                    
+			                    	
+			                    	
+					     				<tr>
+					     					
+					     						<td>7</td>
+							                
+					     						<td>Spot-01</td>
+							                
+					     						<td>65235-25800</td>
+							                
+					     						<td>3/24/2020 0:00</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>2.35</td>
+							                
+					     						<td>14.53</td>
+							                
+					     						<td>2.7</td>
+							                
+					     						<td>72</td>
+							                
+					     				</tr>
+			                    	
+			                    
+			                    	
+			                    	
+					     				<tr>
+					     					
+					     						<td>8</td>
+							                
+					     						<td>Spot-01</td>
+							                
+					     						<td>65235-25800</td>
+							                
+					     						<td>3/24/2020 0:00</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>2.33</td>
+							                
+					     						<td>14.53</td>
+							                
+					     						<td>2.7</td>
+							                
+					     						<td>70</td>
+							                
+					     				</tr>
+			                    	
+			                    
+			                    	
+			                    	
+					     				<tr>
+					     					
+					     						<td>9</td>
+							                
+					     						<td>Spot-01</td>
+							                
+					     						<td>65235-25800</td>
+							                
+					     						<td>3/24/2020 0:00</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>2.32</td>
+							                
+					     						<td>14.57</td>
+							                
+					     						<td>2.7</td>
+							                
+					     						<td>71</td>
+							                
+					     				</tr>
+			                    	
+			                    
+			                    	
+			                    	
+					     				<tr>
+					     					
+					     						<td>10</td>
+							                
+					     						<td>Spot-01</td>
+							                
+					     						<td>65235-25800</td>
+							                
+					     						<td>3/24/2020 0:00</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>2.32</td>
+							                
+					     						<td>14.57</td>
+							                
+					     						<td>2.7</td>
+							                
+					     						<td>72</td>
+							                
+					     				</tr>
+			                    	
+			                    
+			                    	
+			                    	
+					     				<tr>
+					     					
+					     						<td>11</td>
+							                
+					     						<td>Spot-01</td>
+							                
+					     						<td>65235-25800</td>
+							                
+					     						<td>3/24/2020 0:00</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>2.33</td>
+							                
+					     						<td>14.59</td>
+							                
+					     						<td>2.7</td>
+							                
+					     						<td>72</td>
+							                
+					     				</tr>
+			                    	
+			                    
+			                    	
+			                    	
+					     				<tr>
+					     					
+					     						<td>12</td>
+							                
+					     						<td>Spot-01</td>
+							                
+					     						<td>65235-25800</td>
+							                
+					     						<td>3/24/2020 0:00</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>2.36</td>
+							                
+					     						<td>14.59</td>
+							                
+					     						<td>2.7</td>
+							                
+					     						<td>72</td>
+							                
+					     				</tr>
+			                    	
+			                    
+			                    	
+			                    	
+					     				<tr>
+					     					
+					     						<td>13</td>
+							                
+					     						<td>Spot-01</td>
+							                
+					     						<td>65235-25800</td>
+							                
+					     						<td>3/24/2020 0:00</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>2.37</td>
+							                
+					     						<td>14.59</td>
+							                
+					     						<td>2.7</td>
+							                
+					     						<td>73</td>
+							                
+					     				</tr>
+			                    	
+			                    
+			                    	
+			                    	
+					     				<tr>
+					     					
+					     						<td>14</td>
+							                
+					     						<td>Spot-01</td>
+							                
+					     						<td>65235-25800</td>
+							                
+					     						<td>3/24/2020 0:00</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>2.37</td>
+							                
+					     						<td>14.59</td>
+							                
+					     						<td>2.7</td>
+							                
+					     						<td>71</td>
+							                
+					     				</tr>
+			                    	
+			                    
+			                    	
+			                    	
+					     				<tr>
+					     					
+					     						<td>15</td>
+							                
+					     						<td>Spot-01</td>
+							                
+					     						<td>65235-25800</td>
+							                
+					     						<td>3/24/2020 0:00</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>2.36</td>
+							                
+					     						<td>14.59</td>
+							                
+					     						<td>2.7</td>
+							                
+					     						<td>71</td>
+							                
+					     				</tr>
+			                    	
+			                    
+			                    	
+			                    	
+					     				<tr>
+					     					
+					     						<td>16</td>
+							                
+					     						<td>Spot-01</td>
+							                
+					     						<td>65235-25800</td>
+							                
+					     						<td>3/24/2020 0:00</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>2.36</td>
+							                
+					     						<td>14.59</td>
+							                
+					     						<td>2.7</td>
+							                
+					     						<td>72</td>
+							                
+					     				</tr>
+			                    	
+			                    
+			                    	
+			                    	
+					     				<tr>
+					     					
+					     						<td>17</td>
+							                
+					     						<td>Spot-01</td>
+							                
+					     						<td>65235-25800</td>
+							                
+					     						<td>3/24/2020 0:00</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>2.34</td>
+							                
+					     						<td>14.58</td>
+							                
+					     						<td>2.71</td>
+							                
+					     						<td>72</td>
+							                
+					     				</tr>
+			                    	
+			                    
+			                    	
+			                    	
+					     				<tr>
+					     					
+					     						<td>18</td>
+							                
+					     						<td>Spot-01</td>
+							                
+					     						<td>65235-25800</td>
+							                
+					     						<td>3/24/2020 0:00</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>2.35</td>
+							                
+					     						<td>14.58</td>
+							                
+					     						<td>2.71</td>
+							                
+					     						<td>72</td>
+							                
+					     				</tr>
+			                    	
+			                    
+			                    	
+			                    	
+					     				<tr>
+					     					
+					     						<td>19</td>
+							                
+					     						<td>Spot-01</td>
+							                
+					     						<td>65235-25800</td>
+							                
+					     						<td>3/24/2020 0:00</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>2.36</td>
+							                
+					     						<td>14.55</td>
+							                
+					     						<td>2.7</td>
+							                
+					     						<td>72</td>
+							                
+					     				</tr>
+			                    	
+			                    
+			                    	
+			                    	
+					     				<tr>
+					     					
+					     						<td>20</td>
+							                
+					     						<td>Spot-01</td>
+							                
+					     						<td>65235-25800</td>
+							                
+					     						<td>3/24/2020 0:00</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>2.36</td>
+							                
+					     						<td>14.55</td>
+							                
+					     						<td>2.7</td>
+							                
+					     						<td>72</td>
+							                
+					     				</tr>
+			                    	
+			                    
+			                    	
+			                    	
+					     				<tr>
+					     					
+					     						<td>21</td>
+							                
+					     						<td>Spot-01</td>
+							                
+					     						<td>65235-25800</td>
+							                
+					     						<td>3/24/2020 0:00</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>2.34</td>
+							                
+					     						<td>14.55</td>
+							                
+					     						<td>2.7</td>
+							                
+					     						<td>72</td>
+							                
+					     				</tr>
+			                    	
+			                    
+			                    	
+			                    	
+					     				<tr>
+					     					
+					     						<td>22</td>
+							                
+					     						<td>Spot-01</td>
+							                
+					     						<td>65235-25800</td>
+							                
+					     						<td>3/24/2020 0:00</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>2.34</td>
+							                
+					     						<td>14.55</td>
+							                
+					     						<td>2.7</td>
+							                
+					     						<td>72</td>
+							                
+					     				</tr>
+			                    	
+			                    
+			                    	
+			                    	
+					     				<tr>
+					     					
+					     						<td>23</td>
+							                
+					     						<td>Spot-01</td>
+							                
+					     						<td>65235-25800</td>
+							                
+					     						<td>3/24/2020 0:00</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>2.36</td>
+							                
+					     						<td>14.57</td>
+							                
+					     						<td>2.7</td>
+							                
+					     						<td>71</td>
+							                
+					     				</tr>
+			                    	
+			                    
+			                    	
+			                    	
+					     				<tr>
+					     					
+					     						<td>24</td>
+							                
+					     						<td>Spot-01</td>
+							                
+					     						<td>65235-25800</td>
+							                
+					     						<td>3/24/2020 0:00</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>2.36</td>
+							                
+					     						<td>14.57</td>
+							                
+					     						<td>2.7</td>
+							                
+					     						<td>71</td>
+							                
+					     				</tr>
+			                    	
+			                    
+			                    	
+			                    	
+					     				<tr>
+					     					
+					     						<td>25</td>
+							                
+					     						<td>Spot-01</td>
+							                
+					     						<td>65235-25800</td>
+							                
+					     						<td>3/24/2020 0:00</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>2.38</td>
+							                
+					     						<td>14.58</td>
+							                
+					     						<td>2.7</td>
+							                
+					     						<td>71</td>
+							                
+					     				</tr>
+			                    	
+			                    
+			                    	
+			                    	
+					     				<tr>
+					     					
+					     						<td>26</td>
+							                
+					     						<td>Spot-01</td>
+							                
+					     						<td>65235-25800</td>
+							                
+					     						<td>3/24/2020 0:00</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>2.38</td>
+							                
+					     						<td>14.58</td>
+							                
+					     						<td>2.7</td>
+							                
+					     						<td>71</td>
+							                
+					     				</tr>
+			                    	
+			                    
+			                    	
+			                    	
+					     				<tr>
+					     					
+					     						<td>27</td>
+							                
+					     						<td>Spot-01</td>
+							                
+					     						<td>65235-25800</td>
+							                
+					     						<td>3/24/2020 0:00</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>2.3</td>
+							                
+					     						<td>14.61</td>
+							                
+					     						<td>2.7</td>
+							                
+					     						<td>71</td>
+							                
+					     				</tr>
+			                    	
+			                    
+			                    	
+			                    	
+					     				<tr>
+					     					
+					     						<td>28</td>
+							                
+					     						<td>Spot-01</td>
+							                
+					     						<td>65235-25800</td>
+							                
+					     						<td>3/24/2020 0:00</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>2.3</td>
+							                
+					     						<td>14.61</td>
+							                
+					     						<td>2.7</td>
+							                
+					     						<td>72</td>
+							                
+					     				</tr>
+			                    	
+			                    
+			                    	
+			                    	
+					     				<tr>
+					     					
+					     						<td>29</td>
+							                
+					     						<td>Spot-01</td>
+							                
+					     						<td>65235-25800</td>
+							                
+					     						<td>3/24/2020 0:00</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>2.36</td>
+							                
+					     						<td>14.56</td>
+							                
+					     						<td>2.7</td>
+							                
+					     						<td>73</td>
+							                
+					     				</tr>
+			                    	
+			                    
+			                    	
+			                    	
+					     				<tr>
+					     					
+					     						<td>30</td>
+							                
+					     						<td>Spot-01</td>
+							                
+					     						<td>65235-25800</td>
+							                
+					     						<td>3/24/2020 0:00</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>0.7</td>
+							                
+					     						<td>2.36</td>
+							                
+					     						<td>14.56</td>
+							                
+					     						<td>2.7</td>
+							                
+					     						<td>71</td>
+							                
+					     				</tr>
+			                    	
+			                    
+			     			</table>
+			     		</div>
+		     		</div>
+				
+	        	
+				
+				
+			
+		
+		
+        <div class="title-wrap">
+            <h3 class="h3-title"></h3>
+            <button type="text" class="button" onClick="doList()">목록</button>
+        </div>
+    </div>
+    <!-- container -->
+    <div>
+    
+
+
+<script type="text/javascript" src="//wcs.naver.net/wcslog.js"></script>
+<script type="text/javascript" src="/js/aceCounter/common_ui.js"></script>
+
+
+
+
+
+
+<script type="text/javascript">
+    if (!wcs_add) var wcs_add = {};
+
+
+    wcs_add["wa"] = "19753c3f7782360"; // new
+
+   
+    if (window.wcs) {
+        wcs_do();
+    }
+</script>
+<script>
+    function goURL(url) {
+        window.open(url);
+    }
+</script>
+<div class="footer-wrap">
+    <div class="footer">
+        <ul class="partner-log">
+            <li><a href="javascript:void(0)" onClick="goURL('https://www.mss.go.kr/')"><img
+                    src="/images/main/img_logo01.png" alt="중소기업벤처기업부"></a></li>
+            <li><a href="javascript:void(0)" onClick="goURL('http://www.smart-factory.kr')"><img
+	            src="/images/main/TIPA_C.png" alt="스마트공장사업관리시스템" style="height: 53px"></a></li>
+			<li style="padding-top:0px"><a href="javascript:void(0)" onClick="goURL('https://www.nhncloud.com/kr')"><img
+                    src="/images/main/relat-nhnclouB.png" alt="nhncloud"></a></li>  
+			<li style="padding-top:0px"><a href="javascript:void(0)" onClick="goURL('https://www.innobiz.net/')"><img
+                    src="/images/main/relatB-inn.png" alt="이노비즈협회"></a></li>
+        </ul>
+        <ul class="kamp-info">
+            <li><a href="/agreement">이용약관</a></li>
+            <li><a href="/infoPrivacy">개인정보 처리방침</a></li>
+            <li><a href="/emailSecurity">이메일 무단 수집거부</a></li>
+        </ul>
+        <ul class="kamp-info">
+            <li>운영기관 : 044-300-0941, 070-7702-3456, 031-628-9676</li>
+            <li>이메일 :  kosmo1@tipa.or.kr, dl_kamp@nhn.com, sjkim@innobiz.or.kr</li>            
+        </ul>		
+    </div>
+</div>
+<div class="mindon-screen">
+	<div id="ic3_thread"></div>
+</div>
+<script>
+  var ic3_config = function() {
+   this.page.bot.repoId = "KP"        // {required} infochatter3 저장소 아이디
+   this.page.bot.agentName = "KP-AGENT-1"        // {required} infochatter3 에이전트 명
+   this.page.bot.agentId = "11002"         // {required} Infochatter3 에이전트 ID
+   this.page.bot.name = "KP-AGENT-1"         // {required} ChatUI에 나타나는 상단 타이틀
+
+   this.page.ca.caRepoId = "ka17d9d31din"        // {required} 채팅상담솔루션 연계 아이디
+   this.page.ca.caUrl = "https://pickbot.ai/chatassist"  // {required} 채팅상담솔루션 API 주소
+   this.page.chatUIUrl= "https://pickbot.ai/shopby/chatbot"  //{required} 인포채터3 챗봇 URL (테마 및 chatUI 연계)
+   this.page.restAPI= "https://pickbot.ai/shopby/restapi"   //{required} 인포채터3 Rest API 주소 (자동완성 / 의견)
+   // this.page.bot.dqml="aaa=avalue;bbb=bvalue"; //{options} 챗봇에 던져질 추가적인 파라미터들..
+
+   this.page.user.userId = "pickbot_{userid}" // {required} user id 를 넣어주세요.
+
+   this.page.setting.width = 490 //{option}  챗봇UI의 가로 사이즈
+   this.page.setting.height = 850 //{option} 챗봇 UI의 세로 사이즈
+
+   this.page.bot.categoryName = '공통' //{option} FAQ 카테고리 (인포채터 FAQ 에서 사용할 카테고리명 이 값을 안넣고 사용하면 "공통" 카테고리가 기본 적용된다.
+
+     this.page.launcher.size = 90;
+     this.page.launcher.style=[
+       {
+         // 아이콘을 얹힌 영역 (붉은색으로 표현된 영역)
+         className : 'ic-embed-launcher',
+         attribute : {
+           right : '31px !important', 
+           bottom : ' 10px !important'  // 아래에서 10px만큼 간격을 준다.
+           // top : ' 10px !important'
+         }
+       },
+       {
+         // 실제 아이콘 (챗봇 투명 아이콘)
+         className : 'ic-embed-open-icon',
+         attribute : {
+           right : '31px !important', 
+           bottom : ' 10px !important'  // 아래에서 10px만큼 간격을 준다.
+           // top : ' 10px !important'
+         }
+       },
+    ]
+ };
+
+ (function() {
+   var doc = document,
+   embedScript = doc.createElement("script");
+   doc.getElementById('ic3_thread').innerHTML = "";
+   embedScript.src = "https://pickbot.ai/pb/chatbot/embed-chatbot/embed.js"; // embeded_chatbot이 설치된 주소
+   embedScript.setAttribute("data-timestamp", +new Date());
+   doc.body.appendChild(embedScript);
+ })();
+</script>
+
+
+    <iframe id="down"></iframe>
+
+	<!-- 제조AI데이터셋 layer-popup-->
+    <div class="layer-popup module-a system-pop" id="findId" data-bui-toggle="layerPopupTypeB" tabindex="0">
+        <div class="popup-item">
+            <div class="popup-area">
+                <div class="pop-title t02">
+                        <p></p>
+                        <h2>활용 목적</h2>
+                    <select id="DATASET_USE_CASE_SEL" name="useCase" class="form-elem com kamp-type-select" style="width: 480px !important;" onchange="changeUsecaseSel()">
+                        <option value="">활용목적을 선택하세요.</option>
+                        
+	                    	<option value="C029001">
+	                    		제조AI 활용 참조모델 확인
+	                    	</option>
+	                    
+	                    	<option value="C029002">
+	                    		제조AI 솔루션 개발 및 고도화
+	                    	</option>
+	                    
+	                    	<option value="C029003">
+	                    		제조AI 교육 및 강의
+	                    	</option>
+	                    
+	                    	<option value="C029004">
+	                    		제조AI 연구 및 논문 작성
+	                    	</option>
+	                    
+	                    	<option value="C029005">
+	                    		제조AI 기술개발(R&D)
+	                    	</option>
+	                    
+	                    	<option value="C029006">
+	                    		기타
+	                    	</option>
+	                    
+                    </select>
+                    <input type="text" id="DSetcReason" name="DSetcReason" placeholder="활용 목적을 적어주세요 (필수 항목)" maxlength="45" style="margin-top: 10px !important;"/>
+                </div>
+                <div class="pop-title t02">
+                    <h2>출처 표기방법</h2>
+                    <p class="sub-tit t02">연구/공식적으로 사용하실 때에는 <br>꼭 아래와 같이 ‘KAMP 출처(reference)’를 남겨 주시고, 인용시 활용한 내용과 <br>문서
+                        등은
+                        아래 이메일로 보내주시기 바랍니다.
+                        <br>(E-mail : kamp@kaist.ac.kr)
+                    </p>
+                </div>
+
+                <div class="pop-container t02">
+                    <p class="tit">출처 표기양식</p>
+                    <div class="g-box">
+                        중소벤처기업부, Korea AI Manufacturing Platform(KAMP),<br> 제조AI데이터셋 제목, 제공기관(수행기관), 데이터셋등록일, KAMP URL
+                    </div>
+                    <p class="tit">출처 표기예시</p>
+                    <p class="txt">
+                        중소벤처기업부, Korea AI Manufacturing Platform(KAMP),<br> CNC머신 AI데이터셋, KAIST(UNIST, 이피엠솔루션즈),
+                        2020.12.14.,<br> https://kamp-ai.kr
+
+                    </p>
+                </div>
+
+                <div class="pop-btn-area">
+                    <div class="btn-area">
+                        <button type="button" class="button" onclick="closePop('DATASET')">동의안함</button>
+                        
+                        
+                            <button type="button" class="button primary" onClick="doDataDown();">동의</button>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--//layer-popup-->
+
+    <!-- 가이드북 layer-popup-->
+    <div class="layer-popup module-a system-pop" id="findGd" data-bui-toggle="layerPopupTypeB" tabindex="0">
+        <div class="popup-item">
+            <div class="popup-area">
+                <div class="pop-title t02">
+                    <p></p>
+                    <h2>활용 목적</h2>
+                    <select id="GUIDE_USE_CASE_SEL" name="useCase" class="form-elem com kamp-type-select" style="width: 480px !important;" onchange="changeUsecaseSel()">
+                        <option value="">활용목적을 선택하세요.</option>
+                        
+	                    	<option value="C029001">
+	                    		제조AI 활용 참조모델 확인
+	                    	</option>
+	                    
+	                    	<option value="C029002">
+	                    		제조AI 솔루션 개발 및 고도화
+	                    	</option>
+	                    
+	                    	<option value="C029003">
+	                    		제조AI 교육 및 강의
+	                    	</option>
+	                    
+	                    	<option value="C029004">
+	                    		제조AI 연구 및 논문 작성
+	                    	</option>
+	                    
+	                    	<option value="C029005">
+	                    		제조AI 기술개발(R&D)
+	                    	</option>
+	                    
+	                    	<option value="C029006">
+	                    		기타
+	                    	</option>
+	                    
+                    </select>
+                    <input type="text" id="GDetcReason" name="GDetcReason" placeholder="활용 목적을 적어주세요 (필수 항목)" value="" maxlength="45" style="margin-top: 10px !important;"/>
+                </div>
+
+                <div class="pop-title t02">
+                    <h2>출처 표기방법</h2>
+                    <p class="sub-tit t02">연구/공식적으로 사용하실 때에는 <br>꼭 아래와 같이 ‘KAMP 출처(reference)’를 남겨 주시고, 인용시 활용한 내용과 <br>문서
+                        등은
+                        아래 이메일로 보내주시기 바랍니다.
+                        <br>(E-mail : kamp@kaist.ac.kr)
+                    </p>
+                </div>
+                <div class="pop-container t02">
+                    <p class="tit">출처 표기양식</p>
+                    <div class="g-box">
+                        중소벤처기업부, Korea AI Manufacturing Platform(KAMP),<br> 제조AI데이터셋 제목, 제공기관(수행기관), 데이터셋등록일, KAMP URL
+                    </div>
+                    <p class="tit">출처 표기예시</p>
+                    <p class="txt">
+                        중소벤처기업부, Korea AI Manufacturing Platform(KAMP),<br> CNC머신 AI데이터셋, KAIST(UNIST, 이피엠솔루션즈),
+                        2020.12.14.,<br> https://kamp-ai.kr
+
+                    </p>
+                </div>
+                <div class="pop-btn-area">
+                    <div class="btn-area">
+                        <button type="button" class="button" onclick="closePop('GUIDE')">동의안함</button>
+                        <button type="button" class="button primary" onClick="doGuideDown();">동의</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--//layer-popup-->
+
+    <!-- wrap -->
+    <script type="text/javascript" src="/js/main/jquery.bxslider.js"></script>
+    <script type="text/javascript" src="/js/main/common_ui.js"></script>
+</div>
+</body>
+</html>

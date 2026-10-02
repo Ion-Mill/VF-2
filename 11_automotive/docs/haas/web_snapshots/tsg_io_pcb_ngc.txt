@@ -1,0 +1,1526 @@
+ I/O PCB - Troubleshooting Guide - NGC
+My Haas
+Welcome,
+! 
+Haas Tooling
+Guest Order History
+MyHaas/HaasConnect
+Sign In
+Register
+Haas Tooling
+My Account
+Order History
+Return History
+MyHaas/HaasConnect
+Sign Out
+Welcome, 
+My Machines
+Latest Activity
+My Quotes
+My Account
+My Users
+Sign Out
+Find Your Distributor
+Select Language
+English
+Deutsch
+Español - España
+Español - México
+Français
+Italiano
+Português
+Český
+Dansk
+Nederlands
+Magyar
+Polski
+Svenska
+Türkçe
+中文
+Suomi
+Norsk
+الإنجليزية
+български
+Hrvatski
+Ελληνικά
+Română
+Slovenský
+Slovenščina
+한국어
+日本語
+Українська
+machines
+Main Menu
+Vertical Mills 
+Vertical Mills 
+Vertical Mills 
+View All
+Vertical Mills 
+VF Series
+Universal Machines
+VR Series
+VP-5 Prismatic
+Pallet-Changing VMCs
+Mini Mills
+Mold Machines
+High-Speed Drill Centers
+Drill/Tap/ Mill Series
+Toolroom Mills
+Compact Mills
+Gantry Series
+SR Sheet Routers
+Extra-Large VMC
+Double-Column Mills
+Pocket Mill
+Mill Automatic Parts Loader
+VMC/UMC Side-Loading Automatic Parts Loader
+Compact Automatic Parts Loader
+Multi-Axis Solutions
+Multi-Axis Solutions
+Multi-Axis Solutions
+View All
+Multi-Axis Solutions
+Y-Axis Lathes
+5-Axis Mills
+Lathes
+Lathes
+Lathes
+View All
+Lathes
+ST Series
+Dual-Spindle
+Box Way Series
+Toolroom Lathes
+Chucker Lathe
+Haas Bar Feeder V2
+Horizontal Mills
+Horizontal Mills
+Horizontal Mills
+View All
+Horizontal Mills
+50-Taper
+40-Taper
+Rotaries & Indexers
+Rotaries & Indexers
+Rotaries & Indexers
+View All
+Rotaries & Indexers
+Rotary Tables
+Indexers
+5-Axis Rotaries
+Extra-Large Rotaries
+Special Series
+Special Series
+Special Series
+View All
+Special Series
+EU_Series_Redirect
+Automation Systems
+Automation Systems
+Automation Systems
+View All
+Automation Systems
+Mill Automation
+Lathe Automation
+Automation Models
+Desktop Machines
+Desktop Machines
+Desktop Machines
+View All
+Desktop Machines
+Desktop Mill
+Desktop Lathe
+Control Simulator
+Shop Equipment
+Shop Equipment
+Shop Equipment
+View All
+Shop Equipment
+Bandsaw
+Knee Mills
+Manual Lathe
+Vertical Saw
+Miter Saw
+Pocket Machines
+Pocket Machines
+Pocket Machines
+View All
+Pocket Machines
+Pocket Mill
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Options
+Main Menu
+Value Option Packages
+Value Option Packages
+Value Option Packages
+View All
+Value Option Packages
+Spindles
+Spindles
+Spindles
+View All
+Spindles
+Tool Changers
+Tool Changers
+Tool Changers
+View All
+Tool Changers
+4th- | 5th-Axis
+4th- | 5th-Axis
+4th- | 5th-Axis
+View All
+4th- | 5th-Axis
+Turrets & Live Tooling
+Turrets & Live Tooling
+Turrets & Live Tooling
+View All
+Turrets & Live Tooling
+Probing
+Probing
+Probing
+View All
+Probing
+Chip & Coolant Management
+Chip & Coolant Management
+Chip & Coolant Management
+View All
+Chip & Coolant Management
+The Haas Control
+The Haas Control
+The Haas Control
+View All
+The Haas Control
+Product Options
+Product Options
+Product Options
+View All
+Product Options
+Tooling & Fixturing
+Tooling & Fixturing
+Tooling & Fixturing
+View All
+Tooling & Fixturing
+Workholding
+Workholding
+Workholding
+View All
+Workholding
+5-Axis Solutions
+5-Axis Solutions
+5-Axis Solutions
+View All
+5-Axis Solutions
+5 Easy Steps to 5-Axis
+Super-Speed - Super Features Come Standard! | Haas CNC
+Super-Speed - Super Features Come Standard! | Haas CNC
+Super-Speed - Super Features Come Standard! | Haas CNC
+View All
+Super-Speed - Super Features Come Standard! | Haas CNC
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Why Haas
+Main Menu
+Discover the Haas Difference
+Why Haas
+MyHaas
+Education Community
+Industry 4.0
+Haas Certification
+Customer Testimonials
+Service
+Main Menu
+Welcome to Haas Service
+SERVICE HOME
+Operator’s Manuals
+How-To Procedures
+Troubleshooting Guides
+Preventive Maintenance
+Haas Parts
+Haas Tooling
+Videos
+Videos
+Main Menu
+Main Menu
+View All
+View All
+View All
+View All
+HTEC Curriculum Support
+View All
+Haas 10 kg Cobot Package
+Cobot Kits
+View All
+View All
+4 - AUTOMATION SYSTEMS
+Mill Toolholding
+Carousel-V2
+expert test
+Demo_Day_Trident-test
+View All
+Choose Options
+View All
+View All
+View All
+View All
+View All
+calc-test
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Haas Tooling
+Main Menu
+Automation Accessories
+Shop Support
+Mill Toolholding
+Mill Cutting Tools
+Boring Systems
+Mill Workholding
+Lathe Toolholding
+Lathe Cutting Tools
+Lathe Workholding
+Package Kits
+ER Collets & Chucks
+Holemaking
+Threading
+Broaching
+Tombstones & Kits
+Manual Chucks For Milling
+Deburring & Abrasives
+Tool Presetter & Heat Shrinkers
+Storage & Handling
+Machine Maintenance
+Tooling Accessories
+Apparel & Accessories
+Measuring & Inspection
+Winner's Circle
+Winner's Circle
+Clearance
+Today's Hot Deals
+Haas Tooling
+Winner's Circle
+Winner's Circle
+Shop All
+WINNERS_CIRCLE-1Y
+Winner's Circle
+Winner's Circle
+Shop All
+WC-1Y-EU
+Today’s Hot Deals
+Today’s Hot Deals
+Shop All
+Mill Toolholding
+Mill Tooling
+Measuring & Inspection
+Boring Systems
+Mill Workholding
+Shell Mill Kits
+Lathe Toolholding
+Lathe Tooling
+Lathe Workholding
+ER Collets & Chucks
+Holemaking
+Threading
+Broaching
+Tool Storage
+Apparel & Accessories
+Clearance
+Clearance
+Shop All
+00-99-57466
+Measuring & Inspection
+Measuring & Inspection
+Shop All
+Probe Kits & Accessories
+Edge & Center Finders
+Comparative Measuring Gauges
+Height Gauges
+Calipers
+Threaded Plug & Ring Gauges
+Gauge Blocks
+Pin Gauges
+Drop Indicators
+Dial Test Indicators
+Bore Gauges
+Indicator Accessories
+V Blocks
+Setup Blocks
+Depth Measuring
+Micrometers
+Micrometer Accessories
+Micrometer Kits
+Bore Gauge Kits
+Starter Kits
+Indicator Kits
+Caliper Kits
+Toolholder Check Station
+Height Setters
+Coordinate Measuring Machines
+Automation Accessories
+Automation Accessories
+Shop All
+Cobot Kits
+Cobot Kits
+Protective Barriers
+Grippers
+Robot Cell Accessories
+Shop Support
+Shop Support
+Shop All
+Air Compressors
+Laser Marking Machines
+Bandsaw Blades
+Bandsaw Accessories
+Surface Grinding Wheels
+Shop Equipment Accessories
+Mill Toolholding
+Mill Toolholding
+Shop All
+End Mill Holders
+Shell Mill Holders
+Shrink Fit Holders
+ER Collet Chucks
+Milling Chucks & Collets
+NC Drilling Chucks
+Pull Studs / Retention Knobs
+Rotary Tool Holder & Tool Chuck Kits
+Hydraulic Milling Chucks & Collets
+Toolholder Attachments & Wrenches
+Mill Broaching Holders
+Mill Tooling
+Mill Tooling
+Shop All
+Shell Mill Bodies
+Milling Inserts
+End Mills
+Chamfer Mills & Inserts
+Indexable End Mill Bodies
+Ball End Mills
+Chamfer End Mills
+Roughing End Mills
+Indexable Ball End Mills & Inserts
+Shell Mill Kits
+Chamfer Mill Kits
+Indexable End Mill Kits
+Dovetail Cutters
+Indexable Dovetail Cutters
+Engraving End Mills
+Rotary Burrs / Die Grinding Bits
+Keyseat Cutters
+Corner Rounding End Mills
+Slot Mill Bodies
+CNC Router Bits For Wood
+Indexable CNC Router Bits & Inserts
+Boring Systems
+Boring Systems
+Shop All
+Boring Heads & Cartridges
+Boring Holders & Extensions
+Mill Workholding
+Mill Workholding
+Shop All
+Fixed-Jaw Vises
+Self-Centering Vises
+Adapter Plates
+Vise Jaws
+Vise Mounts & Fixtures
+Vise Kits
+Vise Parallels
+Rotary Vise Kits
+Fixture Clamps & Rails
+Automated Workholding Kits
+Tooling Fixture Subplates
+Toolmakers' Vises
+Clamp Force Gauges
+Collet Fixtures
+Angle Plates
+Lathe Toolholding
+Lathe Toolholding
+Shop All
+TL & CL Static Turning Holders
+BOT Static Turning Holders
+BMT Static Turning Holders
+Live / Driven Turning Holders
+Turning Holder Reduction Sleeves / Bushings
+VDI Static Turning Holders
+Turning Holder Accessories
+Lathe Tooling
+Lathe Tooling
+Shop All
+Cut-Off Tool Blocks & Blades
+Cut-Off Tooling Kits
+Turning Inserts
+Grooving & Cut-Off Tools
+Internal (ID) Grooving & Threading Tools
+Threading Inserts
+Threading Tools
+Boring Bars / Internal (ID) Turning Tools
+External (OD) Turning Tools
+Cermet Turning Inserts
+CBN Turning Inserts
+Haas Notch Grooving & Threading Inserts
+Haas Notch Grooving & Threading Tools
+Micro Turning Tools
+Desktop Lathe Tools
+Lathe Workholding
+Lathe Workholding
+Shop All
+Live Centers
+Spindle Reduction Sleeves / Liners
+Quick-Change Collets
+Quick-Change Collet Chucks
+5C Collets
+5C Collet Sets
+Lathe Jaw Boring Rings
+Lathe Jaws
+Bar Pullers
+Scroll Chucks
+Guide Pins
+Collet Accessories
+Package Kits
+Package Kits
+Shop All
+Chip Clearing Fan Kits
+Cutting Tool Kits
+Indexable End Mill Kits
+Cut-Off Tool Block & Blade Kits
+Drill & Tap Kits
+Indexable Drilling Kits
+Shell Mill Kits
+Chamfer Mill Kits
+Rotary Tool Holder & Tool Chuck Kits
+Lathe Starter Kits
+Workholding Kits
+Rotary Vise Kits
+Vise Kits
+3-Jaw Chuck Kits for Mills
+Tombstone Kits
+Reduction Sleeve Kits
+Automated Workholding Kits
+08-1869
+08-1870
+Measuring & Inspection Kits
+Starter Kits
+Bore Gauge Kits
+Caliper Kits
+Indicator Kits
+Micrometer Kits
+ER Collets & Chucks
+ER Collets & Chucks
+Shop All
+ER Straight-Bore Collets
+ER Sealed Collets
+ER Tap Collets
+ER Collet Sets & Accessories
+ER Collet Chucks
+Straight Shank ER Collet Chucks
+Straight Shank Keyless NC Drilling Chucks
+Holemaking
+Holemaking
+Shop All
+Carbide Drills
+Indexable Drill Bodies
+Indexable Drill Inserts
+Modular Drill Bodies
+Modular Drill Heads
+Cobalt Drills & Sets
+Center Drills
+Reamers
+Indexable Drilling Kits
+Spot Drills
+Spade Drill Bodies
+Spade Drill Inserts
+Countersinks
+Threading
+Threading
+Shop All
+Taps
+Threading Inserts
+Threading Tools
+Thread Mills
+Pipe Taps
+Drill Tap Kits
+Broaching
+Broaching
+Shop All
+Broaching Tools
+Broaching Inserts
+Tombstones
+Tombstones
+Shop All
+Tombstones
+Tombstone Kits
+Vise Cluster Towers
+Manual Chucks For Milling
+Manual Chucks For Milling
+Shop All
+5C Indexer Chucks
+3-Jaw Chucks & Mounts for Mills
+Deburring & Abrasives
+Deburring & Abrasives
+Shop All
+Abrasive Pads
+Deburr Tools
+Deburr Wheels
+Abrasive Sheets & Rolls
+Sharpening / Lapping Stones
+Flexible Honing Brushes
+Tool Presetter & Heat Shrinkers
+Tool Presetter & Heat Shrinkers
+Shop All
+Tool Presetting Machines
+Shrink Fit Machines
+Tool Storage
+Tool Storage
+Shop All
+Tool Carts
+Tool Tray
+Tool Bags
+Machine Maintenance
+Machine Maintenance
+Shop All
+Spindle Test Bars
+Levels
+Refractometers
+Machine Additives & Supplies
+Machine Accessories
+Machine Maintenance Kits
+Tooling Accessories
+Tooling Accessories
+Shop All
+Spindle & Toolholder Taper Cleaners
+Haas Shop Lift
+Toolholder Fixtures
+CNC Chip Clearing Fans
+Hammers & Mallets
+Anti-Fatigue Mats
+Layout Tools
+Wrenches
+Magnetic Tools
+Torque Screwdrivers
+Hand Cutting Tools
+Shop Stools
+Lifting Magnets
+Safety Apparel
+Cutting Tool Sharpeners
+Apparel & Accessories
+Apparel & Accessories
+Shop All
+Accessories
+Apparel
+HAAS TOOLING QUICK LINKS
+NEW PRODUCTS 
+NEW PRODUCTS 
+NEW PRODUCTS 
+NEW PRODUCTS 
+MOST POPULAR 
+MOST POPULAR 
+TOOLING PROMOS
+TOOLING PROMOS
+FINANCING & OPEN TERMS
+FINANCING & OPEN TERMS
+PAY BY INVOICE
+PAY BY INVOICE
+FAQs 
+FAQs 
+KITS CREATED FOR YOU
+KITS CREATED FOR YOU
+Haas Service Parts
+Main Menu
+Automatic Pallet Changer
+Lathe Turret
+Tool Changer
+Chip Management
+Coolant
+Counterbalance
+Electrical Cabinet
+Enclosure
+Hydraulics
+Lubrication
+Maintenance
+Pendant
+Probing
+Rotary
+Spindle
+Tailstock
+Haas Service Parts
+Automatic Pallet Changer
+Automatic Pallet Changer
+Shop All
+HMC - Automatic Pallet Changer
+VMC - Automatic Pallet Changer
+Lathe Turret
+Lathe Turret
+Shop All
+Lathe - Turret
+Live Tooling
+Tool Changer
+Tool Changer
+Shop All
+Side Mount
+Umbrella
+Chip Management
+Chip Management
+Shop All
+Multi Auger
+Single Auger
+Coolant
+Coolant
+Shop All
+Auxiliary Filter
+HPC-300 (Lathe)
+HPC-1000 (Lathe)
+Oil Skimmer
+Standard Coolant
+TSC-300 (Mill)
+TSC-1000 (Mill)
+Coolant Refill
+Loc-Line
+Counterbalance
+Counterbalance
+Shop All
+Charge & Discharge Hose
+Electrical Cabinet
+Electrical Cabinet
+Shop All
+Fans
+Filters
+Upgrade Kits
+Enclosure
+Enclosure
+Shop All
+Accessories
+Air Nozzle
+Decals
+Door Bumpers
+Lighting
+Windows, Gaskets, & Weather Strip
+Chip & Coolant Management
+Hydraulics
+Hydraulics
+Shop All
+Filters
+Gauges
+Heat Exchanger
+Hoses
+Lubrication
+Lubrication
+Shop All
+Bijur Mechanical Lubrication
+Minimum Lubrication
+Maintenance
+Maintenance
+Shop All
+Grease, Oil, & Sealants
+Pendant
+Pendant
+Shop All
+Floppy Disk & USB
+Keypad
+Keys
+Lens
+Gaskets & Seals
+Probing
+Probing
+Shop All
+Mill Probing
+Lathe Tool Presetter
+Rotary
+Rotary
+Shop All
+Rotary Gaskets & Seals
+Spindles
+Spindles
+Shop All
+Couplings
+Gaskets & Seals
+Spindle Motor Drive
+Gearbox Drive
+Tool Release Piston
+Tailstock
+Tailstock
+Shop All
+Handles
+×
+Search Results
+Web Pages
+Images
+<
+1
+>
+My Haas
+Welcome,
+! 
+Haas Tooling
+Guest Order History
+MyHaas/HaasConnect
+Sign In
+Register
+Haas Tooling
+My Account
+Order History
+Return History
+MyHaas/HaasConnect
+Sign Out
+Welcome, 
+My Machines
+Latest Activity
+My Quotes
+My Account
+My Users
+Sign Out
+Find Your Distributor
+Select Language
+English
+Deutsch
+Español - España
+Español - México
+Français
+Italiano
+Português
+Český
+Dansk
+Nederlands
+Magyar
+Polski
+Svenska
+Türkçe
+中文
+Suomi
+Norsk
+الإنجليزية
+български
+Hrvatski
+Ελληνικά
+Română
+Slovenský
+Slovenščina
+한국어
+日本語
+Українська
+×
+Search Results
+Web Pages
+Images
+<
+1
+>
+ I/O PCB - Troubleshooting Guide - NGC
+Service Home
+ I/O PCB - Troubleshooting Guide - NGC
+Your document is ready for download, please click below to download your document.
+Download Document
+Error processing this document, please try again or 
+Contact Us
+.
+Please wait while your document is being loaded.
+ I/O PCB - Troubleshooting Guide - NGC
+Jump to Section
+Back to Top
+Your document is ready for download, please click below to download your document.
+Download Document
+Error processing this document, please try again or 
+Contact Us
+.
+Please wait while your document is being loaded.
+Recently Updated
+Last updated: 03/21/2023
+I/O PCB
+ - Troubleshooting Guide - NGC
+Revision A - 05/2025
+Introduction
+ Download and fill out the NGC I/O PCB Inspection Report Checklist below before replacing any parts.
+ NGC I/O PCB Inspection Report Checklist 
+34-348xA
+Release Date: 09/2014
+Main Firmware Version: 01.XX
+Note: 
+Firmware version cannot be upgraded to version 02.XX
+TC Firmware Version: 01.XX
+Note:
+ Firmware version cannot be upgraded to version 02.XX
+34-348xC
+Release Date: 05/2016
+Main Firmware Version: 02.XX
+Note:
+ Firmware version cannot be upgraded to version 03.XX
+TC Firmware Version: 01.XX
+Note:
+ Firmware version cannot be upgraded to version 02.XX
+Backwards compatible with 34-348xA
+Y/D Feedback Support
+TSC/HPC 1K Fan Support
+34-349xA/B
+Release Date: 05/2018
+Main Firmware Version: 03.XX - 04.XX
+Note:
+ See the 
+I/O Firmware Compatibility
+ chart for recommended firmware version.
+TC Firmware Version: 02.XX 
+Note:
+ The 02.xx version will show if the I/O PCB has a TC PCB installed. If the TC PCB is not installed the firmware version will show "No TC".
+Backwards compatible with
+ 34-348xA/B
+Redundant Axis Brake Support
+Optional TC PCB
+Outputs have LED's lights
+34-349xC
+Release Date: 03/2023
+Main Firmware Version: 04.XX
+Note:
+ See the 
+I/O Firmware Compatibility
+ chart for recommended firmware version.
+TC Firmware Version: 02.XX 
+Note:
+ The 02.xx version will show if the I/O PCB has a TC PCB installed. If the TC PCB is not installed the firmware version will show "No TC".
+Backwards compatible with 
+34-348xA/B/C
+ and
+ 34-349xA/B
+Redundant Axis Brake Support
+Optional TC PCB
+Outputs have LED's lights
+Supports low power valves by incorporating the I/O power supply and solenoid filters into the board
+Variable frequency drive (VFD) adapter board is built in
+E-stop Debounce circuit is also built in
+I/O PCB Connector and Pin Information
+As of NGC software version 100.17.000.1016 or higher connector and pin number has been added to the I/O diagnostic tab. The PCB board name has also been added. This will help when troubleshooting a machine and trying to figure out which connector and pin number to probe.
+The format for the connector and pin numbers are Pmm.nn where mm is the connector number and nn is the pin number. For example, connector P56 and pin 5 would be represented as P56.5. In some cases, a given signal may be present on more than one pin or connector. In this case, they will be separated by a comma.
+In addition to providing information on I/O signals, the table now includes rows for things like power and ground pins.
+You can also use the search function to search for specific connector numbers. For example you can search for connector P3 then press the [F1], this will display all the input and output fuctions of connector P3.
+PCB serial number
+Note:
+ The PCB's serial number must be included in the inspection report checklist. The serial number is on a sticker [1] on the top of the inspection checklist. 
+The serial number will start with two letters, followed by eight digits. Include both the letters and numbers on the inspection report. 
+Electrical Safety
+Caution:
+ When you do maintenance or repair on CNC machines and their components, you must always follow basic safety precautions. This decreases the risk of injury and mechanical damage.
+Set the main circuit breaker to the 
+[OFF]
+ position.
+Danger:
+ Before beginning any work inside the control cabinet the High Voltage indicator light on the 320V Power Supply / Vector Drive must have been off for at least 5 minutes.
+Some service procedures can be dangerous or life-threatening. DO NOT attempt a procedure that you do not fully understand. If you have any doubts about doing a procedure contact your Haas Factory Outlet (HFO) and schedule a service visit.
+Symptom Table
+Symptom / Alarm
+Possible Cause
+Corrective Action
+Alarm 
+9924 CONTROL AND IO BOARD COMMUNICATION LOST
+ Alarm 
+9925 CONTROL AND IO BOARD COMMUNICATION DID NOT INITIALIAZE
+.
+ Alarm 
+9915 IO BOARD CONFIGURATION CRC MISMATCH
+The I/O PCB built-in Low Volt Power Supply (LVPS) voltages are not present or the LVPS is not working.
+Troubleshoot the I/O PCB LVPS. Refer to the
+ I/O PCB Low Volt Power Supply
+ section below.
+Alarm 
+9924 CONTROL AND IO BOARD COMMUNICATION LOST
+The I/O PCB is not receiving any power
+Check the PSUP breaker that supplies power to the I/O board. If the breaker is on, there should be LED lights on the I/O PCB. Check to see if the lights on the I/O board are on.
+There is an issue with the RJ45 cable connected from the I/O PCB to the Maincon board.
+This RJ45 cable connected to J1 on the I/O PCB may be damaged. Check the cable and connectors for damage. Swap the cable with another RJ45 and try to clear the alarm. If the alarm clears then the original cable needs to be replaced.
+Alarm 
+9924 CONTROL AND IO BOARD COMMUNICATION LOST 
+is generated intermittently.
+There is electrical noise interfering with communication signals connected to the I/O PCB.
+Use a service key and navigate to the 
+MISC
+ page on the control by pressing 
+Diagnostics -> MISC.
+ Look at the 
+IOPerformance 
+fields that show the communication errors that have been generated. See the 
+Check IO Performance
+ section below.
+If the number of errors is growing, this indicates electrical noise in the control cabinet.
+Press [
+E-STOP]
+ to turn the servos off. Then check to see if the number of errors continues to grow.
+Check that all ferrite filters are installed on communication cables.
+Check that the amplifier power cables are properly grounded to chasis.
+Alarm 
+9924 CONTROL AND IO BOARD COMMUNICATION LOST
+ and 
+9100 NON RESETTABLE SYSTEM ERROR
+Same possible causes as 
+9924 
+alarm above.
+Follow the Corrective Action listed above for 
+9924 
+alarms. If this action doesn't clear the alarm, cycle power on the machine. If the alarm is present after cycling power, take an error report and contact 
+Haas Service
+.
+Alarm 
+9100 NON RESETTABLE SOFTWARE ERROR 
+at Power On, or Alarm 
+9915 IO BOARD CONFIGURATION MISMATCH.
+Main CRC and Factory CRC do not match due to the I/O PCB being swapped out.
+Press 
+[POWER OFF]
+.
+Put the USB memory device into the control.
+Note: The USB memory device must contain your 
+Haas Control Key
+ and the correct 
+configuration files
+.
+Press 
+[POWER ON]
+.
+Press 
+[DIAGNOSTIC]
+.
+Go to I/O Config [2] in the Diagnostics tab [1].
+Press 
+[F3]
+ to Update Config Table [4].
+Press
+ [RESET]
+ to continue. If the alarm does not clear, cycle the machine power.
+The Main CRC and the Factory CRC[3] are now the same.
+Alarm 
+9933
+ SOFTWARE VERSION MISMATCH and 
+9100
+NON RESETTABLE SOFTWARE ERROR
+The firmware update failed, or I/O firmware is corrupted.
+Reload the I/O PCB main firmware refer to 
+Next Generation Control - I/O PCB Main Firmware - Update
+.
+Alarm 
+9899 IOPCB CAN FAULT
+ and/ or 
+9105 IO BOARD COMMAND EXECUTION FAILURE. 
+See the 
+CAN Bus Systems Troubleshooting Guide
+ for more information.
+The CAN node I/O Configuration is incorrect.
+Update the I/O configuration via the I/O Config tab.
+The incorrect CAN node is enabled.
+Verify that Factory Settings 9000.001 -> 9031.001 are set correctly. Only active nodes should be enabled.
+The Autodoor CAN PCB does not have power.
+Verify that the Low Volt Power supply is supplying power to the CAN Autodoor PCB.
+The CAN node Communication cable is disconnected.
+Power down machine for at least a minute. Verify all CAN communication cables are connected correctly.
+The CAN Module ID Selector is incorrect.
+Power down machine for at least a minute. Set ID selector correctly. Power up machine.
+The CAN Modules have incorrect termination.
+Power down machine for at least a minute. Verify that only last node in the chain is terminated. Power up machine.
+The CAN Node needs to be reset.
+Disable CAN Node via 9000.001 -> 9031.001. If the machine recovers (I/O page isn’t “X”) after disabling a particular node, try to enable the node again.
+Spindle load pegs to 200%
+There is a problem with the 
+120 VAC outputs circuit components (solenoids, Wye-Delta, Oil Pump etc.)
+Inspect the wiring, pins, and connectors for this circuit. Inspect the I/O board for faults. Replace the I/O if necessary
+Machine generates multiple Alarm 
+20014.1
+ SIO TOOL CHANGER PCB IS NOT PRESENT and 
+20014.0
+ SIO TOOL CHANGER PCB PRESENT after the I/O TC PCB is installed.
+The I/O or TC PCB firmware is outdated. 
+Update I/O Main and TC firmware version to the latest. Refer to 
+Next Generation Control - I/O PCB Main Firmware - Update
+.
+Machines equipped with I/O PCB P/N: 
+34-3490A/B
+ with an auxiliary estop that generates an estop alarm after the closing of machine doors.
+The doors closing have shaken the estop and caused a momentarily disconnect and caused an estop of the machine.
+A debounce capacitor will need to be added to the I/O PCB. Refer to the 
+E-Stop - Debounce
+ procedure.
+Main I/O Firmware fails to load. 
+TC PCB is causing the failure.
+Remove the TC PCB from the Main I/O PCB. Then try the Firmware upgrade again. 
+Alarm 2001
+ EMERGENCY STOP SWITCH ERROR
+There is a loose connection from the Hydraulic Union Safety Device adaptor to the I/O PCB. 
+Only applies to these machines built after 12/20/2023
+:
+ST - 10/15/20/25/28/30/35/L/Y/LY 
+REBOOT ONLY: ST-40/40Y/45/45Y (note: For ST-45/45L/45Y machines equipped with optional workholding)
+Check the cable connected to the I/O PCB at P12, make sure the cable is not damaged or has a loose connection. 
+Serial I/O PCB Alarms
+Depending on the machine software version, I/O PCB main firmware version you will get a different alarm, see table below:
+Alarm# / Title
+Software 100.17.000.2021 and lower
+I/O PCB Main Firmware 02.04 and lower
+Alarm# / Title
+Software 100.17.000.2030 and higher
+I/O PCB (34-348xC) Main Firmware 02.05 and higher
+Alarm Troubleshooting
+9830
+-IOPCB MEMORY DATA LOCKED
+Attempts were made to download an I/O configuration file while configuration memory was locked.
+850
+-INTERNAL I/O ERROR
+9800
+-INTERNAL I/O ERROR- SHIFT CHAIN
+An internal I/O circuit board error has been sensed in it's shift chain. - Press the 
+[RESET]
+ button. Power off, and inspect the circuit components on the I/O PCB, see section below.
+9801
+-INTERNAL I/O ERROR-TC COMMUNICATION
+An internal I/O circuit board error has been sensed where the main and tool changer microcontrollers could not communicate. - Press the 
+[RESET]
+ button.
+Inspect the tool changer relays, make sure the relay sockets are solder into the PCB board.
+Do not replace the I/O PCB.
+For IO PCB (34-348xA):
+· Upgrade the I/O PCB Tool Changer firmware to the latest 01.xx version.
+For IO PCB (34-348xC):
+· Update the I/O PCB Main firmware to the latest 02.xx version.
+· Update the I/O PCB Tool Changer firmware to the latest 01.xx version.
+For IO PCB (34-349x):
+· Update the I/O PCB Main firmware to the latest 03.xx version.
+Refer to 
+Next Generation Control - I/O PCB Main Firmware - Update
+ procedure.
+9900
+-IOPCB COMMUNICATION LOST
+9802
+-SIO MCU COMMUNICATION LOSS
+Communication has been lost to the I/O PCB. Check that the I/O PCB has power by looking for the 12/24V green LED's. Look for a tripped circuit breaker. If the board has power, then
+1. Check the RJ-45 cable connection from Maincon PCB (J14) to I/O PCB (J4). To test the cable refer to 
+Network Cable Tester Tool procedure
+.
+2. Check the 3-Phase power input from PSUP (P4) to I/O PCB (P55).
+3. Inspect the RJ-45 connector on the Maincon PCB & I/O PCB for bent pins.
+Upgrade the software to 100.17.000.2045 or higher. If you get this alarm with version 100.17.000.2045 or higher download an error report and e-mail to Haas service.
+9831
+-I/O # ERROR
+The main processor has command an output that is not configured in the I/O configuration file.
+9832
+-SIO COMMUNICATION ERROR
+The I/O PCB has received partial or invalid communication from the main processor.
+9833
+-PCB OVER TEMPERATURE
+The I/O PCB is reporting a temperature that exceeds limits (65 degrees C)
+9834
+-12V FAULT
+The 12V supply on the I/O PCB is outside of its limits of 10 to 14V.
+175
+-GROUND FAULT DETECTED
+9803
+-120VAC GROUND FAULT
+A 120 VAC ground fault condition was detected by the I/O PCB. The ground fault signal gets generated by the PSUP PCB. The ground fault signal gets sent to I/O PCB at P56 for monitoring. Check all 120V outputs for possible shorts to earth ground. See ground fault troubleshooting section below.
+9804
+-240VAC GROUND FAULT
+A 240 VAC ground fault condition was detected by the I/O PCB. The ground fault signal gets generated by the PSUP PCB. The ground fault signal gets sent to I/O PCB at P56 for monitoring. Check all 240 V outputs for possible shorts to earth ground. This includes short circuits in any amplifier or vector drive output as well as any 240V pumps or chip conveyor. See ground fault troubleshooting section below.
+9903
+-120 VAC SHORT CIRCUIT
+9805
+-120VAC PHASE C SHORT CIRCUIT
+A short circuit was detected in the 120V outputs from the I/O PCB. Check all 120V outputs for possible shorts to earth ground. See ground fault troubleshooting section below.
+9835
+-120VAC PHASE C OVER CURRENT
+A partial short circuit was detected in the 120V outputs from the I/O PCB. Check all 120V outputs for possible shorts to earth ground. See ground fault troubleshooting section below.
+9836
+-120VAC PHASE C NO CURRENT
+An output was turned on but no change in current was detected. Check for broken wires/cables.
+9837
+-CALIBRATION ERROR
+I/O PCB Calibration error. Either calibration did not occur during power up. Or the new calibration values don't match the previous values.
+9838
+-TSC FAN FAILURE
+The fan for the TSC heat sink stopped; could cause TSC over heating later on.
+9820
+-TSC HEAT SINK OVER TEMP
+The TSC Heat sink temperature is over the limit of 85°C. Check for a damaged fan.
+9904
+-PCOOL MALFUNCTION
+9806
+-PCOOL SHORT CIRCUIT
+The programmable coolant circuit has detected a short circuit (>2.5A) and has shut down. Press the 
+[RESET]
+ button to clear alarms. If necessary, cycle power on the machine. Check for a shorted cable.
+9807
+-PCOOL GROUND FAULT
+The programmable coolant circuit has detected a ground fault condition and has shut down. Press the 
+[RESET]
+ button to clear alarms. If necessary, cycle power on the machine. Check for a shorted cable to earth ground.
+9808
+-PCOOL OVERHEAT
+The programmable coolant circuit has overheated and shut down. Give time for it to cool, then press the 
+[RESET]
+ button to clear alarms. Check for obstructions to Pcool movement.
+9839
+-PCOOL STALLED
+A high current (2.5A> I >1A) was detected in the programmable coolant circuit. Check for obstructions to Pcool movement. Check for binding in the Pcool unit.
+9840
+-PCOOL OVERLOAD
+The programmable coolant circuit has detected an overload condition. Check for binding in the Pcool unit.
+9841
+-PCOOL MOTOR DISCONNECTED
+The programmable coolant circuit was commanded on but no current was detected. Check to see if the Pcool will turn when commanded. Check for broken wires. If the machine is equipped with 34-3090B I/O PCB make sure the Main I/O firmware has version 3.18 or higher. Refer to 
+Next Generation Control - I/O PCB Main Firmware - Update
+ procedure.
+9905
+-IOPCB TOOL CHANGER FAULT
+9809
+-TOOL CHANGER BUS SHORT CIRCUIT
+The I/O PCB experienced an internal short circuit. Replace the 4 tool changer relays. If problem persists, then replace the I/O PCB.
+9810
+-INTERNAL I/O ERROR-TC TRANSISTOR FAILURE
+The I/O PCB tool changer (or bar feeder) transistor appears to be damaged. Replace the I/O PCB.
+9811
+-TOOL CHANGER CABLE SHORT CIRCUIT
+One of the tool changer outputs has detected a short circuit. Check all tool changer motor outputs for possible short circuits.
+9812
+-TOOL CHANGER GROUND FAULT
+A ground fault condition was detected by the I/O PCB tool changer. Check all tool changer motor outputs for possible short circuits to earth ground.
+9813
+-TOOL CHANGER REGEN SHORTED
+The I/O PCB experienced a short circuit on the tool changer regen circuit. Check for a short circuit on it's external regen resistor at P57.
+9814
+-CAROUSEL BRAKE RESISTOR OVER TEMPERATURE
+TBD
+9815
+-ARM BRAKE RESISTOR OVER TEMPERATURE
+TBD
+9816
+-REGEN OVERLOAD
+TBD
+9817
+-MULTIPLE MOTOR COMMANDS
+TBD
+9818
+-TOOL CHANGER OVERLOAD
+TBD
+9842
+-OVER VOLTAGE
+TBD
+9822
+ - IOPCB VERTICAL BRAKE FAILURE
+NGC machines equipped with 
+I/O PCB P/N: 34-3490A/B
+ and a servo brake motor may generate alarm 9822 IOPCB Brake. Upgrade the Main I/O PCB firmware to 3.06 or higher. Refer to 
+I/O PCB Firmware - Update - NGC
+ procedure.
+Upgrade the Main 
+I/O PCB Firmware
+ to 
+4.21
+ or higher.
+HSG-A 07-11-2023
+880
+ - UNDER VOLTAGE ON 160V DC BUS
+9843
+-TC UNDER VOLTAGE
+The system detected an undervoltage condition from the TC circuit or the TC PCB. Check the 115 VAC input to the TC PCB, check for shorts on the tool changer motors.
+Phase missing on the 120VAC power from the PSUP
+Low voltage level in the 120VAC power from the PSUP
+Open diode (s) in the 120Vac bridge rectifier circuit either in the I/O PCB (34-348x A, 34-348x C PCBs) or the TC PCB 34-5502 used on 34-349X I/O PCBs
+Faulty TC PCB 34-5502 PCB
+Faulty I/O PCB
+9844
+-REGEN OPEN
+TBD
+9845
+-CONFIGURATION CONFLICT
+TBD
+9846
+-MOTOR STALLED
+TBD
+9847
+-MOTOR DISCONNECTED
+The control software and the I/O firmware are not compatible, or the I/O firmware is outdated. 
+9906
+-CHIP CONVEYOR MALFUNCTION
+9819
+-CHIP CONVEYOR SHORT CIRCUIT
+TBD
+9848
+-CHIP CONVEYOR MOTOR DISCONNECTED
+TBD
+IO PCB LE7 Light
+Note: 
+The image above shows the location for 
+LE7 
+on IO board 
+34-349C
+. The position of 
+LE7
+ can differ based on the version of IO PCB on the machine.
+LE7 
+[1] is one of the lights that come on when the machine is powered up. 
+LE7
+ has three states that it can be used to troubleshoot potential issues:
+LE7 is OFF
+This indicates the IO PCB is not receiving power or the software isn't functioning correctly. Check the breakers and make sure the IO board is receiving proper power.
+LE7 is Blinking - This can mean several things:
+This indicates that the board is not communicating the IO states at the regular rate. It is normal for this to happen when the machine is booting up and also during firmware upgrades. 
+Check the serial communication cable going to the Maincon.
+LE7
+ will also be blinking if there is an internal IO PCB alarm
+ (9800 Internal error/shift)
+.
+Since 
+LE7
+ blinks when booting up, if the control screen won't turn on and 
+LE7
+ is blinking this may indicate that the Maincon is stuck in it's boot process. 
+This doesn't mean that there is an issue with the IO board, but can indicate the state of the machine.
+LE7 is On Solid
+This is the normal state of 
+LE7
+ when the machine is powered on and booted up. It indicates the IO is communicating with the Maincon.
+Lathe I/O PCB Hydraulic Union Safety Device Connection 
+Push 
+[POWER OFF]
+. Go to P12 on the I/O PCB, unplug the Hydraulic Union Safety Device adaptor. 
+Plug the cable back into P12 making sure its fully seated in the port. Push 
+[POWER ON]
+. Push 
+[ALARMS]
+. Push 
+[RESET]
+.
+Verify that the EMERGENCY STOP alarm has cleared.
+Check IO Performance
+Note: 
+The 
+MISC
+ tab can only be seen when a service key is used on the machine.
+Enter service mode using the service key.
+Press 
+Diagnostics 
+and then going to the 
+MISC 
+tab [1].
+Monitor the Total Errors and CRC Errors for both Transmitting (Tx) and Receiving (Rx) [2].
+If the number of errors is growing, there is likely electrical noise present in the control cabinet.
+Press 
+[E-STOP]
+ to turn off the servo motors. Check if this stops the number of errors from growing. Electrical noise may be produced by the power cables coming from the servo amplifiers located above the IO board.
+If the number of errors stops increasing when the servos are off, make sure that all ferrite filters are installed on communication cables and that amplifier power cables coming from the amplifiers and vector drives are properly grounded. 
+Make sure there are ferrite filters [1] ground connections [2] and that the exposed shielding is grounded on all amplifiers [3].
+Ground Fault Circuit Monitor
+On the NGC control there is a ground fault circuit monitor. This circuit monitors the 115V and 230V for a ground fault condition.
+For 175 GROUND FAULT alarm. Determine if the alarm is caused by a 115 or 230 VAC component.
+Press the 
+[DIAGNOSTIC]
+ button, cursor to the I/O tab.
+Type in: "Ground", then press 
+[F1]
+.
+Look at the _120VAC/_240VAC_GROUND FAULT analog value. The circuit with the highest value is the one that reported the ground fault.
+Test the components that operate in that voltage range, for a short-circuit (see the table below).
+The ground fault analog value will drop when the component with the short circuit is disconnected from the machine control.
+Components to Check when a Ground Fault Alarm Occurs
+ Note:
+ *These devices can be disconnected from the I/O PCB without an alarm being generated.
+Machine Components
+I/O PCB Location
+Operating Voltage
+4th and 5th Axis Brake Solenoids*
+P16 - P17
+120 VAC
+Worklights*
+P18 - P21
+120 VAC
+High Intensity Lights*
+P22
+120 VAC
+GFI
+P23
+120 VAC
+Door Interlocks*
+P40, P41, P42
+120 VAC
+Lube Panel Solenoids
+P35, P36
+120 VAC
+Y/D Contactor Coil
+P37, P38
+120 VAC
+DC Tool Change Motors*
+P58
+160 VDC, generated from the 120 VAC
+Spindle Motor Fan / Oil Pump
+P32
+120 VAC
+Sub Spindle Fan / Hydraulic Pump Fan
+P33
+120 VAC
+TSC/HPC Pump*
+P31
+240 VAC
+Coolant Pump*
+P29
+240 VAC
+Chip Auger / Conveyor*
+P24, Quad PCB
+240 VAC
+Axis Motors
+240 VAC
+Spindle Motor
+240 VAC
+Hydraulic Pump Motor
+240 VAC
+I/O PCB Low Volt Power Supply
+The I/O PCB is equipped with a built in Low Volt Power Supply (LVPS). This power supply generates 3 DC voltages: 
+ +24V, +15V and +12V 
+[1].
+These voltages are used to power low volt circuits on the I/O PCB and also to power external devices like Probes, Axis Brakes, and User Inputs.
+There are 3 LEDs that show the presence of these voltages on the I/O PCB. 
+When the I/O LVPS is working correctly these LED's will glow solid. 
+When there is a short circuit on the low volt circuits these LED's can begin to flash on and off. 
+When this happens you will need to find the source of the short circuit, start by disconnecting devices that are being powered by the LVPS like the Probe, Axis Brakes, User Inputs until LED lights begin to remain solid.
+When the LED's are OFF and the machine is turned on. The I/O PCB may not be getting the 115VAC Voltage input [2] or the Circuit Breaker for the I/O PCB may have tripped.
+PCB Component Inspection
+Intermittent alarms or symptoms can be caused by component failure. Below is a list of possible failures:
+Missing solder on all or some components pins
+Poor solder
+Solder bridges
+Wrong component installation (orientation)
+Missing components
+ Note:
+ Some PCB's have unused circuits and are missing components intentionally, look for broken off components.
+Broken components
+Broken pins on IC's
+Bent pins on the connectors
+Use a magnifying glass to inspect the circuit components on the front and back of the I/O PCB. Below are the circuit component zones to inspect:
+24 VDC, 160 VDC circuit components (DC motor tool changers, axis brake, probe).
+120 VAC outputs circuit components (solenoids, Wye-Delta, Oil Pump etc.)
+240 VAC outputs circuit components (Coolant, TSC, Auger).
+Check the RJ45 connector for loose housing and bent pins.
+ Important:
+ If you find a damaged component, replace the I/O PCB, inspect the new I/O PCB circuit components before installing.
+Electrical Diagrams
+I/O PCB Interconnect Diagram
+I/O PCB (P39) to Mill - Spindle Head Inputs Detail Diagram
+I/O PCB (P34, P35) to Mill - Air/Lube Panel Detail Diagram
+PSUP (P17) to I/O PCB (P56) Detail Diagram
+Related Content
+ CAN I/O Systems 
+ Robot Integration 
+ DIagnostic Data 
+Recently Viewed Items
+Clear Items
+You Have No Recently Viewed Items Yet
+ Feedback 
+美元价格不包括关税、报关费用、保险费、增值税及运费。
+USD prices DO NOT include customs duty, customs fees, insurance, VAT, or freight.
+人民币价格包含关税、报关费用、货运保险和增值税, 但不包括运费。
+CNY prices include customs duty, customs fees, insurance, and VAT. DOES NOT include freight.
+Haas Delivered Price
+This price includes shipping cost, export and import duties, insurance, and any other expenses incurred during shipping to a location in France agreed with you as a buyer. No other mandatory costs can be added to the delivery of a Haas CNC Product.
+Click for details
+KEEP UP WITH THE LATEST HAAS TIPS AND TECHNOLOGY...
+Sign up now! 
+HAAS TOOLING ACCEPTS THE FOLLOWING:
+Service & Support
+Owners
+Request Service
+Operator Manuals
+Haas Parts
+Rotary Repair Request
+Pre-Install Guides
+Shopping Tools
+Build & Price a New Haas
+Available Inventory
+The Haas Price List
+CNCA Financing
+About Haas
+DNSH Statement
+Export Compliance
+Careers
+Certifications & Safety
+Contact Us
+History
+Terms & Conditions
+Haas Tooling Terms & Conditions
+Privacy
+Warranty
+Haas Community
+Haas Certification Program
+Haas Motorsports
+Gene Haas Foundation
+Haas Technical Education Community
+Events
+Join the Conversation
+Facebook
+X
+Flickr
+YouTube
+LinkedIn
+Instagram
+TikTok
+ © 2025 
+Haas Automation, Inc – CNC Machine Tools
+ This site is protected by reCAPTCHA and the Google 
+Privacy Policy
+ and 
+Terms of Service
+ apply. 
+2800 Sturgis Rd., Oxnard, CA 93030
+ Toll Free: (888) 817-4446 / Fax: 805-278-8554
+ {{ if (loading) { }} {{=loadingSpinner}} {{ } else { }} 
+×
+ {{=content}} 
+ {{ } }} 
+ {{ if (loading) { }} {{=loadingSpinner}} {{ } else { }} 
+×
+ {{=content}} 
+ {{ } }} 

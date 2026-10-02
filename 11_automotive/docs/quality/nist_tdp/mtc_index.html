@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>NIST SMS Test Bed: Technical Data Packages</title>
+  <meta name="Description" id="Description" content="Technical Data Pacakages (TDP) for NIST Smart Manufacturing Test Bed. Real manufacturing data available for research and development.">
+  <meta name="Keywords" id="Keywords" content="manufacturing, data, MTConnect, QIF, design" \>
+  <link rel="stylesheet" href="https://pages.nist.gov/nist-header-footer/css/nist-combined.css" \>
+  <script src="https://pages.nist.gov/nist-header-footer/js/jquery-1.9.0.min.js" type="text/javascript" defer="defer"></script>
+  <script src="https://pages.nist.gov/nist-header-footer/js/nist-header-footer.js" type="text/javascript" defer="defer"></script>
+  <!-- DAP Analytics -->
+  <script type="text/javascript" id="_fed_an_ua_tag" src="https://dap.digitalgov.gov/Universal-Federated-Analytics-Min.js?agency=DOC&subagency=NIST&pua=UA-102226507-7&yt=true&exts=ppsx,pps,f90,sch,rtf,wrl,txz,m1v,xlsm,msi,xsd,f,tif,eps,mpg,xml,pl,xlt,c"></script>
+</head>
+
+<div id="main" class="nist-main">
+	<div id="tdp content" style="padding: 0px 30px 30px 30px;">
+	<h1><a
+	id="Design_Manufacturing_and_Inspection_Data_for_a_Box_Assembly_0"></a>Design,
+	Manufacturing, and Inspection Data for a Box Assembly</h1>
+
+	<p>To better understand and address the challenges faced in linking all stages
+	of a manufacturing and design process, an investigative fabrication process was
+	designed and enacted as part of a collaboration between <a
+	href="https://www.nist.gov">National Institute of Standards and Technology
+	(NIST)</a> and <a href="http://www.the-mtc.org/">Manufacturing Technology
+	Centre (MTC)</a>. This collaboration sought to test selected open standards'
+	ability to integrate the product-lifecycle stages of engineering design,
+	manufacturing, and quality assurance through a thorough implementation of a
+	small scale model-based enterprise (MBE). This dataset was generated as a
+	result of the collaboration.</p>
+
+	<p><a href="https://s3.amazonaws.com/nist-el/mfg_digitalthread/nist-mtc-assembly_tdp.zip">Download the full package @ 237 MB.</a></p>
+
+	<h2><a id="Directory_Structure_3"></a>Directory Structure</h2>
+	<ul>
+	  <li><a href="./CAD">CAD</a> 
+		<ul>
+		  <li>Digital Product Definition, in accordance to ASME Y14.41-2012,
+			created using SolidWorks 2016</li>
+		</ul>
+	  </li>
+	  <li><a href="./Clean">Clean</a> 
+		<ul>
+		  <li>Raw output from machine tool adapters with white-space and recording
+			errors cleaned</li>
+		  <li>Pipe delimited in accordance with the MTConnect standard v1.3</li>
+		</ul>
+	  </li>
+	  <li><a href="./FAIR">FAIR</a> 
+		<ul>
+		  <li>First article inspection reporting data in QIF 2.1 format</li>
+		  <li>Data conforms to <a
+			href="http://qifstandards.org/latest-qif-version/">QIF XSD</a></li>
+		  <li>Each file contains data for 20 instances of the same part</li>
+		  <li>NIST / Mitutoyo completed inspection</li>
+		</ul>
+	  </li>
+	  <li><a href="./MTConnect">MTConnect</a> 
+		<ul>
+		  <li>XML-formatted data of the machine tool output data in accordance with
+			the MTConnect standard v1.3</li>
+		  <li>Data conforms to <a
+			href="https://github.com/mtconnect/schema">MTConnect v1.3
+		  schemas</a></li>
+		</ul>
+	  </li>
+	  <li><a href="./NC-Code">NC-Code</a> 
+		<ul>
+		  <li>Machining programs for operations steps for each part in accordance
+			with ISO 6983 (G-code)</li>
+		</ul>
+	  </li>
+	  <li><a href="./PartData">PartData</a> 
+		<ul>
+		  <li>Combined "Split" data organized into data blocks by part instance</li>
+		</ul>
+	  </li>
+	  <li><a href="./QIF-IncomingInspection">QIF-IncomingInspection</a> 
+		<ul>
+		  <li>Receiving / incoming inspection reporting data in QIF 2.1 format</li>
+		  <li>Data conforms to <a
+			href="http://qifstandards.org/latest-qif-version/">QIF XSD</a></li>
+		  <li>Each file contains data for 20 instances of the same part</li>
+		  <li>The MTC in the UK completed inspection</li>
+		</ul>
+	  </li>
+	  <li><a href="./Raw">Raw</a> 
+		<ul>
+		  <li>Raw output from machine tool adapters as recorded on the given date
+			and machine</li>
+		</ul>
+	  </li>
+	  <li><a href="./Split">Split</a> 
+		<ul>
+		  <li>Parsed "Clean" data split into data blocks by operation for each part
+			instance</li>
+		</ul>
+	  </li>
+	</ul>
+
+	<h2><a id="Contacts_31"></a>Contacts</h2>
+
+	<p><a href="https://www.nist.gov/people/thomas-hedberg">Thomas Hedberg</a>
+	and <a href="https://www.nist.gov/people/moneer-helu">Moneer Helu</a>
+	are the Coordinators of the SMS Test Bed.</p>
+
+	<p>For general questions, please send an email to <a
+	href="mailto:smstestbed@nist.gov">smstestbed@nist.gov</a>.</p>
+
+	<h2><a id="Disclaimers_35"></a>Disclaimers</h2>
+
+	<p>The use of any software or hardware by the project does not imply a
+	recommendation or endorsement by NIST.</p>
+
+	<p>The use of the project results in other software or hardware products does
+	not imply a recommendation or endorsement by NIST of those products.</p>
+
+	<p>We would appreciate acknowledgment if any of the project results are used,
+	however, the use of the NIST logo is not allowed.</p>
+
+	<p>NIST-developed software is provided by NIST as a public service. You may
+	use, copy and distribute copies of the software in any medium, provided that
+	you keep intact this entire notice. You may improve, modify and create
+	derivative works of the software or any portion of the software, and you may
+	copy and distribute such modifications or works. Modified works should carry a
+	notice stating that you changed the software and should note the date and
+	nature of any such change. Please explicitly acknowledge the National Institute
+	of Standards and Technology as the source of the software.</p>
+
+	<p>NIST-developed software is expressly provided "AS IS." NIST MAKES NO
+	WARRANTY OF ANY KIND, EXPRESS, IMPLIED, IN FACT OR ARISING BY OPERATION OF LAW,
+	INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS
+	FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT AND DATA ACCURACY. NIST NEITHER
+	REPRESENTS NOR WARRANTS THAT THE OPERATION OF THE SOFTWARE WILL BE
+	UNINTERRUPTED OR ERROR-FREE, OR THAT ANY DEFECTS WILL BE CORRECTED. NIST DOES
+	NOT WARRANT OR MAKE ANY REPRESENTATIONS REGARDING THE USE OF THE SOFTWARE OR
+	THE RESULTS THEREOF, INCLUDING BUT NOT LIMITED TO THE CORRECTNESS, ACCURACY,
+	RELIABILITY, OR USEFULNESS OF THE SOFTWARE.</p>
+
+	<p>You are solely responsible for determining the appropriateness of using and
+	distributing the software and you assume all risks associated with its use,
+	including but not limited to the risks and costs of program errors, compliance
+	with applicable laws, damage to or loss of data, programs or equipment, and the
+	unavailability or interruption of operation. This software is not intended to
+	be used in any situation where a failure could cause risk of injury or damage
+	to property. The software developed by NIST employees is not subject to
+	copyright protection within the United States.</p>
+
+	<p>Date created: August 17, 2018 | Last updated: November 21, 2018 | Contact: <a
+	href="mailto:smstestbed@nist.gov" class="bold">SMS Test Bed Coordinators</a></p>
+	</div>
+</div>
+</body>
+</html>

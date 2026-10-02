@@ -1,0 +1,1222 @@
+H-5AX Spindle Head - Troubleshooting Guide
+MyHaas
+Welcome,
+! 
+Haas Tooling
+Guest Order History
+MyHaas/HaasConnect
+Sign In
+Register
+Haas Tooling
+My Account
+Order History
+Return History
+MyHaas/HaasConnect
+Sign Out
+Welcome, 
+My Machines
+Latest Activity
+My Quotes
+My Account
+My Users
+Sign Out
+Find Your Distributor
+Select Language
+English
+Deutsch
+Español - España
+Español
+Français
+Italiano
+Português
+Český
+Dansk
+Nederlands
+Magyar
+Polski
+Svenska
+Постсоветский
+Türkçe
+中文
+Suomi
+Norsk
+الإنجليزية
+български
+Hrvatski
+Ελληνικά
+Română
+Slovenský
+Slovenščina
+한국어
+日本語
+Search
+machines
+Main Menu
+Vertical Mills 
+Vertical Mills 
+Vertical Mills 
+View All
+Vertical Mills 
+VF Series
+Universal Machines
+VR Series
+Pallet-Changing VMCs
+Mini Mills
+Mold Machines
+Drill/ Tap/ Mill Series
+Toolroom Mills
+Compact Mills
+Gantry Series
+Extra-Large VMC
+Desktop Mill
+Control Simulator
+Mill Automatic Parts Loader
+Compact Automatic Parts Loader
+Multi-Axis Solutions
+Multi-Axis Solutions
+Multi-Axis Solutions
+View All
+Multi-Axis Solutions
+Y-Axis Lathes
+5-Axis Mills
+Lathes
+Lathes
+Lathes
+View All
+Lathes
+ST Series
+Dual-Spindle
+Toolroom Lathes
+Chucker Lathe
+Haas Bar Feeder V2
+Lathe Automatic Parts Loader
+Horizontal Mills
+Horizontal Mills
+Horizontal Mills
+View All
+Horizontal Mills
+50-Taper
+40-Taper
+Rotaries & Indexers
+Rotaries & Indexers
+Rotaries & Indexers
+View All
+Rotaries & Indexers
+Rotary Tables
+Indexers
+5-Axis Rotaries
+Extra-Large Rotaries
+Automation Systems
+Automation Systems
+Automation Systems
+View All
+Automation Systems
+Robot Packages
+Automatic Parts Loaders
+Pallet-Pool Systems
+Haas Bar Feeder
+Models
+QUICK LINKS
+Special Series 
+Special Series 
+HAAS CAREERS
+HAAS CAREERS
+BUILD & PRICE
+BUILD & PRICE
+PRICE LIST
+PRICE LIST
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+HAAS SIX PACK
+HAAS SIX PACK
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Options
+Main Menu
+Spindles
+Spindles
+Spindles
+View All
+Spindles
+Tool Changers
+Tool Changers
+Tool Changers
+View All
+Tool Changers
+4th- | 5th-Axis
+4th- | 5th-Axis
+4th- | 5th-Axis
+View All
+4th- | 5th-Axis
+Turrets & Live Tooling
+Turrets & Live Tooling
+Turrets & Live Tooling
+View All
+Turrets & Live Tooling
+Probing
+Probing
+Probing
+View All
+Probing
+Chip & Coolant Management
+Chip & Coolant Management
+Chip & Coolant Management
+View All
+Chip & Coolant Management
+The Haas Control
+The Haas Control
+The Haas Control
+View All
+The Haas Control
+Product Options
+Product Options
+Product Options
+View All
+Product Options
+Tooling & Fixturing
+Tooling & Fixturing
+Tooling & Fixturing
+View All
+Tooling & Fixturing
+Workholding
+Workholding
+Workholding
+View All
+Workholding
+5-Axis Solutions
+5-Axis Solutions
+5-Axis Solutions
+View All
+5-Axis Solutions
+5 Easy Steps to 5-Axis
+QUICK LINKS
+Special Series 
+Special Series 
+HAAS CAREERS
+HAAS CAREERS
+BUILD & PRICE
+BUILD & PRICE
+PRICE LIST
+PRICE LIST
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+HAAS SIX PACK
+HAAS SIX PACK
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Why Haas
+Main Menu
+Discover the Haas Difference
+Why Haas
+MyHaas
+Education Community
+Industry 4.0
+Haas Certification
+Customer Testimonials
+Service
+Main Menu
+Welcome to Haas Service
+SERVICE HOME
+Operator’s Manuals
+How-To Procedures
+Troubleshooting Guides
+Preventive Maintenance
+Haas Parts
+Haas Tooling
+Videos
+Videos
+Main Menu
+Main Menu
+View All
+View All
+View All
+View All
+VF-2SS
+View All
+VF-2SSYT + Pallet Pool
+View All
+View All
+Haas Tooling
+View All
+View All
+05-0258
+08-1760
+08-1760
+08-1761
+View All
+View All
+Mill Workholding
+View All
+Haas Tooling
+Haas Tooling
+Haas Tooling
+View All
+Haas Tooling
+QUICK LINKS
+Special Series 
+Special Series 
+HAAS CAREERS
+HAAS CAREERS
+BUILD & PRICE
+BUILD & PRICE
+PRICE LIST
+PRICE LIST
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+HAAS SIX PACK
+HAAS SIX PACK
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Haas Tooling
+Main Menu
+Inventory Sale
+Inventory Sale
+Mill Toolholding
+Mill Workholding
+Tombstones
+Manual Chucks For Milling
+Mill Tooling
+Lathe Tooling
+Lathe Toolholding
+Lathe Workholding
+ER Collets & Chucks
+Holemaking
+Threading
+Broaching
+Tool Presetter & Heat Shrinkers
+Tooling Accessories
+Deburring & Abrasives
+Package Kits
+Apparel & Accessories
+Tool Storage
+Measuring & Inspection
+Winner's Circle
+Winner's Circle
+Haas Tooling
+All Sale Items
+All Sale Items
+Shop All
+ER Collets & Chucks
+Holemaking
+Threading
+Broaching
+Manual Chucks For Milling
+Tool Storage
+Tooling Accessories
+Measuring & Inspection
+Shrink Fit Holders
+End Mill Holders
+Shell Mill Holders
+Drill Chucks
+Milling Chucks & Collets
+ER Collet Chucks
+Pull Studs
+Milling Inserts
+Chamfer Mills & Inserts
+Ball End Mills
+End Mills
+Indexable End Mill Bodies
+Shell Mill Bodies
+Chamfer End Mills
+Roughing End Mills
+Indexable Ball End Mills & Inserts
+Dovetail Cutters
+Indexable Dovetail Cutters
+Burrs
+Keyseat Cutters
+Corner Rounding End Mills
+Adapter Plates
+Fixed Jaw Vises
+Self-Centering Vises
+Reduction Sleeves
+Cut-Off Tooling
+Threading Inserts
+Threading Toolholders
+Small ID Grooving & Threading Tools
+Grooving Tools
+Turning Inserts
+Boring Bars
+Cermet Turning Inserts
+OD Toolholders
+CBN Turning Inserts
+ Haas Notch Groove & Thread Inserts
+Haas Notch Groove & Thread Toolholders
+Live Centers
+Lathe Collet Chucks
+Quick-Change Collets
+5C Collets
+Lathe Boring Rings
+Lathe Jaws
+Mill Toolholding Kits
+Shrink Fit Machines
+Tool Presetting Machines
+Inventory Sale
+Inventory Sale
+Shop All
+Mill Toolholding
+Mill Workholding
+Mill Tooling
+Lathe Tooling
+Lathe Toolholding
+Lathe Workholding
+ER Collets & Chucks
+Holemaking
+Threading
+Broaching
+Tool Presetter & Heat Shrinkers
+Tooling Accessories
+Deburring & Abrasives
+Package Kits
+Tool Storage
+Measuring & Inspection
+Mill Toolholding
+Mill Toolholding
+Shop All
+End Mill Holders
+Shell Mill Holders
+Shrink Fit Holders
+ER Collet Chucks
+Milling Chucks & Collets
+Drill Chucks
+Pull Studs
+Mill Toolholding Kits
+Hydraulic Milling Chucks & Collets
+Mill Workholding
+Mill Workholding
+Shop All
+Fixed Jaw Vises
+Self-Centering Vises
+Adapter Plates
+Mill Vise Jaws
+Workholding Accessories
+Vise Kits
+Vise Parallels
+Rotary Vise Kits
+Fixture Clamps
+Automated Workholding Kits
+Toolmakers Vise
+Clamp Force Gauges
+Tombstones
+Tombstones
+Shop All
+Tombstones
+Manual Chucks For Milling
+Manual Chucks For Milling
+Shop All
+5C Indexer Chucks
+3-Jaw Chucks & Mounts for Mills
+Mill Tooling
+Mill Tooling
+Shop All
+Shell Mill Bodies
+Milling Inserts
+End Mills
+Chamfer Mills & Inserts
+Indexable End Mill Bodies
+Ball End Mills
+Chamfer End Mills
+Roughing End Mills
+Indexable Ball End Mills & Inserts
+Shell Mill Kits
+Chamfer Mill Kits
+Indexable End Mill Kits
+Dovetail Cutters
+Indexable Dovetail Cutters
+Engraving End Mills
+Burrs
+Keyseat Cutters
+Corner Rounding End Mills
+Lathe Tooling
+Lathe Tooling
+Shop All
+Cut-Off Tooling
+Cut-Off Tooling Kits
+Turning Inserts
+Grooving Tools
+Small ID Grooving & Threading Tools
+Threading Inserts
+Threading Toolholders
+Boring Bars
+OD Toolholders
+Cermet Turning Inserts
+CBN Turning Inserts
+ Haas Notch Groove & Thread Inserts
+Haas Notch Groove & Thread Toolholders
+Lathe Toolholding
+Lathe Toolholding
+Shop All
+TL & CL Toolholding
+BOT Toolholding
+BMT Toolholding
+Live Toolholding
+Reduction Sleeves
+VDI Toolholding
+Lathe Workholding
+Lathe Workholding
+Shop All
+Live Centers
+Spindle Liners
+Quick-Change Collets
+Lathe Collet Chucks
+5C Collets
+5C Collet Sets
+Lathe Boring Rings
+Lathe Jaws
+ER Collets & Chucks
+ER Collets & Chucks
+Shop All
+ER Collets
+ER Sealed Collets
+ER Tap Collets
+ER Collet Sets & Accessories
+ER Collet Chucks
+Straight Shank ER Collet Chucks
+Straight Shank Keyless Drill Chucks
+Holemaking
+Holemaking
+Shop All
+Carbide Drills
+Indexable Drill Bodies
+Indexable Drill Inserts
+Modular Drill Bodies
+Modular Drill Heads
+Cobalt Drills & Sets
+Center Drills
+Reamers
+Indexable Drilling Kits
+Spot Drills
+Spade Drill Bodies
+Spade Drill Inserts
+Countersinks
+Threading
+Threading
+Shop All
+Taps
+Threading Inserts
+Threading Toolholders
+Thread Mills
+Pipe Taps
+Drill Tap Kits
+Broaching
+Broaching
+Shop All
+Broaching Toolholders
+Broaching Inserts
+Tool Presetter & Heat Shrinkers
+Tool Presetter & Heat Shrinkers
+Shop All
+Tool Presetting Machines
+Shrink Fit Machines
+Tooling Accessories
+Tooling Accessories
+Shop All
+Spindle & Toolholder Taper Cleaners
+Haas Shop Lift
+Toolholder Fixtures
+CNC Clearing Fans
+Spare Parts
+Deburring & Abrasives
+Deburring & Abrasives
+Shop All
+Abrasive Pads
+Deburr Tools
+Deburr Wheels
+Package Kits
+Package Kits
+Shop All
+Chip Clearing Fan Kits
+Cutting Tool Kits
+Indexable End Mill Kits
+Cut-Off Tooling Kits
+Drill Tap Kits
+Indexable Drilling Kits
+Shell Mill Kits
+Chamfer Mill Kits
+Mill Toolholding Kits
+Lathe Tooling Kits
+Workholding Kits
+Rotary Vise Kits
+Vise Kits
+3-Jaw Chuck Kits for Mills
+Tombstone Kits
+Reduction Sleeve Kits
+Automated Workholding Kits
+Measuring & Inspection Kits
+Tool Storage
+Tool Storage
+Shop All
+Tool Carts
+Measuring & Inspection
+Measuring & Inspection
+Shop All
+Probe Kits & Accessories
+Edge & Center Finders
+Comparative Measuring Gauges
+Height Gauges
+Calipers
+Plug & Ring Gauges
+Gauge Blocks & Accessories
+Pin Gauges & Accessories
+Drop Indicators
+Dial Test Indicators
+Bore Gauges
+Indicator Accessories
+V Blocks
+Setup Blocks
+Depth Measuring
+Micrometers
+Micrometer Accessories
+Measuring & Inspection Kits
+Machine Maintenance
+Machine Maintenance
+Shop All
+Test Bars
+Levels
+Refractometers
+Boring Systems
+Boring Systems
+Shop All
+Boring Heads & Cartridges
+Boring Holders & Extensions
+Apparel & Accessories
+Apparel & Accessories
+Shop All
+Accessories
+Apparel
+Winner's Circle
+Winner's Circle
+Shop All
+WINNERS_CIRCLE-1Y
+Winner's Circle
+Winner's Circle
+Shop All
+WC-1Y-EU
+HAAS TOOLING QUICK LINKS
+NEW PRODUCTS 
+NEW PRODUCTS 
+NEW PRODUCTS 
+NEW PRODUCTS 
+MOST POPULAR 
+MOST POPULAR 
+TOOLING PROMOS
+TOOLING PROMOS
+FINANCING & OPEN TERMS
+FINANCING & OPEN TERMS
+PAY BY INVOICE
+PAY BY INVOICE
+FAQs 
+FAQs 
+KITS CREATED FOR YOU
+KITS CREATED FOR YOU
+Haas Service Parts
+Main Menu
+Automatic Pallet Changer
+Lathe Turret
+Tool Changer
+Chip Management
+Coolant
+Counterbalance
+Electrical Cabinet
+Enclosure
+Hydraulics
+Lubrication
+Maintenance
+Pendant
+Probing
+Rotary
+Spindle
+Tailstock
+Haas Service Parts
+Automatic Pallet Changer
+Automatic Pallet Changer
+Shop All
+HMC - Automatic Pallet Changer
+VMC - Automatic Pallet Changer
+Lathe Turret
+Lathe Turret
+Shop All
+Lathe - Turret
+Live Tooling
+Tool Changer
+Tool Changer
+Shop All
+Side Mount
+Umbrella
+Chip Management
+Chip Management
+Shop All
+Multi Auger
+Single Auger
+Coolant
+Coolant
+Shop All
+Auxiliary Filter
+HPC-300 (Lathe)
+HPC-1000 (Lathe)
+Oil Skimmer
+Standard Coolant
+TSC-300 (Mill)
+TSC-1000 (Mill)
+Coolant Refill
+Loc-Line
+Counterbalance
+Counterbalance
+Shop All
+Charge & Discharge Hose
+Electrical Cabinet
+Electrical Cabinet
+Shop All
+Fans
+Filters
+Upgrade Kits
+Enclosure
+Enclosure
+Shop All
+Accessories
+Air Nozzle
+Decals
+Door Bumpers
+Lighting
+Windows, Gaskets, & Weather Strip
+Chip & Coolant Management
+Hydraulics
+Hydraulics
+Shop All
+Filters
+Gauges
+Heat Exchanger
+Hoses
+Lubrication
+Lubrication
+Shop All
+Bijur Mechanical Lubrication
+Minimum Lubrication
+Maintenance
+Maintenance
+Shop All
+Grease, Oil, & Sealants
+Pendant
+Pendant
+Shop All
+Floppy Disk & USB
+Keypad
+Keys
+Lens
+Gaskets & Seals
+Probing
+Probing
+Shop All
+Mill Probing
+Lathe Tool Presetter
+Rotary
+Rotary
+Shop All
+Rotary Gaskets & Seals
+Spindles
+Spindles
+Shop All
+Couplings
+Gaskets & Seals
+Spindle Motor Drive
+Gearbox Drive
+Tool Release Piston
+Tailstock
+Tailstock
+Shop All
+Handles
+Contact Us
+×
+Search Results
+Web Pages
+Images
+<
+1
+>
+MyHaas
+Welcome,
+! 
+Haas Tooling
+Guest Order History
+MyHaas/HaasConnect
+Sign In
+Register
+Haas Tooling
+My Account
+Order History
+Return History
+MyHaas/HaasConnect
+Sign Out
+Welcome, 
+My Machines
+Latest Activity
+My Quotes
+My Account
+My Users
+Sign Out
+Find Your Distributor
+Select Language
+English
+Deutsch
+Español - España
+Español
+Français
+Italiano
+Português
+Český
+Dansk
+Nederlands
+Magyar
+Polski
+Svenska
+Постсоветский
+Türkçe
+中文
+Suomi
+Norsk
+الإنجليزية
+български
+Hrvatski
+Ελληνικά
+Română
+Slovenský
+Slovenščina
+한국어
+日本語
+Search
+×
+Search Results
+Web Pages
+Images
+<
+1
+>
+H-5AX Spindle Head - Troubleshooting Guide
+Service Home
+H-5AX Spindle Head - Troubleshooting Guide
+Recently Updated
+Last updated: 09/08/2023
+H-5AX Spindle Head
+ - Troubleshooting Guide
+H-5AX Spindle Head - Troubleshooting Guide
+- Jump to Cause -
+1. 
+Introduction 
+2. 
+Symptoms Table 
+3. 
+Brake Manifold 
+(1 step)
+4. 
+Motor Wiring 
+(1 step)
+5. 
+H-5AX Sensor Wiring 
+(1 step)
+6. 
+ Coolant Tank Chiller 
+(2 steps)
+7. 
+Encoder Connection 
+(3 steps)
+8. 
+H-5AX Spindle Chiller Fluid 
+9. 
+ Spindle Air Regulator 
+10. 
+Setting the Tool Change Offset 
+(1 step)
+11. 
+Setting Backlash Compensation 
+(8 steps)
+Back to Top
+Introduction
+ Important: Download and fillout the Spindle Inspection Report Checklist below before replacing any parts.
+ Warning: The machine should be stopped and powered off immediately is signs of coolant or chiller fluid is seen leaking from between the spindle and spindle mount plate.
+ Warning: Breaking the DON'T REMOVE seal on the spindle without contacting Haas Service will VOID the warranty. Contact Haas Service before proceeding with any adjust
+ H-5AX Service Request Form 
+This page will assist you in troubleshooting the H-5AX Spindle Head found on the VR series machines and the GM-2-5AX machine.
+For more information on geometry and head alignment please refer to the following procedures for their respective machines:
+Geometry Guide - VR Series
+GM-2-5AX Head Alignment Procedure
+ NOTE: 
+Haas is requiring that the serrated/small steel washers be replaced with hardened thick washers. Order part number
+ 93-3769 HSD C-AXIS MOUNTING HARDWARE SVC KIT 
+for the proper hardened washers and longer bolts
+. 
+Symptoms Table
+Symptom
+Probable Cause
+Solution
+Alarm 130 
+Tool Unclamp
+ Tool Holder is not properly seated in the taper
+Verify double arm alignment to the spindle, refer to 
+Side-Mount Tool Changer - HSK - Double Arm - Replacement - NGC
+ Head Alignment
+Refer to the following procedures for their respective machines: 
+Geometry Guide - VR Series
+ / 
+GM-2-5AX Head Alignment - Procedure
+ A63 Tool Holder orientation
+Refer to the HSK tool loading section in the
+ HSK - Spindle - Troubleshooting Guide
+Air Pressure
+Verify that the TRP pressure is set to 
+145 PSI
+ in the lube panel cabinet. Verify that the Spindle Purge pressure is set to 
+45 PSI
+.
+Verify customer’s air lines are not contaminated (
+moisture
+) 
+Draw Bar push out / switch adjustment
+Verify the 
+clamping cone push out
+ before adjusting TRP sensors. See H-5AX Sensor Wiring section for images
+Alarm 134 
+Tool Unclamp Fualt
+Spindle Air Solenoid has the .040 ORIFICE installed in the wrong location
+Reconfigure the Air Solenoid fitting, Move the restrictor orifice from before 90° fitting to before the Tee Brass fitting. (see 
+Spindle Air Solenoid
+)
+Note: 
+No parts required for corrective action.
+HSG-A 02/16/2023
+Tool Sticking in the Taper
+Incorrect push out
+Air escaping from the Air Regulator Knob
+Spindle was replaced and spindle load is very high. Commanded RPM are incorrect as well.
+Motor may have been wired incorrectly during replacement. 
+Check the motor configuration to see if the motor is wired correctly. See 
+Motor Wiring
+ section for more details.
+If the spindle was not replaced and the machine is experiencing this issue please follow the 
+VECTOR DRIVE TROUBLESHOOTING GUIDE
+ for further troubleshooting.
+Spindle noise is present while running the spindle at lower RPM's. 
+Damaged cables or missing ferrite filters can cause this issue. 
+Troubleshoot the vector drive using the 
+VECTOR DRIVE TROUBLESHOOTING GUIDE
+, verify all feedback cables at the maincon have ferrite filters, verify cables in the spindle are in good condition (see Connection port section for more details, verify the spindle power cable is tight, verify all connections to the signal distribution junction are tight. See 
+Connection Locations
+ section for reference. 
+If the issue persists contact Haas Service for further instructions. 
+Alarm 4.9003 Insuficient Spindle Coolant Chiller Flow 
+occurs
+Flow sensor on the spindle chiller may need to be adjusted to read correct flow. 
+Adjust the flow sensor using the slotted holes on the sensor, move the sensor towards the motor side until the bit changes. The slots on the sensor might not be enough adjustment, if so open the slots further to get the adjustment needed. Contact Haas Service if this issue continues to persist. 
+Air may be introduced into the system via chiller lines not being fully plugged into the manifold or seals that are broken and sucking in air. 
+Replace any broken seals and make sure the lines are fully plugged into the manifold. Prime the lines and make sure the no air bubbles are present in the lines. 
+ Coolant tank chiller issues with less than normal pressure or an over-heated pump
+The correct placement of the 3” return tube. 
+A 6’’ tube (58-3728) being used rather than the 3” tube (58-0742). The 6” tube was bottoming out and cause a major flow restriction. See 
+Coolant Tank Chiller 
+section for images
+Alarm 4.103 
+ S (SPINDLE) AXIS SERVO ERROR TOO LARGE
+Control showing 1000 rpms on the spindle speed with the spindle stopped.
+Verify the spindle encoder or enocder cable is not shorted to ground. See
+ Encoder Connection
+ section for more details.
+Alarm 4.9932 
+S (SPINDLE) SPINDLE STALLED 
+Alarm 4.9922 
+S (SPINDLE) MOTION CHANNEL FAULT DETECTED 
+Alarm 4.182 
+ S (SPINDLE) AXIS ENCODER CABLE FAULT
+Alarm 4.224 
+ S (SPINDLE) AXIS TRANSTION FAULT
+Alarm 7.217 
+C (5th AXIS) AXIS PHASING ERROR
+Alarm 7.9959
+ C (5th AXIS) SERIAL ENCODER DISCONNECT
+Alarm 6.103 
+B (4TH Axis) AXIS SERVO ERROR TOO LARGE
+Brake does not disengage before commanding a movement resulting in high loads on the axis.
+Brake air hoses are not connected properly.
+Check the brake manifold and make sure the air lines are routed to the correct port. See
+ Brake Manifold
+ section for more details. 
+Verify parameter 76 Low Air Pressure Delay has not been changed (30.000 sec) and verify proper air to machine. 
+Alarm 7.103 
+C (5TH Axis) AXIS SERVO ERROR TOO LARGE
+Concentricity of the head is not staying within specification after being established during alignment. 
+The incorrect washer is installed on the C-axis mounting surface.
+{icon:fa fa-file-text} NOTE: 
+Haas is requiring that the serrated/small steel washers be replaced with hardened thick washers. Order part number
+ 93-3769 HSD C-AXIS MOUNTING HARDWARE SVC KIT 
+for the proper hardened washers and longer bolts
+. 
+Brake Manifold
+1
+To access the brake air manifold remove the spindle head sheet metal [1]. THe air manifold can be found mounted on the rear sheet metal. 
+The air brake manifold is the top manifold [2] not mounted on the stand off's.
+Follow the bottom right image for the correct hose orientation. The B-axis brake solenoid hoses [3] will connect to the A-AXIS RELEASE/LOCK ports and the C-axis brake solenoid hoses will connect to the C-AXIS RELEASE/LOCK. ports.
+Motor Wiring 
+1
+Check the motor wirings and make sure they are wired in the delta configuration [1] shown in the image. 
+The barrel connector going to the vector drive [2] is also provided to ensure the cable is pinned correctly.
+H-5AX Sensor Wiring 
+1
+Verify Spindle Clamping Collet push out is correct and all TRP sensor are properly adjusted.
+Check the barrel connectors going to the T-Signal Connector are tight and the connector at P2 on the 5AX Interface PCB is seated correctly.
+(1)
+ TRP Sensors
+(2)
+ T Signal Connector
+(3)
+ B Axis Sensor Cable
+(4)
+ 5AX Interface PCB
+Identifying the sensors for ES779 and ES789
+S1+S4
+ - Clamping cone locked in the correct position (DRAWBAR CLOSED)
+S2 
+ - Clamping cone open tool-holder ejected, Draw Bar forward (DRAWBAR OPEN) 
+S3 - Not Used
+S5**
+ - TRP backward at upper end stop (TRP PISTION RETRACTED) in series with S4 (DRAWBAR CLOSED)
+** Present in certain versions only.
+ Coolant Tank Chiller 
+1
+The 6” return tube is bottoming out and cause a major flow restriction.
+2
+Corrective Action: Install a 3" return tube (58-0742)
+Encoder Connection
+1
+Test to see if the encoder is shorted to ground.
+Using a multimeter, check continuity between the barrel connector case to spindle nose and pins to spindle nose.
+Results should be continuity of 0.2 ohms at the barrel connector case to the spindle nose and all pins open to the spindle nose.
+2
+Test to see if the encoder is shorted to ground.
+If results show continuity between the pins and spindle nose, open the Encoder inspection window on the side of the ES779 or ES789 spindle body and disconnect the encoder terminals. 
+Recheck for continuity between the pins of the barrel connector to the encoder connectors. 
+Connector 3 pin 3 should be the only lead Closed to the Barrel Case showing 0.2 ohms and pin to pin should not be open.
+3
+Testing encoder
+Using a multi meter, verify the pin are open to the Encoder Body. Connector 3 pin 3 should be the only pin closed to the encoder body showing 0.2 ohms. If any of the other pins show continuity, the encoder is shorted internally and will need to be replaced.
+Note: Some encoder have a separate ground cable that is secured to the encoder 
+ For encoder replacement procedure refer to AD0558 
+GM / VR H-5AX Spindle Shaft - Replacement Guide
+H-5AX Spindle Chiller Fluid
+Spindle Chiller tank uses a 50/50 mix of DOWFROST HD INHIBITED PROPYLENE GLYCOL
+ (Not Sold) 
+and deionized water. The tank capacity is 5 gallons. Any over the counter Propylene Glycol product can be used, but will require to flush out the system prior to fillling. 
+IMPORTANT: 
+Mix the glycol and deionized water outside of the chiller tank before adding to the mixture already in the tank.
+ Warning:
+ Don’t mix with Ethylene-glycol product. If Ethylene-glycol is the only substitute to be found then the system must flushed prior to filling.
+ Warning: 
+Do not mix the glycol product with anything other than deionized water.
+ Spindle Air Regulator
+Reconfigure the Air Solenoid fitting, Move the restrictor orifice from before 90° fitting to before the Tee Brass fitting. 
+Note: 
+No parts required for corrective action.
+Setting the Tool Change Offset 
+1
+Reset the grid offset, by zeroing parameters 
+6.140 C-AXIS GRID OFFSET
+ and 
+7.140 C-AXIS GRID OFFSET
+ and then zero returning each axis and pressing the axis B/C and pressing 
+[F4]
+.
+Set the Tool change offset for the B-Axis by sweeping the side of the test bar so it reads zero to zero over the entire length of the test bar [B].
+Set the Tool change offset for the C-Axis by sweeping the front side of the test bar so it reads zero to zero over the entire length of the test bar [C].
+ NOTE: 
+This is 
+NTE 0.0005 in (0.0127 mm),
+ but it is recommended to get this value as close to zero as possible. If the machine is experiencing issues getting it closer to zero, complete the backlash compensation section and return to set the tool change offset.
+Setting Backlash Compensation
+1
+B-Axis Backlash
+After resetting the tool change offset rezero the B and C-Axis set up the test bar [1] as shown in the image and place an indicator at the high spot 20 inches away from the test bar [2]. 
+NOTE: 
+If the test bar is not larger than 20 inches pleace it approximately an inch away from the end of the test bar.
+2
+B-Axis Backlash
+With the indicator set up and B at 0 degrees and C at zero degrees [1] press 
+[POSITION]
+ and navigate to the operators page and set the Y-Axis and B-Axis position to zero.
+Move the Y-axis enough to clear the indicator [2]
+Rotate the B-Axis -10 degrees and return back to B zero position [3].
+Move the Y-Axis back to the zero position on the operators page. 
+Record the error value on the indicator.
+3
+B-Axis Backlash
+With the indicator set up in the same starting position verify that the Y-Axis and B-Axis position are zero on the operators page.
+Move the Y-axis enough to clear the indicator [2]
+Rotate the B-Axis +10 degrees and return back to B zero position [3].
+Move the Y-Axis back to the zero position on the operators page. 
+Record the error value on the indicator.
+Add both error values from this step and the previous and input 
+double 
+the amount of error into 
+Parameter 6.042 B-AXIS BACKLASH COMPENSATION. 
+(Example total backlash observed : 0.004 inches, Parameter 6.042 value: 0.008 deg)
+This value is 
+NTE 0.0003 in (0.0076 mm).
+4
+If the backlash value switched direction then the compensation was set too high. 
+For example before the compensation value was set the negative motion value read [A] 
+red
+, and the positive motion the value read [B] 
+blue
+.
+After the compensation value was set the negative motion value read [A] 
+blue
+, and the positive motion the value read [B] 
+red
+.
+The B & C-Axis backlash is 
+NTE 0.0003 in (0.0076 mm)
+5
+C-Axis Backlash
+After resetting the tool change offset rezero the B and C-Axis set up the test bar [1] as shown in the image and place an indicator at the high spot 20 inches away from the test bar [2]. 
+NOTE: 
+If the test bar is not larger than 20 inches pleace it approximately an inch away from the end of the test bar.
+6
+C-Axis Backlash
+With the indicator set up and B at -90 degrees and C at zero degrees [1] press 
+[POSITION]
+ and navigate to the operators page and set the Z-Axis and C-Axis position to zero.
+Raise the Z-axis enough to clear the indicator [2]
+Rotate the C-Axis -10 degrees and return back to C zero position [3].
+Lower the Z-Axis back to the zero position on the operators page. 
+Record the error value on the indicator.
+7
+C-Axis Backlash
+With the indicator set up in the same starting position verify that the Z-Axis and C-Axis position are zero on the operators page.
+Raise the Z-axis enough to clear the indicator [2]
+Rotate the C-Axis +10 degrees and return back to C zero position [3].
+Lower the Z-Axis back to the zero position on the operators page. 
+Record the error value on the indicator.
+Add both error values from this step and the previous and input 
+double 
+the amount of error into 
+Parameter 7.042 C-AXIS BACKLASH COMPENSATION. 
+(Example total backlash observed : 0.004 inches, Parameter 7.042 value: 0.008 deg)
+This value is 
+NTE 0.0003 in (0.0076 mm).
+8
+If the backlash value switched direction then the compensation was set too high. 
+For example before the compensation value was set the negative motion value read [A] 
+red
+, and the positive motion the value read [B] 
+blue
+.
+After the compensation value was set the negative motion value read [A] 
+blue
+, and the positive motion the value read [B] 
+red
+.
+The B & C-Axis backlash is 
+NTE 0.0003 in (0.0076 mm)
+Cookies
+To make this site work properly, we sometimes place small data files called cookies on your device. Most big websites do this too.
+What are cookies?
+A cookie is a small text file that a website saves on your computer or mobile device when you visit the site. It enables the website to remember your actions and preferences (such as login, language, font size and other display preferences) over a period of time, so you don’t have to keep re-entering them whenever you come back to the site or browse from one page to another.
+View Privacy and Cookie Notice
+I accept cookies
+I refuse cookies
+FIND DISTRIBUTOR
+ Feedback 
+美元价格不包括关税、报关费用、保险费、增值税及运费。
+USD prices DO NOT include customs duty, customs fees, insurance, VAT, or freight.
+人民币价格包含关税、报关费用、货运保险和增值税, 但不包括运费。
+CNY prices include customs duty, customs fees, insurance, and VAT. DOES NOT include freight.
+Haas Delivered Price
+This price includes shipping cost, export and import duties, insurance, and any other expenses incurred during shipping to a location in France agreed with you as a buyer. No other mandatory costs can be added to the delivery of a Haas CNC Product.
+Click for details
+KEEP UP WITH THE LATEST HAAS TIPS AND TECHNOLOGY...
+Sign up now! 
+HAAS TOOLING ACCEPTS THE FOLLOWING:
+Service & Support
+ Owners 
+ Request Service 
+ Operator Manuals 
+ Haas Parts 
+ Rotary Repair Request 
+ Pre-Install Guides 
+Shopping Tools
+ Build & Price a New Haas 
+ Available Inventory 
+ The Haas Price List 
+ CNCA Financing 
+About Haas
+ Careers 
+ Certifications & Safety 
+ Contact Us 
+ History 
+ Terms & Conditions 
+ Haas Tooling Terms & Conditions 
+ Privacy 
+ Warranty 
+Haas Community
+ Haas Certification Program 
+ Haas Motorsports 
+ Gene Haas Foundation 
+ Haas Technical Education Community 
+ Events 
+Join the Conversation
+ Facebook 
+ Twitter 
+ Flickr 
+ YouTube 
+ LinkedIn 
+ Instagram 
+ TikTok 
+ © 2023 
+Haas Automation, Inc – CNC Machine Tools
+ This site is protected by reCAPTCHA and the Google 
+Privacy Policy
+ and 
+Terms of Service
+ apply. 
+2800 Sturgis Rd., Oxnard, CA 93030 / Toll Free: 800-331-6746
+ Phone: 805-278-1800 / Fax: 805-278-2255
+ {{ if (loading) { }} {{=loadingSpinner}} {{ } else { }} 
+×
+ {{=content}} 
+ {{ } }} 
+ {{ if (loading) { }} {{=loadingSpinner}} {{ } else { }} 
+×
+ {{=content}} 
+ {{ } }} 
+Cookie Notice
+We use cookies to improve your user experience.
+Our Cookie Notice
+describes which cookies we use, why we use them, and how you can find more information about them. Please confirm you consent to us using analytics cookies. If you do not consent, you may still use our website with a reduced user experience.
+Accept All Cookies
+Manage Settings
+Cookie Notice
+We use cookies to improve your user experience.
+Our Cookie Notice
+describes which cookies we use, why we use them, and how you can find more information about them. Please confirm you consent to us using analytics cookies. If you do not consent, you may still use our website with a reduced user experience.
+Functional Cookies
+Analytics Cookies
+Save and Close

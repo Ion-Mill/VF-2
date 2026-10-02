@@ -1,0 +1,600 @@
+Conveyor System - Troubleshooting Guide - TG0053
+My Haas
+Welcome,
+! 
+Haas Tooling
+MyHaas/HaasConnect
+Sign In
+Register
+Haas Tooling
+MyHaas/HaasConnect
+Sign Out
+Welcome, 
+My Machines
+Latest Activity
+My Quotes
+My Account
+My Users
+Sign Out
+Find Your Distributor
+Select Language
+English
+Deutsch
+Español
+Français
+Italiano
+Português
+Český
+Dansk
+Nederlands
+Magyar
+Polski
+Svenska
+Türkçe
+中文
+Suomi
+Norsk
+الإنجليزية
+български
+Hrvatski
+Ελληνικά
+Română
+Slovenský
+Slovenščina
+한국어
+日本語
+Українська
+machines
+Main Menu
+Vertical Mills 
+Vertical Mills 
+Vertical Mills 
+View All
+Vertical Mills 
+VF Series
+Universal Machines
+VR Series
+VP-5 Prismatic
+Pallet-Changing VMCs
+Mini Mills
+Mold Machines
+High-Speed Drill Centers
+Drill/Tap/ Mill Series
+Toolroom Mills
+Compact Mills
+Gantry Series
+SR Sheet Routers
+Extra-Large VMC
+Double-Column Mills
+Pocket Mill
+Multi-Axis Solutions
+Multi-Axis Solutions
+Multi-Axis Solutions
+View All
+Multi-Axis Solutions
+Y-Axis Lathes
+5-Axis Mills
+Lathes
+Lathes
+Lathes
+View All
+Lathes
+ST Series
+Dual-Spindle
+Box Way Series
+Toolroom Lathes
+Chucker Lathe
+Haas Bar Feeder V2
+Haas Bar Feeder 12
+Horizontal Mills
+Horizontal Mills
+Horizontal Mills
+View All
+Horizontal Mills
+50-Taper
+40-Taper
+Rotaries & Indexers
+Rotaries & Indexers
+Rotaries & Indexers
+View All
+Rotaries & Indexers
+Rotary Tables
+Indexers
+5-Axis Rotaries
+Extra-Large Rotaries
+Special Series
+Special Series
+Special Series
+View All
+Special Series
+EU_Series_Redirect
+Automation Systems
+Automation Systems
+Automation Systems
+View All
+Automation Systems
+Mill Automation
+Lathe Automation
+Automatic Parts Loaders
+Automation Models
+Desktop Machines
+Desktop Machines
+Desktop Machines
+View All
+Desktop Machines
+Desktop Mill
+Desktop Lathe
+Control Simulator, Standard
+Control Simulator, Premium
+Shop Equipment
+Shop Equipment
+Shop Equipment
+View All
+Shop Equipment
+Bandsaw
+Vertical Saw
+Miter Saw
+Knee Mill
+Manual Lathe
+Laser Cutting Machines
+Pocket Machines
+Pocket Machines
+Pocket Machines
+View All
+Pocket Machines
+Pocket Mill
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Options
+Main Menu
+Value Option Packages
+Value Option Packages
+Value Option Packages
+View All
+Value Option Packages
+Spindles
+Spindles
+Spindles
+View All
+Spindles
+Tool Changers
+Tool Changers
+Tool Changers
+View All
+Tool Changers
+4th- | 5th-Axis
+4th- | 5th-Axis
+4th- | 5th-Axis
+View All
+4th- | 5th-Axis
+Turrets & Live Tooling
+Turrets & Live Tooling
+Turrets & Live Tooling
+View All
+Turrets & Live Tooling
+Probing
+Probing
+Probing
+View All
+Probing
+Chip & Coolant Management
+Chip & Coolant Management
+Chip & Coolant Management
+View All
+Chip & Coolant Management
+The Haas Control
+The Haas Control
+The Haas Control
+View All
+The Haas Control
+Product Options
+Product Options
+Product Options
+View All
+Product Options
+Tooling & Fixturing
+Tooling & Fixturing
+Tooling & Fixturing
+View All
+Tooling & Fixturing
+Workholding
+Workholding
+Workholding
+View All
+Workholding
+5-Axis Solutions
+5-Axis Solutions
+5-Axis Solutions
+View All
+5-Axis Solutions
+5 Easy Steps to 5-Axis
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Why Haas
+Main Menu
+Discover the Haas Difference
+Why Haas
+MyHaas
+Education Community
+Industry 4.0
+Haas Certification
+Customer Testimonials
+Service
+Main Menu
+Welcome to Haas Service
+SERVICE HOME
+Operator’s Manuals
+How-To Procedures
+Troubleshooting Guides
+Preventive Maintenance
+Haas Parts
+Haas Tooling
+Videos
+Videos
+Main Menu
+Main Menu
+View All
+View All
+View All
+View All
+HTEC Curriculum Support
+View All
+Haas 10 kg Cobot Package
+Cobot Kits
+DC-1 Drill Center
+View All
+View All
+contact-us-test
+4 - AUTOMATION SYSTEMS
+Carousel-V2
+expert test
+Demo_Day_Trident-test
+Link Test
+View All
+Choose Options
+View All
+View All
+View All
+View All
+View All
+calc-test
+View All
+QUICK LINKS
+Special Series 
+Special Series 
+EU SERIES
+EU SERIES
+BUILD & PRICE | PRICE LIST
+BUILD & PRICE | PRICE LIST
+In-Stock Machines
+In-Stock Machines
+WHAT’S NEW
+WHAT’S NEW
+YOUR FIRST CNC
+YOUR FIRST CNC
+SHOPPING TOOLS
+Build & Price a Haas
+Price List
+Available Inventory
+CNCA Financing
+WANT TO TALK TO SOMEONE?
+A Haas Factory Outlet (HFO) can answer your questions, and walk you through your best options.
+CONTACT YOUR DISTRIBUTOR >
+Haas Tooling
+Main Menu
+Haas Service Parts
+Main Menu
+My Haas
+Welcome,
+! 
+Haas Tooling
+MyHaas/HaasConnect
+Sign In
+Register
+Haas Tooling
+MyHaas/HaasConnect
+Sign Out
+Welcome, 
+My Machines
+Latest Activity
+My Quotes
+My Account
+My Users
+Sign Out
+Find Your Distributor
+Select Language
+English
+Deutsch
+Español
+Français
+Italiano
+Português
+Český
+Dansk
+Nederlands
+Magyar
+Polski
+Svenska
+Türkçe
+中文
+Suomi
+Norsk
+الإنجليزية
+български
+Hrvatski
+Ελληνικά
+Română
+Slovenský
+Slovenščina
+한국어
+日本語
+Українська
+×
+Search Results
+Web Pages
+Images
+<
+1
+>
+Conveyor System - Troubleshooting Guide - TG0053
+Service Home
+Conveyor System - Troubleshooting Guide - TG0053
+Your document is ready for download, please click below to download your document.
+Download Document
+Error processing this document, please try again or 
+Contact Us
+.
+Please wait while your document is being loaded.
+Conveyor System - Troubleshooting Guide - TG0053
+Jump to Section
+Back to Top
+Your document is ready for download, please click below to download your document.
+Download Document
+Error processing this document, please try again or 
+Contact Us
+.
+Please wait while your document is being loaded.
+8.9 Chip Conveyor System - Troubleshooting
+Recently Updated
+Last updated: 10/10/2025
+Conveyor System
+ - Troubleshooting Guide
+TG0053
+Note: Download and fill out the Chip Conveyor System Inspection Report Checklist below before replacing any parts.
+ Chip Conveyor System Inspection Report Checklist 
+The following service video shows how to resolve common issues with the Haas conveyor system. 
+Note:
+ This service video is for reference only and does not replace the written procedure.
+Introduction
+Conveyor
+Drive Motor
+Power Cord
+Conveyor Drive Shaft /Sprockets
+Belt
+Belt Tensioning Screws
+Exploded View
+CONVEYOR TROUGH COVER
+GASKET
+CONVEYOR TROUGH
+DOUBLE CHAIN LINK OUTER
+SINGLE CHAIN LINK OUTER
+CHAIN SPACER
+BELT PIN
+CHAIN LINK INNER
+BELT PLATE
+CONVEYOR TUNNEL INSERT
+CONVEYOR BRACKET
+HHB 5/16-18 X 1
+CONVEYOR RAMP COVER TOP
+CONVEYOR RAMP COVER SIDE
+CONVEYOR RAMP
+CONVEYOR CHUTE
+CONVEYOR TROUGH EXTENSION
+BHCS 5/16-18 X 1 SS
+Symptom Table
+NOTE:
+TO RECEIVE THE CORRECT TECHNICAL SUPPORT ON YOUR CONVEYOR, IT IS REQUIRED TO TAKE A CLEARLY VISABLE PHOTO OF THE CONVEYOR NAME PLATE AND THE MOTOR SEPCIFICATION PLATE.
+Symptom
+Possible Cause
+Corrective Action
+The conveyor does not start.
+The circuit breaker is tripped.
+Check for a short circuit in the motor or the cable. Refer to the 
+Motor Cable Inspection
+ section.
+No power from I/O PCB to the motor.
+Verify voltage at I/O PCB and the motor.
+Blown fuses (I/O-version R and earlier).
+Check the fuses on the I/O PCB.
+The conveyor motor capacitor is defective.
+Inspect motor capacitor for damage.
+For CDF Conveyor Only:
+ The 230V system does not turn ON and the red LED on the motor drive PCB is OFF. 
+The jumper on the motor drive PCB is incorrectly located or defective. 
+Make sure that the motor drive PCB has a jumper installed on P3 inbetween pin 1 and 2 (the bottom two pins). 
+There is no 12V input power. 
+Make sure that the 12V input power is connected to P2 on the motor drive PCB. 
+Conveyor is noisy or oscillates between forward and reverse.
+There is a build up of chips.
+Clear excessive chips and any obstructions.
+The conveyor belt is damaged.
+Inspect conveyor belt and repair or replace.
+The conveyor belt tension is incorrect.
+Adjust the belt tension.
+The auger is noisy or oscillates between forward and reverse. Then 
+Alarm 9906
+ CHIP CONVEYOR MALFUNCTION is generated.
+There is an excessive chip build-up or an obstruction.
+Clear all chips and obstructions from the auger trough and chip chute.
+There is no chip build-up or obstruction and machine generates
+Alarm 9906
+ CHIP CONVEYOR MALFUNCTION 
+The auger motor is bound up.
+The machine is detecting an overcurrent condition. Check the discrete input CHIP_CONVEYOR_OVERCURRENT cycles from 0 - 1 or 1 - 0 (0 means overload condition). Check the motor for burnout or binding. 
+Run the Chip Conveyor Overcurrent Data Collection, refer to the 
+Diagnostic Data Collection
+ procedure for how to run the data collection.
+The chip conveyor reverses direction with minimal or no chip build-up.
+Chip Auger, Conveyor, may start without operator action, even with doors open.
+Machine has software 100.17.000.1016
+Update software to 100.17.000.2030 or greater. This problem has been corrected such that the conveyor never restarts automatically. With a Classic Haas Control, the operator can restart the conveyor with the door open. NGC machines that have been updated after October 10th, 2018 will have strict door rules that makes this impossible. 
+M31 is restarting conveyor timers if the conveyor is already on.
+Machine has software prior to 100.17.000.2030 and the conveyor cycle keeps restarting every time a M31 is encountered.
+Update software to 100.17.000.2030 or greater. In the new software if a conveyor cycle is already running but in the off state, a M31 will NOT restart the conveyor. The conveyor will follow the cycle it is currently in.
+Alarm 9819
+ CHIP CONVEYOR SHORT CIRCUIT
+The auger motor start capacitor is at fault.
+Inspect the auger motor start capacitor for damage.
+Alarm 9848
+ CHIP CONVEYOR MOTOR DISCONNECTED
+There is no power from the I/O PCB to the motor.
+Verify the voltage at the I/O PCB and at the motor.
+CDF Conveyor runs backwards when commanded to run forward
+Motor wiring is incorrect.
+Verify the motor wiring, use the wiring diagrams in the 
+CDF Motor Wiring
+ Section for reference. 
+Motor Cable Inspection
+Corrective Action:
+Inspect the motor cable for any sign of damage. Check for burn marks at the plug. This could be caused by coolant contamination.
+Measure the Ohms the across the motor power cable leads [1] at the plug. There should be resistance leg to leg. An open reading suggests a bad motor or cable.
+Measure the Ohms on the motor power cable from each power leg to the ground leg [2] of the plug. This reading should be open.
+If cable shows a short leg to ground at the plug, disconnect the power cable at the motor and check each motor power lead to the motor chassis [3]. If reading is open, the cable is at fault. If any lead tests short, the motor is shorted.
+Voltage
+Corrective Action:
+Find the chip conveyor motor cable 140 at the I/O PCB. Press
+ [CHIP FWD]
+. Use a multimeter with needle tip probes to measure the voltage between the black and red wires on the cable.
+Have someone press and hold 
+[CHIP REV]
+. Measure the voltage between the black and white wires. When the I/O PCB operates correctly, each voltage reading is 240 VAC.
+If the voltage at the I/O PCB is correct, open the conveyor motor junction box. Use a multimeter with needle tip probes to check for voltage on the power leads at the motor.
+If there is no voltage, check the motor and the cable. If there is voltage, check the capacitor. If you verify the voltage and capacitor are correct, inspect the motor drive shaft and keyway.
+Fuses
+Corrective Action:
+Check these fuses at the bottom right corner of the I/O PCB (Fuse type: AGC 5 amp):
+Single phase motors: FU2 [1] /FU3 [2]. There should be no fuse in FU4 [3].
+3 phase motors: FU2 [1] /FU3 [2] /FU4 [3]
+A short in the motor or the cable could have blown the fuse
+Capacitor
+Corrective Action:
+Inspect the conveyor motor capacitor for damage. A damaged capacitor will usually have signs of deformation or bubbling on the capacitor casing. This could be caused by a short in the motor or in the cable.
+Open the motor junction box. Check the capacitor. Look for burn marks on the case.
+Measure the capacitor. Most multimeters can measure capacitance upon manual activation (turn to the correct units of measurement, and push the yellow button). It should be 6 or 9 microfarad as noted on the capacitor's case.
+Chips
+Corrective Action:
+Clear chips and obstructions. Make sure the conveyor settings are optimized for the chips that are produced.
+Belt Inspection
+Corrective Action:
+Inspect the conveyor belt for damage.
+Belt Tension
+Corrective Action:
+Make sure the belt tension is correct. Refer to the decals on the side of the machine. The correct belt slack for Jorgensen conveyors is 0.25" - 0.38" (6 - 10 mm). The correct belt slack for Hennig conveyors is 0.12" - 0.25" (3 - 6 mm). 
+CDF Motor Wiring
+Run the conveyor by pressing 
+[CHIP FWD] 
+if the conveyor runs backwards please check the motor wiring and verify it is wired correctly. Use the wiring diagrams below for reference. 
+Electrical Diagram
+Hennig CDF Conveyor Diagram
+Recently Viewed Items
+Clear Items
+You Have No Recently Viewed Items Yet
+ Feedback 
+Haas Delivered Price
+This price includes shipping cost, export and import duties, insurance, and any other expenses incurred during shipping to a location in France agreed with you as a buyer. No other mandatory costs can be added to the delivery of a Haas CNC Product.
+Click for details
+KEEP UP WITH THE LATEST HAAS TIPS AND TECHNOLOGY...
+Sign up now! 
+HAAS TOOLING ACCEPTS THE FOLLOWING:
+Service & Support
+Owners
+Request Service
+Operator Manuals
+Haas Parts
+Rotary Repair Request
+Pre-Install Guides
+Shopping Tools
+Build & Price a New Haas
+Available Inventory
+The Haas Price List
+CNCA Financing
+About Haas
+DNSH Statement
+Export Compliance
+Careers
+Certifications & Safety
+Contact Us
+History
+Terms & Conditions
+Haas Tooling Terms & Conditions
+Privacy
+Warranty
+Haas Community
+Haas Certification Program
+Haas Motorsports
+Gene Haas Foundation
+Haas Technical Education Community
+Events
+Join the Conversation
+Facebook
+X
+Flickr
+YouTube
+LinkedIn
+Instagram
+TikTok
+ © 2026 
+Haas Automation, Inc – CNC Machine Tools
+ This site is protected by reCAPTCHA and the Google 
+Privacy Policy
+ and 
+Terms of Service
+ apply. 
+2800 Sturgis Rd., Oxnard, CA 93030
+ Toll Free: (888) 817-4446 / Fax: 805-278-8554
+ {{ if (loading) { }} {{=loadingSpinner}} {{ } else { }} 
+×
+ {{=content}} 
+ {{ } }} 
+ {{ if (loading) { }} {{=loadingSpinner}} {{ } else { }} 
+×
+ {{=content}} 
+ {{ } }} 
