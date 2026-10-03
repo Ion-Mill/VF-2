@@ -20,30 +20,6 @@ VF/VM-Series - Service Manual
 
 ---
 
-* [1 - VF/VM - Introduction](https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---introduction.html)
-* [2 - VF/VM - Specifications](https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---specifications.html)
-* [3 - VF/VM - Installation](https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---installation.html)
-* [4 - VF/VM - Umbrella Tool Changer](https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---umbrella-tool-changer.html)
-* [5 - VF/VM - HSK - SMTC](https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---hsk---smtc.html)
-* [6 - VF/VM - 40T/50T - SMTC](https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---smtc.html)
-* [7 - VF/VM - Axis Motion](https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---axis-motion.html)
-* [8 - VF/VM - HSK - Spindle](https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---hsk---spindle.html)
-* [9 - VF/VM - 40T - Spindle](https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---40t---spindle.html)
-* [10 - VF/VM - 40T - Spindle Motor](https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---40t-spindle-motor.html)
-* [11 - VF/VM - 40T - Gearbox](https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---40t---gearbox.html)
-* [12 - VF/VM - 50T - Spindle](https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---50t---spindle.html)
-* [13 - VF/VM - 50T - Gearbox](https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---50t---gearbox.html)
-* [14 - VF/VM - Lubrication Systems](https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---lubrication-systems.html)
-* [15 - VF/VM - Electrical Control](https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---electrical-control.html)
-* [16 - VF/VM - Chip Removal and Coolant](https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---chip-removal-and-coolant.html)
-* [17 - VF/VM - Workholding](https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---workholding.html)
-* [18 - VF/VM - Maintenance](https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---maintenance.html)
-* [19 - VF/VM - Autodoor](https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---autodoor.html)
-* [20 - VF/VM - Robot and Automation](https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---robot-and-automation.html)
-* [21 - VF/VM - Enclosure](https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---enclosure.html)
-* [22 - VF/VM - CAN Bus Systems](https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---can-bus-systems.html)
-* [23 - VF/VM - Spindle C-Axis Drive](https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---spindle-c-axis-drive.html)
-
 Go To :
 
 * [10.1 40T Pin Drive Motor - Replacement](#tab_40t-pin-drive-motor---replacement_0)
