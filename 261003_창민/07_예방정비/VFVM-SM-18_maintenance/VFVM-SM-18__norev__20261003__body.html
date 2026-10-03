@@ -1,0 +1,683 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VF/VM - Maintenance - Haas Service Manual</title>
+<style>
+body{font-family:Segoe UI,Arial,sans-serif;max-width:980px;margin:24px auto;padding:0 16px;line-height:1.55;color:#1d1d1f;background:#fff}
+.provenance{font-size:12px;border:1px solid #c9ced6;background:#f4f6f8;padding:8px 12px;margin-bottom:24px}
+.provenance th{text-align:left;padding-right:12px;white-space:nowrap;vertical-align:top}
+table{border-collapse:collapse;margin:12px 0} td,th{border:1px solid #c9ced6;padding:4px 8px;vertical-align:top}
+.provenance td,.provenance th{border:none;padding:1px 8px 1px 0}
+img{max-width:100%;height:auto}
+</style></head><body>
+<div class="provenance"><strong>본문 추출본 (원본 아님)</strong> — 사실 확인은 같은 폴더의 원본 HTML과 공식 URL로 한다. 그림은 Haas 공식 주소에서 불러오므로 인터넷 연결 시에만 보인다.
+<table><tr><th>doc_id</th><td>VFVM-SM-18</td></tr><tr><th>title</th><td>VF/VM - Maintenance - Haas Service Manual</td></tr><tr><th>revision</th><td>표기 없음</td></tr><tr><th>last_updated</th><td>표기 없음</td></tr><tr><th>source_url</th><td>https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---maintenance.html</td></tr><tr><th>retrieved_at</th><td>2026-10-03T18:07:04</td></tr><tr><th>retrieved_via</th><td>direct</td></tr><tr><th>original_file</th><td>VFVM-SM-18__norev__20261003.html</td></tr><tr><th>original_sha256</th><td>7699294cf0a06352061d5de73b558896085e9f48e408f24474c0c0ec138baeb8</td></tr><tr><th>extraction</th><td>div.print-only · scripts/extract_ngc_body.py</td></tr><tr><th>license</th><td>Haas 저작물: 사이트 약관상 서면 허가 없는 사용 불가 표기. 내부 참고용 사본, 재배포 금지</td></tr></table></div>
+
+
+<div>
+<div class="hfoSubnav">
+<div id="hfo-nav-container">
+<nav data-component="HfoSubnav" data-new-flag-default-text="new" data-override-json="[]" id="hfo-nav">
+<div class="hero_subnav_inner">
+<p class="hfo-nav-title">
+                            
+                            VF/VM-Series - Service Manual
+                        </p>
+<hr/>
+<ul class="hfo-link-container">
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---introduction.html">1 - VF/VM - Introduction</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---specifications.html">2 - VF/VM - Specifications</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---installation.html">3 - VF/VM - Installation</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---umbrella-tool-changer.html">4 - VF/VM - Umbrella Tool Changer</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---hsk---smtc.html">5 - VF/VM - HSK - SMTC</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---smtc.html">6 - VF/VM - 40T/50T - SMTC</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---axis-motion.html">7 - VF/VM - Axis Motion</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---hsk---spindle.html">8 - VF/VM - HSK - Spindle</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---40t---spindle.html">9 - VF/VM - 40T - Spindle</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---40t-spindle-motor.html">10 - VF/VM - 40T - Spindle Motor</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---40t---gearbox.html">11 - VF/VM - 40T - Gearbox</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---50t---spindle.html">12 - VF/VM - 50T - Spindle</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---50t---gearbox.html">13 - VF/VM - 50T - Gearbox</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---lubrication-systems.html">14 - VF/VM - Lubrication Systems</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---electrical-control.html">15 - VF/VM - Electrical Control</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---chip-removal-and-coolant.html">16 - VF/VM - Chip Removal and Coolant</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---workholding.html">17 - VF/VM - Workholding</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---maintenance.html">18 - VF/VM - Maintenance</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---autodoor.html">19 - VF/VM - Autodoor</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---robot-and-automation.html">20 - VF/VM - Robot and Automation</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---enclosure.html">21 - VF/VM - Enclosure</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---can-bus-systems.html">22 - VF/VM - CAN Bus Systems</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---spindle-c-axis-drive.html">23 - VF/VM - Spindle C-Axis Drive</a>
+</li>
+</ul>
+<div class="mobile-nav-container">
+<p>Go To :</p>
+
+</div>
+</div>
+</nav>
+<div id="hfo-page-content">
+
+<div class="tabs parbase section">
+
+<ul class="tabs clearfix" data-tabgroup="first-tab-group">
+<li>
+<a href="#tab_vmc---maintenance-schedule_0">
+
+<span id="tab-text">18.1 VMC - Maintenance Schedule</span>
+</a>
+</li>
+<li>
+<a href="#tab_18-2-vmc---spindle-taper_0">
+
+<span id="tab-text">18.2 VMC - Spindle Taper Maintenance</span>
+</a>
+</li>
+</ul>
+<section class="tabgroup" id="first-tab-group" style="padding-bottom: px">
+<div class="tab" id="tab_vmc---maintenance-schedule_0">
+<div class="title parbase section">
+<div class="title-wrapper text-align-left clearfix">
+<h1>18.1 VMC - Maintenance Schedule</h1>
+</div>
+</div>
+<div class="reference parbase section"><div class="cq-dd-paragraph"><div class="par parsys">
+<div class="table parbase">
+<div class="two-px-border-bold-header">
+<table border="1" cellpadding="1" cellspacing="0" width="100%">
+<tbody><tr><td colspan="2" style="text-align: center;"><b>Automatic Pallet Changer</b></td>
+</tr><tr><td><b>Maintenance Item</b></td>
+<td><b>Interval</b></td>
+</tr><tr><td>Clean debris from the APC and Receiver areas.<br/>
+</td>
+<td>Weekly<br/>
+</td>
+</tr><tr><td>Clean debris from receiver pallet clamped switch.<br/>
+</td>
+<td>Weekly</td>
+</tr><tr><td>Grease the plunger.<br/>
+</td>
+<td>Weekly</td>
+</tr><tr><td>Clean the locating pins and bushings.<br/>
+</td>
+<td>Weekly</td>
+</tr><tr><td>Inspect the pallet wipers.<br/>
+</td>
+<td>Monthly</td>
+</tr><tr><td>Inspect the door for proper operation.<br/>
+</td>
+<td>Monthly<br/>
+</td>
+</tr><tr><td>Grease the door side guide rails.<br/>
+</td>
+<td>Monthly<br/>
+</td>
+</tr></tbody></table>
+</div>
+</div>
+<div class="table parbase">
+<div class="two-px-border-bold-header">
+<table border="1" cellpadding="1" cellspacing="0" width="100%">
+<tbody><tr><td colspan="2" style="text-align: center;"><b>Automatic Tool Changer - SMTC</b></td>
+</tr><tr><td><b>Maintenance Item</b></td>
+<td><b>Interval</b></td>
+</tr><tr><td>Clean the chips from the tool changer.<br/>
+</td>
+<td>Weekly<br/>
+</td>
+</tr><tr><td>Inspect the arm plunger and adjuster assembly.<br/>
+</td>
+<td>Six Months<br/>
+</td>
+</tr><tr><td>Clean and lubricate the pocket tool plungers.<br/>
+</td>
+<td>Six Months<br/>
+</td>
+</tr><tr><td>Clean and lubricate the track on the carousel housing that the tool pocket rollers ride on (SMTC30/50 only).<br/>
+</td>
+<td>Six Months<br/>
+</td>
+</tr><tr><td>Grease the tool changer cams.<br/>
+</td>
+<td>Annually<br/>
+</td>
+</tr><tr><td>Inspect and replace worn pocket components: springs, plungers (BT30 have a spring leaf).<br/>
+</td>
+<td>Annually<br/>
+</td>
+</tr><tr><td>Inspect the oil level in the cambox.</td>
+<td>Quarterly</td>
+</tr></tbody></table>
+</div>
+</div>
+<div class="table parbase">
+<div class="two-px-border-bold-header">
+<table border="1" cellpadding="1" cellspacing="0" width="100%">
+<tbody><tr><td colspan="2" style="text-align: center;"><b>Automatic Tool Changer - Umbrella</b></td>
+</tr><tr><td><b>Maintenance Item</b></td>
+<td><b>Interval</b></td>
+</tr><tr><td>Clean the chips from the tool changer.<br/>
+</td>
+<td>Weekly<br/>
+</td>
+</tr><tr><td>Inspect motors and mechanical sensors.<br/>
+</td>
+<td>Monthly<br/>
+</td>
+</tr><tr><td>Inspect motors and proximity sensors.<br/>
+</td>
+<td>Monthly<br/>
+</td>
+</tr><tr><td>Grease the guide rails.<br/>
+</td>
+<td>Monthly<br/>
+</td>
+</tr><tr><td>Grease the extractor fingers.<br/>
+</td>
+<td>Monthly</td>
+</tr></tbody></table>
+</div>
+</div>
+<div class="table parbase">
+<div class="two-px-border-bold-header">
+<table border="1" cellpadding="1" cellspacing="0" width="100%">
+<tbody><tr><td colspan="2" style="text-align: center;"><b>Auxiliary Filter</b><br/>
+</td>
+</tr><tr><td><b>Maintenance Item</b></td>
+<td><b>Interval</b></td>
+</tr><tr><td>Replace the filter bag.<br/>
+</td>
+<td>Check the Gauge<br/>
+</td>
+</tr><tr><td>Inspect the hoses for cracking.<br/>
+</td>
+<td>Six Months<br/>
+</td>
+</tr></tbody></table>
+</div>
+</div>
+<div class="table parbase">
+<div class="two-px-border-bold-header">
+<table border="1" cellpadding="1" cellspacing="0" width="100%">
+<tbody><tr><td colspan="2" style="text-align: center;"><b>Axis Lubrication</b><br/>
+</td>
+</tr><tr><td><b>Maintenance Item</b></td>
+<td><b>Interval</b></td>
+</tr><tr><td>Inspect oil reservoir level and refill.<br/>
+</td>
+<td>Monthly<br/>
+</td>
+</tr><tr><td>Inspect the hoses for cracking.<br/>
+</td>
+<td>Six Months<br/>
+</td>
+</tr><tr><td>Perform an Axis Lubrication Test.</td>
+<td>Six Months<br/>
+</td>
+</tr><tr><td>Ballscrews/Linear guides equipped with zerk fitting</td>
+<td>Monthly or weekly if cutting absorbent materials</td>
+</tr></tbody></table>
+</div>
+</div>
+<div class="table parbase">
+<div class="two-px-border-bold-header">
+<table border="1" cellpadding="1" cellspacing="0" width="100%">
+<tbody><tr><td colspan="2" style="text-align: center;"><b>Counterbalance</b><br/>
+</td>
+</tr><tr><td><b>Maintenance Item</b></td>
+<td><b>Interval</b></td>
+</tr><tr><td>Inspect the counterbalance pressure.<br/>
+</td>
+<td>Monthly<br/>
+</td>
+</tr></tbody></table>
+</div>
+</div>
+<div class="table parbase">
+<div class="two-px-border-bold-header">
+<table border="1" cellpadding="1" cellspacing="0" width="100%">
+<tbody><tr><td colspan="2" style="text-align: center;"><b>Electrical Cabinet</b><br/>
+</td>
+</tr><tr><td><b>Maintenance Item</b></td>
+<td><b>Interval</b></td>
+</tr><tr><td>Clean vector drive air vents / filter.<br/>
+</td>
+<td>Monthly</td>
+</tr></tbody></table>
+</div>
+</div>
+<div class="table parbase">
+<div class="two-px-border-bold-header">
+<table border="1" cellpadding="1" cellspacing="0" width="100%">
+<tbody><tr><td colspan="2" style="text-align: center;"><b>Enclosure</b><br/>
+</td>
+</tr><tr><td><b>Maintenance Item</b></td>
+<td><b>Interval</b></td>
+</tr><tr><td>Inspect windows for damage.<br/>
+</td>
+<td>Daily<br/>
+</td>
+</tr><tr><td>Inspect the door interlock operation.<br/>
+</td>
+<td>Daily<br/>
+</td>
+</tr><tr><td>Inspect waycovers and lubricate.<br/>
+</td>
+<td>Monthly<br/>
+</td>
+</tr></tbody></table>
+</div>
+</div>
+<div class="table parbase">
+<div class="two-px-border-bold-header">
+<table border="1" cellpadding="1" cellspacing="0" width="100%">
+<tbody><tr><td colspan="2" style="text-align: center;"><b>Gearbox</b><br/>
+</td>
+</tr><tr><td><b>Maintenance Item</b></td>
+<td><b>Interval</b></td>
+</tr><tr><td>Inspect the oil level.<br/>
+</td>
+<td>Monthly<br/>
+</td>
+</tr><tr><td>50T Gearbox 16DP-C Clean the oil pump inlet screen.<br/>
+</td>
+<td>Six Months<br/>
+</td>
+</tr><tr><td>Replace the oil.<br/>
+</td>
+<td>Annually<br/>
+</td>
+</tr></tbody></table>
+</div>
+</div>
+<div class="table parbase">
+<div class="two-px-border-bold-header">
+<table border="1" cellpadding="1" cellspacing="0" width="100%">
+<tbody><tr><td colspan="2" style="text-align: center;"><b>Minimum Quantity Lubrication</b><br/>
+</td>
+</tr><tr><td><b>Maintenance Item</b></td>
+<td><b>Interval</b></td>
+</tr><tr><td>Clean the filter inside the oil reservoir.<br/>
+</td>
+<td>Annually</td>
+</tr></tbody></table>
+</div>
+</div>
+<div class="table parbase">
+<div class="two-px-border-bold-header">
+<table border="1" cellpadding="1" cellspacing="0" width="100%">
+<tbody><tr><td colspan="2" style="text-align: center;"><b>Oil Skimmer</b><br/>
+</td>
+</tr><tr><td><b>Maintenance Item</b></td>
+<td><b>Interval</b></td>
+</tr><tr><td>Inspect the oil skimmer pickup tube.<br/>
+</td>
+<td>Six Months</td>
+</tr></tbody></table>
+</div>
+</div>
+<div class="table parbase">
+<div class="two-px-border-bold-header">
+<table border="1" cellpadding="1" cellspacing="0" width="100%">
+<tbody><tr><td colspan="2" style="text-align: center;"><b>Pneumatics</b><br/>
+</td>
+</tr><tr><td><b>Maintenance Item</b></td>
+<td><b>Interval</b></td>
+</tr><tr><td>Inspect the spindle air regulator pressure.<br/>
+</td>
+<td>Weekly<br/>
+</td>
+</tr><tr><td>Inspect the hoses for cracking.<br/>
+</td>
+<td>Six Months<br/>
+</td>
+</tr><tr><td>Clean the Air Purge Solenoid.<br/>
+</td>
+<td>Annually<br/>
+</td>
+</tr></tbody></table>
+</div>
+</div>
+<div class="table parbase">
+<div class="two-px-border-bold-header">
+<table border="1" cellpadding="1" cellspacing="0" width="100%">
+<tbody><tr><td colspan="2" style="text-align: center;"><b>Probe System</b><br/>
+</td>
+</tr><tr><td><b>Maintenance Item</b></td>
+<td><b>Interval</b></td>
+</tr><tr><td>Check the probe batteries.<br/>
+</td>
+<td>Six Months<br/>
+</td>
+</tr><tr><td>Check probe calibration.<br/>
+</td>
+<td>Six Months<br/>
+</td>
+</tr></tbody></table>
+</div>
+</div>
+<div class="table parbase">
+<div class="two-px-border-bold-header">
+<table border="1" cellpadding="1" cellspacing="0" width="100%">
+<tbody><tr><td colspan="2" style="text-align: center;"><b>Rotary</b><br/>
+</td>
+</tr><tr><td><b>Maintenance Item</b></td>
+<td><b>Interval</b></td>
+</tr><tr><td>Inspect the oil level.<br/>
+</td>
+<td>Annually<br/>
+</td>
+</tr><tr><td>Replace the oil.<br/>
+</td>
+<td>Two Years<br/>
+</td>
+</tr><tr><td>Inspect the A-Axis counterbalance cylinder for oil leaks.</td>
+<td>Two Years</td>
+</tr><tr><td>Replace the A-Axis counterbalance cylinder.<br/>
+</td>
+<td>Four Years<br/>
+</td>
+</tr></tbody></table>
+</div>
+</div>
+<div class="table parbase">
+<div class="two-px-border-bold-header">
+<table border="1" cellpadding="1" cellspacing="0" width="100%">
+<tbody><tr><td colspan="2" style="text-align: center;"><b>Standard Coolant System</b></td>
+</tr><tr><td><b>Maintenance Item</b></td>
+<td><b>Interval</b></td>
+</tr><tr><td>Clean the filter screen.<br/>
+</td>
+<td>As Required<br/>
+</td>
+</tr><tr><td>Inspect the coolant level.<br/>
+</td>
+<td>Weekly<br/>
+</td>
+</tr><tr><td>Inspect the coolant concentration. Fill out the Mixture - Maintenance Log sheet.<br/>
+</td>
+<td>Weekly<br/>
+</td>
+</tr><tr><td>Completely clean the coolant tank and replace the coolant.<br/>
+</td>
+<td>Six Months<br/>
+</td>
+</tr><tr><td>Clean the standard coolant filter.<br/>
+</td>
+<td>Six Months<br/>
+</td>
+</tr><tr><td>Verify coolant refill is operating correctly.<br/>
+<br/>
+</td>
+<td>Six Months<br/>
+</td>
+</tr></tbody></table>
+</div>
+</div>
+<div class="table parbase">
+<div class="two-px-border-bold-header">
+<table border="1" cellpadding="1" cellspacing="0" width="100%">
+<tbody><tr><td colspan="2" style="text-align: center;"><b>Through Spindle Coolant (TSC) 300/1K PSI</b><br/>
+</td>
+</tr><tr><td><b>Maintenance Item</b></td>
+<td><b>Interval</b></td>
+</tr><tr><td>Clean the TSC-300 / 1K Pump Filter<br/>
+</td>
+<td>Six Months<br/>
+</td>
+</tr><tr><td>Inspect the hoses for cracking.<br/>
+</td>
+<td>Six Months<br/>
+</td>
+</tr><tr><td>Verify the Auto Clean system is operating correctly.<br/>
+</td>
+<td>Six Months<br/>
+</td>
+</tr></tbody></table>
+</div>
+</div>
+<div class="table parbase">
+<div class="two-px-border-bold-header">
+<table border="1" cellpadding="1" cellspacing="0" width="100%">
+<tbody><tr><td colspan="2" style="text-align: center;"><b>Spindle</b><br/>
+</td>
+</tr><tr><td><b>Maintenance Item</b></td>
+<td><b>Interval</b></td>
+</tr><tr><td>Clean and lubricate the spindle taper.<br/>
+<br/>
+</td>
+<td>As Required<br/>
+</td>
+</tr><tr><td>Spindle drawbar force measurement.<br/>
+</td>
+<td>Annually<br/>
+</td>
+</tr></tbody></table>
+</div>
+</div>
+<div class="table parbase">
+<div class="two-px-border-bold-header">
+<table border="1" cellpadding="1" cellspacing="0" width="100%">
+<tbody><tr><td colspan="2" style="text-align: center;"><b>Spindle Lubrication</b><br/>
+</td>
+</tr><tr><td><b>Maintenance Item</b></td>
+<td><b>Interval</b></td>
+</tr><tr><td>Inspect lubrication tank level.<br/>
+</td>
+<td>Monthly<br/>
+</td>
+</tr><tr><td>Perform Spindle Lubrication Test.<br/>
+</td>
+<td>Six Months<br/>
+</td>
+</tr></tbody></table>
+</div>
+</div>
+<div class="table parbase">
+<div class="two-px-border-bold-header">
+<table border="1" cellpadding="1" cellspacing="0" width="100%">
+<tbody><tr><td colspan="2" style="text-align: center;"><b>Tooling</b><br/>
+</td>
+</tr><tr><td><b>Maintenance Item</b></td>
+<td><b>Interval</b></td>
+</tr><tr><td>Grease Pull Studs.<br/>
+</td>
+<td>As Required<br/>
+</td>
+</tr></tbody></table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="tab" id="tab_18-2-vmc---spindle-taper_0">
+<div class="title parbase section">
+<div class="title-wrapper text-align-left clearfix">
+<h1>18.2 VMC - Spindle Taper Maintenance</h1>
+</div>
+</div>
+<div class="sectionHeader parbase section">
+<div class="sectionHeader section-wrapper text-align-center clearfix" id="waypoint-target">
+
+<h2><b>Spindle</b> - Taper - Maintenance - VMC</h2>
+<hr/>
+</div>
+</div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Introduction">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Introduction</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="diyStep"><div>
+<div class="diy-step" data-last-modified-timestamp="1534183967347" data-recentness-duration="30">
+<div class="step-text"><p>The spindle taper is the area inside of the spindle. A spindle taper that is dirty, damaged, or not aligned decreases cutting accuracy and causes an unsatisfactory surface finish.</p>
+<p>Perform these steps monthly**:</p>
+<ul>
+<li>Use a flashlight to visually inspect the spindle taper for signs of wear and damage.</li>
+<li>Clean the spindle taper with a clean, lint-free cloth.</li>
+<li>Put a coat of all-purpose machine oil on the spindle taper with a lightly-oiled lint-free cloth.</li>
+</ul>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Tools-Required">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Tools Required</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="diyStep"><div>
+<div class="diy-step" data-last-modified-timestamp="1533251578273" data-recentness-duration="30">
+<div class="step-text"><ul>
+<li>Clean Lint-Free Cloth<br/>
+</li>
+<li>Flashlight<br/>
+</li>
+<li>Precision Test Bar<br/>
+</li>
+<li>All-Purpose Machine Oil<br/>
+</li>
+<li>0.0001" Dial Indicator<br/>
+</li>
+<li>Non-Drying High-Spot Paste<br/>
+</li>
+</ul>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="VMC---Spindle---Taper---Maintenance">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">VMC - Spindle - Taper - Maintenance</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/how-to/vmc---spindle---taper---maintenance/Taper_Runout_Indicate_spindle.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1560897115458" data-recentness-duration="30">
+<div class="step-text"><p>Press <b>[EMERGENCY STOP]</b>.</p>
+<p><b>Do these steps monthly, or when needed:</b></p>
+<ul>
+<li>Put the tip of an indicator [1] against the taper to measure runout. Manually turn the spindle. The total indicated runout (TIR) of the spindle at the taper must not exceed 0.0002" (0.005 mm).</li>
+<li>Put a precision test bar [2] into the spindle. Put the tip of the indicator directly below the gauge line to measure runout. The TIR at the gauge line must not exceed 0.0005" (0.013 mm).</li>
+<li>Put the tip of the indicator against the test bar approximately 6.0"(150 mm) below the gauge line to measure runout. The TIR at 6.0"(150 mm) from the gauge line must not exceed 0.001" (0.025 mm).</li>
+<li>Put a coat of blue high-spot paste over the entire surface of the taper of a toolholder. Put the toolholder into the spindle.</li>
+<li>Remove the toolholder. The fit into the taper is correct when at least 75% of paste [3] has been rubbed off. Make sure that the pull stud is not damaged.</li>
+</ul>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="diyStep"><div>
+<div class="diy-step" data-last-modified-timestamp="1533251740814" data-recentness-duration="30">
+<div class="step-text"><p>Refer to <a href="https://www.haascnc.com/content/haascnc/en/service/troubleshooting-and-how-to/how-to/mill---tooling---maintenance.html">Mill - Tooling - Maintenance</a>. Do the <a href="https://www.haascnc.com/content/haascnc/en/service/troubleshooting-and-how-to/how-to/vmc---spindle---drawbar---force-measurement.html">VMC - Spindle - Drawbar - Force Measurement</a>.</p>
+<p><b> Note:</b> Best practice is to remove toolholders from the spindle when the machine is not in operation.</p>
+<p>**The recommended times are based on the average user. Actual times vary depending on machine usage and the materials being cut. If you machine abrasive materials such as graphite or cast iron, or if you run the machine the machine on multiple shifts per day, the inspections should be more frequent. Likewise, if the machine is rarely used, then the intervals between inspections can be longer.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div></div>
+</div>
+</section>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</body></html>

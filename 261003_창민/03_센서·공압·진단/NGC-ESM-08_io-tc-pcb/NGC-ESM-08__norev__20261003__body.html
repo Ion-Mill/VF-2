@@ -1,0 +1,2747 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NGC - I/O and TC PCB - Haas Service Manual</title>
+<style>
+body{font-family:Segoe UI,Arial,sans-serif;max-width:980px;margin:24px auto;padding:0 16px;line-height:1.55;color:#1d1d1f;background:#fff}
+.provenance{font-size:12px;border:1px solid #c9ced6;background:#f4f6f8;padding:8px 12px;margin-bottom:24px}
+.provenance th{text-align:left;padding-right:12px;white-space:nowrap;vertical-align:top}
+table{border-collapse:collapse;margin:12px 0} td,th{border:1px solid #c9ced6;padding:4px 8px;vertical-align:top}
+.provenance td,.provenance th{border:none;padding:1px 8px 1px 0}
+img{max-width:100%;height:auto}
+</style></head><body>
+<div class="provenance"><strong>본문 추출본 (원본 아님)</strong> — 사실 확인은 같은 폴더의 원본 HTML과 공식 URL로 한다. 그림은 Haas 공식 주소에서 불러오므로 인터넷 연결 시에만 보인다.
+<table><tr><th>doc_id</th><td>NGC-ESM-08</td></tr><tr><th>title</th><td>NGC - I/O and TC PCB - Haas Service Manual</td></tr><tr><th>revision</th><td>표기 없음</td></tr><tr><th>last_updated</th><td>표기 없음</td></tr><tr><th>source_url</th><td>https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---i-o.html</td></tr><tr><th>retrieved_at</th><td>2026-10-03T18:03:13</td></tr><tr><th>retrieved_via</th><td>direct</td></tr><tr><th>original_file</th><td>NGC-ESM-08__norev__20261003.html</td></tr><tr><th>original_sha256</th><td>c55dbf37720fd10cf7eff6ba452bf2c3ab6a818be3b8bdec118a0841d2a341de</td></tr><tr><th>extraction</th><td>div.print-only · scripts/extract_ngc_body.py</td></tr><tr><th>license</th><td>Haas 저작물: 사이트 약관상 서면 허가 없는 사용 불가 표기. 내부 참고용 사본, 재배포 금지</td></tr></table></div>
+
+
+<div>
+<div class="hfoSubnav">
+<div id="hfo-nav-container">
+<nav data-component="HfoSubnav" data-new-flag-default-text="new" data-override-json="[]" id="hfo-nav">
+<div class="hero_subnav_inner">
+<p class="hfo-nav-title">
+                            
+                            Next Gen Control Electrical - Service Manual
+                        </p>
+<hr/>
+<ul class="hfo-link-container">
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---introduction.html">1 - NGC - Introduction</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---activation.html">2 - NGC - Activation</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---software-update.html">3 - NGC - Software Update </a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---firmware-update.html">4 - NGC - Firmware Update</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---configuration---patch-files.html">5 - NGC - Configuration</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---error-report-and-backup.html">6 - NGC - Error Report and Backup</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---main-processor.html">7 - NGC - Main Processor</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---i-o.html">8 - NGC - I/O and TC PCB</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---can-systems.html">9 - NGC - CAN Systems and Autodoor</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---servo-motors-and-axis-cables.html">10 - NGC - Servo Motors and Axis Cables</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---4th-and-5th-axis.html">11 - NGC - 4th and 5th Axis</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---servo-amplifiers.html">12 - NGC - Servo Amplifiers</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---vector-drive.html">13 - NGC - Vector Drive</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---regen.html">14 - NGC - Regen</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---320v-power-supply.html">15 - NGC - 320V Power Supply</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---wye---delta.html">16 - NGC - Wye / Delta</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---circuit-breaker-and-transformer.html">17 - NGC - Circuit Breaker and Transformer</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---power-distribuition.html">18 - NGC - PSUP PCB</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---skbif-and-lcd-monitor.html">19 - NGC - SKBIF and LCD Monitor</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---rjh.html">20 - NGC - Remote Jog Handle</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---worklights-and-hil-.html">21 - NGC - 115V LED - WorkLights</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---cabcool.html">22 - NGC - CabCool</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---myhaas.html">23 - NGC - MyHaas</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---wire---wireless-networking.html">24 - NGC - Networking</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---8m-pcb.html">25 - NGC - 8M PCB</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---robot-and-automation.html">26 - NGC - Robot and Automation</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---machine-data-collection.html">27 - NGC - Machine Data Collection</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---control-icons.html">28 - NGC - Control Icons</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---sensors-and-switches.html">29 - NGC - Sensors and Switches</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---usb.html">30 - NGC - USB</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc-keypad.html">31 - NGC - Keypad</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---broken-tool-detection.html">32 - NGC - Broken Tool Detection</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---ipfdm-pcb.html">33 - NGC - IPFDM PCB</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---lvps.html">34. NGC - LVPS</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---camera-monitor-system-.html">35 - NGC - Camera Monitor System </a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc-high-intensity-lights-.html">36 - NGC - High Intensity Lights</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---24v-worklights.html">37 - NGC - 24V LED - Worklights</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---mill---rotary-scale-cable-installation.html">38 - NGC - Mill - Rotary Scale Cable Installation</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---tmd-pcb-.html">39 - NGC - TMD PCB </a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---control-surge-proctector.html">40 - NGC - Control Surge Proctector</a>
+</li>
+</ul>
+<div class="mobile-nav-container">
+<p>Go To :</p>
+
+</div>
+</div>
+</nav>
+<div id="hfo-page-content">
+
+<div class="tabs parbase section">
+
+<ul class="tabs clearfix" data-tabgroup="first-tab-group">
+<li>
+<a href="#tab_i-o-pcb-hinge-door---installation_0">
+
+<span id="tab-text">8.1 I/O PCB Hinge Door - Installation</span>
+</a>
+</li>
+<li>
+<a href="#tab_i-o-pcb---replacement_0">
+
+<span id="tab-text">8.2 I/O PCB - Replacement</span>
+</a>
+</li>
+<li>
+<a href="#tab_tool-changer-pcb---replacement_0">
+
+<span id="tab-text">8.3 Tool Changer PCB - Replacement</span>
+</a>
+</li>
+<li>
+<a href="#tab_i-o-pcb---troubleshooting-guide_0">
+
+<span id="tab-text">8.4 I/O PCB - Troubleshooting Guide</span>
+</a>
+</li>
+<li>
+<a href="#tab_diagnostic-data---ngc_0">
+
+<span id="tab-text">8.5 Diagnostic Data</span>
+</a>
+</li>
+</ul>
+<section class="tabgroup" id="first-tab-group" style="padding-bottom: px">
+<div class="tab" id="tab_i-o-pcb-hinge-door---installation_0">
+<div class="title parbase section">
+<div class="title-wrapper text-align-left clearfix">
+<h1>8.1 I/O PCB Hinge Door - Installation</h1>
+</div>
+</div>
+<div class="sectionHeader parbase section">
+<div class="sectionHeader section-wrapper text-align-center clearfix" id="waypoint-target">
+
+<h2>I/O PCB Hinge Door - Installation</h2>
+<hr/>
+<p><b>AD0444</b></p>
+</div>
+</div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Introduction">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Introduction</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="diyStep"><div>
+<div class="diy-step" data-last-modified-timestamp="1674143139510" data-recentness-duration="30">
+<div class="step-text"><p>This procedure will show you how to install the hinged door on the I/O PCB.</p>
+<p><b>This Document Applies to the Following Kits:</b></p>
+<p>93-1000297 DOOR, HINGED FOR I/O PCB</p>
+<p>93-1000573 DOOR, HINGED CAN INSTALL KIT FOR I/O PCB</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Hinge-Door---Installation">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Hinge Door - Installation</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/how-to/hpc-electrical-install---ngc-kits/IO-Hinged-Door-Hard-Stop.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1634751183507" data-recentness-duration="30">
+<h3 class="stepNumber">1</h3>
+<div class="step-text"><p>Open the control cabinet. Remove the cover for the I/O PCB.</p>
+<p>Install the two socket head cap screws to the top and bottom hinge plate<b>[1]</b>.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/how-to/hpc-electrical-install---ngc-kits/HPC_electrical_install_hinge_door.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1634751209794" data-recentness-duration="30">
+<h3 class="stepNumber">2</h3>
+<div class="step-text"><p>Install these parts:<br/>
+</p>
+<ul>
+<li>Use (2) screws [2] to install the top hinge plate [1].</li>
+<li>Use (2) screws [3] to install the bottom hinge plate [4].</li>
+<li>Use (4) screws [5] to install the (2) door brackets [6].</li>
+<li>door panel [F]</li>
+</ul>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+</div>
+<div class="tab" id="tab_i-o-pcb---replacement_0">
+<div class="title parbase section">
+<div class="title-wrapper text-align-left clearfix">
+<h1>8.2  I/O PCB - Replacement</h1>
+</div>
+</div>
+<div class="sectionHeader parbase section">
+<div class="sectionHeader section-wrapper text-align-center clearfix" id="waypoint-target">
+
+<h2><b>I/O PCB</b> - Replacement - NGC</h2>
+<hr/>
+<p><b>AD0413</b></p>
+</div>
+</div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Introduction">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Introduction</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="diyStep"><div>
+<div class="diy-step" data-last-modified-timestamp="1679522886029" data-recentness-duration="30">
+<div class="step-text"><p>This procedure will show you how to replace the I/O PCB on an NGC machine.</p>
+<p><b> Download and fill out the NGC I/O PCB Inspection Report Checklist below before replacing any parts. It can be found at the <a href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---i-o.html#tab_i-o-pcb---troubleshooting-guide_0">I/O and TC PCB troubleshooting guide</a>. </b></p>
+<p><b>This procedure applies to these kits:</b></p>
+<ul>
+<li><b>93-32-3490C</b> IO PCB, SIO-C NGC</li>
+</ul>
+<p><b>Machine Compatibility:</b></p>
+<ul>
+<li>P/N <b>93-32-3490C</b> is fully backwards compatible with P/N <b>93-32-3490B, 93-32-3490A, 93-32‑3480A, 93-32-3480C</b>, and<b> 93-32‑3482C</b></li>
+<li> <b>Note: </b>If replacing an earlier version I/O PCB some connectors have changed location. Some cables will need to have more slack pulled from the cable channel or from the enclosure. </li>
+<li>You will also need to order a <b>93-32-5502</b> Tool Changer CCA kit if the machine is equipped with DC-Motor tool changer or a bar feeder.</li>
+</ul>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Replacement">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Replacement</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="diyStep"><div>
+<div class="diy-step" data-last-modified-timestamp="1551121441795" data-recentness-duration="30">
+<h3 class="stepNumber">1</h3>
+<div class="step-text"><p>Push <b>[POWER OFF]</b>.</p>
+<p>Set the main circuit breaker to the OFF position.</p>
+<p>Lock the main circuit breaker. Use an approved lock with an approved safety tag.</p>
+<p> <b>Caution:</b> When you handle a PCB, you must wear an Electrostatic Discharge (ESD) strap.</p>
+</div>
+</div>
+</div></div>
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/how-to/iopcb---34-349x---replacement---ngc/AD0413-IO-Board-Jumpers.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1736973626865" data-recentness-duration="30">
+<h3 class="stepNumber">2</h3>
+<div class="step-text"><p>Record the position of the push-on jumpers [1] on the PCB.</p>
+<p>Put an identification label on each cable that is attached to the PCB. This makes the installation easier. Disconnect these cables.</p>
+<p>Remove the I/O PCB and place it next to the replacement PCB [2].</p>
+<p>Remove the push-on jumpers [1] from the removed PCB and put them onto the replacement PCB [2].</p>
+<p><b>Note: </b>The jumpers shown in the image are at <b>P2</b>, <b>P12</b>, and <b>JP1</b> on the I/O PCB. Boards can have these as well as other jumpers depending on the options the machine has.</p>
+<p><b> Caution:</b> Carefully compare the two I/O PCBs to make sure you install each jumper in the correct position. If you do not correctly install each of the jumpers, the I/O PCB cannot operate correctly.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/how-to/iopcb---34-349x---replacement---ngc/tc_pcb_34_3490.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1553897311115" data-recentness-duration="30">
+<h3 class="stepNumber">3</h3>
+<div class="step-text"><p> <b>Note: If the machine is equipped with a tool changer that has a brush motor or bar feeder: </b>Install the (4) standoffs [1] on the I/O PCB. Do not install the Tool Changer PCB until after the I/O is installed.</p>
+<p>Install the I/O PCB in the electrical cabinet.</p>
+<p>If equipped with a brush motor TC or bar feeder: Mount the 93-32-5502 Tool Changer PCB to the standoffs. Connect wires:</p>
+<ul>
+<li>Connect cable P/N 33-0413 from J1 [2] on the TC PCB to P74 [3] on the I/O PCB.</li>
+<li>Connect cable P/N 33-0412 from P55A [4] on the TC PCB to P55 [5] on the I/O PCB.</li>
+<li>Connect cable P/N 33-0349 from P4 on PSUP PCB to the P55 [7] on the TC PCB.</li>
+<li>Connect the tool changer/bar feeder cable to P58 [6].</li>
+<li>For EC models, connect the external resistor at P57 [8].</li>
+</ul>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/how-to/iopcb---34-349x---replacement---ngc/tc_pcb_34_3490_connect_all_cables.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1551121606592" data-recentness-duration="30">
+<h3 class="stepNumber">4</h3>
+<div class="step-text"><p>Connect all cables.</p>
+<p> <b>Note:</b> If updating from an earlier version I/O PCB some plug locations have changed. </p>
+<ul>
+<li>The plugs on top of the I/O [1] will need to have slack pulled from the channel. </li>
+<li>Rotary axis brakes [2] have moved up on the left side of the I/O, these cables will need to be routed differently. </li>
+<li>The coolant and TSC plugs [3] have moved to the bottom of the I/O. Some slack will need to be pulled from the channel or from the enclosure to reach the new location. </li>
+<li>P28 [4] for the TSC Vaccum Sensor has moved. Some slack may need to be pulled from the strain relief on the enclosure to reach the new location. </li>
+<li>The tool changer output cable moves to P58 and cable 33-0349 to P55A on the Tool Changer PCB.</li>
+</ul>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/ngc-io-tsg/IO-PCB-w-New-Filters.jpg" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1706209649254" data-recentness-duration="30">
+<h3 class="stepNumber">5</h3>
+<div class="step-text"><p><b> IMPORTANT: </b>When replacing<b> 34-349XA/B</b> I/O PCB with <b>34-3490C</b>, do not reinstall the SIO filter board [1] and remove any single [2] or dual [3] solenoid filters in the CALM cabinet. The new I/O PCB board has these filters built into the board. </p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/ngc-io-tsg/IO-PCB-with-VFD-adapter-board.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1706209522143" data-recentness-duration="30">
+<h3 class="stepNumber">6</h3>
+<div class="step-text"><p><b> IMPORTANT: </b>When replacing<b> 34-349XA/B </b>I/O PCB with<b> 34-3490C </b>and VFD ADAPTER PCB is installed, do not re-install the VFD ADAPTER PCB into the<b> 34-3490C I/O PCB </b>as this VFD ADAPTER PCB is now built in.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Operation-Test">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Operation Test</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/how-to/iopcb---34-349x---replacement---ngc/tc_pcb_34_3490_io_config_check.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1692106811419" data-recentness-duration="30">
+<h3 class="stepNumber">1</h3>
+<div class="step-text"><p>Power on the machine with your Haas Control Key.</p>
+<p>You get an alarm that you cannot stop until the Main Crc and Factory Crc numbers [3] are the same. Do these steps to stop the alarm:</p>
+<p>Press<b> [DIAGNOSTIC]</b>.</p>
+<p>Use the CURSOR arrows to go to I/O Config [2] in the Diagnostics tab [1].</p>
+<p>Press <b>[F3]</b> to Update Config Table[4].</p>
+<p>Press<b> [RESET]</b> to continue.</p>
+<p>If the alarm does not stop, push <b>[POWER OFF]</b>, and then push <b>[POWER ON]</b>.<br/>
+<br/>
+ <b>Note:</b>  After installation, make sure the SIO Version and I/O TC Version are up to date. Refer to <a href="https://www.haascnc.com/content/haascnc/en/service/online-manuals/next-gen-control-electrical---service-manual/ngc---firmware-update.html">I/O Firmware Compatibility</a> chart for the most current versions. If not, update the firmware to the correct version. </p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="diyStep"><div>
+<div class="diy-step" data-last-modified-timestamp="1551121731211" data-recentness-duration="30">
+<h3 class="stepNumber">2</h3>
+<div class="step-text"><p>Operate the spindle, tool changer, coolant, through-spindle coolant (TSC/HPC), P-cool spigot, Emergency Stop, beacon, operator door, barfeeder, and all optional equipment.</p>
+<p>Make sure that all machine parts and installed options work correctly. If the Side Mount Tool Changer operates slowly, cycle power.</p>
+<p>In an EC series machine, make sure the external resistor you connected to P57 does not heat up while the machine is idle.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div></div>
+</div>
+<div class="tab" id="tab_tool-changer-pcb---replacement_0">
+<div class="title parbase section">
+<div class="title-wrapper text-align-left clearfix">
+<h1>8.3 I/O - Tool Changer PCB - Replacement </h1>
+</div>
+</div>
+<div class="sectionHeader parbase section">
+<div class="sectionHeader section-wrapper text-align-center clearfix" id="waypoint-target">
+
+<h2><b>I/O - Tool Changer PCB</b>- Replacement - NGC</h2>
+<hr/>
+<p><b>AD0386</b></p>
+</div>
+</div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Introduction">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Introduction</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="diyStep"><div>
+<div class="diy-step" data-last-modified-timestamp="1592406208724" data-recentness-duration="30">
+<div class="step-text"><p>This procedure will show you how to replace the Tool changer PCB on a NGC machine.  This tool changer PCB is used on 34-349x I/O PCB that have a DC-Motor Tool changer or a bar feeder option.<br/>
+</p>
+<p><b>This procedure applies to these kits:</b></p>
+<ul>
+<li>93-32-5502 PCB, Tool Changer - NGC</li>
+</ul>
+<p><b>Machine Compatibility:</b></p>
+<ul>
+<li>34-349x I/O PCB </li>
+</ul>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Replacement">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Replacement</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/how-to/iopcb---34-349x---replacement---ngc/tc_pcb_34_3490.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1592406197816" data-recentness-duration="30">
+<div class="step-text"><p>Remove the old TC PCB from the standoffs [1] on the I/O PCB. Install the replacement TC PCB on the standoffs.</p>
+<p>Connect cable P/N 33-0413 from J1 [2] on the TC PCB to P74 [3] on the I/O PCB.</p>
+<p>Connect cable P/N 33-0412 from P55A [4] on the TC PCB to P55 [5] on the I/O PCB.</p>
+<p>Connect cable P/N 33-0349 from P4 on PSUP PCB to the P55 [7] on the TC PCB.</p>
+<p>Connect the tool changer/bar feeder cable to P58 [6].</p>
+<p>For EC models, connect the external resistor at P57 [8].</p>
+<p> <b>Note:</b>  After installation make sure the SIO Version is 3.17 or higher and the I/O TC Version is 2.06 or higher.  If not update the firmware to the correct version.  Refer to <a href="https://www.haascnc.com/content/haascnc/en/service/troubleshooting-and-how-to/how-to/next-generation-control---i-o-pcb-main-firmware---update.html">I/O PCB Firmware - Update - NGC</a> procedure.</p>
+
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+</div>
+<div class="tab" id="tab_i-o-pcb---troubleshooting-guide_0">
+<div class="title parbase section">
+<div class="title-wrapper text-align-left clearfix">
+<h1>8.4 I/O PCB - Troubleshooting Guide</h1>
+</div>
+</div>
+<div class="sectionHeader parbase section">
+<div class="sectionHeader section-wrapper text-align-center clearfix" id="waypoint-target">
+
+<h2> <b>I/O PCB</b> - Troubleshooting Guide - NGC</h2>
+<hr/>
+<p><b>TG0002</b></p>
+<p>Revision C - 08/2026</p>
+</div>
+</div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Introduction">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Introduction</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="diyStep"><div>
+<div class="diy-step" data-last-modified-timestamp="1732213349391" data-recentness-duration="30">
+<div class="step-text"><p><b> Download and fill out the NGC I/O PCB Inspection Report Checklist below before replacing any parts.</b></p>
+</div>
+</div>
+</div></div>
+<div class="link parbase">
+<a aria-label="Learn More" class="on center red" data-openmodal="false" href="https://www.haascnc.com/content/dam/haascnc/service/guides/references/i-o-inspection-checklist/ID0008_Rev_C.pdf" style="
+                  
+                  font-size: px;" target="_blank">
+
+            NGC I/O PCB Inspection Report Checklist
+            
+        </a>
+</div>
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: white; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-center add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/ngc-io-tsg/ngc_34-3480A.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1620321285386" data-recentness-duration="30">
+<div class="step-text"><div><b>34-348xA</b></div>
+<ul>
+<li>Release Date: 09/2014</li>
+<li><b>Main Firmware Version: 01.XX</b><p> <b>Note: </b>Firmware version cannot be upgraded to version 02.XX</p>
+</li>
+<li><b>TC Firmware Version: 01.XX</b><p> <b>Note:</b> Firmware version cannot be upgraded to version 02.XX</p>
+</li>
+</ul>
+</div>
+</div>
+</div></div>
+</div>
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-center add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/ngc-io-tsg/ngc_34-3480C.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1620321236883" data-recentness-duration="30">
+<div class="step-text"><div><b>34-348xC</b></div>
+<ul>
+<li>Release Date: 05/2016</li>
+<li><b>Main Firmware Version: 02.XX</b><p> <b>Note:</b> Firmware version cannot be upgraded to version 03.XX</p>
+</li>
+<li><b>TC Firmware Version: 01.XX</b><p> <b>Note:</b> Firmware version cannot be upgraded to version 02.XX</p>
+</li>
+<li>Backwards compatible with 34-348xA</li>
+<li>Y/D Feedback Support</li>
+<li>TSC/HPC 1K Fan Support</li>
+</ul>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: white; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-center add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/ngc-io-tsg/ngc_34-3490A.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1692049971810" data-recentness-duration="30">
+<div class="step-text"><div><b>34-349xA/B</b></div>
+<ul>
+<li>Release Date: 05/2018</li>
+<li><b>Main Firmware Version: 03.XX - 04.XX</b><br/>
+ <b>Note:</b> See the  <a href="https://www.haascnc.com/content/haascnc/en/service/online-manuals/next-gen-control-electrical---service-manual/ngc---firmware-update.html">I/O Firmware Compatibility</a> chart for recommended firmware version.<br/>
+<br/>
+</li>
+<li><b>TC Firmware Version: 02.XX </b><br/>
+ <b>Note:</b> The 02.xx version will show if the I/O PCB has a TC PCB installed.  If the TC PCB is not installed the firmware version will show "No TC".<br/>
+<br/>
+</li>
+<li>Backwards compatible with<b> 34-348xA/B</b></li>
+<li>Redundant Axis Brake Support</li>
+<li>Optional TC PCB</li>
+<li>Outputs have LED's lights</li>
+</ul>
+</div>
+</div>
+</div></div>
+</div>
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-center add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/ngc-io-tsg/IO-PCB-Board-34-349xC.jpg" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1732213437897" data-recentness-duration="30">
+<div class="step-text"><div><b>34-349xC</b></div>
+<ul>
+<li>Release Date: 03/2023</li>
+<li><b>Main Firmware Version: 04.XX</b><br/>
+ <b>Note:</b> See the <a href="https://www.haascnc.com/content/haascnc/en/service/online-manuals/next-gen-control-electrical---service-manual/ngc---firmware-update.html">I/O Firmware Compatibility</a> chart for recommended firmware version.<br/>
+<br/>
+</li>
+<li><b>TC Firmware Version: 02.XX </b><br/>
+ <b>Note:</b> The 02.xx version will show if the I/O PCB has a TC PCB installed.  If the TC PCB is not installed the firmware version will show "No TC".<br/>
+<br/>
+</li>
+<li>Backwards compatible with <b>34-348xA/B/C</b> and<b> 34-349xA/B</b></li>
+<li>Redundant Axis Brake Support</li>
+<li>Optional TC PCB</li>
+<li>Outputs have LED's lights</li>
+<li>Supports low power valves by incorporating the I/O power supply and solenoid filters into the board</li>
+<li>Variable frequency drive (VFD) adapter board is built in</li>
+<li>E-stop Debounce circuit is also built in</li>
+</ul>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/ngc-io-tsg/io_connector_pins.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1544639665145" data-recentness-duration="30">
+<div class="step-text"><p><b>I/O PCB Connector and Pin Information</b></p>
+<p>As of NGC software version 100.17.000.1016 or higher connector and pin number has been added to the I/O diagnostic tab.  The PCB board name has also been added.  This will help when troubleshooting a machine and trying to figure out which connector and pin number to probe.<br/>
+</p>
+<p>The format for the connector and pin numbers are Pmm.nn where mm is the connector number and nn is the pin number.  For example, connector P56 and pin 5 would be represented as P56.5.  In some cases, a given signal may be present on more than one pin or connector.  In this case, they will be separated by a comma.</p>
+<p>In addition to providing information on I/O signals, the table now includes rows for things like power and ground pins.</p>
+<p>You can also use the search function to search for specific connector numbers.  For example you can search for connector P3 then press the [F1],  this will display all the input and output fuctions of connector P3.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="diySectionContainer parbase"><div>
+<div class="diy-section-container" id="PCB-serial-number">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">PCB serial number</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img non-expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/online-manuals/ngc-control/main-processor-pcb-images/PCB-serial-number-(web).png" style="height:auto; width:100%;"/>
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1674087555860" data-recentness-duration="30">
+<div class="step-text"><p><b>Note:</b> The PCB's serial number must be included in the inspection report checklist. The serial number is on a sticker [1] on the top of the inspection checklist. </p>
+<p>The serial number will start with two letters, followed by eight digits. Include both the letters and numbers on the inspection report. </p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Electrical-Safety">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Electrical Safety</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="reference parbase"><div class="cq-dd-paragraph"><div class="par parsys">
+<div class="diyStep"><div>
+<div class="diy-step" data-last-modified-timestamp="1755019661989" data-recentness-duration="30">
+<div class="step-text"><p> <b>DANGER:</b> Working with the electrical services required for CNC machines is <b>extremely hazardous</b> and can result in <b>serious injury or death</b>.</p>
+<p>Before connecting line wires to the CNC:</p>
+<ul>
+<li><b>Turn off all power</b> to the machine at the source.</li>
+<li>Perform a <b style="">Lockout-Tagout (LOTO)</b> procedure to ensure the power remains off during service.</li>
+<li><b>Verify</b> that power has been disconnected by using an <b>AC voltage detector</b> on all incoming lines.</li>
+</ul>
+<p>If you are <b>uncertain</b> about how to safely disconnect power or perform LOTO procedures:</p>
+<ul>
+<li><b>Do not proceed.</b></li>
+<li>Contact <b>qualified personnel</b> or obtain <b>appropriate assistance</b> before continuing.</li>
+</ul>
+<p>Failure to follow these precautions may result in <b>electrical shock</b>, <b>equipment damage</b>, or <b>fatal injury</b>.</p>
+</div>
+</div>
+</div></div>
+<div class="diyStep"><div>
+<div class="diy-step" data-last-modified-timestamp="1755019253323" data-recentness-duration="30">
+<div class="step-text"><p> <b>Danger:</b> Before beginning any work inside the control cabinet, verify that the <b>High Voltage indicator light</b> on the <b>320V Power Supply / Vector Drive</b> has been <b>off for a minimum of five (5) minutes</b>. This waiting period ensures that residual voltage has dissipated and reduces the risk of electric shock.</p>
+<p>Certain service procedures involve <b>high-risk electrical components</b> and may pose <b>serious injury or fatality hazards</b>. Technicians must <b>not attempt</b> any procedure unless they have a <b>complete understanding</b> of the steps involved and the associated risks.</p>
+<p>If there is <b>any uncertainty</b> regarding a procedure, contact your <b>Haas Factory Outlet (HFO)</b> to arrange for a qualified service technician.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Symptom-Table">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Symptom Table</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="table parbase">
+<div class="two-px-border-bold-header">
+<table border="2" cellpadding="1" cellspacing="0" width="100%">
+<tbody><tr><td style="text-align: center;">Symptom / Alarm</td>
+<td style="text-align: center;">Possible Cause</td>
+<td style="text-align: center;">Corrective Action</td>
+</tr><tr><td>Alarm <b>9924 CONTROL AND IO BOARD COMMUNICATION LOST</b><br/>
+Alarm <b>9925 CONTROL AND IO BOARD COMMUNICATION DID NOT INITIALIAZE</b>.<br/>
+Alarm <b>9915 IO BOARD CONFIGURATION CRC MISMATCH</b></td>
+<td>The I/O PCB built-in Low Volt Power Supply (LVPS) voltages are not present or the LVPS is not working.</td>
+<td>Troubleshoot the I/O PCB LVPS.  Refer to the<b> I/O PCB Low Volt Power Supply</b> section below.</td>
+</tr><tr><td rowspan="2">Alarm <b>9924 CONTROL AND IO BOARD COMMUNICATION LOST</b></td>
+<td>The I/O PCB is not receiving any power</td>
+<td>Check the PSUP breaker that supplies power to the I/O board. If the breaker is on, there should be LED lights on the I/O PCB. Check to see if the lights on the I/O board are on.</td>
+</tr><tr><td>There is an issue with the RJ45 cable connected from the I/O PCB to the Maincon board.</td>
+<td>This RJ45 cable connected to J1 on the I/O PCB may be damaged. Check the cable and connectors for damage. Swap the cable with another RJ45 and try to clear the alarm. If the alarm clears then the original cable needs to be replaced.</td>
+</tr><tr><td>Alarm <b>9924 CONTROL AND IO BOARD COMMUNICATION LOST </b>is generated intermittently.</td>
+<td>There is electrical noise interfering with communication signals connected to the I/O PCB.</td>
+<td><p>Use a service key and navigate to the <b>MISC</b> page on the control by pressing <b>Diagnostics -&gt; MISC.</b> Look at the <b>IOPerformance </b>fields that show the communication errors that have been generated. See the <b>Check IO Performance</b> section below.</p>
+<p>If the number of errors is growing, this indicates electrical noise in the control cabinet.</p>
+<ol>
+<li>Press [<b>E-STOP]</b> to turn the servos off. Then check to see if the number of errors continues to grow.</li>
+<li>Check that all ferrite filters are installed on communication cables.</li>
+<li>Check that the amplifier power cables are properly grounded to chasis.</li>
+</ol>
+</td>
+</tr><tr><td>Alarm <b>9924  CONTROL AND IO BOARD COMMUNICATION LOST</b> and <b>9100 NON RESETTABLE SYSTEM ERROR</b></td>
+<td>Same possible causes as <b>9924 </b>alarm above.</td>
+<td>Follow the Corrective Action listed above for <b>9924 </b>alarms. If this action doesn't clear the alarm, cycle power on the machine. If the alarm is present after cycling power, take an error report and contact <b>Haas Service</b>.</td>
+</tr><tr><td><b>Alarm 9924 CONTROL AND IO BOARD COMMUNICATION LOST </b>and <b>Alarm 9101 RESETTABLE SOFTWARE ERROR</b></td>
+<td>Same possible causes as <b>9924 </b>alarm above.</td>
+<td>Follow the Corrective Action listed above for <b>9924</b> alarms. If this action doesn't clear the alarm, cycle power on the machine. If the alarm is present after cycling power, refer to the  <b>IO Board Minimum Configuration Test </b>section.</td>
+</tr><tr><td>Alarm <b>9100 NON RESETTABLE SOFTWARE ERROR </b>at Power On, or Alarm <b>9915 IO BOARD CONFIGURATION MISMATCH.</b></td>
+<td>Main CRC and Factory CRC do not match due to the I/O PCB being swapped out.</td>
+<td><ol>
+<li>Press <b>[POWER OFF]</b>.</li>
+<li>Put the USB memory device into the control.<p>Note: The USB memory device must contain your <b>Haas Control Key</b> and the correct <b>configuration files</b>.</p>
+</li>
+<li>Press <b>[POWER ON]</b>.</li>
+<li>Press <b>[DIAGNOSTIC]</b>.</li>
+<li>Go to I/O Config [2] in the Diagnostics tab [1].</li>
+<li>Press <b>[F3]</b> to Update Config Table [4].</li>
+<li>Press<b> [RESET]</b> to continue. If the alarm does not clear, cycle the machine power.</li>
+</ol>
+<p>The Main CRC and the Factory CRC[3] are now the same.</p>
+<img height="NaN" src="https://service.haascnc.com/sites/default/files/Locked/3/update_io_config_table1.png" width="300"/></td>
+</tr><tr><td>Alarm <b>9933</b> SOFTWARE VERSION MISMATCH and <b>9100</b><br/>
+<b> </b>NON RESETTABLE SOFTWARE ERROR<br/>
+</td>
+<td>The firmware update failed, or I/O firmware is corrupted.</td>
+<td>Reload the I/O PCB main firmware refer to <a href="https://www.haascnc.com/content/haascnc/en/service/troubleshooting-and-how-to/how-to/next-generation-control---i-o-pcb-main-firmware---update.html">Next Generation Control - I/O PCB Main Firmware - Update</a>.</td>
+</tr><tr><td rowspan="7">Alarm <b>9899 IOPCB CAN FAULT</b> and/ or <b>9105 IO BOARD COMMAND EXECUTION FAILURE. </b>See the <a href="https://www.haascnc.com/content/haascnc/en/service/online-manuals/can-systems---service-manual/can-systems---troubleshooting.html" target="_blank">CAN Bus Systems Troubleshooting Guide</a> for more information.</td>
+<td>The CAN node I/O Configuration is incorrect.</td>
+<td>Update the I/O configuration via the I/O Config tab.</td>
+</tr><tr><td>The incorrect CAN node is enabled.</td>
+<td>Verify that Factory Settings 9000.001 -&gt; 9031.001 are set correctly. Only active nodes should be enabled.</td>
+</tr><tr><td>The Autodoor CAN PCB does not have power.</td>
+<td>Verify that the Low Volt Power supply is supplying power to the CAN Autodoor PCB.</td>
+</tr><tr><td>The CAN node Communication cable is disconnected.</td>
+<td>Power down machine for at least a minute. Verify all CAN communication cables are connected correctly.</td>
+</tr><tr><td>The CAN Module ID Selector is incorrect.</td>
+<td>Power down machine for at least a minute. Set ID selector correctly. Power up machine.</td>
+</tr><tr><td>The CAN Modules have incorrect termination.</td>
+<td>Power down machine for at least a minute. Verify that only last node in the chain is terminated. Power up machine.</td>
+</tr><tr><td>The CAN Node needs to be reset.</td>
+<td>Disable CAN Node via 9000.001 -&gt; 9031.001. If the machine recovers (I/O page isn’t “X”) after disabling a particular node, try to enable the node again.</td>
+</tr><tr><td>Spindle load pegs to 200%</td>
+<td><p>There is a problem with the <span style="font-size: 0.8125rem;">120 VAC outputs circuit components (solenoids, Wye-Delta, Oil Pump etc.)</span></p>
+</td>
+<td>Inspect the wiring, pins, and connectors for this circuit.  Inspect the I/O board for faults. Replace the I/O if necessary</td>
+</tr><tr><td>Machine generates multiple Alarm <b>20014.1</b> SIO TOOL CHANGER PCB IS NOT PRESENT and <b>20014.0</b> SIO TOOL CHANGER PCB PRESENT after the I/O TC PCB is installed.<br/>
+</td>
+<td>The I/O or TC PCB firmware is outdated.  </td>
+<td>Update I/O Main and TC firmware version to the latest.  Refer to <a href="https://www.haascnc.com/content/haascnc/en/service/troubleshooting-and-how-to/how-to/next-generation-control---i-o-pcb-main-firmware---update.html">Next Generation Control - I/O PCB Main Firmware - Update</a>.</td>
+</tr><tr><td>Machines equipped with I/O PCB P/N: <b>34-3490A/B</b> with an auxiliary estop that generates an estop alarm after the closing of machine doors.</td>
+<td>The doors closing have shaken the estop and caused a momentarily disconnect and caused an estop of the machine.</td>
+<td>A debounce capacitor will need to be added to the I/O PCB. Refer to the <a href="https://www.haascnc.com/service/troubleshooting-and-how-to/how-to/e-stop-debounce---ad0546.html">E-Stop - Debounce</a> procedure.</td>
+</tr><tr><td>Main I/O Firmware fails to load. </td>
+<td>TC PCB is causing the failure.</td>
+<td>Remove the TC PCB from the Main I/O PCB.  Then try the Firmware upgrade again.  </td>
+</tr><tr><td><b>Alarm 2001</b> EMERGENCY STOP SWITCH ERROR</td>
+<td><p>There is a loose connection from the Hydraulic Union Safety Device adaptor to the I/O PCB. </p>
+<p><b>Only applies to these machines built after 12/20/2023</b><b style="background-color: transparent;">:</b></p>
+<p><b>ST - 10/15/20/25/28/30/35/L/Y/LY </b></p>
+<p><b>REBOOT ONLY: ST-40/40Y/45/45Y (note: For ST-45/45L/45Y machines equipped with optional workholding)</b></p>
+</td>
+<td>Check the cable connected to the I/O PCB at P12, make sure the cable is not damaged or has a loose connection. </td>
+</tr></tbody></table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Serial-I-O-PCB-Alarms">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Serial I/O PCB Alarms</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="text parbase"><div class="text clearfix">
+<div class="text clearfix">
+
+<div class="text-body" style="background:  ">
+<p>Depending on the machine software version, I/O PCB main firmware version you will get a different alarm, see table below:</p>
+</div>
+</div>
+</div>
+</div>
+<div class="table parbase">
+<div class="one-px-border-bold-header">
+<table border="2" cellpadding="1" cellspacing="0" width="100%">
+<tbody><tr><td height="35" style="text-align: center;" width="313"><p><b>Alarm# / Title</b></p>
+<p><b>Software 100.17.000.2021 and lower</b></p>
+<p><b>I/O PCB Main Firmware 02.04 and lower</b></p>
+</td>
+<td style="text-align: center;" width="358"><p><b>Alarm# / Title</b></p>
+<p><b>Software 100.17.000.2030 and higher</b></p>
+<p><b>I/O PCB (34-348xC) Main Firmware 02.05 and higher</b></p>
+</td>
+<td style="text-align: center;" valign="middle" width="610"><p><b>Alarm Troubleshooting</b></p>
+</td>
+</tr><tr><td height="35" width="313"> </td>
+<td width="358"><b>9830</b>-IOPCB MEMORY DATA LOCKED</td>
+<td width="610">Attempts were made to download an I/O configuration file while configuration memory was locked.</td>
+</tr><tr><td height="136" rowspan="2" width="313"><b>850</b>-INTERNAL I/O ERROR</td>
+<td width="358"><b>9800</b>-INTERNAL I/O ERROR- SHIFT CHAIN</td>
+<td width="610">An internal I/O circuit board error has been sensed in it's shift chain. - Press the <b>[RESET]</b> button. Power off, and inspect the circuit components on the I/O PCB, see section below.</td>
+</tr><tr><td height="101" width="358"><b>9801</b>-INTERNAL I/O ERROR-TC COMMUNICATION</td>
+<td width="610"><p>An internal I/O circuit board error has been sensed where the main and tool changer microcontrollers could not communicate. - Press the <b>[RESET]</b> button.</p>
+<p>Inspect the tool changer relays, make sure the relay sockets are solder into the PCB board.</p>
+<p>Do not replace the I/O PCB.</p>
+<p>For IO PCB (34-348xA):</p>
+<p>·         Upgrade the I/O PCB Tool Changer firmware to the latest 01.xx version.</p>
+<p>For IO PCB (34-348xC):</p>
+<p>·         Update the I/O PCB Main firmware to the latest 02.xx version.</p>
+<p>·         Update the I/O PCB Tool Changer firmware to the latest 01.xx version.</p>
+<p>For IO PCB (34-349x):</p>
+<p>·         Update the I/O PCB Main firmware to the latest 03.xx version.</p>
+<p>Refer to <a href="https://www.haascnc.com/content/haascnc/en/service/troubleshooting-and-how-to/how-to/next-generation-control---i-o-pcb-main-firmware---update.html">Next Generation Control - I/O PCB Main Firmware - Update</a> procedure.</p>
+</td>
+</tr><tr><td height="149" rowspan="5" width="313"><b>9900</b>-IOPCB COMMUNICATION LOST</td>
+<td rowspan="5" width="358"><b>9802</b>-SIO MCU COMMUNICATION LOSS</td>
+<td width="610">Communication has been lost to the I/O PCB. Check that the I/O PCB has power by looking for the 12/24V green LED's. Look for a tripped circuit breaker. If the board has power, then</td>
+</tr><tr><td height="40" width="610">1. Check the RJ-45 cable connection from Maincon PCB (J14) to I/O PCB (J4). To test the cable refer to <a href="https://www.haascnc.com/content/haascnc/en/service/troubleshooting-and-how-to/how-to/network-cable-tester-tool.html">Network Cable Tester Tool procedure</a>.</td>
+</tr><tr><td height="20" width="610">2. Check the 3-Phase power input from PSUP (P4) to I/O PCB (P55).</td>
+</tr><tr><td height="20" width="610">3. Inspect the RJ-45 connector on the Maincon PCB &amp; I/O PCB for bent pins.</td>
+</tr><tr><td height="35" width="610">Upgrade the software to 100.17.000.2045 or higher. If you get this alarm with version 100.17.000.2045 or higher download an error report and e-mail to Haas service.</td>
+</tr><tr><td height="21" width="313"> </td>
+<td width="358"><b>9831</b>-I/O # ERROR</td>
+<td width="610">The main processor has command an output that is not configured in the I/O configuration file.</td>
+</tr><tr><td height="35" width="313"> </td>
+<td width="358"><b>9832</b>-SIO COMMUNICATION ERROR</td>
+<td width="610">The I/O PCB has received partial or invalid communication from the main processor.</td>
+</tr><tr><td height="35" width="313"> </td>
+<td width="358"><b>9833</b>-PCB OVER TEMPERATURE</td>
+<td width="610">The I/O PCB is reporting a temperature that exceeds limits (65 degrees C)</td>
+</tr><tr><td height="21" width="313"> </td>
+<td width="358"><b>9834</b>-12V FAULT</td>
+<td width="610">The 12V supply on the I/O PCB is outside of its limits of 10 to 14V.</td>
+</tr><tr><td height="104" rowspan="2" width="313"><b>175</b>-GROUND FAULT DETECTED</td>
+<td width="358"><b>9803</b>-120VAC GROUND FAULT</td>
+<td width="610">A 120 VAC ground fault condition was detected by the I/O PCB.  The ground fault signal gets generated by the PSUP PCB.  The ground fault signal gets sent to  I/O PCB at  P56 for monitoring. Check all 120V outputs for possible shorts to earth ground. See ground fault troubleshooting section below.</td>
+</tr><tr><td height="69" width="358"><b>9804</b>-240VAC GROUND FAULT</td>
+<td width="610">A 240 VAC ground fault condition was detected by the I/O PCB.  The ground fault signal gets generated by the PSUP PCB.  The ground fault signal gets sent to I/O PCB at  P56 for monitoring. Check all 240 V outputs for possible shorts to earth ground. This includes short circuits in any amplifier or vector drive output as well as any 240V pumps or chip conveyor. See ground fault troubleshooting section below.</td>
+</tr><tr><td height="35" width="313"><b>9903</b>-120 VAC SHORT CIRCUIT</td>
+<td width="358"><b>9805</b>-120VAC PHASE C SHORT CIRCUIT</td>
+<td width="610">A short circuit was detected in the 120V outputs from the I/O PCB. Check all 120V outputs for possible shorts to earth ground. See ground fault troubleshooting section below.</td>
+</tr><tr><td height="35" width="313"> </td>
+<td width="358"><b>9835</b>-120VAC PHASE C OVER CURRENT</td>
+<td width="610">A partial short circuit was detected in the 120V outputs from the I/O PCB. Check all 120V outputs for possible shorts to earth ground. See ground fault troubleshooting section below.</td>
+</tr><tr><td height="21" width="313"> </td>
+<td width="358"><b>9836</b>-120VAC PHASE C NO CURRENT</td>
+<td width="610">An output was turned on but no change in current was detected. Check for broken wires/cables.</td>
+</tr><tr><td height="35" width="313"> </td>
+<td width="358"><b>9837</b>-CALIBRATION ERROR</td>
+<td width="610">I/O PCB Calibration error. Either calibration did not occur during power up. Or the new calibration values don't match the previous values.</td>
+</tr><tr><td height="21" width="313"> </td>
+<td width="358"><b>9838</b>-TSC FAN FAILURE</td>
+<td width="610">The fan for the TSC heat sink stopped; could cause TSC over heating later on.</td>
+</tr><tr><td height="21" width="313"> </td>
+<td width="358"><b>9820</b>-TSC HEAT SINK OVER TEMP</td>
+<td width="610">The TSC Heat sink temperature is over the limit of 85°C. Check for a damaged fan.</td>
+</tr><tr><td height="139" rowspan="3" width="313"><b>9904</b>-PCOOL MALFUNCTION</td>
+<td width="358"><b>9806</b>-PCOOL SHORT CIRCUIT</td>
+<td width="610">The programmable coolant circuit has detected a short circuit (&gt;2.5A) and has shut down. Press the <b>[RESET]</b> button to clear alarms. If necessary, cycle power on the machine. Check for a shorted cable.</td>
+</tr><tr><td height="52" width="358"><b>9807</b>-PCOOL GROUND FAULT</td>
+<td width="610">The programmable coolant circuit has detected a ground fault condition and has shut down. Press the <b>[RESET]</b> button to clear alarms. If necessary, cycle power on the machine. Check for a shorted cable to earth ground.</td>
+</tr><tr><td height="35" width="358"><b>9808</b>-PCOOL OVERHEAT</td>
+<td width="610">The programmable coolant circuit has overheated and shut down. Give time for it to cool, then press the <b>[RESET]</b> button to clear alarms. Check for obstructions to Pcool movement.</td>
+</tr><tr><td height="35" width="313"> </td>
+<td width="358"><b>9839</b>-PCOOL STALLED</td>
+<td width="610">A high current (2.5A&gt; I &gt;1A) was detected in the programmable coolant circuit. Check for obstructions to Pcool movement. Check for binding in the Pcool unit.</td>
+</tr><tr><td height="35" width="313"> </td>
+<td width="358"><b>9840</b>-PCOOL OVERLOAD</td>
+<td width="610">The programmable coolant circuit has detected an overload condition. Check for binding in the Pcool unit.</td>
+</tr><tr><td height="35" width="313"> </td>
+<td width="358"><b>9841</b>-PCOOL MOTOR DISCONNECTED</td>
+<td width="610">The programmable coolant circuit was commanded on but no current was detected. Check to see if the Pcool will turn when commanded. Check for broken wires.   If the machine is equipped with 34-3090B I/O PCB make sure the Main I/O firmware has version 3.18 or higher. Refer to <a href="https://www.haascnc.com/content/haascnc/en/service/troubleshooting-and-how-to/how-to/next-generation-control---i-o-pcb-main-firmware---update.html">Next Generation Control - I/O PCB Main Firmware - Update</a> procedure.</td>
+</tr><tr><td height="294" rowspan="10" width="313"><b>9905</b>-IOPCB TOOL CHANGER FAULT</td>
+<td width="358"><b>9809</b>-TOOL CHANGER BUS SHORT CIRCUIT</td>
+<td width="610">The I/O PCB experienced an internal short circuit. Replace the 4 tool changer relays. If problem persists, then replace the I/O PCB.</td>
+</tr><tr><td height="35" width="358"><b>9810</b>-INTERNAL I/O ERROR-TC TRANSISTOR FAILURE</td>
+<td width="610">The I/O PCB tool changer (or bar feeder) transistor appears to be damaged. Replace the I/O PCB.</td>
+</tr><tr><td height="35" width="358"><b>9811</b>-TOOL CHANGER CABLE SHORT CIRCUIT</td>
+<td width="610">One of the tool changer outputs has detected a short circuit. Check all tool changer motor outputs for possible short circuits.</td>
+</tr><tr><td height="35" width="358"><b>9812</b>-TOOL CHANGER GROUND FAULT</td>
+<td width="610">A ground fault condition was detected by the I/O PCB tool changer. Check all tool changer motor outputs for possible short circuits to earth ground.</td>
+</tr><tr><td height="35" width="358"><b>9813</b>-TOOL CHANGER REGEN SHORTED</td>
+<td width="610">The I/O PCB experienced a short circuit on the tool changer regen circuit. Check for a short circuit on it's external regen resistor at P57.</td>
+</tr><tr><td height="35" width="358"><b>9814</b>-CAROUSEL BRAKE RESISTOR OVER TEMPERATURE</td>
+<td width="610">TBD</td>
+</tr><tr><td height="21" width="358"><b>9815</b>-ARM BRAKE RESISTOR OVER TEMPERATURE</td>
+<td width="610">TBD</td>
+</tr><tr><td height="21" width="358"><b>9816</b>-REGEN OVERLOAD</td>
+<td width="610">TBD</td>
+</tr><tr><td height="21" width="358"><b>9817</b>-MULTIPLE MOTOR COMMANDS</td>
+<td width="610">TBD</td>
+</tr><tr><td height="21" width="358"><b>9818</b>-TOOL CHANGER OVERLOAD</td>
+<td width="610">TBD</td>
+</tr><tr><td height="21" width="313"> </td>
+<td width="358"><b>9842</b>-OVER VOLTAGE</td>
+<td width="610">TBD</td>
+</tr><tr><td rowspan="2"> </td>
+<td rowspan="2"><b>9822</b> - IOPCB VERTICAL BRAKE FAILURE</td>
+<td>NGC machines equipped with <b>I/O PCB P/N: 34-3490A/B</b> and a servo brake motor may generate alarm 9822 IOPCB Brake.  Upgrade the Main I/O PCB firmware to 3.06 or higher.  Refer to <a href="https://www.haascnc.com/service/troubleshooting-and-how-to/how-to/next-generation-control---i-o-pcb-main-firmware---update.html">I/O PCB Firmware - Update - NGC</a> procedure.</td>
+</tr><tr><td><p>Upgrade the Main <a href="https://www.haascnc.com/content/haascnc/en/service/troubleshooting-and-how-to/how-to/next-generation-control---i-o-pcb-main-firmware---update.html" target="_blank">I/O PCB Firmware</a> to <b>4.21</b> or higher.</p>
+<p><a href="https://www.haascnc.com/content/haascnc/en/service/distributor-only/sa---service-alert---news/alarm-9822-iopcb-vertical-brake-failure.html" target="_blank">HSG-A 07-11-2023</a></p>
+</td>
+</tr><tr><td height="21" width="313"><b>880</b> - UNDER VOLTAGE ON 160V DC BUS</td>
+<td width="358"><b>9843</b>-TC UNDER VOLTAGE</td>
+<td width="610"><p>The system detected an undervoltage condition from the TC circuit or the TC PCB.  Check the 115 VAC input to the TC PCB, check for shorts on the tool changer motors.</p>
+<ol>
+<li>Phase missing on the 120VAC power from the PSUP</li>
+<li>Low voltage level in the 120VAC power from the PSUP</li>
+<li>Open diode (s)  in the 120Vac bridge rectifier circuit either in the I/O PCB (34-348x A, 34-348x C  PCBs) or the TC PCB 34-5502 used on 34-349X I/O PCBs</li>
+<li>Faulty TC PCB 34-5502 PCB</li>
+<li>Faulty I/O PCB</li>
+</ol>
+</td>
+</tr><tr><td height="21" width="313"> </td>
+<td width="358"><b>9844</b>-REGEN OPEN</td>
+<td width="610">TBD</td>
+</tr><tr><td height="21" width="313"> </td>
+<td width="358"><b>9845</b>-CONFIGURATION CONFLICT</td>
+<td width="610">TBD</td>
+</tr><tr><td height="21" width="313"> </td>
+<td width="358"><b>9846</b>-MOTOR STALLED</td>
+<td width="610">TBD</td>
+</tr><tr><td height="21" width="313"> </td>
+<td width="358"><b>9847</b>-MOTOR DISCONNECTED</td>
+<td width="610">The control software and the I/O firmware are not compatible, or the I/O firmware is outdated. </td>
+</tr><tr><td height="35" width="313"><b>9906</b>-CHIP CONVEYOR MALFUNCTION</td>
+<td width="358"><b>9819</b>-CHIP CONVEYOR SHORT CIRCUIT</td>
+<td width="610">TBD</td>
+</tr><tr><td height="21" width="313"> </td>
+<td width="358"><b>9848</b>-CHIP CONVEYOR MOTOR DISCONNECTED</td>
+<td width="610">TBD</td>
+</tr></tbody></table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="IO-PCB-LE7-Light">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">IO PCB LE7 Light</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: white; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/high-voltage-power-supply-(mmps)---troubleshooting-guide/io-pcb-le7-location.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1732146795700" data-recentness-duration="30">
+<div class="step-text"><p><b>Note: </b>The image above shows the location for <b>LE7 </b>on IO board <b>34-349C</b>. The position of <b>LE7</b> can differ based on the version of IO PCB on the machine.</p>
+</div>
+</div>
+</div></div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1732214014196" data-recentness-duration="30">
+<div class="step-text"><p><b>LE7 </b>[1] is one of the lights that come on when the machine is powered up. <b>LE7</b> has three states that it can be used to troubleshoot potential issues:</p>
+<p><b>LE7 is OFF</b></p>
+<ol>
+<li>This indicates the IO PCB is not receiving power or the software isn't functioning correctly. Check the breakers and make sure the IO board is receiving proper power.</li>
+</ol>
+<p><b>LE7 is Blinking - This can mean several things:</b></p>
+<ol>
+<li>This indicates that the board is not communicating the IO states at the regular rate. It is normal for this to happen when the machine is booting up and also during firmware upgrades. </li>
+<li>Check the serial communication cable going to the Maincon.</li>
+<li><b>LE7</b> will also be blinking if there is an internal IO PCB alarm<b> (9800 Internal error/shift)</b>.</li>
+<li>Since <b>LE7</b> blinks when booting up, if the control screen won't turn on and <b>LE7</b> is blinking this may indicate that the Maincon is stuck in it's boot process. <b>This doesn't mean that there is an issue with the IO board, but can indicate the state of the machine.</b></li>
+</ol>
+<p><b>LE7 is On Solid</b></p>
+<ol>
+<li>This is the normal state of <b>LE7</b> when the machine is powered on and booted up. It indicates the IO is communicating with the Maincon.</li>
+</ol>
+
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Lathe-I-O-PCB-Hydraulic-Union-Safety-Device-Connection-">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Lathe I/O PCB Hydraulic Union Safety Device Connection </h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: white; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/ngc-io-tsg/io-kill-switch-connection.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1699293988593" data-recentness-duration="30">
+<div class="step-text"><ol>
+<li>Push <b>[POWER OFF]</b>. Go to P12 on the I/O PCB, unplug the Hydraulic Union Safety Device adaptor. </li>
+<li>Plug the cable back into P12 making sure its fully seated in the port. Push <b>[POWER ON]</b>. Push <b>[ALARMS]</b>. Push <b>[RESET]</b>.</li>
+<li>Verify that the EMERGENCY STOP alarm has cleared.</li>
+</ol>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Check-IO-Performance">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Check IO Performance</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: white; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/online-manuals/ngc-control/diagnostic-data/io-errors.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1747431518942" data-recentness-duration="30">
+<div class="step-text"><p><b>Note: </b>The <b>MISC</b> tab can only be seen when a service key is used on the machine.</p>
+<p>Enter service mode using the service key.</p>
+<p>Press <b>Diagnostics </b>and then going to the <b>MISC </b>tab [1].</p>
+<p>Monitor the Total Errors and CRC Errors for both Transmitting (Tx) and Receiving (Rx) [2].</p>
+<p>If the number of errors is growing, there is likely electrical noise present in the control cabinet.</p>
+<p>Press <b>[E-STOP]</b> to turn off the servo motors. Check if this stops the number of errors from growing. Electrical noise may be produced by the power cables coming from the servo amplifiers located above the IO board.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: white; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/online-manuals/ngc-control/diagnostic-data/amplifier-groundings.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1747430688042" data-recentness-duration="30">
+<div class="step-text"><p>If the number of errors stops increasing when the servos are off, make sure that all ferrite filters are installed on communication cables and that amplifier power cables coming from the amplifiers and vector drives are properly grounded. </p>
+<p>Make sure there are ferrite filters [1] ground connections [2] and that the exposed shielding is grounded on all amplifiers [3].</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Ground-Fault-Circuit-Monitor">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Ground Fault Circuit Monitor</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-center add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/ngc-io-tsg/ground_fault.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1543259811576" data-recentness-duration="30">
+<div class="step-text"><p>On the NGC control there is a ground fault circuit monitor. This circuit monitors the 115V and 230V for a ground fault condition.</p>
+<ol>
+<li>For 175 GROUND FAULT alarm. Determine if the alarm is caused by a 115 or 230 VAC component.</li>
+<li>Press the <b>[DIAGNOSTIC]</b> button, cursor to the I/O tab.</li>
+<li>Type in: "Ground", then press <b>[F1]</b>.</li>
+<li>Look at the _120VAC/_240VAC_GROUND FAULT analog value. The circuit with the highest value is the one that reported the ground fault.</li>
+<li>Test the components that operate in that voltage range, for a short-circuit (see the table below).</li>
+<li>The ground fault analog value will drop when the component with the short circuit is disconnected from the machine control.</li>
+</ol>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="diyStep"><div>
+<div class="diy-step" data-last-modified-timestamp="1533830908592" data-recentness-duration="30">
+<div class="step-text"><p><b>Components to Check when a Ground Fault Alarm Occurs</b></p>
+<p><b> Note:</b> *These devices can be disconnected from the I/O PCB without an alarm being generated.</p>
+</div>
+</div>
+</div></div>
+<div class="table parbase">
+<div class="one-px-border-bold-header">
+<table border="2" cellpadding="1" cellspacing="0" width="100%">
+<tbody><tr><td style="text-align: center;"><b>Machine Components</b></td>
+<td style="text-align: center;"><b>I/O PCB Location</b></td>
+<td style="text-align: center;"><b>Operating Voltage</b></td>
+</tr><tr><td style="text-align: center;">4th and 5th Axis Brake Solenoids*</td>
+<td style="text-align: center;">P16 - P17</td>
+<td style="text-align: center;">120 VAC</td>
+</tr><tr><td style="text-align: center;">Worklights*</td>
+<td style="text-align: center;">P18 - P21</td>
+<td style="text-align: center;">120 VAC</td>
+</tr><tr><td style="text-align: center;">High Intensity Lights*</td>
+<td style="text-align: center;">P22</td>
+<td style="text-align: center;">120 VAC</td>
+</tr><tr><td style="text-align: center;">GFI</td>
+<td style="text-align: center;">P23</td>
+<td style="text-align: center;">120 VAC</td>
+</tr><tr><td style="text-align: center;">Door Interlocks*</td>
+<td style="text-align: center;">P40, P41, P42</td>
+<td style="text-align: center;">120 VAC</td>
+</tr><tr><td style="text-align: center;">Lube Panel Solenoids</td>
+<td style="text-align: center;">P35, P36</td>
+<td style="text-align: center;">120 VAC</td>
+</tr><tr><td style="text-align: center;">Y/D Contactor Coil</td>
+<td style="text-align: center;">P37, P38</td>
+<td style="text-align: center;">120 VAC</td>
+</tr><tr><td style="text-align: center;">DC Tool Change Motors*</td>
+<td style="text-align: center;">P58</td>
+<td style="text-align: center;">160 VDC, generated from the 120 VAC</td>
+</tr><tr><td style="text-align: center;">Spindle Motor Fan / Oil Pump</td>
+<td style="text-align: center;">P32</td>
+<td style="text-align: center;">120 VAC</td>
+</tr><tr><td style="text-align: center;">Sub Spindle Fan / Hydraulic Pump Fan</td>
+<td style="text-align: center;">P33</td>
+<td style="text-align: center;">120 VAC</td>
+</tr><tr><td style="text-align: center;">TSC/HPC Pump*</td>
+<td style="text-align: center;">P31</td>
+<td style="text-align: center;">240 VAC</td>
+</tr><tr><td style="text-align: center;">Coolant Pump*</td>
+<td style="text-align: center;">P29</td>
+<td style="text-align: center;">240 VAC</td>
+</tr><tr><td style="text-align: center;">Chip Auger / Conveyor*</td>
+<td style="text-align: center;">P24, Quad PCB</td>
+<td style="text-align: center;">240 VAC</td>
+</tr><tr><td style="text-align: center;">Axis Motors</td>
+<td style="text-align: center;"> </td>
+<td style="text-align: center;">240 VAC</td>
+</tr><tr><td style="text-align: center;">Spindle Motor</td>
+<td style="text-align: center;"> </td>
+<td style="text-align: center;">240 VAC</td>
+</tr><tr><td style="text-align: center;">Hydraulic Pump Motor</td>
+<td style="text-align: center;"> </td>
+<td style="text-align: center;">240 VAC</td>
+</tr></tbody></table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="I-O-PCB-Low-Volt-Power-Supply">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">I/O PCB Low Volt Power Supply</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/ngc-io-tsg/io_pcb_lvps_voltages.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1663348468696" data-recentness-duration="30">
+<div class="step-text"><p>The I/O PCB is equipped with a built in Low Volt Power Supply (LVPS).  This power supply generates 3 DC voltages: <b> +24V, +15V and +12V </b>[1].</p>
+<p>These voltages are used to power low volt circuits on the I/O PCB and also to power external devices like Probes, Axis Brakes, and User Inputs.</p>
+<p>There are 3 LEDs that show the presence of these voltages on the I/O PCB. </p>
+<ul>
+<li>When the I/O LVPS is working correctly these LED's will glow solid.  </li>
+<li>When there is a short circuit on the low volt circuits these LED's can begin to flash on and off. <ul>
+<li>When this happens you will need to find the source of the short circuit, start by disconnecting devices that are being powered by the LVPS like the Probe, Axis Brakes, User Inputs until LED lights begin to remain solid.</li>
+</ul>
+</li>
+<li>When the LED's are OFF and the machine is turned on.  The I/O PCB may not be getting the 115VAC Voltage input [2] or the Circuit Breaker for the I/O PCB may have tripped.</li>
+</ul>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="PCB-Component-Inspection">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">PCB Component Inspection</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-center add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/ngc-io-tsg/ngc_component_inspection_2.png/_jcr_content/renditions/cq5dam.thumbnail.319.319.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1533830918829" data-recentness-duration="30">
+<div class="step-text"><p>Intermittent alarms or symptoms can be caused by component failure. Below is a list of possible failures:</p>
+<ol>
+<li>Missing solder on all or some components pins</li>
+<li>Poor solder</li>
+<li>Solder bridges</li>
+<li>Wrong component installation (orientation)</li>
+<li>Missing components<br/>
+<p><b> Note:</b> Some PCB's have unused circuits and are missing components intentionally, look for broken off components.</p>
+</li>
+<li>Broken components</li>
+<li>Broken pins on IC's</li>
+<li>Bent pins on the connectors</li>
+</ol>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-center add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/ngc-io-tsg/ngc_io_front_component_inspection.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-center add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/ngc-io-tsg/ngc_io_back_component_inspection.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1533830926898" data-recentness-duration="30">
+<div class="step-text"><p>Use a magnifying glass to inspect the circuit components on the front and back of the I/O PCB. Below are the circuit component zones to inspect:</p>
+<ol>
+<li>24 VDC, 160 VDC circuit components (DC motor tool changers, axis brake, probe).</li>
+<li>120 VAC outputs circuit components (solenoids, Wye-Delta, Oil Pump etc.)</li>
+<li>240 VAC outputs circuit components (Coolant, TSC, Auger).</li>
+<li>Check the RJ45 connector for loose housing and bent pins.</li>
+</ol>
+<p><b> Important:</b> If you find a damaged component, replace the I/O PCB, inspect the new I/O PCB circuit components before installing.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="IO-Board-Minimum-Configuration-Test-">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">IO Board Minimum Configuration Test </h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="diyStep"><div>
+<div class="diy-step" data-last-modified-timestamp="1787064771090" data-recentness-duration="30">
+
+<div class="step-text"><p>The following procedure verifies IO PCB operation using the minimum required connections. This test isolates the IO PCB from the rest of the machine and can help determine whether the IO PCB is faulty or if an external component is preventing communication.</p>
+<p>Perform this procedure if the following conditions are present:</p>
+<ul>
+<li>LE 3, LE 4, and LE 5 are ON.</li>
+<li>LE 2 is ON.</li>
+<li>LE 7 is OFF.</li>
+<li>The IO PCB is not displayed on the Diagnostics &gt; System page after power-up.</li>
+</ul>
+</div>
+</div>
+</div></div>
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-center add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/ngc-io-tsg/IO_Board_Minimum-Configuration_Test_LE2.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1787064766017" data-recentness-duration="30">
+<h3 class="stepNumber">1</h3>
+<div class="step-text"><p>LE 2 monitors communication between the Maincon and the IO PCB. With the RJ45 cable connected from J14 on the Maincon to J4 on the IO PCB, LE2 should illuminate after the machine has completed boot-up, regardless of whether any other devices are connected to the IO PCB.</p>
+<p>If LE2 does not illuminate after the machine has booted, there is likely a communication issue between the Maincon and the IO PCB. Inspect the RJ45 cable and verify that it is properly connected at both ends.</p>
+<p>To help isolate the fault, move the RJ45 cable from J14 to J13 on the Maincon. If LE2 illuminates when connected to J13, the J14 port on the Maincon may be damaged or faulty.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-center add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/ngc-io-tsg/IO_Board_Minimum-Configuration_Test.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1787064761729" data-recentness-duration="30">
+<h3 class="stepNumber">2</h3>
+<div class="step-text"><p>Disconnect all connections from the IO PCB and Maincon except those listed below. Refer to the image for the required connections.</p>
+<p>IO PCB Connections:</p>
+<ul>
+<li>RJ45 cable from J4 on the IO PCB to J14 on the Maincon.</li>
+<li>120 VAC input connected to P55 on the IO PCB from P4 on the PSUP PCB.</li>
+<li>Cable from P56 on the IO PCB to P17 on the PSUP PCB.</li>
+</ul>
+<p>Maincon Connections:</p>
+<ul>
+<li>Cable from J3 on the Maincon to P20 on the PSUP PCB.</li>
+<li>HDMI cable from J4 on the Maincon to the LCD PCB.</li>
+<li>RJ45 cable from J7 on the IO PCB to J9 on the SKIBIF.</li>
+<li>RJ45 cable from J14 on the Maincon to J4 on the IO PCB.</li>
+</ul>
+
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-center add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/ngc-io-tsg/IO_Board_Minimum_Configuration_Test_LE7.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-center add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/ngc-io-tsg/IO_Board_Minimum_Configuration_Test_LE_3-5.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1787064757574" data-recentness-duration="30">
+<h3 class="stepNumber">3</h3>
+<div class="step-text"><p>After all connections have been verified, power on the machine and allow it to complete the boot sequence.</p>
+<p>LED 7 [1] should either be ON or blinking.</p>
+<ul>
+<li>A blinking LE7 indicates that communication has been established, but the IO configuration does not match the configuration stored by the control (CRC mismatch).</li>
+<li>A solid LE7 indicates that the Maincon and IO PCB are communicating properly and the IO configuration matches the control.</li>
+<li>If LE7 remains OFF, an internal fault on the IO PCB is likely preventing the processor from communicating with the Maincon.</li>
+</ul>
+<p>Assuming LE3, LE4, and LE5 are illuminated [2], a solid LE7 confirms that communication between the Maincon and IO PCB has been established successfully.<br/>
+<br/>
+If LE3, LE4, and LE5 are ON and LE2 is ON, but LE7 remains OFF with the minimum configuration connected, replace the IO PCB.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Electrical-Diagrams">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Electrical Diagrams</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="image parbase">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/ngc-io-tsg/ngc_io_pcb_electrical_diagram.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+<div class="text parbase"><div class="text clearfix">
+<div class="text clearfix">
+
+<div class="text-body" style="background:  ">
+<p><b>I/O PCB Interconnect Diagram</b></p>
+</div>
+</div>
+</div>
+</div>
+<div class="image parbase">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-center add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/ngc-io-tsg/ngc_io_pcb_sp_inputs.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+<div class="text parbase"><div class="text clearfix">
+<div class="text clearfix">
+
+<div class="text-body" style="background:  ">
+<p><b>I/O PCB (P39) to Mill - Spindle Head Inputs Detail Diagram<br/>
+</b></p>
+</div>
+</div>
+</div>
+</div>
+<div class="image parbase">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-center add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/ngc-io-tsg/ngc_io_pcb_air_lube_inputs_outputs.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+<div class="text parbase"><div class="text clearfix">
+<div class="text clearfix">
+
+<div class="text-body" style="background:  ">
+<p><b>I/O PCB (P34, P35) to Mill - Air/Lube Panel Detail Diagram<br/>
+</b></p>
+</div>
+</div>
+</div>
+</div>
+<div class="image parbase">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-center add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/ngc-io-tsg/P17_PSUP_To_P56_IO.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+<div class="diyStep"><div>
+<div class="diy-step" data-last-modified-timestamp="1787067499316" data-recentness-duration="30">
+
+<div class="step-text"><p><b>PSUP (P17) to I/O PCB (P56) Detail Diagram</b></p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Related-Content">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Related Content</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="link parbase">
+<a aria-label="Learn More" class="on center red" data-openmodal="false" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---can-systems.html" style="
+                  
+                  font-size: px;" target="_blank">
+
+            CAN I/O Systems
+            
+        </a>
+</div>
+<div class="link parbase">
+<a aria-label="Learn More" class="on center red" data-openmodal="false" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---robot-and-automation.html" style="
+                  
+                  font-size: px;" target="_blank">
+
+            Robot Integration
+            
+        </a>
+</div>
+<div class="link parbase">
+<a aria-label="Learn More" class="on center red" data-openmodal="false" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---i-o.html#tab_diagnostic-data---ngc_0" style="
+                  
+                  font-size: px;" target="_blank">
+
+            DIagnostic Data
+            
+        </a>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+</div>
+<div class="tab" id="tab_diagnostic-data---ngc_0">
+<div class="title parbase section">
+<div class="title-wrapper text-align-left clearfix">
+<h1>8.5 I/O PCB Diagnostic Data</h1>
+</div>
+</div>
+<div class="sectionHeader parbase section">
+<div class="sectionHeader section-wrapper text-align-center clearfix" id="waypoint-target">
+
+<h2><b>Diagnostic Data</b> - NGC</h2>
+<hr/>
+</div>
+</div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Introduction">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Introduction</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="diyStep"><div>
+<div class="diy-step" data-last-modified-timestamp="1534966353229" data-recentness-duration="30">
+<div class="step-text"><p>This procedure tells you how to see this information:</p>
+<ul>
+<li>Analog Sensor Data</li>
+<li>Diagnostic Inputs/Outputs</li>
+</ul>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Diagnostic-Data---Analog-Sensors">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Diagnostic Data - Analog Sensors</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/how-to/next-generation-control---diagnostic-data/NGC_analog_sensor_data.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1547833462726" data-recentness-duration="30">
+<h3 class="stepNumber">1</h3>
+<div class="step-text"><p>Push <b>[POWER ON]</b>.</p>
+<p>Push <b>[DIAGNOSTIC]</b> to access the Parameters, Diagnostics and Maintenance display [2].</p>
+<p>Navigate to the primary Diagnostics tab [1].</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/how-to/next-generation-control---diagnostic-data/NGC_analog_sensor_data_open.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1547833467239" data-recentness-duration="30">
+<h3 class="stepNumber">2</h3>
+<div class="step-text"><p>Navigate to the Gauges tab [1].</p>
+<p>The screen shows the analog sensor data for the sensors that follow:</p>
+<ul>
+<li>Air Pressure</li>
+<li>Coolant Level</li>
+<li>Tsc Pressure</li>
+<li>Spindle Motor Temperature</li>
+<li>Electronics Temperature</li>
+<li>Vibration</li>
+<li>Dc Voltage</li>
+<li>Ac Line Voltage</li>
+</ul>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Diagnostic-Data---Input---Output">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Diagnostic Data - Input / Output</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/how-to/next-generation-control---diagnostic-data/NGC_analog_sensor_data.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1534966799790" data-recentness-duration="30">
+<h3 class="stepNumber">1</h3>
+<div class="step-text"><p>Push <b>[POWER ON]</b>.</p>
+<p>Push <b>[DIAGNOSTIC]</b> to go to the Parameters, Diagnostics and Maintenance display [2].</p>
+<p>Navigate to the primary Diagnostics tab [1].</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/how-to/next-generation-control---diagnostic-data/NGC_IO_display.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1547833477017" data-recentness-duration="30">
+<h3 class="stepNumber">2</h3>
+<div class="step-text"><p>Navigate to the I/O tab [1].</p>
+<p>The Type column tells you if the item is an INPUT or OUTPUT.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/how-to/next-generation-control---diagnostic-data/NGC_IO_search_GEAR.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1547833500996" data-recentness-duration="30">
+<h3 class="stepNumber">3</h3>
+<div class="step-text"><p>Use the Search function to find applicable inputs or outputs. Type the letters to find, and then push <b>[F1]</b>.</p>
+<p>This example finds the inputs and outputs that contain the word "GEAR."</p>
+<p>The I/O screen shows the inputs or outputs with the word GEAR in them [2].</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/how-to/next-generation-control---diagnostic-data/NGC_IO_activate_HIGH_GEAR.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1748989216119" data-recentness-duration="30">
+<h3 class="stepNumber">4</h3>
+<div class="step-text"><p>The machine must be in Service mode to do this step. </p>
+<p>You can change an output Value [1] to 0 or 1 to energize or de-energize the I/O PCB output.</p>
+<p>Select the OUTPUT you want to change.</p>
+<p>Push the number 1 or 0 and push <b>[ENTER]</b>.</p>
+<p>This example energizes OUTPUT 32 GEAR_BOX_TO_HIGH_GEAR [3].</p>
+<p><b> Note: </b>This example automatically energizes INPUT VALUE for GEARBOX_HIGH_GEAR [2].</p>
+
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Diagnostic-Data---CAN-PCB-I-O">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Diagnostic Data - CAN PCB I/O</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/online-manuals/ngc-control/diagnostic-data/NGC_IO_CAN_Search.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1628028025545" data-recentness-duration="30">
+<h3 class="stepNumber">1</h3>
+<div class="step-text"><p>Follow these steps to find the inputs and outputs for the various CAN PCBs:</p>
+<ul>
+<li>Press the <b>[DIAGNOSTIC] </b>button to and navigate to the I/O tab [1] from under the Diagnostic tab.</li>
+<li>Search ADPCB [2] to find inputs and outputs for the Autodoor PCB.</li>
+<li>Search EVPCB [3] to find inputs and outputs for the E-Vise PCB.</li>
+<li>Search LPPCB [4] to find the inputs amd outputs for the Lube Panel PCB.</li>
+<li>Search SPHD [5] to find the inputs and outputs for the Spindle Head PCB.</li>
+</ul>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+</div>
+</section>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</body></html>

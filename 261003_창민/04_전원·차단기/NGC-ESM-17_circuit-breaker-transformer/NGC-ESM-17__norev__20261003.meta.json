@@ -1,0 +1,29 @@
+{
+  "source_path": "C:\\code\\1\\참고문서\\매뉴얼\\VF 시리즈 서비스 매뉴얼\\찐\\04_전원·차단기\\NGC-ESM-17_circuit-breaker-transformer\\NGC-ESM-17__norev__20261003.html",
+  "source_name": "NGC-ESM-17__norev__20261003.html",
+  "file_type": "html",
+  "content_hash": "sha256:a8614bb1aeb2cdfdd43437fd015bfe5c0a681acfd025a567ed085ba3140a168f",
+  "converter": "markitdown",
+  "converter_version": "0.1.8",
+  "converted_at": "2026-10-03T18:04:01",
+  "warnings": [
+    "HTML 전체 변환: 사이트 내비게이션·바닥글 포함"
+  ],
+  "doc_id": "NGC-ESM-17",
+  "revision": "",
+  "last_updated": "",
+  "source_url": "https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---circuit-breaker-and-transformer.html",
+  "retrieved_at": "2026-10-03T18:04:01",
+  "retrieved_via": "direct",
+  "http_status": 200,
+  "applies_to": "Applies to these Parts",
+  "embedded_docs": [
+    {
+      "doc_id": "AD1003",
+      "revision": "Revision A - 09/2026"
+    }
+  ],
+  "title": "NGC - Circuit Breaker and Transformer - Haas Service Manual",
+  "pages": null,
+  "license_note": "Haas 저작물: 사이트 약관상 서면 허가 없는 사용 불가 표기. 내부 참고용 사본, 재배포 금지"
+}

@@ -1,0 +1,29 @@
+{
+  "source_path": "C:\\code\\1\\참고문서\\매뉴얼\\VF 시리즈 서비스 매뉴얼\\찐\\03_센서·공압·진단\\NGC-ESM-08_io-tc-pcb\\NGC-ESM-08__norev__20261003.html",
+  "source_name": "NGC-ESM-08__norev__20261003.html",
+  "file_type": "html",
+  "content_hash": "sha256:c55dbf37720fd10cf7eff6ba452bf2c3ab6a818be3b8bdec118a0841d2a341de",
+  "converter": "markitdown",
+  "converter_version": "0.1.8",
+  "converted_at": "2026-10-03T18:03:13",
+  "warnings": [
+    "HTML 전체 변환: 사이트 내비게이션·바닥글 포함"
+  ],
+  "doc_id": "NGC-ESM-08",
+  "revision": "",
+  "last_updated": "",
+  "source_url": "https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---i-o.html",
+  "retrieved_at": "2026-10-03T18:03:13",
+  "retrieved_via": "direct",
+  "http_status": 200,
+  "applies_to": "Applies to the Following Kits:; Only applies to these machines built after 12/20/2023",
+  "embedded_docs": [
+    {
+      "doc_id": "TG0002",
+      "revision": "Revision C - 08/2026"
+    }
+  ],
+  "title": "NGC - I/O and TC PCB - Haas Service Manual",
+  "pages": null,
+  "license_note": "Haas 저작물: 사이트 약관상 서면 허가 없는 사용 불가 표기. 내부 참고용 사본, 재배포 금지"
+}

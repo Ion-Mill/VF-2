@@ -1,0 +1,24 @@
+{
+  "source_path": "C:\\code\\1\\참고문서\\매뉴얼\\VF 시리즈 서비스 매뉴얼\\찐\\09_설비사양·설치\\VF-2-preinstall_pre-install-guide\\VF-2-preinstall__norev__20261003.html",
+  "source_name": "VF-2-preinstall__norev__20261003.html",
+  "file_type": "html",
+  "content_hash": "sha256:710d88d461c24aa62c6950c6cd33d2520a7631f8b2d6768baf263582b72fd1cd",
+  "converter": "markitdown",
+  "converter_version": "0.1.8",
+  "converted_at": "2026-10-03T18:09:18",
+  "warnings": [
+    "HTML 전체 변환: 사이트 내비게이션·바닥글 포함"
+  ],
+  "doc_id": "VF-2-preinstall",
+  "revision": "",
+  "last_updated": "",
+  "source_url": "https://www.haascnc.com/owners/pre-install-guide/mills-pre-install/VF-2.html",
+  "retrieved_at": "2026-10-03T18:09:18",
+  "retrieved_via": "direct",
+  "http_status": 200,
+  "applies_to": "",
+  "embedded_docs": [],
+  "title": "VF-2 Pre-install Guide",
+  "pages": null,
+  "license_note": "Haas 저작물: 사이트 약관상 서면 허가 없는 사용 불가 표기. 내부 참고용 사본, 재배포 금지"
+}

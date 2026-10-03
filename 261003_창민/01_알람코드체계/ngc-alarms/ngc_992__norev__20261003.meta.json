@@ -1,0 +1,24 @@
+{
+  "source_path": "C:\\code\\1\\참고문서\\매뉴얼\\VF 시리즈 서비스 매뉴얼\\찐\\01_알람코드체계\\ngc-alarms\\ngc_992__norev__20261003.html",
+  "source_name": "ngc_992__norev__20261003.html",
+  "file_type": "html",
+  "content_hash": "sha256:68a6068ddca2c9b752fd1139f5eba459f5c7990ae4127decf1fbe5edb4ca6796",
+  "converter": "markitdown",
+  "converter_version": "0.1.8",
+  "converted_at": "2026-10-03T17:59:40",
+  "warnings": [
+    "HTML 전체 변환: 사이트 내비게이션·바닥글 포함"
+  ],
+  "doc_id": "ngc_992",
+  "revision": "",
+  "last_updated": "02/27/2026",
+  "source_url": "https://www.haascnc.com/service/alarm-search.alarm=ngc_992-0000.html",
+  "retrieved_at": "2026-10-03T17:59:40",
+  "retrieved_via": "direct",
+  "http_status": 200,
+  "applies_to": "",
+  "embedded_docs": [],
+  "title": "992 AMPLIFIER OVER CURRENT",
+  "pages": null,
+  "license_note": "Haas 저작물: 사이트 약관상 서면 허가 없는 사용 불가 표기. 내부 참고용 사본, 재배포 금지"
+}

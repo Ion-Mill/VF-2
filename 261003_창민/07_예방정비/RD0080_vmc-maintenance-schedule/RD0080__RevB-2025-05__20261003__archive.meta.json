@@ -1,0 +1,29 @@
+{
+  "source_path": "C:\\code\\1\\참고문서\\매뉴얼\\VF 시리즈 서비스 매뉴얼\\찐\\07_예방정비\\RD0080_vmc-maintenance-schedule\\RD0080__RevB-2025-05__20261003__archive.html",
+  "source_name": "RD0080__RevB-2025-05__20261003__archive.html",
+  "file_type": "html",
+  "content_hash": "sha256:d3872741b294718d9358c4ee16448d7d92cca1ab9e3c422906996b3de277a80a",
+  "converter": "markitdown",
+  "converter_version": "0.1.8",
+  "converted_at": "2026-10-03T18:05:29",
+  "warnings": [
+    "HTML 전체 변환: 사이트 내비게이션·바닥글 포함"
+  ],
+  "doc_id": "RD0080",
+  "revision": "Revision B - 5/2025",
+  "last_updated": "10/17/2025",
+  "source_url": "https://web.archive.org/web/20260214053732/https://www.haascnc.com/service/troubleshooting-and-how-to/reference-documents/vmc-maintenance-schedule.html",
+  "retrieved_at": "2026-10-03T18:05:29",
+  "retrieved_via": "archive 20260214",
+  "http_status": 200,
+  "applies_to": "",
+  "embedded_docs": [
+    {
+      "doc_id": "RD0080",
+      "revision": "Revision B - 5/2025"
+    }
+  ],
+  "title": "VMC Maintenance Schedule - RD0080",
+  "pages": null,
+  "license_note": "Haas 저작물: 사이트 약관상 서면 허가 없는 사용 불가 표기. 내부 참고용 사본, 재배포 금지"
+}

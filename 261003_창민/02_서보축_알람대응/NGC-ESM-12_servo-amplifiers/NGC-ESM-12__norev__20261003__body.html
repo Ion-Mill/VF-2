@@ -1,0 +1,1354 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NGC - Servo Amplifiers - Haas Service Manual</title>
+<style>
+body{font-family:Segoe UI,Arial,sans-serif;max-width:980px;margin:24px auto;padding:0 16px;line-height:1.55;color:#1d1d1f;background:#fff}
+.provenance{font-size:12px;border:1px solid #c9ced6;background:#f4f6f8;padding:8px 12px;margin-bottom:24px}
+.provenance th{text-align:left;padding-right:12px;white-space:nowrap;vertical-align:top}
+table{border-collapse:collapse;margin:12px 0} td,th{border:1px solid #c9ced6;padding:4px 8px;vertical-align:top}
+.provenance td,.provenance th{border:none;padding:1px 8px 1px 0}
+img{max-width:100%;height:auto}
+</style></head><body>
+<div class="provenance"><strong>본문 추출본 (원본 아님)</strong> — 사실 확인은 같은 폴더의 원본 HTML과 공식 URL로 한다. 그림은 Haas 공식 주소에서 불러오므로 인터넷 연결 시에만 보인다.
+<table><tr><th>doc_id</th><td>NGC-ESM-12</td></tr><tr><th>title</th><td>NGC - Servo Amplifiers - Haas Service Manual</td></tr><tr><th>revision</th><td>표기 없음</td></tr><tr><th>last_updated</th><td>표기 없음</td></tr><tr><th>source_url</th><td>https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---servo-amplifiers.html</td></tr><tr><th>retrieved_at</th><td>2026-10-03T18:03:49</td></tr><tr><th>retrieved_via</th><td>direct</td></tr><tr><th>original_file</th><td>NGC-ESM-12__norev__20261003.html</td></tr><tr><th>original_sha256</th><td>d8a5311dbe280a320d79d30cc402afae38e77d52fa0fe23d45245a0f2cc4eb2a</td></tr><tr><th>extraction</th><td>div.print-only · scripts/extract_ngc_body.py</td></tr><tr><th>license</th><td>Haas 저작물: 사이트 약관상 서면 허가 없는 사용 불가 표기. 내부 참고용 사본, 재배포 금지</td></tr></table></div>
+
+
+<div>
+<div class="hfoSubnav">
+<div id="hfo-nav-container">
+<nav data-component="HfoSubnav" data-new-flag-default-text="new" data-override-json="[]" id="hfo-nav">
+<div class="hero_subnav_inner">
+<p class="hfo-nav-title">
+                            
+                            Next Gen Control Electrical - Service Manual
+                        </p>
+<hr/>
+<ul class="hfo-link-container">
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---introduction.html">1 - NGC - Introduction</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---activation.html">2 - NGC - Activation</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---software-update.html">3 - NGC - Software Update </a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---firmware-update.html">4 - NGC - Firmware Update</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---configuration---patch-files.html">5 - NGC - Configuration</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---error-report-and-backup.html">6 - NGC - Error Report and Backup</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---main-processor.html">7 - NGC - Main Processor</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---i-o.html">8 - NGC - I/O and TC PCB</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---can-systems.html">9 - NGC - CAN Systems and Autodoor</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---servo-motors-and-axis-cables.html">10 - NGC - Servo Motors and Axis Cables</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---4th-and-5th-axis.html">11 - NGC - 4th and 5th Axis</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---servo-amplifiers.html">12 - NGC - Servo Amplifiers</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---vector-drive.html">13 - NGC - Vector Drive</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---regen.html">14 - NGC - Regen</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---320v-power-supply.html">15 - NGC - 320V Power Supply</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---wye---delta.html">16 - NGC - Wye / Delta</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---circuit-breaker-and-transformer.html">17 - NGC - Circuit Breaker and Transformer</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---power-distribuition.html">18 - NGC - PSUP PCB</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---skbif-and-lcd-monitor.html">19 - NGC - SKBIF and LCD Monitor</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---rjh.html">20 - NGC - Remote Jog Handle</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---worklights-and-hil-.html">21 - NGC - 115V LED - WorkLights</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---cabcool.html">22 - NGC - CabCool</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---myhaas.html">23 - NGC - MyHaas</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---wire---wireless-networking.html">24 - NGC - Networking</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---8m-pcb.html">25 - NGC - 8M PCB</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---robot-and-automation.html">26 - NGC - Robot and Automation</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---machine-data-collection.html">27 - NGC - Machine Data Collection</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---control-icons.html">28 - NGC - Control Icons</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---sensors-and-switches.html">29 - NGC - Sensors and Switches</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---usb.html">30 - NGC - USB</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc-keypad.html">31 - NGC - Keypad</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---broken-tool-detection.html">32 - NGC - Broken Tool Detection</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---ipfdm-pcb.html">33 - NGC - IPFDM PCB</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---lvps.html">34. NGC - LVPS</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---camera-monitor-system-.html">35 - NGC - Camera Monitor System </a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc-high-intensity-lights-.html">36 - NGC - High Intensity Lights</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---24v-worklights.html">37 - NGC - 24V LED - Worklights</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---mill---rotary-scale-cable-installation.html">38 - NGC - Mill - Rotary Scale Cable Installation</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---tmd-pcb-.html">39 - NGC - TMD PCB </a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---control-surge-proctector.html">40 - NGC - Control Surge Proctector</a>
+</li>
+</ul>
+<div class="mobile-nav-container">
+<p>Go To :</p>
+
+</div>
+</div>
+</nav>
+<div id="hfo-page-content">
+
+<div class="tabs parbase section">
+
+<ul class="tabs clearfix" data-tabgroup="first-tab-group">
+<li>
+<a href="#tab_12-1-servo-amplifier-identification-guide_0">
+
+<span id="tab-text">12.1 Servo Amplifier Identification Guide</span>
+</a>
+</li>
+<li>
+<a href="#tab_amplifier-replacement_0">
+
+<span id="tab-text">12.2 Servo Amplifier Replacement</span>
+</a>
+</li>
+<li>
+<a href="#tab_amplifier-troubleshooting_0">
+
+<span id="tab-text">12.3 Servo Amplifier Troubleshooting</span>
+</a>
+</li>
+</ul>
+<section class="tabgroup" id="first-tab-group" style="padding-bottom: px">
+<div class="tab" id="tab_12-1-servo-amplifier-identification-guide_0">
+<div class="sectionHeader parbase section">
+<div class="sectionHeader section-wrapper text-align-center clearfix" id="waypoint-target">
+
+<h2><b>Servo Amplifier</b> - Identification Guide</h2>
+<hr/>
+<p><b>RD0095</b></p>
+<p>Revision B - 07/2026</p>
+</div>
+</div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Introduction">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Introduction</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="diyStep"><div>
+<div class="diy-step" data-last-modified-timestamp="1783352200658" data-recentness-duration="30">
+<div class="step-text"><p>The 30A and 45A servo amplifiers are available in two versions <b>analog</b> and <b>digital</b>. Although the two types perform similar functions, they are <b>visually identical</b>, which means you cannot distinguish them by appearance alone.</p>
+<p>The <b>only reliable way</b> to tell them apart is by checking the <b>part number</b>.<br/>
+This document explains <b>where to locate the part number</b> on the amplifier and how to use it to determine whether the unit is analog or digital.</p>
+<p> <b>Note: </b>For servo amplifier replacement procedures and compatibility information, refer to the following document: <a href="https://www.haascnc.com/content/haascnc/en/service/troubleshooting-and-how-to/how-to/servo-amplifier---replacement.html">Servo Amplifier - Replacement AD0280</a></p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="30A-Servo-Amplifier">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">30A Servo Amplifier</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: white; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="title parbase section">
+<div class="title-wrapper text-align-left clearfix">
+<h1>30A Analog Servo Amplifier</h1>
+</div>
+</div>
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img non-expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/references/servo-amplifier---identification-guide---rd0095/30A_analog_amplifier.png" style="height:auto; width:100%;"/>
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1783352277212" data-recentness-duration="30">
+<div class="step-text"><p>For the <b>30A Analog Servo Amplifier</b>, the part number is located <b>on the top of the amplifier housing</b>.</p>
+<p><b>Assembly Part Number:</b>  32-5550X</p>
+<p><b>Current Firmware: </b>V1.XX</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: white; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="title parbase section">
+<div class="title-wrapper text-align-left clearfix">
+<h1>30A Digital Servo Amplifier</h1>
+</div>
+</div>
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img non-expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/references/servo-amplifier---identification-guide---rd0095/30A_digital_amplifier.png" style="height:auto; width:100%;"/>
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1783352283307" data-recentness-duration="30">
+<div class="step-text"><p>For the <b>30A Digital Servo Amplifier</b>, the part number is located <b>on the top of the amplifier housing</b>.</p>
+<p><b>Assembly Part Number:</b>  32-9118X</p>
+<p><b>Current Firmware: </b>V2.XX</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="45A-Servo-Amplifier">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">45A Servo Amplifier</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: white; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="title parbase section">
+<div class="title-wrapper text-align-left clearfix">
+<h1>45A Analog Servo Amplifier</h1>
+</div>
+</div>
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img non-expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/references/servo-amplifier---identification-guide---rd0095/40A_analog_amplifier.png" style="height:auto; width:100%;"/>
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1783351590530" data-recentness-duration="30">
+
+<div class="step-text"><p>For the <b>45A Analog Servo Amplifier</b>, the part number is located <b>on the top of the amplifier housing</b>.</p>
+<p><b>Assembly Part Number:</b>  32-3551X</p>
+<p><b>Current Firmware: </b>V1.XX</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: white; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="title parbase section">
+<div class="title-wrapper text-align-left clearfix">
+<h1>45A Digital Servo Amplifier</h1>
+</div>
+</div>
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img non-expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/references/servo-amplifier---identification-guide---rd0095/40A_digital_amplifier.png" style="height:auto; width:100%;"/>
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1783351561639" data-recentness-duration="30">
+
+<div class="step-text"><p>For the <b>45A Digital Servo Amplifier</b>, the part number is located <b>on the top of the amplifier housing</b>.</p>
+<p><b>Assembly Part Number:</b>  32-9119X</p>
+<p><b>Current Firmware: </b>V2.XX</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+</div>
+<div class="tab" id="tab_amplifier-replacement_0">
+<div class="title parbase section">
+<div class="title-wrapper text-align-left clearfix">
+<h1>12.1 Servo Amplifier Replacement</h1>
+</div>
+</div>
+<div class="sectionHeader parbase section">
+<div class="sectionHeader section-wrapper text-align-center clearfix" id="waypoint-target">
+
+<h2><b>Servo Amplifier</b> - Replacement</h2>
+<hr/>
+<p><b>AD0280</b></p>
+<p>Revision C - 08/2026</p>
+</div>
+</div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Introduction">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Introduction</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/how-to/servo-amplifier---replacement---ad0280/servo_amp_intro.jpg" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1787173347623" data-recentness-duration="30">
+<div class="step-text"><p>This procedure tells you how to remove a servo amplifier and install a smart servo amplifier.</p>
+<p>If you replace a servo amplifier that was made before 2007, refer to <a href="https://www.haascnc.com/content/haascnc/en/service/troubleshooting-and-how-to/how-to/servo-amplifier---pcb-auxiliary--aux--load---replacement.html">PCB Auxiliary (AUX) Load - Replacement</a>.</p>
+<p><b>Document Applies to these Parts</b></p>
+<ul>
+<li><b>93-32-5549     </b>  AMP, 90A BL SMART</li>
+<li><b>93-32-5550J    </b>  AMP, 30A BL SMART</li>
+<li><b>93-32-5550N</b>    AMP, 30A BL SMART</li>
+<li><b>93-32-3551J</b>       AMP, 45A BL SMART</li>
+<li><b>93-32-3551N</b>     AMP, 45A BL SMART</li>
+<li><b>93-32-5552G</b>     AMP, 60A BL SMART</li>
+<li><b>93-4988 </b>      AMP,  60A BL SMART</li>
+<li><b>93-4989 </b>      AMP,  90A BL SMART</li>
+<li><b>93-5088       </b>AMP, 30A DIGITAL AMP</li>
+<li><b>93-5089       </b>AMP, 45A DIGITAL AMP<b>    </b></li>
+</ul>
+<p><b>NOTE: </b>The Digital Amplifiers are fully backward compatible with BL Smart Amplifiers.</p>
+<p><b>NOTE: </b>Refer to the <a href="https://www.haascnc.com/content/haascnc/en/service/troubleshooting-and-how-to/reference-documents/servo-amplifier---identification-guide---rd0095.html">Servo Amplifier - Identification Guide</a> for more information.<br/>
+</p>
+</div>
+</div>
+</div></div>
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1787173325757" data-recentness-duration="30">
+
+<div class="step-text"><p><b> Warning</b>: <b>Do not </b>use power tools on the amplifier terminal block screws. Damage caused by the use of power tools is not covered under warranty and may result in the warranty being voided.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Electrical-Safety">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Electrical Safety</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="reference parbase"><div class="cq-dd-paragraph"><div class="par parsys">
+<div class="diyStep"><div>
+<div class="diy-step" data-last-modified-timestamp="1755019661989" data-recentness-duration="30">
+<div class="step-text"><p> <b>DANGER:</b> Working with the electrical services required for CNC machines is <b>extremely hazardous</b> and can result in <b>serious injury or death</b>.</p>
+<p>Before connecting line wires to the CNC:</p>
+<ul>
+<li><b>Turn off all power</b> to the machine at the source.</li>
+<li>Perform a <b style="">Lockout-Tagout (LOTO)</b> procedure to ensure the power remains off during service.</li>
+<li><b>Verify</b> that power has been disconnected by using an <b>AC voltage detector</b> on all incoming lines.</li>
+</ul>
+<p>If you are <b>uncertain</b> about how to safely disconnect power or perform LOTO procedures:</p>
+<ul>
+<li><b>Do not proceed.</b></li>
+<li>Contact <b>qualified personnel</b> or obtain <b>appropriate assistance</b> before continuing.</li>
+</ul>
+<p>Failure to follow these precautions may result in <b>electrical shock</b>, <b>equipment damage</b>, or <b>fatal injury</b>.</p>
+</div>
+</div>
+</div></div>
+<div class="diyStep"><div>
+<div class="diy-step" data-last-modified-timestamp="1755019253323" data-recentness-duration="30">
+<div class="step-text"><p> <b>Danger:</b> Before beginning any work inside the control cabinet, verify that the <b>High Voltage indicator light</b> on the <b>320V Power Supply / Vector Drive</b> has been <b>off for a minimum of five (5) minutes</b>. This waiting period ensures that residual voltage has dissipated and reduces the risk of electric shock.</p>
+<p>Certain service procedures involve <b>high-risk electrical components</b> and may pose <b>serious injury or fatality hazards</b>. Technicians must <b>not attempt</b> any procedure unless they have a <b>complete understanding</b> of the steps involved and the associated risks.</p>
+<p>If there is <b>any uncertainty</b> regarding a procedure, contact your <b>Haas Factory Outlet (HFO)</b> to arrange for a qualified service technician.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Replacement">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Replacement</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="diyStep"><div>
+<div class="diy-step" data-last-modified-timestamp="1538058664208" data-recentness-duration="30">
+<h3 class="stepNumber">1</h3>
+<div class="step-text"><p>Push <b>[POWER OFF]</b>.</p>
+<p>Set the main circuit breaker to the <b>[OFF]</b> position.</p>
+<p>Lock the main circuit breaker. Use an approved lock with an approved safety tag.</p>
+<p> <b>Danger:</b> If the voltage indicator light is on, do not touch the electrical components. The high voltage in the electrical cabinet can kill you. Wait for the voltage indicator LED to go off fully.</p>
+</div>
+</div>
+</div></div>
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/how-to/servo-amplifier---replacement---ad0280/Amp-Replacement_Remove_Amp.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1538058676957" data-recentness-duration="30">
+<h3 class="stepNumber">2</h3>
+<div class="step-text"><p>Disconnect the cables from the used servo amplifier. Remove the used servo amplifier.</p>
+<p>Install the replacement smart servo amplifier [1].</p>
+<p>Connect the current command [2] cable.</p>
+<p>Connect the servo cables [3]. The cables are color-coded.</p>
+<p>Connect the high-voltage jumpers [4] to the terminals on the adjacent servo amplifier.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+</div>
+<div class="tab" id="tab_amplifier-troubleshooting_0">
+<div class="title parbase section">
+<div class="title-wrapper text-align-left clearfix">
+<h1>12.1 Servo Amplifier Troubleshooting Guide</h1>
+</div>
+</div>
+<div class="sectionHeader parbase section">
+<div class="sectionHeader section-wrapper text-align-center clearfix" id="waypoint-target">
+
+<h2><b>Servo Amplifier</b> - Troubleshooting Guide - NGC</h2>
+<hr/>
+<p><b>TG0125</b></p>
+<p>Revision F - 8/2026</p>
+</div>
+</div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Introduction">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Introduction</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/servo-amplifier---troubleshooting-guide/servo_amplifiers_overview_troubleshooting_guide_Rev_B.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1543332438207" data-recentness-duration="30">
+<div class="step-text"><p>There are four versions of Haas amplifiers. 30A [1], 45A [2], 60A [3], and 90A [4]. All four operate the same way.</p>
+<p>Smart Amplifier assemblies are powered from the 320 VDC Bus from the Vector Drive assembly or Minimill Power Supply. They each have a red LED FAULT light, and a green LED POWER ON light to show the status of the amplifier.</p>
+</div>
+</div>
+</div></div>
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1787173369267" data-recentness-duration="30">
+<div class="step-text"><p><b>Note: </b>Machines may be equipped with either Digital or Analog servo amplifiers, depending on the machine configuration.</p>
+<p>To determine which type of amplifier is installed on your machine, refer to <a href="https://www.haascnc.com/service/troubleshooting-and-how-to/reference-documents/servo-amplifier---identification-guide---rd0095.html#gsc.tab=0">Servo Amplifier - Identification Guide - RD0095</a> before troubleshooting.<br/>
+</p>
+</div>
+</div>
+</div></div>
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1787173408124" data-recentness-duration="30">
+
+<div class="step-text"><p><b> Warning</b>:<b> Do not </b>use power tools on the amplifier terminal block screws. Damage caused by the use of power tools is not covered under warranty and may result in the warranty being voided.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="diyStep"><div>
+<div class="diy-step" data-last-modified-timestamp="1640727079481" data-recentness-duration="30">
+<div class="step-text"><p><b> Download and fillout the Amplifier Inspection Report Checklist below before replacing any parts.</b></p>
+</div>
+</div>
+</div></div>
+<div class="link parbase">
+<a aria-label="Learn More" class="on center red" data-openmodal="false" href="https://www.haascnc.com/content/dam/haascnc/service/guides/references/amplifier-inspection-checklist/ID0003_Rev_B.pdf" style="
+                  
+                  font-size: px;" target="_blank">
+
+            Amplifier Inspection Report Checklist
+            
+        </a>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Electrical-Safety">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Electrical Safety</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="reference parbase"><div class="cq-dd-paragraph"><div class="par parsys">
+<div class="diyStep"><div>
+<div class="diy-step" data-last-modified-timestamp="1755019661989" data-recentness-duration="30">
+<div class="step-text"><p> <b>DANGER:</b> Working with the electrical services required for CNC machines is <b>extremely hazardous</b> and can result in <b>serious injury or death</b>.</p>
+<p>Before connecting line wires to the CNC:</p>
+<ul>
+<li><b>Turn off all power</b> to the machine at the source.</li>
+<li>Perform a <b style="">Lockout-Tagout (LOTO)</b> procedure to ensure the power remains off during service.</li>
+<li><b>Verify</b> that power has been disconnected by using an <b>AC voltage detector</b> on all incoming lines.</li>
+</ul>
+<p>If you are <b>uncertain</b> about how to safely disconnect power or perform LOTO procedures:</p>
+<ul>
+<li><b>Do not proceed.</b></li>
+<li>Contact <b>qualified personnel</b> or obtain <b>appropriate assistance</b> before continuing.</li>
+</ul>
+<p>Failure to follow these precautions may result in <b>electrical shock</b>, <b>equipment damage</b>, or <b>fatal injury</b>.</p>
+</div>
+</div>
+</div></div>
+<div class="diyStep"><div>
+<div class="diy-step" data-last-modified-timestamp="1755019253323" data-recentness-duration="30">
+<div class="step-text"><p> <b>Danger:</b> Before beginning any work inside the control cabinet, verify that the <b>High Voltage indicator light</b> on the <b>320V Power Supply / Vector Drive</b> has been <b>off for a minimum of five (5) minutes</b>. This waiting period ensures that residual voltage has dissipated and reduces the risk of electric shock.</p>
+<p>Certain service procedures involve <b>high-risk electrical components</b> and may pose <b>serious injury or fatality hazards</b>. Technicians must <b>not attempt</b> any procedure unless they have a <b>complete understanding</b> of the steps involved and the associated risks.</p>
+<p>If there is <b>any uncertainty</b> regarding a procedure, contact your <b>Haas Factory Outlet (HFO)</b> to arrange for a qualified service technician.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Symptom-Table">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Symptom Table</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="table parbase">
+<div class="two-px-border-bold-header">
+<table border="2" cellpadding="1" cellspacing="0" width="100%">
+<tbody><tr><td style="text-align: center;"><b>Symptom</b></td>
+<td style="text-align: center;"><b>Possible Cause</b></td>
+<td style="text-align: center;"><b>Corrective Action</b></td>
+</tr><tr><td rowspan="4"><p><b style="background-color: transparent;">Alarm 993</b><span style="background-color: transparent;"> AMPLIFIER SHORT CIRCUIT and </span><b style="background-color: transparent;">1.993 - 11.993</b><br/>
+</p>
+<p><b>Alarm 2040</b> VECTOR DRIVE OR SPINDLE AMPLIFIER-SHORT CIRCUIT</p>
+</td>
+<td rowspan="2">Amplifier detected a short.</td>
+<td>Check cables for contamination or damage.</td>
+</tr><tr><td>Refer to the service news <a href="https://hbc.haascnc.com/service/op/content/view/45" target="_blank">HBC-N-03/17/25</a> for how to troubleshoot if the alarm intermittently occurs while the machine is running.</td>
+</tr><tr><td>The amplifier has a internal short circuit.</td>
+<td>Do the <b>Amplifier Short Circuit Inspection </b>section.<p><b>Note:</b> If a short-circuit is found, inspect the cable and motor for a short circuit before installing a new amplifier.</p>
+</td>
+</tr><tr><td>Terminal connections are not tight.</td>
+<td>Check that all terminal connections are tight and secure.</td>
+</tr><tr><td><b>Alarm 986</b> CALIBRATION FAULT and <b>1.986 - 11.986</b></td>
+<td>Amplifier internal calibration.</td>
+<td>Check the command cable from the Maincon PCB to amplifier. Check the 320 VDC voltage to amplifiers.</td>
+</tr><tr><td><b>Alarm 986 </b>CALIBRATION FAULT when first powering on machine. The  alarm requires the machine to have power cycled</td>
+<td>Amplifier internal calibration</td>
+<td>Refer to the service news <a href="https://hbc.haascnc.com/service/op/content/view/45" target="_blank">HBC-N-03/17/25</a> for what to troubleshoot on the amplifier.</td>
+</tr><tr><td><b>Alarm 992</b> AMPLIFIER OVER CURRENT and <b>1.992 - 11.992</b></td>
+<td>Axis mechanical blockage.</td>
+<td>Axis mechanical blockage.</td>
+</tr><tr><td rowspan="2"><b>Alarm 994</b> AMPLIFIER OVER LOAD and <b>1.994 - 11.994</b></td>
+<td>Incorrect application.</td>
+<td>Change speed and check for tool damage.</td>
+</tr><tr><td>Axis mechanical blockage.</td>
+<td>Remove Blockage.</td>
+</tr><tr><td><b>Alarm 991</b> AMPLIFIER OVER TEMPERATURE and 1.994 - 11.994</td>
+<td>Problem with the cooling fan.</td>
+<td>Check cooling fan.</td>
+</tr><tr><td rowspan="2"><b>Alarm 1.9911 - 11.9911 </b>Axis Amplifier Cable Disconnected</td>
+<td>The cable connected to the amp is damaged or disconnected</td>
+<td>Check that both ends of the cable going between the main processor and the servo amplifier are fully connected. Check the entire length of the cable to see if there is any damage.</td>
+</tr><tr><td>The firmware on the amplifier is outdated</td>
+<td>If the alarm can be reset from the Haas Control, the amplifier needs to be replaced. If the alarm gets reset, he machine needs to be power cycled <b>before running the machine again</b>. Refer to the <a href="https://hbc.haascnc.com/service/op/content/view/45" target="_blank">HBC-N-03/14/2025</a> for more details.</td>
+</tr><tr><td><p>NGC machines equipped with a 60A servo amplifier</p>
+<p><b>Alarm 3.991</b> Z-AXIS AMPLIFIER OVER TEMPERATURE.</p>
+</td>
+<td>Erroneous alarm generated by electrical noise.</td>
+<td>
+<ul>
+<li>Install a ferrite filter P/N 64-1252 to the Z-axis motor power cables [2].</li>
+<li>If the machine has the ferrite filter installed and the alarm persist replace the 60A servo amplifier with (P/N 93-32-5552F or later).</li>
+<li>If the machine already has the 60A servo amplifier (P/N 93-32-5552F or later), check the amplifier for a overheat condition. Look at the servo fan for correct operation and the cutting application before changing any parts.</li>
+</ul>
+
+<img height="NaN" src="https://service.haascnc.com/sites/default/files/Locked/3/ferrite-filter.png" width="300"/></td>
+</tr><tr><td><b>Alarm 4.9921</b> Velocity Error Too Large<b> </b>appears on a Tool Room Lathe 1/2. </td>
+<td>Mis wired Spindle Amplifier.  </td>
+<td>See the <b>TL Spindle Amplifier Inspection </b>section below for the corrective action.</td>
+</tr><tr><td>Axis instability, humming, vibration, or oscillation when installing a digital amplifier. </td>
+<td>Compatibility issue between digital amplifiers and Size 02 and Size 04 servo motors.</td>
+<td>Refer to <a href="https://www.haascnc.com/service/distributor-only/sa---service-alert---news/small-servo-motor-with-digital-amplifiers.html#gsc.tab=0">HSA-0083-04/13/2026</a> for the corrective action.</td>
+</tr><tr><td>Pocket Mill with 8K Spindle is receiving <b>Alarm 992</b> AMPLIFIER OVER CURRENT</td>
+<td>The machine is equipped with digital spindle motor amplifier.</td>
+<td>Inspect the spindle motor amplifier to determine whether it is a digital or analog amplifier. Refer to  <a href="https://www.haascnc.com/service/troubleshooting-and-how-to/reference-documents/servo-amplifier---identification-guide---rd0095.html#gsc.tab=0">Servo Amplifier - Identification Guide - RD0095</a> for identification instructions. If a digital amplifier is installed, replace it with an analog amplifier.</td>
+</tr><tr><td>UMC-500 poor cut quality </td>
+<td>The machine is equipped with digital axis amplifiers.</td>
+<td>Inspect the axis amplifiers to determine whether they are digital or analog amplifiers. Refer to <a href="https://www.haascnc.com/service/troubleshooting-and-how-to/reference-documents/servo-amplifier---identification-guide---rd0095.html#gsc.tab=0">Servo Amplifier - Identification Guide - RD0095</a> for identification instructions. If digital amplifiers are installed, replace them with analog amplifiers.</td>
+</tr></tbody></table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Mechanical-Blockage">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Mechanical Blockage</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="diyStep"><div>
+<div class="diy-step" data-last-modified-timestamp="1530570640098" data-recentness-duration="30">
+<div class="step-text"><p><b>Corrective Action:</b></p>
+<p>Make sure the axis has a clear path of travel. Tools, part fixtures, or workpieces that are too large can crash into the machine enclosure.</p>
+<p>Look at the machine's alarm history. Overload alarms followed by over current alarms are a sign of a crash.</p>
+<p>Look at the machine enclosure, spindle and tooling for damage. Damage to the tooling, fixtures and enclosure are signs of a crash.</p>
+<p>If there are no signs of a crash, inspect the ballscrew and linear guides. They must move or turn freely by hand.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Amplifier-Short-Circuit-Inspection">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Amplifier Short Circuit Inspection</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="diyStep"><div>
+<div class="diy-step" data-last-modified-timestamp="1543332966884" data-recentness-duration="30">
+<div class="step-text"><p>Check the amplifier for a short. Power off the machine. Disconnect the cables for the axis servo motor at the amplifier that generates the alarm.<br/>
+</p>
+</div>
+</div>
+</div></div>
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: white; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/servo-amplifier---troubleshooting-guide/amplifier-short-to-gnd.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1747674868376" data-recentness-duration="30">
+<div class="step-text"><p>Set the multimeter to ohms, and take the following reading:</p>
+<ul>
+<li>Place the black lead on the ground screw [1].</li>
+<li>Place the red lead on the RED terminal [2] and record the resistance reading.</li>
+<li>Repeat this with the red lead on the<b> </b>WHT, BLK, HV(+), and HV(-) terminals and record the resistance reading for each.</li>
+</ul>
+<p><b>Note: </b>If the multimeter allows you to set the Ohms range, set it to the MegaOhms range.</p>
+<p>If the multimeter does not show (O.L) for each of these readings then the amplifier is damaged.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: white; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/servo-amplifier---troubleshooting-guide/amplifier-short-to-dc-bus-negative.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1782503118356" data-recentness-duration="30">
+
+<div class="step-text"><p>Set the multimeter to ohms, and take the following reading:</p>
+<ul>
+<li>Place the black lead on the HV (-) terminal [1].</li>
+<li>Place the red lead on the RED terminal [2] and record the resistance reading.</li>
+<li>Repeat this with the red lead on the<b> </b>WHT, and BLK terminals and record the resistance reading for each.</li>
+</ul>
+<p><b>Note: </b>If the multimeter allows you to set the Ohms range, set it to the MegaOhms range.</p>
+<p>The multimeter should show a resistance in the MegaOhms range for each of these readings.</p>
+<p>If the resistance reading is very low then the amplifier is damaged.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: white; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/servo-amplifier---troubleshooting-guide/amplifier-short-to-dc-bus-positive.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1782503109595" data-recentness-duration="30">
+
+<div class="step-text"><p>Set the multimeter to ohms, and take the following reading:</p>
+<ul>
+<li>Place the black lead on the HV (+) terminal [1].</li>
+<li>Place the red lead on the RED terminal [2] and record the resistance reading.</li>
+<li>Repeat this with the red lead on the<b> </b>WHT, and BLK terminals and record the resistance reading for each.</li>
+</ul>
+<p><b>Note: </b>If the multimeter allows you to set the Ohms range, set it to the MegaOhms range.</p>
+<p>The multimeter should show a resistance in the MegaOhms range for each of these readings.</p>
+<p>If the resistance reading is very low then the amplifier is damaged.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Servo-Motor-Short-Circuit-Inspection">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Servo Motor Short Circuit Inspection</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/servo-amplifier---troubleshooting-guide/Measure_servo_motor_resistance_amp_tsg.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1543333229636" data-recentness-duration="30">
+<div class="step-text"><p><b>Corrective Action:</b></p>
+<p><b>Check the cables for a short:</b> Make sure the axis servo motor cables are not contaminated or pinched. Contaminated or pinched cables can cause a short. Replace the cables if necessary.</p>
+<p><b>Inspect the servo motor.</b> Disconnect and inspect the power cable connector at the motor. Make sure that there is no coolant contamination. Coolant contamination can cause this alarm and damage the amplifier. Measure the resistance from the pins labeled A, B and C at the motor connector to chassis ground.</p>
+<ul>
+<li>The reading should show an open circuit.</li>
+<li>If there is not open resistance, the servo motor is at fault.</li>
+</ul>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Review-the-Part-Program">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Review the Part Program</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="diyStep"><div>
+<div class="diy-step" data-last-modified-timestamp="1530571396474" data-recentness-duration="30">
+<div class="step-text"><p><b>Corrective Action:</b></p>
+<p>The machine load is too high. Decrease the feeds to decrease the machine load. Examine the cutting tool for damage.</p>
+<p>Test the axis that generates the alarm. Write a program in MDI to move the axis. If any movement at any feed rate causes the alarm, then the servo amplifier is at fault.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Low-Voltage-Inspection">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Low Voltage Inspection</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/servo-amplifier---troubleshooting-guide/maincon_check_J19_low_voltage_power_supply.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1604359903330" data-recentness-duration="30">
+<div class="step-text"><p><b>Corrective Action:</b></p>
+<p>Measure the low voltage power supply voltage levels at the Maincon PCB. Make sure you do not short or cross your multimeter pins.</p>
+<p>Cycle power to the machine. If the fault stays, then the amplifier is faulty.</p>
+<p>If every axis amplifier in the machine generates the alarm at the same time, and the low voltage power supply is correct, then the Maincon PCB may be at fault.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="table parbase">
+<div class="one-px-border-bold-header">
+<table border="2" cellpadding="1" cellspacing="0" width="100%">
+<tbody><tr><td style="text-align: center;"><b>Pins</b></td>
+<td style="text-align: center;"><b>Correct Voltage</b></td>
+</tr><tr><td height="21">+5 and GND</td>
+<td>+4.90 to +5.20 V dc</td>
+</tr><tr><td height="21">+12 and GND</td>
+<td>+11.85 to +12.50 V dc</td>
+</tr><tr><td height="21">-12 and GND</td>
+<td>-11.85 to -12.50 V dc</td>
+</tr></tbody></table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Cooling-Fan">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Cooling Fan</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/servo-amplifier---troubleshooting-guide/Measure_Voltage_Across_The_Pins_On_The_90B_Cable_For_The_Servo_Amplifier_Cooling_Fan.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1532548450102" data-recentness-duration="30">
+<div class="step-text"><p><b>Corrective Action:</b></p>
+<p><b> Note: </b>The maximum temperature for safe operation of Haas CNC machines is 122 °F (50 °C). The amplifier over temperature sensor will trigger at 195 °F (90 °C).</p>
+<p>Make sure the cooling fan for the servo amplifiers operates correctly.</p>
+<p>If the fan does not operate correctly, measure the voltage it receives. Disconnect the cable from the cooling fan. Measure the voltage between the leads of the cable. The correct voltage 120 VAC.</p>
+<ul>
+<li>If the cable has the correct voltage, the cooling fan is defective.</li>
+</ul>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="TL-1-2-Spindle-Amplifier-Inspection">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">TL 1/2 Spindle Amplifier Inspection</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/online-manuals/ngc-troubleshooting-videos-page/servo-amps/TL-Spindle-Amp-Wiring.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1736804907069" data-recentness-duration="30">
+<div class="step-text"><p><b>Corrective Action:</b></p>
+<p>Open the electrical control of the machine and inspect the phasing of the spindle amplifier.</p>
+<p><b>Note: </b>Refer to the image to verify the correct phasing between the spindle motor and spindle amplifier on a Toolroom Lathe 1/2.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Electrical-Diagram">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Electrical Diagram</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="image parbase">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/servo-amplifier---troubleshooting-guide/sigma5_electrical_schematic.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+</div>
+</section>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</body></html>

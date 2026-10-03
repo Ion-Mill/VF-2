@@ -1,0 +1,24 @@
+{
+  "source_path": "C:\\code\\1\\참고문서\\매뉴얼\\VF 시리즈 서비스 매뉴얼\\찐\\08_운전·화면\\96-8210_mill-operators-manual-ngc\\96-8210__RevU__20261003.pdf",
+  "source_name": "96-8210__RevU__20261003.pdf",
+  "file_type": "pdf",
+  "content_hash": "sha256:b80f2bb571f8982c00855092a062c4ac73368fe56688717b11801f5efa12a0d5",
+  "converter": null,
+  "converter_version": null,
+  "converted_at": null,
+  "warnings": [
+    "PDF 원본만 저장: convert_pdf_pages_markitdown.py로 별도 변환 필요"
+  ],
+  "doc_id": "96-8210",
+  "revision": "U December 2024",
+  "last_updated": "",
+  "source_url": "https://www.haascnc.com/content/dam/haascnc/en/service/manual/operator/english---mill-ngc---operator's-manual---2024.pdf",
+  "retrieved_at": "2026-10-03T18:07:39",
+  "retrieved_via": "direct",
+  "http_status": 200,
+  "applies_to": "",
+  "embedded_docs": [],
+  "title": "English - Mill Operator’s Manual - NGC - 2024",
+  "pages": 550,
+  "license_note": "Haas 저작물: 사이트 약관상 서면 허가 없는 사용 불가 표기. 내부 참고용 사본, 재배포 금지"
+}

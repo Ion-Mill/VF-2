@@ -1,0 +1,1976 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NGC - Servo Motors and Axis Cables - Haas Service Manual</title>
+<style>
+body{font-family:Segoe UI,Arial,sans-serif;max-width:980px;margin:24px auto;padding:0 16px;line-height:1.55;color:#1d1d1f;background:#fff}
+.provenance{font-size:12px;border:1px solid #c9ced6;background:#f4f6f8;padding:8px 12px;margin-bottom:24px}
+.provenance th{text-align:left;padding-right:12px;white-space:nowrap;vertical-align:top}
+table{border-collapse:collapse;margin:12px 0} td,th{border:1px solid #c9ced6;padding:4px 8px;vertical-align:top}
+.provenance td,.provenance th{border:none;padding:1px 8px 1px 0}
+img{max-width:100%;height:auto}
+</style></head><body>
+<div class="provenance"><strong>본문 추출본 (원본 아님)</strong> — 사실 확인은 같은 폴더의 원본 HTML과 공식 URL로 한다. 그림은 Haas 공식 주소에서 불러오므로 인터넷 연결 시에만 보인다.
+<table><tr><th>doc_id</th><td>NGC-ESM-10</td></tr><tr><th>title</th><td>NGC - Servo Motors and Axis Cables - Haas Service Manual</td></tr><tr><th>revision</th><td>표기 없음</td></tr><tr><th>last_updated</th><td>표기 없음</td></tr><tr><th>source_url</th><td>https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---servo-motors-and-axis-cables.html</td></tr><tr><th>retrieved_at</th><td>2026-10-03T18:03:37</td></tr><tr><th>retrieved_via</th><td>direct</td></tr><tr><th>original_file</th><td>NGC-ESM-10__norev__20261003.html</td></tr><tr><th>original_sha256</th><td>582c95956db7cfad6d911b5be2225aab3f44a60e35c3c091cb3cabac01ef1751</td></tr><tr><th>extraction</th><td>div.print-only · scripts/extract_ngc_body.py</td></tr><tr><th>license</th><td>Haas 저작물: 사이트 약관상 서면 허가 없는 사용 불가 표기. 내부 참고용 사본, 재배포 금지</td></tr></table></div>
+
+
+<div>
+<div class="hfoSubnav">
+<div id="hfo-nav-container">
+<nav data-component="HfoSubnav" data-new-flag-default-text="new" data-override-json="[]" id="hfo-nav">
+<div class="hero_subnav_inner">
+<p class="hfo-nav-title">
+                            
+                            Next Gen Control Electrical - Service Manual
+                        </p>
+<hr/>
+<ul class="hfo-link-container">
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---introduction.html">1 - NGC - Introduction</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---activation.html">2 - NGC - Activation</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---software-update.html">3 - NGC - Software Update </a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---firmware-update.html">4 - NGC - Firmware Update</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---configuration---patch-files.html">5 - NGC - Configuration</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---error-report-and-backup.html">6 - NGC - Error Report and Backup</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---main-processor.html">7 - NGC - Main Processor</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---i-o.html">8 - NGC - I/O and TC PCB</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---can-systems.html">9 - NGC - CAN Systems and Autodoor</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---servo-motors-and-axis-cables.html">10 - NGC - Servo Motors and Axis Cables</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---4th-and-5th-axis.html">11 - NGC - 4th and 5th Axis</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---servo-amplifiers.html">12 - NGC - Servo Amplifiers</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---vector-drive.html">13 - NGC - Vector Drive</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---regen.html">14 - NGC - Regen</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---320v-power-supply.html">15 - NGC - 320V Power Supply</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---wye---delta.html">16 - NGC - Wye / Delta</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---circuit-breaker-and-transformer.html">17 - NGC - Circuit Breaker and Transformer</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---power-distribuition.html">18 - NGC - PSUP PCB</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---skbif-and-lcd-monitor.html">19 - NGC - SKBIF and LCD Monitor</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---rjh.html">20 - NGC - Remote Jog Handle</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---worklights-and-hil-.html">21 - NGC - 115V LED - WorkLights</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---cabcool.html">22 - NGC - CabCool</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---myhaas.html">23 - NGC - MyHaas</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---wire---wireless-networking.html">24 - NGC - Networking</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---8m-pcb.html">25 - NGC - 8M PCB</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---robot-and-automation.html">26 - NGC - Robot and Automation</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---machine-data-collection.html">27 - NGC - Machine Data Collection</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---control-icons.html">28 - NGC - Control Icons</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---sensors-and-switches.html">29 - NGC - Sensors and Switches</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---usb.html">30 - NGC - USB</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc-keypad.html">31 - NGC - Keypad</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---broken-tool-detection.html">32 - NGC - Broken Tool Detection</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---ipfdm-pcb.html">33 - NGC - IPFDM PCB</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---lvps.html">34. NGC - LVPS</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---camera-monitor-system-.html">35 - NGC - Camera Monitor System </a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc-high-intensity-lights-.html">36 - NGC - High Intensity Lights</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---24v-worklights.html">37 - NGC - 24V LED - Worklights</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---mill---rotary-scale-cable-installation.html">38 - NGC - Mill - Rotary Scale Cable Installation</a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---tmd-pcb-.html">39 - NGC - TMD PCB </a>
+</li>
+<li>
+<a class="hfo-child-link" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---control-surge-proctector.html">40 - NGC - Control Surge Proctector</a>
+</li>
+</ul>
+<div class="mobile-nav-container">
+<p>Go To :</p>
+
+</div>
+</div>
+</nav>
+<div id="hfo-page-content">
+
+<div class="tabs parbase section">
+
+<ul class="tabs clearfix" data-tabgroup="first-tab-group">
+<li>
+<a href="#tab_axis-designations_0">
+
+<span id="tab-text">10.1 Axis Assignments</span>
+</a>
+</li>
+<li>
+<a href="#tab_positions-view---axis-selection_0">
+
+<span id="tab-text">10.2 Positions View - Axis Selection</span>
+</a>
+</li>
+<li>
+<a href="#tab_axis-grid-offset_0">
+
+<span id="tab-text">10.3 Axis Grid Offset</span>
+</a>
+</li>
+<li>
+<a href="#tab_servo-motor-and-axis-cables---troubleshooting_0">
+
+<span id="tab-text">10.4 Axis Servo Motor and Axis Cables - Troubleshooting</span>
+</a>
+</li>
+</ul>
+<section class="tabgroup" id="first-tab-group" style="padding-bottom: px">
+<div class="tab" id="tab_axis-designations_0">
+<div class="title parbase section">
+<div class="title-wrapper text-align-left clearfix">
+<h1>10.1 Axis Assignments</h1>
+</div>
+</div>
+<div class="sectionHeader parbase section">
+<div class="sectionHeader section-wrapper text-align-center clearfix" id="waypoint-target">
+
+<h2><b>Axis Assignments</b> - NGC</h2>
+<hr/>
+<p><b>RD0003</b></p>
+<p>Revision A - 01/2026</p>
+</div>
+</div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Axis-Assignments">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Axis Assignments</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="diyStep"><div>
+<div class="diy-step" data-last-modified-timestamp="1636400159585" data-recentness-duration="30">
+<div class="step-text"><p>The axis parameters on machines with the Next Generation Control are designated in groups. The number that precedes the period designates the axis. The number that follows the period is the parameter group number. The following table shows the axis assignments for the axes on a mill or lathe.<br/>
+</p>
+</div>
+</div>
+</div></div>
+<div class="table parbase">
+<div class="two-px-border-bold-header">
+<table border="1" cellpadding="1" cellspacing="0" width="100%">
+<tbody><tr><td style="text-align: center;">Motion Axis</td>
+<td style="text-align: center;">NGC Axis Label</td>
+<td style="text-align: center;">Axis Parameter Group</td>
+<td style="text-align: center;">Physical Input/Output Connector</td>
+<td style="text-align: center;">Mill or Lathe Specific</td>
+</tr><tr><td height="21" style="text-align: center;"><b>X</b></td>
+<td style="text-align: center;"><b>X</b></td>
+<td style="text-align: center;"><b>1.xxx</b></td>
+<td style="text-align: center;"><b>1</b></td>
+<td style="text-align: center;"><b>Mill/Lathe</b></td>
+</tr><tr><td style="text-align: center;"><b>X(2) GM</b></td>
+<td style="text-align: center;"><b>X(Slave)</b></td>
+<td style="text-align: center;"><b>1.xxx</b></td>
+<td style="text-align: center;"><b>8</b></td>
+<td style="text-align: center;"><b>Mill</b></td>
+</tr><tr><td height="21" style="text-align: center;"><b>Y</b></td>
+<td style="text-align: center;"><b>Y</b></td>
+<td style="text-align: center;"><b>2.xxx</b></td>
+<td style="text-align: center;"><b>2</b></td>
+<td style="text-align: center;"><b>Mill/Lathe</b></td>
+</tr><tr><td height="21" style="text-align: center;"><b>Z</b></td>
+<td style="text-align: center;"><b>Z</b></td>
+<td style="text-align: center;"><b>3.xxx</b></td>
+<td style="text-align: center;"><b>3</b></td>
+<td style="text-align: center;"><b>Mill/Lathe</b></td>
+</tr><tr><td height="21" style="text-align: center;"><b>Main Spindle</b></td>
+<td style="text-align: center;"><b>S</b></td>
+<td style="text-align: center;"><b>4.xxx</b></td>
+<td style="text-align: center;"><b>6</b></td>
+<td style="text-align: center;"><b>Mill/Lathe</b></td>
+</tr><tr><td height="21" style="text-align: center;"><b>Secondary Spindle</b></td>
+<td style="text-align: center;"><b>SS</b></td>
+<td style="text-align: center;"><b>12.xxx</b></td>
+<td style="text-align: center;"><b>14</b></td>
+<td style="text-align: center;"><b>Lathe</b></td>
+</tr><tr><td height="21" style="text-align: center;"><b>A</b></td>
+<td style="text-align: center;"><b>A</b></td>
+<td style="text-align: center;"><b>5.xxx</b></td>
+<td style="text-align: center;"><b>4</b></td>
+<td style="text-align: center;"><b>Mill</b></td>
+</tr><tr><td height="21" style="text-align: center;"><b>Tool Turret</b></td>
+<td style="text-align: center;"><b>TT</b></td>
+<td style="text-align: center;"><b>9.xxx</b></td>
+<td style="text-align: center;"><b>7</b></td>
+<td style="text-align: center;"><b>Lathe</b></td>
+</tr><tr><td height="21" style="text-align: center;"><b>B</b></td>
+<td style="text-align: center;"><b>B</b></td>
+<td style="text-align: center;"><b>6.xxx</b></td>
+<td style="text-align: center;"><b>5</b></td>
+<td style="text-align: center;"><b>Mill</b></td>
+</tr><tr><td height="21" style="text-align: center;"><b>Hydraulic Tailstock</b></td>
+<td style="text-align: center;"><b>B</b></td>
+<td style="text-align: center;"><b>6.xxx</b></td>
+<td style="text-align: center;"><b>9</b></td>
+<td style="text-align: center;"><b>Lathe</b></td>
+</tr><tr><td height="21" style="text-align: center;"><b>Servo Tailstock</b></td>
+<td style="text-align: center;"><b>B</b></td>
+<td style="text-align: center;"><b>6.xxx</b></td>
+<td style="text-align: center;"><b>5</b></td>
+<td style="text-align: center;"><b>Lathe</b></td>
+</tr><tr><td height="21" style="text-align: center;"><b>C</b></td>
+<td style="text-align: center;"><b>C</b></td>
+<td style="text-align: center;"><b>7.xxx</b></td>
+<td style="text-align: center;"><b>5</b></td>
+<td style="text-align: center;"><b>Mill/Lathe</b></td>
+</tr><tr><td height="21" style="text-align: center;"><b>Servo Tool Carousel</b></td>
+<td style="text-align: center;"><b>TT</b></td>
+<td style="text-align: center;"><b>9.xxx</b></td>
+<td style="text-align: center;"><b>14</b></td>
+<td style="text-align: center;"><b>Mill</b></td>
+</tr><tr><td height="21" style="text-align: center;"><b>Servo Tool Changer Arm</b></td>
+<td style="text-align: center;"><b>TA</b></td>
+<td style="text-align: center;"><b>11.xxx</b></td>
+<td style="text-align: center;"><b>7</b></td>
+<td style="text-align: center;"><b>Mill</b></td>
+</tr><tr><td height="21" style="text-align: center;"><b>Live Tool</b></td>
+<td style="text-align: center;"><b>LT</b></td>
+<td style="text-align: center;"><b>10.xxx</b></td>
+<td style="text-align: center;"><b>11</b></td>
+<td style="text-align: center;"><b>Lathe</b></td>
+</tr><tr><td height="21" style="text-align: center;"><b>Barfeeder</b></td>
+<td style="text-align: center;"><b>BF</b></td>
+<td style="text-align: center;"><b>13.xxx</b></td>
+<td style="text-align: center;"><b>10</b></td>
+<td style="text-align: center;"><b>Lathe</b></td>
+</tr><tr><td height="21" style="text-align: center;"><b>Servo Pallet Changer</b></td>
+<td style="text-align: center;"><b>PC</b></td>
+<td style="text-align: center;"><b>14.xxx</b></td>
+<td style="text-align: center;"><b>-</b></td>
+<td style="text-align: center;"><b>Mill</b></td>
+</tr><tr><td height="21" style="text-align: center;"><b>Pallet Pool Rotate</b></td>
+<td style="text-align: center;"><b>PR</b></td>
+<td style="text-align: center;"><b>15.xxx</b></td>
+<td style="text-align: center;"><b>15</b></td>
+<td style="text-align: center;"><b>Mill</b></td>
+</tr><tr><td height="21" style="text-align: center;"><b>Pallet Pool Slide</b></td>
+<td style="text-align: center;"><b>PS</b></td>
+<td style="text-align: center;"><b>16.xxx</b></td>
+<td style="text-align: center;"><b>16</b></td>
+<td style="text-align: center;"><b>Mill</b></td>
+</tr><tr><td height="21" style="text-align: center;"><b>Compact Auto Part Loader / Auto Part Loader "U" Axis</b></td>
+<td style="text-align: center;"><b>AU</b></td>
+<td style="text-align: center;"><b>17.xxx</b></td>
+<td style="text-align: center;"><b>13</b></td>
+<td style="text-align: center;"><b>Mill/Lathe</b></td>
+</tr><tr><td height="21" style="text-align: center;"><b>Compact Auto Part Loader / Auto Part Loader "V" Axis</b></td>
+<td style="text-align: center;"><b>AV</b></td>
+<td style="text-align: center;"><b>18.xxx</b></td>
+<td style="text-align: center;"><b>15</b></td>
+<td style="text-align: center;"><b>Mill/Lathe</b></td>
+</tr><tr><td height="21" style="text-align: center;"><b>Auto Part Loader "W" Axis</b></td>
+<td style="text-align: center;"><b>AW</b></td>
+<td style="text-align: center;"><b>19.xxx</b></td>
+<td style="text-align: center;"><b>16</b></td>
+<td style="text-align: center;"><b>Mill/Lathe</b></td>
+</tr><tr><td style="text-align: center;"><b>Slave </b></td>
+<td style="text-align: center;"><b>-</b></td>
+<td style="text-align: center;"><b>20.xx</b></td>
+<td style="text-align: center;"><b>-</b></td>
+<td style="text-align: center;"><b>Mill</b></td>
+</tr><tr><td style="text-align: center;"><b>Electric Vise 1</b></td>
+<td style="text-align: center;"><b>EV1</b></td>
+<td style="text-align: center;"><b>21.xx</b></td>
+<td style="text-align: center;"><b>-</b></td>
+<td style="text-align: center;"><b>Mill</b></td>
+</tr><tr><td style="text-align: center;"><b>Electric Vise 2</b></td>
+<td style="text-align: center;"><b>EV2</b></td>
+<td style="text-align: center;"><b>22.xx</b></td>
+<td style="text-align: center;"><b>-</b></td>
+<td style="text-align: center;"><b>Mill</b></td>
+</tr></tbody></table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Axis-Parameters">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Axis Parameters</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/how-to/next-generation-control---axis-assignments/NGC_axis_parameter_assignments.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1534184685030" data-recentness-duration="30">
+<div class="step-text"><p>The following screenshot shows the grid offset parameter group. The group number for grid offset parameters is 140 and the number that precedes it is the axis designation. For example, <b>parameter</b> <b>1.140</b>, is the grid offset parameter for the X Axis.<br/>
+</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Axis-Alarms">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Axis Alarms</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="diyStep"><div>
+<div class="diy-step" data-last-modified-timestamp="1533749023662" data-recentness-duration="30">
+<div class="step-text"><p>The axis alarms for machines with the Next Generation Control are similar to parameter groups. They are similar to parameter groups in that one alarm group number is used for all of the axes. The axis at fault is designated by the number before the period. The alarm group number is the number after the period.</p>
+<p>You must troubleshoot all of the axis alarms as you would the same alarm on a machine with the Classic Haas Control (CHC).</p>
+<p>The following table compares some Servo Overload alarms on a Classic Haas Control machine with the same alarm on a Next Generation Control machine. All of the other axis alarms follow the same structure.</p>
+<p> <b>Note:</b> CHC Alarms 109, 110, 111, 188, 271, 674, along with other Servo Overload alarms, will not appear on a NGC machine. They are all replaced by Alarm group number 108 and are differentiated by the axis designation number that precedes the period.<br/>
+</p>
+</div>
+</div>
+</div></div>
+<div class="table parbase">
+<div class="one-px-border-bold-header">
+<table border="1" cellpadding="1" cellspacing="0" width="100%">
+<tbody><tr><td style="text-align: center;">CHC Servo Overload Alarms</td>
+<td style="text-align: center;">NGC Servo Overload Alarms</td>
+</tr><tr><td>Alarm 108 - X SERVO OVERLOAD</td>
+<td>Alarm 1.108 - X AXIS SERVO OVERLOAD</td>
+</tr><tr><td>Alarm 109 - Y SERVO OVERLOAD</td>
+<td>Alarm 2.108 - Y AXIS SERVO OVERLOAD</td>
+</tr><tr><td>Alarm 110 - Z SERVO OVERLOAD</td>
+<td>Alarm 3.108 - Z AXIS SERVO OVERLOAD</td>
+</tr><tr><td>Alarm 111 - A SERVO OVERLOAD</td>
+<td>Alarm 5.108 - A AXIS SERVO OVERLOAD</td>
+</tr><tr><td>Alarm 188 - B SERVO OVERLOAD</td>
+<td>Alarm 6.108 - B AXIS SERVO OVERLOAD</td>
+</tr><tr><td>Alarm 271 - C SERVO OVERLOAD</td>
+<td>Alarm 7.108 - C AXIS SERVO OVERLOAD</td>
+</tr><tr><td>Alarm 674 - TT SERVO OVERLOAD</td>
+<td>Alarm 11.108 - TA AXIS SERVO OVERLOAD</td>
+</tr></tbody></table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+</div>
+<div class="tab" id="tab_positions-view---axis-selection_0">
+<div class="title parbase section">
+<div class="title-wrapper text-align-left clearfix">
+<h1>10.2 Position View - Axis Selection</h1>
+</div>
+</div>
+<div class="sectionHeader parbase section">
+<div class="sectionHeader section-wrapper text-align-center clearfix" id="waypoint-target">
+
+<h2><b>Position View</b> - Axis Selection - NGC</h2>
+<hr/>
+</div>
+</div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Introduction">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Introduction</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/how-to/next-generation-control---position-view---axis-selection/ngc_position_view_axes.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1534184738020" data-recentness-duration="30">
+<div class="step-text"><p>This procedure tells you how to change the axes that show in the Positions box. The Positions box displays a maximum of 5 axes.<br/>
+</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Position-View---Axis-Selection">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Position View - Axis Selection</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/how-to/next-generation-control---position-view---axis-selection/ngc_position_view_c-axis_check.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1533750264473" data-recentness-duration="30">
+<h3 class="stepNumber">1</h3>
+<div class="step-text"><p>Push <b>[POSITION]</b>.</p>
+<p>Push<b> [ALTER]</b>.</p>
+<p>Select the axes you want to view in the Positions box.</p>
+<p>You must de-select an axis if there are more than the maximum of 5 axes.</p>
+<p>For this procedure we will remove the C axis and add the T axis.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/how-to/next-generation-control---position-view---axis-selection/ngc_position_view_t-axis_check.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1533750334900" data-recentness-duration="30">
+<h3 class="stepNumber">2</h3>
+<div class="step-text"><p>Navigate to the C axis [1].</p>
+<p>Push <b>[ENTER]</b> to remove the mark from the box.</p>
+<p>The C axis goes away from the Positions box.</p>
+<p>Navigate to the T axis [2].</p>
+<p>Push <b>[ENTER]</b> to mark the box.</p>
+<p>The T axis appears in the Positions box [3].</p>
+<p>Push <b>[ALTER]</b> to close.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+</div>
+<div class="tab" id="tab_axis-grid-offset_0">
+<div class="title parbase section">
+<div class="title-wrapper text-align-left clearfix">
+<h1>10.3 Axis Grid Offset</h1>
+</div>
+</div>
+<div class="sectionHeader parbase section">
+<div class="sectionHeader section-wrapper text-align-center clearfix" id="waypoint-target">
+
+<h2><b>Axis Grid Offset</b> - NGC</h2>
+<hr/>
+<p>Applies to machines built from July 2015</p>
+</div>
+</div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Rotary-Axis-Grid-Offset">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Rotary Axis Grid Offset</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/how-to/ngc---axis-grid-offset/grid-offset-image-1-(web).png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1669066414332" data-recentness-duration="30">
+<h3 class="stepNumber">1</h3>
+<div class="step-text"><p> <b>Note:</b> This section only applies to setting the Grid offset for stand alone rotaries. For setting grid offsets for other axis refer to the next section. </p>
+<p><b> Warning:</b> Only set a grid offset if <b>ALARM</b> <b>165 </b>AXIS ZERO RETURN MARGIN IS TOO SMALL is generated when zero returning a rotary axis. If you have a dual axis rotary this only needs to be done for the axis that generates the alarm. </p>
+<p>If you zero return a rotary axis and get <b>ALARM 165 </b>AXIS ZERO RETURN MARGIN IS TOO SMALL. Go to Setting -&gt; Rotary then highlight the axis that generated the alarm. Select <b>Set Offsets </b>[1] by pressing <b>[ALTER]</b>.<b> </b>Press 2 [2] to select <b>Set Grid Offset </b>to set the grid offset. </p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="diyStep"><div>
+<div class="diy-step" data-last-modified-timestamp="1669066431539" data-recentness-duration="30">
+<h3 class="stepNumber">2</h3>
+<div class="step-text"><p><b>Tool Changer Offset</b></p>
+<p><b> Note:</b> If you get <b>ALARM 165 </b>AXIS ZERO RETURN MARGIN IS TOO SMALL<b> </b>when zero returning an axis you must first set a grid offset before a tool changer offset can be set. See step 1. </p>
+<p>The Tool Changer offset sets the location where a rotary will go during a tool change or after it zero returns. </p>
+<p>Move the axis to the location you want the tool change offset to be during a tool change or after a zero return. Then go to Setting -&gt; Rotary then highlight the axis you want to set the offset for. Then select <b>Set Offsets </b>[1] by pressing <b>[ALTER]</b>.<b> </b>Press 1 [3] to select <b>Set TC Offset </b>to set the tool change offset. </p>
+</div>
+</div>
+</div></div>
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/how-to/ngc---axis-grid-offset/grid-offset-image-2-(web).png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1669066492320" data-recentness-duration="30">
+<h3 class="stepNumber">3</h3>
+<div class="step-text"><p>If grid or tool changer offsets have been made they can be saved for future use or transferred to a different machine.<br/>
+</p>
+<p>Press <b>F2 </b>[1] then you will be prompted to name the new rotary file. This text will appear in the name column of the rotary table. </p>
+<p>The file can be found in list program -&gt; User data -&gt; My Rotary. New files will have the name <b>ROT_[name you gave the file]_[default rotary file name]</b>.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Axis-Grid-Offset-With-Service-Key">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Axis Grid Offset With Service Key</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/how-to/ngc---axis-grid-offset/NGC_Grid_Offset_2.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1748989061526" data-recentness-duration="30">
+<h3 class="stepNumber">1</h3>
+<div class="step-text"><p>Put the machine in Service mode.</p>
+<p>Push <b>[ZERO RETURN]</b>.</p>
+<p>Push <b>[ALL]</b>.</p>
+<p>Push <b>[DIAGNOSTIC].</b></p>
+<p>Navigate to the Parameters tab.</p>
+<p>Navigate to the Factory tab.</p>
+<p>Type GRID and then press F1.</p>
+<ul>
+<li>This shows all parameters that have the word "GRID" in the parameter name. </li>
+</ul>
+<p>Type the axis letter you are setting (for example, 'X'), and then press F4 to set the grid offset for X.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/how-to/ngc---axis-grid-offset/NGC_Grid_Offset_3.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1669050395553" data-recentness-duration="30">
+<h3 class="stepNumber">2</h3>
+<div class="step-text"><p>If you need to set other grid offsets, repeat Step 1 but enter the corresponding axis letter.</p>
+<p>This changes the Grid Offset parameters. For example, the letters X, Y, and Z set these Parameters:</p>
+<ul>
+<li>1.140 X_AXIS GRID OFFSET</li>
+<li>2.140 Y_AXIS GRID OFFSET</li>
+<li>3.140 Z_AXIS GRID OFFSET</li>
+<li>5.140 A_AXIS GRID OFFSET</li>
+<li>6.140 B_AXIS GRID OFFSET</li>
+<li>7.140 C_AXIS GRID OFFSET</li>
+</ul>
+<p>For the T-Axis Grid Offset refer to <a href="https://www.haascnc.com/content/haascnc/en/service/troubleshooting-and-how-to/how-to/next-generation-control---servo-driven-smtc---double-arm-grid-of.html">Next Generation Control - Servo-Driven SMTC - Grid Offset and Tool Changer Offset</a>.</p>
+<p>For Lathe, TT-axis Offsets refer to <a href="https://www.haascnc.com/service/troubleshooting-and-how-to/how-to/tl-1-2-tt4-tool-changer-offsets-ngc.html">TL-1/2 TT4 Tool Changer Offsets NGC</a></p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+</div>
+<div class="tab" id="tab_servo-motor-and-axis-cables---troubleshooting_0">
+<div class="title parbase section">
+<div class="title-wrapper text-align-left clearfix">
+<h1>10.4 Axis Servo Motor and Cables - Troubleshooting Guide</h1>
+</div>
+</div>
+<div class="sectionHeader parbase section">
+<div class="sectionHeader section-wrapper text-align-center clearfix" id="waypoint-target">
+
+<h2><b>Axis Servo Motor and Cables</b> - Troubleshooting Guide - NGC</h2>
+<hr/>
+<p><b>TG0033</b></p>
+<p>Revision A - 07/2026
+</p>
+</div>
+</div>
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1641582287733" data-recentness-duration="30">
+<div class="step-text"><p><b> Download and fillout the Servo Motor Inspection Report Checklist below before replacing any parts.</b></p>
+</div>
+</div>
+</div></div>
+<div class="link parbase section">
+<a aria-label="Learn More" class="on center red" data-openmodal="false" href="https://www.haascnc.com/content/dam/haascnc/service/guides/references/servo-motor-inspection-checklist/ID0009_Rev_C.pdf" style="
+                  
+                  font-size: px;" target="_blank">
+
+            Servo Motor Inspection Report Checklist
+            
+        </a>
+</div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Electrical-Safety">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Electrical Safety</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="reference parbase"><div class="cq-dd-paragraph"><div class="par parsys">
+<div class="diyStep"><div>
+<div class="diy-step" data-last-modified-timestamp="1755019661989" data-recentness-duration="30">
+<div class="step-text"><p> <b>DANGER:</b> Working with the electrical services required for CNC machines is <b>extremely hazardous</b> and can result in <b>serious injury or death</b>.</p>
+<p>Before connecting line wires to the CNC:</p>
+<ul>
+<li><b>Turn off all power</b> to the machine at the source.</li>
+<li>Perform a <b style="">Lockout-Tagout (LOTO)</b> procedure to ensure the power remains off during service.</li>
+<li><b>Verify</b> that power has been disconnected by using an <b>AC voltage detector</b> on all incoming lines.</li>
+</ul>
+<p>If you are <b>uncertain</b> about how to safely disconnect power or perform LOTO procedures:</p>
+<ul>
+<li><b>Do not proceed.</b></li>
+<li>Contact <b>qualified personnel</b> or obtain <b>appropriate assistance</b> before continuing.</li>
+</ul>
+<p>Failure to follow these precautions may result in <b>electrical shock</b>, <b>equipment damage</b>, or <b>fatal injury</b>.</p>
+</div>
+</div>
+</div></div>
+<div class="diyStep"><div>
+<div class="diy-step" data-last-modified-timestamp="1755019253323" data-recentness-duration="30">
+<div class="step-text"><p> <b>Danger:</b> Before beginning any work inside the control cabinet, verify that the <b>High Voltage indicator light</b> on the <b>320V Power Supply / Vector Drive</b> has been <b>off for a minimum of five (5) minutes</b>. This waiting period ensures that residual voltage has dissipated and reduces the risk of electric shock.</p>
+<p>Certain service procedures involve <b>high-risk electrical components</b> and may pose <b>serious injury or fatality hazards</b>. Technicians must <b>not attempt</b> any procedure unless they have a <b>complete understanding</b> of the steps involved and the associated risks.</p>
+<p>If there is <b>any uncertainty</b> regarding a procedure, contact your <b>Haas Factory Outlet (HFO)</b> to arrange for a qualified service technician.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Symptom-Table">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Symptom Table</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="table parbase">
+<div class="two-px-border-bold-header">
+<table border="2" cellpadding="1" cellspacing="0" width="100%">
+<tbody><tr><td style="text-align: center;"><b>Symptom</b></td>
+<td style="text-align: center;"><b>Probable Cause</b></td>
+<td style="text-align: center;"><b>Corrective Action</b></td>
+</tr><tr><td><p><b>Alarm 1.9918, 2.9918 or 3.9918</b> X , Y or Z AXIS SERIAL ENCODER INTERNAL DATA ERROR<br/>
+</p>
+<p><b>Alarm 1.9922, 2.9922 or 3.9922</b> X, Y or Z AXIS MOTION CHANNEL FAULT DETECTED</p>
+<p><b>Alarm 1.9923, 2.9923 or 3.9923</b> X, Y or Z AXIS SOFTWARE DETECTED ENCODER FAULT</p>
+<p><b>Alarm 1.9930, 2.9930 or 3.9930</b> X, Y or Z AXIS SERIAL ENCODER POOR COMMUNICATION</p>
+<p><b>Alarm 1.9959, 2.9959 or 3.9959</b> X, Y or Z AXIS SERIAL ENCODER DISCONNECT</p>
+<p><b>Alarm 1.9948, 2.9948 or 3.9948 </b> X, Y or Z  AXIS SECONDARY ENCODER SERIAL FAULT</p>
+<p><b>Alarm 1.9949, 2.9949 or 3.9949</b> X, Y or Z AXIS SOFTWARE DETECTED SECONDARY ENCODER FAULT</p>
+<p><b>Alarm 1.9950, 2.9950 or 3.9950 </b> X, Y or Z AXIS SOFTWARE DETECTED SECONDARY ENCODER FAULT</p>
+<p><b>Alarm 1.9951, 2.9951 or 3.9951</b>  X, Y or Z AXIS SECONDARY ENCODER SERIAL COMMUNICATION FAULT</p>
+<p><b>Alarm 1.9960, 2.9960 or 3.9960</b>  X, Y or Z AXIS SECONDARY SERIAL ENCODER CABLE FAULT</p>
+</td>
+<td><p style="text-align: left;">The  machine software is outdated.</p>
+</td>
+<td><p>Alarm is obsolete </p>
+<p>New alarm for encoder faults updated in software. Update to latest version 100.21.000.1130 or Higher;</p>
+<p>Added Alarms 9719 and 9720 for Encoder Fault Detection on Mocon Primary and Secondary Axes.</p>
+</td>
+</tr><tr><td><p><b>Alarm 1.9719, 2.9719 or 3.9719</b> X, Y or Z AXIS PRIMARY ENCODER SERIAL FAULT</p>
+<p><b>Alarm Subcode (0x1) </b>Encoder Data Fault  = <b>(Alarm 9918</b> SERIAL ENCODER INTERNAL DATA ERROR<b>)</b></p>
+</td>
+<td><p>Encoder signals are affected by noise from high power cables.</p>
+<p>Faulty servo motor encoder.</p>
+</td>
+<td><p>Refer to <b>Serial Data Communication Faults / Electrical Noise</b> section below.</p>
+<p>Check the servo motor for coolant intrusion. For VMC machines, new servo motor cables can be ordered to mitigate coolant intrusion. See <a href="https://www.haascnc.com/content/haascnc/en/service/distributor-only/sa---service-alert---news/upgraded-servo-power-cable---vmc-machines.html" target="_blank"> SA0018 03-11-25</a>.</p>
+</td>
+</tr><tr><td><p><b style="font-size: 0.8125rem;"><b>Alarm 1.9719, 2.9719 or 3.9719</b> </b>X, Y or Z<b style="font-size: 0.8125rem;"> </b>AXIS PRIMARY ENCODER SERIAL FAULT</p>
+<p><b style="font-size: 0.8125rem;">Alarm Subcode (0x2) </b>Encoder Internal Axis Fault 1 =<b> (Alarm 9922 </b>MOTION CHANNEL FAULT DETECTED<b>)</b><br/>
+</p>
+</td>
+<td><p>(The motion channel has reported an internal fault of a type that is not recognized by the control)</p>
+</td>
+<td> Cycle power to the machine. If the issue persists, take an error report (Shift F3) and email to Haas Service</td>
+</tr><tr><td><p><b><b>Alarm 1.9719, 2.9719 or 3.9719</b> </b>X, Y or Z AXIS PRIMARY ENCODER SERIAL FAULT</p>
+<p><b>Alarm Subcode (0x3) </b>Encoder Internal Axis Fault 2 =  <b>(Alarm 9923 </b>SOFTWARE DETECTED ENCODER FAULT<b>)</b></p>
+</td>
+<td><p> (Software has reported an internal fault of a type that is not recognized by the control.)</p>
+</td>
+<td><p> Cycle power to the machine. If the issue persists, take an error report (Shift F3) and email to Haas Service</p>
+</td>
+</tr><tr><td><p><b><b>Alarm 1.9719, 2.9719 or 3.9719</b> </b>X, Y or Z AXIS PRIMARY ENCODER SERIAL FAULT</p>
+<p><b>Alarm Subcode (0x4) </b>Encoder CRC Fault =  <b>(Alarm 9930 </b>SERIAL ENCODER POOR COMMUNICATION<b>)</b></p>
+</td>
+<td><p style="text-align: left;"> (Encoder signals are affected by noise from high power cables.)</p>
+</td>
+<td><p style="text-align: left;"> (Refer to <b style="font-size: 0.8125rem;">Serial Data Communication Faults / Electrical Noise</b> section below.)</p>
+</td>
+</tr><tr><td><p><b><b>Alarm 1.9719, 2.9719 or 3.9719</b> </b>X, Y or Z AXIS PRIMARY ENCODER SERIAL FAULT</p>
+<p><b>Alarm Subcode (0x5) </b>Encoder Cable Fault =  <b>(Alarm 9959 </b>SERIAL ENCODER DISCONNECT<b>)</b></p>
+</td>
+<td> (Cables are not connected correctly or encoder is faulty.)</td>
+<td> (Inspect the cables and connectors. Refer to the <b>Main Processor/Encoder Cable</b> section below.)</td>
+</tr><tr><td><p><b>Alarm 1.9720, 2.9720 or 3.9720</b> X, Y or Z AXIS PRIMARY ENCODER SERIAL FAULT</p>
+<p><b>Alarm Subcode (0x1) </b>Encoder Data Fault  = <b>(Alarm 9948</b> SECONDARY ENCODER INTERNAL DATA ERROR<b>)</b></p>
+</td>
+<td><p>Scale signals are affected by noise from high power cables.</p>
+<p>(Faulty Linear Scale, Configuration File issue; incorrect motor type or incorrect Scale type.)</p>
+</td>
+<td><p>Refer to <b>Serial Data Communication Faults / Electrical Noise</b> section below.</p>
+<p>(Check Scale Encoder for coolant contamination.)</p>
+</td>
+</tr><tr><td><p><b><b>Alarm 1.9720, 2.9720 or 3.9720</b> </b>X, Y or Z<b> </b>AXIS PRIMARY ENCODER SERIAL FAULT</p>
+<p><b>Alarm Subcode (0x2) </b>Encoder Internal Axis Fault 1 =<b> (Alarm 9949 </b>SOFTWARE DETECTED SECONDARY ENCODER FAULT<b>)</b></p>
+</td>
+<td>(The motion channel has reported an internal fault of a type that is not recognized by the control)</td>
+<td> Cycle power to the machine. If the issue persists, take an error report (Shift F3) and email Haas Service</td>
+</tr><tr><td><p><b><b>Alarm 1.9720, 2.9720 or 3.9720</b> </b>X, Y or Z AXIS PRIMARY ENCODER SERIAL FAULT</p>
+<p><b>Alarm Subcode (0x3) </b>Encoder Internal Axis Fault 2 =  <b>(Alarm 9950 </b>SOFTWARE DETECTED SECONDARY ENCODER FAULT)</p>
+</td>
+<td><p> (Software has reported an internal fault of a type that is not recognized by the control.)</p>
+</td>
+<td>Cycle power to the machine. If the issue persists, take an error report (Shift F3) and email to Haas Service</td>
+</tr><tr><td><p><b><b>Alarm 1.9720, 2.9720 or 3.9720</b> </b>X, Y or Z AXIS PRIMARY ENCODER SERIAL FAULT</p>
+<p><b>Alarm Subcode (0x4) </b>Encoder CRC Fault =  <b>(Alarm 9951   </b>SECONDARY ENCODER SERIAL COMMUNICATION FAULT<b> )</b></p>
+</td>
+<td>(Liner Scale signals are affected by noise from high power cables.)</td>
+<td>(Refer to <b>Serial Data Communication Faults / Electrical Noise</b> section below.)</td>
+</tr><tr><td><p><b><b>Alarm 1.9719, 2.9719 or 3.9719</b> </b>X, Y or Z AXIS PRIMARY ENCODER SERIAL FAULT</p>
+<p><b>Alarm Subcode (0x5) </b>Encoder Cable Fault =  <b>(Alarm 9960</b> SECONDARY SERIAL ENCODER CABLE FAULT<span style="font-size: 0.8125rem;"> <b>)</b></span></p>
+</td>
+<td>(Cables are not connected correctly or Linear scale is faulty.)</td>
+<td>(Inspect the cables and connectors. Refer to the <b>Main Processor/Encoder Cable</b> section below.)</td>
+</tr><tr><td><b>Alarms 1.161, 2.161, 3.161 </b>X, Y or Z AXIS DRIVE FAULT</td>
+<td>Faulty servo amplifier.</td>
+<td>Check the corresponding amplifier assembly.<p>Refer to <a href="https://www.haascnc.com/content/haascnc/en/service/troubleshooting-and-how-to/troubleshooting/servo-amplifier---troubleshooting-guide---ngc.html">Servo Amplifier - Troubleshooting Guide</a> to troubleshoot the amplifier.</p>
+</td>
+</tr><tr><td rowspan="2"><b>Alarm 1.217, 2.217, 3.217 </b> X, Y or Z AXIS PHASING ERROR</td>
+<td>Cables are not connected correctly </td>
+<td>Inspect the cables and connectors. Refer to the <b>Main Processor/Encoder Cable</b> section below. </td>
+</tr><tr><td>The wrong type of motor has been installed.</td>
+<td>Check that the correct motor type has been installed.  (Sigma-5 or Sigma-7)</td>
+</tr><tr><td rowspan="2"><b>Alarm 1.645, 2.645, 3.645</b> X, Y or Z AXIS AMPLIFIER GROUND FAULT</td>
+<td>Faulty power cable.</td>
+<td>Inspect the cables and connectors. Refer to <b>Power Cable</b> section below.</td>
+</tr><tr><td>Faulty servo motor.</td>
+<td>Check the corresponding servo motor. Refer to <b>Servo Motor</b> section below.</td>
+</tr><tr><td rowspan="2"><b>Alarm 1.993, 2.993, 3.993</b> X, Y or Z AXIS SHORT CIRCUIT</td>
+<td>Faulty power cable.</td>
+<td>Inspect the cables and connectors. Refer to <b>Power Cable</b> section below.</td>
+</tr><tr><td>Faulty servo motor.</td>
+<td>Check the corresponding servo motor. Refer to <b>Servo Motor</b> section below.</td>
+</tr><tr><td rowspan="5"><p><b>Alarm 1.103, 2.103, 3.103 </b>X, Y or Z AXIS SERVO ERROR TOO LARGE</p>
+<p><b>Alarm 1.9920, 2.9920, 3.9920</b> X, Y or Z POSITION ERROR TOO LARGE</p>
+</td>
+<td>Encoder signals are affected by noise from high power cables. Or Faulty encoder.</td>
+<td>Refer to <b>Serial Data Communication Faults / Electrical Noise</b> section below. Check the encoder steps/revolution versus and ball screw pitch and verify the encoder counts are accurate per each rotation.<br/>
+</td>
+</tr><tr><td>The axis motor brake, is not disengaging when servos are enabled.</td>
+<td>See the <b>Motor Brake</b> section below:</td>
+</tr><tr><td>The axis ballscrew is damaged.</td>
+<td>Check the corresponding axis ballscrew.<p>Refer to <a href="https://www.haascnc.com/content/haascnc/en/service/troubleshooting-and-how-to/troubleshooting/Ballscrew_Troubleshooting_Guide.html">Ballscrew - Troubleshooting Guide</a> to troubleshoot the ballscrew.</p>
+</td>
+</tr><tr><td>Faulty power cable.</td>
+<td>Inspect the cables and connectors. Refer to <b>Power Cable</b> section below.</td>
+</tr><tr><td>Misaligned ballscrew coupling due to a crash</td>
+<td><p>Verify that the ballscrew motor coupling is aligned refer to the <a href="https://www.haascnc.com/content/haascnc/en/service/troubleshooting-and-how-to/troubleshooting/Ballscrew_Troubleshooting_Guide.html">Ballscrew - Troubleshooting Guide</a> for further information on how to re-align the coupler</p>
+<p><b>NOTE</b>: Verify that the power cable is not faulty prior to attemping to align the motor coupling. </p>
+</td>
+</tr><tr><td><b>Alarm 103 </b>AXIS SERVO ERROR TOO LARGE, during the zero return process. The axis zero returns in the wrong direction.</td>
+<td>The home sensor is being made during the zero return process causing the axis to zero return in the opposite direction.</td>
+<td>Check the axis home switch to make sure there are no metal chips on top of the sensor.</td>
+</tr><tr><td><b>Alarm 552 </b>TRIPPED CIRCUIT BREAKER (on UMC-1000)</td>
+<td>Damaged wire conduit and wires within conduit.</td>
+<td>Remove back panel. Inspect wire conduit. If damaged, contact Haas Service Department for assistance.</td>
+</tr><tr><td rowspan="3">The machine servos make a humming noise while sitting idle, jogging, or on a rapid.</td>
+<td>The axis grid offset needs to be adjusted.</td>
+<td>Perform the <a href="https://www.haascnc.com/service/troubleshooting-and-how-to/how-to/ngc---axis-grid-offset.html" target="_blank">Axis Grid Offset</a> adjustment procedure.</td>
+</tr><tr><td>The ballscrew is not aligned.</td>
+<td>Verify that the ballscrew does not bind during travel and that it is correctly aligned.</td>
+</tr><tr><td>Outdated parameters.</td>
+<td>Download the latest configuration files. If the axis servo continues to hum, contact your local HFO for more troubleshooting information.</td>
+</tr><tr><td><b>Alarm 9804</b> 240 VAC GROUND FAULT gets generated when I zero return an Axis.<br/>
+</td>
+<td>There is a short circuit on the cable or motor.</td>
+<td>Check for a short circuit on the corresponding servo motor and cable. Watch the <b>Servo Power Cable and Motor Inspection Videos.</b><br/>
+<br/>
+<b>Note:</b> If an alarm is generated on an ST machine when the A-axis is zero, return the LT axis cable, and check the motor for a short circuit.</td>
+</tr><tr><td style="text-align: center;"><b>Alarm 9804</b> 240 VAC GROUND FAULT <br/>
+AND/OR<br/>
+<b>Alarm 993</b> SHORT CIRCUIT<br/>
+AND/OR<br/>
+<b>Alarm 103 </b>AXIS SERVO ERROR TOO LARGE</td>
+<td>There may be a coolant intrusion on the axis servo motor.</td>
+<td><p>Inspect the motor for coolant intrusion.  For VMC machines, new servo motor cables can be ordered to mitigate coolant intrusion. See <a href="https://www.haascnc.com/content/haascnc/en/service/distributor-only/sa---service-alert---news/upgraded-servo-power-cable---vmc-machines.html">SA0018 03-11-25</a>..</p>
+<p>If the motor is replaced due to coolant intrusion, make sure to order the axis servo motor mount cover for the motor mount that is compatible with the motor.</p>
+<p>Refer to the <a href="https://www.haascnc.com/content/haascnc/en/service/troubleshooting-and-how-to/reference-documents/vf-vr---x-y-motor-mount-cover---reference-.html" target="_blank">VF/VR - X/Y Motor Mount Cover - Reference</a> document to verify motor mounts and their covers. This document wil also have the part numbers for ordering.</p>
+</td>
+</tr><tr><td><p>Any of the following alarms are generated after replacing the Mitsubishi Servo Motor with a Yasakawa Servo motor on the axis that had its motion sensor replaced. </p>
+<p><b>1.9959  X AXIS SERIAL ENCODER CABLE FAULT</b></p>
+<p><b>2.9959  Y AXIS SERIAL ENCODER CABLE FAULT</b></p>
+<p><b>3.9959  Z AXIS SERIAL ENCODER CABLE FAULT</b></p>
+</td>
+<td>Patches to add parameters and tunes for the Yaskawa motor were not loaded. </td>
+<td>Load configurations to apply the patches. <a href="https://www.haascnc.com/content/haascnc/en/service/distributor-only/ad---procedures/ad0929--configuration-file----download-load---ngc.html">Configuration File - Download/Load - NGC</a>.</td>
+</tr><tr><td><p>Any of the following alarms are generated after replacing the Mitsubishi Servo Motor with a Yasakawa Servo motor on axes that did not have their servo motor replaced and still have a Mitsubishi Servo.</p>
+<p><b>1.9719 X AXIS SERIAL ENCODER FAULT </b></p>
+<p><b>2.9719 Y AXIS SERIAL ENCODER FAULT</b></p>
+<p><b>3.9719 Z AXIS SERIAL ENCODER FAULT</b></p>
+<p>Sub code <b>0x4 </b>or <b>0x5.</b></p>
+</td>
+<td>Extra Mitsubishi to Yaskawa conversion patches were not replaced. </td>
+<td><p>Delete the unnecessary patches. Review <a href="https://www.haascnc.com/content/haascnc/en/service/troubleshooting-and-how-to/how-to/vmc---x-y---axis-servo-motor---replacement---ad0656.html" target="_blank">AD0656 VMC - X/Y - Axis Servo Motor - Replacement</a> or <a href="https://www.haascnc.com/content/haascnc/en/service/troubleshooting-and-how-to/how-to/vmc-z-axis---servo-motor---replacement---ad0556.html" target="_blank">AD0556 VMC - Z-Axis - Servo Motor - Replacement</a>. For additional information on replacing linear axis servo motors, see <a href="https://www.haascnc.com/content/haascnc/en/service/distributor-only/rd---reference-documents/how-to-delete-patch-files---ngc---rd0100.html" target="_blank">RD0100 How To Delete a Patch</a> File for additional information about removing patch files. </p>
+
+
+</td>
+</tr></tbody></table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Serial-Data-Communication-Faults---Electrical-Noise">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Serial Data Communication Faults / Electrical Noise</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/sigma-5---axis-servo-motor-and-cables---troubleshooting-guide/encoder_cable_ferrite_filters.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/sigma-5---axis-servo-motor-and-cables---troubleshooting-guide/amplifiers_ferrite_filters.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/sigma-5---axis-servo-motor-and-cables---troubleshooting-guide/vector_drive_ferrite_filters.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1742325661042" data-recentness-duration="30">
+<div class="step-text"><p>Sigma-5 servo motors, non-contact encoders output serial data signal to the control. If the serial data signal is missing or becomes unreliable the control will generate a serial data communication error. Electrical noise can cause the serial data signal from the encoder to become unreliable and cause false alarms. Follow the troubleshooting guide below to help eliminate the noise in the system.</p>
+<ol>
+<li><b>Incorrect machine grounding.</b> Make sure the ground wire size is correct. Also the ground wire should run all the way back to the electrical panel.</li>
+<li><b>Noise from other equipment.</b> Make sure the machine does not share it's electrical service with another machine.</li>
+<li><b>Loose encoder data connectors at PCB or at the motor encoder</b>, can cause the serial data to become unreliable. Refer to the <b>Main Processor / Encoder Cable </b>section.</li>
+<li><b>Loose ground or high voltage power connectors</b> will induce noise into the system.<ul>
+<li><b>electrical cabinet</b> check for loose connection at all the ground and high voltage power terminals (vector drive, wye-delta contactors, transformer..etc).</li>
+<li><b>pendant</b> check for loose terminal connectors.</li>
+<li><b>spindle head</b> check for loose ground and motor power terminals.</li>
+</ul>
+</li>
+<li>The <b>ferrite filters</b> suppress high frequency noise produced by the amplifiers and vector drive, when servos are on. Make sure they are installed in:<ul>
+<li><b>Encoder data cables. </b>Make sure there is a ferrite filter P/N 64 1252 installed in all the encoder data cables.</li>
+<li><b>Axis motor power cables.</b> Make sure there is a ferrite filter P/N 64-1252 installed in X, Y, Z axis motor power cables [1].</li>
+<li><b>Spindle motor cables.</b> Make sure there is a ferrite filter installed in the motor output of the vector drive.<p>For a <b>40HP</b> vector with <b>6 wire leads</b> [1] use ferrite P/N 64-1254.</p>
+<p>For a <b>40HP</b> vector with <b>3 wire leads</b> [2] use ferrite P/N 64-1252.</p>
+<p>For a <b>20HP</b> vector drive with <b>6 or 3 wire leads</b> [3, 4] use ferrite P/N 64-1252.</p>
+</li>
+</ul>
+</li>
+<li><b>Cable routing.</b> Make sure that the encoder cable is separated from high power spindle/axis/pump cables.</li>
+</ol>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Maincon-PCB---Encoder-Cable">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Maincon PCB / Encoder Cable</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/sigma-5---axis-servo-motor-and-cables---troubleshooting-guide/Encoder_Cable_Machine_End.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1742325666840" data-recentness-duration="30">
+<div class="step-text"><p><b>Corrective Action:</b></p>
+<p>Examine the connector [1] on the Maincon. Make sure it is not damaged.</p>
+<p>Examine the cable. Look for signs of damage or stiffness. The connector [4] has two housings [2,3] for the cable pins.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/sigma-5---axis-servo-motor-and-cables---troubleshooting-guide/Motor_pin_pushed_2.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1742325672812" data-recentness-duration="30">
+<div class="step-text"><p>If the pins have been pushed into the motor, you must replace the motor and cable together.</p>
+<p>Make sure the cable is firmly connected at both ends. Reseat both connections. Make sure the cable is installed in the correct connector at the Maincon or MOCON PCB.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Power-Cable">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Power Cable</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="diyStep"><div>
+<div class="diy-step" data-last-modified-timestamp="1788447257664" data-recentness-duration="30">
+<div class="step-text"><p>Inspect the connector at the motor, look for loose connections between motor to cable or between cable spade terminals to amplifier. Check for connector contamination. </p>
+<p>For VMC machines, new servo motor cables can be ordered to mitigate coolant intrusion. See <a href="https://www.haascnc.com/content/haascnc/en/service/distributor-only/sa---service-alert---news/upgraded-servo-power-cable---vmc-machines.html">SA0018 03-11-25</a>.</p>
+<p><b> NOTE:</b> <b><u>Gently</u></b> tug on the cables when checking for loose connection on the amplifier side. Pulling on the cables with excessive force can damage them.<br/>
+</p>
+
+</div>
+</div>
+</div></div>
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/sigma-5---axis-servo-motor-and-cables---troubleshooting-guide/Measure-resistance-of-leg-to-leg.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1742325682188" data-recentness-duration="30">
+<div class="step-text"><p>Look for signs of damage and stiffness on the cable and connector. Disconnect the power cable from the amplifier and motor. Measure the resistance from leg to leg (red, white, black wires), and from leg to ground (green/yellow wire). Make sure the measurements result in an open connection. Refer to the table below as a reference. </p>
+<p><b> NOTE:</b> If the machine is experiencing intermittent short circuit alarms move the axis to the location where the cable would be most bent before performing this test. This may improve the likeliness of finding an intermittent  short.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="table parbase">
+<div class="two-px-border-bold-header">
+<table border="1" cellpadding="1" cellspacing="0" width="100%">
+<tbody><tr><td colspan="4" style="text-align: center;"><b><u>Servo Power Cable Wiring Reference Table</u></b></td>
+</tr><tr><td style="text-align: center;"><b>Function</b></td>
+<td style="text-align: center;"><b>Color </b></td>
+<td style="text-align: center;"><b>Motor End</b></td>
+<td style="text-align: center;"><b>Amplifiier End</b></td>
+</tr><tr><td style="text-align: center;">Phase A</td>
+<td style="text-align: center;">Red</td>
+<td style="text-align: center;">A</td>
+<td style="text-align: center;">Spade</td>
+</tr><tr><td style="text-align: center;">Phase B</td>
+<td style="text-align: center;">White</td>
+<td style="text-align: center;">B</td>
+<td style="text-align: center;">Spade</td>
+</tr><tr><td style="text-align: center;">Phase C</td>
+<td style="text-align: center;">Black</td>
+<td style="text-align: center;">C</td>
+<td style="text-align: center;">Spade</td>
+</tr><tr><td style="text-align: center;">Chassis Ground</td>
+<td style="text-align: center;">Green/Yellow</td>
+<td rowspan="2" style="text-align: center;">D</td>
+<td style="text-align: center;">Ring</td>
+</tr><tr><td style="text-align: center;">Braid</td>
+<td style="text-align: center;">Braid</td>
+<td style="text-align: center;">Not Connected</td>
+</tr></tbody></table>
+</div>
+</div>
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/sigma-5---axis-servo-motor-and-cables---troubleshooting-guide/Measure-resistance-of-braid-and-ground.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1742325686971" data-recentness-duration="30">
+<div class="step-text"><p>Perform a continuity test between the ground wire and the braided shield. If it fails the continuity test fails the cable shield is compromised. </p>
+<p><b> NOTE:</b> If the machine is experiencing intermittent short circuit alarms move the axis to the location where the cable would be most bent before performing this test. This may improve the likeliness of finding an intermittent  short.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/sigma-5---axis-servo-motor-and-cables---troubleshooting-guide/Measure-continuity-of-cable.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1742336157991" data-recentness-duration="30">
+<div class="step-text"><p>Check each leg from one end of the cable to the corresponding leg on the other end of the cable for continuity. Refer to the table above for wiring reference. If there is an open connection, there is a problem with the cable. </p>
+<p><b> NOTE:</b> If the machine is experiencing intermittent short circuit alarms move the axis to the location where the cable would be most bent before performing this test. This may improve the likeliness of finding an intermittent  short.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/sigma-5---axis-servo-motor-and-cables---troubleshooting-guide/Alarm-993-SHORT-CIRCUIT-FLOW-CHART.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1742336153514" data-recentness-duration="30">
+<div class="step-text"><p>Use the following troubleshooting chart to determine whether the motor, amp, or cable is defective.</p>
+<p>When <b>Alarm 993 SHORT CIRCUIT</b> occurs disconnect the axis power cable from the motor. Press <b>[RESET] </b>and jog the axis.</p>
+<p>If <b>Alarm 103 AXIS SERVO ERROR TOO LARGE</b> occurs then the motor is defective. If another <b>Alarm 993 SHORT CIRCUIT</b> occurs then the cable or amp is defective.</p>
+<p>To determine if the cable or amp is defective disconnect the axis power cable from the motor and amp. Press <b>[RESET]</b> and jog the axis.</p>
+<p>If <b>Alarm 993 SHORT CIRCUIT</b> generates then the amplifier is defective. If <b>Alarm 103 AXIS SERVO ERROR TOO LARGE</b> generates the cable is defective. </p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Servo-Motor">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Servo Motor</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/sigma-5---axis-servo-motor-and-cables---troubleshooting-guide/Shorted_Sigma_5_Motor.jpg" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1788447268862" data-recentness-duration="30">
+<div class="step-text"><p><b><u>Corrective Action:</u></b></p>
+<p>Disconnect and inspect the power cable at the motor side. Verify the motor connectors are not contaminated, coolant contamination can generate drive fault alarms and damage the amplifier. Verify that the cable is connected to the corresponding amplifier as well. </p>
+<p>For VMC machines, new servo motor cables can be ordered to mitigate coolant intrusion. See <a href="https://www.haascnc.com/content/haascnc/en/service/distributor-only/sa---service-alert---news/upgraded-servo-power-cable---vmc-machines.html">SA0018 03-11-25</a>.</p>
+<p>Measure the resistance from the pins Labeled A, B, and C at the motor connector to the chassis ground.</p>
+<ul>
+<li>The reading must show an open circuit </li>
+<li>If the reading does not show an open circuit, the motor is at fault</li>
+</ul>
+<p>Conduct a continuity test from the ground pin and chassis ground. The multimeter should beep or read less than 1 ohm resistance for continuity, otherwise then there is a short in the motor. Measure the resistance between the pins labeled A, B and C, refer to the table below for the resistance values.</p>
+<p><b> NOTE:</b> Nominal winding resistance has been added to the table for the 4-wire test method, when using a multimeter use the typical resistance value column for the expected values.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/online-manuals/ngc-troubleshooting-videos-page/electrical/DC-1-Tool-Carousel-Motor.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1742336135163" data-recentness-duration="30">
+<div class="step-text"><p><b><u>DC-1 30 Taper - Tool Carousel Motor without Brake</u></b></p>
+<p><b>Important: </b>Machines built before <b>3/1/2025</b> will have the motor without the brake.</p>
+<p>The DC-1 tool carousel motor is a sigma7 size 04 motor. The pinout for the phases looks different than other axis motors.</p>
+<p>This image shows the pins on the motor connector:</p>
+<ol>
+<li>Gnd</li>
+<li>Phase A </li>
+<li>Phase B </li>
+<li>Phase C</li>
+</ol>
+<p><b>NOTE:</b> The <b>Gnd</b> pin [1] should be longer than the other pins as shown in the image.</p>
+<p><b> NOTE:</b> Nominal winding resistance has been added to the table for the 4-wire test method, when using a multimeter use the typical resistance value column for the expected values.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="table parbase">
+<div class="two-px-border-bold-header">
+<table border="1" cellpadding="1" cellspacing="0" width="100%">
+<tbody><tr><td width="62"><p><b><u>Motor type</u></b></p>
+</td>
+<td width="66"><p><b><u>Haas PN</u></b></p>
+</td>
+<td width="144"><p><b><u>MPN</u></b></p>
+</td>
+<td width="78"><p><b><u>Motor size</u></b></p>
+</td>
+<td width="108"><p><b><u>Nominal winding resistance (Ohms) </u></b></p>
+</td>
+<td width="162"><p><b><u>Typical DMM measured winding resistance (Ohms)</u></b></p>
+</td>
+</tr><tr><td rowspan="4" width="62"><p style="text-align: center;">Sigma 5</p>
+</td>
+<td width="66"><p style="text-align: center;">62-10011/ 62-10010</p>
+</td>
+<td width="144"><p style="text-align: center;">SGMGV-09ADA-HA11/ SGMGV-09ADA-HA21</p>
+</td>
+<td width="78"><p style="text-align: center;">9</p>
+</td>
+<td width="108"><p style="text-align: center;">0.894</p>
+</td>
+<td width="162"><p style="text-align: center;">0.9</p>
+</td>
+</tr><tr><td width="66"><p style="text-align: center;">62-10013/ 62-10012</p>
+</td>
+<td width="144"><p style="text-align: center;">SGMGV-13ADA-HA11/ SGMGV-13ADA-HA21</p>
+</td>
+<td width="78"><p style="text-align: center;">13</p>
+</td>
+<td width="108"><p style="text-align: center;">0.554</p>
+</td>
+<td width="162"><p style="text-align: center;">0.6</p>
+</td>
+</tr><tr><td width="66"><p style="text-align: center;">62-10015/ 62-10014</p>
+</td>
+<td width="144"><p style="text-align: center;">SGMGV-20ADA-HA11/ SGMGV-20ADA-HA21</p>
+</td>
+<td width="78"><p style="text-align: center;">20</p>
+</td>
+<td width="108"><p style="text-align: center;">0.291</p>
+</td>
+<td width="162"><p style="text-align: center;">0.4</p>
+</td>
+</tr><tr><td width="66"><p style="text-align: center;">62-0101/ 62-10027</p>
+</td>
+<td width="144"><p style="text-align: center;">SGMSV-30ADV-YA11/ SGMSV-30ADA2E</p>
+</td>
+<td width="78"><p style="text-align: center;">30</p>
+</td>
+<td width="108"><p style="text-align: center;">0.179</p>
+</td>
+<td width="162"><p style="text-align: center;">0.3</p>
+</td>
+</tr><tr><td rowspan="6" width="62"><p style="text-align: center;">Sigma 7</p>
+</td>
+<td width="66"><p style="text-align: center;">62-0127B</p>
+</td>
+<td width="144"><p style="text-align: center;">SGM7A-02AFK-HA21</p>
+</td>
+<td width="78"><p style="text-align: center;">2</p>
+</td>
+<td width="108"><p style="text-align: center;">6.5</p>
+</td>
+<td width="162"><p style="text-align: center;">6.6</p>
+</td>
+</tr><tr><td style="text-align: center;">62-4445</td>
+<td style="text-align: center;">SGM7A-04A7D61</td>
+<td style="text-align: center;">4</td>
+<td style="text-align: center;">4.3</td>
+<td style="text-align: center;">4.2</td>
+</tr><tr><td style="text-align: center;" width="66"><p>62-0117/ 62-0124</p>
+</td>
+<td style="text-align: center;" width="144">SGM7G-09AFA-HA11/ SGM7G-09AFA-HA21</td>
+<td style="text-align: center;">9</td>
+<td style="text-align: center;">0.882</td>
+<td style="text-align: center;">1.0</td>
+</tr><tr><td width="66"><p style="text-align: center;">62-0119/ 62-0118</p>
+</td>
+<td width="144"><p style="text-align: center;">SGM7G-13AFA-HA11/ SGM7G-13AFA-HA21</p>
+</td>
+<td width="78"><p style="text-align: center;">13</p>
+</td>
+<td width="108"><p style="text-align: center;">0.557</p>
+</td>
+<td width="162"><p style="text-align: center;">0.6</p>
+</td>
+</tr><tr><td width="66"><p style="text-align: center;">62-0120/ 62-0123</p>
+</td>
+<td width="144"><p style="text-align: center;">SGM7G-20AFA-HA11/ SGM7G-20AFA-HA21</p>
+</td>
+<td width="78"><p style="text-align: center;">20</p>
+</td>
+<td width="108"><p style="text-align: center;">0.286</p>
+</td>
+<td width="162"><p style="text-align: center;">0.4</p>
+</td>
+</tr><tr><td width="66"><p style="text-align: center;">62-0122/ 62-0121</p>
+</td>
+<td width="144"><p style="text-align: center;">SGM7G-30AFB-HA11/ SGM7G-30AFB-HA21</p>
+</td>
+<td width="78"><p style="text-align: center;">30</p>
+</td>
+<td width="108"><p style="text-align: center;">0.177</p>
+</td>
+<td width="162"><p style="text-align: center;">0.2</p>
+</td>
+</tr><tr><td rowspan="3" width="62"><p style="text-align: center;">Mitsubishi J5</p>
+</td>
+<td width="66"><p style="text-align: center;">62-0138/ 62-0141</p>
+</td>
+<td width="144"><p style="text-align: center;">HK-ST102WK-S101212/ HK-ST102WBK-S101212</p>
+</td>
+<td width="78"><p style="text-align: center;">9</p>
+</td>
+<td width="108"><p style="text-align: center;">1.254</p>
+</td>
+<td width="162"><p style="text-align: center;">1.4</p>
+</td>
+</tr><tr><td width="66"><p style="text-align: center;">62-0137/ 62-0140</p>
+</td>
+<td width="144"><p style="text-align: center;">HK-ST172WK-S101212/ HK-ST172WBK-S101212</p>
+</td>
+<td width="78"><p style="text-align: center;">13</p>
+</td>
+<td width="108"><p style="text-align: center;">0.807</p>
+</td>
+<td width="162"><p style="text-align: center;">0.9</p>
+</td>
+</tr><tr><td width="66"><p style="text-align: center;">62-0142/ 62-0139</p>
+</td>
+<td width="144"><p style="text-align: center;">HK-ST202AWK-S101212/ HK-ST202AWBK-S101212</p>
+</td>
+<td width="78"><p style="text-align: center;">20</p>
+</td>
+<td width="108"><p style="text-align: center;">0.558</p>
+</td>
+<td width="162"><p style="text-align: center;">0.7</p>
+</td>
+</tr><tr><td rowspan="3" width="62"><p style="text-align: center;">Mitsubishi J3</p>
+</td>
+<td width="66"><p style="text-align: center;">62-0087/ 62-0088</p>
+</td>
+<td width="144"><p style="text-align: center;">HF-SP81MK-S12/ HF-SP81MBK-S12</p>
+</td>
+<td width="78"><p style="text-align: center;">9</p>
+</td>
+<td width="108"><p style="text-align: center;">1.149</p>
+</td>
+<td width="162"><p style="text-align: center;">1.4 </p>
+</td>
+</tr><tr><td width="66"><p style="text-align: center;">62-0089/ 62-0095</p>
+</td>
+<td width="144"><p style="text-align: center;">HF-SP131MK-S12/ HF-SP131MBK-S12</p>
+</td>
+<td width="78"><p style="text-align: center;">13</p>
+</td>
+<td width="108"><p style="text-align: center;">0.692</p>
+</td>
+<td width="162"><p style="text-align: center;">0.8</p>
+</td>
+</tr><tr><td width="66"><p style="text-align: center;">62-0096/ 62-0097</p>
+</td>
+<td width="144"><p style="text-align: center;">HF-SP181MK-S12/ HF-SP181MBK-S12</p>
+</td>
+<td width="78"><p style="text-align: center;">20</p>
+</td>
+<td width="108"><p style="text-align: center;">0.456</p>
+</td>
+<td width="162"><p style="text-align: center;">0.5</p>
+</td>
+</tr><tr><td width="62"><p style="text-align: center;">Delta</p>
+</td>
+<td width="66"><p style="text-align: center;">62-0108/ 62-0109</p>
+</td>
+<td width="144"><p style="text-align: center;">ECMC-FW1308RS/ ECMC-FW1308SS</p>
+</td>
+<td width="78"><p style="text-align: center;">9</p>
+</td>
+<td width="108"><p style="text-align: center;">0.737</p>
+</td>
+<td width="162"><p style="text-align: center;"> 0.8</p>
+</td>
+</tr></tbody></table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Motor-Brake">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Motor Brake</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="grid parbase">
+<div class="gridpad bg-color-none" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-6">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/sigma-5---axis-servo-motor-and-cables---troubleshooting-guide/sigma_5_motor_brake_ngc.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+<div class="col-md-6">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1742336127694" data-recentness-duration="30">
+<div class="step-text"><p><b>Corrective Action:</b></p>
+<p>Reseat the the connection for connectors P3, P4, or P5 on the I/O PCB.</p>
+<p>Measure the voltage across the red and black cables.</p>
+<p>Press <b>[EMERGENCY STOP]</b>. There should be no voltage.</p>
+<p>Press <b>[RESET]</b> to clear the alarms. The voltage s<u></u>hould be between 20-30 VDC.</p>
+<p>Examine the connection at the motor's brake [2] and power connectors [3] for contamination. Reseat the connections.</p>
+<p>If no voltage is present, refer to:</p>
+<ul>
+<li><a href="https://www.haascnc.com/content/haascnc/en/service/troubleshooting-and-how-to/troubleshooting/next-generation-control---i-o-pcb---troubleshooting-guide.html">Next Generation Control - I/O PCB -Troubleshooting Guide</a></li>
+</ul>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<div class="diySectionContainer parbase section"><div>
+<div class="diy-section-container" id="Electrical-Diagrams">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Electrical Diagrams</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="image parbase">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/troubleshooting/sigma-5---axis-servo-motor-and-cables---troubleshooting-guide/sigma_5_electrical_diagram_ngc.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+</div>
+</section>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</body></html>
