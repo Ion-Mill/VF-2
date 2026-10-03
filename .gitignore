@@ -1,1 +1,37 @@
+# Editor / IDE
 .vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Secrets / env
+.env
+.env.*
+*.key
+
+# Office / PDF temp files
+~$*
+*.tmp
+.~lock.*#
+
+# Node (if any front-end tooling gets added)
+node_modules/
+
+# Logs
+*.log
