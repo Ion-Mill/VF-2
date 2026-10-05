@@ -1,0 +1,16 @@
+﻿from,to,n,ratio_median,ratio_p25,ratio_p75,ok_from,ok_to,agg_ratio
+Turning & Milling,Turning & Milling Q.C.,132,1.0,0.947,1.035,12087,10364,0.857
+Final Inspection Q.C.,Packing,113,1.0,1.0,1.0,9217,9234,1.002
+Turning & Milling Q.C.,Laser Marking,95,1.0,1.0,1.0,7753,7481,0.965
+Laser Marking,Lapping,72,1.0,1.0,1.0,5604,5408,0.965
+Lapping,Round Grinding,63,1.0,0.967,1.0,5083,4960,0.976
+Round Grinding,Final Inspection Q.C.,50,0.979,0.878,1.0,6297,5135,0.815
+Packing,Final Inspection Q.C.,43,1.0,1.0,1.0,1887,1884,0.998
+Laser Marking,Flat Grinding,27,1.0,1.0,1.0,1729,1729,1.0
+Flat Grinding,Lapping,24,1.0,1.0,1.0,1209,1268,1.049
+Lapping,Final Inspection Q.C.,21,1.0,0.994,1.0,1788,1705,0.954
+Laser Marking,Final Inspection Q.C.,19,1.0,1.0,1.0,1444,1444,1.0
+Laser Marking,Packing,19,1.0,0.997,1.0,1502,1455,0.969
+Turning & Milling Q.C.,Flat Grinding,18,1.0,1.0,1.0,811,777,0.958
+Turning & Milling Q.C.,Lapping,16,1.0,1.0,1.0,1419,1424,1.004
+Lapping,Laser Marking,15,1.0,1.0,1.0,1371,1360,0.992

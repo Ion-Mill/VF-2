@@ -1,0 +1,57 @@
+{
+ "pdf_pages": 1,
+ "page_markers": 1,
+ "partial_run_pages": "",
+ "extractors": {
+  "markitdown": 1
+ },
+ "multi_column_pages": [],
+ "table_like_pages": [],
+ "markitdown_table_pages_in_output": [],
+ "headings": {},
+ "token_recall_min": 1.0,
+ "token_recall_median": 1.0,
+ "low_recall_pages_lt_0.98": [],
+ "footer_doc_numbers": {
+  "(없음)": 1
+ },
+ "printed_page_not_pdf_minus_1": [],
+ "pages_without_printed_number": [
+  1
+ ],
+ "hf_lines_not_removed_pages": [],
+ "superscript_pages": [],
+ "superscript_total": 0,
+ "cid_total": 0,
+ "repeated_line_pages": [],
+ "ctrl_mark_pages": [],
+ "fallback_pages": [],
+ "fffd_total": 0,
+ "watch_glyph_totals": {
+  "’": 2
+ },
+ "other_nonascii_totals": {
+  "": 18
+ },
+ "markitdown_failures": [],
+ "warnings": [],
+ "thresholds": {
+  "HEADER_Y1_MAX": 70.0,
+  "FOOTER_Y0_MIN": 745.0,
+  "ROW_Y_TOL": 2.5,
+  "GUTTER_SEARCH": [
+   0.33,
+   0.67
+  ],
+  "GUTTER_MIN_GAP": 10.0,
+  "COL_MIN_ROWS": 3,
+  "COL_MIN_OVERLAP": 0.5,
+  "ROW_ALIGNED_RATIO": 0.7,
+  "MK_MIN_RECALL": 0.95,
+  "CHAPTER_BAR_MIN": 450.0,
+  "REPEAT_LINE_MIN": 3,
+  "ITEM_NO_RATIO": 0.6,
+  "MAX_BYTES": 209715200,
+  "WORD_GAP": 1.5
+ }
+}

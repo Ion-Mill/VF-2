@@ -1,0 +1,2 @@
+﻿pdf_page,printed_page,footer_doc,extractor,layout,column_regions,table_like_regions,gutter_x,center_straddle_ratio,body_rows,pdf_body_tokens,out_tokens,token_recall,token_precision,markitdown_token_recall,fallback_reason,markitdown_tables,headings,hf_lines_not_removed,escaped_hash_lines,cid,fffd,ctrl_marks,repeated_lines,superscript_after_digit,superscript_examples,watch_glyphs,other_nonascii,images,drawings,figure_label_words,markitdown_error
+1,,,markitdown,single,0,0,,0.622,37,410,410,1.0,1.0,1.0,,0,0,0,0,0,0,0,,0,,"{""’"": 2}","{"""": 18}",1,15,0,

@@ -1,0 +1,353 @@
+{
+ "records": 1228416,
+ "period": [
+  "2022-10-11 06:26:51.559",
+  "2022-10-11 10:43:11.968"
+ ],
+ "span_h": 4.27,
+ "distinct_keys_incl_noise": 944,
+ "keys_with_part_in_name": [
+  "PARTS_CATCHER",
+  "PARTS_CATCHER_HORIZONTAL",
+  "PART_LOADER_DOOR_OPEN",
+  "TAILSTOCK DID NOT CONTACT PART"
+ ],
+ "keys_with_cycle_in_name": [
+  "ThisCycle",
+  "LastCycle"
+ ],
+ "keys_with_count_in_name": [
+  "BlockCount",
+  "ToolHoleCount",
+  "COUNTERBALANCE_1_LOW_PRESSURE",
+  "COUNTERBALANCE_2_LOW_PRESSURE"
+ ],
+ "record_interval_ms": {
+  "n": 1228264,
+  "mean": 12.5,
+  "p05": 0.0,
+  "p10": 1.0,
+  "p25": 3.0,
+  "p50": 10.0,
+  "p75": 21.0,
+  "p90": 28.0,
+  "p95": 30.0,
+  "min": 0.0,
+  "max": 156.0
+ },
+ "records_per_second_mean": 79.9,
+ "RunningFlag_time_share_pct": {
+  "PROGRAM_STATUS_RUNNING": 14.85,
+  "PROGRAM_STATUS_OFF": 84.8,
+  "PROGRAM_STATUS_PENDING_OFF": 0.03,
+  "PROGRAM_STATUS_HELD": 0.32
+ },
+ "RunningFlag_changes": 272,
+ "running_segments": {
+  "n": 56,
+  "duration_s": {
+   "n": 56,
+   "mean": 40.8,
+   "p05": 0.6,
+   "p10": 1.8,
+   "p25": 3.1,
+   "p50": 6.1,
+   "p75": 16.7,
+   "p90": 134.0,
+   "p95": 256.5,
+   "min": 0.0,
+   "max": 467.4
+  }
+ },
+ "gap_between_running_segments_s": {
+  "n": 55,
+  "mean": 221.9,
+  "p05": 2.6,
+  "p10": 3.1,
+  "p25": 5.6,
+  "p50": 22.9,
+  "p75": 56.7,
+  "p90": 231.6,
+  "p95": 784.8,
+  "min": 0.7,
+  "max": 5487.8
+ },
+ "running_segments_merged_10s": {
+  "n": 35,
+  "duration_s": {
+   "n": 35,
+   "mean": 68.1,
+   "p05": 1.6,
+   "p10": 2.1,
+   "p25": 7.5,
+   "p50": 12.2,
+   "p75": 57.1,
+   "p90": 274.4,
+   "p95": 304.2,
+   "min": 0.7,
+   "max": 467.4
+  }
+ },
+ "BeaconStatus_time_share_pct": {
+  "RED_FLASH_GREEN_OFF": 0.1,
+  "GREEN_FLASH_RED_OFF": 32.86,
+  "YELLOW_FLASH": 4.08,
+  "GREEN_SOLID_RED_OFF": 9.1,
+  "ALL_OFF": 53.87
+ },
+ "BeaconStatus_changes": 256,
+ "ThisCycle_samples": 42698,
+ "ThisCycle_resets": 32,
+ "ThisCycle_value_before_reset": {
+  "n": 32,
+  "mean": 41816.0,
+  "p05": 1766.0,
+  "p10": 2814.0,
+  "p25": 4728.0,
+  "p50": 10310.0,
+  "p75": 24952.0,
+  "p90": 157047.0,
+  "p95": 199798.0,
+  "min": 782.0,
+  "max": 230573.0
+ },
+ "ThisCycle_units_per_second_median": 1000.0,
+ "ThisCycle_max": 230573,
+ "LastCycle_values": {
+  "0": 3,
+  "8000": 3,
+  "2000": 2,
+  "4000": 2,
+  "10000": 2,
+  "3000": 1,
+  "6000": 1,
+  "7000": 1,
+  "29000": 1,
+  "134000": 1
+ },
+ "LastCycle_changes": 29,
+ "ToolHoleCount_values": {
+  "583": 16,
+  "0": 12,
+  "576": 12
+ },
+ "ToolUsage_n_values": 29,
+ "ActiveTool_changes": 42,
+ "ActiveTool_dist": {
+  "11": 16,
+  "9": 12,
+  "6": 7,
+  "4": 5,
+  "1": 1,
+  "12": 1
+ },
+ "FeedTime_TotalTime_sample": [
+  "11504",
+  "49901717",
+  "11504",
+  "49901717"
+ ],
+ "ProgramName_values": {
+  "/home/haas/.HaasData/MDI": 5,
+  "/home/haas/UserData/Memory/001001.nc": 2,
+  "/home/haas/UserData/Memory/09448.nc": 1,
+  "/home/haas/UserData/Memory/00948.nc": 5
+ },
+ "alarm0_changes": [
+  [
+   0,
+   "0"
+  ],
+  [
+   1662,
+   "439"
+  ],
+  [
+   1664,
+   "0"
+  ],
+  [
+   7257,
+   "8370"
+  ],
+  [
+   7268,
+   "0"
+  ],
+  [
+   8963,
+   "310"
+  ],
+  [
+   8965,
+   "0"
+  ]
+ ],
+ "AlarmSafetyLevel_values": {
+  "6": 4,
+  "3": 3
+ },
+ "message_top": [
+  [
+   "Chuck Is Unclamped",
+   26
+  ],
+  [
+   "Reset In Progress!",
+   20
+  ],
+  [
+   "Not Available While Running",
+   19
+  ],
+  [
+   "Dwell 3",
+   10
+  ],
+  [
+   "Dwell 2",
+   10
+  ],
+  [
+   "Dwell 1",
+   10
+  ],
+  [
+   "Dwell 0",
+   10
+  ],
+  [
+   "Spindle RPM Limited By Current Gear Max RPM",
+   7
+  ],
+  [
+   "Keyboard disabled by setting",
+   5
+  ],
+  [
+   "Undo complete",
+   4
+  ]
+ ],
+ "message_events": 153,
+ "ActiveIcons_top": [
+  [
+   "UNLOCK",
+   15367
+  ],
+  [
+   "HIL",
+   15360
+  ],
+  [
+   "POWER_SAVING",
+   10274
+  ],
+  [
+   "DOOROPEN",
+   9595
+  ],
+  [
+   "OPTIONSTOPON",
+   6536
+  ],
+  [
+   "TS_HOLDING",
+   6362
+  ],
+  [
+   "FEEDHOLD",
+   3235
+  ],
+  [
+   "SINGLEBLOCK",
+   2081
+  ],
+  [
+   "RUNNING",
+   1878
+  ],
+  [
+   "CHUCK_UNCLAMPED_OD",
+   1722
+  ],
+  [
+   "HPC",
+   639
+  ],
+  [
+   "FEED",
+   628
+  ]
+ ],
+ "probe": {
+  "st40-100.21.000.1120_probe.xml": {
+   "data_items": 202,
+   "category": {
+    "EVENT": 193,
+    "CONDITION": 1,
+    "SAMPLE": 8
+   },
+   "has_PART_COUNT": false,
+   "has_PROGRAM": 1,
+   "has_EXECUTION": 1,
+   "has_CONTROLLER_MODE": 1,
+   "has_ALARM_condition": 1,
+   "types_part_cycle": [],
+   "n_types": 18
+  },
+  "vf6_100.21.000.1101_probe.xml": {
+   "data_items": 202,
+   "category": {
+    "EVENT": 193,
+    "CONDITION": 1,
+    "SAMPLE": 8
+   },
+   "has_PART_COUNT": false,
+   "has_PROGRAM": 1,
+   "has_EXECUTION": 1,
+   "has_CONTROLLER_MODE": 1,
+   "has_ALARM_condition": 1,
+   "types_part_cycle": [],
+   "n_types": 18
+  },
+  "vf6_100.21.000.1133_probe.xml": {
+   "data_items": 259,
+   "category": {
+    "EVENT": 245,
+    "CONDITION": 1,
+    "SAMPLE": 13
+   },
+   "has_PART_COUNT": false,
+   "has_PROGRAM": 1,
+   "has_EXECUTION": 1,
+   "has_CONTROLLER_MODE": 1,
+   "has_ALARM_condition": 1,
+   "types_part_cycle": [],
+   "n_types": 18
+  }
+ },
+ "current_examples": {
+  "st40-100.21.000.1120_current.xml": {
+   "EmergencyStop": "ARMED",
+   "ControllerMode": "AUTOMATIC",
+   "Execution": "STOPPED",
+   "Program": "00450.nc",
+   "Availability": "AVAILABLE"
+  },
+  "vf6_100.21.000.1101_current.xml": {
+   "EmergencyStop": "ARMED",
+   "ControllerMode": "MANUAL_DATA_INPUT",
+   "Execution": "STOPPED",
+   "Program": "CBH16441.NC",
+   "Availability": "AVAILABLE"
+  },
+  "vf6_100.21.000.1133_current.xml": {
+   "EmergencyStop": "ARMED",
+   "ControllerMode": "MANUAL",
+   "Execution": "STOPPED",
+   "Program": "O16027.nc",
+   "Availability": "AVAILABLE"
+  }
+ }
+}

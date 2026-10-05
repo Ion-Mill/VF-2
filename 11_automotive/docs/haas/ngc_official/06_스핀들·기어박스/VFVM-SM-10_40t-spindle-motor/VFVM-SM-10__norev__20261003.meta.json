@@ -1,0 +1,29 @@
+{
+  "source_path": "C:\\code\\1\\참고문서\\매뉴얼\\VF 시리즈 서비스 매뉴얼\\찐\\06_스핀들·기어박스\\VFVM-SM-10_40t-spindle-motor\\VFVM-SM-10__norev__20261003.html",
+  "source_name": "VFVM-SM-10__norev__20261003.html",
+  "file_type": "html",
+  "content_hash": "sha256:fc0834e4bf41808d325446c57d9ffcdcacdafa1ac328a26b5233d5c729e330c6",
+  "converter": "markitdown",
+  "converter_version": "0.1.8",
+  "converted_at": "2026-10-03T18:06:52",
+  "warnings": [
+    "HTML 전체 변환: 사이트 내비게이션·바닥글 포함"
+  ],
+  "doc_id": "VFVM-SM-10",
+  "revision": "",
+  "last_updated": "",
+  "source_url": "https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---40t-spindle-motor.html",
+  "retrieved_at": "2026-10-03T18:06:52",
+  "retrieved_via": "direct",
+  "http_status": 200,
+  "applies_to": "Applies to machines built after August 2016",
+  "embedded_docs": [
+    {
+      "doc_id": "TG0010",
+      "revision": "Revision C - 04/2026"
+    }
+  ],
+  "title": "VF/VM - 40T - Spindle Motor - Haas Service Manual",
+  "pages": null,
+  "license_note": "Haas 저작물: 사이트 약관상 서면 허가 없는 사용 불가 표기. 내부 참고용 사본, 재배포 금지"
+}

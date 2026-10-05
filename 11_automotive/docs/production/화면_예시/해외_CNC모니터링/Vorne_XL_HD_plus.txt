@@ -1,0 +1,276 @@
+SOURCE: https://www.vorne.com/products/xl/models/xl-hd-plus/
+FETCHED: 2026-10-05
+
+XL HD+ Productivity Appliance | Vorne
+
+[IMG alt=Logo]
+
+PRODUCTS
+
+THE XL PLATFORM
+
+What Is XL? XL Touch NewXL HD+ NewXL810-1 
+Models and Pricing Tech Specs What's New With XL? Free 90-Day Trial 
+XL ADD-ONS
+
+XL Sidekick App FreeBarcode Scanner Kits Integration Tools Services 
+MORE
+
+Testimonials Customers and Industries Additional Products Product Manuals 
+Try Vorne XL free for 90 days
+
+SERVICES
+
+SERVICES
+
+Services from Vorne XL Expert Training The XL Universe IDA: Information, Decision, Action Meet the Services Team 
+Try Vorne XL free for 90 days
+
+SOLUTIONS
+
+APPLICATIONS
+
+Machine Monitoring OEE Displays OEE Software Production Counters Production Monitoring Production Scoreboards Takt Time 
+USE CASES
+
+Creating a Digital Twin Improve Productivity Increase Production Capacity Reduce Changeover Times Reduce Cycle Times Reduce Downtime Reduce Manufacturing Costs Win the Shift 
+INDUSTRIES
+
+Automotive Baking Bottling Building Products Co-Packing Cosmetics Electronics Food and Beverage 
+Medical Devices Metal Forming Metal Stamping Packaging Pharmaceutical Printing Pulp and Paper Textiles 
+Try Vorne XL free for 90 days
+
+LEARNING CENTER
+
+METHODOLOGIES
+
+Agile Continuous Improvement Information, Decision, Action Lean Manufacturing Structured Improvement Theory of Constraints Total Productive Maintenance Toyota Production System 
+METRICS AND MEASURES
+
+Downtime Key Performance Indicators (KPIs) OEE Six Big Losses TEEP 
+PEOPLE-FOCUSED
+
+Be Your Best Leadership Meetings 
+TOOLS AND TECHNIQUES
+
+Andon Short Interval Control Single-Minute Exchange of Die Top Losses Visual Factory 
+Try Vorne XL free for 90 days
+
+SUPPORT
+
+WE CAN HELP
+
+Technical Support 
+DOCUMENTATION
+
+Product Manuals Software Applications 
+Try Vorne XL free for 90 days
+
+ABOUT US
+
+VORNE
+
+About Us Contact Us Careers 
+Try Vorne XL free for 90 days
+
+GLOBAL
+
+XL PARTNERS
+
+XL Partners 
+Try Vorne XL free for 90 days
+
+PRODUCTS
+
+SERVICES
+
+SOLUTIONS
+
+LEARNING CENTER
+
+SUPPORT
+
+ABOUT US
+
+GLOBAL
+
+MANUFACTURING IMPROVEMENT MADE EASY BY VORNE
+
+[IMG alt=background]
+
+XL HD+
+The Most Cost-Effective Way to Monitor Production
+The XL HD+ Productivity Appliance is a purpose-built edge computing device designed and manufactured by Vorne to monitor production, accelerate your digital transformation, and foster a culture of productivity.Try XL HD+ Free for 90 Days
+
+[IMG alt=XL HD+ device and HDMI scoreboard showing the current line status.]
+
+Small Footprint, Huge Impact
+XL HD+ is a compact, rugged, industrial device that fully integrates hardware and software to deliver production monitoring in real time. Simply connect power plus one or two sensors, and XL instantly delivers 140+ metrics across 20+ data dimensions, all easily accessible through its extensive and intuitive browser-based reporting suite. Connect a TV or monitor of your choice via HDMI for an operator scoreboard that further aligns your entire team with a shared view of operations.
+Built on our next-generation hardware platform with significantly greater processing power, memory, and storage, XL HD+ is well equipped to handle today’s challenges and tomorrow’s innovations.
+
+[IMG alt=The XL HD Plus device features power, HDMI, USB, Ethernet, OLED screen, digital inputs, a production state indicator, and relay output.]
+Book a Live Demo
+
+The Price: $4,690
+
+No hidden fees
+
+No recurring fees
+
+No maintenance fees
+
+No contracts to sign
+
+No custom software
+
+One-time cost
+
+Unlimited users
+
+Free software updates
+
+Free technical support
+
+3-year warranty
+The XL HD+ is $4,690 per line (USA and Canada). Quantity discounts are available.
+Try XL Free for 90 Days
+
+Visualize Your Plant Floor
+Hit Your Target, Win the Shift
+Connect any size TV or monitor to the XL HD+ HDMI port for an instant operator scoreboard. For example, a 55" display can show metrics as large as 5" for easy viewing at 100+ feet.
+The plant-floor scoreboard is the single most impactful and quickest way to drive improvement - by empowering and encouraging your operators to win the shift. Empower operators with the KPIs most relevant to them. Encourage operators with an efficiency score - a clear, easily understandable takt-based target with a pace that automatically adjusts based on the part you’re running. An Efficiency score of 100% or better means they’re winning the shift.
+For plant-floor supervisors, the integrated chronogram is particularly helpful, as it provides an instant visualization of the shift. They can easily identify down time at the start or end of the shift, running slowly after changeovers, etc.
+The scoreboard automatically adapts based on the production state XL detects - showing the right information at the right time. When your process is running, the scoreboard shows the current state of the line at a glance.
+
+[IMG alt=XL HD+ HDMI scoreboard depicting the current line status and shift KPIs.]
+When your process is not running, the focus is on helping you return to production. XL automatically detects and displays unplanned events (such as running slowly and down) and also indicates planned events (such as changeovers and breaks) with clear, attention-grabbing visuals.
+
+[IMG alt=HDMI plant-floor scoreboard depicting the line going into a part change.]
+
+[IMG alt=HDMI plant-floor scoreboard depicting the line going into a break.]
+
+[IMG alt=HDMI plant-floor scoreboard depicting the line going down and encouraging operators to add a down reason.]
+
+Operators: Win the Shift
+Operational Tools for Your Plant-Floor Team
+XL automatically collects precise data about down time, rejects, etc. so that all operators need to do is annotate this data with their perspective (e.g., add reasons for down events). The plant-floor scoreboard relfects the real-time status of the line, alerting operators when appropriate and keeping them informed.
+When the line goes down, operators are prompted to add a reason, which they can do quickly and easily with a barcode scanner or with the free XL Sidekick app. Operators add their perspective in real time, right at the source, and right when it is fresh in their minds.
+
+[IMG alt=Our Free XL Sidekick companion app open to the down reason page.]
+
+Supervisors: A Continuous Improvement Roadmap
+Top Loss Reports for Tactical Quick Wins
+One of the fastest ways for supervisors to impact manufacturing productivity is to relentlessly focus on production losses, beginning with the largest sources of loss. In other words, focus your attention on the smallest set of improvement actions that will yield big results. Think of the browser-based Top Losses report as your real-time, personalized continuous improvement roadmap.
+
+[IMG alt=Top Losses report built in Vorne XL and used to help supervisors make action plans.]
+Other popular tools for supervisors include:
+Down Time Pareto (an all-time classic)
+TPT (the Total Production Timeline combines a colorful chronogram with categorized loss data)
+Six Big Losses (transforms OEE into six distinct categories that are natural targets for improvement actions)
+Hour-by-Hour Heatmap (even better when stacked with a chronogram showing breaks, changeovers, etc.)
+
+Managers: The Big Picture
+Strategic Decisions Based on Precise Data
+Having an accurate view of production throughout the entire enterprise aids managers in setting and following up on large-scale objectives. Data rollup and trended reports inform long term goals that then guide tactical and operational actions.
+Charts depicting data over time, like this example that plots quarterly OEE trends by department, reveal challenge areas and areas that deserve praise because they are exceeding targets. In this case, both Stamping and Pressing began the quarter in decline. However, Stamping began steady improvement a few weeks in, whereas Pressing continued to decline. The manager can dig deeper to find out what each department did differently, and set appropriate goals for the next quarter.
+
+[IMG alt=OEE trend over time report built into Vorne XL and used to aid managerial decisionmaking.]
+
+Wave Hello
+Navigate between screens directly on the XL HD+ device using the built-in gesture sensor - simply swipe left or right. Operators can view real-time metrics for the current shift, part, and production events - or access diagnostic screens for device details like input activity and system status - directly from the device.
+
+[IMG alt=The XL HD+ OLED screen depicting data for the current part run.]
+
+[IMG alt=The XL HD+ OLED screen depicting input activity data.]
+
+Metric
+
+Diagnostic
+
+Welcome to the XL Platform
+Your XL Device Is Just the Beginning
+XL devices are the foundation of the XL platform, which is a seamlessly connected system designed around three pillars: production monitoring, digital transformation, and culture of productivity. These pillars have one focus and one goal: rapid and sustainable improvements in manufacturing productivity.
+XL serves as a single source of accurate and actionable data and insights. And as your needs grow, the XL platform grows with you - without lengthy projects, custom development, or needless complexity.
+
+[IMG alt=Screen capture of a downtime pareto in the Vorne XL web page interface.]
+Built-In Reports
+XL HD+'s powerful integrated reporting suite has over 60 built-in reports.
+
+[IMG alt=Screen capture of a top losses table in the Vorne XL web page interface.]
+Custom Reports
+Craft any number of custom reports using drag-and-drop widgets.
+
+[IMG alt=Infographic depicting all the different systems that can integrate with XL.]
+Integrate With Ease
+Integrate to PLCs, MES, and ERP with the XL API or prebuilt partner solutions.
+
+[IMG alt=Screen capture of email and mobile alerts sent from Vorne XL.]
+Alerts and Emails
+Subscribe to alerts (e.g., line down) and reports (e.g., shift, daily, weekly).
+
+[IMG alt=XL Sidekick app on a phone and tablet.]
+XL Sidekick
+Instantly access every XL in your plant from a tablet or phone with our free app.
+
+[IMG alt=XL HDMI scoreboard depicting the line in a down state.]
+Line Status At-a-Glance
+Empower operators to course correct with contextual real-time data.
+
+Evaluate XL HD+ in your production environment with full platform access.Start Your Free 90-Day Trial
+
+Technical Specifications
+
+Processing Core
+(4) 64-bit, 1.4 GHz ARM A-53 Cores
+40GB Flash Memory, 4 GB RAM
+
+Communication Ports
+(1) 10/100 Auto-MDIX, Ethernet
+(1) 2.0 USB-A Host, 500mA 5 VDC
+(1) HDMI 1.4
+
+Environmental
+0° to 50°C ambient
+5% to 95% humidity (non-condensing)
+
+Digital Inputs and Outputs
+(6) 5 to 24 VDC, Sink or Source
+(1) SPDT, 30 VDC at 1A, Relay Out
+
+Dimensions and Weight
+7.75 x 7.75 x 2.00 in | 3 lbs
+
+Power
+24 VDC, 24 WTalk With an XL Expert
+
+First Name*
+Last Name*
+Email*
+Phone Number*
+Company Name*
+What would you like to achieve with XL?Submit
+
+[IMG alt=logo]+1.630.875.3600[email protected]1445 Industrial Dr. Itasca, IL 60143
+Products
+
+XL Productivity Appliance™Models and PricingTech Specs
+Applications
+
+Machine MonitoringProduction MonitoringOEE SoftwareOEE DisplaysProduction Monitoring SoftwareProduction CountersProduction ScoreboardsTakt Time
+Use Cases
+
+Increase CapacityImprove ProductivityReduce DowntimeReduce Changeover TimesReduce Cycle TimesReduce CostWin the ShiftCreate a Digital Twin
+Learn
+
+Learning CenterServicesSupport
+About Us
+
+Our CompanyOur CustomersCareers© 2011-2026 Vorne Industries. All Rights Reserved | Privacy Policy | Cookie Policy
+
+[IMG alt=Banner Ad]
+
+What's included in your 90-day free trial?
+
+[IMG alt=Andon Report]
+VORNE XL | Works with any machine, any process, right out of the boxEasy, quick self-install | Accurate, real-time KPIs immediatelyTry XL for FREE today
+GET STARTEDSEE HOW VORNE XL WORKS

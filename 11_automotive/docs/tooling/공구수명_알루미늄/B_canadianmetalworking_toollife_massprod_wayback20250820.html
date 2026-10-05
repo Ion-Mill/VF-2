@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html
+            class="canada"
+        lang="en" prefix="og: http://ogp.me/ns#"
+    data-site="cm">
+<head>
+    <meta charset="utf-8"><script type="text/javascript">(window.NREUM||(NREUM={})).init={ajax:{deny_list:["bam.nr-data.net"]}};(window.NREUM||(NREUM={})).loader_config={licenseKey:"6ae71fe6f4",applicationID:"16008031"};;/*! For license information please see nr-loader-rum-1.295.0.min.js.LICENSE.txt */
+(()=>{var e,t,r={122:(e,t,r)=>{"use strict";r.d(t,{a:()=>i});var n=r(944);function i(e,t){try{if(!e||"object"!=typeof e)return(0,n.R)(3);if(!t||"object"!=typeof t)return(0,n.R)(4);const r=Object.create(Object.getPrototypeOf(t),Object.getOwnPropertyDescriptors(t)),a=0===Object.keys(r).length?e:r;for(let s in a)if(void 0!==e[s])try{if(null===e[s]){r[s]=null;continue}Array.isArray(e[s])&&Array.isArray(t[s])?r[s]=Array.from(new Set([...e[s],...t[s]])):"object"==typeof e[s]&&"object"==typeof t[s]?r[s]=i(e[s],t[s]):r[s]=e[s]}catch(e){r[s]||(0,n.R)(1,e)}return r}catch(e){(0,n.R)(2,e)}}},555:(e,t,r)=>{"use strict";r.d(t,{D:()=>o,f:()=>s});var n=r(384),i=r(122);const a={beacon:n.NT.beacon,errorBeacon:n.NT.errorBeacon,licenseKey:void 0,applicationID:void 0,sa:void 0,queueTime:void 0,applicationTime:void 0,ttGuid:void 0,user:void 0,account:void 0,product:void 0,extra:void 0,jsAttributes:{},userAttributes:void 0,atts:void 0,transactionName:void 0,tNamePlain:void 0};function s(e){try{return!!e.licenseKey&&!!e.errorBeacon&&!!e.applicationID}catch(e){return!1}}const o=e=>(0,i.a)(e,a)},324:(e,t,r)=>{"use strict";r.d(t,{F3:()=>i,Xs:()=>a,xv:()=>n});const n="1.295.0",i="PROD",a="CDN"},154:(e,t,r)=>{"use strict";r.d(t,{OF:()=>c,RI:()=>i,WN:()=>d,bv:()=>a,gm:()=>s,mw:()=>o,sb:()=>u});var n=r(863);const i="undefined"!=typeof window&&!!window.document,a="undefined"!=typeof WorkerGlobalScope&&("undefined"!=typeof self&&self instanceof WorkerGlobalScope&&self.navigator instanceof WorkerNavigator||"undefined"!=typeof globalThis&&globalThis instanceof WorkerGlobalScope&&globalThis.navigator instanceof WorkerNavigator),s=i?window:"undefined"!=typeof WorkerGlobalScope&&("undefined"!=typeof self&&self instanceof WorkerGlobalScope&&self||"undefined"!=typeof globalThis&&globalThis instanceof WorkerGlobalScope&&globalThis),o=Boolean("hidden"===s?.document?.visibilityState),c=/iPad|iPhone|iPod/.test(s.navigator?.userAgent),u=c&&"undefined"==typeof SharedWorker,d=((()=>{const e=s.navigator?.userAgent?.match(/Firefox[/\s](\d+\.\d+)/);Array.isArray(e)&&e.length>=2&&e[1]})(),Date.now()-(0,n.t)())},241:(e,t,r)=>{"use strict";r.d(t,{W:()=>a});var n=r(154);const i="newrelic";function a(e={}){try{n.gm.dispatchEvent(new CustomEvent(i,{detail:e}))}catch(e){}}},687:(e,t,r)=>{"use strict";r.d(t,{Ak:()=>u,Ze:()=>f,x3:()=>d});var n=r(241),i=r(836),a=r(606),s=r(860),o=r(646);const c={};function u(e,t){const r={staged:!1,priority:s.P3[t]||0};l(e),c[e].get(t)||c[e].set(t,r)}function d(e,t){e&&c[e]&&(c[e].get(t)&&c[e].delete(t),p(e,t,!1),c[e].size&&g(e))}function l(e){if(!e)throw new Error("agentIdentifier required");c[e]||(c[e]=new Map)}function f(e="",t="feature",r=!1){if(l(e),!e||!c[e].get(t)||r)return p(e,t);c[e].get(t).staged=!0,g(e)}function g(e){const t=Array.from(c[e]);t.every((([e,t])=>t.staged))&&(t.sort(((e,t)=>e[1].priority-t[1].priority)),t.forEach((([t])=>{c[e].delete(t),p(e,t)})))}function p(e,t,r=!0){const s=e?i.ee.get(e):i.ee,c=a.i.handlers;if(!s.aborted&&s.backlog&&c){if((0,n.W)({agentIdentifier:e,type:"lifecycle",name:"drain",feature:t}),r){const e=s.backlog[t],r=c[t];if(r){for(let t=0;e&&t<e.length;++t)m(e[t],r);Object.entries(r).forEach((([e,t])=>{Object.values(t||{}).forEach((t=>{t[0]?.on&&t[0]?.context()instanceof o.y&&t[0].on(e,t[1])}))}))}}s.isolatedBacklog||delete c[t],s.backlog[t]=null,s.emit("drain-"+t,[])}}function m(e,t){var r=e[1];Object.values(t[r]||{}).forEach((t=>{var r=e[0];if(t[0]===r){var n=t[1],i=e[3],a=e[2];n.apply(i,a)}}))}},836:(e,t,r)=>{"use strict";r.d(t,{P:()=>o,ee:()=>c});var n=r(384),i=r(990),a=r(646),s=r(607);const o="nr@context:".concat(s.W),c=function e(t,r){var n={},s={},d={},l=!1;try{l=16===r.length&&u.initializedAgents?.[r]?.runtime.isolatedBacklog}catch(e){}var f={on:p,addEventListener:p,removeEventListener:function(e,t){var r=n[e];if(!r)return;for(var i=0;i<r.length;i++)r[i]===t&&r.splice(i,1)},emit:function(e,r,n,i,a){!1!==a&&(a=!0);if(c.aborted&&!i)return;t&&a&&t.emit(e,r,n);var o=g(n);m(e).forEach((e=>{e.apply(o,r)}));var u=v()[s[e]];u&&u.push([f,e,r,o]);return o},get:h,listeners:m,context:g,buffer:function(e,t){const r=v();if(t=t||"feature",f.aborted)return;Object.entries(e||{}).forEach((([e,n])=>{s[n]=t,t in r||(r[t]=[])}))},abort:function(){f._aborted=!0,Object.keys(f.backlog).forEach((e=>{delete f.backlog[e]}))},isBuffering:function(e){return!!v()[s[e]]},debugId:r,backlog:l?{}:t&&"object"==typeof t.backlog?t.backlog:{},isolatedBacklog:l};return Object.defineProperty(f,"aborted",{get:()=>{let e=f._aborted||!1;return e||(t&&(e=t.aborted),e)}}),f;function g(e){return e&&e instanceof a.y?e:e?(0,i.I)(e,o,(()=>new a.y(o))):new a.y(o)}function p(e,t){n[e]=m(e).concat(t)}function m(e){return n[e]||[]}function h(t){return d[t]=d[t]||e(f,t)}function v(){return f.backlog}}(void 0,"globalEE"),u=(0,n.Zm)();u.ee||(u.ee=c)},646:(e,t,r)=>{"use strict";r.d(t,{y:()=>n});class n{constructor(e){this.contextId=e}}},908:(e,t,r)=>{"use strict";r.d(t,{d:()=>n,p:()=>i});var n=r(836).ee.get("handle");function i(e,t,r,i,a){a?(a.buffer([e],i),a.emit(e,t,r)):(n.buffer([e],i),n.emit(e,t,r))}},606:(e,t,r)=>{"use strict";r.d(t,{i:()=>a});var n=r(908);a.on=s;var i=a.handlers={};function a(e,t,r,a){s(a||n.d,i,e,t,r)}function s(e,t,r,i,a){a||(a="feature"),e||(e=n.d);var s=t[a]=t[a]||{};(s[r]=s[r]||[]).push([e,i])}},878:(e,t,r)=>{"use strict";function n(e,t){return{capture:e,passive:!1,signal:t}}function i(e,t,r=!1,i){window.addEventListener(e,t,n(r,i))}function a(e,t,r=!1,i){document.addEventListener(e,t,n(r,i))}r.d(t,{DD:()=>a,jT:()=>n,sp:()=>i})},607:(e,t,r)=>{"use strict";r.d(t,{W:()=>n});const n=(0,r(566).bz)()},566:(e,t,r)=>{"use strict";r.d(t,{LA:()=>o,bz:()=>s});var n=r(154);const i="xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx";function a(e,t){return e?15&e[t]:16*Math.random()|0}function s(){const e=n.gm?.crypto||n.gm?.msCrypto;let t,r=0;return e&&e.getRandomValues&&(t=e.getRandomValues(new Uint8Array(30))),i.split("").map((e=>"x"===e?a(t,r++).toString(16):"y"===e?(3&a()|8).toString(16):e)).join("")}function o(e){const t=n.gm?.crypto||n.gm?.msCrypto;let r,i=0;t&&t.getRandomValues&&(r=t.getRandomValues(new Uint8Array(e)));const s=[];for(var o=0;o<e;o++)s.push(a(r,i++).toString(16));return s.join("")}},614:(e,t,r)=>{"use strict";r.d(t,{BB:()=>s,H3:()=>n,g:()=>u,iL:()=>c,tS:()=>o,uh:()=>i,wk:()=>a});const n="NRBA",i="SESSION",a=144e5,s=18e5,o={STARTED:"session-started",PAUSE:"session-pause",RESET:"session-reset",RESUME:"session-resume",UPDATE:"session-update"},c={SAME_TAB:"same-tab",CROSS_TAB:"cross-tab"},u={OFF:0,FULL:1,ERROR:2}},863:(e,t,r)=>{"use strict";function n(){return Math.floor(performance.now())}r.d(t,{t:()=>n})},944:(e,t,r)=>{"use strict";r.d(t,{R:()=>i});var n=r(241);function i(e,t){"function"==typeof console.debug&&(console.debug("New Relic Warning: https://github.com/newrelic/newrelic-browser-agent/blob/main/docs/warning-codes.md#".concat(e),t),(0,n.W)({agentIdentifier:null,drained:null,type:"data",name:"warn",feature:"warn",data:{code:e,secondary:t}}))}},701:(e,t,r)=>{"use strict";r.d(t,{B:()=>a,t:()=>s});var n=r(241);const i=new Set,a={};function s(e,t){const r=t.agentIdentifier;a[r]??={},e&&"object"==typeof e&&(i.has(r)||(t.ee.emit("rumresp",[e]),a[r]=e,i.add(r),(0,n.W)({agentIdentifier:r,loaded:!0,drained:!0,type:"lifecycle",name:"load",feature:void 0,data:e})))}},990:(e,t,r)=>{"use strict";r.d(t,{I:()=>i});var n=Object.prototype.hasOwnProperty;function i(e,t,r){if(n.call(e,t))return e[t];var i=r();if(Object.defineProperty&&Object.keys)try{return Object.defineProperty(e,t,{value:i,writable:!0,enumerable:!1}),i}catch(e){}return e[t]=i,i}},389:(e,t,r)=>{"use strict";function n(e,t=500,r={}){const n=r?.leading||!1;let i;return(...r)=>{n&&void 0===i&&(e.apply(this,r),i=setTimeout((()=>{i=clearTimeout(i)}),t)),n||(clearTimeout(i),i=setTimeout((()=>{e.apply(this,r)}),t))}}function i(e){let t=!1;return(...r)=>{t||(t=!0,e.apply(this,r))}}r.d(t,{J:()=>i,s:()=>n})},910:(e,t,r)=>{"use strict";r.d(t,{i:()=>a});var n=r(944);const i=new Map;function a(...e){return e.every((e=>{if(i.has(e))return i.get(e);const t="function"==typeof e&&e.toString().includes("[native code]");return t||(0,n.R)(64,e?.name||e?.toString()),i.set(e,t),t}))}},289:(e,t,r)=>{"use strict";r.d(t,{GG:()=>a,Qr:()=>o,sB:()=>s});var n=r(878);function i(){return"undefined"==typeof document||"complete"===document.readyState}function a(e,t){if(i())return e();(0,n.sp)("load",e,t)}function s(e){if(i())return e();(0,n.DD)("DOMContentLoaded",e)}function o(e){if(i())return e();(0,n.sp)("popstate",e)}},384:(e,t,r)=>{"use strict";r.d(t,{NT:()=>s,US:()=>d,Zm:()=>o,bQ:()=>u,dV:()=>c,pV:()=>l});var n=r(154),i=r(863),a=r(910);const s={beacon:"bam.nr-data.net",errorBeacon:"bam.nr-data.net"};function o(){return n.gm.NREUM||(n.gm.NREUM={}),void 0===n.gm.newrelic&&(n.gm.newrelic=n.gm.NREUM),n.gm.NREUM}function c(){let e=o();return e.o||(e.o={ST:n.gm.setTimeout,SI:n.gm.setImmediate||n.gm.setInterval,CT:n.gm.clearTimeout,XHR:n.gm.XMLHttpRequest,REQ:n.gm.Request,EV:n.gm.Event,PR:n.gm.Promise,MO:n.gm.MutationObserver,FETCH:n.gm.fetch,WS:n.gm.WebSocket},(0,a.i)(...Object.values(e.o))),e}function u(e,t){let r=o();r.initializedAgents??={},t.initializedAt={ms:(0,i.t)(),date:new Date},r.initializedAgents[e]=t}function d(e,t){o()[e]=t}function l(){return function(){let e=o();const t=e.info||{};e.info={beacon:s.beacon,errorBeacon:s.errorBeacon,...t}}(),function(){let e=o();const t=e.init||{};e.init={...t}}(),c(),function(){let e=o();const t=e.loader_config||{};e.loader_config={...t}}(),o()}},843:(e,t,r)=>{"use strict";r.d(t,{u:()=>i});var n=r(878);function i(e,t=!1,r,i){(0,n.DD)("visibilitychange",(function(){if(t)return void("hidden"===document.visibilityState&&e());e(document.visibilityState)}),r,i)}},773:(e,t,r)=>{"use strict";r.d(t,{z_:()=>a,XG:()=>o,TZ:()=>n,rs:()=>i,xV:()=>s});r(154),r(566),r(384);const n=r(860).K7.metrics,i="sm",a="cm",s="storeSupportabilityMetrics",o="storeEventMetrics"},630:(e,t,r)=>{"use strict";r.d(t,{T:()=>n});const n=r(860).K7.pageViewEvent},782:(e,t,r)=>{"use strict";r.d(t,{T:()=>n});const n=r(860).K7.pageViewTiming},234:(e,t,r)=>{"use strict";r.d(t,{W:()=>a});var n=r(836),i=r(687);class a{constructor(e,t){this.agentIdentifier=e,this.ee=n.ee.get(e),this.featureName=t,this.blocked=!1}deregisterDrain(){(0,i.x3)(this.agentIdentifier,this.featureName)}}},741:(e,t,r)=>{"use strict";r.d(t,{W:()=>a});var n=r(944),i=r(261);class a{#e(e,...t){if(this[e]!==a.prototype[e])return this[e](...t);(0,n.R)(35,e)}addPageAction(e,t){return this.#e(i.hG,e,t)}register(e){return this.#e(i.eY,e)}recordCustomEvent(e,t){return this.#e(i.fF,e,t)}setPageViewName(e,t){return this.#e(i.Fw,e,t)}setCustomAttribute(e,t,r){return this.#e(i.cD,e,t,r)}noticeError(e,t){return this.#e(i.o5,e,t)}setUserId(e){return this.#e(i.Dl,e)}setApplicationVersion(e){return this.#e(i.nb,e)}setErrorHandler(e){return this.#e(i.bt,e)}addRelease(e,t){return this.#e(i.k6,e,t)}log(e,t){return this.#e(i.$9,e,t)}start(){return this.#e(i.d3)}finished(e){return this.#e(i.BL,e)}recordReplay(){return this.#e(i.CH)}pauseReplay(){return this.#e(i.Tb)}addToTrace(e){return this.#e(i.U2,e)}setCurrentRouteName(e){return this.#e(i.PA,e)}interaction(){return this.#e(i.dT)}wrapLogger(e,t,r){return this.#e(i.Wb,e,t,r)}measure(e,t){return this.#e(i.V1,e,t)}}},261:(e,t,r)=>{"use strict";r.d(t,{$9:()=>u,BL:()=>o,CH:()=>g,Dl:()=>_,Fw:()=>y,PA:()=>h,Pl:()=>n,Tb:()=>l,U2:()=>a,V1:()=>k,Wb:()=>x,bt:()=>b,cD:()=>v,d3:()=>w,dT:()=>c,eY:()=>p,fF:()=>f,hG:()=>i,k6:()=>s,nb:()=>m,o5:()=>d});const n="api-",i="addPageAction",a="addToTrace",s="addRelease",o="finished",c="interaction",u="log",d="noticeError",l="pauseReplay",f="recordCustomEvent",g="recordReplay",p="register",m="setApplicationVersion",h="setCurrentRouteName",v="setCustomAttribute",b="setErrorHandler",y="setPageViewName",_="setUserId",w="start",x="wrapLogger",k="measure"},163:(e,t,r)=>{"use strict";r.d(t,{j:()=>E});var n=r(384),i=r(741);var a=r(555);r(860).K7.genericEvents;const s="experimental.marks",o="experimental.measures",c="experimental.resources",u=e=>{if(!e||"string"!=typeof e)return!1;try{document.createDocumentFragment().querySelector(e)}catch{return!1}return!0};var d=r(614),l=r(944),f=r(122);const g="[data-nr-mask]",p=e=>(0,f.a)(e,(()=>{const e={feature_flags:[],experimental:{marks:!1,measures:!1,resources:!1},mask_selector:"*",block_selector:"[data-nr-block]",mask_input_options:{color:!1,date:!1,"datetime-local":!1,email:!1,month:!1,number:!1,range:!1,search:!1,tel:!1,text:!1,time:!1,url:!1,week:!1,textarea:!1,select:!1,password:!0}};return{ajax:{deny_list:void 0,block_internal:!0,enabled:!0,autoStart:!0},api:{allow_registered_children:!0,duplicate_registered_data:!1},distributed_tracing:{enabled:void 0,exclude_newrelic_header:void 0,cors_use_newrelic_header:void 0,cors_use_tracecontext_headers:void 0,allowed_origins:void 0},get feature_flags(){return e.feature_flags},set feature_flags(t){e.feature_flags=t},generic_events:{enabled:!0,autoStart:!0},harvest:{interval:30},jserrors:{enabled:!0,autoStart:!0},logging:{enabled:!0,autoStart:!0},metrics:{enabled:!0,autoStart:!0},obfuscate:void 0,page_action:{enabled:!0},page_view_event:{enabled:!0,autoStart:!0},page_view_timing:{enabled:!0,autoStart:!0},performance:{get capture_marks(){return e.feature_flags.includes(s)||e.experimental.marks},set capture_marks(t){e.experimental.marks=t},get capture_measures(){return e.feature_flags.includes(o)||e.experimental.measures},set capture_measures(t){e.experimental.measures=t},capture_detail:!0,resources:{get enabled(){return e.feature_flags.includes(c)||e.experimental.resources},set enabled(t){e.experimental.resources=t},asset_types:[],first_party_domains:[],ignore_newrelic:!0}},privacy:{cookies_enabled:!0},proxy:{assets:void 0,beacon:void 0},session:{expiresMs:d.wk,inactiveMs:d.BB},session_replay:{autoStart:!0,enabled:!1,preload:!1,sampling_rate:10,error_sampling_rate:100,collect_fonts:!1,inline_images:!1,fix_stylesheets:!0,mask_all_inputs:!0,get mask_text_selector(){return e.mask_selector},set mask_text_selector(t){u(t)?e.mask_selector="".concat(t,",").concat(g):""===t||null===t?e.mask_selector=g:(0,l.R)(5,t)},get block_class(){return"nr-block"},get ignore_class(){return"nr-ignore"},get mask_text_class(){return"nr-mask"},get block_selector(){return e.block_selector},set block_selector(t){u(t)?e.block_selector+=",".concat(t):""!==t&&(0,l.R)(6,t)},get mask_input_options(){return e.mask_input_options},set mask_input_options(t){t&&"object"==typeof t?e.mask_input_options={...t,password:!0}:(0,l.R)(7,t)}},session_trace:{enabled:!0,autoStart:!0},soft_navigations:{enabled:!0,autoStart:!0},spa:{enabled:!0,autoStart:!0},ssl:void 0,user_actions:{enabled:!0,elementAttributes:["id","className","tagName","type"]}}})());var m=r(154),h=r(324);let v=0;const b={buildEnv:h.F3,distMethod:h.Xs,version:h.xv,originTime:m.WN},y={appMetadata:{},customTransaction:void 0,denyList:void 0,disabled:!1,entityManager:void 0,harvester:void 0,isolatedBacklog:!1,isRecording:!1,loaderType:void 0,maxBytes:3e4,obfuscator:void 0,onerror:void 0,ptid:void 0,releaseIds:{},session:void 0,timeKeeper:void 0,jsAttributesMetadata:{bytes:0},get harvestCount(){return++v}},_=e=>{const t=(0,f.a)(e,y),r=Object.keys(b).reduce(((e,t)=>(e[t]={value:b[t],writable:!1,configurable:!0,enumerable:!0},e)),{});return Object.defineProperties(t,r)};var w=r(701);const x=e=>{const t=e.startsWith("http");e+="/",r.p=t?e:"https://"+e};var k=r(836),A=r(241);const S={accountID:void 0,trustKey:void 0,agentID:void 0,licenseKey:void 0,applicationID:void 0,xpid:void 0},T=e=>(0,f.a)(e,S),R=new Set;function E(e,t={},r,s){let{init:o,info:c,loader_config:u,runtime:d={},exposed:l=!0}=t;if(!c){const e=(0,n.pV)();o=e.init,c=e.info,u=e.loader_config}e.init=p(o||{}),e.loader_config=T(u||{}),c.jsAttributes??={},m.bv&&(c.jsAttributes.isWorker=!0),e.info=(0,a.D)(c);const f=e.init,g=[c.beacon,c.errorBeacon];R.has(e.agentIdentifier)||(f.proxy.assets&&(x(f.proxy.assets),g.push(f.proxy.assets)),f.proxy.beacon&&g.push(f.proxy.beacon),function(e){const t=(0,n.pV)();Object.getOwnPropertyNames(i.W.prototype).forEach((r=>{const n=i.W.prototype[r];if("function"!=typeof n||"constructor"===n)return;let a=t[r];e[r]&&!1!==e.exposed&&"micro-agent"!==e.runtime?.loaderType&&(t[r]=(...t)=>{const n=e[r](...t);return a?a(...t):n})}))}(e),(0,n.US)("activatedFeatures",w.B),e.runSoftNavOverSpa&&=!0===f.soft_navigations.enabled&&f.feature_flags.includes("soft_nav")),d.denyList=[...f.ajax.deny_list||[],...f.ajax.block_internal?g:[]],d.ptid=e.agentIdentifier,d.loaderType=r,e.runtime=_(d),R.has(e.agentIdentifier)||(e.ee=k.ee.get(e.agentIdentifier),e.exposed=l,(0,A.W)({agentIdentifier:e.agentIdentifier,drained:!!w.B?.[e.agentIdentifier],type:"lifecycle",name:"initialize",feature:void 0,data:e.config})),R.add(e.agentIdentifier)}},374:(e,t,r)=>{r.nc=(()=>{try{return document?.currentScript?.nonce}catch(e){}return""})()},860:(e,t,r)=>{"use strict";r.d(t,{$J:()=>d,K7:()=>c,P3:()=>u,XX:()=>i,Yy:()=>o,df:()=>a,qY:()=>n,v4:()=>s});const n="events",i="jserrors",a="browser/blobs",s="rum",o="browser/logs",c={ajax:"ajax",genericEvents:"generic_events",jserrors:i,logging:"logging",metrics:"metrics",pageAction:"page_action",pageViewEvent:"page_view_event",pageViewTiming:"page_view_timing",sessionReplay:"session_replay",sessionTrace:"session_trace",softNav:"soft_navigations",spa:"spa"},u={[c.pageViewEvent]:1,[c.pageViewTiming]:2,[c.metrics]:3,[c.jserrors]:4,[c.spa]:5,[c.ajax]:6,[c.sessionTrace]:7,[c.softNav]:8,[c.sessionReplay]:9,[c.logging]:10,[c.genericEvents]:11},d={[c.pageViewEvent]:s,[c.pageViewTiming]:n,[c.ajax]:n,[c.spa]:n,[c.softNav]:n,[c.metrics]:i,[c.jserrors]:i,[c.sessionTrace]:a,[c.sessionReplay]:a,[c.logging]:o,[c.genericEvents]:"ins"}}},n={};function i(e){var t=n[e];if(void 0!==t)return t.exports;var a=n[e]={exports:{}};return r[e](a,a.exports,i),a.exports}i.m=r,i.d=(e,t)=>{for(var r in t)i.o(t,r)&&!i.o(e,r)&&Object.defineProperty(e,r,{enumerable:!0,get:t[r]})},i.f={},i.e=e=>Promise.all(Object.keys(i.f).reduce(((t,r)=>(i.f[r](e,t),t)),[])),i.u=e=>"nr-rum-1.295.0.min.js",i.o=(e,t)=>Object.prototype.hasOwnProperty.call(e,t),e={},t="NRBA-1.295.0.PROD:",i.l=(r,n,a,s)=>{if(e[r])e[r].push(n);else{var o,c;if(void 0!==a)for(var u=document.getElementsByTagName("script"),d=0;d<u.length;d++){var l=u[d];if(l.getAttribute("src")==r||l.getAttribute("data-webpack")==t+a){o=l;break}}if(!o){c=!0;var f={296:"sha512-5mjLs4V+vqmVCMY5tMI4S9zuik2ZQGpHyNyS3JjzoMIc9MrdQiFKTHsXuapkHWyDEDo06Z3nazEbjwKKn3drdA=="};(o=document.createElement("script")).charset="utf-8",o.timeout=120,i.nc&&o.setAttribute("nonce",i.nc),o.setAttribute("data-webpack",t+a),o.src=r,0!==o.src.indexOf(window.location.origin+"/")&&(o.crossOrigin="anonymous"),f[s]&&(o.integrity=f[s])}e[r]=[n];var g=(t,n)=>{o.onerror=o.onload=null,clearTimeout(p);var i=e[r];if(delete e[r],o.parentNode&&o.parentNode.removeChild(o),i&&i.forEach((e=>e(n))),t)return t(n)},p=setTimeout(g.bind(null,void 0,{type:"timeout",target:o}),12e4);o.onerror=g.bind(null,o.onerror),o.onload=g.bind(null,o.onload),c&&document.head.appendChild(o)}},i.r=e=>{"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},i.p="https://js-agent.newrelic.com/",(()=>{var e={374:0,840:0};i.f.j=(t,r)=>{var n=i.o(e,t)?e[t]:void 0;if(0!==n)if(n)r.push(n[2]);else{var a=new Promise(((r,i)=>n=e[t]=[r,i]));r.push(n[2]=a);var s=i.p+i.u(t),o=new Error;i.l(s,(r=>{if(i.o(e,t)&&(0!==(n=e[t])&&(e[t]=void 0),n)){var a=r&&("load"===r.type?"missing":r.type),s=r&&r.target&&r.target.src;o.message="Loading chunk "+t+" failed.\n("+a+": "+s+")",o.name="ChunkLoadError",o.type=a,o.request=s,n[1](o)}}),"chunk-"+t,t)}};var t=(t,r)=>{var n,a,[s,o,c]=r,u=0;if(s.some((t=>0!==e[t]))){for(n in o)i.o(o,n)&&(i.m[n]=o[n]);if(c)c(i)}for(t&&t(r);u<s.length;u++)a=s[u],i.o(e,a)&&e[a]&&e[a][0](),e[a]=0},r=self["webpackChunk:NRBA-1.295.0.PROD"]=self["webpackChunk:NRBA-1.295.0.PROD"]||[];r.forEach(t.bind(null,0)),r.push=t.bind(null,r.push.bind(r))})(),(()=>{"use strict";i(374);var e=i(566),t=i(741);class r extends t.W{agentIdentifier=(0,e.LA)(16)}var n=i(860);const a=Object.values(n.K7);var s=i(163);var o=i(908),c=i(863),u=i(261),d=i(241),l=i(944),f=i(701),g=i(773);function p(e,t,i,a){const s=a||i;!s||s[e]&&s[e]!==r.prototype[e]||(s[e]=function(){(0,o.p)(g.xV,["API/"+e+"/called"],void 0,n.K7.metrics,i.ee),(0,d.W)({agentIdentifier:i.agentIdentifier,drained:!!f.B?.[i.agentIdentifier],type:"data",name:"api",feature:u.Pl+e,data:{}});try{return t.apply(this,arguments)}catch(e){(0,l.R)(23,e)}})}function m(e,t,r,n,i){const a=e.info;null===r?delete a.jsAttributes[t]:a.jsAttributes[t]=r,(i||null===r)&&(0,o.p)(u.Pl+n,[(0,c.t)(),t,r],void 0,"session",e.ee)}var h=i(687),v=i(234),b=i(289),y=i(154),_=i(384);const w=e=>y.RI&&!0===e?.privacy.cookies_enabled;function x(e){return!!(0,_.dV)().o.MO&&w(e)&&!0===e?.session_trace.enabled}var k=i(389);class A extends v.W{constructor(e,t){super(e.agentIdentifier,t),this.abortHandler=void 0,this.featAggregate=void 0,this.onAggregateImported=void 0,this.deferred=Promise.resolve(),!1===e.init[this.featureName].autoStart?this.deferred=new Promise(((t,r)=>{this.ee.on("manual-start-all",(0,k.J)((()=>{(0,h.Ak)(e.agentIdentifier,this.featureName),t()})))})):(0,h.Ak)(e.agentIdentifier,t)}importAggregator(e,t,r={}){if(this.featAggregate)return;let a;this.onAggregateImported=new Promise((e=>{a=e}));const s=async()=>{let s;await this.deferred;try{if(w(e.init)){const{setupAgentSession:t}=await i.e(296).then(i.bind(i,305));s=t(e)}}catch(e){(0,l.R)(20,e),this.ee.emit("internal-error",[e]),this.featureName===n.K7.sessionReplay&&this.abortHandler?.()}try{if(!this.#t(this.featureName,s,e.init))return(0,h.Ze)(this.agentIdentifier,this.featureName),void a(!1);const{Aggregate:n}=await t();this.featAggregate=new n(e,r),e.runtime.harvester.initializedAggregates.push(this.featAggregate),a(!0)}catch(e){(0,l.R)(34,e),this.abortHandler?.(),(0,h.Ze)(this.agentIdentifier,this.featureName,!0),a(!1),this.ee&&this.ee.abort()}};y.RI?(0,b.GG)((()=>s()),!0):s()}#t(e,t,r){switch(e){case n.K7.sessionReplay:return x(r)&&!!t;case n.K7.sessionTrace:return!!t;default:return!0}}}var S=i(630),T=i(614);class R extends A{static featureName=S.T;constructor(e){var t;super(e,S.T),this.setupInspectionEvents(e.agentIdentifier),t=e,p(u.Fw,(function(e,r){"string"==typeof e&&("/"!==e.charAt(0)&&(e="/"+e),t.runtime.customTransaction=(r||"http://custom.transaction")+e,(0,o.p)(u.Pl+u.Fw,[(0,c.t)()],void 0,void 0,t.ee))}),t),this.ee.on("api-send-rum",((e,t)=>(0,o.p)("send-rum",[e,t],void 0,this.featureName,this.ee))),this.importAggregator(e,(()=>i.e(296).then(i.bind(i,108))))}setupInspectionEvents(e){const t=(t,r)=>{t&&(0,d.W)({agentIdentifier:e,timeStamp:t.timeStamp,loaded:"complete"===t.target.readyState,type:"window",name:r,data:t.target.location+""})};(0,b.sB)((e=>{t(e,"DOMContentLoaded")})),(0,b.GG)((e=>{t(e,"load")})),(0,b.Qr)((e=>{t(e,"navigate")})),this.ee.on(T.tS.UPDATE,((t,r)=>{(0,d.W)({agentIdentifier:e,type:"lifecycle",name:"session",data:r})}))}}var E=i(843),N=i(878),j=i(782);class I extends A{static featureName=j.T;constructor(e){super(e,j.T),y.RI&&((0,E.u)((()=>(0,o.p)("docHidden",[(0,c.t)()],void 0,j.T,this.ee)),!0),(0,N.sp)("pagehide",(()=>(0,o.p)("winPagehide",[(0,c.t)()],void 0,j.T,this.ee))),this.importAggregator(e,(()=>i.e(296).then(i.bind(i,350)))))}}class O extends A{static featureName=g.TZ;constructor(e){super(e,g.TZ),y.RI&&document.addEventListener("securitypolicyviolation",(e=>{(0,o.p)(g.xV,["Generic/CSPViolation/Detected"],void 0,this.featureName,this.ee)})),this.importAggregator(e,(()=>i.e(296).then(i.bind(i,373))))}}new class extends r{constructor(e){var t;(super(),y.gm)?(this.features={},(0,_.bQ)(this.agentIdentifier,this),this.desiredFeatures=new Set(e.features||[]),this.desiredFeatures.add(R),this.runSoftNavOverSpa=[...this.desiredFeatures].some((e=>e.featureName===n.K7.softNav)),(0,s.j)(this,e,e.loaderType||"agent"),t=this,p(u.cD,(function(e,r,n=!1){if("string"==typeof e){if(["string","number","boolean"].includes(typeof r)||null===r)return m(t,e,r,u.cD,n);(0,l.R)(40,typeof r)}else(0,l.R)(39,typeof e)}),t),function(e){p(u.Dl,(function(t){if("string"==typeof t||null===t)return m(e,"enduser.id",t,u.Dl,!0);(0,l.R)(41,typeof t)}),e)}(this),function(e){p(u.nb,(function(t){if("string"==typeof t||null===t)return m(e,"application.version",t,u.nb,!1);(0,l.R)(42,typeof t)}),e)}(this),function(e){p(u.d3,(function(){e.ee.emit("manual-start-all")}),e)}(this),this.run()):(0,l.R)(21)}get config(){return{info:this.info,init:this.init,loader_config:this.loader_config,runtime:this.runtime}}get api(){return this}run(){try{const e=function(e){const t={};return a.forEach((r=>{t[r]=!!e[r]?.enabled})),t}(this.init),t=[...this.desiredFeatures];t.sort(((e,t)=>n.P3[e.featureName]-n.P3[t.featureName])),t.forEach((t=>{if(!e[t.featureName]&&t.featureName!==n.K7.pageViewEvent)return;if(this.runSoftNavOverSpa&&t.featureName===n.K7.spa)return;if(!this.runSoftNavOverSpa&&t.featureName===n.K7.softNav)return;const r=function(e){switch(e){case n.K7.ajax:return[n.K7.jserrors];case n.K7.sessionTrace:return[n.K7.ajax,n.K7.pageViewEvent];case n.K7.sessionReplay:return[n.K7.sessionTrace];case n.K7.pageViewTiming:return[n.K7.pageViewEvent];default:return[]}}(t.featureName).filter((e=>!(e in this.features)));r.length>0&&(0,l.R)(36,{targetFeature:t.featureName,missingDependencies:r}),this.features[t.featureName]=new t(this)}))}catch(e){(0,l.R)(22,e);for(const e in this.features)this.features[e].abortHandler?.();const t=(0,_.Zm)();delete t.initializedAgents[this.agentIdentifier]?.features,delete this.sharedAggregator;return t.ee.get(this.agentIdentifier).abort(),!1}}}({features:[R,I,O],loaderType:"lite"})})()})();</script>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+            <meta name="robots" content="max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Extending cutting tool life in mass production/automotive settings</title>
+ <meta name="description" content="What&amp;rsquo;s the best way to extend cutting tool life in mass production/automotive settings? Canadian Metalworking recently approached a series of industry..." />
+ <meta name="twitter:card" content="summary" />
+ <meta name="twitter:site" content="@cdnmetalworking" />
+ <meta property="og:title" content="" />
+ <meta property="og:url" content="https://www.canadianmetalworking.com/canadianmetalworking/article/cuttingtools/extending-cutting-tool-life-in-mass-productionautomotive-settings" />
+ <meta property="og:description" content="What&amp;rsquo;s the best way to extend cutting tool life in mass production/automotive settings? Canadian Metalworking recently approached a series of industry" />
+ <meta property="og:type" content="article" />
+ <meta property="fb:app_id" content="1159897944129681" />
+ <meta property="og:image" content="https://cdn.canadianmetalworking.com/import/2014/10/Capture8.jpg" />
+<meta property="og:image" content="https://cdn.canadianmetalworking.com/import/2014/10/Capture23.jpg" />
+
+        <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "author": [ [{"@type":"Person","name":"Nate Hendley","url":"https:\/\/www.canadianmetalworking.com\/author\/nate-hendley"}]],
+        "dateModified": "2014-10-27T08:47:49-05:00",
+        "datePublished": "2014-10-27T08:47:49-05:00",
+        "description": "                                                                                                                                                                                            ...",
+        "headline": "Extending cutting tool life in mass production/automotive settings",
+        "image": [[{"@type":"ImageObject","height":382,"width":568,"url":"https:\/\/cdn.canadianmetalworking.com\/import\/2014\/10\/Capture8.jpg"},{"@type":"ImageObject","height":656,"width":343,"url":"https:\/\/cdn.canadianmetalworking.com\/import\/2014\/10\/Capture23.jpg"}]],
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://www.canadianmetalworking.com/canadianmetalworking/article/cuttingtools/extending-cutting-tool-life-in-mass-productionautomotive-settings"
+        },
+        "publisher": { 
+                "@type": "Organization",
+    "name": "Canadian Metalworking",
+    "logo": {
+    "@type": "ImageObject",
+    "url": "https://cdn.canadianmetalworking.com/cm-logo.png",
+    "width": 350,
+    "height": 60
+} 
+        }
+    }
+    </script>
+    <meta name="_token" content="p5oPLeOF3wYlqHWjtOpXMZC3XjpmZAnmURdsXtAH" />
+
+    
+    <link rel="icon" sizes="32x32" href="https://cdn.canadianmetalworking.com/favicons/favicon.ico">
+    <link rel="icon" type="image/svg+xml" href="https://cdn.canadianmetalworking.com/favicons/favicon.svg">
+    <link rel="apple-touch-icon" href="https://cdn.canadianmetalworking.com/favicons/apple-touch-icon.png">
+    <link rel="manifest" href="https://cdn.canadianmetalworking.com/favicons/manifest.webmanifest">
+
+    <link rel="preconnect" href="https://ads.thefabricator.com">
+    <link rel="preconnect" href="https://www.googletagmanager.com">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="https://cdn.canadianmetalworking.com/dist/vendor.css?id=a84219ab5034be645278588d1a52f677" />
+    
+    <!--link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet"-->
+    <link rel="stylesheet" href="https://use.typekit.net/mgd7prm.css" crossorigin="anonymous">
+
+    <!-- <script src="https://kit.fontawesome.com/0065dfc167.js" crossorigin="anonymous"></script> -->
+    <link rel="stylesheet" href="https://kit.fontawesome.com/0065dfc167.css" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://cdn.canadianmetalworking.com/dist/app.css?id=40d0f16784c81990f2e5c93d2d43c4ce" >
+
+    
+    <script src="https://cdn.canadianmetalworking.com/dist/app.js?id=d0115281a6165e8222ddbeef2c8dcc0b"></script>
+
+    <script>
+        //Google Tag Manager canada live environment
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-55MPTFF');
+    //End Google Tag Manager
+    
+    
+</script>
+                <link rel="stylesheet" href="https://cdn.canadianmetalworking.com/dist/vendor-content.css?id=fc5e18fddec0fb24d91b51a6df08d3f3" />
+        
+        <script src="https://cdn.canadianmetalworking.com/dist/content.js?id=7101399c4a12590c121d21b5c263ef8d"></script>
+        
+    <script id="publication-data" type="application/json">{"covers":[{"webp":"https://cdn.canadianmetalworking.com/pub/thumbs/200/JPEG/cm-august-2025-1754066505.webp","jpg":"https://cdn.canadianmetalworking.com/pub/thumbs/200/JPEG/cm-august-2025-1754066505.jpg","link":"https://www.canadianmetalworking.com/my-subscriptions?pub=cim"},{"webp":"https://cdn.canadianmetalworking.com/pub/thumbs/200/JPEG/cfw-august-2025-1754066538.webp","jpg":"https://cdn.canadianmetalworking.com/pub/thumbs/200/JPEG/cfw-august-2025-1754066538.jpg","link":""}],"header":"subscribe now","description":"Keep up to date with the latest news, events, and technology for all things metal from our pair of monthly magazines written specifically for Canadian manufacturers!","buttonText":"start your free subscription"}</script>
+
+            <link rel="stylesheet" href="https://cdn.canadianmetalworking.com/dist/cm.css?id=c67b5b9f1dc28eff6c9f4765c59c5c5f" >
+        <script src="https://bc.canadianmetalworking.com/script.js"></script>
+            <!-- Styles stack -->
+        <link rel="canonical" href="https://www.canadianmetalworking.com/canadianmetalworking/article/cuttingtools/extending-cutting-tool-life-in-mass-productionautomotive-settings" />
+
+
+    <script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "WebSite",
+        "url": "https://www.canadianmetalworking.com",
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://www.canadianmetalworking.com/search?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
+    <link rel="alternate" type="application/rss+xml" title="Canadian Metalworking's Feed" href="/metal_fabricating_news.rss"/>
+</head>
+<body
+    class="page-canadianmetalworking "
+>
+<!-- Google Tag Manager (noscript) canada dev environment-->
+    <noscript>
+        <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-55MPTFF&gtm_auth=Do6oeEW6YY4xfXvu0xaskA&gtm_preview=env-117&gtm_cookies_win=x"
+                height="0" width="0" style="display:none;visibility:hidden"></iframe>
+    </noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+
+<main id="site-content">
+                        <div id="supernav" class="">
+	<div class="container">
+		<div id="supernav-left" class="supernav-content-container">
+			<div id="our-sites">Our Sites <i class="fas fa-caret-right"></i></div>
+			<ul>
+				<li id="supernav-membership"><a href="https://www.fmamfg.org" target="_blank" title="Fabricators and Manufacturers Association">FMA</a></li>
+				<li id="supernav-publications"><a href="https://www.thefabricator.com" target="_blank">The Fabricator</a></li>
+				<li id="supernav-expos"><a href="https://www.fabtechexpo.com" target="_blank">FABTECH</a></li>
+				<li class="active tablet" id="supernav-canadian-metalworking">Canadian Metalworking</li>
+			</ul>
+			<div id="more-sites">
+				<span class="more-sites">More <i class="fas fa-caret-right"></i></span>
+				<ul>
+					<li id="supernav-canadian-metalworking"><a href="https://canada.fabtechexpo.com/" target="_blank" title="FABTECH Canada">FABTECH Canada</a></li>
+					<li id="supernav-mmp-show"><a href="https://www.metalworkingexpo.com/" target="_blank" title="Metalworking &amp; Manufacturing Expo">Metalworking &amp; Manufacturing Expo</a></li>
+				</ul>
+			</div><!-- #more-sites -->
+		</div><!-- #supernav-left -->
+	</div><!-- .container -->
+</div><!-- #supernav -->
+        
+        
+                                    <div id="ad_banner">
+                    <div class="ad-slot">
+                                                                                    <div class="ad ad-728">
+            <ins data-revive-zoneid="637" data-revive-block="1" data-revive-id="b6badbd540e6f80810b853d74715004b"></ins>
+</div><!-- .ad -->                                                                        </div>
+                </div><!-- #ad_banner -->
+                    
+                    <nav id="nav-primary" class="">
+        <div class="container" id="nav-content-container">
+
+            <div id="nav-logo-container">
+                <div id="nav-logo">
+                                            <a href="/canadianmetalworking" title="Canadian Metalworking Home">
+                            <img class="logo canadian-metalworking" src="https://cdn.canadianmetalworking.com/logos/logo_canadian-metalworking.svg" alt="The logo of Canadian Metalworking" />
+                        </a>
+                                    </div><!-- #nav-logo -->
+                <div id="nav-hamburger">
+                    <div id="hamburger" aria-expanded="false" aria-label="Toggle navigation" data-toggle="#offcanvas" >
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                    </div>
+                </div> <!-- #nav-hamburger -->
+            </div><!-- #nav-logo-container -->
+
+                            <div id="nav-navigation-container">
+                    <div id="nav-items-container">
+                        <div class="has-dropdown has-mega-menu item">Categories <i class="fas fa-chevron-down"></i>
+                            <div id="nav-categories" class="dropdown mega-menu">
+                                <div class="row">
+                                    <div class="col">
+                                        <div class="item"><a href="/automationsoftware" title="Automation Software">Automation Software</a></div><!-- .item -->
+                                        <div class="item"><a href="/cuttingtools" title="Cutting Tools">Cutting Tools</a></div><!-- .item -->
+                                        <div class="item"><a href="/fabricating" title="Fabricating">Fabricating</a></div><!-- .item -->
+                                        <div class="item"><a href="/healthsafety">Health & Safety</a></div>
+                                        <div class="item"><a href="/madeincanada" title="Made In Canada">Made In Canada</a></div><!-- .item -->
+                                        <div class="item"><a href="/management" title="Management">Management</a></div><!-- .item -->
+                                        <div class="item"><a href="/measurement" title="Measurement">Measurement</a></div><!-- .item -->
+                                        <div class="item"><a href="/metalfinishing" title="Metal Finishing">Metal Finishing</a></div><!-- .item -->
+                                        <div class="item"><a href="/metalworking" title="Metalworking">Metalworking</a></div><!-- .item -->
+                                        <div class="item"><a href="/welding" title="Welding">Welding</a></div><!-- .item -->
+                                        <div class="item separator-top"><a href="/mfgleaders">Next Gen Leaders</a></div>
+                                    </div><!-- .col -->
+                                </div><!-- .row -->
+                            </div><!-- #categories.mega-menu -->
+                        </div>
+                                                <div class="has-dropdown item"><a href="/showcase" title="See All Video Showcases">Video&nbsp;Showcases</a> <i class="fas fa-chevron-down has-dropdown"></i>
+                            <div id="showcases" class="dropdown">
+                                <ul class="">
+                                    <li><a href="/showcase/automation-and-software" title="Automation and Software Video Showcase">Automation and Software</a></li>
+                                    <li><a href="/showcase/cutting-tools" title="Cutting Tools Video Showcase">Cutting Tools</a></li>
+                                    <li><a href="/showcase/fabricating" title="Fabricating Video Showcase">Fabricating</a></li>
+                                    <li><a href="/showcase/management-and-safety" title="Management and Safety Video Showcase">Management and Safety</a></li>
+                                    <li><a href="/showcase/measurement" title="Measurement Video Showcase">Measurement</a></li>
+                                    <li><a href="/showcase/metal-finishing" title="Metal Finishing Video Showcase">Metal Finishing</a></li>
+                                    <li><a href="/showcase/metalworking" title="Metalworking Video Showcase">Metalworking</a></li>
+                                    <li><a href="/showcase/welding" title="Welding Video Showcase">Welding</a></li>
+                                    <li class="separator-top"><a href="/showcase" title="See All Video Showcases">All Showcases</a></li>
+                                </ul>
+                            </div><!-- #categories.mega-menu -->
+                        </div>
+                                                    <div class="item"><a href="/canadianmetalworkingenews/about" title="Subscribe to Canadian Metalworking e-newsletter">E-Newsletter</a></div>
+                                                            <div class="item"><a href="/canadianmetalworking/digitaledition" title="Digital Edition">Digital&nbsp;Edition</a></div>
+                                                                            <div class="item"><a href="/canadianmetalworking/advertise" title="Advertise">Advertise</a></div>
+                    </div><!-- #nav-items-container -->
+
+                    <div id="nav-supplemental-container">
+                        <div id="nav-subscribe">
+                            <div class="item"><a class="btn btn-primary" href="https://www.canadianmetalworking.com/my-subscriptions" title="Subscribe">Subscribe Free</a></div>
+                        </div><!-- #nav-subscribe -->
+                                                    <div id="nav-account-login">
+                                <div class="item" data-toggle="modal" data-target="#navAccountLoginModal"><i class="fas fa-user"></i></div>
+                            </div><!-- #nav-account-login -->
+                                                <div id="nav-search">
+                            <div class="item"><i class="fas fa-search"></i></div>
+                        </div><!-- #nav-search -->
+                    </div><!-- #nav-supplemental-container -->
+
+                    <div id="search-fields" class="active">
+                        <form role="search" method="get" id="search-form" action="/search">
+                            <fieldset>
+                                <input id="search-input" type="text" name="q" value="" placeholder="Search Term(s)" maxlength="" aria-label="Search">
+                                <div id="search-close">
+                                    <i class="fas fa-times" aria-hidden="true"></i>
+                                </div>
+                                <button id="search-button" type="submit">Search</button>
+                            </fieldset>
+                        </form>
+                    </div>
+                                    </div><!-- #nav-navigation-container -->
+
+        </div><!-- .container #nav-content-container -->
+    </nav><!-- #nav-primary -->
+    <div class="navbar-collapse offcanvas-collapse" id="offcanvas">
+        <div id="nav-mobile-header">
+            <div id="nav-logo-mobile">
+                <a href="/"><img class="logo canadianmetalworkingcom" src="https://cdn.canadianmetalworking.com/logos/logo_canadian-metalworking-dot-com.svg" alt="The logo of canadianmetalworking.com" /></a>
+            </div>
+            <div id="nav-mobile-close" data-toggle="#offcanvas" >
+                <div class="bar"></div><!-- .bar -->
+                <div class="bar"></div><!-- .bar -->
+            </div>
+        </div><!-- #nav-mobile-header -->
+        <div id="nav-mobile-body">
+            <div id="mobile-search-fields" class="active">
+                <form role="search" method="get" id="mobile-search-form" action="/search">
+                    <fieldset>
+                        <input id="mobile-search-input" type="text" name="q" value="" placeholder="Search Term(s)" maxlength="" aria-label="Search">
+                        <div id="mobile-search-close">
+                            <i class="fas fa-times" aria-hidden="true"></i>
+                        </div>
+                        <button id="mobile-search-button" type="submit">Search</button>
+                    </fieldset>
+                </form>
+            </div>
+            <div id="nav-mobile-publications">
+                <div class="nav-content-wrapper dropdown open">
+                    <h5 data-target="nav-mobile-dropdown-01">Our Publications <i class="fas fa-chevron-down"></i></h5>
+                    <ul class="dropdown" data-id="nav-mobile-dropdown-01">
+                                                    <li id="nav-canadianmetalworking" class="item item-nav  active "><a href="/canadianmetalworking" title="Canadian Metalworking"><div class="logo-shorthand"></div>Canadian Metalworking</a></li>
+                                                            <ul id="nav-current-publication">
+                                    <li><a href="https://www.canadianmetalworking.com/my-subscriptions?pub=cm" title="Subscribe to Canadian Metalworking">Subscribe</a></li>
+                                    <li><a href="/canadianmetalworkingenews/about" title="Subscribe to Canadian Metalworking e-newsletter">E-Newsletter</a></li>
+                                    <li><a href="/canadianmetalworking/digitaledition" title="Digital Edition of Canadian Metalworking">Digital Edition</a></li>
+                                    <li><a href="/canadianmetalworking/advertise" title="Advertise on Canadian Metalworking">Advertise</a></li>
+                                </ul>
+                                                                                <li id="nav-canadianfabricatingandwelding" class="item item-nav "><a href="/canadianfabricatingandwelding" title="Canadian Fabricating &amp; Welding"><div class="logo-shorthand"></div>Canadian Fabricating &amp; Welding</a></li>
+                                                                        </ul>
+                </div><!-- .nav-content-wrapper -->
+            </div><!-- #nav-mobile-publications -->
+            <div id="nav-mobile-menu-items">
+                <div class="nav-content-wrapper dropdown">
+                    <h5 data-target="nav-mobile-dropdown-02">Categories <i class="fas fa-chevron-down"></i></h5>
+                    <ul class="dropdown" data-id="nav-mobile-dropdown-02">
+                        <li><a href="/automationsoftware" title="Automation Software">Automation Software</a></li><!-- .item -->
+                        <li><a href="/cuttingtools" title="Cutting Tools">Cutting Tools</a></li><!-- .item -->
+                        <li><a href="/fabricating" title="Fabricating">Fabricating</a></li><!-- .item -->
+                        <li><a href="/healthsafety">Health & Safety</a></li>
+                        <li><a href="/madeincanada" title="Made In Canada">Made In Canada</a></li><!-- .item -->
+                        <li><a href="/management" title="Management">Management</a></li><!-- .item -->
+                        <li><a href="/measurement" title="Measurement">Measurement</a></li><!-- .item -->
+                        <li><a href="/metalfinishing" title="Metal Finishing">Metal Finishing</a></li><!-- .item -->
+                        <li><a href="/metalworking" title="Metalworking">Metalworking</a></li><!-- .item -->
+                        <li><a href="/welding" title="Welding">Welding</a></li><!-- .item -->
+                        <li><a href="/mfgleaders">Next Gen Leaders</a></li>
+                    </ul>
+                </div><!-- .nav-content-wrapper -->
+                <div class="nav-content-wrapper dropdown">
+                    <h5 data-target="nav-mobile-dropdown-03">Industry Info<i class="fas fa-chevron-down"></i></h5>
+                    <ul class="dropdown" data-id="nav-mobile-dropdown-03">
+                        <li><a href="/directory" title="Search the Directory (Showrooms)">Directory (Showrooms)</a></li>
+                        <li><a href="/white-papers">White Papers</a></li>
+                        <li>
+                                                    <a href="/auth/register" title="Register for the Directory">Register for the Directory</a>
+                                                </li>
+                    </ul>
+                </div><!-- .nav-content-wrapper -->
+                <div class="nav-content-wrapper dropdown">
+                    <h5 data-target="nav-mobile-dropdown-06">Video Showcases <i class="fas fa-chevron-down"></i></h5>
+                    <ul class="dropdown" data-id="nav-mobile-dropdown-06">
+                        <li><a href="/showcase/automation-and-software" title="Automation and Software Video Showcase">Automation and Software</a></li>
+                        <li><a href="/showcase/cutting-tools" title="Cutting Tools Video Showcase">Cutting Tools</a></li>
+                        <li><a href="/showcase/fabricating" title="Fabricating Video Showcase">Fabricating</a></li>
+                        <li><a href="/showcase/management-and-safety" title="Management and Safety Video Showcase">Management and Safety</a></li>
+                        <li><a href="/showcase/measurement" title="Measurement Video Showcase">Measurement</a></li>
+                        <li><a href="/showcase/metal-finishing" title="Metal Finishing Video Showcase">Metal Finishing</a></li>
+                        <li><a href="/showcase/metalworking" title="Metalworking Video Showcase">Metalworking</a></li>
+                        <li><a href="/showcase/welding" title="Welding Video Showcase">Welding</a></li>
+                    </ul>
+                </div><!-- .nav-content-wrapper -->
+                <a href="/advertise" title="Advertise"><div class="nav-content-wrapper">
+                    <h5 data-target="nav-mobile-dropdown-06">Advertise</h5>
+                </div></a><!-- .nav-content-wrapper -->
+                <a href="https://www.canadianmetalworking.com/my-subscriptions" title="Subscribe"><div class="nav-content-wrapper">
+                    <h5 data-target="nav-mobile-dropdown-06">Subscribe</h5>
+                </div></a><!-- .nav-content-wrapper -->
+                <div class="nav-content-wrapper dropdown">
+                    <h5 data-target="nav-mobile-dropdown-05">Our Affiliated Brands <i class="fas fa-chevron-down"></i></h5>
+                    <ul class="dropdown" data-id="nav-mobile-dropdown-05">
+                        <li><a href="https://www.fmamfg.org" target="_blank">Fabricators and Manufacturers Association</a></li>
+                        <li><a href="https://www.thefabricator.com" target="_blank">The Fabricator</a></li>
+                        <li><a href="https://www.fmamfg.org/foundation" target="_blank">SparkForce, The FMA Foundation</a></li>
+                        <li><a href="https://www.fabtechexpo.com" target="_blank">FABTECH</a></li>
+                    </ul>
+                </div><!-- .nav-content-wrapper -->
+            </div><!-- #nav-mobile-menu-items -->
+            <div id="nav-mobile-supplemental">
+                                    <div id="mobile-account-login">
+                        <div class="supplemental-item" data-toggle="modal" data-target="#navAccountLoginModal">
+                            <div class="supplemental-icon-container">
+                                <i class="fas fa-user"></i>
+                            </div><!-- .supplemental-icon-container -->
+                            <h5>Account Login</h5>
+                        </div><!-- .supplemental-item -->
+                    </div><!-- #mobile-account-login -->
+                                <div id="mobile-search">
+                    <div class="supplemental-item">
+                        <div class="supplemental-icon-container">
+                            <i class="fas fa-search"></i>
+                        </div><!-- .icon-container -->
+                        <h5>Search</h5>
+                    </div><!-- .supplemental-item -->
+                </div><!-- #mobile-search -->
+            </div><!-- #nav-mobile-supplemental -->
+        </div><!-- #nav-mobile-body -->
+        <div id="mobile-overlay"></div><!-- #mobile-overlay -->
+    </div>
+    <div id="content-wrapper">
+                    <section class="subnav">
+                <div class="container">
+                    <ul class="subnav-publications">
+                        <li class="disabled" data-selector="subnavhome" id="subnavhome"><a href="/" title="See all articles on canadianmetalworking.com"><i class="fas fa-home"></i></a></li>
+                        <li class="disabled intro"><a href="https://www.canadianmetalworking.com/my-subscriptions" title="Our Publications">Our Publications</a></li>
+                                                    <li data-selector="canadianmetalworking"  class="current" ><a href="/canadianmetalworking" title="See all articles in Canadian Metalworking">Canadian Metalworking</a></li>
+                                                    <li data-selector="canadianfabricatingandwelding" ><a href="/canadianfabricatingandwelding" title="See all articles in Canadian Fabricating &amp; Welding">Canadian Fabricating &amp; Welding</a></li>
+                                            </ul>
+                </div><!-- .container -->
+                <div id="subnav-latest">
+                    <div class="container">
+                        <div data-target="canadianmetalworking" class="subnav-content-wrapper">
+            <div class="subnav-kicker">
+                <ul class="kicker publication canadianmetalworking">
+        <li class="kicker-icon">
+                            <img class="icon" src="https://cdn.canadianmetalworking.com/logos/shorthand/logo-shorthand-canadian-metalworking-has-bg.svg" alt="An icon for Canadian Metalworking" height="150" width="150" />
+                    </li>
+        <li>From <a href="/canadianmetalworking" title="Content shared from Canadian Metalworking" target="_self">Canadian Metalworking</a></li>
+    </ul><!-- .publication -->
+            </div>
+            <div class="subnav-features">
+                <div class="subnav-articles">
+                                                        <article class="excerpt" id="">
+                        <div class="entry-content ">
+                            <div class="entry-thumbnail">
+                                <a class="post-link" href="/canadianmetalworking/article/metalworking/looking-back-to-august-1905" title="Looking back to August 1905" target="_self">
+                                                                            <picture>
+                                                                                        <source srcset="https://cdn.canadianmetalworking.com/a/looking-back-to-august-1905-1754498210.webp?size=300x" type="image/webp">
+                                                                                        <source srcset="https://cdn.canadianmetalworking.com/a/looking-back-to-august-1905-1754498210.jpg?size=300x" type="image/jpeg">
+                                            <img src="https://cdn.canadianmetalworking.com/a/looking-back-to-august-1905-1754498210.jpg?size=300x" alt="August 1905 - 120 year anniversary" loading="lazy">
+                                        </picture>
+                                                                                                        </a>
+                            </div><!-- .entry-thumbnail -->
+                            <header class="entry-header">
+                                <h3><a class="post-link" href="/canadianmetalworking/article/metalworking/looking-back-to-august-1905" title="Looking back to August 1905" target="_self">Looking back to August 1905</a></h3>
+                            </header><!-- .entry-header -->
+                        </div><!-- .entry-content -->
+                    </article>
+                                                        <article class="excerpt" id="">
+                        <div class="entry-content ">
+                            <div class="entry-thumbnail">
+                                <a class="post-link" href="/canadianmetalworking/article/metalworking/boreal-machine-has-diversified-capabilities-to-continue-steady-growth" title="Boreal Machine has diversified capabilities to continue steady growth" target="_self">
+                                                                            <picture>
+                                                                                        <source srcset="https://cdn.canadianmetalworking.com/a/boreal-machine-has-diversified-capabilities-to-continue-steady-growth-1754496293.webp?size=300x" type="image/webp">
+                                                                                        <source srcset="https://cdn.canadianmetalworking.com/a/boreal-machine-has-diversified-capabilities-to-continue-steady-growth-1754496293.jpg?size=300x" type="image/jpeg">
+                                            <img src="https://cdn.canadianmetalworking.com/a/boreal-machine-has-diversified-capabilities-to-continue-steady-growth-1754496293.jpg?size=300x" alt="Boreal Shop front from 1966." loading="lazy">
+                                        </picture>
+                                                                                                        </a>
+                            </div><!-- .entry-thumbnail -->
+                            <header class="entry-header">
+                                <h3><a class="post-link" href="/canadianmetalworking/article/metalworking/boreal-machine-has-diversified-capabilities-to-continue-steady-growth" title="Boreal Machine has diversified capabilities to continue steady growth" target="_self">Boreal Machine has diversified capabilities to continue steady growth</a></h3>
+                            </header><!-- .entry-header -->
+                        </div><!-- .entry-content -->
+                    </article>
+                                                        <article class="excerpt" id="">
+                        <div class="entry-content ">
+                            <div class="entry-thumbnail">
+                                <a class="post-link" href="/canadianmetalworking/blog/automationsoftware/dont-fear-ai-in-your-machine-shop" title="Don’t fear AI in your machine shop" target="_self">
+                                                                            <picture>
+                                                                                        <source srcset="https://cdn.canadianmetalworking.com/a/dont-fear-ai-in-your-machine-shop-1754494751.webp?size=300x" type="image/webp">
+                                                                                        <source srcset="https://cdn.canadianmetalworking.com/a/dont-fear-ai-in-your-machine-shop-1754494751.jpg?size=300x" type="image/jpeg">
+                                            <img src="https://cdn.canadianmetalworking.com/a/dont-fear-ai-in-your-machine-shop-1754494751.jpg?size=300x" alt="AI graphic" loading="lazy">
+                                        </picture>
+                                                                                                        </a>
+                            </div><!-- .entry-thumbnail -->
+                            <header class="entry-header">
+                                <h3><a class="post-link" href="/canadianmetalworking/blog/automationsoftware/dont-fear-ai-in-your-machine-shop" title="Don’t fear AI in your machine shop" target="_self">Don’t fear AI in your machine shop</a></h3>
+                            </header><!-- .entry-header -->
+                        </div><!-- .entry-content -->
+                    </article>
+                                                        <article class="excerpt" id="">
+                        <div class="entry-content ">
+                            <div class="entry-thumbnail">
+                                <a class="post-link" href="/canadianmetalworking/blog/metalworking/bypass-the-barriers-to-investing-in-cnc-automation" title="Bypass the barriers to investing in CNC automation" target="_self">
+                                                                            <picture>
+                                                                                        <source srcset="https://cdn.canadianmetalworking.com/a/bypass-the-barriers-to-investing-in-cnc-automation-1751283054.webp?size=300x" type="image/webp">
+                                                                                        <source srcset="https://cdn.canadianmetalworking.com/a/bypass-the-barriers-to-investing-in-cnc-automation-1751283054.jpg?size=300x" type="image/jpeg">
+                                            <img src="https://cdn.canadianmetalworking.com/a/bypass-the-barriers-to-investing-in-cnc-automation-1751283054.jpg?size=300x" alt="Planning for CNC automation" loading="lazy">
+                                        </picture>
+                                                                                                        </a>
+                            </div><!-- .entry-thumbnail -->
+                            <header class="entry-header">
+                                <h3><a class="post-link" href="/canadianmetalworking/blog/metalworking/bypass-the-barriers-to-investing-in-cnc-automation" title="Bypass the barriers to investing in CNC automation" target="_self">Bypass the barriers to investing in CNC automation</a></h3>
+                            </header><!-- .entry-header -->
+                        </div><!-- .entry-content -->
+                    </article>
+                                </div>
+                <div class="subnav-links">
+                    <ul class="">
+                        <li class="logo canadianmetalworking">
+                            <a href="/canadianmetalworking" title="The latest featured content from Canadian Metalworking" target="_self">
+                                <img src="https://cdn.canadianmetalworking.com/logos/logo_canadian-metalworking.svg" alt="The logo of Canadian Metalworking" loading="lazy"/>
+                            </a>
+                        </li>
+                                                    <li><a href="https://www.canadianmetalworking.com/my-subscriptions?pub=cm" title="Subscribe to Canadian Metalworking" target="_self">Subscribe</a></li>
+
+                                                            <li><a href="/canadianmetalworkingenews/about" title="Subscribe to Canadian Metalworking e-newsletter" target="_self">E-Newsletter</a></li>
+                                                        <li><a href="/canadianmetalworking/digitaledition" title="Digital Edition of Canadian Metalworking" target="_self">Digital Edition</a></li>
+                            <li><a href="/canadianmetalworking/advertise" title="Advertise on Canadian Metalworking" target="_self">Advertise</a></li>
+                            <li><a href="/canadianmetalworking/about" title="About Canadian Metalworking" target="_self">About</a></li>
+                                                                            <li><a href="/canadianmetalworking/issues" title="Archive" target="_self">Archive</a></li>
+                                                <li class="read-more"><a href="/canadianmetalworking" title="The latest featured content from Canadian Metalworking" target="_self">See More</a></li>
+                    </ul>
+                </div><!-- .subnav-articles-links -->
+            </div><!-- .subnav-articles-wrapper -->
+        </div><!-- .subnav-content-wrapper -->
+                <div data-target="canadianfabricatingandwelding" class="subnav-content-wrapper">
+            <div class="subnav-kicker">
+                <ul class="kicker publication canadianfabricatingandwelding">
+        <li class="kicker-icon">
+                            <img class="icon" src="https://cdn.canadianmetalworking.com/logos/shorthand/logo-shorthand-canadian-fabricating-and-welding-has-bg.svg" alt="An icon for Canadian Fabricating and Welding" height="150" width="150" />
+                    </li>
+        <li>From <a href="/canadianfabricatingandwelding" title="Content shared from Canadian Fabricating & Welding" target="_self">Canadian Fabricating & Welding</a></li>
+    </ul><!-- .publication -->
+            </div>
+            <div class="subnav-features">
+                <div class="subnav-articles">
+                                                        <article class="excerpt" id="">
+                        <div class="entry-content ">
+                            <div class="entry-thumbnail">
+                                <a class="post-link" href="/canadianfabricatingandwelding/article/automationsoftware/cutting-through-the-noise-at-forestdale" title="Cutting through the noise at Forestdale" target="_self">
+                                                                            <picture>
+                                                                                        <source srcset="https://cdn.canadianmetalworking.com/a/cutting-through-the-noise-at-forestdale-1754585111.webp?size=300x" type="image/webp">
+                                                                                        <source srcset="https://cdn.canadianmetalworking.com/a/cutting-through-the-noise-at-forestdale-1754585111.jpg?size=300x" type="image/jpeg">
+                                            <img src="https://cdn.canadianmetalworking.com/a/cutting-through-the-noise-at-forestdale-1754585111.jpg?size=300x" alt="A completed assembly hangs from a rack." loading="lazy">
+                                        </picture>
+                                                                                                        </a>
+                            </div><!-- .entry-thumbnail -->
+                            <header class="entry-header">
+                                <h3><a class="post-link" href="/canadianfabricatingandwelding/article/automationsoftware/cutting-through-the-noise-at-forestdale" title="Cutting through the noise at Forestdale" target="_self">Cutting through the noise at Forestdale</a></h3>
+                            </header><!-- .entry-header -->
+                        </div><!-- .entry-content -->
+                    </article>
+                                                        <article class="excerpt" id="">
+                        <div class="entry-content ">
+                            <div class="entry-thumbnail">
+                                <a class="post-link" href="/canadianfabricatingandwelding/article/fabricating/its-coming-through-the-trees" title="It’s coming! Through the trees!" target="_self">
+                                                                            <picture>
+                                                                                        <source srcset="https://cdn.canadianmetalworking.com/a/its-coming-through-the-trees-1754582722.webp?size=300x" type="image/webp">
+                                                                                        <source srcset="https://cdn.canadianmetalworking.com/a/its-coming-through-the-trees-1754582722.jpg?size=300x" type="image/jpeg">
+                                            <img src="https://cdn.canadianmetalworking.com/a/its-coming-through-the-trees-1754582722.jpg?size=300x" alt="A steel sasquatch statue is seen in front of a pond." loading="lazy">
+                                        </picture>
+                                                                                                        </a>
+                            </div><!-- .entry-thumbnail -->
+                            <header class="entry-header">
+                                <h3><a class="post-link" href="/canadianfabricatingandwelding/article/fabricating/its-coming-through-the-trees" title="It’s coming! Through the trees!" target="_self">It’s coming! Through the trees!</a></h3>
+                            </header><!-- .entry-header -->
+                        </div><!-- .entry-content -->
+                    </article>
+                                                        <article class="excerpt" id="">
+                        <div class="entry-content ">
+                            <div class="entry-thumbnail">
+                                <a class="post-link" href="/canadianfabricatingandwelding/blog/automationsoftware/smarter-production-step-by-step" title="Smarter production, step by step" target="_self">
+                                                                            <picture>
+                                                                                        <source srcset="https://cdn.canadianmetalworking.com/a/smarter-production-step-by-step-1754502129.webp?size=300x" type="image/webp">
+                                                                                        <source srcset="https://cdn.canadianmetalworking.com/a/smarter-production-step-by-step-1754502129.jpg?size=300x" type="image/jpeg">
+                                            <img src="https://cdn.canadianmetalworking.com/a/smarter-production-step-by-step-1754502129.jpg?size=300x" alt="FABTECH welding automation" loading="lazy">
+                                        </picture>
+                                                                                                        </a>
+                            </div><!-- .entry-thumbnail -->
+                            <header class="entry-header">
+                                <h3><a class="post-link" href="/canadianfabricatingandwelding/blog/automationsoftware/smarter-production-step-by-step" title="Smarter production, step by step" target="_self">Smarter production, step by step</a></h3>
+                            </header><!-- .entry-header -->
+                        </div><!-- .entry-content -->
+                    </article>
+                                                        <article class="excerpt" id="">
+                        <div class="entry-content ">
+                            <div class="entry-thumbnail">
+                                <a class="post-link" href="/canadianfabricatingandwelding/blog/welding/building-for-the-long-agricultural-haul" title="Building for the long agricultural haul" target="_self">
+                                                                            <picture>
+                                                                                        <source srcset="https://cdn.canadianmetalworking.com/a/building-for-the-long-agricultural-haul-1751480843.webp?size=300x" type="image/webp">
+                                                                                        <source srcset="https://cdn.canadianmetalworking.com/a/building-for-the-long-agricultural-haul-1751480843.jpg?size=300x" type="image/jpeg">
+                                            <img src="https://cdn.canadianmetalworking.com/a/building-for-the-long-agricultural-haul-1751480843.jpg?size=300x" alt="A close-up view of agricultural equipment." loading="lazy">
+                                        </picture>
+                                                                                                        </a>
+                            </div><!-- .entry-thumbnail -->
+                            <header class="entry-header">
+                                <h3><a class="post-link" href="/canadianfabricatingandwelding/blog/welding/building-for-the-long-agricultural-haul" title="Building for the long agricultural haul" target="_self">Building for the long agricultural haul</a></h3>
+                            </header><!-- .entry-header -->
+                        </div><!-- .entry-content -->
+                    </article>
+                                </div>
+                <div class="subnav-links">
+                    <ul class="">
+                        <li class="logo canadianfabricatingandwelding">
+                            <a href="/canadianfabricatingandwelding" title="The latest featured content from Canadian Fabricating &amp; Welding" target="_self">
+                                <img src="https://cdn.canadianmetalworking.com/logos/logo_canadian-fabricating-and-welding.svg" alt="The logo of Canadian Fabricating &amp; Welding" loading="lazy"/>
+                            </a>
+                        </li>
+                                                    <li><a href="https://www.canadianmetalworking.com/my-subscriptions?pub=cfw" title="Subscribe to Canadian Fabricating &amp; Welding" target="_self">Subscribe</a></li>
+
+                                                            <li><a href="/canadianfabricatingweldingenews/about" title="Subscribe to Canadian Fabricating &amp; Welding e-newsletter" target="_self">E-Newsletter</a></li>
+                                                        <li><a href="/canadianfabricatingandwelding/digitaledition" title="Digital Edition of Canadian Fabricating &amp; Welding" target="_self">Digital Edition</a></li>
+                            <li><a href="/canadianfabricatingandwelding/advertise" title="Advertise on Canadian Fabricating &amp; Welding" target="_self">Advertise</a></li>
+                            <li><a href="/canadianfabricatingandwelding/about" title="About Canadian Fabricating &amp; Welding" target="_self">About</a></li>
+                                                                            <li><a href="/canadianfabricatingandwelding/issues" title="Archive" target="_self">Archive</a></li>
+                                                <li class="read-more"><a href="/canadianfabricatingandwelding" title="The latest featured content from Canadian Fabricating &amp; Welding" target="_self">See More</a></li>
+                    </ul>
+                </div><!-- .subnav-articles-links -->
+            </div><!-- .subnav-articles-wrapper -->
+        </div><!-- .subnav-content-wrapper -->
+    
+                    </div><!-- .container -->
+                </div><!-- #subnav-latest -->
+            </section><!-- .subnav -->
+                                    <section>
+        <div class="container">
+            <div class="row justify-content-between">
+                <div class="col-lg column-container mainbar single" id="">
+                    <div class="content-wrapper">
+                        <article class="single">
+                            <div class="entry-content">
+                                <header class="entry-header">
+                                                                                                            <h1>Extending cutting tool life in mass production/automotive settings</h1>
+                                                                            <h2 class="subhead">The experts weigh in</h2>
+                                                                        <div class="social-sharing">
+                                        <ul class="social">
+                                            <li class="facebook st-custom-button st-hide-label" data-network="facebook">
+                                                <i class="fab fa-facebook-f" aria-hidden="true"></i></li>
+                                            <li class="twitter st-custom-button st-hide-label" data-network="twitter"><i
+                                                    class="fab fa-x-twitter" aria-hidden="true"></i></li>
+                                            <li class="linkedin st-custom-button st-hide-label" data-network="linkedin">
+                                                <i class="fab fa-linkedin-in" aria-hidden="true"></i></li>
+                                            <li class="email st-custom-button st-hide-label" data-network="email"><i
+                                                    class="fas fa-envelope"></i></li>
+                                        </ul>
+                                    </div><!-- .social-sharing -->
+                                    <div class="entry-meta">
+                                        <ul>
+                                                                                            <li>
+                                                    <i class="far fa-user"></i></i> By <a href="https://www.canadianmetalworking.com/author/nate-hendley">Nate Hendley</a>
+                                                </li>
+                                                                                                                                    <li><i class="far fa-calendar"></i> October 27, 2014
+                                            </li>
+                                            <li><i class="far fa-file"></i> <a href="/?filter=article"
+                                                                               title="Cutting Tools Articles"
+                                                                               target="_self">Article</a>
+                                            </li>
+                                                                                        <li><i class="fas fa-cube"></i> <a
+                                                    href="/cuttingtools"
+                                                    title="More content from the cutting tools category"
+                                                    target="_self">Cutting Tools</a></li>
+                                        </ul>
+                                    </div><!-- .entry-meta -->
+
+                                </header><!-- .entry-header -->
+                                <div class="entry-article-container">
+                                    <div class="entry-article">
+                                        
+                                        
+                                                                                    <div class="image image-full"><a data-fancybox="gallery" 
+                                         class="fancybox" rel="gallery" 
+                                         data-caption="" 
+                                         href="https://cdn.canadianmetalworking.com/import/2014/10/Capture8.jpg?size=1000x1000">
+                    <div class="image-overlay"><i class="fa fa-search-plus"></i></div>
+
+                            
+            <picture style="width: 100%">
+                <source
+                    srcset="https://cdn.canadianmetalworking.com/import/2014/10/Capture8.webp?size=1000x"
+                    media="(min-width:1200px)"
+                    type="image/webp"
+                >
+                <source
+                    srcset="https://cdn.canadianmetalworking.com/import/2014/10/Capture8.webp?size=550x"
+                    media="(min-width:992px) and (max-width: 1199px)"
+                    type="image/webp"
+                >
+                <source
+                    srcset="https://cdn.canadianmetalworking.com/import/2014/10/Capture8.webp?size=700x"
+                    media="(min-width: 769px) and (max-width: 991px)"
+                    type="image/webp"
+                >
+                <source
+                    srcset="https://cdn.canadianmetalworking.com/import/2014/10/Capture8.webp?size=500x"
+                    media="(max-width: 768px)"
+                    type="image/webp"
+                >
+                <source
+                    srcset="https://cdn.canadianmetalworking.com/import/2014/10/Capture8.jpg?size=1000x"
+                    media="(min-width:1200px)"
+                    type="image/jpeg"
+                >
+                <source
+                    srcset="https://cdn.canadianmetalworking.com/import/2014/10/Capture8.jpg?size=550x"
+                    media="(min-width:992px) and (max-width: 1199px)"
+                    type="image/jpeg"
+                >
+                <source
+                    srcset="https://cdn.canadianmetalworking.com/import/2014/10/Capture8.jpg?size=700x"
+                    media="(min-width: 769px) and (max-width: 991px)"
+                    type="image/jpeg"
+                >
+                <source
+                    srcset="https://cdn.canadianmetalworking.com/import/2014/10/Capture8.jpg?size=500x"
+                    media="(max-width: 768px)"
+                    type="image/jpeg"
+                >
+                <img src="https://cdn.canadianmetalworking.com/import/2014/10/Capture8.jpg?size=1000x" alt="" width="568" height="382" >
+            </picture>
+        
+                     </a></div><p>What&rsquo;s the best way to extend cutting tool life in mass production/automotive settings?</p> <p><em>Canadian Metalworking</em> recently approached a series of industry professionals with this question in mind.</p> <p>Here&rsquo;s what they had to say:</p><p style="color: darkred"><strong>IN MASS PRODUCTION SETTINGS, PARTICULARLY FOR AUTOMOTIVE, WHAT&rsquo;S THE BIGGEST THREAT TO THE LONGEVITY AND PERFORMANCE OF CUTTING TOOLS?</strong></p> <p>&ldquo;In mass production automotive manufacturing, one of the biggest threats to operations is unpredictable tool life. Since many of these operations are highly automated with the use of robots, gaging and other automation systems, downtime can be very time consuming and expensive. Often these manufacturers will optimize tool life and then set the tool change counter to less than maximum tool life for a safer more predictable tool life. The downtime costs to index an unintended tool change far outweigh trying to extend the tool life by a few more parts.</p><div class="ad content-ad"><ins data-revive-zoneid="662" data-revive-id="b6badbd540e6f80810b853d74715004b"></ins></div><p>&ldquo;However, due to variations in materials and normal wear and tear on tool holders, catastrophic insert failure still occurs. Many manufacturers do not view tool holders as consumable tools and change them only after failure. Tool holders, however, do wear out where the pocket may deform and not hold the insert as securely as it once did, allowing for movement and eventually catastrophic failure. Tool holders should be closely inspected at every insert index. Tool holders should be replaced at regular intervals.</p> <p>&ldquo;Another tactic often used by automotive manufacturers is to index inserts during periods of shut down such as breaks, lunch and the end of shift,&rdquo; says John Mitchell, general manager for Tungaloy America, based in Brantford, ON.</p> <p>&ldquo;Measuring tool life is often not as simple as just counting parts or using elapsed time as a measurement. A better way to measure tool life can be the amount of material removed. For example, one cutting tool may produce 100 parts but requires two passes&mdash;a roughing and a finishing pass. Each tool can get 100 parts per edge. Another tool may make 90 parts but requires only one pass.</p> <p>Obviously one tool removes more material and reduces the cycle time. Sometimes tool life is measured in minutes. For example, one insert may last one hour before indexing. However if another tool only lasts 45 minutes but produces twice as many parts, it is removing more material and reducing the cycle time,&rdquo; adds Mitchell.</p> <p>&ldquo;The number one killer for tool life is always speed. No matter what we talk about, speed is number one. [Speed] creates more heat in the cutting zone. And heat is your enemy as far as tool wear&hellip;the best way to improve tool life is to be in contact with the workpiece for less time for each component,&rdquo; adds Kevin Burton, product specialist at Sandvik Coromant in Mississauga, ON.</p><div class="image image-half"><a data-fancybox="gallery" 
+                                         class="fancybox" rel="gallery" 
+                                         data-caption="(Photo: Tungaloy)" 
+                                         href="https://cdn.canadianmetalworking.com/import/2014/10/Capture23.jpg?size=1000x1000">
+                    <div class="image-overlay"><i class="fa fa-search-plus"></i></div>
+
+                            
+            <picture style="width: 100%">
+                <source
+                    srcset="https://cdn.canadianmetalworking.com/import/2014/10/Capture23.webp?size=1000x"
+                    media="(min-width:1200px)"
+                    type="image/webp"
+                >
+                <source
+                    srcset="https://cdn.canadianmetalworking.com/import/2014/10/Capture23.webp?size=550x"
+                    media="(min-width:992px) and (max-width: 1199px)"
+                    type="image/webp"
+                >
+                <source
+                    srcset="https://cdn.canadianmetalworking.com/import/2014/10/Capture23.webp?size=700x"
+                    media="(min-width: 769px) and (max-width: 991px)"
+                    type="image/webp"
+                >
+                <source
+                    srcset="https://cdn.canadianmetalworking.com/import/2014/10/Capture23.webp?size=500x"
+                    media="(max-width: 768px)"
+                    type="image/webp"
+                >
+                <source
+                    srcset="https://cdn.canadianmetalworking.com/import/2014/10/Capture23.jpg?size=1000x"
+                    media="(min-width:1200px)"
+                    type="image/jpeg"
+                >
+                <source
+                    srcset="https://cdn.canadianmetalworking.com/import/2014/10/Capture23.jpg?size=550x"
+                    media="(min-width:992px) and (max-width: 1199px)"
+                    type="image/jpeg"
+                >
+                <source
+                    srcset="https://cdn.canadianmetalworking.com/import/2014/10/Capture23.jpg?size=700x"
+                    media="(min-width: 769px) and (max-width: 991px)"
+                    type="image/jpeg"
+                >
+                <source
+                    srcset="https://cdn.canadianmetalworking.com/import/2014/10/Capture23.jpg?size=500x"
+                    media="(max-width: 768px)"
+                    type="image/jpeg"
+                >
+                <img src="https://cdn.canadianmetalworking.com/import/2014/10/Capture23.jpg?size=1000x" alt="(Photo: Tungaloy)" width="343" height="656" loading=lazy>
+            </picture>
+        
+                     </a><p class="caption">(Photo: Tungaloy)</p></div><p>&ldquo;Look at how operators work today [in mass production]. Go back 20 years. Back then, you had a machinist operating one machine. Today, that&rsquo;s not necessarily the case. They have other responsibilities and/or multiple machines in the cell. Repeatability becomes very, very important,&rdquo; states Jan Andersson, senior global product manager for turning products at Kennametal, in Latrobe, Pennsylvania.</p> <p>&ldquo;An obstacle that occurs in gaining optimum performance in high production automotive operations [is the fact that] tools are not always run to their extended life or failure mode. Automotive is high production with many variances that affect tool life. They run large numbers of components&hellip;[An automotive company] might have a cutting tool that has a failure mode and performance life that could exceed more than one full production shift, perhaps a shiftand-a-half or more. However, because it can&rsquo;t perform two full production shifts, many cutting tools are indexed or changed prematurely at the conclusion of each shift. The focus is to decrease production downtime thus increasing production volumes,&rdquo; says Cliff Fields, automotive/OEM division sales manager, Ingersoll Cutting Tools, based in Rockford, Illinois.</p><p style="color: darkred"><strong>WHAT ROLE DOES COOLANT PLAY IN EXTENDING TOOL LIFE IN MASS PRODUCTION/AUTOMOTIVE SETTINGS?</strong></p> <p></p><div class="ad content-ad run-of-site"><ins data-revive-zoneid="883" data-revive-id="b6badbd540e6f80810b853d74715004b"></ins></div><p>&ldquo;Coolant can play many roles and often helps increase tool life. However, in any interrupted cutting applications the tool should be run dry, since intermittent coolant may cause thermal cracking and shorten the tool life,&rdquo; says Mitchell.</p> <p>&ldquo;One of the biggest tool failures [in mass production] I used to see was related to coolant. Coolant holes were plugged or there wasn&rsquo;t enough coolant on the tools. In mass production, you have a big build-up. Cast iron dust, forgings. You get this surface skin that builds up into a powder, gets into the coolant and causes slurry. It plugs up coolant lines,&rdquo; echoes Burton.</p> <p>&ldquo;More and more applications are going to MQL [Minimum Quantity Lubricant], especially in drilling and hole machining,&rdquo; adds Fields.</p><p style="color: darkred"><strong>ARE THERE ANY &lsquo;RULES OF THUMB&rsquo; FOR SELECTING INSERTS IN MASS PRODUCTION OPERATIONS VERSUS SMALL MACHINE SHOP SETTINGS?</strong></p> <p>&ldquo;Generally job shops are looking for cutting tools that work well in a variety of applications. Job shops may require a tool that will cut cast iron, ductile iron, low carbon and alloy steels. One insert that is capable of cutting all of those materials is likely not the optimal insert for any one material but its versatility is critical to the job shop, since the job shop typically has short runs and machines a variety of materials. Conversely, a high volume automotive shop can fine tune their cutting tools to one specific material. A good rule of thumb is to start with a forgiving grade and progressively move to a harder grade until the insert chips. Care should be taken when monitoring the &ldquo;failure mode&rdquo; to insure it was not another symptom that caused the failure. Generally the harder the grade the faster the speed which will reduce cycle time,&rdquo; says Mitchell.</p><p style="color: darkred"><strong>ARE THERE ANY COMMON MACHINING MISTAKES IN MASS PRODUCTION/AUTOMOTIVE SETTINGS THAT ARE DETRIMENTAL TO CUTTING TOOL LIFE?</strong></p> <p>&ldquo;A lot of automotive manufacturers, because they&rsquo;re dealing with millions of components, tend to run very, very aggressive speeds because they need to get the part done as quickly as possible. In automotive, every second counts,&rdquo; says Steve Geisel, senior product manager, Iscar Tools, based in Oakville, Ontario.</p> <p>&ldquo;Some of the big automotive makers, they are buying Chinese inserts. They&rsquo;re really low cost, like $2&ndash;3 an insert, but they only have four edges. They&rsquo;re only getting a certain tool life. What [companies] have to look at is some of the newer technology where we have eight, sixteen edges. Don&rsquo;t just look at total cost of the insert. Break it down, cost per edge,&rdquo; adds Tom Hagan, milling product manager at Iscar Tools.</p> <p>&ldquo;Good handling of cutting tools when off of the machine is very important. They require good handling and cleaning &hellip; are the pockets cleaned properly? Are [the cutting tools] thrown in a bin to be washed?</p> <p>If they are not handled properly, it could cause inserts to fracture or chip on the cutting edge thus creating premature failure and decreased performance when on the spindle, which has nothing to do with the application itself. That becomes a problem at times. You seldom experience this type of issue with smaller job shops, as you do with automotive,&rdquo; says Fields.</p> <p>&ldquo;[In mass production/automotive] not every operator or individual sticks with the same application, job or transfer line continually. So you might have individuals that are coming in to do an application that they have never performed it before,&rdquo; adds Fields.</p> <p>&ldquo;I had a call from a guy just today. An automotive customer &hellip; they&rsquo;re running at the maximum feed rate for the insert and they want to know why we can&rsquo;t improve tool life. That&rsquo;s typical in automotive. They run very high speed, high feeds, maximum depths of cut. It&rsquo;s all about cycle time,&rdquo; states Burton.</p><p style="color: darkred"><strong>WHAT IMPACT HAS WIDESPREAD ADOPTION OF THE &lsquo;JUST-IN-TIME&rsquo; SYSTEM HAD ON CUTTING TOOLS IN MASS PRODUCTION/AUTOMOTIVE SETTINGS?</strong></p> <p></p> <p>&ldquo;There have been major changes in the industry about how we receive materials, especially large production shops. If we go back 10, 15, 20 years, we ordered raw material in bulk and kept [this material] in a warehouse or outdoor storage or some kind of storage facility. Today, Just-in-Time flows through the entire operation, from raw material to finished component. You don&rsquo;t want to have finished components sitting around in a warehouse &hellip; If you look, for example, at casting prior [to Just-in-Time], you would receive the casting from the forge and you stored it for weeks and months, which gave the casting time to age. Today, you receive it as soon as they are done. That chemically changes the material&hellip;there&rsquo;s a significantly shorter tool life when you have non-aged castings which also means now the cutting tool materials change quite significantly as well,&rdquo; says Andersson.</p><p style="color: darkred"><strong>ANY FINAL WORDS?</strong></p> <p>&ldquo;We do a lot of special tools for the automotive industry. In a lot of cases, it&rsquo;s combination tools&mdash;a drill bore, finished bore all in one tool &hellip; I think optimized tools are key. In the past, many, many years ago, companies used to develop grades for steel wear. They used to work in stainless or cast iron. Now grades are optimized very specifically for the material in the working area. That obviously pays dividends,&rdquo; says Burton.</p> <p>&ldquo;We have a team in Israel [at company headquarters], a complete team that&hellip;all they do is look for ways to improve processes for automotive and mass production components.</p> <p>They take a component and ask, &lsquo;Okay, what is the best and most efficient way to produce this part?&rsquo; They come up with combination tooling. They come up with unique ideas as to how to be able to produce whatever part they&rsquo;re looking at. The quickest, most efficient and most inexpensive way possible,&rdquo; says Geisel.</p> <p>&ldquo;Most of our major automotive customers have objectives to lower their cost per unit (CPU) by 10 per cent annually. As a partner, their cost reduction becomes our objective as well. If you can&rsquo;t achieve this goal, you&rsquo;re not going to stay as a preferred supplier. The only way we can do that is not only having better products than the competition but [continually improving our own products]&hellip;that&rsquo;s what we do to lower the cost to the end-user customer,&rdquo; says Fields.</p> <p>&ldquo;Sometimes you&rsquo;re not improving tool life by 100 per cent or 50 per cent. It&rsquo;s a small percentage but it compounds, over a million parts. So when you&rsquo;re talking mass production, one second can be very valuable,&rdquo; says Burton.</p> <p>A PARTING THOUGHT</p> <p>&ldquo;It seems in automotive, like many industries, when there are issues, the first thing customers suspect is a faulty cutting tool. However, there are many factors that affect tool life, like the machine tool itself, the process, the material, etc.,&rdquo; says Fields.</p>
+
+                                                                            </div><!-- .entry-article -->
+                                </div><!-- .entry-article-container -->
+                            </div><!-- .entry-content -->
+                        </article>
+                    </div><!-- .content-wrapper -->
+
+                    <div class="content-wrapper" id="related-content"></div>
+<script type="application/javascript">
+    
+    const relatedContent = document.querySelector('#related-content');
+    const onObserve = entries => {
+        for (const entry of entries) {
+            if (entry.isIntersecting) {
+                setRelatedContentChonk(relatedContent);
+                observer.disconnect();
+            }
+        }
+    };
+
+    
+    const observer = new IntersectionObserver(onObserve, {
+        root: null,
+        rootMargin: '0% 0% 400px 0%',
+        threshold: 0
+    });
+
+    observer.observe(relatedContent);
+
+    async function setRelatedContentChonk(target) {
+        try {
+            const response = await fetch('https://www.canadianmetalworking.com/api/related/58753d6bf05da812268b5147');
+            const text = await response.json();
+            if (response.status !== 200) {
+                throw new Error(`server returned non success status code ${response.status}`);
+            }
+
+            target.innerHTML = text;
+        } catch (e) {
+            console.error('failed loading related content', e)
+            target.innerHTML = '';
+        }
+    }
+</script>                                                                        <div class="content-wrapper" data-optimize="about-author">
+                                <div class="row justify-content-between">
+                                    <div class="col-xl-6">
+        <h5 class="kicker">About the Author</h5>
+
+                                                    <div class="author-container">
+                    <div class="meta-box-container">
+                                                <div class="content-container">
+                            <h3 itemprop="name">Nate Hendley</h3>
+                            <div class="content">
+                                <p class="title" itemprop="jobTitle"></p>
+                            </div><!-- .content -->
+                            <div class="content">
+                                                                    <p class="company"></p>
+                                                            </div><!-- .content -->
+                                                                                                                                                <div class="content has-icon">
+                                    <div class="icon-container">
+                                        <i class="fas fa-envelope"></i>
+                                    </div>
+                                    <div class="content-container">
+                                        <p><a href="/cdn-cgi/l/email-protection#0d63656863696168744d7e74607d6c79646e62236e6c" itemprop="email" target="_self" title="Nate Hendley">Email Nate Hendley</a></p>
+                                    </div><!-- .content-container -->
+                                </div><!-- .content.has-icon -->
+                                                        <div class="content has-icon">
+                                <div class="icon-container">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </div>
+                                <div class="content-container">
+                                    <p><a href="/author/nate-hendley">See More by Nate Hendley</a></p>
+                                </div><!-- .content-container -->
+                            </div><!-- .content.has-icon -->
+                                                    </div><!-- .content-container -->
+                    </div><!-- .meta-box-container -->
+                </div><!-- .author-container -->
+                        </div><!-- .col-lg-6 -->
+                                    <div class="col-xl-6">
+    <div class="publication-container">
+        <h5 class="kicker">About the Publication</h5>
+        <div class="meta-box-container">
+                                        <div class="image-container">
+                    <a href="/canadianmetalworking/about" title="About Canadian Metalworking">
+                        <picture>
+                            <source srcset="https://cdn.canadianmetalworking.com/pub/thumbs/200/JPEG/cm-august-2025-1754066505.webp?size=200x"
+                                    type="image/webp">
+                            <source srcset="https://cdn.canadianmetalworking.com/pub/thumbs/200/JPEG/cm-august-2025-1754066505.jpg?size=200x" type="image/jpeg">
+                            <img src="https://cdn.canadianmetalworking.com/pub/thumbs/200/JPEG/cm-august-2025-1754066505.jpg?size=200x" alt="Canadian Metalworking" loading="lazy"
+                                 class="colsig" width="100" height="130">
+                        </picture>
+                    </a>
+                </div><!-- .image-container -->
+                        <div class="content-container">
+                <div class="content">
+                    <div class="publication-logo">
+                        <a href="/canadianmetalworking/about" title="About Canadian Metalworking">
+                            <img
+                                alt="Canadian Metalworking"
+                                class="logo cover canadianmetalworking"
+                                height="45"
+                                src="https://cdn.canadianmetalworking.com/logos/logo_canadian-metalworking.svg"
+                                width="200"
+                            >
+                        </a>
+                    </div><!-- .publication-logo -->
+                </div><!-- .content -->
+
+                                <div class="content has-icon">
+                    <div class="icon-container">
+                        <i class="far fa-eye"></i>
+                    </div>
+                    <div class="content-container">
+                        <p><a href="/canadianmetalworking/digitaledition"
+                              title="View the digital edition of Canadian Metalworking" target="_blank">View the
+                                Digital Edition</a></p>
+                    </div><!-- .content-container -->
+                </div><!-- .content.has-icon -->
+                <div class="content has-icon">
+                    <div class="icon-container">
+                        <i class="fas fa-book-reader"></i>
+                    </div>
+                    <div class="content-container">
+                        <p><a href="https://www.canadianmetalworking.com/my-subscriptions?pub=cm" title="Subscribe to Canadian Metalworking">Subscribe
+                                to Canadian Metalworking</a></p>
+                    </div><!-- .content-container -->
+                </div><!-- .content.has-icon -->
+                                    <div class="content has-icon">
+                        <div class="icon-container">
+                            <i class="fab fa-facebook-f"></i>
+                        </div>
+                        <div class="content-container">
+                            <p><a href="https://www.facebook.com/CanadianMetalworking/"
+                                  title="Find Canadian Metalworking on Facebook">Find Canadian Metalworking on
+                                    Facebook</a></p>
+                        </div><!-- .content-container -->
+                    </div><!-- .content.has-icon -->
+                                                    <div class="content has-icon">
+                        <div class="icon-container">
+                            <i class="fab fa-x-twitter"></i>
+                        </div>
+                        <div class="content-container">
+                            <p><a href="https://twitter.com/cdnmetalworking"
+                                  title="Find Canadian Metalworking on Twitter">Find Canadian Metalworking on
+                                    X</a></p>
+
+                        </div><!-- .content-container -->
+                    </div><!-- .content.has-icon -->
+                            </div><!-- .content-container -->
+        </div><!-- .meta-box-container -->
+    </div><!-- .publication-container -->
+</div><!-- .col-lg-6 -->
+                                </div><!-- .row .justify-content-between -->
+                            </div><!-- .content-wrapper -->
+                                            
+                                        <div class="content-wrapper" id="filler" style="display: none;"></div>                </div><!-- .mainbar -->
+
+                <div class="col-lg column-container sidebar" id="">
+                    <div class="content-wrapper widget">
+    <div id="pub-subscribe">
+        <ul class="kicker">
+            <li class="kicker-icon"><i class="fas fa-check"></i></li>
+            <li>Stay connected from anywhere</li>
+        </ul>
+        <div class="pub-brand-wrapper subscribe">
+                        <div class="pub-brand-selector">
+                <ul class="kicker publication">
+                    <li class="kicker-icon active" data-selector="canadianmetalworking">
+                        <img class="icon" src="https://cdn.canadianmetalworking.com/logos/shorthand/logo-shorthand-canadian-metalworking-has-bg.svg" alt="An icon for Canadian Metalworking" />
+                    </li><!-- .kicker-icon -->
+                    <li class="kicker-icon " data-selector="canadianfabricatingandwelding">
+                        <img class="icon" src="https://cdn.canadianmetalworking.com/logos/shorthand/logo-shorthand-canadian-fabricating-and-welding-has-bg.svg" alt="An icon for Canadian Fabricating and Welding" />
+                    </li><!-- .kicker-icon -->
+                </ul><!-- .kicker .publication -->
+            </div><!-- .pub-brand-selector -->
+                        <div class="pub-brand-content">
+                                                    <div class="content canadianmetalworking active" data-target="canadianmetalworking">
+                    <figure class="subscribe-image-container">
+                        <a href="/canadianmetalworking/digitaledition" title="View the Digital Edition of Canadian Metalworking">
+                                                        <picture>
+                                <source srcset="https://cdn.canadianmetalworking.com/pub/thumbs/200/JPEG/cm-august-2025-1754066505.webp?size=x150" type="image/webp">
+                                <source srcset="https://cdn.canadianmetalworking.com/pub/thumbs/200/JPEG/cm-august-2025-1754066505.jpg?size=x150" type="image/jpeg">
+                                <img src="https://cdn.canadianmetalworking.com/pub/thumbs/200/JPEG/cm-august-2025-1754066505.jpg?size=x150" width="115" height="150" alt="The cover of Canadian Metalworking" loading="lazy">
+                            </picture>
+                        </a>
+                    </figure><!-- .subscribe-image-container -->
+                    <div class="subscribe-content-container">
+                        <p>Easily access valuable industry resources now with full access to the digital edition of Canadian Metalworking.</p>
+                    </div><!-- .subscribe-content-container -->
+                    <ul class="links">
+                        <li><div class="icon"><i class="fas fa-check"></i></div><!--.icon--><a href="/canadianmetalworking/digitaledition" title="View the Digital Edition of Canadian Metalworking">View the Digital Edition</a></li>
+                    </ul><!-- .links -->
+                </div><!-- .content -->
+                                                    <div class="content canadianfabricatingandwelding " data-target="canadianfabricatingandwelding">
+                    <figure class="subscribe-image-container">
+                        <a href="/canadianfabricatingandwelding/digitaledition" title="View the Digital Edition of Canadian Fabricating &amp; Welding">
+                                                        <picture>
+                                <source srcset="https://cdn.canadianmetalworking.com/pub/thumbs/200/JPEG/cfw-august-2025-1754066538.webp?size=x150" type="image/webp">
+                                <source srcset="https://cdn.canadianmetalworking.com/pub/thumbs/200/JPEG/cfw-august-2025-1754066538.jpg?size=x150" type="image/jpeg">
+                                <img src="https://cdn.canadianmetalworking.com/pub/thumbs/200/JPEG/cfw-august-2025-1754066538.jpg?size=x150" width="115" height="150" alt="The cover of Canadian Fabricating &amp; Welding" loading="lazy">
+                            </picture>
+                        </a>
+                    </figure><!-- .subscribe-image-container -->
+                    <div class="subscribe-content-container">
+                        <p>Easily access valuable industry resources now with full access to the digital edition of Canadian Fabricating &amp; Welding.</p>
+                    </div><!-- .subscribe-content-container -->
+                    <ul class="links">
+                        <li><div class="icon"><i class="fas fa-check"></i></div><!--.icon--><a href="/canadianfabricatingandwelding/digitaledition" title="View the Digital Edition of Canadian Fabricating &amp; Welding">View the Digital Edition</a></li>
+                    </ul><!-- .links -->
+                </div><!-- .content -->
+                            </div><!-- .pub-brand-content -->
+        </div><!-- .pub-brand-wrapper.subscribe -->
+    </div><!-- #pub-subscribe -->
+</div><!-- .content-wrapper -->
+        <div class="content-wrapper widget">
+        <div id="sidebar-video-showcase">
+            <ul class="kicker">
+                <li class="kicker-icon"><i class="fas fa-play"></i></li>
+                <li>Video Showcase</li>
+            </ul>
+
+                            <div class="video-content-container mb-2">
+                    <div class="video-container mb-0">
+                        <div align="center" class="embed-responsive embed-responsive-16by9">
+                            <lite-youtube videoid="H1IAtwOS-Es" params="rel=0&modestbranding=1"></lite-youtube>
+                        </div><!-- .embed-responsive .embed-responsive-16by9 -->
+                    </div><!-- .video-container -->
+                </div>
+
+                <h4 class="mb-2"><a class="post-link"
+                                    href="/showcase/cutting-tools#iscar-helislot">Iscar HELISLOT</a>
+                </h4>
+                        <div class="entry-meta mb-2">
+                <ul>
+                    <li><i class="fas fa-cube"></i>
+                        <a href="/showcase/cutting-tools"
+                           title="View all Cutting Tools  Videos">Cutting Tools </a>
+                    </li>
+                </ul>
+            </div>
+            <p><a class="post-link"
+                  href="/showcase/cutting-tools#iscar-helislot">ISCAR&#039;s New Products 2024
+HELISLOT - Unique 06 Twisted Inserts for Small Diameter and Narrower Width of Cut</a></p>
+
+            <div class="filter-button-container">
+    <!-- dropup button -->
+    <div class="icon"><i class="fas fa-filter"></i></div>
+    <div class="dropup">
+        <button id="cm-showcase-button" type="button" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Category: <span class="cm-showcase-button-text">Cutting Tools </span>
+        </button>
+
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="cm-showcase-links">
+            <div class="cm-filter-by-category-container">
+                <div><i class="fas fa-filter" style="margin-left: 20px; margin-right: 10px; color: red;"></i></div>Filter by Category
+            </div>
+                            <a class="dropdown-item " href="/showcase/automation-and-software">Automation and Software</a>
+                            <a class="dropdown-item  active " href="/showcase/cutting-tools">Cutting Tools </a>
+                            <a class="dropdown-item " href="/showcase/fabricating">Fabricating</a>
+                            <a class="dropdown-item " href="/showcase/management-and-safety">Management and Safety</a>
+                            <a class="dropdown-item " href="/showcase/measurement">Measurement</a>
+                            <a class="dropdown-item " href="/showcase/metal-finishing">Metal Finishing</a>
+                            <a class="dropdown-item " href="/showcase/metalworking">Metalworking </a>
+                            <a class="dropdown-item " href="/showcase/welding">Welding</a>
+                    </div>
+    </div>
+</div>
+            <ul class="links">
+                <li>
+                    <div class="icon"><i class="fas fa-video"></i></div>
+                    <a href="/showcase" title="View all Videos">View all Videos</a></li>
+            </ul>
+        </div><!-- #sidebar-video-showcase -->
+    </div><!-- .content-wrapper -->
+    
+            <div class="content-wrapper ad">
+            <div class="ad ad-300">
+            <ins data-revive-zoneid="669" data-revive-block="1" data-revive-id="b6badbd540e6f80810b853d74715004b"></ins>
+</div><!-- .ad -->        </div><!-- .content-wrapper -->
+    
+        
+        
+            <div class="content-wrapper ad">
+            <div class="ad ad-300">
+            <ins data-revive-zoneid="807" data-revive-block="1" data-revive-id="b6badbd540e6f80810b853d74715004b"></ins>
+</div><!-- .ad -->        </div><!-- .content-wrapper -->
+    
+                    
+        
+            <div class="content-wrapper ad">
+            <div class="ad ad-300">
+            <ins data-revive-zoneid="807" data-revive-block="1" data-revive-id="b6badbd540e6f80810b853d74715004b"></ins>
+</div><!-- .ad -->        </div><!-- .content-wrapper -->
+    
+        
+            <div class="content-wrapper">
+    <div id="most-popular" class="list-with-images">
+        <ul class="kicker">
+            <li class="kicker-icon"><i class="fas fa-chart-line"></i></li>
+            <li>Trending Articles</li>
+        </ul>
+                                                    <article class="" id="">
+                    <a class="post-link" href="/canadianmetalworking/article/metalworking/boreal-machine-has-diversified-capabilities-to-continue-steady-growth" title="Boreal Machine has diversified capabilities to continue steady growth" target="_self">
+                        <div class="entry-content">
+                            <div class="popular-ranking">
+                                <span>1</span>
+                            </div><!-- .entry-meta -->
+                            <header class="entry-header">
+                                <h4>Boreal Machine has diversified capabilities to continue steady growth</h4>
+                            </header><!-- .entry-header -->
+                                                        <div class="entry-thumbnail">
+                                <figure>
+                                                                        <img src="https://cdn.canadianmetalworking.com/a/boreal-machine-has-diversified-capabilities-to-continue-steady-growth-1754496293.jpg?size=x100" alt="Boreal Machine has diversified capabilities to continue steady growth" loading="lazy" height="65" width="65">
+                                                                    </figure>
+                            </div><!-- .entry-thumbnail -->
+                                                    </div><!-- .entry-content -->
+                    </a>
+                </article>
+                                                                <article class="" id="">
+                    <a class="post-link" href="/canadianmetalworking/news/automationsoftware/dmg-mori-and-open-mind-form-global-sales-alliance" title="DMG Mori and OPEN MIND form global sales alliance" target="_self">
+                        <div class="entry-content">
+                            <div class="popular-ranking">
+                                <span>2</span>
+                            </div><!-- .entry-meta -->
+                            <header class="entry-header">
+                                <h4>DMG Mori and OPEN MIND form global sales alliance</h4>
+                            </header><!-- .entry-header -->
+                                                        <div class="entry-thumbnail">
+                                <figure>
+                                                                        <img src="https://cdn.canadianmetalworking.com/a/dmg-mori-and-open-mind-form-global-sales-alliance-1755007240.jpg?size=x100" alt="DMG Mori and OPEN MIND form global sales alliance" loading="lazy" height="65" width="65">
+                                                                    </figure>
+                            </div><!-- .entry-thumbnail -->
+                                                    </div><!-- .entry-content -->
+                    </a>
+                </article>
+                                                                <article class="" id="">
+                    <a class="post-link" href="/canadianmetalworking/news/metalworking/smart-manufacturing-to-take-centre-stage-at-cmts-2025-with-more-than-750-brands-showcased" title="Smart manufacturing to take centre stage at CMTS 2025 with more than 750 brands showcased" target="_self">
+                        <div class="entry-content">
+                            <div class="popular-ranking">
+                                <span>3</span>
+                            </div><!-- .entry-meta -->
+                            <header class="entry-header">
+                                <h4>Smart manufacturing to take centre stage at CMTS 2025 with more than 750 brands showcased</h4>
+                            </header><!-- .entry-header -->
+                                                        <div class="entry-thumbnail">
+                                <figure>
+                                                                        <img src="https://cdn.canadianmetalworking.com/a/smart-manufacturing-to-take-centre-stage-at-cmts-2025-with-more-than-750-brands-showcased-1754930239.jpg?size=x100" alt="Smart manufacturing to take centre stage at CMTS 2025 with more than 750 brands showcased" loading="lazy" height="65" width="65">
+                                                                    </figure>
+                            </div><!-- .entry-thumbnail -->
+                                                    </div><!-- .entry-content -->
+                    </a>
+                </article>
+                                                                <article class="" id="">
+                    <a class="post-link" href="/canadianmetalworking/product/cuttingtools/series-of-coated-grades-designed-to-for-stainless-steel-turning" title="Series of coated grades designed to for stainless steel turning" target="_self">
+                        <div class="entry-content">
+                            <div class="popular-ranking">
+                                <span>4</span>
+                            </div><!-- .entry-meta -->
+                            <header class="entry-header">
+                                <h4>Series of coated grades designed to for stainless steel turning</h4>
+                            </header><!-- .entry-header -->
+                                                        <div class="entry-thumbnail">
+                                <figure>
+                                                                        <img src="https://cdn.canadianmetalworking.com/a/series-of-coated-grades-designed-to-for-stainless-steel-turning-1755013211.jpg?size=x100" alt="Series of coated grades designed to for stainless steel turning" loading="lazy" height="65" width="65">
+                                                                    </figure>
+                            </div><!-- .entry-thumbnail -->
+                                                    </div><!-- .entry-content -->
+                    </a>
+                </article>
+                                                                <article class="" id="">
+                    <a class="post-link" href="/canadianmetalworking/product/metalworking/angle-head-delivers-centre-through-coolant-at-up-to-1000-psi" title="Angle head delivers centre-through coolant at up to 1,000 PSI" target="_self">
+                        <div class="entry-content">
+                            <div class="popular-ranking">
+                                <span>5</span>
+                            </div><!-- .entry-meta -->
+                            <header class="entry-header">
+                                <h4>Angle head delivers centre-through coolant at up to 1,000 PSI</h4>
+                            </header><!-- .entry-header -->
+                                                        <div class="entry-thumbnail">
+                                <figure>
+                                                                        <img src="https://cdn.canadianmetalworking.com/a/angle-head-delivers-centre-through-coolant-at-up-to-1000-psi-1754663151.jpg?size=x100" alt="Angle head delivers centre-through coolant at up to 1,000 PSI" loading="lazy" height="65" width="65">
+                                                                    </figure>
+                            </div><!-- .entry-thumbnail -->
+                                                    </div><!-- .entry-content -->
+                    </a>
+                </article>
+                        </div><!-- #most-popular -->
+</div><!-- .content-wrapper -->        
+            <div class="content-wrapper ad">
+            <div class="ad ad-300">
+            <ins data-revive-zoneid="807" data-revive-block="1" data-revive-id="b6badbd540e6f80810b853d74715004b"></ins>
+</div><!-- .ad -->        </div><!-- .content-wrapper -->
+    
+        
+        
+            <div class="content-wrapper ad">
+            <div class="ad ad-300">
+            <ins data-revive-zoneid="807" data-revive-block="1" data-revive-id="b6badbd540e6f80810b853d74715004b"></ins>
+</div><!-- .ad -->        </div><!-- .content-wrapper -->
+    
+        
+        
+            <div class="content-wrapper ad">
+            <div class="ad ad-300">
+            <ins data-revive-zoneid="807" data-revive-block="1" data-revive-id="b6badbd540e6f80810b853d74715004b"></ins>
+</div><!-- .ad -->        </div><!-- .content-wrapper -->
+    
+        
+        
+            <div class="content-wrapper ad">
+            <div class="ad ad-300">
+            <ins data-revive-zoneid="807" data-revive-block="1" data-revive-id="b6badbd540e6f80810b853d74715004b"></ins>
+</div><!-- .ad -->        </div><!-- .content-wrapper -->
+    
+        
+            <div class="content-wrapper">
+        <div id="industry-events">
+            <ul class="kicker">
+                <li class="kicker-icon"><i class="fas fa-calendar"></i></li>
+                <li>Industry Events</li>
+            </ul>
+            <div class="industry-events">
+                                    <div class="industry-event">
+                        <h4><a href="/canadianfabricatingandwelding/event/fabricating/fabtech-chicago-2025">FABTECH Chicago 2025</a></h4>
+                        <div class="entry-meta">
+                            <ul>
+                                <li>September 8 -  11, 2025</li>
+                                <li>                                        Chicago,
+                                                                        IL</li>
+                            </ul>
+                        </div><!-- .entry-meta -->
+                    </div><!-- .industry-event -->
+                                    <div class="industry-event">
+                        <h4><a href="/canadianmetalworking/event/automationsoftware/intelligent-vision-industrial-ai-conference-2025">Intelligent Vision &amp; Industrial AI Conference 2025</a></h4>
+                        <div class="entry-meta">
+                            <ul>
+                                <li>September 24 -  25, 2025</li>
+                                <li>                                        Seattle,
+                                                                        WA</li>
+                            </ul>
+                        </div><!-- .entry-meta -->
+                    </div><!-- .industry-event -->
+                                    <div class="industry-event">
+                        <h4><a href="/canadianmetalworking/event/metalworking/cmts-2025">CMTS 2025</a></h4>
+                        <div class="entry-meta">
+                            <ul>
+                                <li>September 29 - October 2, 2025</li>
+                                <li>                                        Etobicoke,
+                                                                        ON                                        Canada
+                                    </li>
+                            </ul>
+                        </div><!-- .entry-meta -->
+                    </div><!-- .industry-event -->
+                                    <div class="industry-event">
+                        <h4><a href="/canadianmetalworking/event/metalworking/mazaks-discover-2025-event">Mazak’s DISCOVER 2025 Event</a></h4>
+                        <div class="entry-meta">
+                            <ul>
+                                <li>October 6 -  10, 2025</li>
+                                <li>                                        Florence,
+                                                                        KY</li>
+                            </ul>
+                        </div><!-- .entry-meta -->
+                    </div><!-- .industry-event -->
+                                    <div class="industry-event">
+                        <h4><a href="/canadianmetalworking/event/metalworking/2025-salon-industriel-de-terrebonne">2025 Salon Industriel de Terrebonne</a></h4>
+                        <div class="entry-meta">
+                            <ul>
+                                <li>October 22 -  23, 2025</li>
+                                <li>                                        Terrebonne,
+                                                                        QC                                        Canada
+                                    </li>
+                            </ul>
+                        </div><!-- .entry-meta -->
+                    </div><!-- .industry-event -->
+                            </div><!-- .industry-events -->
+            <a role="button" class="btn btn-transparent" href="/?filter=event" title="See all industry events">All
+                Industry Events <i class="fas fa-angle-double-right"></i></a>
+        </div><!-- #industry-events -->
+    </div><!-- .content-wrapper -->
+        
+            <div class="content-wrapper ad">
+            <div class="ad ad-300">
+            <ins data-revive-zoneid="807" data-revive-block="1" data-revive-id="b6badbd540e6f80810b853d74715004b"></ins>
+</div><!-- .ad -->        </div><!-- .content-wrapper -->
+    
+        
+        
+            <div class="content-wrapper ad">
+            <div class="ad ad-300">
+            <ins data-revive-zoneid="807" data-revive-block="1" data-revive-id="b6badbd540e6f80810b853d74715004b"></ins>
+</div><!-- .ad -->        </div><!-- .content-wrapper -->
+    
+        
+                    </div><!-- .sidebar -->
+            </div><!-- .row -->
+        </div><!-- .container -->
+    </section>
+</div><!-- #content-wrapper -->
+<div id="site-overlay"></div><!-- .site-overlay -->
+</main><!-- #site-content -->
+    <footer id="site-footer">
+
+                    <div id="affiliated-footer">
+                <div class="container">
+                    <h5>Our Affiliated Brands</h5>
+                    <div class="affiliation-container">
+                        <div class="affiliate">
+                            <div class="logo" id="affiliate-logo-fma">
+                                <a href="https://www.fmamfg.org" title="The website of the Fabricators and Manufacturers Association">
+                                    <img loading="lazy" src="https://cdn.canadianmetalworking.com/logos/logo-fma-minimal-has-tm-plum.svg" alt="The logo of the Fabricators and Manufacturers Association" height="80" width="300" />
+                                </a>
+                            </div><!-- .logo -->
+                        </div><!-- .affiliate -->
+                        <div class="affiliate">
+                            <div class="logo" id="affiliate-logo-fabtech">
+                                <a href="https://www.fabtechexpo.com" title="The website of FABTECH" target="_self">
+                                    <img loading="lazy" src="https://cdn.canadianmetalworking.com/logos/logo_fabtech.svg" alt="The logo of FABTECH" />
+                                </a>
+                            </div><!-- .logo -->
+                        </div><!-- .affiliate -->
+                        <div class="affiliate">
+                            <div class="logo" id="affiliate-logo-the-fabricator">
+                                <a href="https://www.thefabricator.com" title="The website of The Fabricator" target="_self">
+                                    <img loading="lazy" src="https://cdn.canadianmetalworking.com/logos/logo-the-fabricator-primary-tm-plum.svg" alt="The logo of The Fabricator" />
+                                </a>
+                            </div><!-- .logo -->
+                        </div><!-- .affiliate -->
+                        <div class="affiliate">
+                            <div class="logo" id="affiliate-logo-nbt">
+                                <a href="https://www.fmamfg.org/foundation" title="The website of SparkForce, The FMA Foundation" target="_self">
+                                    <img loading="lazy" src="https://cdn.canadianmetalworking.com/logos/logo-sparkforce-fma-lockup-2.svg" alt="The logo of SparkForce, The FMA Foundation" height="104" width="528" />
+                                </a>
+                            </div><!-- .logo -->
+                        </div><!-- .affiliate -->
+                    </div><!-- .affiliation-container -->
+                </div><!-- .container -->
+            </div><!-- #affiliated-footer -->
+        
+        <div class="primary-footer">
+            <div class="container">
+                <div id="footer-publications-container">
+                    <div id="footer-publications">
+                        <div class="logo-row">
+                            <div class="logo" id="footer-publication-logo_canadian-metalworking">
+                                <a href="/canadianmetalworking/about" title="Canadian Metalworking">
+                                    <img loading="lazy" src="https://cdn.canadianmetalworking.com/logos/logo_canadian-metalworking_white.svg" alt="The logo of Canadian Metalworking" />
+                                </a>
+                            </div>
+                            <div class="logo" id="footer-publication-logo_canadian-fabricating-and-welding">
+                                <a href="/canadianfabricatingandwelding/about" title="Canadian Fabricating and Metalworking">
+                                    <img loading="lazy" src="https://cdn.canadianmetalworking.com/logos/logo_canadian-fabricating-and-welding_white.svg" alt="The logo of Canadian Fabricating and Welding" />
+                                </a>
+                            </div>
+                        </div><!-- .logo-row -->
+                    </div><!-- #footer-publications -->
+                </div><!-- #footer-publications-container -->
+
+                <div id="footer-fma">
+                    <div class="content">
+                        <p>&copy; 2025 FMA Communications Canada, Inc. All rights reserved.</p>
+                    </div><!-- .content -->
+                </div><!-- .fma -->
+            </div><!-- .container -->
+        </div><!-- .primary-footer -->
+
+        <div class="legal-footer">
+            <div class="container">
+                <div class="footer-legal-container">
+                    <div class="footer-social order-md-2 order-lg-2 order-xl-2">
+                        <ul id="footer-social-links">
+                                                            <a class="facebook" href="https://www.facebook.com/CanadianMetalworking/" title="Canadian Metalworking on Facebook" target="_blank"><li><i class="fab fa-facebook-f" aria-hidden="true"></i></li></a>
+                                                                                        <a class="twitter" href="https://twitter.com/cdnmetalworking" title="Canadian Metalworking on X" target="_blank"><li><i class="fab fa-x-twitter" aria-hidden="true"></i></li></a>
+                                                                                        <a class="linkedin" href="https://www.linkedin.com/showcase/canadian-metalworking/" title="Canadian Metalworking on LinkedIn" target="_blank"><li><i class="fab fa-linkedin-in" aria-hidden="true"></i></li></a>
+                                                                                                                    <a class="instagram" href="https://www.instagram.com/canadianmetalworking/" title="Canadian Metalworking on Instagram" target="_blank"><li><i class="fab fa-instagram" aria-hidden="true"></i></li></a>
+                                                        
+                        </ul>
+                    </div><!-- .footer-social -->
+                    <div class="footer-legal-links">
+                        <p><a href="https://www.fmamfg.org/terms-of-use" title="Terms of Use" target="_self">Terms of Use</a></p>
+                        <p><a href="https://www.fmamfg.org/privacy-policy" title="Privacy Policy" target="_self">Privacy Policy</a></p>
+                        <p><a href="/contact-us" title="Contact FMA Communications Canada" target="_self">Contact Us</a></p>
+                    </div><!-- .footer-legal-links -->
+                </div><!-- .container -->
+            </div><!-- .footer-legal-container -->
+        </div><!-- .legal-footer -->
+
+    </footer><!-- #site-footer -->
+
+<!-- Modal -->
+<div class="modal fade" id="navAccountLoginModal" tabindex="-1" role="dialog" aria-labelledby="navAccountLoginModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="navAccountLoginModalLabel">Welcome back!</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div><!-- .modal-header -->
+            <div class="modal-body">
+                <form method="POST" action="/auth/login" accept-charset="UTF-8">
+                    <input type="hidden" name="_token" value="p5oPLeOF3wYlqHWjtOpXMZC3XjpmZAnmURdsXtAH">
+                    <fieldset>
+                        <legend>Please sign in to your acccount</legend>
+                        <div class="form-group">
+                            <div class="label-inset">
+                                <input required="required" name="email" type="email" >
+                                <label for="email" class="control-label col-md-3 required">Email</label>
+                            </div><!-- .label-inset -->
+                        </div><!-- .form-group -->
+                        <div class="form-group">
+                            <div class="label-inset">
+                                <input class="form-control" required="required" name="password" type="password" value="" id="password">
+                                <label for="password" class="">Password</label>
+                            </div><!-- .label-inset -->
+                        </div><!-- .form-group -->
+                        <div class="form-group">
+                            <div class="submit">
+                                <button type="submit" class="btn btn-primary">Login</button>
+                            </div>
+                            <div class="checkbox remember">
+                                <input id="account-remember-me" class="remember" type="checkbox" name="remember">
+                                <label for="account-remember-me">Remember Me</label>
+                            </div>
+                        </div><!-- .form-group -->
+                    </fieldset>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="account-login-lost-password">
+                    <p><a href="/auth/password/email" title="Forgot your password?" target="_self">Forgot password?</a></p>
+                </div>
+                <div class="account-login-register">
+                    <p>Not yet registered? <a href="/auth/register" title="Create an account" target="_self">Sign up</a></p>
+                </div>
+            </div><!-- .modal-footer -->
+        </div><!-- .modal-content -->
+    </div><!-- .modal-dialog -->
+</div><!-- Modal -->
+<div class="modal fade" id="navAccountManagementModal" tabindex="-1" role="dialog" aria-labelledby="navAccountManagementModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="navAccountManagementModalLabel">My Account </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div><!-- .modal-header -->
+            <div class="modal-body">
+                <ul>
+                                        <li><a href="/user/select">My Showrooms</a></li>
+                    <li><a href="/guidecompare">My Saved Guide Comparisons</a></li>
+                    <li><a href="/auth/password">Change Password</a></li>
+                    <li><a href="/auth/userinfo">Change Personal Info</a></li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <div class="account-management-logout">
+                    <p><a href="/auth/logout">Logout</a></p>
+                </div>
+            </div><!-- .modal-footer -->
+        </div><!-- .modal-content -->
+    </div><!-- .modal-dialog -->
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="https://ads.thefabricator.com/delivery/asyncjs.php" async></script>
+
+<script>
+                let isAdmin = false;
+    
+    (function(){var t=function(e,t){t.length>0?window.open(e,t):window.location.href=e};if(document.getElementsByTagName){var n=document.getElementsByTagName("a"),r=document.domain.split(".").reverse()[1]+"."+document.domain.split(".").reverse()[0];for(var i=0;i<n.length;i++){var s=typeof n[i].getAttribute("href")=="string"?n[i].getAttribute("href"):"",o=s.match(r);(s.match(/^https?\:/i)&&!o||s.match(/^mailto\:/i))&&n[i].addEventListener("click",function(e){var n=this.getAttribute("href"),r=typeof (this.getAttribute("target")=="string")?this.getAttribute("target"):"";ga("send","event","outbound","click",n,{hitCallback:t(n,r)},{nonInteraction:1});e.preventDefault()})}}})();
+
+    document.addEventListener('revive-b6badbd540e6f80810b853d74715004b-receive', function() {
+        setTimeout(function(){
+            if (isAdmin !== true) {
+                $('ins[data-revive-loaded]:not(:has(a,video,iframe))').closest('.ad.content-ad, .content-wrapper.ad, .ad-stream').remove();
+            }
+
+            var mainContents = $('.mainbar .content-wrapper');
+            var sidebarContents = $('.sidebar .content-wrapper').filter(":visible");
+            var sidebarTotalHeight = 0;
+            var maincontentTotalHeight = 0;
+
+            sidebarContents.each(function () {
+                sidebarTotalHeight += $(this).outerHeight(true);
+            });
+
+            mainContents.each(function () {
+                maincontentTotalHeight += $(this).outerHeight(true);
+            });
+
+            //if the sidebar is bigger than the mainbar, pad out main content
+            if (sidebarTotalHeight > maincontentTotalHeight) {
+                $( "#filler" ).load( "/api/query/latestfrompubs", function() {
+                    $('#filler').show();
+                });
+            }
+        }, 0)
+    });
+
+    window.addEventListener("beforeunload", logVideoData);
+
+    function logVideoData()
+    {
+        var results = [];
+
+        // get all video elements, check the played time thing, send them out
+        $('video').each(function () {
+            var playedVidInfo = getPlayedTime(this);
+            if (playedVidInfo) {
+                results.push(playedVidInfo);
+            }
+        });
+
+        //if anything in the array, send it on
+        if (results.length !== 0) {
+            var videoData = new FormData();
+            videoData.set('user', '0');
+            videoData.set('page', 'https://www.canadianmetalworking.com/canadianmetalworking/article/cuttingtools/extending-cutting-tool-life-in-mass-productionautomotive-settings');
+            videoData.set('videodata', JSON.stringify(results));
+
+            if (navigator.sendBeacon) {
+                navigator.sendBeacon("/api/query/videostats", videoData)
+            } else {
+                // synchronous AJAX for older browsers
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/query/videostats',
+                    data: videoData,
+                    async: false
+                });
+            }
+        }
+    }
+
+    function getPlayedTime(video)
+    {
+        var totalPlayed = 0;
+        var played = video.played;
+
+        for (var i = 0; i < played.length; i++) {
+            totalPlayed += played.end(i) - played.start(i);
+        }
+
+        if ( 0 !== totalPlayed) {
+            return {
+                src: video.currentSrc,
+                totalPlayed: totalPlayed,
+                length: video.duration,
+                percent:totalPlayed / video.duration * 100
+            };
+        }
+
+        return false;
+    }
+
+</script>
+
+
+<script>
+    
+    let allImages = document.querySelectorAll('img');
+    let brokenImages = [];
+
+    allImages.forEach(image => {
+        image.addEventListener('error', function(){
+            brokenImages.push(image.src);
+        });
+    });
+
+    window.addEventListener("beforeunload", sendPageMetrics);
+
+    
+    function sendPageMetrics(){
+        if(brokenImages.length > 0) {
+            let payload = new FormData();
+            payload.set('user', '0');
+            payload.set('page', 'https://www.canadianmetalworking.com/canadianmetalworking/article/cuttingtools/extending-cutting-tool-life-in-mass-productionautomotive-settings');
+            payload.set('data', JSON.stringify({ brokenImages })); 
+
+            if (navigator.sendBeacon) {
+                navigator.sendBeacon("/api/query/pagemetrics", payload)
+            } else {
+                
+                $.ajax({
+                    type: 'POST',
+                    url: '/api/query/pagemetrics',
+                    data: payload,
+                    async: false
+                });
+            }
+        }
+    }
+</script><script type="text/javascript">window.NREUM||(NREUM={});NREUM.info={"beacon":"bam.nr-data.net","licenseKey":"6ae71fe6f4","applicationID":"16008031","transactionName":"Z1QAZhMFC0BWAhdYVl4eI1EVDQpdGAIMX01VXxY=","queueTime":0,"applicationTime":200,"atts":"SxMDEFsfGE4=","errorBeacon":"bam.nr-data.net","agent":""}</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'97249bb2ba5d362b',t:'MTc1NTcyMTQwMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

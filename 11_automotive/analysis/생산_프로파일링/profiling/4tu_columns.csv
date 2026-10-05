@@ -1,0 +1,15 @@
+﻿column,dtype,null,nunique,example
+Case ID,str,0,225,Case 1
+Activity,str,0,55,Turning & Milling - Machine 4
+Resource,str,0,31,Machine 4 - Turning & Milling
+Start Timestamp,str,0,3743,2012/01/29 23:24:00.000
+Complete Timestamp,str,0,3842,2012/01/30 05:43:00.000
+Span,str,0,662,006:19
+Work Order Qty,int64,0,94,10
+Part Desc.,str,0,43,Cable Head
+Worker ID,str,0,49,ID4932
+Report Type,str,0,3,S
+Qty Completed,int64,0,175,1
+Qty Rejected,int64,0,15,0
+Qty for MRB,int64,0,6,0
+Rework,str,4511,1,Y

@@ -1,0 +1,1774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Control Plan in Manufacturing: Requirements &amp; Example</title>
+
+    <meta name="Content-language" content="en-US">
+    <meta name="description" content="Learn what a control plan is, the three types, IATF 16949 and AIAG requirements, every column explained, and a practical manufacturing example.">
+    <meta name="country" content="USA">
+
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://amrepinspect.com/images/web/AMREPInspect.jpg">
+    <meta property="og:title" content="Control Plan in Manufacturing: Requirements &amp; Example">
+    <meta property="og:description" content="Learn what a control plan is, the three types, IATF 16949 and AIAG requirements, every column explained, and a practical manufacturing example.">
+    <meta property="og:url" content="https://amrepinspect.com/blog/control-plan-in-manufacturing-requirements-example">
+
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://amrepinspect.com/blog/control-plan-in-manufacturing-requirements-example">
+    <meta property="twitter:image" content="https://amrepinspect.com/images/web/AMREPInspect.jpg">
+    <meta name="twitter:title" content="Control Plan in Manufacturing: Requirements &amp; Example">
+    <meta name="twitter:description" content="Learn what a control plan is, the three types, IATF 16949 and AIAG requirements, every column explained, and a practical manufacturing example.">
+
+    <link rel="shortcut icon" href="https://amrepinspect.com/images/web/icons/favicon.png">
+    <link rel="apple-touch-icon" href="https://amrepinspect.com/images/web/icons/favicon.png">
+
+    <meta name="csrf-token" content="2sKkumNVqFushH20Lp7xePgSwLvvTepJvc9Iv5pG">
+
+   
+
+    <meta name="theme-color" content="#6777ef">
+    <link rel="manifest" href="https://amrepinspect.com/manifest.json">
+    <!--<link href="https://fonts.googleapis.com/css2?family=Krub:wght@500&family=Rubik:wght@500;600&display=swap" rel="stylesheet">-->
+
+  <!-- Preconnect to improve speed -->
+<!--<link rel="preconnect" href="https://fonts.googleapis.com">-->
+<!--<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>-->
+
+<!-- Load Google Fonts asynchronously -->
+<!--<link href="https://fonts.googleapis.com/css2?family=Krub:wght@500&family=Rubik:wght@500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">-->
+
+<!-- Fallback for no-JS browsers -->
+<!--<noscript>-->
+<!--  <link href="https://fonts.googleapis.com/css2?family=Krub:wght@500&family=Rubik:wght@500;600&display=swap" rel="stylesheet">-->
+<!--</noscript>-->
+
+    <link rel="stylesheet" href="https://amrepinspect.com/css/style.css" defer>
+<link rel="stylesheet" href="https://amrepinspect.com/css/utility.css" defer>
+ <style>
+ .test{}
+ @charset "UTF-8";:root{--bs-blue:#0d6efd;--bs-indigo:#6610f2;--bs-purple:#6f42c1;--bs-pink:#d63384;--bs-red:#dc3545;--bs-orange:#fd7e14;--bs-yellow:#ffc107;--bs-green:#198754;--bs-teal:#20c997;--bs-cyan:#0dcaf0;--bs-black:#000;--bs-white:#fff;--bs-gray:#6c757d;--bs-gray-dark:#343a40;--bs-gray-100:#f8f9fa;--bs-gray-200:#e9ecef;--bs-gray-300:#dee2e6;--bs-gray-400:#ced4da;--bs-gray-500:#adb5bd;--bs-gray-600:#6c757d;--bs-gray-700:#495057;--bs-gray-800:#343a40;--bs-gray-900:#212529;--bs-primary:#0d6efd;--bs-secondary:#6c757d;--bs-success:#198754;--bs-info:#0dcaf0;--bs-warning:#ffc107;--bs-danger:#dc3545;--bs-light:#f8f9fa;--bs-dark:#212529;--bs-primary-rgb:13,110,253;--bs-secondary-rgb:108,117,125;--bs-success-rgb:25,135,84;--bs-info-rgb:13,202,240;--bs-warning-rgb:255,193,7;--bs-danger-rgb:220,53,69;--bs-light-rgb:248,249,250;--bs-dark-rgb:33,37,41;--bs-primary-text-emphasis:#052c65;--bs-secondary-text-emphasis:#2b2f32;--bs-success-text-emphasis:#0a3622;--bs-info-text-emphasis:#055160;--bs-warning-text-emphasis:#664d03;--bs-danger-text-emphasis:#58151c;--bs-light-text-emphasis:#495057;--bs-dark-text-emphasis:#495057;--bs-primary-bg-subtle:#cfe2ff;--bs-secondary-bg-subtle:#e2e3e5;--bs-success-bg-subtle:#d1e7dd;--bs-info-bg-subtle:#cff4fc;--bs-warning-bg-subtle:#fff3cd;--bs-danger-bg-subtle:#f8d7da;--bs-light-bg-subtle:#fcfcfd;--bs-dark-bg-subtle:#ced4da;--bs-primary-border-subtle:#9ec5fe;--bs-secondary-border-subtle:#c4c8cb;--bs-success-border-subtle:#a3cfbb;--bs-info-border-subtle:#9eeaf9;--bs-warning-border-subtle:#ffe69c;--bs-danger-border-subtle:#f1aeb5;--bs-light-border-subtle:#e9ecef;--bs-dark-border-subtle:#adb5bd;--bs-white-rgb:255,255,255;--bs-black-rgb:0,0,0;--bs-font-sans-serif:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue","Noto Sans","Liberation Sans",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";--bs-font-monospace:SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;--bs-gradient:linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));--bs-body-font-family:var(--bs-font-sans-serif);--bs-body-font-size:1rem;--bs-body-font-weight:400;--bs-body-line-height:1.5;--bs-body-color:#212529;--bs-body-color-rgb:33,37,41;--bs-body-bg:#fff;--bs-body-bg-rgb:255,255,255;--bs-emphasis-color:#000;--bs-emphasis-color-rgb:0,0,0;--bs-secondary-color:rgba(33, 37, 41, 0.75);--bs-secondary-color-rgb:33,37,41;--bs-secondary-bg:#e9ecef;--bs-secondary-bg-rgb:233,236,239;--bs-tertiary-color:rgba(33, 37, 41, 0.5);--bs-tertiary-color-rgb:33,37,41;--bs-tertiary-bg:#f8f9fa;--bs-tertiary-bg-rgb:248,249,250;--bs-heading-color:inherit;--bs-link-color:#0d6efd;--bs-link-color-rgb:13,110,253;--bs-link-decoration:underline;--bs-link-hover-color:#0a58ca;--bs-link-hover-color-rgb:10,88,202;--bs-code-color:#d63384;--bs-highlight-color:#212529;--bs-highlight-bg:#fff3cd;--bs-border-width:1px;--bs-border-style:solid;--bs-border-color:#dee2e6;--bs-border-color-translucent:rgba(0, 0, 0, 0.175);--bs-border-radius:0.375rem;--bs-border-radius-sm:0.25rem;--bs-border-radius-lg:0.5rem;--bs-border-radius-xl:1rem;--bs-border-radius-xxl:2rem;--bs-border-radius-2xl:var(--bs-border-radius-xxl);--bs-border-radius-pill:50rem;--bs-box-shadow:0 0.5rem 1rem rgba(0, 0, 0, 0.15);--bs-box-shadow-sm:0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);--bs-box-shadow-lg:0 1rem 3rem rgba(0, 0, 0, 0.175);--bs-box-shadow-inset:inset 0 1px 2px rgba(0, 0, 0, 0.075);--bs-focus-ring-width:0.25rem;--bs-focus-ring-opacity:0.25;--bs-focus-ring-color:rgba(13, 110, 253, 0.25);--bs-form-valid-color:#198754;--bs-form-valid-border-color:#198754;--bs-form-invalid-color:#dc3545;--bs-form-invalid-border-color:#dc3545}*,::after,::before{box-sizing:border-box}@media (prefers-reduced-motion:no-preference){:root{scroll-behavior:smooth}}body{margin:0;font-family:var(--bs-body-font-family);font-size:var(--bs-body-font-size);font-weight:var(--bs-body-font-weight);line-height:var(--bs-body-line-height);color:var(--bs-body-color);text-align:var(--bs-body-text-align);background-color:var(--bs-body-bg);-webkit-text-size-adjust:100%}hr{margin:1rem 0;color:inherit;border:0;border-top:var(--bs-border-width) solid;opacity:.25}.h5,h1,h2,h3{margin-top:0;margin-bottom:.5rem;font-weight:500;line-height:1.2;color:var(--bs-heading-color)}h1{font-size:calc(1.375rem + 1.5vw)}@media (min-width:1200px){h1{font-size:2.5rem}}h2{font-size:calc(1.325rem + .9vw)}@media (min-width:1200px){h2{font-size:2rem}}h3{font-size:calc(1.3rem + .6vw)}@media (min-width:1200px){h3{font-size:1.75rem}}.h5{font-size:1.25rem}p{margin-top:0;margin-bottom:1rem}ul{padding-left:2rem}ul{margin-top:0;margin-bottom:1rem}ul ul{margin-bottom:0}a{color:rgba(var(--bs-link-color-rgb),var(--bs-link-opacity,1));text-decoration:underline}img,svg{vertical-align:middle}button{border-radius:0}button,input{margin:0;font-family:inherit;font-size:inherit;line-height:inherit}button{text-transform:none}[type=button],button{-webkit-appearance:button}::-moz-focus-inner{padding:0;border-style:none}::-webkit-datetime-edit-day-field,::-webkit-datetime-edit-fields-wrapper,::-webkit-datetime-edit-hour-field,::-webkit-datetime-edit-minute,::-webkit-datetime-edit-month-field,::-webkit-datetime-edit-text,::-webkit-datetime-edit-year-field{padding:0}::-webkit-inner-spin-button{height:auto}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-color-swatch-wrapper{padding:0}::-webkit-file-upload-button{font:inherit;-webkit-appearance:button}::file-selector-button{font:inherit;-webkit-appearance:button}.img-fluid{max-width:100%;height:auto}.container{--bs-gutter-x:1.5rem;--bs-gutter-y:0;width:100%;padding-right:calc(var(--bs-gutter-x) * .5);padding-left:calc(var(--bs-gutter-x) * .5);margin-right:auto;margin-left:auto}@media (min-width:576px){.container{max-width:540px}}@media (min-width:768px){.container{max-width:720px}}@media (min-width:992px){.container{max-width:960px}}@media (min-width:1200px){.container{max-width:1140px}}@media (min-width:1400px){.container{max-width:1320px}}:root{--bs-breakpoint-xs:0;--bs-breakpoint-sm:576px;--bs-breakpoint-md:768px;--bs-breakpoint-lg:992px;--bs-breakpoint-xl:1200px;--bs-breakpoint-xxl:1400px}.row{--bs-gutter-x:1.5rem;--bs-gutter-y:0;display:flex;flex-wrap:wrap;margin-top:calc(-1 * var(--bs-gutter-y));margin-right:calc(-.5 * var(--bs-gutter-x));margin-left:calc(-.5 * var(--bs-gutter-x))}.row>*{flex-shrink:0;width:100%;max-width:100%;padding-right:calc(var(--bs-gutter-x) * .5);padding-left:calc(var(--bs-gutter-x) * .5);margin-top:var(--bs-gutter-y)}.col-6{flex:0 0 auto;width:50%}@media (min-width:576px){.col-sm-6{flex:0 0 auto;width:50%}.col-sm-12{flex:0 0 auto;width:100%}}@media (min-width:768px){.col-md-3{flex:0 0 auto;width:25%}.col-md-4{flex:0 0 auto;width:33.33333333%}.col-md-6{flex:0 0 auto;width:50%}.col-md-8{flex:0 0 auto;width:66.66666667%}}@media (min-width:992px){.col-lg-3{flex:0 0 auto;width:25%}.col-lg-8{flex:0 0 auto;width:66.66666667%}.col-lg-9{flex:0 0 auto;width:75%}}.dropdown{position:relative}.dropdown-menu{--bs-dropdown-zindex:1000;--bs-dropdown-min-width:10rem;--bs-dropdown-padding-x:0;--bs-dropdown-padding-y:0.5rem;--bs-dropdown-spacer:0.125rem;--bs-dropdown-font-size:1rem;--bs-dropdown-color:var(--bs-body-color);--bs-dropdown-bg:var(--bs-body-bg);--bs-dropdown-border-color:var(--bs-border-color-translucent);--bs-dropdown-border-radius:var(--bs-border-radius);--bs-dropdown-border-width:var(--bs-border-width);--bs-dropdown-inner-border-radius:calc(var(--bs-border-radius) - var(--bs-border-width));--bs-dropdown-divider-bg:var(--bs-border-color-translucent);--bs-dropdown-divider-margin-y:0.5rem;--bs-dropdown-box-shadow:var(--bs-box-shadow);--bs-dropdown-link-color:var(--bs-body-color);--bs-dropdown-link-hover-color:var(--bs-body-color);--bs-dropdown-link-hover-bg:var(--bs-tertiary-bg);--bs-dropdown-link-active-color:#fff;--bs-dropdown-link-active-bg:#0d6efd;--bs-dropdown-link-disabled-color:var(--bs-tertiary-color);--bs-dropdown-item-padding-x:1rem;--bs-dropdown-item-padding-y:0.25rem;--bs-dropdown-header-color:#6c757d;--bs-dropdown-header-padding-x:1rem;--bs-dropdown-header-padding-y:0.5rem;position:absolute;z-index:var(--bs-dropdown-zindex);display:none;min-width:var(--bs-dropdown-min-width);padding:var(--bs-dropdown-padding-y) var(--bs-dropdown-padding-x);margin:0;font-size:var(--bs-dropdown-font-size);color:var(--bs-dropdown-color);text-align:left;list-style:none;background-color:var(--bs-dropdown-bg);background-clip:padding-box;border:var(--bs-dropdown-border-width) solid var(--bs-dropdown-border-color);border-radius:var(--bs-dropdown-border-radius)}.dropdown-item{display:block;width:100%;padding:var(--bs-dropdown-item-padding-y) var(--bs-dropdown-item-padding-x);clear:both;font-weight:400;color:var(--bs-dropdown-link-color);text-align:inherit;text-decoration:none;white-space:nowrap;background-color:transparent;border:0;border-radius:var(--bs-dropdown-item-border-radius,0)}.nav-link{display:block;padding:var(--bs-nav-link-padding-y) var(--bs-nav-link-padding-x);font-size:var(--bs-nav-link-font-size);font-weight:var(--bs-nav-link-font-weight);color:var(--bs-nav-link-color);text-decoration:none;background:0 0;border:0}.navbar-brand{padding-top:var(--bs-navbar-brand-padding-y);padding-bottom:var(--bs-navbar-brand-padding-y);margin-right:var(--bs-navbar-brand-margin-end);font-size:var(--bs-navbar-brand-font-size);color:var(--bs-navbar-brand-color);text-decoration:none;white-space:nowrap}.navbar-nav{--bs-nav-link-padding-x:0;--bs-nav-link-padding-y:0.5rem;--bs-nav-link-font-weight: ;--bs-nav-link-color:var(--bs-navbar-color);--bs-nav-link-hover-color:var(--bs-navbar-hover-color);--bs-nav-link-disabled-color:var(--bs-navbar-disabled-color);display:flex;flex-direction:column;padding-left:0;margin-bottom:0;list-style:none}.navbar-nav .dropdown-menu{position:static}.navbar-collapse{flex-basis:100%;flex-grow:1;align-items:center}.navbar-toggler{padding:var(--bs-navbar-toggler-padding-y) var(--bs-navbar-toggler-padding-x);font-size:var(--bs-navbar-toggler-font-size);line-height:1;color:var(--bs-navbar-color);background-color:transparent;border:var(--bs-border-width) solid var(--bs-navbar-toggler-border-color);border-radius:var(--bs-navbar-toggler-border-radius)}@media (min-width:992px){.navbar-expand-lg{flex-wrap:nowrap;justify-content:flex-start}.navbar-expand-lg .navbar-nav{flex-direction:row}.navbar-expand-lg .navbar-nav .dropdown-menu{position:absolute}.navbar-expand-lg .navbar-nav .nav-link{padding-right:var(--bs-navbar-nav-link-padding-x);padding-left:var(--bs-navbar-nav-link-padding-x)}.navbar-expand-lg .navbar-collapse{display:flex!important;flex-basis:auto}.navbar-expand-lg .navbar-toggler{display:none}}.d-flex{display:flex!important}.d-none{display:none!important}.shadow{box-shadow:var(--bs-box-shadow)!important}.position-absolute{position:absolute!important}.flex-column{flex-direction:column!important}.flex-column-reverse{flex-direction:column-reverse!important}.justify-content-center{justify-content:center!important}.justify-content-between{justify-content:space-between!important}.align-items-center{align-items:center!important}.mx-0{margin-right:0!important;margin-left:0!important}.mx-3{margin-right:1rem!important;margin-left:1rem!important}.mt-2{margin-top:.5rem!important}.mt-3{margin-top:1rem!important}.mt-4{margin-top:1.5rem!important}.mt-5{margin-top:3rem!important}.mb-0{margin-bottom:0!important}.mb-2{margin-bottom:.5rem!important}.mb-4{margin-bottom:1.5rem!important}.ms-3{margin-left:1rem!important}.p-3{padding:1rem!important}.p-4{padding:1.5rem!important}.p-5{padding:3rem!important}.px-3{padding-right:1rem!important;padding-left:1rem!important}.px-5{padding-right:3rem!important;padding-left:3rem!important}.py-3{padding-top:1rem!important;padding-bottom:1rem!important}.pt-3{padding-top:1rem!important}.pe-3{padding-right:1rem!important}.pb-0{padding-bottom:0!important}.pb-1{padding-bottom:.25rem!important}.ps-0{padding-left:0!important}.ps-2{padding-left:.5rem!important}.ps-3{padding-left:1rem!important}.ps-4{padding-left:1.5rem!important}.ps-5{padding-left:3rem!important}.fs-4{font-size:calc(1.275rem + .3vw)!important}.fs-5{font-size:1.25rem!important}.fs-6{font-size:1rem!important}.fw-bold{font-weight:700!important}.text-end{text-align:right!important}.text-center{text-align:center!important}.text-warning{--bs-text-opacity:1;color:rgba(var(--bs-warning-rgb),var(--bs-text-opacity))!important}.text-light{--bs-text-opacity:1;color:rgba(var(--bs-light-rgb),var(--bs-text-opacity))!important}.text-dark{--bs-text-opacity:1;color:rgba(var(--bs-dark-rgb),var(--bs-text-opacity))!important}.text-white{--bs-text-opacity:1;color:rgba(var(--bs-white-rgb),var(--bs-text-opacity))!important}.bg-white{--bs-bg-opacity:1;background-color:rgba(var(--bs-white-rgb),var(--bs-bg-opacity))!important}.rounded{border-radius:var(--bs-border-radius)!important}@media (min-width:992px){.mb-lg-0{margin-bottom:0!important}}@media (min-width:1200px){.fs-4{font-size:1.5rem!important}}
+   
+    .top-head{
+            height: 5rem;
+    padding: 8px 0 8px 0;
+    }
+    .logo{
+        width:16rem;
+    }
+    .top-header-info{
+        width:36rem;
+    }
+    #navbar {
+    position: sticky;
+    top: 0;
+    z-index: 10000;
+    }
+    .mble-menu-icons{
+    display:none;
+    }
+        .why-us {
+            list-style-type: none;
+            padding-left: 0.5rem !important;
+        }
+        .why-us li {
+            margin-bottom: 0.7rem;
+        }
+        .why-us li::before {
+            font-family: sans-serif;
+            content: '✔';
+            color: #fff;
+            background: #fdcb26;
+            display: inline-block;
+            width: 1.3em;
+            padding-left: 3px;
+            border-radius: 50%;
+            margin-right: 0.5em;
+        }
+     
+        /* Dropdown Menu */
+    .dropdown-menu {
+        margin-top: 0;
+    }
+
+    .dropdown-menu .dropdown-toggle::after {
+        vertical-align: middle;
+        border-left: 4px solid;
+        border-bottom: 4px solid transparent;
+        border-top: 4px solid transparent;
+    }
+
+    .dropdown-menu .dropdown .dropdown-menu {
+        left: 100%;
+        top: 0%;
+        margin: 0 20px;
+        border-width: 0;
+    }
+
+    .dropdown-menu .dropdown .dropdown-menu.left {
+        right: 100%;
+        left: auto;
+    }
+
+    /* Submenu */
+    #sub-drop {
+        display: none !important;
+    }
+
+    #main-sub:hover #sub-drop {
+        display: block !important;
+    }
+
+    .drop-icon {
+        display: none !important;
+    }
+
+    /* Arrow Positioning */
+    .arrow-redirect svg {
+        position: relative;
+        left: 18rem;
+    }
+    #cookie-popup {
+            position: fixed;
+            bottom: 3%;
+            right: 1%;
+            width: 30%;
+            padding: 15px;
+            background-color: #fff;
+            text-align: center;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            display: none;
+            z-index: 100000;
+            /* Initially hide the popup */
+        }
+    /* Media Queries */
+    @media screen and (max-width: 992px) {
+        ul {
+            margin-left: 0px !important;
+        }
+
+        .drop-icon {
+            display: inline !important;
+        }
+
+        .multi-drop {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        #multi-drop-id {
+            width: 65% !important;
+        }
+
+        #sub-drop {
+            margin: 0 1rem !important;
+        }
+
+        .arrow-redirect svg {
+            left: 12rem !important;
+        }
+         #cookie-popup{
+            width: 50% !important;
+            right: 3% !important;
+        }
+    }
+
+    @media (min-width: 768px) {
+        .dropdown-menu .dropdown .dropdown-menu {
+            margin: 0;
+            border-width: 1px;
+        }
+
+        .dropdown-menu>li.show>a {
+            color: white;
+        }
+    }
+
+    @media (max-width: 768px) {
+		.banner{
+		padding-left:2rem;
+		padding-right:2rem;
+		}
+            .desk-img {
+                display: none !important;
+            }
+            .why-us-card {
+                margin-top: 0 !important;
+            }
+	.ser-crd{
+                margin-right:0 !important;
+            }
+        .arrow-redirect svg {
+            left: 20rem !important;
+        }
+    }
+     @media (max-width: 550px) {
+        #cookie-popup{
+            width: 90% !important;
+            right: 5% !important;
+        }
+    }
+
+    @media (max-width: 450px) {
+        .arrow-redirect svg {
+            left: 16rem !important;
+        }
+    }
+
+    @media (max-width: 400px) {
+        .arrow-redirect svg {
+            left: 12rem !important;
+        }
+    }
+    
+    </style>
+<!-- Google tag (gtag.js) -->
+<script defer src="https://www.googletagmanager.com/gtag/js?id=G-KL5R8F517Z"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-KL5R8F517Z');
+    gtag('consent', 'default', {
+            'ad_storage': 'denied',
+            'ad_user_data': 'denied',
+            'ad_personalization': 'denied',
+            'analytics_storage': 'denied',
+            'wait_for_update': 500
+        });
+</script>
+    <link rel="canonical" href="https://amrepinspect.com/blog/control-plan-in-manufacturing-requirements-example">
+    <link rel="preload" as="image" href="../images/new/control-plan-in-manufacturing-requirements-example.webp">
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@graph": [
+        {
+            "@type": "BlogPosting",
+            "mainEntityOfPage": {
+                "@type": "WebPage",
+                "@id": "https://amrepinspect.com/blog/control-plan-in-manufacturing-requirements-example"
+            },
+            "headline": "Control Plan in Manufacturing: Types, Requirements, and Practical Example (2026)",
+            "description": "Learn what a control plan is, the three types, IATF 16949 and AIAG requirements, every column explained, and a practical manufacturing example.",
+            "image": "https://amrepinspect.com/images/new/control-plan-in-manufacturing-requirements-example.webp",
+            "author": {
+                "@type": "Organization",
+                "name": "AMREPInspect",
+                "url": "https://amrepinspect.com"
+            },
+            "publisher": {
+                "@type": "Organization",
+                "name": "AMREPInspect",
+                "logo": {
+                    "@type": "ImageObject",
+                    "url": "https://amrepinspect.com/images/web/icons/new-logo.png"
+                }
+            },
+            "datePublished": "2026-09-07",
+            "dateModified": "2026-09-07"
+        },
+        {
+            "@type": "FAQPage",
+            "mainEntity": [
+                {
+                    "@type": "Question",
+                    "name": "Who is responsible for creating and maintaining the control plan?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "The supplier quality engineer or quality manager typically owns it, but it should be developed by a cross-functional team including manufacturing, engineering, and quality. IATF 16949 does not assign a single role. What matters is that the responsible person has authority to update it when changes occur and that operators are trained on its contents."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "Can one control plan cover multiple part numbers?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Yes. A family control plan is acceptable when parts share the same process steps, machines, and controls, differing only in dimensions or materials. Each part number must be listed in the header, and tolerances that differ between parts must be called out separately. Auditors will verify that family plans reflect genuine process similarity, not administrative convenience."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "How detailed does a reaction plan need to be for a non-special characteristic?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Specific enough for an operator to act without escalating. At minimum, it should state what to do immediately (flag, segregate, hold parts), how many parts to contain (back to the last known good sample), and what must happen before production resumes. \"Rework\" or \"scrap\" alone is not a reaction plan."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "What is the difference between a control plan and a control chart?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "A control plan defines what to monitor, how, how often, and what to do when results fall out of limits. A control chart (SPC chart) is one control method listed within the plan, used to track a specific characteristic over time. The control plan tells you to use it; the control chart is where you use it."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "Does a control plan need to be re-submitted to the customer after every update?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Not always. Changes affecting a characteristic on a submitted PPAP almost always require customer approval before implementation. Minor administrative updates, such as correcting a contact name or updating a machine number with no process impact, typically do not. Confirm the threshold with your customer's CSR."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "What happens to the control plan during a safe launch period?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "Controls are tighter than standard production: higher sample sizes, more frequent measurement, and sometimes 100% inspection on critical characteristics. Once the process demonstrates stability over the customer-defined period, the control plan is updated to reflect reduced sampling frequencies. Safe launch exit criteria should be documented in the control plan itself."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "Can a control plan be used as a training document for operators?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "As a reference, yes. But it should not replace a work instruction. The control plan specifies what to measure and what to do when something is wrong. It does not contain step-by-step instructions for operating. Both documents should be accessible at the workstation."
+                    }
+                },
+                {
+                    "@type": "Question",
+                    "name": "What is the difference between a process control plan and a product control plan?",
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": "These are not separate document types under IATF 16949. A single control plan covers both product characteristics (dimensions, attributes) and process characteristics (temperatures, pressures, speeds). Product characteristics come from the drawing; process characteristics come from the PFMEA. Both must be present for the plan to be effective."
+                    }
+                }
+            ]
+        }
+    ]
+}
+    </script>
+    <style>
+        p {
+            color: black;
+        }
+
+        li,
+        td {
+            font-family: 'Krub', sans-serif !important;
+            font-size: 15px;
+            line-height: 25px;
+
+        }
+
+        h3 {
+            font-size: 1.5rem;
+
+        }
+
+        h4 {
+            color: black !important;
+            font-size: 22px;
+        }
+
+        main h1 {
+            letter-spacing: 0px !important;
+        }
+
+        .imp {
+            border: solid rgb(201, 198, 198);
+            padding: 10px;
+            margin-bottom: 10px;
+
+        }
+
+        th {
+            font-size: 18px;
+        }
+
+        li {
+            color: black !important;
+        }
+    </style>
+    <link rel="stylesheet" href="https://amrepinspect.com/css/utility.css" media="all">
+    <link rel="stylesheet" href="https://amrepinspect.com/css/style.css" media="all">
+    <link rel="stylesheet" href="https://amrepinspect.com/css/blog.css" media="all">
+    <style>
+    .t{}
+    </style>
+</head>
+<body>
+    <div class="top-head bg-white">
+    <div class="container">
+        <div class="d-flex justify-content-between top-bar">
+            <div class="logo">
+                <a class="navbar-brand" href="https://amrepinspect.com">
+                    <img src="https://amrepinspect.com/images/new/amrep-inspect-logo.webp"
+                        alt="AMREPInspect supplier management" id="header-logo" width="220" height="60">
+                </a>
+            </div>
+            <div class="top-header-info">
+                <div class="time d-flex align-items-center">
+                    <div class="top-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#fff"
+                            class="bi bi-clock" viewBox="0 0 16 16">
+                            <path
+                                d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z" />
+                            <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z" />
+                        </svg>
+                    </div>
+                    <div class="text ps-2">
+                        <p class="mb-0 top-txt">
+                            Mon - Sat 9.00 - 18.00
+                        </p>
+                        <p class="mb-0 top-txt">
+                            Sunday Closed
+                        </p>
+                    </div>
+                </div>
+                <div class="email mx-3 d-flex align-items-center">
+                    <div class="top-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#fff"
+                            class="bi bi-envelope" viewBox="0 0 16 16">
+                            <path
+                                d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z" />
+                        </svg>
+                    </div>
+                    <div class="text ps-2">
+                        <p class="mb-0 top-txt">
+                            Email
+                        </p>
+                        <p class="mb-0 top-txt">
+                            <a href="mailto:supplyquality@amrepinspect.com" class="text-dark"
+                                style="text-decoration: none">supplyquality@amrepinspect.com</a>
+                        </p>
+                    </div>
+                </div>
+                <div class="phone d-flex align-items-center">
+                    <div class="top-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#fff"
+                            class="bi bi-telephone" viewBox="0 0 16 16">
+                            <path
+                                d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.568 17.568 0 0 0 4.168 6.608 17.569 17.569 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.745 1.745 0 0 1-1.657-.459L5.482 8.062a1.745 1.745 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58L3.654 1.328zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z" />
+                        </svg>
+                    </div>
+                    <div class="text ps-2">
+                        <p class="mb-0 top-txt">
+                            Call Us
+                        </p>
+                        <p class="mb-0 top-txt">
+                            <a href="tel:14159448189" class="text-dark" style="text-decoration: none">+1 858 329
+                                0211</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<nav id="navbar" class="navbar-expand-lg head-area stickyElement">
+    <div class="container">
+        <div class="d-flex justify-content-between" style="padding:0 1rem;">
+           <div class="mble-menu-icons d-none">
+            <div class="ps-2">
+                <a href="mailto:supplyquality@amrepinspect.com">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="rgb(255, 210, 12)" class="bi bi-envelope-fill" viewBox="0 0 16 16">
+                    <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555ZM0 4.697v7.104l5.803-3.558zM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586l-1.239-.757Zm3.436-.586L16 11.801V4.697l-5.803 3.546Z"/>
+                  </svg>
+                </a>
+            </div>
+            <div class="ms-3">
+                <a href="tel:14159448189">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="rgb(255, 210, 12)" class="bi bi-telephone-fill" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M1.885.511a1.745 1.745 0 0 1 2.61.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z"/>
+                  </svg>
+                </a>
+            </div>
+           </div>
+            <button id="toggleButton" class="navbar-toggler tab-icon" type="button" onclick="toggleMainMenu()"
+                data-bs-target="#MainMenu" aria-controls="MainMenu" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <svg id="toggle-icon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#fff"
+                    class="bi bi-list" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd"
+                        d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z" />
+                </svg>
+                <svg id="xSign" style="display: none" xmlns="http://www.w3.org/2000/svg" width="40"
+                    height="40" fill="#fff" class="bi bi-x" viewBox="0 0 16 16">
+                    <path
+                        d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+                </svg>
+            </button>
+
+        </div>
+        <div class="navbar-collapse" id="MainMenu">
+            <ul class="navbar-nav mb-2 mb-lg-0 mx-0 align-items-center">
+                <li class="nav-item">
+                    <a href="https://amrepinspect.com" class="nav-link">Home</a>
+                </li>
+                <!--<li class="nav-item seperator">|</li>-->
+                <li class="nav-item dropdown">
+                    <a class="nav-link" href="javascript::void(0)" id="aboutDropdown" data-bs-toggle="dropdown"
+                        data-bs-auto-close="false">
+                        About
+                        <span style="padding-left:5px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd"
+                                    d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />
+                            </svg>
+                        </span>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="aboutDropdown">
+                        <li>
+                            <a class="dropdown-item" href="https://amrepinspect.com/amrep-history">AMREP's History</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="https://amrepinspect.com/our-values">Our Values</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="https://amrepinspect.com/our-clients">Our Clients</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="https://amrepinspect.com/social-responsibility">Social
+                                Responsibility</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="https://amrepinspect.com/our-team">Our Team</a>
+                        </li>
+                    </ul>
+                </li>
+                <!--<li class="nav-item seperator">|</li>-->
+                <li class="nav-item dropdown">
+                    <a class="nav-link" href="javascript:void(0)" role="button" data-bs-toggle="dropdown">
+                        Services <span style="padding-left:5px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd"
+                                    d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />
+                            </svg>
+
+                        </span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li class="nav-item dropdown" id="main-sub">
+                            <span class="multi-drop">
+                                <a class="dropdown-item" href="https://amrepinspect.com/quality-management-solutions"
+                                    data-bs-toggle="dropdown" id="multi-drop-id">
+                                    Quality Management Solutions
+                                    <span class="deskchev" style="padding-left:5px;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                            fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd"
+                                                d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" />
+                                        </svg>
+                                </a>
+                                <span class="drop-icon" role="button" data-bs-toggle="dropdown"
+                                    style="padding-right:20px;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                        fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd"
+                                            d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />
+                                    </svg>
+                                </span>
+                            </span>
+                            <ul class="dropdown-menu dropdown-submenu" id="sub-drop">
+                                <li class="nav-item">
+                                    <a class="dropdown-item" href="https://amrepinspect.com/supplier-audits">
+                                        Audits
+                                    </a>
+                                </li>
+                               
+                                <li class="nav-item">
+                                    <a class="dropdown-item"
+                                        href="https://amrepinspect.com/manufacturing-quality-engineering">Supplier
+                                        Quality Engineering</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="dropdown-item"
+                                        href="https://amrepinspect.com/supplier-development">Supplier
+                                        Development</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="dropdown-item"
+                                        href="https://amrepinspect.com/product-quality-management">Production
+                                        Quality Management</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="dropdown-item"
+                                        href="https://amrepinspect.com/production-monitoring">Supplier
+                                        Monitoring</a>
+                                </li>
+                                 
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown" id="main-sub">
+                            <span class="multi-drop">
+                                <a class="dropdown-item" href="https://amrepinspect.com/inspections"
+                                    data-bs-toggle="dropdown" id="multi-drop-id">
+                                    Quality Inspection Services
+                                    <span class="deskchev" style="padding-left:5px;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                            fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                                            <path fill-rule="evenodd"
+                                                d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" />
+                                        </svg>
+                                </a>
+                                <span class="drop-icon" role="button" data-bs-toggle="dropdown"
+                                    style="padding-right:20px;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                        fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd"
+                                            d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />
+                                    </svg>
+                                </span>
+                            </span>
+                            <ul class="dropdown-menu dropdown-submenu" id="sub-drop">
+                                <li class="nav-item">
+                                    <a class="dropdown-item" href="https://amrepinspect.com/quality-inspection-services-in-mexico">
+                                        Mexico
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="dropdown-item" href="https://amrepinspect.com/quality-inspection-services-in-malaysia">Malaysia</a>
+                                </li>
+                                 <li class="nav-item">
+                                    <a class="dropdown-item" href="https://amrepinspect.com/quality-inspection-services-in-vietnam">Vietnam</a>
+                                </li>
+                                 <li class="nav-item">
+                                    <a class="dropdown-item" href="https://amrepinspect.com/quality-inspection-services-in-thailand">Thailand</a>
+                                </li>
+                            
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="dropdown-item" href="https://amrepinspect.com/production-management-solutions"
+                                role="button" data-bs-toggle="dropdown">
+                                Production Management Solutions
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="dropdown-item" href="https://amrepinspect.com/training-and-consulting"
+                                role="button" data-bs-toggle="dropdown">
+                                Training And Consulting
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="dropdown-item" href="https://amrepinspect.com/supplier-problems" role="button"
+                                data-bs-toggle="dropdown">
+                                Supplier Problems Troubleshooting
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="dropdown-item" href="https://amrepinspect.com/local-talent-solutions"
+                                role="button" data-bs-toggle="dropdown">
+                                Local Resource Solutions
+                            </a>
+                        </li>
+                        
+                    </ul>
+                </li>
+                <!--<li class="nav-item seperator">|</li>-->
+                <li class="nav-item dropdown">
+                    <a class="nav-link" href="javascript:void(0)" id="industryDropdown" data-bs-toggle="dropdown">
+                        Industries
+                        <span style="padding-left:5px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd"
+                                    d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />
+                            </svg>
+                        </span>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="industryDropdown">
+                        <li>
+                            <a class="dropdown-item" href="https://amrepinspect.com/automotive">Automotive</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="https://amrepinspect.com/aerospace">Aerospace</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="https://amrepinspect.com/electronics">Electronics</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="https://amrepinspect.com/medical">Medical & Health</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="https://amrepinspect.com/solar">Solar And
+                                Photovoltaics</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="https://amrepinspect.com/automation">Automation and
+                                Digital Transformation</a>
+                        </li>
+                    </ul>
+                </li>
+                <!--<li class="nav-item seperator">|</li>-->
+                <li class="nav-item dropdown">
+                    <a class="nav-link" href="javascript:void(0)" id="industryDropdown" data-bs-toggle="dropdown">
+                        Blog/News
+                        <span style="padding-left:5px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                fill="currentColor" class="bi bi-chevron-down" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd"
+                                    d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z" />
+                            </svg>
+                        </span>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="industryDropdown">
+                        <li>
+                            <a class="dropdown-item" href="https://amrepinspect.com/blog">Blog</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="https://amrepinspect.com/news">News</a>
+                        </li>
+                    </ul>
+                </li>
+
+            </ul>
+            <div class="social-btn">
+                <div class="social py-3">
+                    <ul>
+                        
+                        <li>
+                            <a href="https://www.facebook.com/amrepquality">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#fff"
+                                    class="bi bi-facebook" viewBox="0 0 16 16">
+                                    <path
+                                        d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z" />
+                                </svg>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://twitter.com/amrep">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#fff"
+                                    class="bi bi-twitter-x" viewBox="0 0 16 16">
+                                    <path
+                                        d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z" />
+                                </svg>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.linkedin.com/company/amrep-inspect/">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#fff"
+                                    class="bi bi-linkedin" viewBox="0 0 16 16">
+                                    <path
+                                        d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z" />
+                                </svg>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="nav-quote py-3">
+                    <a href="">Request Quote</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+    <main>
+            <section>
+        <div class="overlay">
+        </div>
+        <div class="blog-bg blog-head">
+        </div>
+        <div class="blogcontainer">
+            <div class="blogcontent mt-3 shadow card p-5 border-0 mb-5">
+                <h1 class="blogheading">
+Control Plan in Manufacturing: Types, Requirements, and Practical Example (2026)
+</h1>
+                <div class="bs-example mt-3">
+                    <nav style="--bs-breadcrumb-divider: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='currentColor'/%3E%3C/svg%3E&quot;);"
+                        aria-label="breadcrumb">
+                        <ol class="breadcrumb p-2 rounded">
+                            <li class="breadcrumb-item"><a href="">Home</a></li>
+                            <li class="breadcrumb-item"><a href="">Blog</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">
+Control Plan in Manufacturing: Types, Requirements, and Practical Example (2026)
+                            </li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="d-flex justify-content-between mt-3 py-2 align-items-center">
+                    <div>
+                        <p class="date mb-0">By AMREP | Posted on September 7, 2026</p>
+                    </div>
+                    <div class="social text-end">
+                        <a href="https://twitter.com/amrep" class="px-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#000"
+                                class="bi bi-twitter-x" viewBox="0 0 16 16">
+                                <path
+                                    d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z" />
+                            </svg>
+                        </a>
+                        <a href="https://www.facebook.com/amrepquality" class="px-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#000"
+                                class="bi bi-facebook" viewBox="0 0 16 16">
+                                <path
+                                    d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z" />
+                            </svg>
+                        </a>
+                        <a href="https://www.linkedin.com/company/amrep-inspect/" class="px-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#000"
+                                class="bi bi-linkedin" viewBox="0 0 16 16">
+                                <path
+                                    d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+
+
+<p>A control plan is a structured document that specifies how each manufacturing process step is monitored and controlled to ensure consistent product quality. It defines what is measured, the specification, the measurement method, the frequency, and the action to take when the process goes out of control. There are three types, Prototype, Pre-Launch, and Production, each corresponding to a phase in the product lifecycle. Under IATF 16949 Clause 8.5.1.1, a production control plan is mandatory and must always reflect the current process. Section 8.5.1.1 consistently ranks in the top four sources of IATF audit findings, according to the International Automotive Oversight Bureau (IAOB).</p>
+<p>This guide covers what a control plan is, the three types, every column explained, IATF 16949 and AIAG requirements, and a practical worked example.</p>
+
+<h2 class="py-2 fs-3">Table of Contents</h2>
+<div class="seperator mb-3"></div>
+<ul>
+<li><a href="#what-is-a-control-plan">What Is a Control Plan?</a></li>
+<li><a href="#why-control-plans-matter">Why Control Plans Matter</a></li>
+<li><a href="#the-three-types-of-control-plans">The Three Types of Control Plans</a></li>
+<li><a href="#iatf-16949-and-aiag-requirements">IATF 16949 and AIAG Requirements (2024 Update)</a></li>
+<li><a href="#control-plan-columns-explained">Control Plan Columns Explained</a></li>
+<li><a href="#special-characteristics-understanding-the-symbols">Special Characteristics: Understanding the Symbols</a></li>
+<li><a href="#the-pfmea-and-control-plan-link">The PFMEA and Control Plan Link</a></li>
+<li><a href="#control-plan-vs-process-flow-diagram-vs-work-instruction">Control Plan vs. Process Flow Diagram vs. Work Instruction</a></li>
+<li><a href="#practical-example-machined-aluminum-bracket">Practical Example: Machined Aluminum Bracket</a></li>
+<li><a href="#when-to-review-and-update-your-control-plan">When to Review and Update Your Control Plan</a></li>
+<li><a href="#common-mistakes-and-how-to-avoid-them">Common Mistakes and How to Avoid Them</a></li>
+<li><a href="#control-plan-development-checklist">Control Plan Development Checklist</a></li>
+<li><a href="#work-with-amrep-to-build-audit-ready-control-plans">Work with AMREP to Build Audit-Ready Control Plans</a></li>
+<li><a href="#frequently-asked-questions">Frequently Asked Questions</a></li>
+</ul>
+<img src="https://amrepinspect.com/images/new/control-plan-in-manufacturing-requirements-example.webp" alt="Control Plan in Manufacturing: Types, Requirements, and Practical Example (2026)" width="500" height="500" class="img-fluid mb-5">
+
+<h2 class="py-2 fs-3" id="what-is-a-control-plan">What Is a Control Plan?</h2>
+<div class="seperator mb-3"></div>
+<p>A control plan is a structured document that describes the systems and processes required to control product quality during manufacturing. Under IATF 16949:2016, it is the documented description of the systems and processes required for controlling the manufacturing of products. It is not a work instruction or inspection checklist, though it connects directly to both. It is the master reference that governs in-process control for every production run.</p>
+<p>A well-built control plan answers four questions at every process step:</p>
+<ul><li>What characteristic are we controlling?</li><li>How are we measuring it?</li><li>How often are we checking it?</li><li>What do we do when it falls out of specification?</li></ul>
+
+<h2 class="py-2 fs-3" id="why-control-plans-matter">Why Control Plans Matter</h2>
+<div class="seperator mb-3"></div>
+<p><strong>Regulatory and customer requirement.</strong> Control plans are a mandatory PPAP deliverable under the AIAG Production Part Approval Process, required by IATF 16949 Clause 8.5.1.1, and specified in most OEM customer-specific requirements. A missing or outdated control plan is a PPAP rejection reason and an IATF audit non-conformance.</p>
+<p><strong>Operational continuity.</strong> When operators change or machines are replaced, the control plan ensures the process runs the same way every time. It is the institutional memory of how a process is supposed to work.</p>
+<p><strong>Cost of non-detection.</strong> A process without effective controls produces defects that travel downstream. The cost of a defect caught on the production floor is a fraction of the cost caught at the customer.</p>
+<p><strong>Audit performance.</strong> Most IATF 16949 Section 8.5.1.1 findings trace to one gap: the control plan does not match the current production process or current PFMEA revision.</p>
+
+<h2 class="py-2 fs-3" id="the-three-types-of-control-plans">The Three Types of Control Plans</h2>
+<div class="seperator mb-3"></div>
+<p>Control plan development is a key APQP output, with three types corresponding to product lifecycle phases. All three follow the same column structure, only scope, timing, and detail level change.</p>
+<h3>Prototype Control Plan</h3><p>Covers early builds during product design and development. Its purpose is design validation before committing to production tooling. Controls are broader and less prescriptive since the process is not yet defined. A prototype control plan is required only if the customer mandates it, confirm with your customer's APQP requirements.</p>
+<h3>Pre-Launch Control Plan</h3><p>Governs pilot runs and the PPAP build event. Controls may be stricter because the process is still being stabilized. This is the version submitted in the PPAP package and may include additional supervision methods such as the GP-12 procedure. The 2024 AIAG Control Plan manual formalized a Safe Launch phase as a distinct element within this stage.</p>
+<h3>Production Control Plan</h3><p>The live document governing full-volume serial manufacturing. Contains a comprehensive listing of product and process special characteristics, controls, and measurement methods. This is what auditors review during IATF 16949 Clause 8.5.1.1 audits and must always reflect the current process.</p>
+<div class="table-responsive my-4"><table class="table table-bordered"><thead><tr><th></th><th>Prototype</th><th>Pre-Launch</th><th>Production</th></tr></thead><tbody>
+<tr><td><strong>Phase</strong></td><td>Design development</td><td>Pilot run / PPAP build</td><td>Serial manufacturing</td></tr>
+<tr><td><strong>Focus</strong></td><td>Design validation</td><td>Process stabilization</td><td>Ongoing process control</td></tr>
+<tr><td><strong>Controls</strong></td><td>Broad, exploratory</td><td>Tighter; GP-12 / safe launch</td><td>Standard; reduced where stable</td></tr>
+<tr><td><strong>PPAP requirement</strong></td><td>Customer-dependent</td><td>Required deliverable</td><td>Must be current at all times</td></tr>
+<tr><td><strong>Auditor reference</strong></td><td>Rarely reviewed</td><td>Reviewed at PPAP</td><td>Primary audit document</td></tr>
+</tbody></table></div>
+
+<h2 class="py-2 fs-3" id="iatf-16949-and-aiag-requirements">IATF 16949 and AIAG Requirements (2024 Update)</h2><div class="seperator mb-3"></div>
+<h3>IATF 16949 Clause 8.5.1.1</h3><p>The control plan must:</p><ul><li>List controls used for manufacturing process control</li><li>Include monitoring methods for special characteristics (customer and organization-defined)</li><li>Initiate the specified reaction plan when the process becomes unstable or not statistically capable</li><li>Be reviewed and updated when any change occurs affecting product quality</li></ul>
+<h3>AIAG Control Plan Manual, 1st Edition (March 2024)</h3><p>AIAG released a standalone Control Plan Reference Manual effective March 1, 2024. GM and Stellantis required implementation by September 1, 2024; Ford by December 31, 2024. Key changes include alignment of terminology with IATF 16949:2016 and the AIAG/VDA FMEA Handbook, formalization of the Safe Launch phase, and strengthened PFMEA linkage requirements.</p>
+<h3>Customer-Specific Requirements</h3><p>Most OEMs add to control plan obligations through CSRs, including customer approval before shipment for changes to submitted characteristics, specific safe launch sample sizes, required special characteristic symbols, and portal submission requirements (e.g., GM's SCMS system).</p>
+
+<h2 class="py-2 fs-3" id="control-plan-columns-explained">Control Plan Columns Explained</h2><div class="seperator mb-3"></div>
+<h3>Header Section</h3><div class="table-responsive my-4"><table class="table table-bordered"><thead><tr><th>Field</th><th>What It Requires</th></tr></thead><tbody>
+<tr><td>Control Plan Number</td><td>Document number per your control system, used for revision tracking</td></tr><tr><td>Part Number / Change Level</td><td>Drawing or part number including the latest engineering change level</td></tr><tr><td>Part Name / Description</td><td>Part name per drawing; family name if covering multiple part numbers</td></tr><tr><td>Supplier / Plant</td><td>Manufacturing site name and location</td></tr><tr><td>Supplier Code</td><td>Customer-assigned supplier code</td></tr><tr><td>Key Contact / Phone</td><td>Primary contact responsible for the control plan</td></tr><tr><td>Date (Original / Revised)</td><td>Original issue date; revised date must update with every change</td></tr><tr><td>Approval Signatures</td><td>Customer engineering, customer quality, and supplier approvals as required</td></tr>
+</tbody></table></div>
+<h3>Process Step Columns</h3><ul><li><strong>Part / Process Number:</strong> Sequential step number matching the Process Flow Diagram.</li><li><strong>Process Name / Operation Description:</strong> Operation name identical to the Process Flow Diagram (e.g., “CNC Turning,” “Heat Treatment”).</li><li><strong>Machine, Device, Jig, Tools:</strong> Specific equipment or fixture ID. Generic entries like “CNC machine” are not acceptable.</li></ul>
+<h3>Characteristic Columns</h3><ul><li><strong>Number:</strong> Sequential characteristic reference number. Must align with the PFMEA.</li><li><strong>Product Characteristic:</strong> The product feature being controlled (diameter, surface finish, hardness). Derived from the drawing.</li><li><strong>Process Characteristic:</strong> The process parameter being controlled (temperature, pressure, feed rate). These are controlled inputs that drive product outputs.</li><li><strong>Special Characteristic Classification:</strong> The symbol designating a characteristic as special.</li></ul>
+<h3>Specification and Method Columns</h3><ul><li><strong>Specification / Tolerance:</strong> Traceable to a specific drawing or document revision.</li><li><strong>Evaluation / Measurement Technique:</strong> Specific instrument with type and resolution (not just “caliper”). Must correspond to a gauge that has completed MSA.</li><li><strong>Sample Size:</strong> Statistically justified for SPC applications. Customer CSRs may mandate minimum sizes for special characteristics.</li><li><strong>Sample Frequency:</strong> Based on process risk and capability data. If capability data is not yet established, run a <a href="https://amrepinspect.com/blog/process-capability-study">Process Capability Study</a> before setting frequencies for special characteristics.</li><li><strong>Control Method:</strong> SPC, go/no-go, poka-yoke, visual inspection, etc. Must match the detection method in the corresponding PFMEA row.</li><li><strong>Reaction Plan:</strong> Specific action when the process goes out of control. Must specify containment scope, segregation, and re-verification steps, not just “notify supervisor.”</li></ul>
+
+<h2 class="py-2 fs-3" id="special-characteristics-understanding-the-symbols">Special Characteristics: Understanding the Symbols</h2><div class="seperator mb-3"></div>
+<p>Special characteristics are product or process parameters where variation beyond specification limits could compromise safety, regulatory compliance, or fit/function. They require elevated controls: mandatory SPC, more frequent measurement, and customer notification for any change.</p>
+<div class="table-responsive my-4"><table class="table table-bordered"><thead><tr><th>Symbol</th><th>Classification</th><th>Typical Trigger</th><th>Control Requirement</th></tr></thead><tbody>
+<tr><td>◆ (Diamond)</td><td>Safety / Critical (SC)</td><td>Failure could cause injury or regulatory non-compliance</td><td>SPC mandatory; customer approval required for any change</td></tr>
+<tr><td>★ (Star)</td><td>Significant Characteristic (Ford)</td><td>Significant impact on fit, function, or regulation</td><td>Documented controls; SPC strongly recommended</td></tr>
+<tr><td>YC</td><td>Critical Characteristic (GM)</td><td>Safety or regulatory impact</td><td>SPC required; PFMEA RPN thresholds apply</td></tr>
+<tr><td>YS</td><td>Significant Characteristic (GM)</td><td>Fit, function, or regulatory impact</td><td>Documented controls; MSA required</td></tr>
+<tr><td>▽ (Inverted Triangle)</td><td>Key Characteristic (Boeing/AS9100)</td><td>Product performance, interchangeability, or safety</td><td>SPC or 100% inspection</td></tr>
+</tbody></table></div>
+<p>The same special characteristic must appear in both the PFMEA and the control plan with the same symbol. Misalignment between the two documents is one of the most common PPAP rejection causes.</p>
+
+<h2 class="py-2 fs-3" id="the-pfmea-and-control-plan-link">The PFMEA and Control Plan Link</h2><div class="seperator mb-3"></div>
+<p>The control plan is a direct output of the Process FMEA (PFMEA). If you are new to FMEA, read our <a href="https://amrepinspect.com/blog/failure-mode-and-effects-analysis">FMEA Quick Guide</a> before building your control plan.</p>
+<p>The PFMEA identifies potential failure modes and defines detection controls at each process step. The control plan specifies how those detection controls are implemented, the specific instrument, sample size, frequency, and reaction plan. The detection control in the PFMEA must match the control method in the control plan for every characteristic.</p>
+<p>One of the top PPAP rejection reasons in automotive supplier quality is “Control Plan does not reflect current PFMEA detection controls,” caused when the control plan is built from an older PFMEA revision.</p>
+<h3>The Three-Document Triad</h3><ul><li>Process Flow Diagram (PFD) defines the sequence of process steps</li><li>PFMEA identifies risks and defines detection controls at each step</li><li>Control Plan specifies how those controls are implemented in production</li></ul><p>Operation numbers, process step names, and characteristic numbers must be consistent across all three. An auditor will lay all three side by side and trace each entry.</p>
+
+<h2 class="py-2 fs-3" id="control-plan-vs-process-flow-diagram-vs-work-instruction">Control Plan vs. Process Flow Diagram vs. Work Instruction</h2><div class="seperator mb-3"></div>
+<div class="table-responsive my-4"><table class="table table-bordered"><thead><tr><th>Document</th><th>Purpose</th><th>Primary User</th><th>Detail Level</th></tr></thead><tbody>
+<tr><td>Process Flow Diagram</td><td>Sequence and flow of all operations</td><td>Quality engineer, auditor</td><td>Process-level; no measurement detail</td></tr>
+<tr><td>Control Plan</td><td>What is controlled, how, how often, and reaction when out of control</td><td>Quality engineer, auditor, operator</td><td>Characteristic-level; references tools and frequency</td></tr>
+<tr><td>Work Instruction</td><td>Step-by-step operator instructions</td><td>Operator</td><td>Task-level; photos and detailed steps</td></tr>
+</tbody></table></div><p>The control plan references the work instruction; it does not replace it. For products requiring formal quality gates, an <a href="https://amrepinspect.com/blog/inspection-test-plan-manufacturing">Inspection and Test Plan (ITP)</a> works alongside the control plan to define hold points and acceptance criteria at each stage.</p>
+
+<h2 class="py-2 fs-3" id="practical-example-machined-aluminum-bracket">Practical Example: Machined Aluminum Bracket</h2><div class="seperator mb-3"></div>
+<p><strong>Part:</strong> Aluminum Suspension Bracket | <strong>Part Number:</strong> AB-7721-R3 | <strong>Type:</strong> Production | <strong>Date:</strong> June 2026</p>
+<h3>Table A: Process and Measurement</h3><div class="table-responsive my-4"><table class="table table-bordered"><thead><tr><th>Char #</th><th>Op</th><th>Operation</th><th>Characteristic</th><th>Class</th><th>Specification</th><th>Instrument</th><th>Sample</th><th>Frequency</th></tr></thead><tbody>
+<tr><td>1</td><td>10</td><td>CNC Turning</td><td>Outer diameter</td><td>◆ SC</td><td>48.00 ± 0.05 mm</td><td>Mitutoyo micrometer 0.001 mm</td><td>3 parts</td><td>Every 25 parts</td></tr>
+<tr><td>2</td><td>10</td><td>CNC Turning</td><td>Surface finish (Ra)</td><td></td><td>Ra ≤ 1.6 µm</td><td>Profilometer TR-200</td><td>1 part</td><td>Every 50 parts</td></tr>
+<tr><td>3</td><td>10</td><td>CNC Turning</td><td>Spindle speed (process)</td><td></td><td>1,800 ± 50 RPM</td><td>Machine digital readout</td><td></td><td>Setup + each shift</td></tr>
+<tr><td>4</td><td>20</td><td>Drilling</td><td>Hole diameter</td><td>YC</td><td>12.00 +0.05/-0.00 mm</td><td>GO/NO-GO pin gauge</td><td>5 parts</td><td>Every 30 parts</td></tr>
+<tr><td>5</td><td>20</td><td>Drilling</td><td>Hole position (true position)</td><td>◆ SC</td><td>TP ∅0.15 mm (MMC)</td><td>CMM, Zeiss Contura</td><td>2 parts</td><td>Every 60 parts or setup</td></tr>
+<tr><td>6</td><td>20</td><td>Drilling</td><td>Coolant pressure (process)</td><td></td><td>45–55 PSI</td><td>Machine pressure gauge</td><td></td><td>Every 2 hours</td></tr>
+<tr><td>7</td><td>30</td><td>Final Inspection</td><td>Visual, surface defects</td><td></td><td>No cracks, burrs, or gouges</td><td>Visual per WI-031</td><td>100%</td><td>Every part</td></tr>
+<tr><td>8</td><td>30</td><td>Final Inspection</td><td>Threaded insert torque</td><td>◆ SC</td><td>22 ± 2 N·m</td><td>Calibrated dial torque wrench</td><td>3 parts</td><td>Batch start + every 50 parts</td></tr>
+</tbody></table></div>
+<h3>Table B: Control Method and Reaction Plan</h3><div class="table-responsive my-4"><table class="table table-bordered"><thead><tr><th>Char #</th><th>Control Method</th><th>Reaction Plan</th></tr></thead><tbody>
+<tr><td>1</td><td>X-bar/R SPC chart</td><td>Stop production; quarantine last 50 parts; notify QE; re-verify setup before restart</td></tr><tr><td>2</td><td>Visual + instrument check</td><td>Adjust feed rate; re-inspect previous 25 parts; log deviation</td></tr><tr><td>3</td><td>Operator check vs. setup sheet; record on traveler</td><td>Adjust to nominal; re-verify first part</td></tr><tr><td>4</td><td>GO/NO-GO attribute inspection</td><td>Reject affected parts; replace drill; 100% re-inspect prior 50 parts</td></tr><tr><td>5</td><td>CMM measurement vs. nominal</td><td>Stop drilling; contain all parts since last good sample; escalate to QE</td></tr><tr><td>6</td><td>Operator log check</td><td>Adjust coolant supply; if unresolvable, stop and notify maintenance</td></tr><tr><td>7</td><td>100% visual inspection</td><td>Reject and quarantine; log on daily rejection record</td></tr><tr><td>8</td><td>Torque measurement; record on traveler</td><td>Stop assembly; 100% re-inspect all inserts since last conforming sample; notify QE</td></tr>
+</tbody></table></div>
+<p><strong>Key points from this example:</strong></p><ul><li>Char #1 (outer diameter) is Safety Critical, SPC, specific instrument, detailed reaction plan with quarantine scope and QE notification.</li><li>Char #4 (hole diameter) uses GO/NO-GO gauging, correct for a binary pass/fail attribute characteristic.</li><li>Char #6 (coolant pressure) is a process characteristic, monitoring inputs is as important as monitoring outputs.</li><li>Char #7 (visual inspection) references work instruction WI-031 rather than embedding criteria in the control plan, the correct approach.</li></ul>
+
+<h2 class="py-2 fs-3" id="when-to-review-and-update-your-control-plan">When to Review and Update Your Control Plan</h2><div class="seperator mb-3"></div>
+<p>The control plan must be reviewed and updated when any change occurs affecting the product, manufacturing process, measurement system, supply sources, or risk analysis (PFMEA). Specific triggers include:</p><ul><li>Engineering changes (drawing revisions, tolerance changes)</li><li>Process changes (new tooling, new machine, revised parameters)</li><li>Measurement system changes (new gauge, revised calibration frequency)</li><li>Supplier changes (raw material or sub-tier supplier)</li><li>Customer complaints related to a controlled characteristic</li><li>PFMEA revision affecting detection controls</li><li>Internal or external audit findings requiring corrective action</li></ul><p>If required by the customer, approval must be obtained after review or revision. For characteristics on a submitted PPAP, changes without customer notification are a major non-conformance under most OEM CSRs.</p>
+
+<h2 class="py-2 fs-3" id="common-mistakes-and-how-to-avoid-them">Common Mistakes and How to Avoid Them</h2><div class="seperator mb-3"></div>
+<ul><li><strong>Control plan does not match the PFMEA.</strong> The leading cause of PPAP rejections and IATF findings. Cross-reference both documents every time either is revised.</li><li><strong>Reaction plans are too vague.</strong> “Notify supervisor” is not a reaction plan. Specify containment scope, segregation, and re-verification steps. When a reaction plan is triggered, the outcome typically requires a formal <a href="https://amrepinspect.com/blog/non-conformance-report-process-examples-corrective-actions">Non-Conformance Report (NCR)</a> to document the deviation and drive corrective action.</li><li><strong>Sample sizes are not justified.</strong> Entering “5 parts per shift” without statistical justification is inadequate for special characteristics. Base sample sizes on process capability and detection sensitivity required.</li><li><strong>Process characteristics missing.</strong> A control plan that monitors only product outputs cannot prevent defects, it can only detect them after the fact. Include process inputs (temperature, pressure, feed rates).</li><li><strong>Outdated control plans in production.</strong> The most common finding in AMREP's supplier audits. Implement document control that ensures the production floor always has the current revision.</li><li><strong>Missing or incorrect special characteristic symbols.</strong> A symbol present in the PFMEA must carry through to the control plan. Dropping it, even unintentionally, is a PPAP rejection reason.</li><li><strong>Generic equipment entries.</strong> “Caliper” or “CMM” are not sufficient. Specify the instrument, resolution, and calibration status.</li></ul>
+
+<h2 class="py-2 fs-3" id="control-plan-development-checklist">Control Plan Development Checklist</h2><div class="seperator mb-3"></div>
+<h3>Phase 1: Preparation</h3><ul><li>Process Flow Diagram completed and approved</li><li>PFMEA completed, reviewed, and linked to this control plan revision</li><li>Customer-specific requirements reviewed for control plan obligations</li><li>Special characteristic symbols confirmed per customer requirements</li><li>MSA completed for all measurement methods listed</li></ul>
+<h3>Phase 2: Header Completion</h3><ul><li>Control plan type identified (Prototype / Pre-Launch / Production)</li><li>Part number and latest drawing revision confirmed</li><li>Key contact assigned; all approval signatures obtained</li></ul>
+<h3>Phase 3: Process Step Entries</h3><ul><li>Operation numbers and names match Process Flow Diagram exactly</li><li>Specific machine/tool/fixture identified for each operation</li><li>Both product and process characteristics listed per operation</li><li>All special characteristics from PFMEA carried over with correct symbols</li></ul>
+<h3>Phase 4: Specification and Method Entries</h3><ul><li>All specifications traceable to current drawing or document revision</li><li>Measurement method specifies instrument type and resolution</li><li>Sample sizes statistically justified or per customer CSR</li><li>Control methods match PFMEA detection controls</li></ul>
+<h3>Phase 5: Reaction Plans</h3><ul><li>Every characteristic has a specific reaction plan</li><li>Reaction plans specify containment scope and re-verification step before restart</li><li>Operators trained on reaction plan execution</li></ul>
+<h3>Phase 6: Review and Approval</h3><ul><li>Cross-referenced against current PFMEA, all detection controls aligned</li><li>Cross-referenced against current Process Flow Diagram, all operations aligned</li><li>Customer approval obtained if required by CSR</li><li>Production floor copy updated to current revision</li></ul>
+
+<h2 class="py-2 fs-3" id="work-with-amrep-to-build-audit-ready-control-plans">Work with AMREP to Build Audit-Ready Control Plans</h2><div class="seperator mb-3"></div>
+<p>Control plan non-conformances are preventable. They occur when documents are built in isolation, not updated when processes change, or not aligned with the PFMEA and Process Flow Diagram. AMREP Inspect's <a href="https://amrepinspect.com/manufacturing-quality-engineering">manufacturing quality engineering services</a> work with manufacturers across Mexico, Vietnam, Malaysia, Thailand, China, and the Philippines to develop, review, and align APQP core tool documentation to IATF 16949 and customer-specific requirements.</p><p><a href="https://amrepinspect.com/contact-us">Contact AMREP Inspect</a> to discuss supplier quality engineering support.</p>
+
+<h2 class="py-2 fs-3" id="frequently-asked-questions">Frequently Asked Questions</h2><div class="seperator mb-3"></div>
+<h3>Who is responsible for creating and maintaining the control plan?</h3><p>The supplier quality engineer or quality manager typically owns it, but it should be developed by a cross-functional team including manufacturing, engineering, and quality. IATF 16949 does not assign a single role. What matters is that the responsible person has authority to update it when changes occur and that operators are trained on its contents.</p>
+<h3>Can one control plan cover multiple part numbers?</h3><p>Yes. A family control plan is acceptable when parts share the same process steps, machines, and controls, differing only in dimensions or materials. Each part number must be listed in the header, and tolerances that differ between parts must be called out separately. Auditors will verify that family plans reflect genuine process similarity, not administrative convenience.</p>
+<h3>How detailed does a reaction plan need to be for a non-special characteristic?</h3><p>Specific enough for an operator to act without escalating. At minimum, it should state what to do immediately (flag, segregate, hold parts), how many parts to contain (back to the last known good sample), and what must happen before production resumes. “Rework” or “scrap” alone is not a reaction plan.</p>
+<h3>What is the difference between a control plan and a control chart?</h3><p>A control plan defines what to monitor, how, how often, and what to do when results fall out of limits. A control chart (SPC chart) is one control method listed within the plan, used to track a specific characteristic over time. The control plan tells you to use it; the control chart is where you use it.</p>
+<h3>Does a control plan need to be re-submitted to the customer after every update?</h3><p>Not always. Changes affecting a characteristic on a submitted PPAP almost always require customer approval before implementation. Minor administrative updates, such as correcting a contact name or updating a machine number with no process impact, typically do not. Confirm the threshold with your customer's CSR.</p>
+<h3>What happens to the control plan during a safe launch period?</h3><p>Controls are tighter than standard production: higher sample sizes, more frequent measurement, and sometimes 100% inspection on critical characteristics. Once the process demonstrates stability over the customer-defined period, the control plan is updated to reflect reduced sampling frequencies. Safe launch exit criteria should be documented in the control plan itself.</p>
+<h3>Can a control plan be used as a training document for operators?</h3><p>As a reference, yes. But it should not replace a work instruction. The control plan specifies what to measure and what to do when something is wrong. It does not contain step-by-step instructions for operating. Both documents should be accessible at the workstation.</p>
+<h3>What is the difference between a process control plan and a product control plan?</h3><p>These are not separate document types under IATF 16949. A single control plan covers both product characteristics (dimensions, attributes) and process characteristics (temperatures, pressures, speeds). Product characteristics come from the drawing; process characteristics come from the PFMEA. Both must be present for the plan to be effective.</p>
+<p><em>Information based on IATF 16949:2016, the AIAG Control Plan Reference Manual 1st Edition (March 2024), and AMREP's supplier quality engineering experience. Always consult applicable standards and your customer's CSRs. Content current as of June 2026.</em></p>
+            <aside style="margin-top: 6rem">
+                <div class="text-center mb-5 mt-5 side-banner">
+                    <img src="https://amrepinspect.com/images/new/side-contact-banner.webp" alt="Contact banner Blog page"
+                        class="img-fluid" loading="lazy" width="300" height="500">
+                    <div class="contact-banner">
+                        <a href="">Contact Us</a>
+                    </div>
+                </div>
+                <div class="my-5 aside">
+                    <h3 class="fs-5 fw-bold py-2 text-center">Tags</h3>
+                    <div class="divider position-relative"></div>
+                    <div class="tag mt-4">
+                        <a href="https://amrepinspect.com/blog/search-result/Control%20Plan" id="keyword">Control Plan</a>
+                        <a href="https://amrepinspect.com/blog/search-result/IATF%2016949" id="keyword">IATF 16949</a>
+                        <a href="https://amrepinspect.com/blog/search-result/AIAG" id="keyword">AIAG</a>
+                        <a href="https://amrepinspect.com/blog/search-result/PFMEA" id="keyword">PFMEA</a>
+                        <a href="https://amrepinspect.com/blog/search-result/PPAP" id="keyword">PPAP</a>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </section>
+    <section style="padding:5rem">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <h2 class="py-2 fs-3">Don't Forget to Share This Post</h2>
+                    <div class="social-share text-center mt-4">
+                        <a href="https://twitter.com/share?text=Control%20Plan%20in%20Manufacturing%3A%20Types%2C%20Requirements%2C%20and%20Practical%20Example%20%282026%29%20&amp;url=https://amrepinspect.com/blog/control-plan-in-manufacturing-requirements-example%20via%20@amrep" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;" class="px-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="35" fill="#fff"
+                                style="margin-left: 5px;" class="bi bi-twitter-x" viewBox="0 0 16 16">
+                                <path
+                                    d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z" />
+                            </svg>
+                        </a>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=https://amrepinspect.com/blog/control-plan-in-manufacturing-requirements-example"
+                            onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;"
+                            rel="nofollow" target="_blank" class="px-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="#fff"
+                                viewBox="0 0 320 512">
+                                <path
+                                    d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z" />
+                            </svg>
+                        </a>
+                        <a href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https://amrepinspect.com/blog/control-plan-in-manufacturing-requirements-example"
+                            onclick="window.open(this.href, 'linkedin-share', 'width=490,height=530');return false;"
+                            rel="nofollow" target="_blank" class="px-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="#fff"
+                                viewBox="0 0 448 512">
+                                <path
+                                    d="M100.28 448H7.4V148.9h92.88zM53.79 108.1C24.09 108.1 0 83.5 0 53.8a53.79 53.79 0 0 1 107.58 0c0 29.7-24.1 54.3-53.79 54.3zM447.9 448h-92.68V302.4c0-34.7-.7-79.2-48.29-79.2-48.29 0-55.69 37.7-55.69 76.7V448h-92.78V148.9h89.08v40.8h1.3c12.4-23.5 42.69-48.3 87.88-48.3 94 0 111.28 61.9 111.28 142.3V448z" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="bg-home contact" style="padding:5rem">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4" style="margin-left:auto;margin-right:auto">
+                    <div class="banner-text2">
+                        <p class="text-light">
+                            Contact
+                        </p>
+                        <h2 class="mt-2 text-light">
+                            Want More From Your Suppliers?
+                        </h2>
+                    </div>
+                    <p class="text-light">
+                        Contact Us To See What We Can Do
+                    </p>
+                    <div class="email mt-4 mb-3 d-flex align-items-center">
+                        <div class="icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#FFD550"
+                                class="bi bi-envelope" viewBox="0 0 16 16">
+                                <path
+                                    d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z" />
+                            </svg>
+                        </div>
+                        <div class="text ps-2 text-light">
+                            <p class="mb-0 top-txt" style="line-height: 20px !important;">
+                                Email
+                            </p>
+                            <p class="mb-0 top-txt" style="line-height: 20px !important;">
+                                <a href="mailto:supplyquality@amrepinspect.com" class="text-white"
+                                    style="text-decoration: none">supplyquality@amrepinspect.com</a>
+                            </p>
+                            <p class="mb-0 top-txt" style="line-height: 20px !important;">
+                                <a href="mailto:supplycontrol@amrepinspect.com" class="text-white"
+                                    style="text-decoration: none">supplycontrol@amrepinspect.com</a>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="phone d-flex align-items-center">
+                        <div class="icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#FFD550"
+                                class="bi bi-telephone" viewBox="0 0 16 16">
+                                <path
+                                    d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.568 17.568 0 0 0 4.168 6.608 17.569 17.569 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.745 1.745 0 0 1-1.657-.459L5.482 8.062a1.745 1.745 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58L3.654 1.328zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z" />
+                            </svg>
+                        </div>
+                        <div class="text ps-2 text-light">
+                            <p class="mb-0 top-txt" style="line-height: 18px !important;">
+                                Call Us
+                            </p>
+                            <p class="mb-0 top-txt" style="line-height: 18px !important;">
+                                <a href="tel:8583290211" class="text-white" style="text-decoration: none">+1 858 329
+                                    0211</a>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="time d-flex align-items-center mt-3">
+                        <div class="icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#FFD550"
+                                class="bi bi-clock" viewBox="0 0 16 16">
+                                <path
+                                    d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z" />
+                                <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z" />
+                            </svg>
+                        </div>
+                        <div class="text ps-2 text-light">
+                            <p class="mb-0 top-txt" style="line-height: 18px !important;">
+                                Mon - Sat 9.00 - 18.00
+                            </p>
+                            <p class="mb-0 top-txt" style="line-height: 18px !important;">
+                                Sunday Closed
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <form action="post" class="mt-3">
+                        <div>
+                            <input type="text" name="name" id="name" placeholder="Your Name*">
+                            <input type="email" name="email" id="email" placeholder="Email here*">
+                        </div>
+                        <div>
+                            <input type="text" name="phone" id="phone" placeholder="Phone Number*">
+                            <input type="text" name="city" id="city" placeholder="City*">
+                        </div>
+                        <div>
+                            <textarea name="message" id="message" cols="50" rows="5" placeholder="Your Message"></textarea>
+                        </div>
+                        <a class="form-btn" href="https://amrepinspect.com/contact-us">
+                            <span class="btn-description">Submit Message</span>
+                        </a>
+                    </form>
+                </div>
+            </div>
+            <div class="row my-5">
+                <div class="col-md-12 text-center my-3">
+                    <img src="https://amrepinspect.com/images/new/get-in-touch.webp" alt="Get In Touch" loading="lazy"
+                        class="img-fluid" width="1100" height="235">
+                </div>
+            </div>
+        </div>
+    </section>
+    <section style="padding: 5rem 0 5rem 0">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 p-5">
+                    <div class="banner-text3">
+                        <p>
+                            Blog
+                        </p>
+                        <h2 class="mt-2">
+                            Related Blog
+                        </h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row justify-content-center blog-row">
+                <div class="col-lg-9">
+                    <div class="d-flex blog">
+                        <div class="d-flex blog-image" style="border-right:1px solid silver">
+                            <div class="img-container">
+                                <img src="https://amrepinspect.com/images/new/how-to-qualify-new-suppliers-in-malaysia.webp"
+                                    alt="This Image  is about  How to Qualify New Suppliers in Malaysia" loading="lazy"
+                                    width="486" height="375">
+                                <div class="button">
+                                    <a href="https://amrepinspect.com/blog/how-to-qualify-new-suppliers-in-malaysia">Find Out
+                                        More</a>
+                                </div>
+                            </div>
+                            <p class="mble-date mb-0 mt-3 text-end d-none date-color">
+                                12 - May 2025
+                            </p>
+                            <div class="d-flex align-items-center flex-column px-4 desk-date">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="#FFD550"
+                                    class="bi bi-calendar-event" viewBox="0 0 16 16">
+                                    <path
+                                        d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z" />
+                                    <path
+                                        d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z" />
+                                </svg>
+                                <p class="fs-4 fw-bold mb-0 mt-3">
+                                    12
+                                </p>
+                                <p class="mb-0">
+                                    May
+                                </p>
+                                <p class="mb-0">
+                                    2025
+                                </p>
+                            </div>
+                        </div>
+                        <div class="px-4 blog-content">
+                            <h3 class="blog-heading fs-5">
+                                <a href="https://amrepinspect.com/blog/how-to-qualify-new-suppliers-in-malaysia">Guide to
+                                    Qualifying New Suppliers in Malaysia for Manufacturing Success</a>
+                            </h3>
+                            <p>
+                                Malaysia is a premier manufacturing hub in Southeast Asia. According to the Malaysian
+                                Investment Development Authority (MIDA), “Malaysia, with its extensive trade....
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-lg-9">
+                    <div class="d-flex blog">
+                        <div class="d-flex blog-image" style="border-right:1px solid silver">
+                            <div class="img-container">
+                                <img src="https://amrepinspect.com/images/new/total-quality-management-in-healthcare.webp"
+                                    alt="This Image  is about Total Quality Management in Healthcare" loading="lazy"
+                                    width="486" height="375">
+                                <div class="button">
+                                    <a href="https://amrepinspect.com/blog/total-quality-management-in-healthcare">Find Out
+                                        More</a>
+                                </div>
+                            </div>
+                            <p class="mble-date mb-0 mt-3 text-end d-none date-color">
+                                22 - April 2025
+                            </p>
+                            <div class="d-flex align-items-center flex-column px-4 desk-date">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="#FFD550"
+                                    class="bi bi-calendar-event" viewBox="0 0 16 16">
+                                    <path
+                                        d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z" />
+                                    <path
+                                        d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z" />
+                                </svg>
+                                <p class="fs-4 fw-bold mb-0 mt-3">
+                                    22
+                                </p>
+                                <p class="mb-0">
+                                    April
+                                </p>
+                                <p class="mb-0">
+                                    2025
+                                </p>
+                            </div>
+                        </div>
+                        <div class="px-4 blog-content">
+                            <h3 class="blog-heading fs-5">
+                                <a href="https://amrepinspect.com/blog/total-quality-management-in-healthcare">Total Quality
+                                    Management in Healthcare: Elevating Patient Care and Operational Efficiency</a>
+                            </h3>
+                            <p>
+                                Healthcare is rapidly evolving, ensuring consistent and high-quality patient care. Total
+                                Quality Management (TQM) in healthcare is more than just a buzzword—it is a powerful....
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-9">
+                    <div class="d-flex blog">
+                        <div class="d-flex blog-image" style="border-right:1px solid silver">
+                            <div class="img-container">
+                                <img src="https://amrepinspect.com/images/new/principles-of-total-quality-management-tqm.webp"
+                                    alt="This Image  is about Principles of Total Quality Management" loading="lazy"
+                                    width="486" height="375">
+                                <div class="button">
+                                    <a href="https://amrepinspect.com/blog/principles-of-total-quality-management-tqm">Find Out
+                                        More</a>
+                                </div>
+                            </div>
+                            <p class="mble-date mb-0 mt-3 text-end d-none date-color">
+                                16 - April 2025
+                            </p>
+                            <div class="d-flex align-items-center flex-column px-4 desk-date">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" fill="#FFD550"
+                                    class="bi bi-calendar-event" viewBox="0 0 16 16">
+                                    <path
+                                        d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z" />
+                                    <path
+                                        d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z" />
+                                </svg>
+                                <p class="fs-4 fw-bold mb-0 mt-3">
+                                    16
+                                </p>
+                                <p class="mb-0">
+                                    April
+                                </p>
+                                <p class="mb-0">
+                                    2025
+                                </p>
+                            </div>
+                        </div>
+                        <div class="px-4 blog-content">
+                            <h3 class="blog-heading fs-5">
+                                <a href="https://amrepinspect.com/blog/principles-of-total-quality-management-tqm">Principles of
+                                    Total Quality Management (TQM)</a>
+                            </h3>
+                            <p>
+                                Total Quality Management (TQM) is a mindset that involves everyone in the organization
+                                working toward a common goal: achieving excellence through quality. From....
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-md-10 text-center mt-5">
+                    <div class="blog-button">
+                        <a class="blog-btn" href="https://amrepinspect.com/blog">
+                            <span class="name-description">More Blog</span>
+                            <div class="btn-icon">
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    </main>
+
+
+    <div>
+    <img src="https://amrepinspect.com/images/new/footer-banner.webp" alt="Footer Banner Image" loading="lazy" width="100%"
+        height="300">
+</div>
+<footer class="desk-footer">
+    <div class="foot-menu bg-foot">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-3 col-md-3 bg-home py-2 text-center">
+                    <a href="https://amrepinspect.com">
+                            <img loading="lazy" src="https://amrepinspect.com/images/web/logo-light.png" alt="AMREPInspect Supplier Management Solution" id="footer-logo" class="img-fluid" width="162" height="70" style="padding-top: 8px;">
+                    </a>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                    <h3 class="fs-6">Services</h3>
+                </div>
+                <div class="col-lg-2 col-md-2">
+                    <h3 class="fs-6">Quick Links</h3>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                    <h3 class="fs-6">Subscribe</h3>
+                </div>
+                <div class="col-lg-1"></div>
+            </div>
+        </div>
+    </div>
+    <div class="bg-home pt-3 pb-1">
+        <div class="container">
+            <div class="row">
+                
+                <div class="col-lg-3 col-md-3 py-2">
+                      <p class="text-light" style="text-align: left;">
+                       AMREP is your boots on the ground when you're working with your factories, suppliers, and contract manufacturers. We operate globally in key manufacturing
+                        locations and our specialities include QA/QC, QMS development, quality engineering, ISO and
+                        regulatory compliance, sourcing, manufacturing engineering, program management, supplier
+                        development, inspections, auditing, and resident engineering.
+                    </p>
+                    <div class="email mt-4 mb-4 d-flex align-items-center">
+                        <div class="icon mt-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#FFD550"
+                                class="bi bi-envelope" viewBox="0 0 16 16">
+                                <path
+                                    d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z" />
+                            </svg>
+                        </div>
+                        <div class="text ps-2 text-light">
+                            <p class="mb-0 top-txt"  style="line-height: 20px !important; font-size:22px !importent;">
+                                Email
+                            </p>
+                            <p class="mb-0 mt-2 top-txt"  style="line-height: 20px !important;">
+                                <a href="mailto:supplyquality@amrepinspect.com" class="text-light "style="font-size:18px;">supplyquality@amrepinspect.com</a>
+                            </p>
+                            <p class="mb-0 mt-2 top-txt"  style="line-height: 20px !important;">
+                                <a href="mailto:supplycontrol@amrepinspect.com" class="text-light" style="font-size:18px;">supplycontrol@amrepinspect.com</a>
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="col-lg-3 col-md-3">
+                    <div class="subscribe">
+                        <ul class="ps-0 footer-links" style="list-style-type: none">
+                            <li>
+                                <a href="https://amrepinspect.com/quality-management-solutions"
+                                    class="text-light">Quality Management Solutions</a>
+                            </li>
+                            <li class="pt-3">
+                                <a href="https://amrepinspect.com/training-and-consulting" class="text-light">Training
+                                    And Consulting</a>
+                            </li>
+                            <li class="pt-3">
+                                <a href="https://amrepinspect.com/production-management-solutions"
+                                    class="text-light">Production Management Solutions</a>
+                            </li>
+                            <li class="pt-3">
+                                <a href="https://amrepinspect.com/supplier-problems" class="text-light">Supplier
+                                    Problems Troubleshooting</a>
+                            </li>
+                            <li class="pt-3">
+                                <a href="https://amrepinspect.com/local-talent-solutions" class="text-light">Local
+                                    Resource Solutions</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-2">
+                    <div class="subscribe">
+                        <ul class="ps-0 footer-links" style="list-style-type: none">
+                            <li>
+                                <a href="https://amrepinspect.com/" class="text-light">Home</a>
+                            </li>
+                            <li class="pt-3">
+                                <a href="https://amrepinspect.com/blog" class="text-light">Blog</a>
+                            </li>
+                            <li class="pt-3">
+                                <a href="https://amrepinspect.com/locations" class="text-light">Locations</a>
+                            </li>
+                            <li class="pt-3">
+                                <a href="https://amrepinspect.com/faqs" class="text-light">FAQs</a>
+                            </li>
+                            <li class="pt-3">
+                                <a href="https://amrepinspect.com/testimonials" class="text-light">Testimonials</a>
+                            </li>
+                            <li class="pt-3">
+                                <a href="https://amrepinspect.com/contact-us" class="text-light">Contact Us</a>
+                            </li>
+                            <li class="pt-3">
+                             
+                                <a href="https://amrepinspect.com/careers" class="text-light">Careers</a>
+                            </li>
+                            
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4">
+                    <div class="subscribe">
+                        <input type="email" name="email" id="footer-email" placeholder="Email here*">
+                        <div class="mt-3 d-flex align-items-center">
+                            <a class="form-btn" href="https://amrepinspect.com/contact-us">
+                                <span class="btn-description">Contact Us</span>
+                            </a>
+                            <a href="https://www.linkedin.com/company/amrep-inspect/" class="ps-4 pe-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#fff"
+                                    class="bi bi-linkedin" viewBox="0 0 16 16">
+                                    <path
+                                        d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z" />
+                                </svg>
+                            </a>
+                            <a href="https://twitter.com/amrep" class="px-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#fff"
+                                    class="bi bi-twitter-x" viewBox="0 0 16 16">
+                                    <path
+                                        d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z" />
+                                </svg>
+                            </a>
+                            <a href="https://www.facebook.com/amrepquality" class="px-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#fff"
+                                    class="bi bi-facebook" viewBox="0 0 16 16">
+                                    <path
+                                        d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z" />
+                                </svg>
+                            </a>
+                        </div>
+                        <div class="email mt-4 mb-4 d-flex align-items-center">
+                            <div class="icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#FFD550" class="bi bi-geo-alt" viewBox="0 0 16 16">
+                                    <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A31.493 31.493 0 0 1 8 14.58a31.481 31.481 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10"/>
+                                    <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4m0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+                                  </svg>
+                            </div>
+                            <div class="text ps-2 text-light">
+                                <p class="mb-0 top-txt"  style="line-height: 20px !important;">
+                                   Address
+                                 </p>
+                                <p class="mb-0 top-txt"  style="line-height: 20px !important;">
+                                   <a href="https://maps.app.goo.gl/PZ4vVGowvhFzGwUs9" class="text-white" style="text-decoration: none"> 845 15th Street, Suite 103, San Diego, CA 92101</a>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="phone d-flex align-items-center">
+                            <div class="icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#FFD550"
+                                    class="bi bi-telephone" viewBox="0 0 16 16">
+                                    <path
+                                        d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.568 17.568 0 0 0 4.168 6.608 17.569 17.569 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.745 1.745 0 0 1-1.657-.459L5.482 8.062a1.745 1.745 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58L3.654 1.328zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z" />
+                                </svg>
+                            </div>
+                            <div class="text ps-2 text-light" >
+                                <p class="mb-0 top-txt"  style="line-height: 20px !important;">
+                                    Call Us
+                                </p>
+                                <p class="mb-0 top-txt"  style="line-height: 20px !important;">
+                                   <a href="tel:14159448189" class="text-light">+1 858 329 0211</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr style="color: grey">
+        <div class="text-light text-center  d-flex mt-4 justify-content-between">
+          <div>
+            <p class="ps-5 pb-0 linkfont pmargin" >© Copyright 2025 AMREP Supplier Management Services. All Rights Reserved.</p>
+          </div>
+          <div class="me-5">
+            <a href="https://amrepinspect.com/cookie-policy"  class="ps-4 text-warning   align-content-lg-start linkfont linkmarging">Cookie Policy</a>
+            <a href="https://amrepinspect.com/privacy-policy" class="ps-3 text-warning linkfont" >Privacy Policy</a>
+            <a href="https://amrepinspect.com/terms-and-conditions" class="ps-3 text-warning linkfont" >Terms and Conditions</a>
+            <a href="https://amrepinspect.com/disclaimer" class="ps-3 text-warning linkfont" >Disclaimer</a>
+          </div>
+       </div>
+    </div>
+</footer>
+<footer class="mble-footer d-none">
+    <div class="foot-menu bg-foot">
+        <div class="row bg-home mx-0">
+            <div class="col-lg-3 col-md-3 mx-0 px-5">
+                <div class="text-center">
+                    <a href="https://amrepinspect.com">
+                        <img loading="lazy" src="https://amrepinspect.com/images/web/icons/new-logo.png"
+                            alt="AMREPInspect supplier management" width="162" height="60">
+                    </a>
+                </div>
+                  <p class="text-light" style="text-align: left;">
+                        AMREP Supplier Management Services is your boots on the ground when you’re working with your
+                        factories, suppliers, and contract manufacturers. We operate globally in key manufacturing
+                        locations and our specialities include QA/QC, QMS development, quality engineering, ISO and
+                        regulatory compliance, sourcing, manufacturing engineering, program management, supplier
+                        development, inspections, auditing, and resident engineering.
+                    </p>
+                <div class="d-flex justify-content-between mble-footer-social ">
+                    <div class="email mt-4 mb-4 d-flex align-items-center flex-column">
+                        <div class="icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#FFD550"
+                                class="bi bi-envelope" viewBox="0 0 16 16">
+                                <path
+                                    d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4Zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2Zm13 2.383-4.708 2.825L15 11.105V5.383Zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741ZM1 11.105l4.708-2.897L1 5.383v5.722Z" />
+                            </svg>
+                        </div>
+                        <div class="text mt-2 ps-2 text-light">
+                            <p class="mb-0 top-txt"  style="line-height: 20px !important; font-size:22px !important;">
+                                Email
+                            </p>
+                            <p class="mb-0 mt-2 top-txt"  style="line-height: 20px !important;">
+                                <a href="mailto:supplyquality@amrepinspect.com" class="text-light" style="font-size:18px;">supplyquality@amrepinspect.com</a>
+                            </p>
+                            <p class="mb-0 mt-2 top-txt"  style="line-height: 20px !important;">
+                                <a href="mailto:supplycontrol@amrepinspect.com" class="text-light" style="font-size:18px;">supplycontrol@amrepinspect.com</a>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="email mt-4 mb-4 d-flex align-items-center flex-column">
+                        <div class="icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#FFD550"
+                                class="bi bi-geo-alt" viewBox="0 0 16 16">
+                                <path
+                                    d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A31.493 31.493 0 0 1 8 14.58a31.481 31.481 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10" />
+                                <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4m0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6" />
+                            </svg>
+                        </div>
+                        <div class="text mt-2 d-flex ps-2 text-light flex-column">
+                            <p class="mb-0 top-txt"  style="line-height: 20px !important; font-size:22px !important;">
+                               Address
+                             </p>
+                            <p class="mb-0 mt-2 top-txt" style="line-height: 20px !important;">
+                               <a href="https://maps.app.goo.gl/PZ4vVGowvhFzGwUs9" class="text-white" style="text-decoration: none ;font-size:18px;">845 15th Street, Suite 103, San Diego, CA 92101</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="phone d-flex align-items-center mt-4 mb-4 flex-column ">
+                    <div class="icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="#FFD550"
+                            class="bi bi-telephone" viewBox="0 0 16 16">
+                            <path
+                                d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.568 17.568 0 0 0 4.168 6.608 17.569 17.569 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.745 1.745 0 0 1-1.657-.459L5.482 8.062a1.745 1.745 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58L3.654 1.328zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z" />
+                        </svg>
+                    </div>
+                    <div class="text mt-2 ps-2 text-light ">
+                        <p class="mb-0 top-txt"  style="line-height: 20px !important;text-align: center;font-size:22px !important;">
+                            Call Us
+                        </p>
+                        <p class="mb-0 mt-2 top-txt"  style="line-height: 20px !important">
+                           <a href="tel:14159448189" class="text-light " style="font-size:18px;">+1 858 329 0211</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="row align-items-center justify-content-center">
+
+                <div class="col-sm-6 col-6">
+                    <h3 class="fs-5">Services</h3>
+                </div>
+                <div class="col-sm-6 col-6">
+                    <h3 class="fs-5">Quick Links</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="bg-home pt-3 pb-1">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-sm-6 col-6">
+                    <div class="subscribe">
+                        <ul class="ps-0 footer-links" style="list-style-type: none">
+                            <li>
+                                <a href="https://amrepinspect.com/quality-management-solutions"
+                                    class="text-light">Quality Management Solutions</a>
+                            </li>
+                            <li class="pt-3">
+                                <a href="https://amrepinspect.com/training-and-consulting" class="text-light">Training
+                                    And Consulting</a>
+                            </li>
+                            <li class="pt-3">
+                                <a href="https://amrepinspect.com/production-management-solutions"
+                                    class="text-light">Production Management Solutions</a>
+                            </li>
+                            <li class="pt-3">
+                                <a href="https://amrepinspect.com/supplier-problems" class="text-light">Supplier
+                                    Problems Troubleshooting</a>
+                            </li>
+                            <li class="pt-3">
+                                <a href="https://amrepinspect.com/local-talent-solutions" class="text-light">Local
+                                    Resource Solutions</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-6">
+                    <div class="subscribe">
+                        <ul class="ps-0 footer-links" style="list-style-type: none">
+                            <li>
+                                <a href="https://amrepinspect.com/" class="text-light">Home</a>
+                            </li>
+                            <li class="pt-3">
+                                <a href="https://amrepinspect.com/blog" class="text-light">Blog</a>
+                            </li>
+                            <li class="pt-3">
+                                <a href="https://amrepinspect.com/locations" class="text-light">Locations</a>
+                            </li>
+                            <li class="pt-3">
+                                <a href="https://amrepinspect.com/faqs" class="text-light">FAQs</a>
+                            </li>
+                            <li class="pt-3">
+                                <a href="https://amrepinspect.com/testimonials" class="text-light">Testimonials</a>
+                            </li>
+                            <li class="pt-3">
+                                <a href="https://amrepinspect.com/contact-us" class="text-light">Contact Us</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+    <div class="foot-menu bg-foot">
+        <div class="container">
+            <div class="row align-items-center">
+
+                <div class="col-sm-6">
+                    <h3 class="fs-5">Subscribe</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="bg-home pt-3 pb-1">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-sm-12">
+                    <div class="subscribe">
+                        <input type="email" name="email" id="footer-email2" placeholder="Email here*">
+                        <div class="mt-3 d-flex align-items-center">
+                            <a class="form-btn" href="https://amrepinspect.com/contact-us">
+                                <span class="btn-description">Contact Us</span>
+                            </a>
+                            <a href="https://www.linkedin.com/company/amrep-inspect/" class="ps-4 pe-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#fff"
+                                    class="bi bi-linkedin" viewBox="0 0 16 16">
+                                    <path
+                                        d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z" />
+                                </svg>
+                            </a>
+                            <a href="https://twitter.com/amrep" class="px-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#fff"
+                                    class="bi bi-twitter-x" viewBox="0 0 16 16">
+                                    <path
+                                        d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865l8.875 11.633Z" />
+                                </svg>
+                            </a>
+                            <a href="https://www.facebook.com/amrepquality" class="px-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#fff"
+                                    class="bi bi-facebook" viewBox="0 0 16 16">
+                                    <path
+                                        d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+      <hr style="color: grey">
+        <div class="text-light text-center d-flex mt-4 flex-column-reverse">
+          <div>
+            <p class=" pb-0 mt-2" >© Copyright 2025 AMREP Supplier Management Services. All Rights Reserved.</p>
+          </div>
+          <div>
+            <a href="https://amrepinspect.com/cookie-policy"  class="ps-4 text-warning" style="font-size:22px;">Cookie Policy</a>
+            <a href="https://amrepinspect.com/privacy-policy" class="ps-3 text-warning"style="font-size:22px;">Privacy Policy</a>
+            <a href="https://amrepinspect.com/terms-and-conditions" class="ps-3 text-warning" style="font-size:22px;">Terms and Conditions</a>
+            <a href="https://amrepinspect.com/disclaimer" class="ps-3 text-warning" style="font-size:22px;">Disclaimer</a>
+          </div>
+       </div>
+    </div>
+       <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</footer>
+
+<div id="cookie-popup" class="shadow rounded p-4">
+    <div class="position-absolute" style="right:20px; cursor: pointer;" id="decline-cookies" onclick="declineCookies()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#183660" class="bi bi-x-circle-fill"
+            viewBox="0 0 16 16">
+            <path
+                d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z" />
+        </svg>
+    </div>
+    <div>
+        <img src="https://amrepinspect.com/images/cookie-2.webp" alt="Cookie Image" class="img-fluid" width="100" height="100">
+        <h2 class="fs-4">We use Cookies</h2>
+    </div>
+    <div class="mt-2">
+        <p>Our website uses cookies to improve your experience. Read our <a href="/cookie-policy">Cookie Policy</a> for
+            more
+            information.</p>
+        <button id="accept-cookies" class="blog-btn" onclick="acceptCookies()">Accept Cookies</button>
+    </div>
+</div>
+    <script>
+        var toggleButton = document.getElementById('toggleButton');
+        var toggleIcon = document.getElementById('toggle-icon');
+        var menu = document.getElementById('MainMenu');
+        toggleButton.addEventListener('click', function() {
+            if (menu.classList.contains('active')) {
+                // Change the icon to a cross when the menu is expanded
+                document.getElementById('xSign').style.display = 'block';
+                toggleIcon.style.display = 'none';
+            } else {
+                // Change the icon back to the default when the menu is collapsed
+                document.getElementById('xSign').style.display = 'none';
+                toggleIcon.style.display = 'block';
+            }
+        });
+    </script>
+    <script>
+        var prevScrollpos = window.pageYOffset;
+        window.onscroll = function() {
+            var currentScrollPos = window.pageYOffset;
+            if (prevScrollpos > currentScrollPos || prevScrollpos == currentScrollPos) {
+                document.getElementById("navbar").style.top = "0";
+            } else {
+                document.getElementById("navbar").style.top = "-100px";
+            }
+            prevScrollpos = currentScrollPos;
+        }
+    </script>
+<script>
+    // Toggle Main Menu
+    function toggleMainMenu() {
+        var myhiddenthing = document.querySelector('#MainMenu');
+        // MY TOGGLE BUTTON - BY ADDING/REMOVING A CLASS
+        var mytogglebutton = document.querySelector('.navbar-toggler');
+        mytogglebutton.onclick = function() {
+            myhiddenthing.classList.toggle('active');
+        };
+    }
+
+
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register("sw.js").then(function(reg) {
+            console.log("Service worker has been registered for scope: " + reg.scope);
+        }).catch(function(error) {
+            console.error("Service worker registration failed:", error);
+        });
+    }
+    
+</script>
+
+<script>
+  let cls = 0;
+new PerformanceObserver((entryList) => {
+  for (const entry of entryList.getEntries()) {
+    if (!entry.hadRecentInput) {
+      cls += entry.value;
+      console.log('Current CLS value:', cls, entry);
+    }
+  }
+}).observe({type: 'layout-shift', buffered: true});
+  const mobileSection = document.querySelector('.mobile-product-section');
+const infoWrapper = document.querySelector('.Product__InfoWrapper');
+
+console.log(mobileSection.offsetTop, infoWrapper.offsetTop,"hassi");
+
+</script>      <link rel="stylesheet" href="https://amrepinspect.com/css/bootstrap-new.css">
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a44a3e1b1ff2da59',t:'MTc5MTAxMjYzNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

@@ -1,0 +1,4 @@
+﻿type,rows,share_pct,span_min_median,span_min_p25,span_min_p75,elapsed_min_median,qty_completed_sum,rows_qty_gt0_pct,qty_rejected_sum,mrb_sum,is_qc_activity_pct,first_in_case_pct,prev_S_pct,prev_D_pct,prev_B_pct,hour_peak_start,start_midnight_pct
+B,53,1.2,98.0,60.0,279.0,92.0,0,0.0,0,0,0.0,5.7,35.8,54.7,3.8,7,0.0
+D,3785,83.3,95.0,19.0,254.0,95.0,92048,71.5,593,105,30.6,1.6,11.8,85.6,1.0,7,11.9
+S,705,15.5,157.0,79.0,300.0,160.0,471,37.2,0,0,5.1,22.7,33.0,42.3,2.0,7,2.1

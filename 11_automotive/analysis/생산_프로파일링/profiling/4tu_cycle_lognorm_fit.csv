@@ -1,0 +1,10 @@
+﻿family,n,lognorm_sigma,lognorm_median_min
+Final Inspection Q.C.,206,2.233,1.73
+Flat Grinding,80,1.578,2.21
+Lapping,204,1.384,2.7
+Laser Marking,195,1.213,0.85
+Round Grinding,378,0.754,15.09
+Round Grinding - Manual,43,0.905,26.83
+Turning,64,1.247,15.25
+Turning & Milling,738,0.959,20.41
+Turning & Milling Q.C.,192,2.193,1.44

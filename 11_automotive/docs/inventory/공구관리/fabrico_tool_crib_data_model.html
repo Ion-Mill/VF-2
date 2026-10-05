@@ -1,0 +1,2874 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Tool Crib System Data Model: Fields, Statuses, Workflow</title>
+    <meta name="description" content="Field tables for a tool crib system: item master, serialised vs bulk stock, transaction log, calibration, lifecycle statuses, reorder point math and KPIs.">
+    <meta name="keywords" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+
+    <meta property="og:title" content="Tool Crib System Data Model: Fields, Statuses, Workflow"/>
+    <meta property="og:description" content="Field tables for a tool crib system: item master, serialised vs bulk stock, transaction log, calibration, lifecycle statuses, reorder point math and KPIs."/>
+    <meta property="og:image" content="https://s3.fabrico.io/uploads/equipment-maintenance-software.jpg"/>
+
+    
+        <link rel="canonical" href="https://www.fabrico.io/blog/tool-crib-management-system-data-model/"/>
+    
+
+    
+        
+            <link rel="alternate" href="https://www.fabrico.io/de/blog/tool-crib-management-system-data-model/" hrefLang="de"/>
+            
+        
+            <link rel="alternate" href="https://www.fabrico.io/blog/tool-crib-management-system-data-model/" hrefLang="en"/>
+            
+            <link rel="alternate" href="https://www.fabrico.io/blog/tool-crib-management-system-data-model/" hrefLang="x-default"/>
+            
+        
+    
+
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap" rel="stylesheet"> 
+
+    <!-- Styles  -->
+    <link href="/statics/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/statics/css/slick.css" rel="stylesheet">
+    <link href="/statics/css/slick-theme.css?v=2" rel="stylesheet">
+    <link href="/statics/css/global.css?v=52" rel="stylesheet">
+    <link href="/statics/css/switch.css" rel="stylesheet">
+
+    <link rel="icon" type="image/x-icon" href="/statics/img/fabrico_favicon.png">
+
+<!-- Structured data: who Fabrico is (Organization) and what the product is (SoftwareApplication). Same on every page. -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@graph": [
+        {
+            "@type": "Organization",
+            "@id": "https://www.fabrico.io/#organization",
+            "name": "Fabrico",
+            "url": "https://www.fabrico.io/",
+            "logo": "https://www.fabrico.io/statics/img/fabrico-logo-clean.svg",
+            "description": "Fabrico is a cloud-based MES and OEE platform for manufacturers: real-time production monitoring, automatic downtime tracking and OEE analytics, with AI computer vision. Maintenance management (CMMS) is built in.",
+            "knowsAbout": ["Manufacturing execution systems (MES)", "Overall equipment effectiveness (OEE)", "Production monitoring", "Downtime tracking", "Computerized maintenance management (CMMS)"],
+            "sameAs": [
+                "https://www.linkedin.com/company/fabricoio",
+                "https://www.facebook.com/fabrico.io"
+            ]
+        },
+        {
+            "@type": "SoftwareApplication",
+            "@id": "https://www.fabrico.io/#software",
+            "name": "Fabrico",
+            "url": "https://www.fabrico.io/",
+            "applicationCategory": "BusinessApplication",
+            "applicationSubCategory": "Manufacturing execution system (MES) and OEE software",
+            "operatingSystem": "Web, Android, iOS",
+            "description": "Fabrico is a cloud-based MES and OEE platform for manufacturers: real-time production monitoring, automatic downtime tracking and OEE analytics, with AI computer vision. Maintenance management (CMMS) is built in.",
+            "publisher": {"@id": "https://www.fabrico.io/#organization"}
+        }
+    ]
+}
+</script>
+    
+<link href="/statics/css/index.css?v=4" rel="stylesheet">
+<link href="/statics/css/article.css?v=11" rel="stylesheet">
+<link href="/statics/css/customers.css?v=4" rel="stylesheet">
+
+
+    <script>
+        var apiUrl = '/api/submit_contact_form/';
+        var registerUrl = '/api/register/';
+        var cookiesConsentUrl = '/cookies-consent/';
+        var blogPageUrl = '/blog-page/';
+        //var csrfToken = 'cSwhUcfOPPyAfmJRG98y5avKvZbB19Md0jvWWoYKHu0avNoHcIYWaDq00TKDOcWn';
+        var RECAPTCHA_SITE_KEY = '6Lf-t6coAAAAAK6Qd0bIEcpzrnC5aJeFRUVzsFN5'
+        var RECAPTCHA_V2_SITE_KEY = '6LcoB-grAAAAAOA57JsHZUbFrUvvc4LanptoMSF1'
+
+        var ACTIVE_COOKIES_TAB = 1;
+var DISABLED_COOKIES = {'statistics': true, 'marketing': true};
+var CONSENT_HASH = "";
+var CONSENT_DATE = "";
+
+    </script>
+
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+
+        gtag('consent', 'default', {
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied',
+        'analytics_storage': 'denied'
+        });
+
+        // Re-apply the visitor's stored cookie choice on every page load (Consent Mode: default denied, then update).
+        // Fails closed: only an explicit false ("not disabled") grants; anything else stays denied.
+        (function () {
+            var marketing = 'denied';
+            var statistics = 'denied';
+            try {
+                var choice = (typeof DISABLED_COOKIES === 'object' && DISABLED_COOKIES) ? DISABLED_COOKIES : {};
+                if (choice.marketing === false) { marketing = 'granted'; }
+                if (choice.statistics === false) { statistics = 'granted'; }
+            } catch (e) {}
+            if (marketing === 'granted' || statistics === 'granted') {
+                gtag('consent', 'update', {
+                    'ad_storage': marketing,
+                    'ad_user_data': marketing,
+                    'ad_personalization': marketing,
+                    'analytics_storage': statistics
+                });
+            }
+        })();
+    </script>
+</head>
+<body class="body-tool-crib-management-system-data-model lang-en">
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WRPRKP4H"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<script id="mcjs">!function(c,h,i,m,p){m=c.createElement(h),p=c.getElementsByTagName(h)[0],m.async=1,m.src=i,p.parentNode.insertBefore(m,p)}(document,"script","https://chimpstatic.com/mcjs-connected/js/users/97355596d1a39c212504effed/58774e42a3799c1c17777feaa.js");</script>
+
+
+
+<header>
+    
+    <div class="mobile-menu" onclick="event.stopPropagation();">
+        <img src="/statics/img/menu.svg" alt="Menu" width="30" height="30">    
+    </div>
+
+    <div class="logo">
+        <a href="/">
+            <img src="/statics/img/fabrico-logo-clean.svg" alt="Fabrico.io" height="44">
+        </a>
+    </div>
+
+    <div class="header-buttons" onclick="event.stopPropagation();">
+        <div class="nav-menu">
+           
+            <div class="btn-group">
+                  <button class="btn btn-bd-primary shadow-none dropdown-toggle" style="padding-right: 15px;"
+                    type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="/statics/img/flag-en.svg" alt="English">
+                  </button>
+                  <ul class="dropdown-menu">
+                    
+                         
+                            
+                            <li>
+                                <a href="/bg/blog/" class="dropdown-item">
+                                    <img src="/statics/img/flag-bg.svg" alt="Bulgarian">
+                                    <span style="text-transform: capitalize">Bulgarian</span> 
+                                </a>
+                            </li>
+                            
+                         
+                            
+                            <li>
+                                <a href="/de/blog/tool-crib-management-system-data-model/" class="dropdown-item">
+                                    <img src="/statics/img/flag-de.svg" alt="German">
+                                    <span style="text-transform: capitalize">German</span> 
+                                </a>
+                            </li>
+                            
+                         
+                            
+                         
+                            
+                            <li>
+                                <a href="/fr/blog/" class="dropdown-item">
+                                    <img src="/statics/img/flag-fr.svg" alt="French">
+                                    <span style="text-transform: capitalize">French</span> 
+                                </a>
+                            </li>
+                            
+                         
+                            
+                            <li>
+                                <a href="/es/blog/" class="dropdown-item">
+                                    <img src="/statics/img/flag-es.svg" alt="Spanish">
+                                    <span style="text-transform: capitalize">Spanish</span> 
+                                </a>
+                            </li>
+                            
+                         
+                            
+                            <li>
+                                <a href="/pl/blog/" class="dropdown-item">
+                                    <img src="/statics/img/flag-pl.svg" alt="Polish">
+                                    <span style="text-transform: capitalize">Polish</span> 
+                                </a>
+                            </li>
+                            
+                         
+                            
+                         
+                            
+                         
+                            
+                        
+                    
+                  </ul>
+            </div>
+
+            <a href="https://app.fabrico.io" class="login" target="_blank">
+                <img src="/statics/img/login.svg" alt="Login" width="18" height="19">Login
+            </a>
+            <a href="/contacts/" class="btn btn-primary">Contact Us</a>
+        </div>
+
+
+    </div>
+
+    <nav class="navi" onclick="event.stopPropagation();">
+
+        <div class="mobile-menu-header">
+            <div class="mobile-logo">
+                <a href="/">
+                    <img src="/statics/img/logo-menu.svg" alt="Fabrico.io" width="153" height="44">
+                </a>
+            </div>
+
+            <div class="mobile-header-buttons">
+                <div class="btn-group">
+                    <button class="btn btn-bd-primary shadow-none dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="/statics/img/flag-en.svg" alt="English">
+                    </button>
+                    <ul class="dropdown-menu">
+                      
+                           
+                            
+                            <li>
+                                <a href="/bg/blog/" class="dropdown-item">
+                                    <img src="/statics/img/flag-bg.svg" alt="Bulgarian">
+                                    <span style="text-transform: capitalize">Bulgarian</span> 
+                                </a>
+                            </li>
+                            
+                           
+                            
+                            <li>
+                                <a href="/de/blog/tool-crib-management-system-data-model/" class="dropdown-item">
+                                    <img src="/statics/img/flag-de.svg" alt="German">
+                                    <span style="text-transform: capitalize">German</span> 
+                                </a>
+                            </li>
+                            
+                           
+                            
+                           
+                            
+                            <li>
+                                <a href="/fr/blog/" class="dropdown-item">
+                                    <img src="/statics/img/flag-fr.svg" alt="French">
+                                    <span style="text-transform: capitalize">French</span> 
+                                </a>
+                            </li>
+                            
+                           
+                            
+                            <li>
+                                <a href="/es/blog/" class="dropdown-item">
+                                    <img src="/statics/img/flag-es.svg" alt="Spanish">
+                                    <span style="text-transform: capitalize">Spanish</span> 
+                                </a>
+                            </li>
+                            
+                           
+                            
+                            <li>
+                                <a href="/pl/blog/" class="dropdown-item">
+                                    <img src="/statics/img/flag-pl.svg" alt="Polish">
+                                    <span style="text-transform: capitalize">Polish</span> 
+                                </a>
+                            </li>
+                            
+                           
+                            
+                           
+                            
+                           
+                            
+                          
+                      
+                    </ul>
+              </div>
+            </div>
+            
+            <div class="mobile-menu mobile-menu-close">
+                <img src="/statics/img/mobile-menu-close.png" alt="Menu" width="30" height="30">    
+            </div>
+        </div>
+
+
+        <ul class="nav-menu">
+
+            
+            <li class="nav-item">
+                <a class="navi-link" href="/">OEE & CMMS</a>
+            </li>
+
+            <li class="nav-item nav-item-with-submenu">
+                <a class="navi-link" href="javascript:;">Solutions</a>
+                <div class="nav-submenu">
+                    <div class="container-xl">
+                       <div class="row">
+                            
+                            <div class="col-12 col-lg-4 pe-lg-5 pb-5">
+                                <h3 class="nav-category">MES &amp; OEE</h3>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/mes-oee-solution-overview/">
+                                       Solution overview MES &amp; OEE
+                                    </a>
+                                </div>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/mes-oee-tracking-availability/">
+                                       Tracking Availability
+                                    </a>
+                                </div>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/mes-oee-machine-connectivity/">
+                                       Machine connectivity
+                                    </a>
+                                </div>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/mes-oee-production-planning/">
+                                       Production planning
+                                    </a>
+                                </div>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/mes-oee-computer-vision/">
+                                       Computer vision
+                                    </a>
+                                </div>
+                                
+                            </div>
+                            
+                            <div class="col-12 col-lg-4 pe-lg-5 pb-5">
+                                <h3 class="nav-category">CMMS</h3>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/cmms-solution-overview/">
+                                       CMMS Solution overview
+                                    </a>
+                                </div>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/emergency-repairs/">
+                                       Emergency repairs
+                                    </a>
+                                </div>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/preventive-maintenance/">
+                                       Preventive Maintenance
+                                    </a>
+                                </div>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/analytics-and-reporting/">
+                                       Analytics &amp; Reporting
+                                    </a>
+                                </div>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/task-management/">
+                                       Task Management &amp; Work Cards
+                                    </a>
+                                </div>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/smart-notifications/">
+                                       Smart notifications
+                                    </a>
+                                </div>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/inventory-management/">
+                                       Inventory Management
+                                    </a>
+                                </div>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/multi-accounts/">
+                                       Group and Multisite Overview and Management
+                                    </a>
+                                </div>
+                                
+                            </div>
+                            
+                            <div class="col-12 col-lg-4 pe-lg-5 pb-5">
+                                <h3 class="nav-category">AI add-ons</h3>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/ai-add-ons-overview/">
+                                       AI add-ons overview
+                                    </a>
+                                </div>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/ai-add-ons-ai-assistant/">
+                                       AI Assistant
+                                    </a>
+                                </div>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/ai-add-ons-inefficiencies/">
+                                       Inefficiencies zoom-in
+                                    </a>
+                                </div>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/ai-add-ons-ai-agent/">
+                                       AI Agent
+                                    </a>
+                                </div>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/ai-add-ons-custom-ai-modules/">
+                                       Custom AI modules
+                                    </a>
+                                </div>
+                                
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </li>
+            
+            <li class="nav-item nav-item-with-submenu">
+                <a class="navi-link" href="javascript:;">Resources</a>
+                <div class="nav-submenu">
+                    <div class="container-xl">
+                        <div class="row">
+
+                            <div class="col-12 col-lg-4">
+                                <a class="nav-submenu-item" href="/survey/">
+                                    <img 
+                                        src="/statics/img/icon-survey.svg" 
+                                        width="50"
+                                        height="50"
+                                        alt="Self-assessment test">
+                                    <h3>Self-assessment test</h3>
+                                    <p>Discover how maintenance management software can boost your production efficiency with our 2-min survey!</p>
+                                </a>
+                            </div>
+                            <div class="col-12 col-lg-4">
+                                <a class="nav-submenu-item" href="/calculator/">
+                                    <img 
+                                        src="/statics/img/icon-customers.svg" 
+                                        width="50"
+                                        height="50"
+                                        alt="ROI Calculator">
+                                    <h3>ROI Calculator</h3>
+                                    <p>See how businesses benefit</p>
+                                </a>
+                            </div>
+                            <div class="col-12 col-lg-4">
+                                <a class="nav-submenu-item" href="/calculator-oee/">
+                                    <img 
+                                        src="/statics/img/icon-hex-tasks.png" 
+                                        width="50"
+                                        height="50"
+                                        alt="OEE Calculator">
+                                    <h3>OEE Calculator</h3>
+                                    <p>Estimate your production potential</p>
+                                </a>
+                            </div>
+                            <div class="col-12 col-lg-4">
+                                <a class="nav-submenu-item" href="/knowledge-center/">
+                                    <img 
+                                        src="/statics/img/icon-hex-preventive.png" 
+                                        width="50"
+                                        height="50"
+                                        alt="Knowledge Center">
+                                    <h3>Knowledge Center</h3>
+                                    <p>Download our white papers and playbooks</p>
+                                </a>
+                            </div>
+                            
+                            <div class="col-12 col-lg-4">
+                                <a class="nav-submenu-item" href="/blog/">
+                                    <img 
+                                        src="/statics/img/icon-blog.svg"
+                                        width="50"
+                                        height="50"
+                                        alt="Blog">
+                                    <h3>Blog</h3>
+                                    <p>Read the latest articles</p>
+                                </a>
+                            </div>
+
+                            <div class="col-12 col-lg-4">
+                                <a class="nav-submenu-item" href="/glossary/">
+                                    <img 
+                                        src="/statics/img/icon-faq.svg" 
+                                        width="50"
+                                        height="50"
+                                        alt="Glossary">
+                                    <h3>Glossary</h3>
+                                    <p>Maintenance Terms and Definitions</p>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            
+            <li class="nav-item nav-item-with-submenu">
+                <a class="navi-link" href="javascript:;">Industries</a>
+                <div class="nav-submenu">
+                    <div class="container-xl">
+                       <div class="row">
+                            
+                            <div class="col-12 col-lg-4 pe-lg-5 pb-5">
+                                <div class="nav-category-item">
+                                    <a href="/info/industry-aerospace/">
+                                        
+                                        <img src="https://s3.fabrico.io/uploads/rocket-solid.png" alt="Aerospace">
+                                        
+                                        Aerospace
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 col-lg-4 pe-lg-5 pb-5">
+                                <div class="nav-category-item">
+                                    <a href="/info/industry-chemical/">
+                                        
+                                        <img src="https://s3.fabrico.io/uploads/vial-circle-check-solid.png" alt="Chemical">
+                                        
+                                        Chemical
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 col-lg-4 pe-lg-5 pb-5">
+                                <div class="nav-category-item">
+                                    <a href="/info/industry-electonics/">
+                                        
+                                        <img src="https://s3.fabrico.io/uploads/charging-station-solid.png" alt="Electronics &amp; Automotive">
+                                        
+                                        Electronics &amp; Automotive
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 col-lg-4 pe-lg-5 pb-5">
+                                <div class="nav-category-item">
+                                    <a href="/info/industry-fmcg/">
+                                        
+                                        <img src="https://s3.fabrico.io/uploads/truck-fast-solid.png" alt="FMCG">
+                                        
+                                        FMCG
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 col-lg-4 pe-lg-5 pb-5">
+                                <div class="nav-category-item">
+                                    <a href="/info/industry-metal/">
+                                        
+                                        <img src="https://s3.fabrico.io/uploads/magnet-solid.png" alt="Metal and Aluminium">
+                                        
+                                        Metal and Aluminium
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 col-lg-4 pe-lg-5 pb-5">
+                                <div class="nav-category-item">
+                                    <a href="/info/industry-pharma/">
+                                        
+                                        <img src="https://s3.fabrico.io/uploads/capsules-solid.png" alt="Pharma">
+                                        
+                                        Pharma
+                                    </a>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </li>
+            
+            <li class="nav-item">
+                <a class="navi-link" href="/customers/">Customer stories</a>
+            </li>     
+
+            <!--    
+            <li class="nav-item">
+                <a class="navi-link" href="/pricing/">Pricing</a>
+            </li>
+            -->
+
+            <li class="nav-item nav-item-mobile">
+                <a class="navi-link" href="/survey/">Take our Survey</a>
+            </li>
+
+            <li class="nav-item nav-item-mobile">
+                <a class="navi-link" href="/demo/">Request a demo</a>
+            </li> 
+
+            <li class="nav-item nav-item-mobile">
+                <a class="navi-link" href="/contacts/">Contact us</a>
+            </li> 
+
+            <li class="nav-item nav-item-mobile">
+                <a class="navi-link" href="https://app.fabrico.io" target="_blank">Login</a>
+            </li> 
+
+        </ul>
+    </nav>
+</header>
+
+
+<!-- Page content -->
+
+
+
+    <section class="article-top-section">
+        <div class="container">
+
+                <div class="row">
+                    <div class="col-12 col-lg-5">
+
+                        
+                        <div class="blog-back">
+                            <a href="/blog/"><img src="/statics/img/icon-arrow-back.svg" alt="Back"> Blog</a>
+                        </div>
+
+                        
+                        <div class="article-mobile-image">
+                            <img 
+                                src="https://s3.fabrico.io/uploads/equipment-maintenance-software.jpg" 
+                                alt="Tool Crib Management System: Data Model, Fields and Workflow"
+                                class="rounded-img">
+                        </div>
+                        
+                        <h1 class="article-title">
+                            Tool Crib Management System: Data Model, Fields and Workflow
+                        </h1>
+                        
+                            
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        19 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        12 min.
+    </div>
+    
+</div>
+
+                        
+                        <div class="article-content html-content">
+                            Field tables for a tool crib system: item master, serialised vs bulk stock, transaction log, calibration, lifecycle statuses, reorder point math and KPIs.
+                        </div>
+                    </div>
+                    
+                    <div class="col-12 col-lg-7 ps-lg-6 article-desktop-image">
+                        <div class="article-image">
+                            <img 
+                                src="https://s3.fabrico.io/uploads/equipment-maintenance-software.jpg"  
+                                alt="Tool Crib Management System: Data Model, Fields and Workflow"
+                                class="rounded-img">
+                        </div>
+                    </div>
+                    
+                </div>
+
+        </div>
+    </section>
+
+
+   <section class="pv-normal">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 col-lg-3 pe-lg-5">
+                    <div class="sticky-sidebar">
+
+                        <div class="article-contents" style="display: none;">Contents:</div>
+                        <div class="article-contents-items" id="contents-menu"></div>
+
+                    </div>
+                </div>
+                <div class="col-12 col-xl-6 col-lg-9 article-content-sections" id="contents-section">
+                    
+                    <div class="article-content-section html-content">
+                    <p><strong>Key takeaways</strong></p>
+<ul>
+<li>A tool crib system needs <strong>eight core entities</strong>: item master, serialised item, bulk stock, location, employee, transaction log, calibration record and vendor or regrind order.</li>
+<li>Track <strong>serialised items one by one</strong> (gauges, holders, torque wrenches) and <strong>consumables by quantity</strong> (inserts, drills, gloves). Mixing the two is the most common design error.</li>
+<li>Every movement is an <strong>append-only transaction</strong>: who, what, where, when, which machine and which work order.</li>
+<li>Set stock with <strong>reorder point = daily usage × lead time + safety stock</strong>. For 6 end mills a day, 5 days lead time and 2 days of cover, that is 42.</li>
+<li>Measure <strong>checkout compliance, overdue rate, tool cost per unit and stock-outs</strong>.</li>
+</ul>
+
+<h2>What a tool crib system records</h2>
+<p>A <strong>tool crib</strong> is the controlled store where a plant keeps cutting tools, gauges, fixtures, hand tools, consumables and calibrated instruments.</p>
+<p>A <strong>tool crib management system</strong> records what is in it, who has what, where it is used and what it costs.</p>
+<p>This guide lays out that model as field tables you can copy into a specification. If you are comparing products, our <a href="/blog/best-tool-crib-management-software/">tool crib management software</a> roundup covers the market.</p>
+
+<h2>The core entities at a glance</h2>
+<p>Agree on the entities before the fields. Merging two of them into one table is the classic failure.</p>
+
+<table>
+<thead>
+<tr><th>Entity</th><th>What one record represents</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Item master</strong></td><td>A tool type, e.g. "End mill 10 mm, 4 flute, carbide"</td></tr>
+<tr><td><strong>Serialised item</strong></td><td>One physical tool with its own ID and history</td></tr>
+<tr><td><strong>Bulk stock</strong></td><td>A quantity of one consumable in one bin</td></tr>
+<tr><td><strong>Location / bin</strong></td><td>A place a tool can be: bin, cabinet, machine, vendor</td></tr>
+<tr><td><strong>Employee / badge</strong></td><td>A person allowed to take or return tools</td></tr>
+<tr><td><strong>Trans­ac­tion</strong></td><td>One movement: issue, return, transfer, scrap</td></tr>
+<tr><td><strong>Cali­bra­tion record</strong></td><td>One cali­bra­tion event for one instrument</td></tr>
+<tr><td><strong>Vendor / regrind order</strong></td><td>A supplier, or a batch sent out for regrinding</td></tr>
+</tbody>
+</table>
+
+<h2>Item master fields</h2>
+<p>The <strong>item master</strong> describes the tool type once. Every serialised item and every bulk stock row points back to it.</p>
+
+<table>
+<thead>
+<tr><th>Field</th><th>Type</th><th>Example</th></tr>
+</thead>
+<tbody>
+<tr><td>item_<wbr>id</td><td>Text, unique</td><td>EM-10-4F-CAR</td></tr>
+<tr><td>descrip­tion</td><td>Text</td><td>End mill 10 mm 4F carbide</td></tr>
+<tr><td>category</td><td>List</td><td>Cutting tool, gauge, fixture, hand tool, consumable</td></tr>
+<tr><td>tracking_<wbr>mode</td><td>List</td><td>SERIALISED or BULK</td></tr>
+<tr><td>manufacturer_<wbr>part_<wbr>no</td><td>Text</td><td>Maker's catalogue number</td></tr>
+<tr><td>unit_<wbr>cost</td><td>Money</td><td>€84.00</td></tr>
+<tr><td>min_<wbr>qty / max_<wbr>qty</td><td>Integer</td><td>42 / 102</td></tr>
+<tr><td>lead_<wbr>time_<wbr>days</td><td>Integer</td><td>5</td></tr>
+<tr><td>preferred_<wbr>vendor_<wbr>id</td><td>Link</td><td>Vendor record</td></tr>
+<tr><td>re­grind­able</td><td>Yes / no</td><td>Yes</td></tr>
+<tr><td>max_<wbr>regrinds</td><td>Integer</td><td>3</td></tr>
+<tr><td>calibration_<wbr>required</td><td>Yes / no</td><td>No</td></tr>
+<tr><td>calibration_<wbr>interval_<wbr>days</td><td>Integer</td><td>365 (for gauges)</td></tr>
+<tr><td>default_<wbr>loan_<wbr>hours</td><td>Integer</td><td>8 (one shift; the grace period adds the margin)</td></tr>
+<tr><td>return_<wbr>required</td><td>Yes / no</td><td>No for inserts, yes for gauges</td></tr>
+</tbody>
+</table>
+<p>The field that matters most is <strong>tracking_mode</strong>. It decides whether the system expects a serial number or a quantity at every scan.</p>
+
+<h2>Serialised item vs bulk consumable</h2>
+<p>A <strong>serialised item</strong> is worth tracking individually: a micrometer, a bore gauge, a shrink-fit holder, a torque wrench, a drill jig.</p>
+<p>A <strong>bulk consumable</strong> is issued by count and never comes back: inserts, taps, small drills, gloves, abrasive discs.</p>
+
+<h3>Serialised item fields</h3>
+<table>
+<thead>
+<tr><th>Field</th><th>Type</th><th>Example</th></tr>
+</thead>
+<tbody>
+<tr><td>serial_<wbr>id</td><td>Text, unique</td><td>GA-0147</td></tr>
+<tr><td>item_<wbr>id</td><td>Link</td><td>MIC-0-25</td></tr>
+<tr><td>barcode / QR value</td><td>Text</td><td>Same as serial_<wbr>id</td></tr>
+<tr><td>status</td><td>List</td><td>IN_<wbr>CRIB, CHECKED_<wbr>OUT, etc.</td></tr>
+<tr><td>current_<wbr>location_<wbr>id</td><td>Link</td><td>Bin C-03-2 or machine CNC-07</td></tr>
+<tr><td>current_<wbr>holder_<wbr>id</td><td>Link</td><td>Employee, empty when in crib</td></tr>
+<tr><td>due_<wbr>back_<wbr>at</td><td>Date and time</td><td>2026-09-19 22:00</td></tr>
+<tr><td>regrind_<wbr>count</td><td>Integer</td><td>0 (never reground; counts up on end mills)</td></tr>
+<tr><td>calibration_<wbr>due_<wbr>date</td><td>Date</td><td>2027-03-01</td></tr>
+<tr><td>condition</td><td>List</td><td>OK, WORN, DAMAGED</td></tr>
+<tr><td>purchase_<wbr>date / cost</td><td>Date / money</td><td>2025-11-04 / €310</td></tr>
+</tbody>
+</table>
+
+<h3>Bulk stock fields</h3>
+<table>
+<thead>
+<tr><th>Field</th><th>Type</th><th>Example</th></tr>
+</thead>
+<tbody>
+<tr><td>item_<wbr>id</td><td>Link</td><td>INS-CNMG-120408</td></tr>
+<tr><td>location_<wbr>id</td><td>Link</td><td>Bin A-12-1</td></tr>
+<tr><td>qty_<wbr>on_<wbr>hand</td><td>Integer</td><td>64</td></tr>
+<tr><td>last_<wbr>count_<wbr>date</td><td>Date</td><td>2026-09-01</td></tr>
+</tbody>
+</table>
+<p>Keep <strong>qty_on_hand</strong> as a result of transactions, not a field people type into. A stock-take posts an ADJUST transaction with the difference.</p>
+<p>Keep qty_on_order on the item, not on each bin. The reorder check compares the item's total on hand plus on order with its reorder point.</p>
+
+<h2>Location, employee and vendor fields</h2>
+
+<table>
+<thead>
+<tr><th>Entity</th><th>Key fields</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Location / bin</strong></td><td>location_<wbr>id, type (bin, cabinet, machine, vendor, quarantine), parent_<wbr>location, QR value</td></tr>
+<tr><td><strong>Employee / badge</strong></td><td>employee_<wbr>id, badge_<wbr>no, name, department, shift, allowed_<wbr>categories, max_<wbr>open_<wbr>checkouts, active</td></tr>
+<tr><td><strong>Vendor</strong></td><td>vendor_<wbr>id, name, type (supplier, regrinder, cali­bra­tion lab), lead_<wbr>time_<wbr>days, contact</td></tr>
+<tr><td><strong>Regrind order</strong></td><td>order_<wbr>id, vendor_<wbr>id, serial_<wbr>ids sent, sent_<wbr>date, expected_<wbr>date, returned_<wbr>date, cost_<wbr>per_<wbr>tool</td></tr>
+</tbody>
+</table>
+<p>Make <strong>machines locations too</strong>. A tool sitting in the magazine of CNC-07 then has a real, queryable address instead of "out".</p>
+<p><strong>allowed_categories</strong> lets you stop an untrained person from checking out a master gauge or a calibrated torque wrench.</p>
+
+<h2>The transaction log</h2>
+<p>The <strong>transaction log</strong> is the heart of the system. It is append-only: you never edit a past movement, you post a correcting one.</p>
+
+<table>
+<thead>
+<tr><th>Field</th><th>Type</th><th>Example</th></tr>
+</thead>
+<tbody>
+<tr><td>txn_<wbr>id</td><td>Auto</td><td>1048213</td></tr>
+<tr><td>txn_<wbr>type</td><td>List</td><td>ISSUE, RETURN, TRANSFER, SCRAP, ADJUST</td></tr>
+<tr><td>timestamp</td><td>Date and time</td><td>2026-09-19 06:12</td></tr>
+<tr><td>item_<wbr>id / serial_<wbr>id</td><td>Link</td><td>EM-10-4F-CAR / EM-0932</td></tr>
+<tr><td>qty</td><td>Integer</td><td>1 for serialised, n for bulk</td></tr>
+<tr><td>from_<wbr>location_<wbr>id</td><td>Link</td><td>Bin B-04-1</td></tr>
+<tr><td>to_<wbr>location_<wbr>id</td><td>Link</td><td>Machine CNC-07</td></tr>
+<tr><td>employee_<wbr>id</td><td>Link</td><td>Badge 2231</td></tr>
+<tr><td>issued_<wbr>by</td><td>Link</td><td>Attendant, or "self" at a scan point</td></tr>
+<tr><td>machine_<wbr>id</td><td>Link</td><td>CNC-07</td></tr>
+<tr><td>work_<wbr>order_<wbr>id</td><td>Link</td><td>WO-26-4412</td></tr>
+<tr><td>condition_<wbr>on_<wbr>return</td><td>List</td><td>OK, WORN, DAMAGED, MISSING</td></tr>
+<tr><td>reason_<wbr>code</td><td>List</td><td>Worn, broken, lost, wrong tool</td></tr>
+<tr><td>unit_<wbr>cost_<wbr>at_<wbr>txn</td><td>Money</td><td>€84.00</td></tr>
+</tbody>
+</table>
+<p>Store <strong>unit_cost_at_txn</strong> on the row. Prices change, and a cost report built on today's price rewrites last year's history.</p>
+<p>Other useful types are RECEIPT (goods in), SEND_REGRIND, RECEIVE_REGRIND, SEND_CAL and RECEIVE_CAL.</p>
+
+<h2>Calibration record fields</h2>
+<p>Gauges and measuring instruments need their own history, because an out-of-tolerance result affects every part measured since the last good calibration.</p>
+<p>Where traceability is required, ISO 9001 clause 7.1.5.2 expects measuring equipment to be calibrated or verified at set intervals against traceable standards, identified by status and safeguarded from adjustment. When an instrument is found unfit, the organisation must decide whether earlier results are still valid.</p>
+
+<table>
+<thead>
+<tr><th>Field</th><th>Type</th><th>Example</th></tr>
+</thead>
+<tbody>
+<tr><td>cal_<wbr>id</td><td>Auto</td><td>CAL-2026-0381</td></tr>
+<tr><td>serial_<wbr>id</td><td>Link</td><td>GA-0147</td></tr>
+<tr><td>cal_<wbr>date / due_<wbr>date</td><td>Date</td><td>2026-03-01 / 2027-03-01</td></tr>
+<tr><td>performed_<wbr>by</td><td>Text</td><td>In-house lab or vendor</td></tr>
+<tr><td>as_<wbr>found_<wbr>result</td><td>List</td><td>IN_<wbr>TOL, OUT_<wbr>OF_<wbr>TOL</td></tr>
+<tr><td>as_<wbr>left_<wbr>result</td><td>List</td><td>IN_<wbr>TOL, ADJUSTED, FAILED</td></tr>
+<tr><td>standard_<wbr>used</td><td>Text</td><td>Gauge block set ID</td></tr>
+<tr><td>certificate_<wbr>ref</td><td>Text / file</td><td>Cer­tifi­cate number or PDF</td></tr>
+</tbody>
+</table>
+<p>The <strong>as_found</strong> result matters most. If it was out of tolerance, the log shows which work orders used that gauge since the last pass.</p>
+<p>For the full process, see our guide to <a href="/blog/calibration-management/">calibration management</a>, and for one common instrument, <a href="/blog/torque-wrench-calibration/">torque wrench calibration</a>.</p>
+
+<h2>Tool lifecycle statuses and what triggers them</h2>
+<p>A serialised item has one status at a time, set by a transaction or a timer, never by hand.</p>
+
+<table>
+<thead>
+<tr><th>Status</th><th>Set by</th><th>Cleared by</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>IN_<wbr>CRIB</strong></td><td>RETURN with condition OK or WORN (WORN waits on the regrind shelf), RECEIPT, RECEIVE_<wbr>REGRIND, RECEIVE_<wbr>CAL (pass)</td><td>Any issue or send-out</td></tr>
+<tr><td><strong>CHECKED_<wbr>OUT</strong></td><td>ISSUE to an employee</td><td>RETURN (a TRANSFER changes the holder or machine, not the status)</td></tr>
+<tr><td><strong>OVERDUE</strong></td><td>Timer: now is past due_<wbr>back_<wbr>at plus the grace period</td><td>RETURN</td></tr>
+<tr><td><strong>IN_<wbr>REGRIND</strong></td><td>SEND_<wbr>REGRIND to a vendor</td><td>RECEIVE_<wbr>REGRIND</td></tr>
+<tr><td><strong>IN_<wbr>CALI­BRA­TION</strong></td><td>SEND_<wbr>CAL to a lab or the in-house bench</td><td>RECEIVE_<wbr>CAL with a result</td></tr>
+<tr><td><strong>QUAR­AN­TINED</strong></td><td>Return marked DAMAGED, failed cali­bra­tion, cali­bra­tion overdue</td><td>Inspection release or SCRAP</td></tr>
+<tr><td><strong>SCRAPPED</strong></td><td>SCRAP, or a WORN return once regrind_<wbr>count equals max_<wbr>regrinds</td><td>Final, no exit</td></tr>
+</tbody>
+</table>
+<p><strong>OVERDUE</strong> is derived, not stored: the record keeps CHECKED_OUT and each overdue check compares now with due_back_at.</p>
+<p>A gauge past its calibration_due_date should be <strong>blocked from issue</strong>, even if it sits in the crib and looks fine.</p>
+
+<h2>The checkout and return workflow</h2>
+<p>Aim for under 15 seconds at the window, or people will reach over the counter.</p>
+
+<h3>Checkout</h3>
+<ol>
+<li><strong>Scan the badge.</strong> The system checks the employee is active, has fewer than max_open_checkouts and has no overdue items above the limit you set.</li>
+<li><strong>Scan the machine or work order QR code.</strong> This links the tool to where and why it will be used.</li>
+<li><strong>Scan the tool.</strong> For a serialised item, scan its own code. For a consumable, scan the bin label and enter the quantity.</li>
+<li><strong>The system validates.</strong> It blocks the issue if the item is quarantined, calibration is overdue or the category is not allowed for this person.</li>
+<li><strong>Post the ISSUE transaction.</strong> Status becomes CHECKED_OUT and due_back_at is set from default_loan_hours.</li>
+</ol>
+
+<h3>Return</h3>
+<ol>
+<li><strong>Scan the tool.</strong> The system shows who had it, since when and on which machine.</li>
+<li><strong>Record the condition.</strong> OK, WORN, DAMAGED or MISSING, with a reason code if not OK.</li>
+<li><strong>Route it.</strong> OK goes back to its bin. WORN on a regrindable tool goes to the regrind shelf, or to scrap once regrind_count equals max_regrinds. DAMAGED goes to quarantine.</li>
+<li><strong>Post the RETURN transaction.</strong> The holder is cleared and the status follows the route.</li>
+</ol>
+
+<h3>Overdue rules</h3>
+<ul>
+<li><strong>Due time:</strong> end of shift for hand tools and gauges, end of job for fixtures and tools loaded in a machine.</li>
+<li><strong>Grace period:</strong> a fixed margin, for example 2 hours, before the status turns OVERDUE.</li>
+<li><strong>Notice:</strong> the holder and their supervisor get a message at the first overdue check.</li>
+<li><strong>Block:</strong> an employee with overdue calibrated instruments cannot check out new ones.</li>
+<li><strong>Loss:</strong> after a set period, for example 5 working days, the crib posts a SCRAP with reason code lost, at unit cost, so the loss shows in the numbers.</li>
+</ul>
+
+<h2>Stock rules: min, max and reorder point</h2>
+<p>Bulk consumables and serialised tools that wear out, like regrindable end mills, need a reorder point. Returnable tools usually need only a <strong>minimum available count</strong>, such as "at least 4 bore gauges in the crib".</p>
+<p>The standard formula is <strong>reorder point = average daily usage × lead time in days + safety stock</strong>.</p>
+
+<h3>Worked example: 10 mm carbide end mill</h3>
+<table>
+<thead>
+<tr><th>Input</th><th>Value</th></tr>
+</thead>
+<tbody>
+<tr><td>Average daily usage (new tools issued)</td><td>6</td></tr>
+<tr><td>Supplier lead time</td><td>5 working days</td></tr>
+<tr><td>Safety stock (2 days of usage)</td><td>6 × 2 = 12</td></tr>
+<tr><td><strong>Reorder point (min)</strong></td><td>6 × 5 + 12 = <strong>42</strong></td></tr>
+<tr><td>Order quantity (2 weeks of usage)</td><td>6 × 10 = 60</td></tr>
+<tr><td><strong>Max (order-up-to level)</strong></td><td>42 + 60 = <strong>102</strong></td></tr>
+</tbody>
+</table>
+<p>When <strong>on hand plus on order</strong> falls to 42, someone orders up to 102. At exactly 42 that is an order of 60.</p>
+<p>During the 5 day lead time the plant uses about 30, so the order arrives with 12 left, the safety stock. Peak stock after receipt is about 72.</p>
+<p>Count only <strong>new tools issued</strong> in daily usage. Reground tools returning from the vendor cover part of the demand and would inflate the figure.</p>
+<p>Recalculate the levels each quarter, or when a new job changes usage. Our <a href="/blog/spare-parts-management-software-cmms/">spare parts management</a> guide applies the same logic to maintenance spares.</p>
+
+<h2>Worked cost example: tool cost per part and lost tools</h2>
+<p>Two calculations with round, illustrative numbers.</p>
+
+<h3>Cost per part with and without regrinding</h3>
+<ul>
+<li>New end mill: <strong>€84</strong>, life <strong>400 parts</strong>.</li>
+<li>Without regrinding: 84 ÷ 400 = <strong>€0.21 per part</strong>.</li>
+<li>With 3 regrinds at €18 each: total cost 84 + 3 × 18 = <strong>€138</strong>.</li>
+<li>If each reground life is 350 parts: 400 + 3 × 350 = <strong>1,450 parts</strong>.</li>
+<li>Cost per part: 138 ÷ 1,450 = <strong>€0.095 per part</strong>, less than half.</li>
+</ul>
+<p>That saving needs regrind_count per serial, so worn tools go to regrind instead of the scrap bin.</p>
+
+<h3>Cost of lost and untracked tools per month</h3>
+<ul>
+<li>Items that go missing: <strong>25 per month</strong> at an average of <strong>€45</strong> = 25 × 45 = <strong>€1,125</strong>.</li>
+<li>Time spent looking for tools: <strong>6 searches a day × 12 minutes</strong> = 72 minutes a day.</li>
+<li>Over 21 working days: 72 × 21 = 1,512 minutes = <strong>25.2 hours</strong>.</li>
+<li>At €40 per hour: 25.2 × 40 = <strong>€1,008</strong>.</li>
+<li>Total: 1,125 + 1,008 = <strong>€2,133 per month</strong>, or €25,596 per year.</li>
+</ul>
+<p>Replace these numbers with your own before you use them. The point is the method: <strong>count the losses from the log, not from memory</strong>.</p>
+
+<h2>How tool usage ties to machines and work orders</h2>
+<p>Put <strong>machine_id and work_order_id on every issue</strong>. That single decision turns a stock list into cost and quality data.</p>
+<ul>
+<li><strong>Tool cost per part number:</strong> sum issue cost by work order, divide by good units on that order.</li>
+<li><strong>Tool cost per machine:</strong> find the machine that eats twice the inserts of its twin, which often points to spindle runout or a worn fixture.</li>
+<li><strong>Traceability:</strong> when a gauge fails calibration, list every work order it measured since the last pass.</li>
+<li><strong>Maintenance link:</strong> see whether tool life dropped after a machine repair.</li>
+</ul>
+<p>Fixtures, dies and moulds follow the same pattern with longer lives. See <a href="/blog/tool-and-die-maintenance-software/">tool and die maintenance software</a> and <a href="/blog/best-tool-mold-management-software/">tool and mold management software</a>.</p>
+
+<h2>KPIs for a tool crib</h2>
+<p>Report each KPI with its numerator and denominator, not only a percentage.</p>
+
+<table>
+<thead>
+<tr><th>KPI</th><th>Formula</th><th>What it shows</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Checkout compliance</strong></td><td>Issues with badge and item scanned ÷ all issues × 100</td><td>How much stock leaves unrecorded</td></tr>
+<tr><td><strong>Overdue rate</strong></td><td>Overdue open checkouts ÷ all open checkouts × 100</td><td>Whether loan rules are followed</td></tr>
+<tr><td><strong>Tool cost per unit</strong></td><td>Tool spend ÷ good units produced</td><td>Tooling cost trend by part or line</td></tr>
+<tr><td><strong>Stock-outs</strong></td><td>Requests with zero on hand, per month</td><td>Whether min/max levels are right</td></tr>
+</tbody>
+</table>
+<p>For example, 380 open checkouts with 19 overdue is an <strong>overdue rate of 19 ÷ 380 = 5.0%</strong>.</p>
+<p>Checkout compliance is hard to measure directly, because unrecorded issues leave no row. Estimate it from stock-take differences: an ADJUST of minus 40 on a bin that issued 400 suggests 400 ÷ 440 = about 91% compliance, if the count itself is right.</p>
+<p>Inventory accuracy and carrying cost matter too. Our guide to <a href="/blog/manufacturing-inventory-management-software/">manufacturing inventory management software</a> covers the wider set.</p>
+
+<h2>Common mistakes in tool crib data models</h2>
+
+<h3>1. One table for everything</h3>
+<p>Putting gauges and inserts in the same structure forces either fake serial numbers on inserts or no history on gauges.</p>
+<p>Split <strong>serialised</strong> and <strong>bulk</strong> from day one.</p>
+
+<h3>2. Editable stock quantities</h3>
+<p>If anyone can overwrite qty_on_hand, nobody can explain a difference later.</p>
+<p>Every change must be a transaction with a type, a person and a timestamp.</p>
+
+<h3>3. No machine or work order on the issue</h3>
+<p>Without them you know the crib spent €30,000 on inserts last quarter, but not which part or machine drove it.</p>
+
+<h3>4. Treating a regrind as a new tool</h3>
+<p>Receiving reground tools as new stock resets their history and hides the max_regrinds limit.</p>
+<p>Keep the <strong>same serial</strong> and increase regrind_count.</p>
+
+<h3>5. Calibration status stored only on a sticker</h3>
+<p>A sticker cannot stop a checkout. The due date has to live on the record, where the checkout step can block it.</p>
+
+<h3>6. A process slower than walking in</h3>
+<p>If checkout takes a minute of typing, people skip it and compliance falls. Badge scan, tool scan, done.</p>
+
+<p>Once the crib records every issue and return, the same data feeds a full <a href="/blog/tooling-cost-of-ownership-tracking/">tooling cost of ownership report</a>.</p>
+<h2>How Fabrico helps</h2>
+<p>Fabrico is an <strong>OEE platform with a full CMMS built in</strong>. It does not have a dedicated tool crib module, kiosk, vending machine integration or RFID.</p>
+<p>What it does have covers the bulk stock side of the model: an <strong>inventory catalogue with min and max levels</strong>, deliveries and stock-takes. Per-employee checkout, loan times and overdue tracking are not part of it, and there is no automatic reorder: your team places the order.</p>
+<p><strong>QR codes on parts and machines</strong> let a technician scan both from the <strong>iOS or Android app</strong>, and <strong>consumption is recorded against the work order</strong> it was used on.</p>
+<p>Because OEE, downtime and maintenance history sit in the same platform, the team can compare parts and tooling consumption with how each machine actually ran.</p>
+<p>Want to see how your parts and consumables would look in Fabrico? Book <a href="/demo/">a 30 minute demo with a Fabrico consultant, no commitment</a>, or <a href="/contacts/">contact us</a> with your questions.</p>
+
+<section data-fab-faq="1">
+<h2>Frequently asked questions</h2>
+
+<h3>What fields does a tool crib checkout record need?</h3>
+<p>At minimum: transaction type, timestamp, item or serial ID, quantity, employee, from and to location, machine and work order. On return, add condition and a reason code.</p>
+
+<h3>What is the difference between a serialised tool and a consumable in a tool crib?</h3>
+<p>A serialised tool has its own ID and history and must come back, like a gauge or a holder. A consumable is issued by quantity and is not returned, like inserts or gloves.</p>
+
+<h3>How do you calculate the reorder point for tool crib items?</h3>
+<p>Reorder point = average daily usage × lead time in days + safety stock. For 6 a day, 5 days lead time and 12 in safety stock, it is 42.</p>
+
+<h3>When should a tool be marked overdue?</h3>
+<p>When the current time passes its due_back_at plus any grace period. Most plants set due time at end of shift for hand tools and gauges, and at end of job for tools loaded in a machine.</p>
+
+<h3>What KPIs should a tool crib track?</h3>
+<p>Checkout compliance, overdue rate, tool cost per unit and stock-outs per month. Report each with its numerator and denominator, not only the percentage.</p>
+</section>
+<div style="margin:32px 0;padding:24px;border:1px solid #e3e8ee;border-left:4px solid #1f9d57;border-radius:10px;background:#f7faf8;"><p style="margin:0 0 14px;font-size:1.05em;font-weight:600;color:#14302a;">See how Fabrico unifies OEE and maintenance in one platform.</p><a href="https://www.fabrico.io/demo/" style="display:inline-block;padding:11px 22px;background:#1f9d57;color:#fff;font-weight:600;text-decoration:none;border-radius:8px;">Request a demo</a></div>
+                    </div>
+
+                    
+
+                    
+                    <div class="article-cta" style="background-color: #e9fdf3;">
+                        <div class="article-cta-title">
+                            Track OEE and downtime in real time
+                        </div>
+                        <div class="sidebar-cta-text">
+                            Fabrico is an MES and OEE platform with maintenance built in.
+                        </div>
+                        <div class="article-categories-more-list">
+                            <a class="article-category" href="/feature/mes-oee-solution-overview/">OEE software</a>
+                            <a class="article-category" href="/feature/mes-oee-tracking-availability/">Downtime tracking software</a>
+                            <a class="article-category" href="/feature/mes-oee-machine-connectivity/">Machine monitoring</a>
+                            <a class="article-category" href="/calculator-oee/">Free OEE calculator</a>
+                        </div>
+                    </div>
+
+                    
+
+                </div>
+                <div class="col-12 col-lg-12 col-xl-3">
+                    <div class="sticky-sidebar">
+                        <div class="sidebar-cta">
+                            <div class="sidebar-cta-text"> A 30 minute demo of OEE and downtime tracking</div>
+                            <div class="sidebar-cta-button">
+                                <a href="/demo/" class="btn btn-primary btn-tiny">Request a demo</a>
+                            </div>
+                        </div>
+
+                        
+                        <div class="article-categories-more">
+                            <div class="article-categories-see-more">
+                                Related articles:
+                            </div>
+                            <div class="article-categories-more-list">
+                                
+                                    <a class="article-category" 
+                                        href="/blog/category/cmms/#categories">CMMS</a>
+                                
+                            </div>
+                        </div>
+                        
+                        
+                        
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    
+
+    <section class="articles-section pv-normal" style="border-top: 1px solid rgba(0,0,0,0.1);">
+        <div class="container narrow-container">
+            <h2>Latest from our blog</h2>
+
+            <div class="customer-categories-scroll">
+                <div class="customer-categories">
+                    <a class="customer-category selected" 
+                        href="/blog/#categories">All articles</a>
+                    
+                        <a class="customer-category" 
+                            href="/blog/category/digitalization/#categories">Digitalization</a>
+                    
+                        <a class="customer-category" 
+                            href="/blog/category/oee/#categories">OEE</a>
+                    
+                        <a class="customer-category" 
+                            href="/blog/category/cmms/#categories">CMMS</a>
+                    
+                        <a class="customer-category" 
+                            href="/blog/category/events/#categories">Events</a>
+                    
+                        <a class="customer-category" 
+                            href="/blog/category/newsletter/#categories">Newsletter</a>
+                    
+                </div>
+            </div>
+            
+            <div class="row articles-grid">
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/setting-oee-targets-by-line-that-drive-real-performance-improvements/"><img 
+            src="https://s3.fabrico.io/uploads/oee-metal.png" 
+            alt="Setting OEE Targets by Line That Drive Real Performance Improvements"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        02 Oct `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        9 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/setting-oee-targets-by-line-that-drive-real-performance-improvements/">Setting OEE Targets by Line That Drive Real Performance Improvements</a>
+        </div>
+
+        <a href="/blog/setting-oee-targets-by-line-that-drive-real-performance-improvements/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/downtime-data-hygiene-for-trustworthy-oee-one-year-after-go-live/"><img 
+            src="https://s3.fabrico.io/uploads/best-oee-cmms-animal-feed-mill-groups.jpg" 
+            alt="Downtime Data Hygiene for Trustworthy OEE: One Year After Go-Live"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        02 Oct `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        9 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/downtime-data-hygiene-for-trustworthy-oee-one-year-after-go-live/">Downtime Data Hygiene for Trustworthy OEE: One Year After Go-Live</a>
+        </div>
+
+        <a href="/blog/downtime-data-hygiene-for-trustworthy-oee-one-year-after-go-live/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/plant-managers-weekly-oee-review-from-data-to-ownership/"><img 
+            src="https://s3.fabrico.io/uploads/cmms.jpg" 
+            alt="The Plant Manager&#x27;s Weekly OEE Review: From Data to Ownership"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        02 Oct `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        9 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/plant-managers-weekly-oee-review-from-data-to-ownership/">The Plant Manager's Weekly OEE Review: From Data to Ownership</a>
+        </div>
+
+        <a href="/blog/plant-managers-weekly-oee-review-from-data-to-ownership/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/oee-data-quality-for-manufacturers-from-pencil-whip-to-precision/"><img 
+            src="https://s3.fabrico.io/uploads/maintenance-task.jpg" 
+            alt="OEE Data Quality for Manufacturers: From Pencil Whip to Precision"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        02 Oct `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        7 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/oee-data-quality-for-manufacturers-from-pencil-whip-to-precision/">OEE Data Quality for Manufacturers: From Pencil Whip to Precision</a>
+        </div>
+
+        <a href="/blog/oee-data-quality-for-manufacturers-from-pencil-whip-to-precision/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/five-oee-numbers-plant-leaders-need-on-the-wall-and-weekly/"><img 
+            src="https://s3.fabrico.io/uploads/machine-female-maintenance.jpg" 
+            alt="Five OEE Numbers Plant Leaders Need on the Wall and Weekly"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        02 Oct `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        9 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/five-oee-numbers-plant-leaders-need-on-the-wall-and-weekly/">Five OEE Numbers Plant Leaders Need on the Wall and Weekly</a>
+        </div>
+
+        <a href="/blog/five-oee-numbers-plant-leaders-need-on-the-wall-and-weekly/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/modern-downtime-tracking-machine-signals-and-vision-beat-manual-logs/"><img 
+            src="https://s3.fabrico.io/uploads/machine-worker.jpg" 
+            alt="Modern Downtime Tracking: Machine Signals and Vision Beat Manual Logs"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        01 Oct `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        7 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/modern-downtime-tracking-machine-signals-and-vision-beat-manual-logs/">Modern Downtime Tracking: Machine Signals and Vision Beat Manual Logs</a>
+        </div>
+
+        <a href="/blog/modern-downtime-tracking-machine-signals-and-vision-beat-manual-logs/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/micro-stops-in-manufacturing-why-they-cost-more-than-breakdowns-and-how-to-count-them-automatically/"><img 
+            src="https://s3.fabrico.io/uploads/clean-machine-manufacturing.jpg" 
+            alt="Micro-Stops in Manufacturing: Why They Can Cost More Than Breakdowns and How to Count Them Automatically"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        01 Oct `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        9 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/micro-stops-in-manufacturing-why-they-cost-more-than-breakdowns-and-how-to-count-them-automatically/">Micro-Stops in Manufacturing: Why They Can Cost More Than Breakdowns and How to Count Them Automatically</a>
+        </div>
+
+        <a href="/blog/micro-stops-in-manufacturing-why-they-cost-more-than-breakdowns-and-how-to-count-them-automatically/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/from-oee-loss-to-work-order-keeping-downtime-linked-to-maintenance/"><img 
+            src="https://s3.fabrico.io/uploads/work-orders.jpg" 
+            alt="From OEE Loss to Work Order: Keeping Downtime Linked to Maintenance"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        01 Oct `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        9 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/from-oee-loss-to-work-order-keeping-downtime-linked-to-maintenance/">From OEE Loss to Work Order: Keeping Downtime Linked to Maintenance</a>
+        </div>
+
+        <a href="/blog/from-oee-loss-to-work-order-keeping-downtime-linked-to-maintenance/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/why-maintenance-belongs-in-your-mes-unifying-loss-data-for-production-and-mro/"><img 
+            src="https://s3.fabrico.io/uploads/maintenance.jpg" 
+            alt="Why Maintenance Belongs in Your MES: Unifying Loss Data for Production and MRO"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        01 Oct `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        7 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/why-maintenance-belongs-in-your-mes-unifying-loss-data-for-production-and-mro/">Why Maintenance Belongs in Your MES: Unifying Loss Data for Production and MRO</a>
+        </div>
+
+        <a href="/blog/why-maintenance-belongs-in-your-mes-unifying-loss-data-for-production-and-mro/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/integrating-mes-and-oee-with-erp-and-quality-systems-defining-data-flows-ownership-and-system-boundaries/"><img 
+            src="https://s3.fabrico.io/uploads/two-technicians-in-a-manufacturing-facility-looking-at-stats.jpg" 
+            alt="Integrating MES and OEE with ERP and Quality Systems: Defining Data Flows, Ownership and System Boundaries"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        01 Oct `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        10 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/integrating-mes-and-oee-with-erp-and-quality-systems-defining-data-flows-ownership-and-system-boundaries/">Integrating MES and OEE with ERP and Quality Systems: Defining Data Flows, Ownership and System Boundaries</a>
+        </div>
+
+        <a href="/blog/integrating-mes-and-oee-with-erp-and-quality-systems-defining-data-flows-ownership-and-system-boundaries/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/mes-data-for-cfos-turning-oee-losses-into-cost-visibility/"><img 
+            src="https://s3.fabrico.io/uploads/best-cmms-software-for-manufacturing-review.jpg" 
+            alt="MES Data for CFOs: Turning OEE Losses into Cost Visibility"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        30 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        9 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/mes-data-for-cfos-turning-oee-losses-into-cost-visibility/">MES Data for CFOs: Turning OEE Losses into Cost Visibility</a>
+        </div>
+
+        <a href="/blog/mes-data-for-cfos-turning-oee-losses-into-cost-visibility/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/scaling-mes-from-pilot-line-to-plant-without-losing-data-discipline/"><img 
+            src="https://s3.fabrico.io/uploads/best-oee-software-hybrid-manufacturing-lines.jpg" 
+            alt="Scaling MES from Pilot Line to Plant without Losing Data Discipline"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        30 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        9 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/scaling-mes-from-pilot-line-to-plant-without-losing-data-discipline/">Scaling MES from Pilot Line to Plant without Losing Data Discipline</a>
+        </div>
+
+        <a href="/blog/scaling-mes-from-pilot-line-to-plant-without-losing-data-discipline/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/mes-for-contract-manufacturers-prove-oee-performance-for-every-customer-job/"><img 
+            src="https://s3.fabrico.io/uploads/enforce-cmms-pm-compliance-food-plastics-packaging.jpg" 
+            alt="MES for Contract Manufacturers: Prove OEE Performance for Every Customer Job"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        30 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        8 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/mes-for-contract-manufacturers-prove-oee-performance-for-every-customer-job/">MES for Contract Manufacturers: Prove OEE Performance for Every Customer Job</a>
+        </div>
+
+        <a href="/blog/mes-for-contract-manufacturers-prove-oee-performance-for-every-customer-job/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/first-30-days-on-mes-and-oee-what-plants-learn-from-their-machines/"><img 
+            src="https://s3.fabrico.io/uploads/oee-1.png" 
+            alt="First 30 Days on MES and OEE: What Plants Learn from Their Machines"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        30 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        7 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/first-30-days-on-mes-and-oee-what-plants-learn-from-their-machines/">First 30 Days on MES and OEE: What Plants Learn from Their Machines</a>
+        </div>
+
+        <a href="/blog/first-30-days-on-mes-and-oee-what-plants-learn-from-their-machines/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/comparing-mes-oee-calculations-definitions-filters-trustworthy-benchmarks/"><img 
+            src="https://s3.fabrico.io/uploads/OEE-in-CPG-factory.jpg" 
+            alt="Comparing MES OEE Calculations: Definitions, Filters, Trustworthy Benchmarks"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        30 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        10 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/comparing-mes-oee-calculations-definitions-filters-trustworthy-benchmarks/">Comparing MES OEE Calculations: Definitions, Filters, Trustworthy Benchmarks</a>
+        </div>
+
+        <a href="/blog/comparing-mes-oee-calculations-definitions-filters-trustworthy-benchmarks/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/winning-cfo-support-build-a-credible-mes-and-oee-business-case/"><img 
+            src="https://s3.fabrico.io/uploads/person-sales-stats.jpg" 
+            alt="Winning CFO Support: Build a Credible MES and OEE Business Case"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        29 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        12 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/winning-cfo-support-build-a-credible-mes-and-oee-business-case/">Winning CFO Support: Build a Credible MES and OEE Business Case</a>
+        </div>
+
+        <a href="/blog/winning-cfo-support-build-a-credible-mes-and-oee-business-case/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/mes-vs-erp-what-erp-misses-on-the-shop-floor-and-how-they-share-data/"><img 
+            src="https://s3.fabrico.io/uploads/manufacturing-warehouse-with-boxes.jpg" 
+            alt="MES vs ERP: What ERP Misses on the Shop Floor and How They Share Data"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        29 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        8 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/mes-vs-erp-what-erp-misses-on-the-shop-floor-and-how-they-share-data/">MES vs ERP: What ERP Misses on the Shop Floor and How They Share Data</a>
+        </div>
+
+        <a href="/blog/mes-vs-erp-what-erp-misses-on-the-shop-floor-and-how-they-share-data/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/cloud-mes-buyers-guide-security-uptime-data-ownership-and-it-questions/"><img 
+            src="https://s3.fabrico.io/uploads/ai-in-eastern-europe.jpg" 
+            alt="Cloud MES Buyer&#x27;s Guide: Security, Uptime, Data Ownership and IT Questions"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        29 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        8 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/cloud-mes-buyers-guide-security-uptime-data-ownership-and-it-questions/">Cloud MES Buyer's Guide: Security, Uptime, Data Ownership and IT Questions</a>
+        </div>
+
+        <a href="/blog/cloud-mes-buyers-guide-security-uptime-data-ownership-and-it-questions/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/oee-benchmarks-by-industry-what-good-looks-like-and-why-performance-gaps-persist/"><img 
+            src="https://s3.fabrico.io/uploads/overall-equipment-effectiveness.jpg" 
+            alt="OEE Benchmarks by Industry: What Good Looks Like and Why Performance Gaps Persist"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        29 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        12 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/oee-benchmarks-by-industry-what-good-looks-like-and-why-performance-gaps-persist/">OEE Benchmarks by Industry: What Good Looks Like and Why Performance Gaps Persist</a>
+        </div>
+
+        <a href="/blog/oee-benchmarks-by-industry-what-good-looks-like-and-why-performance-gaps-persist/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/mes-selection-guide-12-questions-for-smarter-production-and-maintenance/"><img 
+            src="https://s3.fabrico.io/uploads/manufacturing-maintenance-software-guide-2026.jpg" 
+            alt="MES Selection Guide: 12 Questions for Smarter Production and Maintenance"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        29 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        8 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/mes-selection-guide-12-questions-for-smarter-production-and-maintenance/">MES Selection Guide: 12 Questions for Smarter Production and Maintenance</a>
+        </div>
+
+        <a href="/blog/mes-selection-guide-12-questions-for-smarter-production-and-maintenance/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/mes-vs-scada-why-plant-leaders-need-an-execution-layer-beyond-control/"><img 
+            src="https://s3.fabrico.io/uploads/best-maintenance-software-leather-tanneries.jpg" 
+            alt="MES vs SCADA: Why Plant Leaders Need an Execution Layer Beyond Control"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        29 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        8 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/mes-vs-scada-why-plant-leaders-need-an-execution-layer-beyond-control/">MES vs SCADA: Why Plant Leaders Need an Execution Layer Beyond Control</a>
+        </div>
+
+        <a href="/blog/mes-vs-scada-why-plant-leaders-need-an-execution-layer-beyond-control/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/computer-vision-for-oee-from-detecting-line-events-to-validating-stops-and-quality/"><img 
+            src="https://s3.fabrico.io/uploads/production-inspection.jpg" 
+            alt="Computer Vision for OEE: From Detecting Line Events to Validating Stops and Quality"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        29 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        8 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/computer-vision-for-oee-from-detecting-line-events-to-validating-stops-and-quality/">Computer Vision for OEE: From Detecting Line Events to Validating Stops and Quality</a>
+        </div>
+
+        <a href="/blog/computer-vision-for-oee-from-detecting-line-events-to-validating-stops-and-quality/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/production-monitoring-vs-oee-software-vs-mes-what-each-one-records-who-uses-it-and-when-a-plant-needs-the-next-level/"><img 
+            src="https://s3.fabrico.io/uploads/mes-machines.png" 
+            alt="Production Monitoring vs OEE Software vs MES: What Each One Records, Who Uses It, and When a Plant Needs the Next Level"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        29 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        11 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/production-monitoring-vs-oee-software-vs-mes-what-each-one-records-who-uses-it-and-when-a-plant-needs-the-next-level/">Production Monitoring vs OEE Software vs MES: What Each One Records, Who Uses It, and When a Plant Needs the Next Level</a>
+        </div>
+
+        <a href="/blog/production-monitoring-vs-oee-software-vs-mes-what-each-one-records-who-uses-it-and-when-a-plant-needs-the-next-level/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/90-day-oee-improvement-program-what-plant-managers-should-see-mondays/"><img 
+            src="https://s3.fabrico.io/uploads/oee-2.png" 
+            alt="90-Day OEE Improvement Program: What Plant Managers Should See on Mondays"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        29 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        8 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/90-day-oee-improvement-program-what-plant-managers-should-see-mondays/">90-Day OEE Improvement Program: What Plant Managers Should See on Mondays</a>
+        </div>
+
+        <a href="/blog/90-day-oee-improvement-program-what-plant-managers-should-see-mondays/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/cloud-mes-rollout-timeline-from-week-1-to-month-3/"><img 
+            src="https://s3.fabrico.io/uploads/oee-calibration.png" 
+            alt="Cloud MES Rollout Timeline: From Week 1 to Month 3"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        29 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        10 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/cloud-mes-rollout-timeline-from-week-1-to-month-3/">Cloud MES Rollout Timeline: From Week 1 to Month 3</a>
+        </div>
+
+        <a href="/blog/cloud-mes-rollout-timeline-from-week-1-to-month-3/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/maintenance-kitting-data-model/"><img 
+            src="https://s3.fabrico.io/uploads/automate-maintenance-kitting-using-cmms.jpg" 
+            alt="Maintenance Kitting Data Model: Fields, Reservations, Returns"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        20 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        17 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/maintenance-kitting-data-model/">Maintenance Kitting Data Model: Fields, Reservations, Returns</a>
+        </div>
+
+        <a href="/blog/maintenance-kitting-data-model/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/contractor-work-data-model/"><img 
+            src="https://s3.fabrico.io/uploads/quality-assurance-vs-quality-control-qa-qc-manufacturing.jpg" 
+            alt="Contractor Work Data Model: Fields, Rates and Real Cost"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        20 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        20 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/contractor-work-data-model/">Contractor Work Data Model: Fields, Rates and Real Cost</a>
+        </div>
+
+        <a href="/blog/contractor-work-data-model/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/nonconformance-data-model/"><img 
+            src="https://s3.fabrico.io/uploads/production-inspection.jpg" 
+            alt="Nonconformance Data Model: Fields, Disposition, Quantity"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        20 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        18 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/nonconformance-data-model/">Nonconformance Data Model: Fields, Disposition, Quantity</a>
+        </div>
+
+        <a href="/blog/nonconformance-data-model/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/warranty-claim-data-model/"><img 
+            src="https://s3.fabrico.io/uploads/unplanned-equipment-failure-manufacturing.jpg" 
+            alt="Warranty Claim Data Model: Terms, Coverage, Claims"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        20 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        17 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/warranty-claim-data-model/">Warranty Claim Data Model: Terms, Coverage, Claims</a>
+        </div>
+
+        <a href="/blog/warranty-claim-data-model/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/mro-purchasing-data-model/"><img 
+            src="https://s3.fabrico.io/uploads/Fabrico_cmms_oee_article_043.jpg" 
+            alt="MRO Purchasing Data Model: Requisition to Invoice Match"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        20 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        19 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/mro-purchasing-data-model/">MRO Purchasing Data Model: Requisition to Invoice Match</a>
+        </div>
+
+        <a href="/blog/mro-purchasing-data-model/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+            </div>
+        </div> 
+    </section>
+
+    <div style="background:#F8F9FA;">
+        
+
+
+<!-- DEMO -->
+<section id="home-demo" class="pv-normal">
+    <div class="container">
+        <div class="home-demo-title">
+            Define Your Reliability Roadmap
+        </div>
+        <div class="home-demo-subtitle">
+            Validate Your Potential ROI: Book a Live Demo
+        </div>
+        
+        <div class="home-demo-image">
+            <img src="https://s3.fabrico.io/uploads/demo.jpg" 
+                width="1156" 
+                height="567"  
+                alt="Define Your Reliability Roadmap"
+                class="rounded-img"
+                >    
+        </div>
+        
+        <div class="home-demo-content">
+            
+        </div>
+        <div class="home-demo-buttons">
+            <!-- <a href="/register/" class="btn btn-primary">Sign Up for Free</a> -->
+            <a href="/demo/" class="learn-more">Request a demo</a>
+        </div>
+    </div>
+</section> 
+    </div>
+    
+
+
+
+
+
+<footer class="pv-normal">
+    <div class="footer-container">
+        <div class="container-xl">
+            <div class="row">
+                <div class="col-12 col-sm-12 col-md-9 col-xl-4 footer-address-col">
+                    <div class="footer-address-col-in">
+                        <div class="footer-logo">
+                            <a href="/">
+                                <img src="/statics/img/fabrico-logo-clean.svg" alt="Fabrico.io" height="44">
+                            </a>
+                        </div>
+                        
+                        <div class="footer-addresses">
+                            <div class="footer-address">
+                                <img src="/statics/img/icon-location.svg" width="20" height="20" class="p-icon" alt="Location"/>
+                                <div class="footer-country"> United States</div>    
+                                <p> 180 N Stetson Ave, Chicago, IL 60601 United States</p>
+                            </div>
+                        </div>
+                        
+                        <div class="footer-addresses">
+                            <div class="footer-address">
+                                <img src="/statics/img/icon-location.svg" width="20" height="20" class="p-icon" alt="Location"/>
+                                <div class="footer-country"> United Kingdom</div>    
+                                <p> 18-22 Finchley Rd, London NW8 6EB</p>
+                            </div>
+                        </div>
+                        
+                        <div class="footer-addresses">
+                            <div class="footer-address">
+                                <img src="/statics/img/icon-location.svg" width="20" height="20" class="p-icon" alt="Location"/>
+                                <div class="footer-country"> Poland</div>    
+                                <p> Jana Pawła II 7 05-077 Warsaw</p>
+                            </div>
+                        </div>
+                        
+                        <div class="footer-addresses">
+                            <div class="footer-address">
+                                <img src="/statics/img/icon-location.svg" width="20" height="20" class="p-icon" alt="Location"/>
+                                <div class="footer-country"> Bulgaria</div>    
+                                <p> 40, Tsarigradsko shose Blvd, Sofia</p>
+                            </div>
+                        </div>
+                        
+                        <div class="footer-addresses">
+                            <div class="footer-address">
+                                <img src="/statics/img/icon-location.svg" width="20" height="20" class="p-icon" alt="Location"/>
+                                <div class="footer-country"> France</div>    
+                                <p> 66 Rue des Archives, Paris</p>
+                            </div>
+                        </div>
+                        
+                        <div class="footer-addresses">
+                            <div class="footer-address">
+                                <img src="/statics/img/icon-location.svg" width="20" height="20" class="p-icon" alt="Location"/>
+                                <div class="footer-country"> Netherlands</div>    
+                                <p> Nieuwstraat 11 B13, Maastricht</p>
+                            </div>
+                        </div>
+                        
+                        <div class="footer-addresses">
+                            <div class="footer-address">
+                                <img src="/statics/img/icon-location.svg" width="20" height="20" class="p-icon" alt="Location"/>
+                                <div class="footer-country"> Serbia</div>    
+                                <p> Mileve Maric 4, 21241 Kać</p>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+                <div class="col-12 col-sm-4 col-md-4 col-xl-2">
+
+                         
+                        <div class="footer-title">MES &amp; OEE</div>
+                        
+                            <div class="footer-link"><a href="/feature/mes-oee-solution-overview/">Solution overview MES &amp; OEE</a></div>
+                        
+                            <div class="footer-link"><a href="/feature/mes-oee-tracking-availability/">Tracking Availability</a></div>
+                        
+                            <div class="footer-link"><a href="/feature/mes-oee-machine-connectivity/">Machine connectivity</a></div>
+                        
+                            <div class="footer-link"><a href="/feature/mes-oee-production-planning/">Production planning</a></div>
+                        
+                            <div class="footer-link"><a href="/feature/mes-oee-computer-vision/">Computer vision</a></div>
+                         
+                        <div style="height: 20px;"></div>
+                         
+                        <div class="footer-title">CMMS</div>
+                        
+                            <div class="footer-link"><a href="/feature/cmms-solution-overview/">CMMS Solution overview</a></div>
+                        
+                            <div class="footer-link"><a href="/feature/emergency-repairs/">Emergency repairs</a></div>
+                        
+                            <div class="footer-link"><a href="/feature/preventive-maintenance/">Preventive Maintenance</a></div>
+                        
+                            <div class="footer-link"><a href="/feature/analytics-and-reporting/">Analytics &amp; Reporting</a></div>
+                        
+                            <div class="footer-link"><a href="/feature/task-management/">Task Management &amp; Work Cards</a></div>
+                        
+                            <div class="footer-link"><a href="/feature/smart-notifications/">Smart notifications</a></div>
+                        
+                            <div class="footer-link"><a href="/feature/inventory-management/">Inventory Management</a></div>
+                        
+                            <div class="footer-link"><a href="/feature/multi-accounts/">Group and Multisite Overview and Management</a></div>
+                         
+                        <div style="height: 20px;"></div>
+                         
+                        <div class="footer-title">AI add-ons</div>
+                        
+                            <div class="footer-link"><a href="/feature/ai-add-ons-overview/">AI add-ons overview</a></div>
+                        
+                            <div class="footer-link"><a href="/feature/ai-add-ons-ai-assistant/">AI Assistant</a></div>
+                        
+                            <div class="footer-link"><a href="/feature/ai-add-ons-inefficiencies/">Inefficiencies zoom-in</a></div>
+                        
+                            <div class="footer-link"><a href="/feature/ai-add-ons-ai-agent/">AI Agent</a></div>
+                        
+                            <div class="footer-link"><a href="/feature/ai-add-ons-custom-ai-modules/">Custom AI modules</a></div>
+                         
+                        <div style="height: 20px;"></div>
+                    
+
+                    
+                </div>
+                <div class="col-12 col-sm-4 col-md-4 col-xl-2">
+                    <div class="footer-title">Resources</div>
+                    <div class="footer-link"><a href="/customers/">Customer stories</a></div>  
+                    <div class="footer-link"><a href="/blog/">Blog</a></div>   
+                    <div class="footer-link"><a href="/survey/">Take our Survey</a></div>  
+                    <div class="footer-link"><a href="/calculator/">ROI Calculator</a></div> 
+                    <div class="footer-link"><a href="/calculator-oee/">OEE Calculator</a></div> 
+                    <div class="footer-link"><a href="/knowledge-center/">Knowledge Center</a></div> 
+                    <div class="footer-link"><a href="/faq/">FAQ</a></div>   
+                    <div class="footer-link"><a href="/glossary/">Glossary</a></div>   
+                </div>
+                <div class="col-12 col-sm-4 col-md-4 col-xl-2">
+                    <div class="footer-title">Information</div>
+                    <div class="footer-link"><a href="/about-us/">About Us</a></div>    
+                    <div class="footer-link"><a href="/pricing/">Pricing</a></div>
+                    <div class="footer-link"><a href="/contacts/">Contacts</a></div>
+                    <div class="footer-link"><a href="/security/">Security</a></div> 
+                    <div class="footer-link"><a href="/privacy-policy/">Privacy Policy</a></div>
+                    <div class="footer-link"><a href="/cookies-declaration/">Cookies Declaration</a></div>
+                    <div class="footer-link"><a href="/terms-and-conditions/">Terms and Conditions</a></div>
+                    
+
+                    <div class="social-links">
+                        <a href="https://www.facebook.com/fabrico.io" target="_blank">
+                            <img src="/statics/img/icon-facebook.svg" alt="Facebook" width="36" height="36"/>
+                        </a>
+                        <a href="https://www.linkedin.com/company/fabricoio" target="_blank">
+                            <img src="/statics/img/icon-linkedin.svg" alt="Instagram" width="36" height="36"/>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-12 col-md-3 col-xl-2 footer-apps-col">
+                    <div class="mobile-app"><span onclick="window.location='https://apps.apple.com/us/app/fabrico/id1617719283'" 
+                        aria-label="App Store"
+                        target="_blank" style="background-image:url(/statics/img/img-appstore.png)"></span></div>
+                    <div class="mobile-app"><span onclick="window.location='https://play.google.com/store/apps/details?id=io.fabrico.dev'"  
+                        aria-label="Google Play"
+                        target="_blank" style="background-image:url(/statics/img/img-playstore.png)"></span></div> 
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="footer-vc">
+            Fabrico SaaS has been supported by "Vitosha Venture Partners Fund l", a private equity fund, 
+            co-financed by the European Structural and Investment Funds under the operational program 
+            “Innovation and Competitiveness 2014-2020”, managed by the Fund Manager of Financial Instruments in Bulgaria.
+        </div>
+    </div>
+</footer>
+
+
+<div id="cookies-settings" onclick="openCookies();"></div>
+
+<div id="cookies">
+    <div class="container">
+        <div class="cookies-content">
+            <div class="cookies-text">
+                By clicking the Accept button, you are giving your consent to the use of cookies when accessing this website and utilizing our services. To learn more about how cookies are used and managed, please refer to our 
+                <a href="/privacy-policy/">Privacy Policy</a> and 
+                <a href="/cookies-declaration/">Cookies Declaration</a>
+            </div>
+            <div class="cookies-button">
+                <a href="javascript:openCookies();" class="btn btn-white btn-small">Customize</a>
+                <a href="javascript:cookiesAccept([]);" class="btn btn-primary btn-small">Accept</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="shadow" onclick="closePopup()">
+    <div id="popup" onclick="event.stopPropagation()">
+
+        <div id="popup-video"></div>
+
+        <div id="popup-cookies" data-tab="1">
+            
+
+            <div class="cookies-consent-tabs">
+                <div class="cookies-consent-tab active" id="cookies-consent-tab-1" onclick="openCookiesTab(1)">
+                    <div class="cookies-consent-tab-title">Consent</div>
+                </div>
+                <div class="cookies-consent-tab" id="cookies-consent-tab-2" onclick="openCookiesTab(2)">
+                    <div class="cookies-consent-tab-title">Details</div>
+                </div>
+                <div class="cookies-consent-tab" id="cookies-consent-tab-3" onclick="openCookiesTab(3)">
+                    <div class="cookies-consent-tab-title">About</div>
+                </div>
+            </div>
+            <div class="cookies-consent-content">
+                <div class="cookies-consent-tab-content active" id="cookies-consent-tab-content-1">
+                   <h3>This website uses cookies</h3>
+                   <p>We use cookies to personalise content and ads, to provide social media features and to analyse our traffic. We also share information about your use of our site with our social media, advertising and analytics partners who may combine it with other information that you’ve provided to them or that they’ve collected from your use of their services.</p>
+
+                   <div id="cookies-consent-info">
+                        <div id="cookies-consent-info-cookies">
+                            <div class="cookies-consent-category-check active">Necessary</div> 
+                            <div class="cookies-consent-category-check" id="cookies-statistics-check">Statistics</div>      
+                            <div class="cookies-consent-category-check" id="cookies-marketing-check">Marketing</div>   
+                        </div>
+                        <div id="cookies-consent-info-details">
+                            <b>Consent date:</b>
+                            <div id="cookies-consent-date"></div>
+                            
+                            <b>Your consent ID:</b><br>
+                            <div id="cookies-consent-hash"></div>
+
+                            <a href="javascript:cookiesWithdraw()">Withdraw your consent</a>
+                        </div>
+                   </div>
+                </div>  
+                <div class="cookies-consent-tab-content" id="cookies-consent-tab-content-2">
+                    <div class="cookies-consent-category">
+                        <div class="cookies-consent-category-top">
+                            <div class="cookies-consent-category-top-switch switch-disabled"><input name="necessary" type="checkbox" checked disabled></div>  
+                            <div class="cookies-consent-category-top-title">Necessary</div>      
+                        </div>
+                        <div class="cookies-consent-category-text">Necessary cookies help make a website usable by enabling basic functions like page navigation and access to secure areas of the website. The website cannot function properly without these cookies.</div>
+                    </div>
+                    <div class="cookies-consent-category">
+                        <div class="cookies-consent-category-top">
+                            <div class="cookies-consent-category-top-switch" id="cat-statistics"><input name="statistics" type="checkbox"></div>  
+                            <div class="cookies-consent-category-top-title">Statistics</div>   
+                        </div>
+                        <div class="cookies-consent-category-text">Statistic cookies help website owners to understand how visitors interact with websites by collecting and reporting information anonymously.</div>
+                    </div>
+                    <div class="cookies-consent-category">
+                        <div class="cookies-consent-category-top">
+                            <div class="cookies-consent-category-top-switch" id="cat-marketing"><input name="marketing" type="checkbox"></div>   
+                            <div class="cookies-consent-category-top-title">Marketing</div>
+                        </div>
+                        <div class="cookies-consent-category-text">Marketing cookies are used to track visitors across websites. The intention is to display ads that are relevant and engaging for the individual user and thereby more valuable for publishers and third party advertisers.</div>
+                    </div>
+                </div>
+                <div class="cookies-consent-tab-content" id="cookies-consent-tab-content-3">
+                   <p>Cookies are small text files that can be used by websites to make a user&#39;s experience more efficient.<br />
+<br />
+The law states that we can store cookies on your device if they are strictly necessary for the operation of this site. For all other types of cookies we need your permission.&nbsp;This means that cookies which are categorized as necessary, are processed based on GDPR Art. 6 (1) (f). All other cookies, meaning those from the categories preferences and marketing, are processed based on GDPR Art. 6 (1) (a).<br />
+<br />
+This site uses different types of cookies. Some cookies are placed by third party services that appear on our pages.<br />
+<br />
+You can at any time change or withdraw your consent from the <a href="/cookies-declaration/" style="color: rgba(16, 50, 207, 1)">Cookie Declaration</a> on our website.<br />
+<br />
+Learn more about who we are, how you can contact us and how we process personal data in our <a href="/privacy-policy/" style="color: rgba(16, 50, 207, 1)">Privacy Policy</a>.</p> 
+                </div>
+            </div>
+            <div class="cookies-consent-buttons">
+                <a href="javascript:;" onclick="closePopup(true);cookiesAccept({'statistics':true,'marketing':true},false,true);" class="btn btn-red">Deny</a>
+                
+                <a href="javascript:;" onclick="openCookiesTab(2);" id="cookies-customize-open" class="btn btn-blank">Customize ></a>
+                <a href="javascript:;" onclick="closePopup(true);cookiesAccept(DISABLED_COOKIES);" id="cookies-customize-allow" class="btn btn-blank d-none">Allow selection</a>
+
+                <a href="javascript:;" onclick="closePopup(true);openCookiesTab(1);cookiesAccept({'statistics':false,'marketing':false},false,true);"  class="btn btn-primary">Accept</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-WRPRKP4H');</script>
+        <!-- End Google Tag Manager -->
+    
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-YYQT227GMZ"></script>
+        <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+   
+        gtag('js', new Date());
+        gtag('config', 'G-YYQT227GMZ');
+    </script>
+
+    <script>!function(key) {if (window.reb2b) return;window.reb2b = {loaded: true};var s = document.createElement("script");s.async = true;s.src = "https://ddwl4m2hdecbv.cloudfront.net/b/" + key + "/" + key + ".js.gz";document.getElementsByTagName("script")[0].parentNode.insertBefore(s, document.getElementsByTagName("script")[0]);}("9NMMZHRM8KNW");</script>
+
+
+<!-- Javascript  -->
+<script src="/statics/js/jquery-3.6.4.min.js"></script>
+<script src="/statics/js/jquery-ui.js"></script>
+
+<script src="/statics/js/bootstrap.bundle.min.js"></script>
+<script src="/statics/js/slick.min.js?v=1"></script>
+<script src="/statics/js/slick-config.js?v=8"></script>
+
+<script src="/statics/js/global.js?v=30"></script>
+<script>
+    // Mirror GA4 lead events as a GTM-readable dataLayer event: GTM cannot read gtag's arguments object.
+    // Must stay AFTER every gtag declaration on the page (the body GA4 snippet redeclares gtag) and BEFORE requester.js.
+    (function () {
+        var baseGtag = window.gtag;
+        if (typeof baseGtag !== 'function' || baseGtag.leadMirror) { return; }
+        var mirroring = false;
+        var wrapped = function () {
+            baseGtag.apply(this, arguments);
+            if (!mirroring && arguments[0] === 'event' && arguments[1] === 'generate_lead') {
+                mirroring = true;
+                try {
+                    var params = arguments[2] || {};
+                    window.dataLayer.push({'event': 'lead_submit', 'form_type': params.event_label || 'unknown'});
+                } catch (e) {
+                } finally {
+                    mirroring = false;
+                }
+            }
+        };
+        wrapped.leadMirror = true;
+        window.gtag = wrapped;
+    })();
+</script>
+<script src="/statics/js/requester.js?v=20"></script>
+<script src="/statics/js/switch.js?v=1"></script>
+
+
+<script>
+    $(function(){
+        
+        let contents = "";
+        let i = 0;
+        $('#contents-section').find('h1, h2').each(function(){
+            $(this).attr('data-id', i);
+            $(this).find('br').remove();
+            contents += $(this)[0].outerHTML;
+            i++;
+        });
+        
+        if(contents != ""){
+            $('.article-contents').show();
+
+            $('#contents-menu').prepend(`<div id="contents-links">${contents}</div>`);
+
+            $('#contents-menu').find('h1, h2').each(function(){
+                $(this).on('click', function(){ 
+                    const id = $(this).attr('data-id');
+                    const t = $('#contents-section').find(`[data-id=${id}]`).offset().top
+                    $('html, body').animate({scrollTop: (t - 120)}, 500);
+                })
+            });
+        }
+    });
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BlogPosting",
+      "headline": "Tool Crib Management System: Data Model, Fields and Workflow",
+      
+      "datePublished": "2026-09-19",
+      "dateModified": "2026-10-04",
+      
+      "publisher": {
+        "@type": "Organization",
+        "name": "Fabrico",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://www.fabrico.io/statics/img/fabrico-logo-clean.svg"
+        }
+      },
+      "description": "Field tables for a tool crib system: item master, serialised vs bulk stock, transaction log, calibration, lifecycle statuses, reorder point math and KPIs."
+    }
+    
+  ]
+}
+</script>
+
+
+</body>
+</html>
+
+

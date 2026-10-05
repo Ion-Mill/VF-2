@@ -1,0 +1,348 @@
+SOURCE: https://wizcore.co.kr/product/smart-factory/nexpom/monitoring/
+FETCHED: 2026-10-05
+
+Monitoring – WIZCORE
+
+ABOUT US
+
+회사소개
+
+PRODUCT
+
+제조 DX
+
+NEXPOM
+
+Overview
+
+Monitoring
+
+MES
+
+HACCP
+
+SPC
+
+EMS
+
+NEXPOMer
+
+정부지원사업
+
+GLOBAL IT
+
+PURE STORAGE
+
+NUTANIX
+
+SPLUNK
+
+VERITAS
+
+PRECISE
+
+USE CASE
+
+PARTNERS
+
+CAREER
+
+채용안내
+
+채용공고
+
+NEWS
+
+CONTACT US
+
+찾아오시는길
+
+문의하기
+
+ PARTNER PORTAL
+
+ KOR 
+
+ ENG 
+
+ CHN 
+
+ MENU
+
+전체메뉴
+
+ PARTNER PORTAL
+
+ KOR 
+
+ ENG 
+
+ CHN 
+
+ 메뉴닫기
+
+ABOUT US
+
+회사소개
+
+PRODUCT
+
+제조 DX
+NEXPOM
+Overview
+
+Monitoring
+
+MES
+
+HACCP
+
+SPC
+
+EMS
+
+NEXPOMer
+
+정부지원사업
+
+GLOBAL IT
+PURE STORAGE
+
+NUTANIX
+
+SPLUNK
+
+VERITAS
+
+PRECISE
+
+USE CASE
+
+PARTNERS
+
+CAREER
+
+채용안내
+
+채용공고
+
+NEWS
+
+CONTACT US
+
+찾아오시는길
+
+문의하기
+
+PRODUCT
+
+기업의 경쟁력을 높이는 가장 확실한 솔루션
+
+ PRODUCT
+
+PRODUCT
+
+USE CASE
+
+PARTNERS
+
+CAREER
+
+NEWS
+
+CONTACT US
+
+ 제조 DX
+
+제조 DX
+
+GLOBAL IT
+
+ NEXPOM
+
+NEXPOM
+
+NEXPOMer
+
+정부지원사업
+
+ Monitoring
+
+Overview
+
+Monitoring
+
+MES
+
+HACCP
+
+SPC
+
+EMS
+
+ 맨 위로
+
+Monitoring
+
+NEXPOM은 생산, 설비, 품질, 에너지 등의 KPI를 기준으로 시스템 및 공장 현황을 통합 분석 및 실시간 모니터링하여, 공장의 종합상황실 역할을 하고 최적의 공장 운영 지표를 제공합니다.
+
+공장 운영 현황을 최적화된 지표를 통해 관리 가능한 통합 모니터링
+
+생산 대시보드 
+
+생산 관련 지표를 라인 > 공정의 TOP-DOWN 방식으로 토탈 모니터링
+
+품질 대시보드 
+
+생산에 중요한 영향을 미치는 품질 데이터를 실시간으로 파악
+
+설비 대시보드 
+
+설비 주요 지표를 통해 최적화된 설비 상태 관리
+
+에너지 대시보드 
+
+에너지의 흐름 및 비용 환산을 통한 공장 에너지 관리
+
+Monitoring 활용 예시
+
+ STEP. 1
+ 가공 설비의 컨트롤러, PLC 등의 I/F를 통해 데이터 수집 및 OEE 분석&모니터링 
+
+ STEP. 2
+ 손실 발생 요인들의 종류, 빈도, 누적 시간 등을 분석하여 손실 요인의 우선 순위화 
+
+ STEP. 3
+ 우선 순위가 높은 요인들부터 관리, 개선하여 생산성 향상 및 비용절감 효과 
+
+ STEP. 4
+ 미정의된 요소들에 대한 신규 시나리오 적용, 분석 및 검증을 통해 KPI 업데이트 적용 
+
+Monitoring 구축 사례
+
+의료기기 A사
+
+ 도입 제품 
+
+Monitoring + MES
+
+ 구축 이유 
+
+점점 높아지는 의료용 기기에 대한 품질 관리(UDI)에 대비하고, 정확한 재고 관리를 통한 생산효율을 극대화할 수 있는 스마트팩토리 시스템 구축
+
+ 구축 내용 
+
+자재 입고에서 출하까지 MES를 통한 LOT 추적 관리
+
+설비 I/F를 통한 생산 데이터 수집 자동화
+
+원재료, 반제품, 완제품에 대한 정확한 재고 파악 및 모니터링
+
+ 구축 효과 
+
+25%
+
+생산과정의 체계적인 시스템화에 따른 생산량 25% 증가
+
+24%
+
+측정 데이터의 실시간 관리를 통한 완제품 불량률 24% 개선
+
+4%
+
+생산량에 따른 정확한 자재 소요량 파악으로 재고 비용 4% 절감
+
+10%
+
+공정 진척 현황 관리에 따른 정확한 납기 예측으로 리드타임 10% 감소
+
+ Contact us
+
+김종민 차장
+ Sales
+
+wizcore@wizcore.co.kr
+
+02. 3273. 2608
+
+ PARTNER PORTAL
+
+ 회사소개서 
+
+ BLOG 
+
+ YOUTUBE 
+
+ SAFELY 
+
+ 개인정보처리방침 
+
+ABOUT US
+
+회사소개
+
+PRODUCT
+
+제조 DX
+NEXPOM
+Overview
+
+Monitoring
+
+MES
+
+HACCP
+
+SPC
+
+EMS
+
+NEXPOMer
+
+정부지원사업
+
+GLOBAL IT
+PURE STORAGE
+
+NUTANIX
+
+SPLUNK
+
+VERITAS
+
+PRECISE
+
+USE CASE
+
+PARTNERS
+
+CAREER
+
+채용안내
+
+채용공고
+
+NEWS
+
+CONTACT US
+
+찾아오시는길
+
+문의하기
+
+위즈코어 주식회사 (Smart Factory Division)
+
+ ADDRESS.
+ 서울시 성동구 아차산로 17길 49, 성수생각공장 데시앙플렉스 1505~8호 / 1406호 
+
+ TEL. 
+ 02. 3273. 2608 
+
+ FAX. 
+ 02. 3273. 2609 
+
+대표 :박승훈
+
+사업자등록번호 :105-81-74484
+
+ Copyright 2026 WIZCORE Inc. All Rights Reserved.

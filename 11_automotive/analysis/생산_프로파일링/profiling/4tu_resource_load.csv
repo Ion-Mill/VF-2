@@ -1,0 +1,32 @@
+﻿Resource,rows,span_h,orders,workers,days,h_per_active_day,util_vs_calendar_pct
+Quality Check 1,1193,1936.93,214,9,76,25.49,89.67
+Machine 4 - Turning & Milling,271,1532.7,35,9,84,18.25,70.96
+Machine 5 - Turning & Milling,264,1440.82,35,11,78,18.47,66.7
+Machine 6 - Turning & Milling,261,1314.67,39,11,80,16.43,60.86
+Machine 2 - Round Grinding,273,1093.67,47,8,75,14.58,50.63
+Machine 3 - Round Grinding,275,1036.58,44,8,70,14.81,47.99
+Machine 10 - Grinding,178,995.13,21,11,67,14.85,46.07
+Machine 9 - Turning & Milling,198,922.53,26,11,65,14.19,42.71
+Machine 8 - Turning & Milling,219,819.05,44,9,72,11.38,37.92
+Machine 1 - Lapping,369,521.73,132,10,74,7.05,24.15
+Machine 27 - Grinding,153,477.6,43,4,60,7.96,22.11
+Machine 12 - Grinding,93,251.25,33,4,38,6.61,11.63
+Machine 15 - Turning,49,229.45,8,7,23,9.98,10.62
+Machine 7- Laser Marking,252,180.1,167,15,64,2.81,8.34
+Machine 11 - Grinding,124,162.47,65,6,54,3.01,7.52
+Wire Cut - Machine 13,21,126.0,4,2,15,8.4,5.83
+Machine 14 - Milling,18,77.62,2,4,8,9.7,3.59
+Machine 16 - Milling,10,76.22,4,1,10,7.62,3.53
+Machine 22 - Milling,4,32.78,1,2,3,10.93,1.52
+Machine 18 - Wire Cutting,6,30.0,3,2,4,7.5,1.39
+Manual Deburring,9,14.48,6,3,9,1.61,0.67
+Machine 19 - Grinding,6,13.63,1,1,2,6.82,0.63
+Machine 21 - Turning,4,12.0,4,1,3,4.0,0.56
+Oven,3,11.1,3,2,3,3.7,0.51
+Machine 17 - Sinking,4,11.02,2,2,4,2.75,0.51
+Machine 23 - Turning,3,7.68,2,2,3,2.56,0.36
+Machine 25 - Grinding,1,6.75,1,1,1,6.75,0.31
+Machine 26 - Flat Grinding,1,4.5,1,1,1,4.5,0.21
+Manual Milling - Machine 28,2,3.5,2,1,1,3.5,0.16
+Quality Check 2,2,1.0,1,1,2,0.5,0.05
+Packing,277,0.0,175,4,68,0.0,0.0

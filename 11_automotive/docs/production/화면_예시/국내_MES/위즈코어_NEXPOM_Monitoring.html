@@ -1,0 +1,821 @@
+<!doctype html>
+<html lang="ko-KR">
+	<head>
+
+        <!-- Google Tag Manager -->
+        <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-W5P762Q');</script>
+        <!-- End Google Tag Manager -->
+
+		<meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=11">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta property="og:image" content="/wp-content/themes/wizcore/statics/common/images/opengraph_wizcore.png" />
+        <meta property="og:title" content="위즈코어 WIZCORE" />
+        <meta property="og:description" content="고객의 데이터를 발굴해서 숨겨진 가치를 발견하다." />
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+		<link rel="profile" href="http://gmpg.org/xfn/11">
+		<title>Monitoring &#8211; WIZCORE</title>
+<link rel='dns-prefetch' href='//wcs.naver.net' />
+<link rel='dns-prefetch' href='//wizcore.co.kr' />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="WIZCORE &raquo; 피드" href="https://wizcore.co.kr/feed/" />
+<link rel="alternate" type="application/rss+xml" title="WIZCORE &raquo; 댓글 피드" href="https://wizcore.co.kr/comments/feed/" />
+		<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/13.0.0\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/13.0.0\/svg\/","svgExt":".svg","source":{"concatemoji":"https:\/\/wizcore.co.kr\/wp-includes\/js\/wp-emoji-release.min.js?ver=5.5.1"}};
+			!function(e,a,t){var r,n,o,i,p=a.createElement("canvas"),s=p.getContext&&p.getContext("2d");function c(e,t){var a=String.fromCharCode;s.clearRect(0,0,p.width,p.height),s.fillText(a.apply(this,e),0,0);var r=p.toDataURL();return s.clearRect(0,0,p.width,p.height),s.fillText(a.apply(this,t),0,0),r===p.toDataURL()}function l(e){if(!s||!s.fillText)return!1;switch(s.textBaseline="top",s.font="600 32px Arial",e){case"flag":return!c([127987,65039,8205,9895,65039],[127987,65039,8203,9895,65039])&&(!c([55356,56826,55356,56819],[55356,56826,8203,55356,56819])&&!c([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]));case"emoji":return!c([55357,56424,8205,55356,57212],[55357,56424,8203,55356,57212])}return!1}function d(e){var t=a.createElement("script");t.src=e,t.defer=t.type="text/javascript",a.getElementsByTagName("head")[0].appendChild(t)}for(i=Array("flag","emoji"),t.supports={everything:!0,everythingExceptFlag:!0},o=0;o<i.length;o++)t.supports[i[o]]=l(i[o]),t.supports.everything=t.supports.everything&&t.supports[i[o]],"flag"!==i[o]&&(t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&t.supports[i[o]]);t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&!t.supports.flag,t.DOMReady=!1,t.readyCallback=function(){t.DOMReady=!0},t.supports.everything||(n=function(){t.readyCallback()},a.addEventListener?(a.addEventListener("DOMContentLoaded",n,!1),e.addEventListener("load",n,!1)):(e.attachEvent("onload",n),a.attachEvent("onreadystatechange",function(){"complete"===a.readyState&&t.readyCallback()})),(r=t.source||{}).concatemoji?d(r.concatemoji):r.wpemoji&&r.twemoji&&(d(r.twemoji),d(r.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+		<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+	<link rel='stylesheet' id='wp-block-library-css'  href='https://wizcore.co.kr/wp-includes/css/dist/block-library/style.min.css?ver=5.5.1' type='text/css' media='all' />
+<link rel='stylesheet' id='vc-fonts-css'  href='https://wizcore.co.kr/wp-content/themes/wizcore/statics/common/fonts/font-ko_KR.css?ver=2026-10-04' type='text/css' media='all' />
+<link rel='stylesheet' id='vc-common-css'  href='https://wizcore.co.kr/wp-content/themes/wizcore/statics/common/common.css?ver=2026-10-04' type='text/css' media='all' />
+<link rel='stylesheet' id='vc-slick-css'  href='https://wizcore.co.kr/wp-content/themes/wizcore/statics/common/libs/slick/slick.css?ver=2026-10-04' type='text/css' media='all' />
+<link rel='stylesheet' id='vc-plyr-css'  href='https://wizcore.co.kr/wp-content/themes/wizcore/statics/common/libs/plyr/plyr.css?ver=2026-10-04' type='text/css' media='all' />
+<link rel='stylesheet' id='wizcore-single-product-css'  href='https://wizcore.co.kr/wp-content/themes/wizcore/statics/product/common.css?ver=2026-10-04' type='text/css' media='all' />
+<link rel='stylesheet' id='wizcore-booth-css'  href='https://wizcore.co.kr/wp-content/themes/wizcore/statics/product/booth.css?ver=2026-10-04' type='text/css' media='all' />
+<link rel='stylesheet' id='wizcore-board-css'  href='https://wizcore.co.kr/wp-content/themes/wizcore/statics/board/common.css?ver=2026-10-04' type='text/css' media='all' />
+<script type='text/javascript' src='https://wizcore.co.kr/wp-includes/js/jquery/jquery.js?ver=1.12.4-wp' id='jquery-core-js'></script>
+<link rel="https://api.w.org/" href="https://wizcore.co.kr/wp-json/" /><link rel="alternate" type="application/json" href="https://wizcore.co.kr/wp-json/wp/v2/product/208" /><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://wizcore.co.kr/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://wizcore.co.kr/wp-includes/wlwmanifest.xml" /> 
+<link rel='prev' title='MES' href='https://wizcore.co.kr/product/smart-factory/nexpom/mes/' />
+<link rel='next' title='Overview' href='https://wizcore.co.kr/product/smart-factory/nexpom/overview/' />
+<meta name="generator" content="WordPress 5.5.1" />
+<link rel="canonical" href="https://wizcore.co.kr/product/smart-factory/nexpom/monitoring/" />
+<link rel='shortlink' href='https://wizcore.co.kr/?p=208' />
+<link rel="alternate" type="application/json+oembed" href="https://wizcore.co.kr/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwizcore.co.kr%2Fproduct%2Fsmart-factory%2Fnexpom%2Fmonitoring%2F" />
+<link rel="alternate" type="text/xml+oembed" href="https://wizcore.co.kr/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwizcore.co.kr%2Fproduct%2Fsmart-factory%2Fnexpom%2Fmonitoring%2F&#038;format=xml" />
+<link rel="icon" href="https://wizcore.co.kr/wp-content/uploads/2023/01/cropped-favicon_wizcore_blue-32x32.png" sizes="32x32" />
+<link rel="icon" href="https://wizcore.co.kr/wp-content/uploads/2023/01/cropped-favicon_wizcore_blue-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon" href="https://wizcore.co.kr/wp-content/uploads/2023/01/cropped-favicon_wizcore_blue-180x180.png" />
+<meta name="msapplication-TileImage" content="https://wizcore.co.kr/wp-content/uploads/2023/01/cropped-favicon_wizcore_blue-270x270.png" />
+	</head>
+
+    <body class="production" id="top">
+
+        <header class="header">
+            <div class="header-background"><div class="header-indicator"></div></div>
+            <div class="l_wrapper">
+                <div class="header-inside">
+                    <a class="header-logo" href="https://wizcore.co.kr">
+                        <span class="header-logo-contents">
+                            <img src="/wp-content/themes/wizcore/statics/common/images/logo_wizcore.png">
+                        </span>
+                    </a>
+                    <nav class="header-menu">
+                        <div class="header-menu-list"><ul id="menu-global-menu" class="menu"><li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children drop drop-0"><a  href="https://wizcore.co.kr/about-us/company/" class="drop-anchor drop-anchor-0"><h2>ABOUT US</h2></a><div class="header-drop header-drop-0"><ul class="header-drop-inside header-drop-0-inside"><li class="menu-item menu-item-type-post_type menu-item-object-page drop drop-1 is_ko"><a  href="https://wizcore.co.kr/about-us/company/" class="drop-anchor drop-anchor-1"><h3>회사소개</h3></a></li>
+</ul></div></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page current-menu-ancestor current_page_ancestor menu-item-has-children drop drop-0"><a  href="https://wizcore.co.kr/product/" class="drop-anchor drop-anchor-0"><h2>PRODUCT</h2></a><div class="header-drop header-drop-0"><ul class="header-drop-inside header-drop-0-inside"><li class="menu-item menu-item-type-post_type menu-item-object-product current-product-ancestor current-menu-ancestor menu-item-has-children drop drop-1 is_ko"><a  href="https://wizcore.co.kr/product/smart-factory/" class="drop-anchor drop-anchor-1"><h3>제조 DX</h3></a><div class="header-drop header-drop-1"><ul class="header-drop-inside header-drop-1-inside"><li class="menu-item menu-item-type-post_type menu-item-object-product current-product-ancestor current-menu-ancestor current-menu-parent current-product-parent menu-item-has-children drop drop-2"><a  href="https://wizcore.co.kr/product/smart-factory/nexpom/" class="drop-anchor drop-anchor-2">NEXPOM</a><div class="header-drop header-drop-2"><ul class="header-drop-inside header-drop-2-inside"><li class="menu-item menu-item-type-post_type menu-item-object-product drop drop-3"><a  href="https://wizcore.co.kr/product/smart-factory/nexpom/overview/" class="drop-anchor drop-anchor-3">Overview</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-product current-menu-item drop drop-3"><a  href="https://wizcore.co.kr/product/smart-factory/nexpom/monitoring/" class="drop-anchor drop-anchor-3">Monitoring</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-product drop drop-3"><a  href="https://wizcore.co.kr/product/smart-factory/nexpom/mes/" class="drop-anchor drop-anchor-3">MES</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-product drop drop-3"><a  href="https://wizcore.co.kr/product/smart-factory/nexpom/haccp/" class="drop-anchor drop-anchor-3">HACCP</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-product drop drop-3"><a  href="https://wizcore.co.kr/product/smart-factory/nexpom/spc/" class="drop-anchor drop-anchor-3">SPC</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-product drop drop-3"><a  href="https://wizcore.co.kr/product/smart-factory/nexpom/ems/" class="drop-anchor drop-anchor-3">EMS</a></li>
+</ul></div></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-product drop drop-2"><a  href="https://wizcore.co.kr/product/smart-factory/nexpomer/" class="drop-anchor drop-anchor-2">NEXPOMer</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-product drop drop-2 is_ko"><a  href="https://wizcore.co.kr/product/smart-factory/%ec%a0%95%eb%b6%80%ec%a7%80%ec%9b%90%ec%82%ac%ec%97%85/" class="drop-anchor drop-anchor-2">정부지원사업</a></li>
+</ul></div></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-product menu-item-has-children drop drop-1"><a  href="https://wizcore.co.kr/product/global-it/" class="drop-anchor drop-anchor-1"><h3>GLOBAL IT</h3></a><div class="header-drop header-drop-1"><ul class="header-drop-inside header-drop-1-inside"><li class="menu-item menu-item-type-post_type menu-item-object-product drop drop-2"><a  href="https://wizcore.co.kr/product/global-it/pure-storage/" class="drop-anchor drop-anchor-2">PURE STORAGE</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-product drop drop-2"><a  href="https://wizcore.co.kr/product/global-it/nutanix/" class="drop-anchor drop-anchor-2">NUTANIX</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-product drop drop-2"><a  href="https://wizcore.co.kr/product/global-it/splunk/" class="drop-anchor drop-anchor-2">SPLUNK</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-product drop drop-2"><a  href="https://wizcore.co.kr/product/global-it/veritas/" class="drop-anchor drop-anchor-2">VERITAS</a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-product drop drop-2"><a  href="https://wizcore.co.kr/product/global-it/precise/" class="drop-anchor drop-anchor-2">PRECISE</a></li>
+</ul></div></li>
+</ul></div></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page drop drop-0"><a  href="https://wizcore.co.kr/use-case/" class="drop-anchor drop-anchor-0"><h2>USE CASE</h2></a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page drop drop-0"><a  href="https://wizcore.co.kr/partners/" class="drop-anchor drop-anchor-0"><h2>PARTNERS</h2></a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children drop drop-0"><a  href="https://wizcore.co.kr/career/" class="drop-anchor drop-anchor-0"><h2>CAREER</h2></a><div class="header-drop header-drop-0"><ul class="header-drop-inside header-drop-0-inside"><li class="menu-item menu-item-type-post_type menu-item-object-page drop drop-1 is_ko"><a  href="https://wizcore.co.kr/career/information/" class="drop-anchor drop-anchor-1"><h3>채용안내</h3></a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page drop drop-1 is_ko"><a  href="https://wizcore.co.kr/career/recruitment/" class="drop-anchor drop-anchor-1"><h3>채용공고</h3></a></li>
+</ul></div></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page drop drop-0"><a  href="https://wizcore.co.kr/news/" class="drop-anchor drop-anchor-0"><h2>NEWS</h2></a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children drop drop-0"><a  href="https://wizcore.co.kr/contact-us/" class="drop-anchor drop-anchor-0"><h2>CONTACT US</h2></a><div class="header-drop header-drop-0"><ul class="header-drop-inside header-drop-0-inside"><li class="menu-item menu-item-type-post_type menu-item-object-page drop drop-1 is_ko"><a  href="https://wizcore.co.kr/contact-us/location/" class="drop-anchor drop-anchor-1"><h3>찾아오시는길</h3></a></li>
+<li class="menu-item menu-item-type-post_type menu-item-object-page drop drop-1 is_ko"><a  href="https://wizcore.co.kr/contact-us/form/" class="drop-anchor drop-anchor-1"><h3>문의하기</h3></a></li>
+</ul></div></li>
+</ul></div>                    </nav>
+                    <div class="header-portal">
+                        <a class="header-button" href="#none" target="_blank">PARTNER PORTAL</a>
+                            <div class="header-switch">
+        <button id="language-switch" class="header-switch-button" type="button">
+            KOR        </button>
+        <nav class="header-select">
+                                            <a class="header-select-option" href="/en">
+                    ENG                </a>
+                                            <a class="header-select-option" href="/cn">
+                    CHN                </a>
+                    </nav>
+    </div>
+                    </div>
+                    <aside class="header-aside">
+                        <button id="menu-open" class="header-burger" type="button">
+                            <i class="header-burger-icon"></i>
+                            <span class="hide">MENU</span>
+                        </button>
+                    </aside>
+                </div>
+            </div>
+        </header>
+
+        <div class="plate">
+            <div class="plate-background"></div>
+            <div class="plate-inside">
+                <div class="plate-header">
+                    <h1>전체메뉴</h1>
+                    <div class="plate-portal">
+                        <a class="plate-button" href="#none" target="_blank">PARTNER PORTAL</a>
+                            <div class="switch ">
+        <button id="language" class="switch-button" type="button">
+            KOR        </button>
+        <nav class="switch-select">
+                                            <a class="switch-select-option" href="/en">
+                    ENG                </a>
+                                            <a class="switch-select-option" href="/cn">
+                    CHN                </a>
+                    </nav>
+    </div>
+                    </div>
+                    <button class="plate-close" type="button">메뉴닫기</button>
+                </div>
+                <div class="plate-contents">
+                    <nav class="plate-nav"><ul id="menu-global-menu-1" class="menu"><li class="plate-nav-item plate-nav-item-0 menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children"><a  href="https://wizcore.co.kr/about-us/company/" class="plate-nav-anchor plate-nav-anchor_none"><h2>ABOUT US</h2></a><ul class="plate-nav-sub plate-nav-sub-0"><li class="plate-nav-item plate-nav-item-1 menu-item menu-item-type-post_type menu-item-object-page is_ko"><a  href="https://wizcore.co.kr/about-us/company/" class="plate-nav-anchor"><h3>회사소개</h3></a></li>
+</ul>
+</li>
+<li class="plate-nav-item plate-nav-item-0 menu-item menu-item-type-post_type menu-item-object-page current-menu-ancestor current_page_ancestor menu-item-has-children"><a  href="https://wizcore.co.kr/product/" class="plate-nav-anchor plate-nav-anchor_none"><h2>PRODUCT</h2></a><ul class="plate-nav-sub plate-nav-sub-0"><li class="plate-nav-item plate-nav-item-1 menu-item menu-item-type-post_type menu-item-object-product current-product-ancestor current-menu-ancestor menu-item-has-children is_ko"><a  href="https://wizcore.co.kr/product/smart-factory/" class="plate-nav-anchor plate-nav-anchor_none"><h3>제조 DX</h3></a><ul class="plate-nav-sub plate-nav-sub-1"><li class="plate-nav-item plate-nav-item-2 menu-item menu-item-type-post_type menu-item-object-product current-product-ancestor current-menu-ancestor current-menu-parent current-product-parent menu-item-has-children"><a  href="https://wizcore.co.kr/product/smart-factory/nexpom/" class="plate-nav-anchor plate-nav-anchor_none">NEXPOM</a><ul class="plate-nav-sub plate-nav-sub-2"><li class="plate-nav-item plate-nav-item-3 menu-item menu-item-type-post_type menu-item-object-product"><a  href="https://wizcore.co.kr/product/smart-factory/nexpom/overview/" class="plate-nav-anchor">Overview</a></li>
+<li class="plate-nav-item plate-nav-item-3 menu-item menu-item-type-post_type menu-item-object-product current-menu-item"><a  href="https://wizcore.co.kr/product/smart-factory/nexpom/monitoring/" class="plate-nav-anchor">Monitoring</a></li>
+<li class="plate-nav-item plate-nav-item-3 menu-item menu-item-type-post_type menu-item-object-product"><a  href="https://wizcore.co.kr/product/smart-factory/nexpom/mes/" class="plate-nav-anchor">MES</a></li>
+<li class="plate-nav-item plate-nav-item-3 menu-item menu-item-type-post_type menu-item-object-product"><a  href="https://wizcore.co.kr/product/smart-factory/nexpom/haccp/" class="plate-nav-anchor">HACCP</a></li>
+<li class="plate-nav-item plate-nav-item-3 menu-item menu-item-type-post_type menu-item-object-product"><a  href="https://wizcore.co.kr/product/smart-factory/nexpom/spc/" class="plate-nav-anchor">SPC</a></li>
+<li class="plate-nav-item plate-nav-item-3 menu-item menu-item-type-post_type menu-item-object-product"><a  href="https://wizcore.co.kr/product/smart-factory/nexpom/ems/" class="plate-nav-anchor">EMS</a></li>
+		</ul>
+</li>
+<li class="plate-nav-item plate-nav-item-2 menu-item menu-item-type-post_type menu-item-object-product"><a  href="https://wizcore.co.kr/product/smart-factory/nexpomer/" class="plate-nav-anchor">NEXPOMer</a></li>
+<li class="plate-nav-item plate-nav-item-2 menu-item menu-item-type-post_type menu-item-object-product is_ko"><a  href="https://wizcore.co.kr/product/smart-factory/%ec%a0%95%eb%b6%80%ec%a7%80%ec%9b%90%ec%82%ac%ec%97%85/" class="plate-nav-anchor">정부지원사업</a></li>
+	</ul>
+</li>
+<li class="plate-nav-item plate-nav-item-1 menu-item menu-item-type-post_type menu-item-object-product menu-item-has-children"><a  href="https://wizcore.co.kr/product/global-it/" class="plate-nav-anchor plate-nav-anchor_none"><h3>GLOBAL IT</h3></a><ul class="plate-nav-sub plate-nav-sub-1"><li class="plate-nav-item plate-nav-item-2 menu-item menu-item-type-post_type menu-item-object-product"><a  href="https://wizcore.co.kr/product/global-it/pure-storage/" class="plate-nav-anchor">PURE STORAGE</a></li>
+<li class="plate-nav-item plate-nav-item-2 menu-item menu-item-type-post_type menu-item-object-product"><a  href="https://wizcore.co.kr/product/global-it/nutanix/" class="plate-nav-anchor">NUTANIX</a></li>
+<li class="plate-nav-item plate-nav-item-2 menu-item menu-item-type-post_type menu-item-object-product"><a  href="https://wizcore.co.kr/product/global-it/splunk/" class="plate-nav-anchor">SPLUNK</a></li>
+<li class="plate-nav-item plate-nav-item-2 menu-item menu-item-type-post_type menu-item-object-product"><a  href="https://wizcore.co.kr/product/global-it/veritas/" class="plate-nav-anchor">VERITAS</a></li>
+<li class="plate-nav-item plate-nav-item-2 menu-item menu-item-type-post_type menu-item-object-product"><a  href="https://wizcore.co.kr/product/global-it/precise/" class="plate-nav-anchor">PRECISE</a></li>
+	</ul>
+</li>
+</ul>
+</li>
+<li class="plate-nav-item plate-nav-item-0 menu-item menu-item-type-post_type menu-item-object-page"><a  href="https://wizcore.co.kr/use-case/" class="plate-nav-anchor"><h2>USE CASE</h2></a></li>
+<li class="plate-nav-item plate-nav-item-0 menu-item menu-item-type-post_type menu-item-object-page"><a  href="https://wizcore.co.kr/partners/" class="plate-nav-anchor"><h2>PARTNERS</h2></a></li>
+<li class="plate-nav-item plate-nav-item-0 menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children"><a  href="https://wizcore.co.kr/career/" class="plate-nav-anchor plate-nav-anchor_none"><h2>CAREER</h2></a><ul class="plate-nav-sub plate-nav-sub-0"><li class="plate-nav-item plate-nav-item-1 menu-item menu-item-type-post_type menu-item-object-page is_ko"><a  href="https://wizcore.co.kr/career/information/" class="plate-nav-anchor"><h3>채용안내</h3></a></li>
+<li class="plate-nav-item plate-nav-item-1 menu-item menu-item-type-post_type menu-item-object-page is_ko"><a  href="https://wizcore.co.kr/career/recruitment/" class="plate-nav-anchor"><h3>채용공고</h3></a></li>
+</ul>
+</li>
+<li class="plate-nav-item plate-nav-item-0 menu-item menu-item-type-post_type menu-item-object-page"><a  href="https://wizcore.co.kr/news/" class="plate-nav-anchor"><h2>NEWS</h2></a></li>
+<li class="plate-nav-item plate-nav-item-0 menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children"><a  href="https://wizcore.co.kr/contact-us/" class="plate-nav-anchor plate-nav-anchor_none"><h2>CONTACT US</h2></a><ul class="plate-nav-sub plate-nav-sub-0"><li class="plate-nav-item plate-nav-item-1 menu-item menu-item-type-post_type menu-item-object-page is_ko"><a  href="https://wizcore.co.kr/contact-us/location/" class="plate-nav-anchor"><h3>찾아오시는길</h3></a></li>
+<li class="plate-nav-item plate-nav-item-1 menu-item menu-item-type-post_type menu-item-object-page is_ko"><a  href="https://wizcore.co.kr/contact-us/form/" class="plate-nav-anchor"><h3>문의하기</h3></a></li>
+</ul>
+</li>
+</ul></nav>                </div>
+            </div>
+        </div>
+
+<section class="cover">
+    <div class="cover-background lazy" data-bg="https://wizcore.co.kr/wp-content/uploads/2020/08/product-cover-1.png"></div>
+    <div class="cover-inside">
+        <div class="l_wrapper">
+            <div class="cover-title">
+                <h1>PRODUCT</h1>
+                <p>기업의 경쟁력을 높이는 가장 확실한 솔루션</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<nav class="indicator ">
+    <div class="l_wrapper">
+        <div class="indicator-inside">
+            <div class="indicator-item indicator-item_root indicator-item_root indicator-item_4">
+    <button type="button">PRODUCT</button>
+    <div class="indicator-item-sub"><ul id="menu-global-menu-2" class="menu">
+<ul class="sub-menu">
+</li>
+</ul>
+</li>
+<li class=""><a  href="https://wizcore.co.kr/product/">PRODUCT</a>
+<ul class="sub-menu">
+
+	<ul class="sub-menu">
+
+		<ul class="sub-menu">
+</li>
+</li>
+</li>
+</li>
+</li>
+</li>
+		</ul>
+</li>
+</li>
+</li>
+	</ul>
+</li>
+
+	<ul class="sub-menu">
+</li>
+</li>
+</li>
+</li>
+</li>
+	</ul>
+</li>
+</ul>
+</li>
+<li class=""><a  href="https://wizcore.co.kr/use-case/">USE CASE</a></li>
+<li class=""><a  href="https://wizcore.co.kr/partners/">PARTNERS</a></li>
+<li class=""><a  href="https://wizcore.co.kr/career/">CAREER</a>
+<ul class="sub-menu">
+</li>
+</li>
+</ul>
+</li>
+<li class=""><a  href="https://wizcore.co.kr/news/">NEWS</a></li>
+<li class=""><a  href="https://wizcore.co.kr/contact-us/">CONTACT US</a>
+<ul class="sub-menu">
+</li>
+</li>
+</ul>
+</li>
+</ul></div></div>
+<div class="indicator-item indicator-item_4 is_ko">
+    <button type="button">제조 DX</button>
+    <div class="indicator-item-sub"><ul id="menu-global-menu-3" class="menu">
+<ul class="sub-menu">
+</li>
+</ul>
+</li>
+
+<ul class="sub-menu">
+<li class=" is_ko"><a  href="https://wizcore.co.kr/product/smart-factory/">제조 DX</a>
+	<ul class="sub-menu">
+
+		<ul class="sub-menu">
+</li>
+</li>
+</li>
+</li>
+</li>
+</li>
+		</ul>
+</li>
+</li>
+</li>
+	</ul>
+</li>
+<li class=""><a  href="https://wizcore.co.kr/product/global-it/">GLOBAL IT</a>
+	<ul class="sub-menu">
+</li>
+</li>
+</li>
+</li>
+</li>
+	</ul>
+</li>
+</ul>
+</li>
+</li>
+</li>
+
+<ul class="sub-menu">
+</li>
+</li>
+</ul>
+</li>
+</li>
+
+<ul class="sub-menu">
+</li>
+</li>
+</ul>
+</li>
+</ul></div></div>
+<div class="indicator-item indicator-item_4">
+    <button type="button">NEXPOM</button>
+    <div class="indicator-item-sub"><ul id="menu-global-menu-4" class="menu">
+<ul class="sub-menu">
+</li>
+</ul>
+</li>
+
+<ul class="sub-menu">
+
+	<ul class="sub-menu">
+<li class=""><a  href="https://wizcore.co.kr/product/smart-factory/nexpom/">NEXPOM</a>
+		<ul class="sub-menu">
+</li>
+</li>
+</li>
+</li>
+</li>
+</li>
+		</ul>
+</li>
+<li class=""><a  href="https://wizcore.co.kr/product/smart-factory/nexpomer/">NEXPOMer</a></li>
+<li class=" is_ko"><a  href="https://wizcore.co.kr/product/smart-factory/%ec%a0%95%eb%b6%80%ec%a7%80%ec%9b%90%ec%82%ac%ec%97%85/">정부지원사업</a></li>
+	</ul>
+</li>
+
+	<ul class="sub-menu">
+</li>
+</li>
+</li>
+</li>
+</li>
+	</ul>
+</li>
+</ul>
+</li>
+</li>
+</li>
+
+<ul class="sub-menu">
+</li>
+</li>
+</ul>
+</li>
+</li>
+
+<ul class="sub-menu">
+</li>
+</li>
+</ul>
+</li>
+</ul></div></div>
+<div class="indicator-item indicator-item_4">
+    <button type="button">Monitoring</button>
+    <div class="indicator-item-sub"><ul id="menu-global-menu-5" class="menu">
+<ul class="sub-menu">
+</li>
+</ul>
+</li>
+
+<ul class="sub-menu">
+
+	<ul class="sub-menu">
+
+		<ul class="sub-menu">
+<li class=""><a  href="https://wizcore.co.kr/product/smart-factory/nexpom/overview/">Overview</a></li>
+<li class=""><a  href="https://wizcore.co.kr/product/smart-factory/nexpom/monitoring/">Monitoring</a></li>
+<li class=""><a  href="https://wizcore.co.kr/product/smart-factory/nexpom/mes/">MES</a></li>
+<li class=""><a  href="https://wizcore.co.kr/product/smart-factory/nexpom/haccp/">HACCP</a></li>
+<li class=""><a  href="https://wizcore.co.kr/product/smart-factory/nexpom/spc/">SPC</a></li>
+<li class=""><a  href="https://wizcore.co.kr/product/smart-factory/nexpom/ems/">EMS</a></li>
+		</ul>
+</li>
+</li>
+</li>
+	</ul>
+</li>
+
+	<ul class="sub-menu">
+</li>
+</li>
+</li>
+</li>
+</li>
+	</ul>
+</li>
+</ul>
+</li>
+</li>
+</li>
+
+<ul class="sub-menu">
+</li>
+</li>
+</ul>
+</li>
+</li>
+
+<ul class="sub-menu">
+</li>
+</li>
+</ul>
+</li>
+</ul></div></div>
+        </div>
+    </div>
+</nav>
+<div class="anchor">
+    <div class="anchor-inside">
+        <div class="l_wrapper">
+            <div class="anchor-contents">
+                <a class="anchor-arrow" href="#top"><span class="hide">맨 위로</span></a>
+            </div>
+        </div>
+    </div>
+    <div class="anchor-clip">
+
+<div class="booth">
+    <article class="product">
+        
+<section class="product-section product-section_center type_cleanBottom">
+    <div class="l_wrapper">
+        <div class="booth-title">
+            <div class="holder booth-title-logo type_b" style="max-width: 222px">
+    <div class="image" style="padding-top: 18.918918918919%">
+        <img class="lazy image-src" data-src="https://wizcore.co.kr/wp-content/themes/wizcore/statics/product/images/nexpom-logo.png">
+    </div>
+</div>
+            <div class="booth-title-headings">
+                <h1 class="type_b">Monitoring</h1>
+                <p>NEXPOM은 생산, 설비, 품질, 에너지 등의 KPI를 기준으로 시스템 및 공장 현황을 통합 분석 및 실시간 모니터링하여, 공장의 종합상황실 역할을 하고 최적의 공장 운영 지표를 제공합니다.</p>
+            </div>
+        </div>
+    </div>
+    <div class="booth-cover">
+        <div class="l_wrapper">
+            <div class="booth-cover-area">
+                <div class="booth-pc">
+                    <div class="booth-pc-monitor">
+                        <img src="https://wizcore.co.kr/wp-content/themes/wizcore/statics/product/images/cover-01-monitoring-nexpom.png">
+                    </div>
+                </div>                
+                <img class="lazy booth-wings type_left" data-src="https://wizcore.co.kr/wp-content/themes/wizcore/statics/product/images/cover-02-monitoring-nexpom.png">
+                <img class="lazy booth-wings type_right" data-src="https://wizcore.co.kr/wp-content/themes/wizcore/statics/product/images/cover-03-monitoring-nexpom.png">
+            </div>
+        </div>
+    </div>
+</section>
+<section class="product-section product-section_center">
+    <div class="l_wrapper">
+        <div class="booth-slides">
+            <h1 class="booth-message"><div>공장 운영 현황을 최적화된 지표를 통해 관리 가능한 통합 모니터링</div></h1>
+                        <div class="booth-monitors type_a">
+                            <div class="booth-monitors-item">
+                    <div class="booth-monitors-item-inside">
+                        <img src="https://wizcore.co.kr/wp-content/themes/wizcore/statics/product/images/monitor-01-monitoring-nexpom.png">
+                    </div>
+                </div>                
+                            <div class="booth-monitors-item">
+                    <div class="booth-monitors-item-inside">
+                        <img src="https://wizcore.co.kr/wp-content/themes/wizcore/statics/product/images/monitor-02-monitoring-nexpom.png">
+                    </div>
+                </div>                
+                            <div class="booth-monitors-item">
+                    <div class="booth-monitors-item-inside">
+                        <img src="https://wizcore.co.kr/wp-content/themes/wizcore/statics/product/images/monitor-03-monitoring-nexpom.png">
+                    </div>
+                </div>                
+                            <div class="booth-monitors-item">
+                    <div class="booth-monitors-item-inside">
+                        <img src="https://wizcore.co.kr/wp-content/themes/wizcore/statics/product/images/monitor-04-monitoring-nexpom.png">
+                    </div>
+                </div>                
+                        </div>                
+                                    <div class="booth-note">
+                            <div class="booth-note-item">
+                    <h2>생산 대시보드</h2>  
+                    <p>생산 관련 지표를 라인 > 공정의 TOP-DOWN 방식으로 토탈 모니터링</p>
+                </div>                
+                            <div class="booth-note-item">
+                    <h2>품질 대시보드</h2>  
+                    <p>생산에 중요한 영향을 미치는 품질 데이터를 실시간으로 파악</p>
+                </div>                
+                            <div class="booth-note-item">
+                    <h2>설비 대시보드</h2>  
+                    <p>설비 주요 지표를 통해 최적화된 설비 상태 관리</p>
+                </div>                
+                            <div class="booth-note-item">
+                    <h2>에너지 대시보드</h2>  
+                    <p>에너지의 흐름 및 비용 환산을 통한 공장 에너지 관리</p>
+                </div>                
+                        </div>                
+                    </div>
+    </div>
+</section>
+<section class="product-section product-section_gray">
+    <div class="l_wrapper">
+        <h1 class="booth-subject">Monitoring 활용 예시</h1>
+        <div class="booth-example">
+                        <div class="booth-grid booth-grid_arrow">
+                 
+                <div class="booth-grid-item booth-grid-item_6_12 booth-grid-item_large_3_12 booth-grid-item_mobile_12_12 booth-grid-item_arrow">
+                    <div class="booth-numbering type_b">
+                        <img class="lazy booth-numbering-cover" data-src="https://wizcore.co.kr/wp-content/themes/wizcore/statics/product/images/arrows-01-monitoring-nexpom.png">
+                        <div class="booth-numbering-contents">
+                            <h2>
+                                <span>STEP. 1</span>
+                                가공 설비의 컨트롤러, PLC 등의 I/F를 통해 데이터 수집 및 OEE 분석&모니터링                            </h2>
+                        </div>
+                    </div>
+                </div>
+                 
+                <div class="booth-grid-item booth-grid-item_6_12 booth-grid-item_large_3_12 booth-grid-item_mobile_12_12 booth-grid-item_arrow">
+                    <div class="booth-numbering type_b">
+                        <img class="lazy booth-numbering-cover" data-src="https://wizcore.co.kr/wp-content/themes/wizcore/statics/product/images/arrows-02-monitoring-nexpom.png">
+                        <div class="booth-numbering-contents">
+                            <h2>
+                                <span>STEP. 2</span>
+                                손실 발생 요인들의 종류, 빈도, 누적 시간 등을 분석하여 손실 요인의 우선 순위화                            </h2>
+                        </div>
+                    </div>
+                </div>
+                 
+                <div class="booth-grid-item booth-grid-item_6_12 booth-grid-item_large_3_12 booth-grid-item_mobile_12_12 booth-grid-item_arrow">
+                    <div class="booth-numbering type_b">
+                        <img class="lazy booth-numbering-cover" data-src="https://wizcore.co.kr/wp-content/themes/wizcore/statics/product/images/arrows-03-monitoring-nexpom.png">
+                        <div class="booth-numbering-contents">
+                            <h2>
+                                <span>STEP. 3</span>
+                                우선 순위가 높은 요인들부터 관리, 개선하여 생산성 향상 및 비용절감 효과                            </h2>
+                        </div>
+                    </div>
+                </div>
+                 
+                <div class="booth-grid-item booth-grid-item_6_12 booth-grid-item_large_3_12 booth-grid-item_mobile_12_12 booth-grid-item_arrow">
+                    <div class="booth-numbering type_b">
+                        <img class="lazy booth-numbering-cover" data-src="https://wizcore.co.kr/wp-content/themes/wizcore/statics/product/images/arrows-04-monitoring-nexpom.png">
+                        <div class="booth-numbering-contents">
+                            <h2>
+                                <span>STEP. 4</span>
+                                미정의된 요소들에 대한 신규 시나리오 적용, 분석 및 검증을 통해 KPI 업데이트 적용                            </h2>
+                        </div>
+                    </div>
+                </div>
+                            </div>
+                    </div>
+    </div>
+</section>
+<section class="product-section">
+    <div class="l_wrapper">
+        <div class="booth-usecase">
+            <h1 class="booth-subject">Monitoring 구축 사례</h1>
+
+                            <div class="booth-usecase-title lazy" data-bg="https://wizcore.co.kr/wp-content/themes/wizcore/statics/product/images/usecase-bg.png">
+                    <div class="booth-usecase-inside">
+                        <h2>의료기기 A사</h2>
+                        <ul class="booth-usecase-summary">
+                            <li>
+                                <i class="booth-icon"><img src="/wp-content/themes/wizcore/statics/product/images/usecase-icon-01.png"></i> 
+                                <strong>
+                                    도입 제품                                </strong>
+                                <div class="booth-description is_en">Monitoring + MES</div>
+                            </li>
+                            <li>
+                                <i class="booth-icon"><img src="/wp-content/themes/wizcore/statics/product/images/usecase-icon-02.png"></i> 
+                                <strong>
+                                    구축 이유                                </strong>
+                                <div class="booth-description type_b">점점 높아지는 의료용 기기에 대한 품질 관리(UDI)에 대비하고, 정확한 재고 관리를 통한 생산효율을 극대화할 수 있는 스마트팩토리 시스템 구축</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            
+                            <h2 class="booth-square">
+                    구축 내용                </h2>
+                <div class="booth-usecase-list">
+                    <div class="booth-usecase-list-contents">
+                        <ul class="lists type_b">
+                                
+                                <li>자재 입고에서 출하까지 MES를 통한 <strong>LOT 추적 관리</strong></li>
+                                
+                                <li>설비 I/F를 통한 <strong>생산 데이터 수집 자동화</strong></li>
+                                
+                                <li>원재료, 반제품, 완제품에 대한 <strong>정확한 재고 파악 및 모니터링</strong></li>
+                                                    </ul>
+                    </div>
+                </div>
+                
+                            <div class="booth-usecase-detail">
+                    <div class="holder booth-detail" style="max-width: 759px">
+    <div class="image" style="padding-top: 86.95652173913%">
+        <img class="lazy image-src" data-src="https://wizcore.co.kr/wp-content/themes/wizcore/statics/product/images/usecase-contents-monitoring.png">
+    </div>
+</div>
+                </div>
+            
+                                            <div class="booth-usecase-graph">
+                    <h2 class="booth-square">
+                        구축 효과                    </h2>
+                    <ul class="l_row l_row_hairline">
+                            
+                            <li class="l_col l_col_6_12 l_col_large_3_12 l_col_mobile_12_12">
+                                <div class="booth-state">
+                                    <div class="booth-state-cover is_up">25%</div>
+                                    <p class="booth-state-contents">생산과정의 체계적인 시스템화에 따른 <strong>생산량 25% 증가</strong></p>
+                                </div>
+                            </li>
+                            
+                            <li class="l_col l_col_6_12 l_col_large_3_12 l_col_mobile_12_12">
+                                <div class="booth-state">
+                                    <div class="booth-state-cover is_down">24%</div>
+                                    <p class="booth-state-contents">측정 데이터의 실시간 관리를 통한 <strong>완제품 불량률 24% 개선</strong></p>
+                                </div>
+                            </li>
+                            
+                            <li class="l_col l_col_6_12 l_col_large_3_12 l_col_mobile_12_12">
+                                <div class="booth-state">
+                                    <div class="booth-state-cover is_down">4%</div>
+                                    <p class="booth-state-contents">생산량에 따른 정확한 자재 소요량 파악으로 <strong>재고 비용 4% 절감</strong></p>
+                                </div>
+                            </li>
+                            
+                            <li class="l_col l_col_6_12 l_col_large_3_12 l_col_mobile_12_12">
+                                <div class="booth-state">
+                                    <div class="booth-state-cover is_down">10%</div>
+                                    <p class="booth-state-contents">공정 진척 현황 관리에 따른 정확한 납기 예측으로 <strong>리드타임 10% 감소</strong></p>
+                                </div>
+                            </li>
+                                            </ul> 
+                </div>
+            
+        </div>
+    </div>
+</section>
+            <section class="product-contact">
+        <div class="l_wrapper">
+            <div class="product-contact-inside">
+                <div class="product-contact-header">
+                    <h1>
+                        Contact us
+                                            </h1>
+                </div>
+                <div class="product-contact-contents">
+                    <ul class="l_row l_row_gap20">
+                                                    <li class="l_col l_col_6_12 l_col_mobile_12_12">
+                                <div class="product-card"> 
+                                    <div class="product-card-title">
+                                        <h2>김종민 차장</h2>
+                                        <span>Sales</span>
+                                    </div>
+                                    <ul class="product-card-contents">
+                                        <li class="type_email">wizcore@wizcore.co.kr</li>
+                                        <li class="type_phone">02. 3273. 2608</li>
+                                    </ul>
+                                </div>
+                            </li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    </article>
+</div>
+
+    <!--anchor clip end --></div>
+<!--anchor end --></div>
+        <footer class="footer">
+            <div class="footer-menu">
+                <div class="l_wrapper">
+                    <div class="footer-menu-inside">
+                        <nav class="footer-nav">
+                            <a 
+                                class="footer-nav-item footer-nav-item_important"
+                                href="#none"
+                                target="_blank"
+                            >
+                                PARTNER PORTAL
+                            </a>
+                                                                                                                                    <a 
+                                        class="footer-nav-item "
+                                        href="https://drive.google.com/file/d/1xkgzckgr_RPfTokHB4WXrnRlun5dHPAS/view?usp=sharing"
+                                        target="_blank"                                    >
+                                        회사소개서                                    </a>
+                                                                                                        <a 
+                                        class="footer-nav-item "
+                                        href="https://blog.naver.com/wizcore01"
+                                        target="_blank"                                    >
+                                        BLOG                                    </a>
+                                                                                                        <a 
+                                        class="footer-nav-item "
+                                        href="https://www.youtube.com/channel/UCl7ehS3OK6piFcb-_75PSGg"
+                                        target="_blank"                                    >
+                                        YOUTUBE                                    </a>
+                                                                                                        <a 
+                                        class="footer-nav-item "
+                                        href="https://keep-safely.com/"
+                                                                            >
+                                        SAFELY                                    </a>
+                                                                                                        <a 
+                                        class="footer-nav-item "
+                                        href="https://wizcore.co.kr/privacy-policy/"
+                                                                            >
+                                        개인정보처리방침                                    </a>
+                                                            
+                        </nav>
+                        <nav class="footer-sitemap"><ul id="menu-global-menu-6" class="footer-sitemap-list"><li class="footer-sitemap-item footer-sitemap-item-0"><a  href="https://wizcore.co.kr/about-us/company/" class="footer-sitemap-anchor"><h2>ABOUT US</h2></a><ul class="footer-sitemap-sub footer-sitemap-sub-0"><li class="footer-sitemap-item footer-sitemap-item-1 is_ko"><a  href="https://wizcore.co.kr/about-us/company/" class="footer-sitemap-anchor"><h3>회사소개</h3></a></li>
+</ul>
+</li>
+<li class="footer-sitemap-item footer-sitemap-item-0"><a  href="https://wizcore.co.kr/product/" class="footer-sitemap-anchor"><h2>PRODUCT</h2></a><ul class="footer-sitemap-sub footer-sitemap-sub-0"><li class="footer-sitemap-item footer-sitemap-item-1 is_ko"><a  href="https://wizcore.co.kr/product/smart-factory/" class="footer-sitemap-anchor"><h3>제조 DX</h3></a><ul class="footer-sitemap-sub footer-sitemap-sub-1"><li class="footer-sitemap-item footer-sitemap-item-2"><a  href="https://wizcore.co.kr/product/smart-factory/nexpom/" class="footer-sitemap-anchor">NEXPOM</a><ul class="footer-sitemap-sub footer-sitemap-sub-2"><li class="footer-sitemap-item footer-sitemap-item-3"><a  href="https://wizcore.co.kr/product/smart-factory/nexpom/overview/" class="footer-sitemap-anchor">Overview</a></li>
+<li class="footer-sitemap-item footer-sitemap-item-3"><a  href="https://wizcore.co.kr/product/smart-factory/nexpom/monitoring/" class="footer-sitemap-anchor">Monitoring</a></li>
+<li class="footer-sitemap-item footer-sitemap-item-3"><a  href="https://wizcore.co.kr/product/smart-factory/nexpom/mes/" class="footer-sitemap-anchor">MES</a></li>
+<li class="footer-sitemap-item footer-sitemap-item-3"><a  href="https://wizcore.co.kr/product/smart-factory/nexpom/haccp/" class="footer-sitemap-anchor">HACCP</a></li>
+<li class="footer-sitemap-item footer-sitemap-item-3"><a  href="https://wizcore.co.kr/product/smart-factory/nexpom/spc/" class="footer-sitemap-anchor">SPC</a></li>
+<li class="footer-sitemap-item footer-sitemap-item-3"><a  href="https://wizcore.co.kr/product/smart-factory/nexpom/ems/" class="footer-sitemap-anchor">EMS</a></li>
+		</ul>
+</li>
+<li class="footer-sitemap-item footer-sitemap-item-2"><a  href="https://wizcore.co.kr/product/smart-factory/nexpomer/" class="footer-sitemap-anchor">NEXPOMer</a></li>
+<li class="footer-sitemap-item footer-sitemap-item-2 is_ko"><a  href="https://wizcore.co.kr/product/smart-factory/%ec%a0%95%eb%b6%80%ec%a7%80%ec%9b%90%ec%82%ac%ec%97%85/" class="footer-sitemap-anchor">정부지원사업</a></li>
+	</ul>
+</li>
+<li class="footer-sitemap-item footer-sitemap-item-1"><a  href="https://wizcore.co.kr/product/global-it/" class="footer-sitemap-anchor"><h3>GLOBAL IT</h3></a><ul class="footer-sitemap-sub footer-sitemap-sub-1"><li class="footer-sitemap-item footer-sitemap-item-2"><a  href="https://wizcore.co.kr/product/global-it/pure-storage/" class="footer-sitemap-anchor">PURE STORAGE</a></li>
+<li class="footer-sitemap-item footer-sitemap-item-2"><a  href="https://wizcore.co.kr/product/global-it/nutanix/" class="footer-sitemap-anchor">NUTANIX</a></li>
+<li class="footer-sitemap-item footer-sitemap-item-2"><a  href="https://wizcore.co.kr/product/global-it/splunk/" class="footer-sitemap-anchor">SPLUNK</a></li>
+<li class="footer-sitemap-item footer-sitemap-item-2"><a  href="https://wizcore.co.kr/product/global-it/veritas/" class="footer-sitemap-anchor">VERITAS</a></li>
+<li class="footer-sitemap-item footer-sitemap-item-2"><a  href="https://wizcore.co.kr/product/global-it/precise/" class="footer-sitemap-anchor">PRECISE</a></li>
+	</ul>
+</li>
+</ul>
+</li>
+<li class="footer-sitemap-item footer-sitemap-item-0"><a  href="https://wizcore.co.kr/use-case/" class="footer-sitemap-anchor"><h2>USE CASE</h2></a></li>
+<li class="footer-sitemap-item footer-sitemap-item-0"><a  href="https://wizcore.co.kr/partners/" class="footer-sitemap-anchor"><h2>PARTNERS</h2></a></li>
+<li class="footer-sitemap-item footer-sitemap-item-0"><a  href="https://wizcore.co.kr/career/" class="footer-sitemap-anchor"><h2>CAREER</h2></a><ul class="footer-sitemap-sub footer-sitemap-sub-0"><li class="footer-sitemap-item footer-sitemap-item-1 is_ko"><a  href="https://wizcore.co.kr/career/information/" class="footer-sitemap-anchor"><h3>채용안내</h3></a></li>
+<li class="footer-sitemap-item footer-sitemap-item-1 is_ko"><a  href="https://wizcore.co.kr/career/recruitment/" class="footer-sitemap-anchor"><h3>채용공고</h3></a></li>
+</ul>
+</li>
+<li class="footer-sitemap-item footer-sitemap-item-0"><a  href="https://wizcore.co.kr/news/" class="footer-sitemap-anchor"><h2>NEWS</h2></a></li>
+<li class="footer-sitemap-item footer-sitemap-item-0"><a  href="https://wizcore.co.kr/contact-us/" class="footer-sitemap-anchor"><h2>CONTACT US</h2></a><ul class="footer-sitemap-sub footer-sitemap-sub-0"><li class="footer-sitemap-item footer-sitemap-item-1 is_ko"><a  href="https://wizcore.co.kr/contact-us/location/" class="footer-sitemap-anchor"><h3>찾아오시는길</h3></a></li>
+<li class="footer-sitemap-item footer-sitemap-item-1 is_ko"><a  href="https://wizcore.co.kr/contact-us/form/" class="footer-sitemap-anchor"><h3>문의하기</h3></a></li>
+</ul>
+</li>
+</ul></nav>                    </div>
+                </div>
+            </div>
+            <div class="footer-information">
+                <div class="l_wrapper">
+                    <div class="footer-section">
+                        <a class="footer-logo">
+                            <span class="footer-logo-contents">
+                                <img class="lazy" data-src="/wp-content/themes/wizcore/statics/common/images/logo_wizcore.png">
+                            </span>
+                        </a>
+                        <div class="footer-contact">
+			    <h2>위즈코어 주식회사 (Smart Factory Division)</h2>
+                                                        <ul>
+                                <li>
+                                    <strong class="hide">ADDRESS.</strong>
+                                    <span>서울시 성동구 아차산로 17길 49, 성수생각공장 데시앙플렉스 1505~8호 / 1406호</span>                                </li>
+                                <li class="is_break">
+                                    <strong>TEL.</strong> 
+                                    <span>02. 3273. 2608</span>                                </li>
+                                <li>
+                                    <strong>FAX.</strong> 
+                                    <span>02. 3273. 2609</span>                                </li>
+
+                                                                <li><strong>대표 :</strong><span>박승훈</span></li>
+                                <li><strong>사업자등록번호 :</strong><span>105-81-74484</span></li>
+                                
+                            </ul>
+                            <address>Copyright 2026 WIZCORE Inc. All Rights Reserved.</address>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+		<script type='text/javascript' src='https://wizcore.co.kr/wp-includes/js/underscore.min.js?ver=1.8.3' id='underscore-js'></script>
+<script type='text/javascript' src='//wcs.naver.net/wcslog.js?ver=2026-10-04' id='vc-nasa-js'></script>
+<script type='text/javascript' src='https://wizcore.co.kr/wp-content/themes/wizcore/statics/common/libs/intersection-observer.js?ver=2026-10-04' id='vc-intersection-observer-js'></script>
+<script type='text/javascript' src='https://wizcore.co.kr/wp-content/themes/wizcore/statics/common/libs/lazyload.min.js?ver=2026-10-04' id='vc-lazyload-js'></script>
+<script type='text/javascript' src='https://wizcore.co.kr/wp-content/themes/wizcore/statics/common/libs/jquery.transit.min.js?ver=2026-10-04' id='vc-transit-js'></script>
+<script type='text/javascript' src='https://wizcore.co.kr/wp-content/themes/wizcore/statics/common/libs/slick/slick.js?ver=2026-10-04' id='vc-slick-js'></script>
+<script type='text/javascript' src='https://wizcore.co.kr/wp-content/themes/wizcore/statics/common/common.js?ver=2026-10-04' id='vc-common-js'></script>
+<script type='text/javascript' src='https://wizcore.co.kr/wp-content/themes/wizcore/statics/common/libs/plyr/plyr.min.js?ver=2026-10-04' id='vc-plyr-js'></script>
+<script type='text/javascript' src='https://wizcore.co.kr/wp-content/themes/wizcore/statics/product/product.js?ver=2026-10-04' id='wizcore-single-product-js'></script>
+<script type='text/javascript' src='https://wizcore.co.kr/wp-content/themes/wizcore/statics/common/libs/wow.js?ver=2026-10-04' id='wizcore-wow-js'></script>
+<script type='text/javascript' src='https://wizcore.co.kr/wp-content/themes/wizcore/statics/product/booth.js?ver=2026-10-04' id='wizcore-booth-js'></script>
+<script type='text/javascript' src='https://wizcore.co.kr/wp-includes/js/wp-embed.min.js?ver=5.5.1' id='wp-embed-js'></script>
+        <script type="text/javascript"> 
+
+        if ( jQuery(".acfe-form-success").size() == 1 ) {
+            var _nasa={};
+            if(window.wcs) _nasa["cnv"] = wcs.cnv("4","1");
+        }
+
+        if (!wcs_add) var wcs_add={};
+        wcs_add["wa"] = "s_f97d59a4e47";
+        if (!_nasa) var _nasa={};
+        if(window.wcs){
+        wcs.inflow();
+        wcs_do(_nasa);
+        }
+        </script>
+
+        <!-- Google Tag Manager (noscript) -->
+        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W5P762Q"
+        height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+        <!-- End Google Tag Manager (noscript) -->
+
+	</body>
+</html>

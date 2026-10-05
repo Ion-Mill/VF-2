@@ -1,0 +1,291 @@
+<html class="no-js" lang="en-us">
+<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="copyright" content="(C) Minitab, LLC. All rights Reserved. 2026">
+<meta name="DC.rights.owner" content="(C) Minitab, LLC. All rights Reserved. 2026">
+<meta name="WT.cg_n" content="Support">
+<meta name="WT.cg_s" content="MSSSupport">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Page-Enter" content="blendTrans(Duration=0.001)">
+<meta http-equiv="Page-Exit" content="blendTrans(Duration=0.001)">
+<meta name="DC.Type" content="mtbtopic">
+<meta name="DC.Title" content="Methods and formulas for potential capability measures in Normal Capability Analysis">
+<meta name="DC.Relation" scheme="URI" content="../../quality-and-process-improvement/quality-improvement-index.html">
+<meta name="topicrole" content="pubtopic">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="dctm_Chron0900045780301813">
+<meta name="DC.Language" content="en-US">
+
+
+<link rel="stylesheet" type="text/css" href="/en-us/minitab/themes/css/minitab.css">
+<link rel="stylesheet" type="text/css" href="/en-us/minitab/themes/css/pageFramework.css">
+<link rel="stylesheet" type="text/css" href="/en-us/minitab/themes/css/output_pane.css">
+<link rel="stylesheet" type="text/css" href="/en-us/minitab/themes/css/navStyles.css">
+<link rel="stylesheet" type="text/css" href="/en-us/minitab/themes/css/styleBody.css">
+
+
+
+
+
+<!--Google Tag Manager-->
+            <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-TZG4BD');</script>
+
+<script>
+   // Define dataLayer and the gtag function. 
+  window.dataLayer = window.dataLayer || []; 
+  function gtag(){dataLayer.push(arguments);} 
+  
+  gtag('set' , 'developer_id.dYWJhMj', true);
+
+  // Default ad_storage to 'denied'. 
+  gtag('consent', 'default', { 
+        ad_storage: "denied", 
+        analytics_storage: "denied", 
+        functionality_storage: "denied", 
+        personalization_storage: "denied", 
+        security_storage: "denied",
+        ad_user_data: "denied",
+        ad_personalization: "denied", 
+'wait_for_update': 500 
+
+  });
+ </script>
+<script type="text/javascript">
+window.uetq = window.uetq || [];
+window.uetq.push('consent', 'default', {
+    'ad_storage': 'denied'
+    });
+</script>
+<!-- OneTrust Cookies Consent Notice start for minitab.com -->
+<script type="text/javascript" src="https://cdn.cookielaw.org/consent/e962acd9-c4b4-4977-913d-795e7bbb846d/OtAutoBlock.js"></script>
+<script type="text/javascript" src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js" charset="UTF-8" data-domain-script="e962acd9-c4b4-4977-913d-795e7bbb846d"></script><script type="text/javascript">function OptanonWrapper() { 
+          $('#otp-toggle').click(function(e) {
+            e.preventDefault();
+            OneTrust.ToggleInfoDisplay();         
+            });
+            
+            if(OnetrustActiveGroups.includes("C0004")){
+$('.video__notice').css('display', 'none');
+ $('iframe[data-type="youtube"]').css('display', 'block');
+ $('.cmp-video__content .video-wrapper[data-videotype="youtube"]').css({"display":"block", "padding-top":"56.25%"});	
+  }else{
+  $('.video__notice').css('display', 'block');  
+	if($("iframe[data-type='youtube']:not([data-ot-ignore])")){
+	  console.log('view mode');
+	$('iframe[data-type="youtube"]').css('display','none');
+		$('.cmp-video__content .video-wrapper[data-videotype="youtube"]').css({"display":"none","padding":"0"});
+	}
+	else {
+	}
+  }
+
+
+window.OneTrust.OnConsentChanged(function () {
+    if (!window.OnetrustActiveGroups.includes('C0004')) {
+		location.reload();
+//update Microsoft Consent
+//window.uetq = window.uetq || [];
+window.uetq.push('consent', 'update', {
+    'ad_storage': 'granted'
+    });
+    } else {
+    }
+  });
+
+window.dataLayer.push({event:'OneTrustGroupsUpdated'}); 
+          
+          }</script>
+       <!-- [if (gte IE 6)&(lte IE 8)]>
+
+<script type="text/javascript" data-ot-ignore="" class="optanon-category-C0001 " src="/en-us/minitab/themes/js/respond.min.js"></script>
+<script type="text/javascript" data-ot-ignore="" class="optanon-category-C0001 " src="/en-us/minitab/themes/js/selectivizr.js"></script>
+<![endif]-->
+<title>Methods and formulas for potential capability measures in Normal Capability Analysis - Minitab</title>
+
+<link rel="shortcut icon" type="image/x-icon" href="/en-us/minitab/themes/img/favicon.ico"><link rel="icon" type="image/x-icon" href="/en-us/minitab/themes/img/favicon.ico"></head>
+<body class=" - jumplinks.flat  noTransition brand-mss ">
+<div id="frame" class="pageContainer mainBody"><div id="page-top" class="productHeader minitab"><div class="menuButton" id="menuButton"><span class="material-icons">menu</span></div><div class="productTitlebar"><a href="/en-us/minitab/">Minitab<span id="reg">®</span>&nbsp; Support</a></div></div><div class="helpSearchBar"><input type="text" id="queryString" placeholder="Search Minitab Support"></div><div class="topicContainer"><div class="frame"><div class="inner"></div></div><div class="frame"><div class="inner"><div id="potential-capability" lang="en-US" class="topic mtbtopic  - jumplinks.flat "><div class="titlebar"><h1 class="topicHeader">Methods and formulas for potential capability measures in <span class="ph mtbcommand">Normal Capability
+		Analysis</span></h1><div class="promo"><a target="_blank" href="https://www.minitab.com/products/minitab/">Learn more about Minitab </a></div></div><div class="jumplinks"><h4>In This Topic</h4><ul class="jumplinkList"><li><a href="#cp">Cp</a></li><li><a href="#cp-confidence-interval-bounds">Cp confidence interval bounds</a></li><li><a href="#cpl">CPL</a></li><li><a href="#cpu">CPU</a></li><li><a href="#cpk">Cpk</a></li><li><a href="#cpk-confidence-interval-bounds">Cpk confidence interval bounds</a></li><li><a href="#ccpk">CCpk</a></li></ul><div class="clearing"></div></div><div id="cp" lang="en-US" class="topic mtbtopic"><h2 class="title topictitle2" id="ariaid-title2">Cp</h2>
+<div class="body mtbbody"> 
+<div class="p"> 
+<figure class="fig equation fignone"><div class="p equ"><img src="/en-us/minitab/png/Cp_Process_Capability_Normal_mf.dita_IDEC5E8DD7DAAF42A98F868371C459CA77_methodformula_0.png"></div></figure>
+ </div> 
+<div class="section"> 
+<h3 class="title sectiontitle">Notation</h3> 
+<table class="nl-striped-table"><tr><th>Term</th><th>Description</th></tr><tr><td>USL</td><td>Upper specification limit</td></tr><tr><td>LSL</td><td>Lower specification limit</td></tr><tr><td>Toler</td><td>Multiplier of the sigma tolerance (Minitab uses 6 as the default value)</td></tr><tr><td><span class="equ"><img src="/en-us/minitab/png/Cp_Process_Capability_Normal_mf.dita_IDEC5E8DD7DAAF42A98F868371C459CA77_methodformula_1.png"></span></td><td>Within-subgroup standard deviation</td></tr></table> </div></div></div><div id="cp-confidence-interval-bounds" lang="en-US" class="topic mtbtopic"><h2 class="title topictitle2" id="ariaid-title3">Cp confidence interval bounds</h2>
+<div class="body mtbbody">
+<p class="p">The (1 -α) 100% confidence interval for Cp is calculated as follows: </p>
+<p class="p">
+<div class="p equ"><img src="/en-us/minitab/png/ci_cp_process_capa_norm_mf.dita_IDB5E9691AE03F48A99B00989A511F265F_methodformula_0.png"></div></p>
+<p class="p">
+<div class="p equ"><img src="/en-us/minitab/png/ci_cp_process_capa_norm_mf.dita_IDB5E9691AE03F48A99B00989A511F265F_methodformula_1.png"></div></p>
+<p class="p">where ν is calculated based on the method used to estimate σ<sup class="ph sup">2</sup><sub class="ph sub">within</sub>: </p>
+<ul class="ul">
+<li class="li">Pooled standard deviation: ν = Σ (n<sub class="ph sub">i</sub>- 1) </li>
+
+<li class="li">Average moving range and Median moving range: ν ≈ k – Rspan + 1 </li>
+
+<li class="li">Square root of MSSD: ν = k - 1 </li>
+
+<li class="li" id="IDB5E9691AE03F48A99B00989A511F265F_methodformula__ID8CE9409660904CEA8DE7F06CBAAC35D9_li">Rbar: ν = 0.9 k (n - 1) </li>
+
+<li class="li">Sbar: ν = f<sub class="ph sub">n</sub> k (n - 1), where f<sub class="ph sub">n</sub> is the adjustment factor that varies with n, as shown in the following table. </li>
+</ul>
+
+<div class="tablenoborder"><table cellpadding="4" cellspacing="0" summary="" id="IDB5E9691AE03F48A99B00989A511F265F_methodformula__ID4C342E1F677140D3BC0FB77E44CC0469_table" class="table" frame="border" border="1" rules="all"><colgroup><col><col></colgroup><thead class="thead" style="text-align:left;">
+<tr class="row" style="vertical-align:top;">
+<th class="entry nocellnorowborder" style="vertical-align:top;" id="d770841e445">n </th>
+
+<th class="entry cell-norowborder" style="vertical-align:top;" id="d770841e448">f<sub class="ph sub">n</sub></th>
+</tr>
+</thead>
+<tbody class="tbody">
+<tr class="row" style="vertical-align:top;">
+<td class="entry nocellnorowborder" style="vertical-align:top;" headers="d770841e445 ">2 </td>
+
+<td class="entry cell-norowborder" style="vertical-align:top;" headers="d770841e448 ">0.88 </td>
+</tr>
+
+<tr class="row" style="vertical-align:top;">
+<td class="entry nocellnorowborder" rowspan="1" colspan="1" style="vertical-align:top;" headers="d770841e445 "> 3 </td>
+
+<td class="entry cell-norowborder" rowspan="1" colspan="1" style="vertical-align:top;" headers="d770841e448 "> 0.92 </td>
+</tr>
+
+<tr class="row" style="vertical-align:top;">
+<td class="entry nocellnorowborder" rowspan="1" colspan="1" style="vertical-align:top;" headers="d770841e445 "> 4 </td>
+
+<td class="entry cell-norowborder" rowspan="1" colspan="1" style="vertical-align:top;" headers="d770841e448 "> 0.94 </td>
+</tr>
+
+<tr class="row" style="vertical-align:top;">
+<td class="entry nocellnorowborder" rowspan="1" colspan="1" style="vertical-align:top;" headers="d770841e445 "> 5 </td>
+
+<td class="entry cell-norowborder" rowspan="1" colspan="1" style="vertical-align:top;" headers="d770841e448 "> 0.95 </td>
+</tr>
+
+<tr class="row" style="vertical-align:top;">
+<td class="entry nocellnorowborder" rowspan="1" colspan="1" style="vertical-align:top;" headers="d770841e445 "> 6, 7 </td>
+
+<td class="entry cell-norowborder" rowspan="1" colspan="1" style="vertical-align:top;" headers="d770841e448 "> 0.96 </td>
+</tr>
+
+<tr class="row" style="vertical-align:top;">
+<td class="entry nocellnorowborder" rowspan="1" colspan="1" style="vertical-align:top;" headers="d770841e445 "> 8, 9 </td>
+
+<td class="entry cell-norowborder" rowspan="1" colspan="1" style="vertical-align:top;" headers="d770841e448 "> 0.97 </td>
+</tr>
+
+<tr class="row" style="vertical-align:top;">
+<td class="entry nocellnorowborder" rowspan="1" colspan="1" style="vertical-align:top;" headers="d770841e445 "> 10-17 </td>
+
+<td class="entry cell-norowborder" rowspan="1" colspan="1" style="vertical-align:top;" headers="d770841e448 "> 0.98 </td>
+</tr>
+
+<tr class="row" style="vertical-align:top;">
+<td class="entry nocellnorowborder" rowspan="1" colspan="1" style="vertical-align:top;" headers="d770841e445 "> 18-64 </td>
+
+<td class="entry cell-norowborder" rowspan="1" colspan="1" style="vertical-align:top;" headers="d770841e448 "> 0.99 </td>
+</tr>
+
+<tr class="row" style="vertical-align:top;">
+<td class="entry row-nocellborder" rowspan="1" colspan="1" style="vertical-align:top;" headers="d770841e445 "> 65- </td>
+
+<td class="entry cellrowborder" rowspan="1" colspan="1" style="vertical-align:top;" headers="d770841e448 "> 1.00 </td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="section">
+<h3 class="title sectiontitle">Notation</h3>
+<table class="nl-striped-table"><tr><th>Term</th><th>Description</th></tr><tr><td>χ<sup class="ph sup">2</sup><sub class="ph sub">α</sub><sub class="ph sub">,</sub><sub class="ph sub">ν</sub></td><td>The α percentile of the chi-square distribution with ν degrees of freedom</td></tr><tr><td>α</td><td>Alpha for the confidence level</td></tr><tr><td>ν</td><td>Degrees of freedom</td></tr><tr><td>σ<sup class="ph sup">2</sup><sub class="ph sub">within</sub></td><td>Within-subgroup variance</td></tr><tr><td>n<sub class="ph sub">i</sub></td><td> The i<sup class="ph sup">th</sup> subgroup size </td></tr><tr><td>k</td><td>Number of samples</td></tr><tr><td>Rspan</td><td>Length of the moving range</td></tr><tr><td>n</td><td>Average sample size (Σ n<sub class="ph sub">i</sub> / k).</td></tr></table></div></div></div><div id="cpl" lang="en-US" class="topic mtbtopic"><h2 class="title topictitle2" id="ariaid-title4">CPL</h2>
+<div class="body mtbbody"> 
+<div class="p"> 
+<figure class="fig equation fignone"><div class="p equ"><img src="/en-us/minitab/png/CPL_Process_Capability_Normal_mf.dita_IDD9A544B1BA224F93AD31631C37267F81_methodformula_0.png"></div></figure>
+ </div> 
+<div class="section"> 
+<h3 class="title sectiontitle">Notation</h3> 
+<table class="nl-striped-table"><tr><th>Term</th><th>Description</th></tr><tr><td><span class="equ"><img src="/en-us/minitab/png/CPL_Process_Capability_Normal_mf.dita_IDD9A544B1BA224F93AD31631C37267F81_methodformula_1.png"></span></td><td>Process mean (estimated from the sample data or a historical value)</td></tr><tr><td>LSL</td><td>Lower specification limit</td></tr><tr><td>Toler</td><td>Multiplier of the sigma tolerance (Minitab uses 6 as the default value)</td></tr><tr><td><span class="equ"><img src="/en-us/minitab/png/CPL_Process_Capability_Normal_mf.dita_IDD9A544B1BA224F93AD31631C37267F81_methodformula_2.png"></span></td><td>Within-subgroup standard deviation</td></tr></table> </div></div></div><div id="cpu" lang="en-US" class="topic mtbtopic"><h2 class="title topictitle2" id="ariaid-title5">CPU</h2>
+<div class="body mtbbody"> 
+<div class="p"> 
+<figure class="fig equation fignone"><div class="p equ"><img src="/en-us/minitab/png/CPU_Process_Capability_Normal_mf.dita_IDE53B10E3EC544D808B51E2C514E2B074_methodformula_0.png"></div></figure>
+ </div> 
+<div class="section"> 
+<h3 class="title sectiontitle">Notation</h3> 
+<table class="nl-striped-table"><tr><th>Term</th><th>Description</th></tr><tr><td>USL</td><td>Upper specification limit</td></tr><tr><td><span class="equ"><img src="/en-us/minitab/png/CPU_Process_Capability_Normal_mf.dita_IDE53B10E3EC544D808B51E2C514E2B074_methodformula_1.png"></span></td><td>Process mean (estimated from the sample data or a historical value)</td></tr><tr><td>Toler</td><td>Multiplier of the sigma tolerance (Minitab uses 6 as the default value)</td></tr><tr><td><span class="equ"><img src="/en-us/minitab/png/CPU_Process_Capability_Normal_mf.dita_IDE53B10E3EC544D808B51E2C514E2B074_methodformula_2.png"></span></td><td>Within-subgroup standard deviation</td></tr></table> </div> </div></div><div id="cpk" lang="en-US" class="topic mtbtopic"><h2 class="title topictitle2" id="ariaid-title6">Cpk</h2>
+<div class="body mtbbody"> 
+<figure class="fig equation fignone"><div class="p equ"><img src="/en-us/minitab/png/cpk_process_capa_bwca_mf.dita_topic-01_0.png"></div></figure>
+ </div></div><div id="cpk-confidence-interval-bounds" lang="en-US" class="topic mtbtopic"><h2 class="title topictitle2" id="ariaid-title7">Cpk confidence interval bounds</h2>
+<div class="body mtbbody"> 
+<p class="p">The (1 -α) 100% confidence interval for Cpk is calculated as follows: </p> 
+<figure class="fig equation fignone"><div class="p equ"><img src="/en-us/minitab/png/CI_Cpk_capa_norm_mf.dita_IDCD90D82DCF4B4EF28462D734ADB98A6F_methodformula_0.png"></div></figure>
+ 
+<figure class="fig equation fignone"><div class="p equ"><img src="/en-us/minitab/png/CI_Cpk_capa_norm_mf.dita_IDCD90D82DCF4B4EF28462D734ADB98A6F_methodformula_1.png"></div></figure>
+ 
+<div class="section"> 
+<h3 class="title sectiontitle">Notation</h3> 
+<table class="nl-striped-table"><tr><th>Term</th><th>Description</th></tr><tr><td>N</td><td>The total number of observations</td></tr><tr><td>α</td><td>Alpha for the confidence level</td></tr><tr><td>v</td><td>The degrees of freedom based on the method used to estimate σ<sup class="ph sup">2</sup><sub class="ph sub">within</sub> (for information on the calculation of v, see the section on Cp confidence interval bounds)</td></tr><tr><td>Toler</td><td>Multiplier of the sigma tolerance (Minitab uses 6 as the default value)</td></tr><tr><td>Z<sub class="ph sub">1</sub>-<sub class="ph sub">α</sub><sub class="ph sub">/2</sub></td><td>The 1-α/2 percentile from the standard normal distribution</td></tr></table> </div></div></div><div id="ccpk" lang="en-US" class="topic mtbtopic"><h2 class="title topictitle2" id="ariaid-title8">CCpk</h2>
+<div class="body mtbbody"> 
+<p class="p">Minitab calculates CCpk based on known values of LSL, USL, and T. </p> 
+<p> 
+
+<div class="tablenoborder"><table cellpadding="4" cellspacing="0" summary="" class="table - With " frame="void" border="0" rules="none"><colgroup><col style="width:27.397260273972602%"><col style="width:72.6027397260274%"></colgroup><thead class="thead" style="text-align:left;"> 
+<tr class="row"> 
+<th class="entry row-nocellborder" style="vertical-align:top;" id="d770841e1589">Known value </th>
+ 
+<th class="entry row-nocellborder" style="vertical-align:top;" id="d770841e1592">CCpk </th>
+ </tr>
+</thead>
+<tbody class="tbody"> 
+<tr class="row"> 
+<td class="entry nocellnorowborder" style="vertical-align:top;" headers="d770841e1589 ">USL only </td>
+ 
+<td class="entry nocellnorowborder" style="vertical-align:top;" headers="d770841e1592 "> 
+<figure class="fig equation fignone"><div class="p equ"><img src="/en-us/minitab/png/CCpk_Process_Capability_Normal_mf.dita_ID34C4134F3EA948B9AE7F7878CB3C3F4C_methodformula_0.png"></div></figure>
+ </td>
+ </tr>
+ 
+<tr class="row"> 
+<td class="entry nocellnorowborder" style="vertical-align:top;" headers="d770841e1589 ">LSL only </td>
+ 
+<td class="entry nocellnorowborder" style="vertical-align:top;" headers="d770841e1592 "> 
+<figure class="fig equation fignone"><div class="p equ"><img src="/en-us/minitab/png/CCpk_Process_Capability_Normal_mf.dita_ID34C4134F3EA948B9AE7F7878CB3C3F4C_methodformula_1.png"></div></figure>
+ </td>
+ </tr>
+ 
+<tr class="row"> 
+<td class="entry nocellnorowborder" style="vertical-align:top;" headers="d770841e1589 ">LSL and USL </td>
+ 
+<td class="entry nocellnorowborder" style="vertical-align:top;" headers="d770841e1592 "> 
+<figure class="fig equation fignone"><div class="p equ"><img src="/en-us/minitab/png/CCpk_Process_Capability_Normal_mf.dita_ID34C4134F3EA948B9AE7F7878CB3C3F4C_methodformula_2.png"></div></figure>
+ </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+ </p> 
+<p class="p">where: </p> 
+<p class="p"><span class="equ"><img src="/en-us/minitab/png/CCpk_Process_Capability_Normal_mf.dita_ID34C4134F3EA948B9AE7F7878CB3C3F4C_methodformula_3.png"></span> </p> 
+<p class="p"><span class="equ"><img src="/en-us/minitab/png/CCpk_Process_Capability_Normal_mf.dita_ID34C4134F3EA948B9AE7F7878CB3C3F4C_methodformula_4.png"></span> </p> 
+<p class="p"><span class="equ"><img src="/en-us/minitab/png/CCpk_Process_Capability_Normal_mf.dita_ID34C4134F3EA948B9AE7F7878CB3C3F4C_methodformula_5.png"></span> </p> 
+<div class="section"> 
+<h3 class="title sectiontitle">Notation</h3> 
+<table class="nl-striped-table"><tr><th>Term</th><th>Description</th></tr><tr><td><span class="equ"><img src="/en-us/minitab/png/CCpk_Process_Capability_Normal_mf.dita_ID34C4134F3EA948B9AE7F7878CB3C3F4C_methodformula_6.png"></span></td><td>Estimator for the population mean</td></tr><tr><td>USL</td><td>Upper specification limit</td></tr><tr><td>LSL</td><td>Lower specification limit</td></tr><tr><td><span class="equ"><img src="/en-us/minitab/png/CCpk_Process_Capability_Normal_mf.dita_ID34C4134F3EA948B9AE7F7878CB3C3F4C_methodformula_7.png"></span></td><td>Within-subgroup standard deviation</td></tr><tr><td><span class="equ"><img src="/en-us/minitab/png/CCpk_Process_Capability_Normal_mf.dita_ID34C4134F3EA948B9AE7F7878CB3C3F4C_methodformula_8.png"></span></td><td>Average of the observations</td></tr><tr><td>Toler</td><td>Multiplier of the sigma tolerance (Minitab uses 6 as the default value)</td></tr></table> </div></div></div></div><div class="footerContainer"><div class="inner"><div class="minitabSites"><ul><li class="first"><a href="http://www.minitab.com/">Minitab.com</a></li><li><a href="https://licensing.minitab.com">License Portal</a></li><li><a href="http://store.minitab.com/781/purl-store">Store</a></li><li><a href="http://blog.minitab.com/">Blog</a></li><li><a href="http://www.minitab.com/contact-us/">Contact Us</a></li><li class="last"><a class="ot-sdk-show-settings" id="ot-sdk-btn" style="color:#666!important;font-size:14px;font-weight:inherit;font-family:inherit;padding:0 16px 0 16px;cursor:pointer;float:none;">Cookie Settings</a></li></ul></div><div class="copyAndLang"><div class="copyright">Copyright © 2026 Minitab, LLC. All rights Reserved.</div><div class="langSelector"><select id="lang" class="lang" name="ctl00$changeLang$lang"><option value="en-us">English</option><option value="fr-fr">Français</option><option value="de-de">Deutsch</option><option value="pt-br">Português</option><option value="es-mx">Español</option><option value="ja-jp">日本語</option><option value="ko-kr">한국어</option><option value="zh-cn">中文（简体）</option></select></div></div></div></div><div class="totop"><a class="back-to-top" href="#page-top" alt="Return to top"></a><div class="clearing"></div></div></div></div></div></div><div class="pageContainer offCanvasNav"><iframe class="nav optanon-category-C0001 " name="toc" id="toc" src="/en-us/minitab/nav_d1e57612?context=help-and-how-to/quality-and-process-improvement/capability-analysis/how-to/capability-analysis/normal-capability-analysis/methods-and-formulas/potential-capability/"></iframe></div><div class="modal fade" id="speedbump" role="dialog"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><img alt="Minitab" class="main-logo ext-note" src="/en-us/minitab/themes/img//minitab-corp-logo.svg"><h4 class="modal-title">Notice</h4></div><div class="modal-body"><p class="mtb-ext-note">You are now leaving support.minitab.com.</p><p class="mtb-ext-redirect">Click Continue to proceed to: <span id="clickUrl"></span></p></div><div class="modal-footer text-center"><button type="button" class="btn btn-modal btn-continue cmp-button cmp-button__secondary light-bg" data-dismisss="modal" title="continue">Continue</button><button type="button" class="btn btn-modal btn-close cmp-button cmp-button__secondary light-bg" data-dismiss="modal" title="back">Go Back</button></div></div></div></div>
+
+<script type="text/javascript" src="/en-us/minitab/themes/js/modernizr-2.6.2.js"></script>
+
+<script type="text/javascript" data-ot-ignore="" class="optanon-category-C0001 " src="/en-us/minitab/themes/js/jquery-3.7.1.min.js"></script>
+<script type="text/javascript" data-ot-ignore="" class="optanon-category-C0001 " src="/en-us/minitab/themes/js/MC.cookieUtils.js"></script>
+<script type="text/javascript" data-ot-ignore="" class="optanon-category-C0001 " src="/en-us/minitab/themes/js/SMC.signInOutUtils.js"></script>
+<script type="text/javascript" data-ot-ignore="" class="optanon-category-C0001 " src="/en-us/minitab/themes/js/MC.languageUtils.js"></script>
+<script type="text/javascript" data-ot-ignore="" class="optanon-category-C0001 " src="/en-us/minitab/themes/js/MC.queryStringUtils.js"></script>
+<script type="text/javascript" data-ot-ignore="" class="optanon-category-C0001 " src="/en-us/minitab/themes/js/IMC.debuggingUtils.js"></script>
+<script type="text/javascript" data-ot-ignore="" class="optanon-category-C0001 " src="/en-us/minitab/themes/js/MC.siteSearch.js"></script><script type="text/javascript" data-ot-ignore="" class="optanon-category-C0001 " src="/en-us/minitab/themes/js/minitabCommon.js"></script><script type="text/javascript" data-ot-ignore="" class="optanon-category-C0001 " src="/en-us/minitab/themes/js/support.js"></script>
+<!-- Google Tag Manager (noscript) -->
+			<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TZG4BD" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+		<!-- End Google Tag Manager (noscript) -->
+
+</body>
+</html>

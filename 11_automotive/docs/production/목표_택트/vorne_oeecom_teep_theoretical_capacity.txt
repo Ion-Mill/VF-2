@@ -1,0 +1,136 @@
+TOPICS Understand 
+ What is OEE? OEE Factors Six Big Losses Hidden Factory Practical OEE 
+
+ Measure 
+ Calculate OEE Implement OEE Calculate TEEP Visual OEE ™ 
+
+ Improve 
+ Improve OEE World-Class OEE Address the Six Big Losses Takt Time 
+
+ Try Vorne XL free for 90 days 
+
+ FAQ 
+ GLOSSARY 
+ ABOUT US 
+ FREE TOOLS 
+
+ TOPICS 
+
+ FAQ 
+
+ GLOSSARY 
+
+ ABOUT US 
+
+ FREE TOOLS 
+
+ LEARN THE ART & SCIENCE OF MANUFACTURING IMPROVEMENT FROM VORNE 
+ Calculate TEEP
+
+ THE BIG IDEA 
+
+ OEE reveals how much of your Planned Production Time is truly productive, but TEEP also takes Utilization into account to show how much potential you have to increase throughput with the equipment you already own. 
+
+ What Is TEEP?
+ TEEP (Total Effective Equipment Performance) is a performance metric that provides insights as to the true capacity of your manufacturing operation. It takes account both Equipment Losses (as measured by OEE) and Schedule Losses (as measured by Utilization).
+
+ TEEP is calculated by multiplying four factors: Availability, Performance, Quality, and Utilization. Let’s briefly contrast OEE and TEEP:
+ OEE measures the percentage of Planned Production Time that is truly productive.
+ TEEP measures the percentage of All Time that is truly productive.
+ If your TEEP score is 100% then you are making only Good Parts, as fast as possible, with no stops, around the clock (24/7). In other words, you have no Schedule Losses and no OEE Losses .
+ Plan Not Open Schedule Losses TEEP takes into account Schedule Losses. 
+ Production Not Scheduled 
+ Setup and Adjustments Six Big Losses OEE takes into account the Six Big Losses, which map to OEE Losses as follows: Availability Loss
+ Performance Loss
+ Quality Loss
+
+ Breakdowns 
+ Reduced Speed 
+ Small Stops 
+ Production Rejects 
+ Startup Rejects 
+ Fully Productive Time OEE and TEEP OEE is the ratio of Fully Productive Time to Planned Production Time. It takes into account the Six Big Losses.
+ TEEP is the ratio of Fully Productive Time to All Time. It takes into account Schedule Losses and Six Big Losses.
+
+ OEE is improving. Great job! Or is it? Dig a little deeper and the picture is less clear. Most companies would not want to increase Availability by 5.0% at the expense of decreasing Quality by 4.5%.
+ Calculation Example
+ Now let’s work through a complete example using the preferred OEE calculation. Here is data recorded for the first shift:
+ Item Data 
+ Shift Length 8 hours (480 minutes) 
+ Breaks (2) 15 minute and (1) 30 minute 
+ Downtime 47 minutes 
+ Ideal Cycle Time 1.0 seconds 
+ Total Count 19,271 widgets 
+ Reject Count 423 widgets 
+
+ How Is TEEP Calculated?
+ TEEP is calculated as:
+ TEEP = OEE × Utilization
+
+ Utilization is calculated as:
+ Utilization = Planned Production Time / All Time
+
+ Here is a simple example, based on a manufacturing operation with a 65% OEE score, that is running two 8-hour shifts per day, five days per week.
+ Item Value Calculation 
+ OEE 65.00% How to calculate OEE 
+ Planned Production Time 80 hours 8 hours × 2 shifts × 5 days 
+ All Time 168 hours 24 hours × 7 days 
+ Utilization 47.62% 80 hours / 168 hours 
+ TEEP 30.95% 0.6500 × 0.4762 
+
+ TEEP and the Hidden Factory
+ TEEP indicates how much capacity is waiting to be unlocked in your “ hidden factory ”. In other words, it shows how much potential you have to increase throughput with your current equipment. In many cases, reclaiming time from your hidden factory is a faster and less expensive alternative to purchasing new equipment.
+ TEEP can also be used to get a sense of your potential sales capacity as it takes into account the full capacity of your manufacturing plant. Keep in mind though, that even a world-class manufacturing plant operating around the clock typically achieves only 80% to 90% Utilization of total capacity.
+ The Manufacturing Productivity Improvement Device That Feels Like Magic In less than 8 hours you can benefit from automated, real-time accurate data. Learn About Vorne XL 
+
+ 42,000+ Installations 
+ 45+ Countries 
+ $4,690 One-Time Cost 
+ 8 Hours to Deploy 
+ 50+ Years in Business 
+
+ 8 Hours to Deploy 
+ 50+ Years in Business 
+
+ Manufacturing Capacity and Equipment Utilization
+ Capacity can be defined as “the amount that can be produced”. From a discrete manufacturing perspective, we can define capacity as “the maximum number of parts that can be manufactured”. Capacity is fundamentally a part-based metric (e.g., our current capacity is 24,000 red widgets per hour).
+ Utilization can be defined as “how much something is used”. From a discrete manufacturing perspective, we can define utilization as “the proportion of time that manufacturing equipment is used”. Utilization is fundamentally a percentage-based metric (e.g., our current utilization is 47.62%).
+ TEEP and Losses
+ As stated above, TEEP takes into account both Schedule Losses and OEE Losses. Interestingly, losses can be viewed from three perspectives:
+ Part Units (we lost 1,000 units of potential production)
+ Time Units (we lost two hours of production)
+ Percentage Units (we lost 17% of our Planned Production Time)
+ All three perspectives can be useful – depending on whether you are thinking in terms of sales/capacity (part units), labor/utilization (time units), or manufacturing performance (percentage units).
+ Measuring TEEP reveals these losses in full so that you can begin to understand and utilize the entire capacity of your plant.
+ To learn more about manufacturing losses, visit the Six Big Losses .
+
+ WHAT YOU SHOULD DO NEXT...
+ 1. Learn more about how our product, Vorne XL, can help you eliminate waste and significantly improve OEE.
+ Vorne XL is the simplest and fastest way to monitor and improve production. It's a one-time cost and takes just a day to install. And you can try it completely free for 90 days.
+ Learn More 2. Download our FREE package of tools to supercharge your manufacturing productivity
+ The package includes leadership lessons, training guides, meeting and report templates, summaries of key concepts, project organizers, and more. You'll also receive our monthly newsletter for free. Unsubscribe at any time.
+ DOWNLOAD FREE LEAN TOOLS 3. Sign up for our monthly newsletter
+ Get free monthly updates with proven methods for improving our manufacturing productivity. Unsubscribe at any time.
+
+ First Name* 
+ Last Name* 
+
+ Email* 
+ Phone Number* 
+ Company Name* 
+ What would you like to achieve with XL? 
+ Submit 
+
+ +1.630.875.3600 [email protected] 1445 Industrial Dr. Itasca, IL 60143 
+ Learn About OEE 
+ What is OEE? OEE Factors Six Big Losses Hidden Factory Practical OEE 
+ Calculate OEE Implement OEE Calculate TEEP Visual OEE ™ 
+ Improve OEE World-Class Address the Six Big Losses Takt Time 
+
+ Resources 
+ Free OEE Tools OEE Glossary FAQ 
+
+ About Us 
+ Our Company Vorne.com LeanProduction.com Vorne XL Free Trial 
+
+ © 2011-2026 Vorne Industries. All Rights Reserved | Privacy Policy | Cookie Policy

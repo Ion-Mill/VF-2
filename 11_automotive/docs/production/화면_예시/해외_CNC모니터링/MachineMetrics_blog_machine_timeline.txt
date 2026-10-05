@@ -1,0 +1,390 @@
+SOURCE: https://www.machinemetrics.com/blog/machine-timeline
+FETCHED: 2026-10-05
+
+Machine Timeline: Production and Diagnostic Data for Root Cause Analysis
+
+ [IMG alt=mm-announcemen]
+
+ Catch us at IMTS! Booth #133100
+
+ Sign In
+
+ [IMG alt=mm-main-logo]
+
+ Platform
+
+ Explore the MaximaOS Platform
+
+ [IMG alt=connect-1]
+
+ CONNECT
+
+ Every machine, every signal, live in minutes.
+
+ [IMG alt=execute-2]
+
+ EXECUTE
+
+ Every job, every shift, in real time.
+
+ [IMG alt=optimize-1]
+
+ OPTIMIZE
+
+ Every metric, from machine to enterprise.
+
+ [IMG alt=build]
+
+ BUILD
+
+ Every workflow, every app, no integrator required.
+
+ [IMG alt=meet-max-ai]
+
+ Meet Max AI
+
+MaximaOS
+
+refuse to fall behind
+
+ [IMG alt=Frame 1000005942]
+
+ Solutions
+
+ BY USE CASE
+
+ Production Scheduling
+
+ Work Order Management
+
+ Operator Guidance
+
+ Downtime Tracking
+
+ OEE & Production Analytics
+
+ Machine Monitoring
+
+ Quality & Scrap Reduction
+
+ Tool Life Management
+
+ Multi-Site Visibility
+
+ Labor Tracking and Costing
+
+ Capacity & Quoting
+
+ BY TEAM
+
+ [IMG alt=operations]
+
+ Operations
+
+ [IMG alt=Continous improvement]
+
+ Continuous Improvement
+
+ [IMG alt=maintenance]
+
+ Maintenance Teams
+
+ [IMG alt=frontline workers]
+
+ Frontline Workers
+
+ [IMG alt=executive leadership]
+
+ Executive Leadership
+
+ [IMG alt=Developers]
+
+ IT & Developers
+
+ BY INDUSTRY
+
+ [IMG alt=aero]
+
+ Aerospace & Defense
+
+ [IMG alt=Auto]
+
+ Automotive
+
+ [IMG alt=contract manufacturers]
+
+ Contract Manufacturers
+
+ [IMG alt=job shops]
+
+ Job Shop
+
+ [IMG alt=Medical]
+
+ Medical Device
+
+ [IMG alt=industrial]
+
+ Industrial & Heavy Equipment
+
+ [IMG alt=firearms]
+
+ Firearms
+
+ See the execution gap in your own numbers
+
+case study
+
+25%+ improvement in schedule attainment
+
+ [IMG alt=Frame 1000005943 (1)]
+
+ Resources
+
+ LEARN
+
+ [IMG alt=file-text]
+
+ Blog
+
+ [IMG alt=book-text]
+
+ eBooks
+
+ [IMG alt=newspaper]
+
+ Newsroom
+
+ [IMG alt=calculator-1]
+
+ ROI Calculator
+
+ PROOF
+
+ [IMG alt=message-square-quote]
+
+ Customer Stories
+
+ [IMG alt=monitor-play]
+
+ Webinars
+
+ KNOWLEDGE
+
+ [IMG alt=hammer]
+
+ Support Hub
+
+ [IMG alt=Developers]
+
+ For Developers
+
+ [IMG alt=connected worker]
+
+ Connectivity Hub
+
+ROI CALCULATOR
+
+PUT A NUMBER
+ON THE GAP.
+
+ [IMG alt=Frame 1000005944]
+
+ Company
+
+ About Us
+
+ Careers
+
+ Events
+
+ Contact Us
+
+BLOG
+
+MANUFACTURING DOESN'T FAIL
+AT PLANNING. IT FAILS AT EXECUTION.
+
+ [IMG alt=Frame 1000005945]
+
+ Request a Demo
+
+ See It in Action
+
+ Request a Demo
+
+ See It in Action
+
+ Search the website
+
+ Search
+
+ MachineMetrics
+
+ Machine Timeline: Production and Diagnostic Data for Root Cause Analysis
+
+ [IMG alt=Graham Immerman]
+
+ Graham Immerman
+
+ December 7, 2023
+
+A Historical Record of Health and Performance
+
+Real-time data is critical to making fast decisions on the shop floor. It's one of the many reasons that the Current Shift Dashboard is one of MachineMetrics' most popular features.
+
+However, what's also incredibly useful is an accurate record of historical information that can be referenced at any time. The ability to look deeply into past performance makes the MachineMetrics Timeline a critical feature for root cause analysis.
+
+Machine timelines provide an interactive view for each machine showing operating status over time alongside diagnostic machine data. Further, you can quickly view whichever range of time makes sense for your current analysis.
+
+[IMG alt=machine-timeline]
+
+While dashboards and reports provide an overview of production, timelines drill deeper into the performance and health of equipment, enabling users to look back in time to see what happened to their machines and why, down to every minute.
+
+In the below video, Director of Business Development Ben Groves walks through the MachineMetrics Timeline feature.
+
+Root Cause Analysis
+
+The MachineMetrics Timeline is quite helpful when looking for specific causes of problems, or to identify patterns in performance. By providing a detailed overview of machine operations, including running and idle times, production output, downtime categorization, and alarms, the Timeline enables quick identification of potential issues. This helps pinpoint the sequence of events leading to malfunctions or inefficiencies, making the diagnostic process both faster and more accurate.
+
+The Timeline's ability to zoom into granular data, such as motor loads or tool change frequencies, further aids in distinguishing between symptoms and root causes. The integration of sensor data like temperature and vibration readings allows for a thorough analysis, correlating mechanical performance with external factors. This precise and detailed approach ensures quicker problem resolution, better preventive strategies, and improved machine productivity.
+
+Categorize Your Downtime
+
+Not all MachineMetrics customers choose to categorize their downtime reasons. Those who do see immense value in understanding what the top causes of their downtime are, enabling them to adjust processes to reduce or eliminate causes of downtime.
+
+While operators can categorize the reason for a downtime event, it is possible for the downtime reason to not be collected in real-time at the machine. In this case, users can leverage the machine timeline to document downtime reasons.
+
+[IMG alt=7 Day MachineMetrics Timeline]
+
+[See Full-Size Image]
+
+Know Exactly What Happened...And Why!
+
+The Timeline puts power into the hands of engineers and managers searching for the “why” behind downtime events, extended cycle times, and any other issues occurring on the shop floor. With an accurate record of every machine event, you can find out exactly what occurred at any given time in the past. Think of it like a logbook for every single machine in your plant. Want an inside look? Watch our on-demand product tour:
+
+Want to See the Platform in Action?
+
+Watch Now
+
+In this article
+
+Share with your community
+
+ Get In Touch With Us
+
+ Contact Us
+
+ 844-822-0664
+
+ info@machinemetrics.com
+
+ Headquarters
+
+9 1/2 Market St, Suite 3B Northampton, MA 01060
+
+ Platform
+
+Execute 
+
+Optimize 
+
+Build
+
+Meet Max AI
+
+MaximaOS
+
+ Solutions
+
+Production Scheduling
+
+Work Order Management
+
+Operator Guidance
+
+Downtime Tracking
+
+OEE & Production Analytics
+
+Machine Monitoring
+
+Quality & Scrap Reduction
+
+Tool Life Management
+
+Multi-Site Visibility
+
+Labor Tracking and Costing
+
+Capacity & Quoting
+
+ By Team
+
+Operations
+
+Continuous Improvement
+
+Maintenance Teams
+
+Frontline Workers
+
+Executive Leadership
+
+IT & Developers
+
+ By Industry
+
+Aerospace & Defense
+
+Automotive
+
+Contract Manufacturers
+
+Job Shop
+
+Medical Device
+
+Industrial & Heavy Equipment
+
+Firearms
+
+ Resources
+
+Customer Stories
+
+Webinars
+
+Support Hub
+
+For Developers
+
+Connectivity Hub
+
+ROI Calculator
+
+Blog
+
+Newsroom
+
+eBooks
+
+Blog
+
+ Support
+
+Privacy Policy
+
+Data Processing Addendum
+
+Service Level Agreement
+
+Return Policy
+
+Website Terms
+
+Contact Us
+
+Sign In
+
+ All Rights Reserved by MachineMetrics ©2026

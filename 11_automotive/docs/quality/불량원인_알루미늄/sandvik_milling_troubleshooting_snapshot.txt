@@ -1,0 +1,36 @@
+SOURCE: Sandvik Coromant - "Milling troubleshooting"
+URL: https://www.sandvik.coromant.com/en-us/knowledge/milling/troubleshooting-milling
+Accessed: 2026-10-03 (page is JavaScript-rendered; plain curl returns an empty shell, so this is a rendered-text snapshot for internal reference only)
+Copyright: AB Sandvik Coromant. Internal study reference only; do not redistribute. Always check the live page.
+
+=== Problem -> Cause -> Solution (excerpt of rendered table) ===
+
+[Vibration]
+- Weak fixture -> support against cutting-force direction; reduce ap; coarse/differential pitch, more positive cutter; small corner radius & parallel land; fine-grain uncoated/thin-coated insert.
+- Axially weak workpiece -> 90 deg square-shoulder positive cutter; lower axial force (lower ap, smaller radius); check tool wear and holder run-out; improve tool clamping.
+- Too long tool overhang -> minimize overhang; coarse differential pitch; increase fz; reduce ap; up milling in finishing; for solid carbide end mills try fewer teeth and/or higher helix.
+- Irregular table feed -> try up milling; tighten feed mechanism.
+- Cutting data -> reduce vc, increase fz, change ap.
+- Vibration in corners -> program larger corner radii with reduced feed.
+
+[Chip jamming] (long-chipping materials, full slotting)
+- Improve chip evacuation (rich, well-directed coolant or compressed air); reduce fz; split deep cuts; up milling in deep slots; coarse pitch; solid carbide end mills with 2-3 edges and/or higher helix.
+
+[Re-cutting of chips] (slotting/pocketing, deep cavities on vertical machines)
+- Evacuate chips by air/coolant (prefer internal coolant); change tool path; reduce fz; split deep cuts.
+
+[Unsatisfactory surface finish]
+- Excessive feed per rev -> check axial insert setting, spindle run-out; fn <= 70% of parallel-land width; wiper inserts for finishing.
+- Vibration -> see Vibration.
+- Built-up edge formation -> increase vc to raise temperature; turn off cutting fluid; sharp edge with smooth rake; positive geometry; cermet grade.
+- Back-cutting -> check spindle tilt (~0.10 mm/1000 mm); spindle axial run-out (TIR) <= 7 um in finishing; reduce radial force; smaller cutter.
+- Workpiece frittering -> decrease fz; closer pitch; reposition cutter for thinner exit chip; 45 deg entering angle; sharp insert; monitor flank wear.
+
+[Burr formation]
+- (HRSA/stainless, notch wear) large radius, low entry angle, ap = 0.5 x radius.
+
+[Insert wear section - relevant items]
+- Flank wear -> reduce vc / increase fz / more wear-resistant grade; uneven wear from run-out: keep run-out < 0.02 mm, check chuck/collet, minimize protrusion, higher helix (>=45 deg) for solid end mills.
+- Chipping -> tougher grade, stronger edge; may be caused by built-up edge.
+- Built-up edge (BUE): cutting zone temperature too low; very sticky materials such as low-carbon steel, stainless and ALUMINIUM -> increase vc, increase fz, positive geometry, use oil mist or cutting fluid. BUE causes poor surface finish and edge frittering when torn away.
+- Thermal cracks -> coolant copiously or not at all.

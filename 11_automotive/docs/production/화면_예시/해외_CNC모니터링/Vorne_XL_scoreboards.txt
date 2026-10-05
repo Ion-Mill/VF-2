@@ -1,0 +1,261 @@
+SOURCE: https://www.vorne.com/solutions/applications/scoreboards/
+FETCHED: 2026-10-05
+
+Manufacturing Production Scoreboards | Vorne
+
+[IMG alt=Logo]
+
+PRODUCTS
+
+THE XL PLATFORM
+
+What Is XL? XL Touch NewXL HD+ NewXL810-1 
+Models and Pricing Tech Specs What's New With XL? Free 90-Day Trial 
+XL ADD-ONS
+
+XL Sidekick App FreeBarcode Scanner Kits Integration Tools Services 
+MORE
+
+Testimonials Customers and Industries Additional Products Product Manuals 
+Try Vorne XL free for 90 days
+
+SERVICES
+
+SERVICES
+
+Services from Vorne XL Expert Training The XL Universe IDA: Information, Decision, Action Meet the Services Team 
+Try Vorne XL free for 90 days
+
+SOLUTIONS
+
+APPLICATIONS
+
+Machine Monitoring OEE Displays OEE Software Production Counters Production Monitoring Production Scoreboards Takt Time 
+USE CASES
+
+Creating a Digital Twin Improve Productivity Increase Production Capacity Reduce Changeover Times Reduce Cycle Times Reduce Downtime Reduce Manufacturing Costs Win the Shift 
+INDUSTRIES
+
+Automotive Baking Bottling Building Products Co-Packing Cosmetics Electronics Food and Beverage 
+Medical Devices Metal Forming Metal Stamping Packaging Pharmaceutical Printing Pulp and Paper Textiles 
+Try Vorne XL free for 90 days
+
+LEARNING CENTER
+
+METHODOLOGIES
+
+Agile Continuous Improvement Information, Decision, Action Lean Manufacturing Structured Improvement Theory of Constraints Total Productive Maintenance Toyota Production System 
+METRICS AND MEASURES
+
+Downtime Key Performance Indicators (KPIs) OEE Six Big Losses TEEP 
+PEOPLE-FOCUSED
+
+Be Your Best Leadership Meetings 
+TOOLS AND TECHNIQUES
+
+Andon Short Interval Control Single-Minute Exchange of Die Top Losses Visual Factory 
+Try Vorne XL free for 90 days
+
+SUPPORT
+
+WE CAN HELP
+
+Technical Support 
+DOCUMENTATION
+
+Product Manuals Software Applications 
+Try Vorne XL free for 90 days
+
+ABOUT US
+
+VORNE
+
+About Us Contact Us Careers 
+Try Vorne XL free for 90 days
+
+GLOBAL
+
+XL PARTNERS
+
+XL Partners 
+Try Vorne XL free for 90 days
+
+PRODUCTS
+
+SERVICES
+
+SOLUTIONS
+
+LEARNING CENTER
+
+SUPPORT
+
+ABOUT US
+
+GLOBAL
+
+MANUFACTURING IMPROVEMENT MADE EASY BY VORNE
+
+[IMG alt=background]
+
+Production Scoreboards
+Production scoreboards display key information on the plant floor in real time so your production team knows exactly how they are doing and when action needs to be taken.
+The most effective scoreboards do more than display information – they create focus, reinforce expectations, and help teams stay on pace throughout their shift.
+
+[IMG alt=XL HDMI scoreboard showing takt time along with other plant-floor KPIs, and a snapshot of a takt time report built into XL.]
+
+What Are Manufacturing Scoreboards?
+Production scoreboards can be as simple as a stacklight communicating machine state through color, or as sophisticated as an electronic display showing multiple production metrics and contextual information in real time.
+The most effective production scoreboards are dynamic. They update automatically throughout the shift and communicate exactly what operators and supervisors need to know at that moment in time.
+View Our Production Scoreboards
+Why Use Production Scoreboards?
+Every day, manufacturers look for better ways to eliminate waste and increase productivity. One of the easiest and fastest ways to make gains is to focus your plant floor team on production metrics that are proven to drive improvement in manufacturing productivity (e.g., Overall Equipment Effectiveness, Down Time, Changeover Time, First Pass Yield, and Efficiency). These types of metrics are typically referred to as KPIs (Key Performance Indicators).
+Well-chosen KPIs that are widely communicated and consistently reinforced can be very effective in transforming a group of individuals into a high-performance team. Production scoreboards are a proven tool for communicating and reinforcing these KPIs in real time.
+Scoreboards create focus, communicate information, and encourage your production teams to “win their shift”.
+
+[IMG alt=Example of an HDMI production scoreboard driven by the Vorne XL production monitoring platform.]Industrial plant-floor scoreboards communicate real-time KPIs and encourage your plant floor employees to “win their shift”.
+Try the XL Production Scoreboard Free
+
+Types of Production Scoreboards
+There are three common types of scoreboards used in manufacturing:
+
+TypeHow It's Used
+Andon BoardsThe simplest type of production scoreboard. Typically a stacklight that communicates equipment state using color. For example, green, yellow, red, and blue lights may communicate whether the equipment is running well, running poorly, down, or in a changeover condition. Flashing lights convey increased urgency. Andon boards are effective for drawing attention to equipment conditions, but they are limited in the amount of information they can communicate.
+WhiteboardsPortable (on wheels) or fixed (wall-mounted) writable boards where KPIs and other information are periodically updated. Typical information includes counts, rates, downtime, and targets. Whiteboards can be very effective when updated consistently, but the information is not real-time, must be captured manually, and is difficult to view from a distance.
+Real-Time Visual DisplaysPlant floor electronic displays that show KPIs and other important information. The most effective visual displays are dynamic and automatically adapt based on current production conditions. They take full advantage of real-time information by:
+Updating KPIs automatically throughout the shift
+Using color changes and flashing to communicate urgency
+Displaying contextual information based on current production conditions
+Showing performance metrics while running
+Displaying downtime information during breakdowns
+Highlighting target time during changeovers and breaks
+Automatically capturing production data directly from machines
+
+How to Use Scoreboards in Manufacturing
+A very effective way to use scoreboards is to communicate three types of information:
+
+InformationConveysKPI
+ExpectationWhere should we be?Target
+PerformanceWhere are we?Actual
+AchievementHow are we doing?Efficiency
+Expectation
+Expectation communicates where production metrics should be at any given point of time.
+Setting expectations lends itself well to SMART goals (Specific, Measureable, Achievable, Relevant, and Time-Specific).
+An effective way to set expectations for manufacturing lines is to display a real-time Target Count driven by Takt Time. Target Count continuously updates throughout the shift and communicates how many good parts should have been manufactured at any given point of time (typically restarted from zero with each new shift).
+Performance
+Performance communicates where production actually is at any given point of time.
+An effective way to communicate performance for manufacturing lines is to display Good Count.
+In general, match the units of your performance metric to the units of your expectation metric. For example:
+If your expectation metric is measured in counts, display the current count.
+If your expectation metric is measured as a rate, display the current rate.
+Achievement
+Achievement communicates how well production is performing against expectations.
+This is where you clearly communicate whether your team is “winning their shift” (whether they are meeting or exceeding expectations).
+An effective way to communicate achievement for manufacturing lines is to display Efficiency:
+Actual ÷ Target
+Displayed as a percentage
+Remember - the goal of using manufacturing scoreboards is to influence behavior and drive action on the factory floor.
+With that in mind, plant floor scoreboards are most effective when they are real-time. After all, a scoreboard is not a report. It's not a tool for deep analysis. It's a tool for instantly communicating how production is performing and whether the shift is ahead, behind, or on pace (whether your team is winning the shift).
+You have good people, and good people are capable of achieving great results - especially when they have the right information and focus to drive effective actions.
+Production scoreboards provide the information and focus that lead to effective actions, and ultimately, to improved results. Set expectations and unleash the competitive spirit of your employees. Everyone likes to win. Use scoreboards to make it easier for your plant floor employees to win their shift!
+
+Production Scoreboard Comparison Chart
+The following selection chart highlights some of the many advantages of using the Vorne XL Productivity Appliance™ as a production scoreboard. We like to think of XL as the ultimate plant floor scoreboard!
+View Our Models and Pricing
+
+AdvantageAndonWhiteboardVorne XL Productivity Appliance™
+
+[IMG alt=Andon with red, yellow, and green stacked lights.]
+
+[IMG alt=Production whiteboard for hourly metrics.]
+
+[IMG alt=Manufacturing scoreboard showing Efficiency, OEE, Target Count, Actual Count, and Downtime]
+Affordable✔✔✔
+Highly Visible✔✔
+Engages Operators✔✔✔
+Automates Data Capture✔
+Real-Time Information✔✔
+Historical Analytics✔
+Browser-Based Reports✔
+Multiple KPIs✔✔
+Downtime Alerts✔✔
+Slow Running Alerts✔
+Changeover/Break Timers✔
+Count Metrics✔✔
+Rate Metrics✔
+Cycle Metrics✔
+Production Time Metrics✔
+OEE Metrics✔
+Six Big Loss Metrics✔
+TEEP/Capacity Metrics✔
+Target Metrics✔✔
+
+Real-Time Production Scoreboards with XL
+The Vorne XL Productivity Appliance™ automatically captures production data, calculates over 140 metrics, and displays real-time KPIs on scoreboards for the plant floor.
+Manufacturers use XL scoreboards to display:
+Target vs. Actual
+Efficiency
+Downtime
+Production counts
+Rates
+Changeover timers
+Break timers
+OEE metrics
+Escalation alerts
+And much, much more
+Because XL captures production data directly from machines, scoreboards update automatically throughout the shift without requiring manual intervention.
+XL production scoreboards can be displayed on:
+Integrated LED displays
+Large external TVs and monitors
+Touchscreen operator interfaces
+Browser-based dashboards
+The most effective scoreboards communicate the right information at the right time. For example:
+Target pace while production is running
+Downtime information during breakdowns
+Remaining time during breaks and changeovers
+The result is a real-time production scoreboard that helps operators and supervisors immediately see how production is performing and when action needs to be taken.
+
+The Manufacturing Productivity Improvement Device That Feels Like MagicIn less than 8 hours you can benefit from automated, real-time accurate data.Learn About Vorne XL
+
+[IMG alt=XL HD Run Screen]
+
+45,000+Installations
+45+Countries
+$4,690One-Time Cost
+8Hours to Deploy
+50+Years in Business
+
+8Hours to Deploy
+50+Years in Business
+
+First Name*
+Last Name*
+Email*
+Phone Number*
+Company Name*
+What would you like to achieve with XL?Submit
+
+[IMG alt=logo]+1.630.875.3600[email protected]1445 Industrial Dr. Itasca, IL 60143
+Products
+
+XL Productivity Appliance™Models and PricingTech Specs
+Applications
+
+Machine MonitoringProduction MonitoringOEE SoftwareOEE DisplaysProduction Monitoring SoftwareProduction CountersProduction ScoreboardsTakt Time
+Use Cases
+
+Increase CapacityImprove ProductivityReduce DowntimeReduce Changeover TimesReduce Cycle TimesReduce CostWin the ShiftCreate a Digital Twin
+Learn
+
+Learning CenterServicesSupport
+About Us
+
+Our CompanyOur CustomersCareers© 2011-2026 Vorne Industries. All Rights Reserved | Privacy Policy | Cookie Policy
+
+[IMG alt=Banner Ad]
+
+What's included in your 90-day free trial?
+
+[IMG alt=Andon Report]
+VORNE XL | Works with any machine, any process, right out of the boxEasy, quick self-install | Accurate, real-time KPIs immediatelyTry XL for FREE today
+GET STARTEDSEE HOW VORNE XL WORKS

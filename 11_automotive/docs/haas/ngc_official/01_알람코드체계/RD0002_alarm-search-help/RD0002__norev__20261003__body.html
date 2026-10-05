@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Alarm Search Help Guide - RD0002</title>
+<style>
+body{font-family:Segoe UI,Arial,sans-serif;max-width:980px;margin:24px auto;padding:0 16px;line-height:1.55;color:#1d1d1f;background:#fff}
+.provenance{font-size:12px;border:1px solid #c9ced6;background:#f4f6f8;padding:8px 12px;margin-bottom:24px}
+.provenance th{text-align:left;padding-right:12px;white-space:nowrap;vertical-align:top}
+table{border-collapse:collapse;margin:12px 0} td,th{border:1px solid #c9ced6;padding:4px 8px;vertical-align:top}
+.provenance td,.provenance th{border:none;padding:1px 8px 1px 0}
+img{max-width:100%;height:auto}
+</style></head><body>
+<div class="provenance"><strong>본문 추출본 (원본 아님)</strong> — 사실 확인은 같은 폴더의 원본 HTML과 공식 URL로 한다. 그림은 Haas 공식 주소에서 불러오므로 인터넷 연결 시에만 보인다.
+<table><tr><th>doc_id</th><td>RD0002</td></tr><tr><th>title</th><td>Alarm Search Help Guide - RD0002</td></tr><tr><th>revision</th><td>표기 없음</td></tr><tr><th>last_updated</th><td>10/16/2025</td></tr><tr><th>source_url</th><td>https://www.haascnc.com/service/troubleshooting-and-how-to/reference-documents/alarm-search-help.html</td></tr><tr><th>retrieved_at</th><td>2026-10-03T17:57:22</td></tr><tr><th>retrieved_via</th><td>direct</td></tr><tr><th>original_file</th><td>RD0002__norev__20261003.html</td></tr><tr><th>original_sha256</th><td>dfa6a2f04b9880c72e8a46aa168c008950504cd457f475ecc3db91e2beef90d8</td></tr><tr><th>extraction</th><td>div.print-only · scripts/extract_ngc_body.py</td></tr><tr><th>license</th><td>Haas 저작물: 사이트 약관상 서면 허가 없는 사용 불가 표기. 내부 참고용 사본, 재배포 금지</td></tr></table></div>
+
+
+<div>
+
+<div class="sectionHeader parbase">
+<div class="sectionHeader section-wrapper text-align-center clearfix" id="waypoint-target">
+
+<span class="last-updated">Last updated: 10/16/2025</span>
+<h2><b>Alarm Search</b> Help Guide</h2>
+<hr/>
+<p><b>RD0002</b></p>
+</div>
+</div>
+
+<div class="diySectionContainer parbase"><div>
+<div class="diy-section-container" id="Alarm-Search-Help">
+<div class="row">
+<div class="diySectionContainerTitle titleLine-wrapper">
+<h2 class="titleLine">Alarm Search Help</h2>
+</div>
+<div class="diySectionContainerInner">
+<div class="grid parbase">
+<div class="gridpad" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-12">
+<div class="image parbase section">
+<!--*/Optional wrapper class for padding, etc /*-->
+<div class="image-component align-left add-shadow">
+<div class="image-component-inner">
+<img class="default-img expandable-image" loading="lazy" src="https://www.haascnc.com/content/dam/haascnc/service/guides/references/alarm-search-help/NGC_Alarm_Naming_Convention.png" style="height:auto; width:100%;"/>
+
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid parbase">
+<div class="gridpad" style="
+        background-image: url();
+        background-size:cover;
+        display: ;
+        border-radius: px;
+        border-top-left-radius: px; 
+        border-top-right-radius: px; 
+        border-bottom-left-radius: px; 
+        border-bottom-right-radius: px; 
+        border-style: solid;
+        border-width: 0;
+        border-width: px; 
+        border-color: ; 
+        padding-top: px;
+        padding-bottom: px;
+        padding-left: px;
+        padding-right: px;
+        padding: 1% 3%;
+        
+        ">
+<div class="row">
+<div class="col-md-12">
+<div class="diyStep section"><div>
+<div class="diy-step" data-last-modified-timestamp="1682452084855" data-recentness-duration="30">
+<div class="step-text"><p>The Next Generation Control (NGC) alarm numbers have several formats.</p>
+<p><b>1.</b> The standard format alarm number <b>[A]</b> has no decimal points. These alarm numbers are for both Classic Haas Control (CHC) and Next Generation Control (NGC). For example: Alarm <b>107 </b>E-stop.</p>
+<p><b>2.</b> For alarms that are related to the machine axis, the number before the decimal point <b>[B]</b> is the axis number. The (4) numbers after the decimal point <b>[C]</b> is the alarm number. For example: Alarm <b>1.9930 </b>X SERIAL ENCODER COMMUNICATION FAULT.</p>
+<p> <b>Note:</b> In the Alarm Viewer in the control, you can search only for the alarm "<b>9930</b>" number. On the Haas Service Site you can search for the entire alarm number "<b>1.9930</b>" or the axis alarm "<b>9930</b>".</p>
+<p> <b>Note:</b> The numbers of the axis are the same as in the NGC parameters. The axis number is not always the same as the physical board address numbers. Refer to <a href="https://www.haascnc.com/content/haascnc/en/service/troubleshooting-and-how-to/reference-documents/next-generation-control---axis-assignments.html" target="_blank">Next Generation Control - Axis Assignments</a> for more information.</p>
+<p><b>3.</b> For alarms that have (4) numbers before the decimal point <b>[D]</b>,<b> </b>this is the alarm number. Most of the (3) numbers after the decimal point <b>[E]</b> are sub-alarm numbers that are used to provide more information related to the alarm. For example: Alarm <b>9100.018</b> NON RESETTABLE Software Error.</p>
+<p> <b>Note:</b> The <b>20000 </b>alarms (<b>20000</b>-<b>20017 </b>currently) are informational messages only. These are usually generated at power up and only show in the alarm history. This information is used by our software developers for debugging purposes. They typically do not require any service action. Refer to <a href="https://www.haascnc.com/content/haascnc/en/service/troubleshooting-and-how-to/troubleshooting/system-messages---notifications.html" target="_blank">System Messages &amp; Notifications</a> for more information.</p>
+</div>
+</div>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+</div>
+
+</body></html>

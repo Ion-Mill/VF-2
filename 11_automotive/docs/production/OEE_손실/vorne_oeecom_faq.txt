@@ -1,0 +1,230 @@
+OEE FAQ – Frequently Asked Questions | OEE
+TOPICSUnderstand
+What is OEE? OEE Factors Six Big Losses Hidden Factory Practical OEE
+Measure
+Calculate OEE Implement OEE Calculate TEEP Visual OEE ™
+Improve
+Improve OEE World-Class OEE Address the Six Big Losses Takt Time
+Try Vorne XL free for 90 days
+FAQ
+GLOSSARY
+ABOUT US
+FREE TOOLS
+search
+search
+TOPICS
+FAQ
+GLOSSARY
+ABOUT US
+FREE TOOLS
+LEARN THE ART & SCIENCE OF MANUFACTURING IMPROVEMENT FROM VORNE
+OEE FAQ
+Introduction
+We have a lot of experience in manufacturing, particularly regarding OEE. Here are answers to the questions we encounter most frequently when applying the concept of OEE in practice.
+Have a question?
+Feel free to give us a call.
+Want to reuse content from this website?
+The content on this site is registered with the US Copyright Office. To learn more, read our policy on reusing content.
+Implementing OEE
+Why should I implement OEE?
+OEE (Overall Equipment Effectiveness) is a universally accepted method for measuring the improvement potential of a production process – with one simple number. Measuring makes it easier to improve, and improving productivity (by eliminating waste) is the core objective of Lean Manufacturing. OEE also provides a critical link between measurement and improvement. It directly ties to the Six Big Losses, which provide a practical and actionable roadmap for improving manufacturing productivity.
+Will OEE work with my process?
+The short answer is “very likely yes.” OEE is most commonly applied to discrete manufacturing processes (i.e., processes that make individual parts). However, OEE can also be applied to continuous processes (e.g., refineries). The key thing to remember is that OEE identifies the ratio of Fully Productive Time (actual output) to Planned Production Time (theoretically possible output). The difference between the two is waste – lost time that could be used for manufacturing.
+My manufacturing process is mostly manual. Can I use OEE?
+Yes – but you may want to consider a variant known as OLE (Overall Labor Effectiveness). OEE is designed to measure equipment effectiveness. OLE is designed to measure labor (workforce) effectiveness. Another option is to simply measure labor productivity (parts per person hour).
+The Manufacturing Productivity Improvement Device That Feels Like MagicIn less than 8 hours you can benefit from automated, real-time accurate data.Learn About Vorne XL
+42,000+Installations
+45+Countries
+$4,690One-Time Cost
+8Hours to Deploy
+50+Years in Business
+8Hours to Deploy
+50+Years in Business
+Measuring OEE
+I want an OEE score for my entire production line. Where should I measure this?
+OEE (Overall Equipment Effectiveness) should always be measured at the constraint step in your process. Whether you’re filling bottles, packing boxes, stamping metal, or assembling buses, there will always be a single step or machine that governs your throughput. This step is the constraint, and it is the point at which it is absolutely critical to capture all losses (internal and external):
+Internal Losses are the Six Big Losses (i.e., Equipment Failure, Setup and Adjustments, Idling and Minor Stops, Reduced Speed, Process Defects, and Reduced Yield)
+External Losses are Starved (by an upstream process) and Blocked (by a downstream process)
+On lines where all the equipment is balanced to run at identical speed, the best practice is to monitor OEE at the equipment that does the primary work. For example, on a balanced filling line, monitor the filler.
+What if I don’t want OEE for a single machine? What if I want OEE for the line?
+The performance of your constraint IS the performance of your line. If your constraint runs at one thousand units per hour and your palletizer runs at three thousand units per hour, how many units will you make? One thousand units per hour! Other equipment can stop and start, but if your constraint is running, you’re making money. This is the most important lesson from the Theory of Constraints.
+Many sites also closely track the number of pallets or boxes shipped to the customer. As a result they often believe that they should measure OEE at the end of the line. This is usually not necessary. Counts and OEE can be treated as independent metrics. Only measure OEE at the end of the line if this is your constraint.
+What if I want OEE on the constraint AND on all other steps of the process?
+Why? Creating an OEE score at multiple points will give you conflicting information and potentially lead you to focus on less critical aspects of your process. The best practice is to measure OEE at the constraint and to measure mechanical efficiency for other assets. This will give you a single OEE score for the line PLUS a benchmark number for every asset without complicating and confusing your OEE measurement.
+What if the constraint moves because of improvements we made?
+If the constraint moves because you’ve improved (elevated) the former constraint – grab a celebratory drink and say well done to the team! Then move your OEE measurement to the new constraint and start again. The key is to always measure OEE at one point in the process – your current constraint.
+What if the constraint moves when we run different products?
+If the constraint moves with different products, then in theory it’s correct to also move your measurement point. Join us in our common sense corner to ask; is it worth moving the OEE measurement for every product? If the cost or complexity of moving your OEE measurement is very high, the answer is probably no. If you can easily move the measurement point then the answer is most likely yes. Either way – keep things simple. In the real world, the best results usually come from doing simple things to a very high level.
+How do I measure OEE for process industries?
+The key to applying OEE to any industry is a clear definition of Availability, Performance, and Quality. Here are some points to consider.
+As always – the OEE calculation starts with Planned Production Time (the time your process is scheduled to run). In many process industries this can be 24/7 (the process should always be running).
+Availability is reasonably straightforward to define. Any time the process is not running due to an unplanned stop (e.g., some type of mechanical failure) or a planned stop (e.g., cleaning) is an Availability Loss.
+Performance can be looked at in terms of flow or mixing rate. What is the theoretical maximum flow or mixing rate? Performance can be calculated as the ratio of Actual Run Rate to Theoretical Maximum Rate (Nameplate Capacity). In terms of a calculation this can be expressed as: (Volume Produced / Run Time) / Ideal Run Rate. For example: Performance = (1,200 Liters / 1 Hour) / 1,500 Liters per Hour = 80%.
+Quality is the ratio of Good Material to All Material. Some process applications only produce good materials, while others may have Quality Loss due to non-conforming materials.
+It’s also worth considering if OEE is the best metric for your particular application. For example, if your process always runs at maximum rate and only produces good materials then OEE is not a very meaningful metric. If this is the case, it may be more useful to measure just the Availability component of OEE and to support this metric with appropriate material yield and labor productivity metrics.
+Implementation Decisions
+Should changeover time affect my OEE score?
+Yes. Changeover time should be included in OEE (specifically, it should be included in Availability). Changeovers are a source of Setup and Adjustment time, which is one of the Six Big Losses. It is lost production time and thus represents a valuable opportunity for improvement. Changeover times are most commonly improved (reduced) through the application of SMED (Single-Minute Exchange of Die).
+Should preventative maintenance affect my OEE score?
+Probably. If preventative maintenance takes away time that could otherwise be used for value-added production (i.e., manufacturing to meet customer needs as opposed to manufacturing for inventory) it should be included in OEE. Specifically, it should be included in the Availability calculation.
+Should lunches and breaks affect my OEE score?
+Probably. In practice, most companies choose not to include lunches and breaks as an OEE loss. However, if lunches and breaks take away time that could otherwise be used for value-added production (i.e., manufacturing to meet customer needs as opposed to manufacturing for inventory) it would be considered a best practice to include them in OEE. Specifically, they should be included in the Availability calculation.
+Consider this – a typical shift accumulates approximately 15+ hours of lunches and breaks in a month. If this time is excluded from Availability (and thus OEE) it is hidden. Including this as a loss exposes it as an opportunity for improvement. For example, it may be possible to schedule relief operators to run through lunches and breaks. Or, it may be possible to extend material feeds so equipment can run through very short breaks without operator intervention.
+Should a process running that is short an operator affect my OEE score?
+We recommend that you calculate OEE as normal, which means your OEE score will be lower when you are short an operator.
+OEE is intended to identify all equipment-based losses. In this case, because you are short an operator, your equipment cannot run at its design speed. In order to accurately identify losses, it is important to include all factors that prevent your manufacturing process from achieving perfect production (manufacturing only good parts, as fast as possible, with no downtime). If you hide losses by excluding them from OEE, it is much harder take steps to improve them.
+A more nuanced answer takes into account that you want to manufacture to meet customer demand (not to create inventory). Therefore:
+If you are short an operator, but there is full customer demand (you would prefer the manufacturing process to be running at full speed), treat an absent operator as an OEE loss. In other words, do not change the Ideal Cycle Time.
+If you are short an operator, but there is less than full customer demand (the manufacturing process does not need to be running at full speed), do not treat an absent operator as an OEE loss. In other words, adjust the Ideal Cycle Time appropriately.
+Should a process not running because there is no operator affect my OEE score?
+Cold, hard, theory first. If your manufacturing process was scheduled to run and it could not run because you had no operator then this should be considered Downtime (an Availability Loss). The reason that this is an Availability Loss, is that your manufacturing process should have been running.
+On the other hand, if you are scheduled to not have an operator because of lack of demand or because the planned production was moved to another line – is it an OEE loss? Probably not – it’s more likely to be Not Scheduled Time (a Schedule Loss excluded from OEE but included in TEEP). As another variation, sometimes operators are moved from process to process to meet production needs. If an operator is moved from one process to another should OEE be affected? Probably – as long as there continues to be customer demand for the first process.
+So how do you decide? Go to the core truth. OEE is intended to help you identify your losses. That means creating the lowest possible “real” OEE score by including as many losses as possible. If you hide losses by excluding them from OEE… you can’t improve them.
+In summary:
+If there is no operator but there is customer demand (you would prefer the manufacturing process to be running) treat it as Downtime (an Availability Loss to OEE).
+If there is no operator and there is no customer demand (the manufacturing process does not need to be running) treat it as Not Scheduled Time (a Schedule Loss to TEEP, which has no effect on OEE).
+How should I handle reworked parts?
+It is a well-accepted best practice in OEE that from a quality perspective, parts that need rework should be counted as rejects the first time they run through the manufacturing process. This makes OEE Quality very similar to First Pass Yield; defining good parts as parts that pass through the manufacturing process the first time without needing rework.
+Things get much more complicated when rework parts are run through the manufacturing process a second time (in order to “fix” them). Here are two pragmatic (simplified) ways to handle this:
+Treat the time that rework parts pass through the manufacturing process a second time as “Not Scheduled Time” (which has no impact to OEE, but will reduce your TEEP). This is likely to be a reasonable option when rejected parts are batched and reworked after production has been completed. The rationale is that the part has already reduced your OEE by treating it as a reject when it first ran through the process.
+Treat the rework part like “new raw material” and run it through the manufacturing process like any other part (which will impact OEE like any other part running through the process, albeit impacting it a second time). This may be a reasonable option when rework parts are “mixed in” with an ongoing production run as it accurately reflects how your process is running. Care is required however, to ensure your part counts stay accurate.
+There are a lot of ways this question can become even more complicated. For example:
+A rework part is only run through part of the manufacturing process.
+A rework part requires the manufacturing process to be run slower when it is run through a second time.
+The defect affects only outer-packaging and not the actual product (so the product can be reworked without affecting the constraint).
+Keeping parts counts balanced (good count, reject count, rework count, total count).
+Keeping production time balanced (e.g., if scheduled production time is taken away to rework parts).
+The effect on the process constraint (quality issues before the constraint are generally less impactful than after the constraint).
+How do I calculate OEE if I can’t detect rejects during my manufacturing process? What if I can only detect rejects hours or days later?
+Some manufacturing processes have offline quality audits that can take hours or days. This presents interesting challenges for calculating OEE Quality. There are three options for handling this type of situation. The best option for a given application usually depends on how long of a lag there is before reject/scrap information is available.
+The first option is to delay publishing the OEE score. This is a reasonable option if the reject/scrap information lag is measured in a small number of hours. After all, we don’t usually recommend OEE as a real-time plant floor metric. In most applications, we prefer TAED (Target, Actual, Efficiency, Downtime) as a real-time plant floor metric.
+The second option is to measure OEE based solely on Availability and Performance (i.e., exclude Quality). This is a reasonable option if the reject/scrap information lag is a day or longer. After all, for most manufacturers, Availability and Performance are the two largest sources of lost production time (by far). If you choose this option, it is important to report on quality losses with an alternative KPI, such as Yield Loss or Audited Rejects.
+The third option is to modify the OEE score once reject/scrap information has been finalized for a given batch or shift. We don’t usually recommend this option. It means the OEE score will change after it has been first published. Most companies prefer not to change a KPI after it is published – it can be very confusing. It can also lead to a situation where there are multiple OEE scores floating around for the same time interval.
+Should I base OEE on units of parts or units of time?
+That depends on the nature of your process. For discrete manufacturing (e.g., stamping, packaging) it is typical to measure in units of parts. For process manufacturing (e.g., refining, blending) it is typical to measure in units of time.
+If I am basing OEE on parts should I use pieces, cases, or pallets?
+Usually it’s best to use the most granular measure (i.e., prefer cans to cases). This is almost always where you will have the most accurate and detailed information about losses. Another consideration is to use the measure that is most easily understood and most meaningful for the team. Overall – make sure that your selected unit of measurement is easily captured, consistently applied, and broadly understood.
+Should I use a manual or automated system?
+Manually calculating OEE is a great way to start – we highly recommend it. You can start with pen and paper or a simple spreadsheet. Performing manual OEE calculations helps to reinforce underlying concepts and provides a richer understanding of OEE. And it’s not hard – only three pieces of data are needed to calculate OEE (Total Parts, Ideal Cycle Time, and Planned Production Time). With two additional pieces of data (Run Time and Good Parts) you can also calculate Availability, Performance, and Quality. We strongly recommend calculating OEE with Availability, Performance, and Quality to get a complete picture of your losses.
+Once you understand OEE, there are very strong benefits to moving to automated OEE data collection (e.g., using the Vorne XL Productivity Appliance™). These benefits include significantly improved downtime accuracy, detailed information on slow cycles and minor stops, real-time metrics and analytics, easy access to historical data, real-time plant floor visual alerts, richer reporting, etc.
+Calculating OEE
+What period of time should I use for my OEE calculation?
+Choose the time period that is most meaningful for your process or site. Typically this will be shift, job (part run), hour, or day.
+What is the difference between standard (or budget) cycle time and Ideal Cycle Time?
+Standard Cycle Time is used to schedule production and plan capital expenditures, while Ideal Cycle Time is used to identify OEE improvement opportunities.
+Standard cycle time represents how well you can realistically expect your process to run over a prolonged period of time. It includes allocations for typical losses including planned stops, unplanned stops, small stops, slow cycles, and defects. By including these losses, the sales and production scheduling teams have a throughput value that they can use to confidently schedule production so that the business can meet customer demand.
+Ideal cycle time represents the maximum theoretical speed that the process can run. It does not include any losses. By excluding all losses from the Ideal Cycle Time, the manufacturing team have a throughput value that they can use to measure how well their process is actually running (average cycle time) versus how it was designed to run (Ideal Cycle Time).
+With an accurate Standard Cycle Time:
+As a production planner, I can plan with a good level of certainty that my manufacturing team will hit our delivery targets.
+As a project engineer calculating return on investment (ROI) for a capital purchase, I have a real-world estimate for how my purchase will contribute to production.
+With an accurate Ideal Cycle Time:
+As a production engineer, I can accurately calculate my performance losses to OEE, so that I can confidently apply improvement tools to increase productivity.
+As a production manager, I can identify if I may be able to improve the productivity of my existing equipment or if I should buy new equipment to meet predicted customer demand.
+Should I use Standard Cycle Time to calculate OEE?
+Definitely not. Use Ideal Cycle Time (refer to the FAQ above). Otherwise:
+Your OEE calculation will be inaccurate – it will hide losses. If your equipment can run faster than the value used in your OEE calculation, then OEE will not correctly calculate your losses. If OEE is not correctly calculating your losses, it will be significantly harder to improve productivity.
+You may directly lose production. If you use Standard Cycle Time to calculate OEE then there is a chance that your operators will set their equipment to run at the Standard Cycle Time. If this happens, you will literally be throwing away potential productivity. We have seen this happen!
+Use Ideal Cycle Time to measure OEE. Keep Standard Cycle Time off the factory floor.
+How do I calculate Standard Cycle Time?
+For equipment that is already installed and operational, the simplest way to calculate Standard Cycle Time is to divide Planned Production Time (over a meaningful time period) by pieces produced.
+For new equipment, where you have no historical data, an easy way to calculate Standard Cycle Time is to take the Ideal Cycle Time and increase it based on your known productivity (OEE). For example, if the Ideal Cycle Time is 3.00 seconds, and other similar equipment runs with an OEE of 65% you can estimate the Standard Cycle Time as 3.00 / 0.65 or 4.62 seconds. Some companies choose to add an additional safety factor, such as 10%, in which case the Standard Cycle Time would be 4.62 × 1.10 or 5.08 seconds.
+It is important to create a standardized task to periodically review Standard Cycle Times (e.g., once per year). Over time, underlying assumptions may change, and hopefully your throughput will be increasing as OEE losses are reduced.
+How do I determine Ideal Cycle Time?
+Ideal Cycle Time is the theoretical maximum throughput of the machine or process. This number should generally NOT be lowered due to factors such as machine age or material quality – these types of loss factors should be mitigated using Lean Manufacturing, Six Sigma, and other improvement tools. Loss factors are opportunities for improvement.
+There are two approaches to determining Ideal Cycle Time:
+Nameplate Capacity: This is the value that the equipment builder specifies (e.g., you may buy a press with a design capacity of 120 strokes per minute).
+Time Study: Measure the absolute fastest speed that the process can support (not an average, normal or sustained speed). Be particularly careful not to include any form of speed losses (i.e., slow cycles or small stops). Also, do not make any adjustments based on historical performance. Ideal Cycle Time is a theoretical maximum.
+Is it possible for OEE or any of its underlying metrics to exceed 100%?
+No. An OEE score of 100% represents perfect production – manufacturing only good parts, as fast as possible, with no stop time. How can you improve upon that? There is only one way – increasing the speed of the process (going faster). However, if the process is capable of going faster the Ideal Cycle Time must equally and proportionally be reduced.
+Bottom line – if Availability, Performance or Quality is greater than 100%, then something is incorrectly defined or measured. Almost always when this occurs, the underlying problem is Performance. Specifically, an Ideal Cycle Time that is set too high, resulting in a Performance score greater than 100%.
+How do I calculate OEE when I run products with different cycle times?
+This is a difficult problem, especially when batch sizes are very small, and when calculations are being performed manually. Unfortunately, there are not any shortcuts if the goal is to generate an accurate OEE score.
+A simple average of individual OEE scores is insufficient, as it does not take into account the production time of each product. A weighted average, where the weighting is the actual production time, is better, but it does not provide the detailed loss information that comes from Availability, Performance, and Quality.
+The best option requires having the full set of underlying data for each product run: Run Time, Planned Production Time, Ideal Cycle Time, Total Parts, and Good Parts. In that case you can use the following calculations:
+Availability = ∑ Run Time / ∑ Planned Production Time
+Performance = ∑ (Ideal Cycle Time × Total Parts) / ∑ Run Time
+Quality = ∑ Good Parts / ∑ Total Parts
+OEE = Availability × Performance × Quality
+Note that each sum is performed across the full set of products. For example, with two products:
+∑ (Ideal Cycle Time × Total Parts) = (Ideal Cycle Time1 × Total Parts1) + (Ideal Cycle Time2 × Total Parts2)
+How do I calculate OEE for my entire plant?
+Calculating OEE for an entire plant can be useful for monitoring trends (such as whether a given plant is improving) or as a rough gauge of where a given plant lies in the OEE benchmarking spectrum. However, you should be very cautious when using OEE to compare different plants, products or assets. Unless you are running identical products on identical equipment under identical conditions, comparing OEE scores is somewhat like comparing apples to oranges.
+One way to calculate OEE for an entire plant is with a weighted average. A weighted average “weights” the OEE score of each production asset. The weight can be any factor that assigns relative importance; however, we recommended assigning weights based on time (e.g., Planned Production Time) or value (e.g., value added by the asset). Weighting by production time has the advantage of being simple and transparent. Weighting by value has the advantage of emphasizing assets that add the most value.
+In a plant with three production assets, the weighted average calculation would be:
+Plant OEE = ((OEE1 × Weight1) + (OEE2 × Weight2) + (OEE3 × Weight3)) / (Weight1 + Weight2 + Weight3)
+Is there an international standard for the OEE calculation?
+The short answer is “not really”. However, the OEE calculation can be treated as a defacto standard. In other words, there are well-accepted and consistent practices for calculating OEE, even if not officially recognized with an international standard.
+The OEE calculation is based on pioneering work by Seiichi Nakajima in the field of TPM in the early 1970s while at the Japanese Institute of Plant Maintenance. Seiichi Nakajima published a book in 1984 called TPM Nyūmon (published in English as Introduction to TPM: Total Productive Maintenance), which we highly recommend as an introduction to TPM, OEE and the Six Big Losses.
+There are several “official” publications that do specify the OEE calculation, including:
+SEMATECH (Semiconductor Manufacturing Technology consortium) published an OEE Guidebook in 1995.
+AFNOR (a French standards organization) published an OEE standard in 2002 under the publication E60-182. Note that in this publication OEE is referred to as TRS (Synthetic Rate of Return).
+Interpreting OEE
+I  ’ve heard that world-class OEE is 85%. Is this my target?
+No. There are many references to world-class OEE being 85% (including this website). It is a convenient, compelling and completely artificial benchmark.
+For most discrete manufacturers achieving 85% OEE is absolutely a notable and noteworthy accomplishment. If you have achieved it – good job and congratulations! But do you really want to stop there – with 15% loss? At the other end of the spectrum, if you’re new to OEE, you may very well find yourself starting with an OEE score of less than 50%. That presents a daunting gap to 85%.
+Here is the bottom line. Set OEE targets that will drive solid, incremental improvement. Each step should be a stretch target that is achievable, preferably within three to four months. Short enough to keep people engaged, long enough to achieve significant improvement.
+Isn’t OEE data subject to misuse and misinterpretation?
+Absolutely – and it happens every day! That’s one of the reasons we created this FAQ. To make it easier for you to drive effective and sustainable improvements with OEE.
+One of the most common mistakes is to focus on improving OEE without context and without background knowledge. For example, it is very easy for a factory manager to improve OEE with the side effect of creating unneeded inventory. Or, to improve OEE by tackling the lowest performing line – even if that line is not a constraint or is not of strategic important to the business.
+OEE data is only meaningful within the context of your business objectives and strategy. Blindly emphasizing OEE will almost certainly yield suboptimal results (and unintended consequences). This especially comes into play when site or line managers are “judged” by their OEE score. Judge someone by their OEE score and you are likely to get a higher score. But not necessarily the result you intended!
+OEE is most effective when used for its original purpose – as a metric that gauges progress in improving the effectiveness and efficiency of a manufacturing process (e.g., as used in TPM programs).
+How do I explain OEE to operators?
+Many companies find that the best way to explain OEE to operators is to discuss it in the context of underlying Six Big Losses (i.e., Equipment Failure, Setup and Adjustments, Idling and Minor Stops, Reduced Speed, Process Defects, and Reduced Yield). Better yet, connect that loss information to actions that can be taken to improve results.
+SIC (Short Interval Control) is a great way to do exactly that. SIC is a structured and incremental process for identifying and acting on opportunities to improve production. It uses quick and focused reviews of performance data during the shift to enable mid-course corrections and immediate small-scale fixes that collectively result in significant improvements in OEE. It works. Try it!
+Which of the three OEE factors is most important? What should I work on first?
+None of the three OEE Factors (Availability, Performance, and Quality) is inherently more important than the others. Therefore, the answer as to which should be worked on first depends on the specifics of your situation. One thing to always keep in mind is that the most important aspect of improving OEE is to focus on the underlying losses:
+Availability takes into account Equipment Failure and Setup and Adjustments.
+Performance takes into account Idling and Minor Stops and Reduced Speed.
+Quality takes into account Process Defects and Reduced Yield.
+Many companies place additional emphasis on the Quality score and prioritize losses in this area over Availability or Performance losses. Typically this is because any rejects that make it through your process without discovery will have direct customer impact.
+Rather than focusing on an entire loss category, another approach is to focus on individual losses. A great way to achieve this is to compile a top losses report, and select one loss at a time to improve. This technique can be used at an operational level or a strategic level (or both).
+At an operational level look for losses for which your team has ideas for countermeasures; where minimal external resources are needed to take action; and where actions can be taken straightaway (a quick fix is possible).
+At a strategic level look for losses that are getting worse (losses that are not being addressed); where significant resources may be required to address the problem (thus the loss is not a good candidate for operational attention); and where you can envision a long-term fix (at this level the focus should be on permanent fixes; sometimes referred to as 100-year fixes).
+Focusing on losses will improve your OEE score in a very organic and natural way. Try it!
+How do I compare OEE for different machines, departments, or plants?
+With an abundance of caution! Unless you are running identical products on identical equipment under identical conditions, comparing their OEE scores is not really valid. Please refer to Using OEE to compare dissimilar processes for a more complete discussion.
+What is the difference between OEE and TEEP?
+OEE (Overall Equipment Effectiveness) measures the ratio of Fully Productive Time to Planned Production Time. If your OEE score is 100% then you are making only Good Parts, as fast as possible (Ideal Cycle Time), with no Stop Time, during the time you are scheduled for production. It is calculated as Availability x Performance x Quality. It is a measure of Equipment Losses. The primary purpose of OEE is to benchmark progress in improving manufacturing productivity (i.e., eliminating waste).
+TEEP (Total Effective Equipment Performance) measures the ratio of Fully Productive Time to All Time (24/7). If your TEEP score is 100% then you are making only Good Parts, as fast as possible (Ideal Cycle Time), with no Stop Time, around the clock (24/7). It is calculated as Availability x Performance x Quality x Utilization. It is a measure of Equipment Losses (as measured by OEE) and Schedule Losses (as measured by Utilization). The primary purpose of TEEP is to highlight the true capacity of your manufacturing operation (sometimes referred to as the “hidden factory”).
+Biggest OEE Mistakes
+Focusing on the OEE score – not the underlying losses
+OEE (Overall Equipment Effectiveness) measures how close you are to perfect production (manufacturing only good parts, as fast as possible, with no stop time). Monitoring your OEE score on its own is not all that helpful to improving production. The true value of OEE comes from understanding the underlying losses: Availability Loss, Performance Loss, and Quality Loss. By focusing on these losses, and more importantly, by taking action to reduce these losses, your OEE score will naturally improve.
+Using ‘budget’ or ‘standard’ speeds for Ideal Cycle Time
+If you want OEE to fully drive productivity improvement, make sure to use the “true” Ideal Cycle Time, which is the maximum theoretical speed of your process. Many companies have ‘budget’ or ‘standard’ speeds that are slower than this maximum. These numbers are useful for production planning, but if used in the OEE calculation they will hide the true capacity of your process. This will artificially raise your OEE score, while hiding loss and slowing improvement.
+Excluding changeovers
+Changeovers are an essential part of the production process for most manufacturers. Changeover time is lost production time – time that could be spent manufacturing parts. While excluding changeovers from your OEE calculation will increase Availability (and OEE), it will also hide the opportunity to increase output by reducing changeover time. To learn more about reducing changeover time read up on SMED (Single-Minute Exchange of Die).
+Collecting too much data
+Keep your OEE data collection as simple as possible. Many managers ask operators to select from a bewildering array of downtime reason codes. Other managers set downtime thresholds so low that operators spend as much time collecting data as running machines. The operator’s job is to run the machine. Asking them to collect large amounts of excessively detailed data will result in poor data or poor productivity. Collect less; do it well.
+Using OEE to compare dissimilar processes
+Many companies compare OEE scores across divisions, sites, assets, or products. The temptation to do so is overwhelming. Here is the problem. Such comparisons are only truly meaningful when comparing the same equipment running the same product under the same conditions. Let’s consider a few real-world examples:
+Is it meaningful to compare a production line that has twelve changeovers per day with a production line that has two changeovers per day?
+Is 90% Quality comparable to 90% Availability?
+Are some parts known to be harder to run than others, even though they have the same Ideal Cycle Time?
+Resist putting too much weight on comparisons of dissimilar processes. Yes, such comparisons can provide interesting insights – but they are as likely to provide as much misinformation as good information. Compare with care. Focus on OEE’s role as a tool for improvement. For example, measure improvement and manage progress by trending OEE over time for a given asset or product.
+Overemphasizing OEE on the plant floor
+OEE (Overall Equipment Effectiveness) is a relatively abstract concept. As such, if it is going to be used on the plant floor, it is extremely important to provide in-depth training to operators and supervisors to help them understand how OEE affects their day-to-day work. One of the most effective ways to do this is to emphasize the underlying Six Big Losses to OEE (i.e., Equipment Failure, Setup and Adjustments, Idling and Minor Stops, Reduced Speed, Process Defects, and Reduced Yield) and how OEE serves as a measure of these losses.
+An interesting alternative to using OEE for the plant floor, especially for companies early in their improvement journey, is to focus on Efficiency (which is essentially comparing actual performance to target performance). The benefit of this approach is it enables operators to “win their shift” by achieving 100% of target. This can be a very powerful motivator – especially when operators see results in real-time. On the other hand, it is essential to set targets that are meaningful; targets that will drive significant improvement. For example, it is rarely a good idea to drive target performance from “standard times”. They represent the status quo and are not likely to drive meaningful improvement.
+WHAT YOU SHOULD DO NEXT...
+1. Learn more about how our product, Vorne XL, can help you eliminate waste and significantly improve OEE.
+Vorne XL is the simplest and fastest way to monitor and improve production. It's a one-time cost and takes just a day to install. And you can try it completely free for 90 days.
+Learn More2. Download our FREE package of tools to supercharge your manufacturing productivity
+The package includes leadership lessons, training guides, meeting and report templates, summaries of key concepts, project organizers, and more. You'll also receive our monthly newsletter for free. Unsubscribe at any time.
+DOWNLOAD FREE LEAN TOOLS3. Sign up for our monthly newsletter
+Get free monthly updates with proven methods for improving our manufacturing productivity. Unsubscribe at any time.
+First Name*
+Last Name*
+Email*
+Phone Number*
+Company Name*
+What would you like to achieve with XL?
+Submit
++1.630.875.3600[email protected]1445 Industrial Dr. Itasca, IL 60143
+Learn About OEE
+What is OEE?OEE FactorsSix Big LossesHidden FactoryPractical OEE
+Calculate OEEImplement OEECalculate TEEPVisual OEE ™
+Improve OEEWorld-ClassAddress the Six Big LossesTakt Time
+Resources
+Free OEE ToolsOEE GlossaryFAQ
+About Us
+Our CompanyVorne.comLeanProduction.comVorne XL Free Trial
+© 2011-2026 Vorne Industries. All Rights Reserved | Privacy Policy | Cookie Policy
