@@ -1,0 +1,763 @@
+SOURCE: https://blog.isa.org/the-high-performance-hmi
+FETCHED: 2026-10-05
+
+How to Maximize Operator Effectiveness with a High-Performance HMI
+
+ Skip to Main Content
+
+ Explore ISA
+
+ Explore International Society of Automation
+
+ [IMG alt=ISA Logo]
+
+ [IMG alt=ISA Logo]
+
+ISA provides technical resources and standards to help industrial automation professionals advance their careers and the field. We enable automation professionals worldwide to solve problems and enhance their skills by bringing people together to create new technologies and share best practices with future automation professionals.
+
+Follow Us
+
+ISA Resources
+
+ Home
+
+ Career Center
+
+ Connect
+
+ ISA Merchandise
+
+Upcoming Events
+
+ Automation Summit and Expo
+
+ OT Cybersecurity Summit
+
+Industry Insights
+
+ Automation.com
+
+Consortia
+
+ ICS4ICS
+
+ ISA 100 Wireless
+
+ ISA Global Cybersecurity Alliance
+
+ ISA Secure
+
+ My ISA Account
+
+ Create an Account
+
+ Login
+
+ [IMG alt=Logo]
+
+ [IMG alt=Sponsor Logo Nav]
+ [IMG alt=Sponsor Logo Nav Active]
+
+ Topics
+
+ Trending Topics
+
+ Industrial Automation and Control
+
+ Operations Management
+
+ Continuous Process Control
+
+ Cybersecurity Risk Assessment
+
+ Smart Manufacturing
+
+ Digital Transformation
+
+ Additive Manufacturing
+
+ Artificial Intelligence
+
+ Autonomous Systems
+
+ Blockchain
+
+ Digital Twin
+
+ View All (10)
+
+ Industrial Automation and Control
+
+ Control Strategies
+
+ Alarm Management
+
+ Automatic Identification Systems
+
+ Batch Process Control
+
+ Building Automation
+
+ View All (43)
+
+ Industrial Safety
+
+ Burner Management Systems
+
+ Electrical Safety
+
+ Fire Systems
+
+ Functional safety
+
+ Gas Systems
+
+ View All (11)
+
+ Industrial Security
+
+ Cybersecurity Risk Assessment
+
+ OT Cybersecurity
+
+ Network Protection
+
+ Personnel Security Awareness
+
+ Physical Security
+
+ Plant & Facility Security
+
+ Industrial Data and Connectivity
+
+ Cloud computing
+
+ DNP3
+
+ Data strategy
+
+ Device management
+
+ Digital thread
+
+ View All (22)
+
+ Operations Management
+
+ Asset Management
+
+ Commissioning, FAT/SAT
+
+ Control System Changeovers and migrations
+
+ Corporate/enterprise resource planning (ERP)
+
+ Data science and analytics
+
+ View All (24)
+
+ Industry
+
+ Aircraft, Aerospace
+
+ Automotive, Other Transportation Vehicles/Systems
+
+ Chemicals & Allied Products
+
+ Communications/Networking/Data Services
+
+ Computers, Electronics and Semiconductors
+
+ Consumer Packaged Goods, Food, Beverage
+
+ Education & Training
+
+ Engineering Consulting/EPC
+
+ Ethanol Production
+
+ Fabricated Metal Products
+
+ Facilities/Building Management
+
+ Show More (34)
+
+ Glass, Concrete, Stone and Clay Products
+
+ Government or Military
+
+ Industrial Machinery & Equipment
+
+ Instrumentation, Control, Test, Measurement Systems
+
+ Marine, Maritime
+
+ Medical Devices/Equipment
+
+ Metal Processing
+
+ Mining & Minerals
+
+ Miscellaneous or Other Manufacturing
+
+ Oil, Gas and Petroleum - Extraction/Upstream
+
+ Oil, Gas and Petroleum - Pipeline/Midstream
+
+ Oil, Gas and Petroleum - Refining/Downstream
+
+ Paper, Wood & Allied Products
+
+ Pharmaceuticals, Life Sciences
+
+ Plastics & Rubber
+
+ Power Generation/Distribution - Electrical, Oil, Gas, Nuclear, Combined
+
+ Power Generation/Distribution - Renewable: Solar, Wind, etc.
+
+ Smart Cities/Building Automation
+
+ Systems Integration/Value-Added Resellers
+
+ Textiles, Apparel and Leather
+
+ Warehouse/Distribution, Logistics, Ports
+
+ Water/Wastewater
+
+ Agriculture
+
+ Show Less
+
+ Login
+
+ Subscribe
+
+ [IMG alt=Logo]
+
+We attract over 140,000 unique automation professionals monthly, making us the premier online content provider and the only dedicated electronic magazine in the automation industry.
+
+ Subscribe
+
+ Login
+
+ Industry
+
+ Topics
+
+ Articles and News
+
+ Columns
+
+ Industry Products
+
+ Featured Suppliers
+
+Monthly Magazine
+
+ Current Issue
+
+Learn more about us
+
+ About Us
+
+ Our Team
+
+ What We Do
+
+ Contact Us
+
+ Submit Content
+
+More things to read
+
+ Magazine Archive
+
+ White Papers
+
+ eBooks
+
+ Books
+
+Events and Webinars
+
+ Upcoming Events and Webinars
+
+ Conference Sponsorships
+
+Advertising Opportunities
+
+ Advertise and Sponsor With Us
+
+ Audience and Statistics
+
+ Media Planner
+
+Follow Us
+
+ Back
+
+ Aircraft, Aerospace
+
+ Automotive, Other Transportation Vehicles/Systems
+
+ Chemicals & Allied Products
+
+ Communications/Networking/Data Services
+
+ Computers, Electronics and Semiconductors
+
+ Consumer Packaged Goods, Food, Beverage
+
+ Education & Training
+
+ Engineering Consulting/EPC
+
+ Ethanol Production
+
+ Fabricated Metal Products
+
+ Facilities/Building Management
+
+ Show More (34)
+
+ Glass, Concrete, Stone and Clay Products
+
+ Government or Military
+
+ Industrial Machinery & Equipment
+
+ Instrumentation, Control, Test, Measurement Systems
+
+ Marine, Maritime
+
+ Medical Devices/Equipment
+
+ Metal Processing
+
+ Mining & Minerals
+
+ Miscellaneous or Other Manufacturing
+
+ Oil, Gas and Petroleum - Extraction/Upstream
+
+ Oil, Gas and Petroleum - Pipeline/Midstream
+
+ Oil, Gas and Petroleum - Refining/Downstream
+
+ Paper, Wood & Allied Products
+
+ Pharmaceuticals, Life Sciences
+
+ Plastics & Rubber
+
+ Power Generation/Distribution - Electrical, Oil, Gas, Nuclear, Combined
+
+ Power Generation/Distribution - Renewable: Solar, Wind, etc.
+
+ Smart Cities/Building Automation
+
+ Systems Integration/Value-Added Resellers
+
+ Textiles, Apparel and Leather
+
+ Warehouse/Distribution, Logistics, Ports
+
+ Water/Wastewater
+
+ Agriculture
+
+ Show Less
+
+ Back
+
+ Trending Topics
+
+ Industrial Automation and Control
+
+ Operations Management
+
+ Continuous Process Control
+
+ OT Cybersecurity
+
+ Smart Manufacturing
+
+ Industrial Data and Connectivity
+
+ Cloud computing
+
+ DNP3
+
+ Data strategy
+
+ Device management
+
+ Digital thread
+
+ View All (22)
+
+ Industrial Automation and Control
+
+ Control Strategies
+
+ Alarm Management
+
+ Automatic Identification Systems
+
+ Batch Process Control
+
+ Building Automation
+
+ View All (43)
+
+ Industrial Safety
+
+ Burner Management Systems
+
+ Electrical Safety
+
+ Fire Systems
+
+ Functional safety
+
+ Gas Systems
+
+ View All (11)
+
+ Industrial Security
+
+ Cybersecurity Risk Assessment
+
+ OT Cybersecurity
+
+ Network Protection
+
+ Personnel Security Awareness
+
+ Physical Security
+
+ Plant & Facility Security
+
+ Operations Management
+
+ Asset Management
+
+ Commissioning, FAT/SAT
+
+ Control System Changeovers and migrations
+
+ Corporate/enterprise resource planning (ERP)
+
+ Data science and analytics
+
+ View All (24)
+
+ Digital Transformation
+
+ Additive Manufacturing
+
+ Artificial Intelligence
+
+ Autonomous Systems
+
+ Blockchain
+
+ Digital Twin
+
+ View All (10)
+
+ [IMG alt=M logo for Automation.com Monthly. Link to current issue.]
+
+ [IMG alt=Logo]
+
+ What can we help you find?
+
+ Search
+
+Search Sponsored By:
+
+ [IMG alt=Sponsor Logo]
+
+ Feature
+
+ How to Maximize Operator Effectiveness with a High-Performance HMI
+
+ By:
+
+ Contributing Authors
+
+12 December, 2012
+
+ 8 min read
+
+ Share 
+
+ [IMG alt=How to Maximize Operator Effectiveness with a High-Performance HMI]
+
+ How to Maximize Operator Effectiveness with a High-Performance HMI
+
+ HMI information needs to be displayed in meaningful and actionable ways rather than as "raw data."
+
+This post was written by Bill R. Hollifield, an industry veteran, ISA committee member and author of books on alarm management and HMI.
+
+Almost three decades ago, we control engineers were given a new task for which we were ill-prepared. We installed control systems with the capability to display real-time process control graphics for the operator. But the screens were blank, and we were responsible to fill them up.
+
+We had no available guidelines as to what constituted a "good" graphic. So, we did the best we could with what we knew-which wasn't much! As a result, we set in place a low-performance paradigm of what a control system human-machine interface (HMI) should look like, and inertia has done the rest. Mostly for convenience, we chose to depict the process as a P&ID view covered in live numbers. We stuck with that paradigm even as graphic capabilities of DCS/SCADA systems improved, mostly migrating rather than redesigning the displays. Now, tens of thousands of operators throughout the world are controlling multi-billion dollar processes by looking at primitive cartoons designed at a time when we really did not know what we were doing.
+
+Poorly performing HMIs have been cited as significant contributing factors to major accidents. The principles for designing proper process graphics are now available. A high performance HMI (HPHMI) has many advantages, including improved operator situation awareness and process surveillance, better abnormal situation detection and response, and reduced training time for new operators. Many industrial companies have graphic improvement efforts underway.
+
+High performance displays depict information. Information is data, in context, made useful. HPHMI graphics show not only the process value, but where it is relative to "what's good." Abnormal conditions are designed to stand out clearly. Color is used consistently, effectively, and sparingly.
+
+Graphics are designed with a proper hierarchy.
+
+Displaying information
+
+In Figure 1, much money has been spent on the instrumentation. But can you answer the simple question, "Is this process running at peak efficiency, or very poorly?" To know that, one must have specific training and months of experience in normal and abnormal situations. The operator must compare each number to a memorized mental map acquired through experience and upsets. This is a difficult cognitive process. Most operators have well over a thousand such numbers and status indications spread out over dozens of graphics.
+
+Advertisement
+
+Detecting abnormal conditions is difficult.
+
+In the Figure 2 depiction, a compressor's instruments are displayed in a different fashion. The normal or desired range of each value is clearly depicted using the light blue range. The value's proximity to alarm ranges and automated interlock thresholds is shown. (We normally expect operators to also memorize which sensors are interlock initiators). Values in alarm are depicted with a redundantly-coded alarm priority indicator.
+
+With a single two-second glance at this bank of properly designed analog indicators, the operators can tell if any values are outside of the normal range, by how much, and the proximity of the measurement to both alarms and interlock activation. Humans intuitively understand analog depictions. The abnormally high discharge temperature shown is easy to detect even though it is not yet in alarm. Alarm conditions stand out.
+
+By coding information into the display, the operator can effectively scan dozens of values in a few seconds. This supports surveillance of the process and early detection of abnormalities. We do not wait for an alarm to indicate a problem. The best knowledge of desirable operating conditions is coded into the display and in view all the time, not buried in written procedures. Variability in the proficiency and knowledge of individual operators is reduced.
+
+Operator training time is also significantly reduced, since important knowledge is not acquired hit-or-miss through experience. This is important because most companies will lose well over half of their experienced operators and engineers in the next 10 years.
+
+Use and abuse of color
+
+It is important to eliminate the common overuse and misuse of color. One important principle is that color alone is not used as the sole discriminator of an important status condition. The same colors designated for alarms must not also be used for other trivial purposes, minimizing their significance.
+
+Advertisement
+
+The most common and worst color principle violation is the red (off)-green (on) equipment paradigm. The power industry reverses this, with red meaning energized. Who is right? Neither! Figure 3 indicates poor color-coding vs. proper practice.
+
+The red-green coloring shown is (improperly) the only difference depicting equipment status. Since red is usually used as an alarm color, it should not be used for something as trivial as depicting an "off" condition. Being "off" is usually a normal and appropriate status; a process running normally should not be showing red. Brightness coding is a better practice-imagine that a light bulb is inside the pump. A status word is placed next to the equipment to ensure clarity.
+
+This paradigm can be usefully extended into tables and other depictions. Alarms are commonly indicated by simply changing the color of a process value or its background, a poor practice. Alarm conditions should be shown by a redundantly coded (shape, color, text) element indicating the alarm's presence and priority. A click on the alarm indicator can call up its rationalization information. Alarm colors are not used for non-alarm purposes.
+
+Bright colors are used to draw attention to abnormal situations, not show normal ones. A gray background and muted colors minimize screen glare and reflection, facilitating a brightly lit control room. A color palette and the proper uses of each color are determined in advance. HPHMI is not either eliminating color or just converting graphics to grayscale.
+
+Graphic hierarchy
+
+Displays should be designed in a hierarchy providing progressive exposure of detail. Displays designed from a stack of P&IDs will not have this; they will be "flat"-like a computer hard disk with one folder for all the files.
+
+Hierarchy begins with a Level 1 Process Area Overview. This is a big picture display showing the operator's entire span of control. It is an overall indicator of how the process is running. It depicts the most important information and the key performance indicators. The Overview is a good use of a large-format wall screen.
+
+Control interactions are not made from this display.
+
+A Level 1 Overview display of a large, coal-fired power plant is shown at the top of this page. At a glance the operator can detect if the various parts of the process are running well. We sometimes hear, "But it doesn't look like a power plant!" Should your auto instrument panel look like your engine?
+
+Advertisement
+
+Every process consists of smaller, separate unit operations. A few examples might include a compressor, reactor, pipeline segment, distillation train, furnace, generator, or feed system. A Level 2 Process Unit display (Figure 4) is the primary graphic for detailed surveillance and control manipulations. It contains all the information and controls required to perform most operator tasks associated with that process part. This cannot be accomplished by simply replicating a P&ID.
+
+A typical operator might have about a dozen Level 2 graphics.
+
+Clicking on any value or element brings up the detailed faceplate for that particular element, through which adjustments are made. In this example, the faceplate is an element appearing in the upper-right reserved area. Faceplates should not obscure the primary portion of the graphic. Two alarms are in effect on this reactor.
+
+Embedded trends with indications of the desirable range are used in all HPHMI graphics. Control system "trend on demand" capability works poorly in actual practice.
+
+Level 3 Process Unit Detail graphics address a single piece of equipment or control scheme. These are used for a detailed diagnosis of problems. An augmented P&ID type of depiction is often desirable for Level 3 displays. Most of the existing graphics in the world can be considered as improvable Level 3 graphics.
+
+Level 4 Process Diagnostic displays provide the most detail of subsystems, individual sensors, or components. Screens, such as "Point Detail," are Level 4.
+
+Developing a hierarchy does not have to be a complex and expensive effort. For existing systems, most of the benefits of HPHMI can be obtained by creating about 20 new displays-typically a Level 1, a dozen or so Level 2s, and a few new Abnormal Situation displays. The existing graphics are designated Level 3. This will be somewhat inconsistent, but most existing graphics are already inconsistent. Over time, the Level 3s can be improved.
+
+There are dozens of additional depiction improvements and HMI topics addressed in detail in "The High Performance HMI Handbook," available through ISA Publishing.
+
+Proving these concepts
+
+In 2009, the Electric Power Research Institute (EPRI) conducted a major test of these HMI concepts. A report was produced, "Operator Human Machine Interface Case Study: The Evaluation of Existing 'Traditional' Operator Graphics Versus High-Performance Graphics in a Coal-Fired Power Plant Simulator, ID 1017637." The power plant chosen had used a plant-training simulator for more than a dozen years. In the test, several operators detected and resolved various abnormal scenarios using both their familiar existing graphics and new, HPHMI graphics. The HPHMI provided significantly-improved operator performance in several areas.
+
+Advertisement
+
+The operator's reaction to the overall test is best summed up in this quote: "Once you got used to these new graphics, going back to the old ones would be hell."
+
+As an example of the power of inertia, many plant scenarios require an immediate half-rate reduction, or "runback." Done incorrectly, the plant can drop to an undesirable zero output. To accomplish this stressful and difficult task, operators were trained for a decade in using their normal graphics for runback. This involved using a dozen different screens, some to adjust only a single item. Prior to this test, it had not occurred to the plant to design any special-purpose screens for use during the runback, containing all the controls and trends needed for that task.
+
+For the test, a pair of HPHMI runback screens were created, used, and evaluated as far superior for runback accomplishment.
+
+The HPHMI work process
+
+There is a proven seven-step methodology for the development of a high performance HMI:
+
+Step 1:
+
+Adopt a high performance HMI philosophy and style guide with proper principles.
+
+Step 2:
+
+Assess and benchmark existing graphics against the HMI philosophy.
+
+Step 3:
+
+Determine specific performance and goal objectives/targets for process control, such as safety parameters, production rate, efficiency, cost, and quality.
+
+Step 4:
+
+Task analysis identifies which controls must be monitored and manipulated to achieve the performance and goal objectives, determining the content of each Level 2 and 3 graphic.
+
+Step 5:
+
+Design high performance graphics, following the HMI philosophy, addressing the identified tasks.
+
+Step 6:
+
+Install, commission, and provide training on the new HMI.
+
+Step 7:
+
+Control, maintain, and periodically reassess the HMI performance.
+
+Justification for HMI change
+
+Inertia, not cost, is the primary force preventing HMI improvement. Operators are usually on board immediately when shown examples of HPHMI concepts. They see the value compared to their existing screens covered in raw numbers. Surprisingly, the engineers tend to be the most resistant to change. Based on actual incident histories, HPHMI can produce significant cost savings.
+
+The HMI is the primary tool for the operator to successfully run the process. The operator must succeed for the plant to succeed. Alarm systems are receiving considerable attention but are only a small part of the operator's HMI. Rather than justify creating a good HMI, we would ask, "Was there a justification for installing a poor HMI in the first place?" Let's fix what is broken.
+
+Conclusion
+
+Our sophisticated control systems are currently operated via ineffective and problematic HMIs, designed without adequate knowledge. Operator performance can be greatly enhanced by HMIs reflecting proper principles. A high performance HMI is practical, achievable, and affordable.
+
+About the Author
+
+Bill R. Hollifield, PAS principal alarm management and HMI consultant, is an industry veteran with international experience in all aspects of alarm management and HMI development for the petrochemical, power generation, pipeline, and mining industries. Bill is co-author of Alarm Management: A Comprehensive Guide , The Alarm Management Handbook, The High Performance HMI Handbook, and The Electric Power Research Institute (EPRI) guideline on Alarm Management. He is a member of the American Petroleum Institute's API RP-1167 Alarm Management Recommended Practice committee, the ISA18 Alarm Management committee, the ISA101 HMI committee, and the Engineering Equipment and Materials Users Association (EEMUA) Industry Review Group.
+
+Bill is a regular presenter on these topics in such venues as API, ISA, and Electric Power symposiums. He has a BSME from Louisiana Tech University and an MBA from the University of Houston.
+
+Connect with Bill
+
+[IMG alt=LinkedIn] [IMG alt=Email]
+
+A version of this article also was published at InTech magazine. 
+
+Categories: 
+
+ Human-Machine Interface
+
+ Batch Process Control
+
+ Continuous Process Control
+
+ Industrial Automation and Control
+
+ [IMG alt=Default Avatar]
+
+Contributing Authors
+
+Advertisement
+
+ Trending Articles
+
+ Building Resilient and Secure Industrial Automation Systems
+
+ By:
+ Nikhil Rai
+
+ 28 September, 2026
+ | 
+ 6 minutes
+
+ Acoustic Confidence: The Real Commissioning Requirement for Hydrogen-Blend Ultrasonic Flowmeters
+
+ By:
+ Muhammad Ubair
+
+ September 2026
+
+ More Than One-Third of Industrial Organizations See Cybersecurity Risk as a Top Obstacle to Growth, New Global Study Finds
+
+ 30 September, 2026
+ | 
+ 3 minutes
+
+ Automating Brewery Processes with Sophisticated Modular Systems
+
+ 29 September, 2026
+ | 
+ 6 minutes
+
+Advertisement
+
+ Related Articles
+
+ View all Articles and News
+
+ [IMG alt=Ensuring Cybersecurity for Remote Operations]
+
+ Ensuring Cybersecurity for Remote Operations
+
+Effective cybersecurity for remote industrial operations combines several complementary technologies and practices.
+
+ By:
+ Jack Smith
+
+ 11 April, 2025
+ | 
+ 9 minutes
+
+ Using AI to Capture Industrial Expertise
+
+ By:
+ Jack Smith
+
+ 06 March, 2025
+ | 
+ 8 minutes
+
+ EtherNet/IP Provides a Single Network for Complete Machine Control
+
+ 07 June, 2011
+ | 
+ 7 minutes
+
+ SCADA and Control System Security: New Standards Protecting Old Technology
+
+ 01 June, 2011
+ | 
+ 6 minutes
+
+Advertisement
+
+Advertisement
+
+ Close advertisement
+
+ [IMG alt=Logo]
+
+International Society of Automation
+
+PO Box 12277 
+
+Research Triangle Park, NC 27709
+
+E-Mail: [email protected]
+
+Follow Us
+
+ About Us
+
+ What We Do
+
+ Privacy Policy
+
+ Do Not Sell My Personal Information - California
+
+ Terms & Conditions
+
+ Subscribe
+
+ Submit Content
+
+ Advertise and Sponsor With Us
+
+ Contact Us
+
+©2026 Automation.com, a subsidiary of the International Society of Automation.
+
+Hidden

@@ -1,0 +1,1332 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html xmlns:mml="http://www.w3.org/1998/Math/MathML">
+<head>
+
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="dc.identifier" content="10.7232/JKIIE.2025.51.3.201">
+<!--<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="referrer" content="strict-origin-when-cross-origin" />
+<meta http-equiv="Cache-Cotrol" content="no-cache">
+<meta http-equiv="Expires" content="-1">
+<title>Journal of the Korean Institute of Industrial Engineers</title>
+<link rel="stylesheet" href="/_common/default.css" type="text/css">
+<link rel="stylesheet" href="/_common/css/jquery.simplyscroll.css" type="text/css" />
+<link rel="stylesheet" href="/_common/css/owl.carousel.min.css" type="text/css" />
+<!--<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=MML_HTMLorMML"></script>-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML" crossorigin="anonymous" integrity="sha384-Ra6zh6uYMmH5ydwCqqMoykyf1T/+ZcnOQfFPhDrp2kI4OIxadnhsvvA2vv9A7xYv"></script>
+
+<!--<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>-->
+
+<script type="text/javascript" src="/_common/js/jquery.min.js"></script>
+<script type="text/javascript" src="/_common/js/jquery.simplyscroll.min.js"></script>
+<script type="text/javascript" src="/_common/js/common.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" integrity="sha256-f45CCkrD6n9v0IHOByNBAUFNJ98mCm1UdmP44MDvuvQ=" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js" integrity="sha256-xNjb53/rY+WmG+4L6tTl9m6PpqknWZvRt0rO1SRnJzw=" crossorigin="anonymous"></script>
+<script type="text/javascript" src="/_common/js/crossmark.min.js"></script>
+<script type="text/javascript" src="/_common/js/owl.carousel.min.js"></script>
+
+
+</head><link href="/design.css" rel="stylesheet" type="text/css">
+
+<body>
+
+<div class="wrap">
+	<div class="basicTable">
+
+
+<div id="wrap">
+	<div id="header">
+		<div class="header_area">
+			<div class="header_inner clearfix">
+				<div class="header_box">
+					<img class="publisher" src="/images/basic/logo.png"/>
+					<p class="publisher_text">The Korean Institute of Industrial Engineers</p>
+					<h1 class="logo"><a href="/main.php">JKIIE</a></h1>
+					<h3 class="header_sub clearfix">Journal of the Korean Institute of Industrial Engineers</h3>
+				</div>
+				<p class="header_issn">pISSN 1225-0988 | eISSN 2234-6457</p>
+				<ul class="header_link">
+					<li><a href="/main.php">HOME</a></li>
+					<li><a href="mailto:journal@kiie.org" target="_blank">CONTACT</a></li>
+					<!--<li><a href="/_common/do.php?a=html&b=home" target="_blank">Use Google Translate</a></li>-->
+				</ul>
+				<div class="search">
+					<div class="mspan" id="msearchbar">
+<form name="msearchF" method="post" onsubmit="return fmSearch(this)">
+<!--- �˻� ���� --->
+	<table cellpadding=0 cellspacing=0 border="0" class="msearch">
+		<tr>
+			<td><input type="text" name="sch_text" value="" class="inbox" onkeypress="doKeyPress()" placeholder="Search"></td>
+			<td class="pdL5" ><div class="btn_msearch" onclick="javascript:domSearch()"></div></td>
+		</tr>
+	</table>
+<input type="hidden" name="andor" value="or">
+<input type="hidden" name="sort" value="year">
+<input type="hidden" name="ord" value="asc">
+<input type="hidden" name="psize" value="20">
+<input type="hidden" name="a" value="search">
+<input type="hidden" name="b" value="33">
+<input type="hidden" name="aidx" value="">
+<input type="hidden" name="sch_title" value="Y">
+<input type="hidden" name="sch_full" value="Y">
+<input type="hidden" name="sch_auth" value="Y">
+<input type="hidden" name="sch_kwd" value="Y">
+<input type="hidden" name="sch_abs" value="Y">
+</form>
+</div>
+<script>
+	function winResize(){
+		var sb = document.getElementById('msearchbar');
+		var mi = document.getElementById('mapimg');
+		var bodyWidth = Math.round(window.document.body.offsetWidth/2);
+		sb.style.left = bodyWidth+276;
+	}
+	function domSearch() {
+		if( fmSearch(document.msearchF) == true) {
+			document.msearchF.submit();
+		}
+	}
+	function fmSearch(f) {
+		var t = trim(f.sch_text.value);
+		if(t == "") {
+			alert("Input msearch text, please!");
+			return false;
+		}
+		if(t.length < 4) {
+			alert("Enter the msearch words a little longer, please!");
+			return false;
+		}
+		document.msearchF.action="/_common/do.php";
+		document.msearchF.submit();
+		return true;
+	}
+	function doKeyPress() {
+		if(event.keyCode==13) domSearch();
+	}
+</script>				</div>
+			</div>
+		</div>
+		<div class="menu_inner clearfix">
+			<div class="main_gnb">
+				<div class="mobile_gnb">
+					<div class="mobile_menu clearfix">
+						<h4>MENU</h4>
+						<ul class="menu-toggle">
+							<li><span></span></li>
+							<li><span></span></li>
+							<li><span></span></li>
+						</ul>
+					</div>
+					<ul class="mobile_nav">
+						<li><a href="/main.php">HOME</a></li>
+						<li>About
+							<ol>
+								<li><a href="/_common/do.php?a=html&b=11">Aims and Scope</a></li>
+								<li><a href="/_common/do.php?a=html&b=12">About the Journal</a></li>
+								<li><a href="/_common/do.php?a=html&b=13">Editorial Board</a></li>
+								<li><a href="/_common/do.php?a=html&b=14">Editorial Office</a></li>
+							</ol>
+						</li>
+						<li>Browse Archives
+							<ol>
+								<li><a href="/_common/do.php?a=full&b=21">Journal Archive</a></li>
+								<li><a href="/_common/do.php?a=current&b=22">Current Issue</a></li>
+								<li><a href="/_common/do.php?a=html&b=23">Most Read Articles</a></li>
+								<li><a href="/_common/do.php?a=search&b=24">Search for Archives</a></li>
+							</ol>
+						</li>
+						<li><a href="/_common/do.php?a=current&b=22">Current Issue</a></li>
+						<li>For Authors and Reviewers
+							<ol>
+								<li><a href="/_common/do.php?a=html&b=41">Instructions for Authors</a></li>
+								<li><a href="/_common/do.php?a=html&b=42">Research and Publication Ethics</a></li>
+								<li><a href="/_common/do.php?a=html&b=43">Checklist</a></li>
+								<li><a href="https://dbpiaone.com/kiie" target="_blank">e-Submission</a></li>
+								<li><a href="/_common/do.php?a=html&b=45">Copyright Transfer Agreement</a></li>
+							</ol>
+						</li>
+					</ul>
+				</div>
+				<div class="gnb">
+					<div class="nav clearfix">
+						<ul>
+							<li><a href="/main.php"><img src="/images/basic/home.gif" alt="HOME"></a></li>
+							<li>About
+								<ol class="sub_1">
+									<li><a href="/_common/do.php?a=html&b=11">Aims and Scope</a></li>
+									<li><a href="/_common/do.php?a=html&b=12">About the Journal</a></li>
+									<li><a href="/_common/do.php?a=html&b=13">Editorial Board</a></li>
+									<li><a href="/_common/do.php?a=html&b=14">Editorial Office</a></li>
+								</ol>
+							</li>
+							<li>Browse Archives
+								<ol class="sub_2">
+									<li><a href="/_common/do.php?a=full&b=21">Journal Archive</a></li>
+									<li><a href="/_common/do.php?a=current&b=22">Current Issue</a></li>
+									<li><a href="/_common/do.php?a=html&b=23">Most Read Articles</a></li>
+									<li><a href="/_common/do.php?a=search&b=24">Search for Archives</a></li>
+								</ol>
+							</li>
+							<li><a href="/_common/do.php?a=current&b=22">Current Issue</a></li>
+							<li>For Authors and Reviewers
+								<ol class="sub_4">
+									<li><a href="/_common/do.php?a=html&b=41">Instructions for Authors</a></li>
+									<li><a href="/_common/do.php?a=html&b=42">Research and Publication Ethics</a></li>
+									<li><a href="/_common/do.php?a=html&b=43">Checklist</a></li>
+									<li><a href="https://dbpiaone.com/kiie" target="_blank">e-Submission</a></li>
+									<li><a href="/_common/do.php?a=html&b=45">Copyright Transfer Agreement</a></li>
+								</ol>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<a class="top_btn" onclick="$.mobile.silentScroll(0)"><img src="/images/basic/top_btn.jpg" /></a> 
+<script type="text/javascript">
+
+$(function() {
+    $(window).scroll(function() {
+        if ($(this).scrollTop() > 200) {
+            $('.top_btn').fadeIn();            
+        } else {
+            $('.top_btn').fadeOut();
+        }
+    });
+    
+    $(".top_btn").click(function() {
+        $('html, body').animate({
+            scrollTop : 0
+        }, 400);
+        return false;
+    });
+	$(".nav ul li:nth-child(2)").mouseover(function(){
+		$(".nav ul li ol").stop().slideUp();
+		$(".sub_1").stop().slideDown();
+	}).mouseout(function(){
+		$(".sub_1").stop().slideUp();
+	})
+	$(".nav ul li:nth-child(3)").mouseover(function(){
+		$(".nav ul li ol").stop().slideUp();
+		$(".sub_2").stop().slideDown();
+	}).mouseout(function(){
+		$(".sub_2").stop().slideUp();
+	})
+	$(".nav ul li:nth-child(4)").mouseover(function(){
+		$(".nav ul li ol").stop().slideUp();
+		$(".sub_3").stop().slideDown();
+	}).mouseout(function(){
+		$(".sub_3").stop().slideUp();
+	})
+	$(".nav ul li:nth-child(5)").mouseover(function(){
+		$(".nav ul li ol").stop().slideUp();
+		$(".sub_4").stop().slideDown();
+	}).mouseout(function(){
+		$(".sub_4").stop().slideUp();
+	})
+
+	$('.mobile_nav').hide();
+		$('.mobile_menu').on('click', function() {
+			$('.mobile_nav').slideToggle();
+        $('.menu-toggle').toggleClass('active');
+    })
+});
+
+    
+</script>
+		<span id="submenu1" onMouseOver="menuOn('1')" onMouseOut="menuOff('1')" class="subMenuType" style="position:absolute; top: 235px; visibility:hidden;">
+			<table cellpadding=0 cellspacing=0 border=0 style="margin-top:11px;">
+				<tr>
+					<td class="subMenuTypeLeft">&nbsp;</td><!--321-->
+					<td>
+						<table cellpadding=0 cellspacing=0 border=0 class="subMenuLayerList">
+							<tr>
+								<td class="subMenuLink"><a href="javascript:go_menu('html','11')"><nobr>Aims and Scopes</nobr></a></td>
+								<td class="subMenuLink"><a href="javascript:go_menu('html','12')"><nobr>About the Journal</nobr></a></td>
+								<td class="subMenuLink"><a href="javascript:go_menu('html','13')"><nobr>Editorial Board</nobr></a></td>
+								<td class="subMenuLink"><a href="javascript:go_menu('html','14')"><nobr>Editorial Office</nobr></a></td>
+							</tr>
+					  </table>
+				  </td>
+					<td class="subMenuTypeRight">&nbsp;</td>
+				</tr>
+		</table>
+</span>
+
+
+		<span id="submenu2" onMouseOver="menuOn('2')" onMouseOut="menuOff('2')" class="subMenuType" style="position:absolute; top: 235px; visibility:hidden;">
+			<table cellpadding=0 cellspacing=0 border=0 style="margin-top:11px;">
+				<tr>
+					<td class="subMenuTypeLeft">&nbsp;</td><!--321-->
+					<td>
+						<table cellpadding=0 cellspacing=0 border=0 class="subMenuLayerList">
+							<tr>
+								<td class="subMenuLink"><a href="javascript:go_menu('full','21')"><nobr>Journal Archive</nobr></a></td>
+								<td class="subMenuLink"><a href="javascript:go_menu('current','22')"><nobr>Current Issue</nobr></a></td>
+								<td class="subMenuLink"><a href="javascript:go_menu('html','23')"><nobr>Most Read Articles</nobr></a></td>
+								<td class="subMenuLink"><a href="javascript:go_menu('search','24')"><nobr>Search for Archives</nobr></a></td>
+							</tr>
+					  </table>
+				  </td>
+					<td class="subMenuTypeRight">&nbsp;</td>
+				</tr>
+		</table>
+</span>
+
+
+		<span id="submenu4" onMouseOver="menuOn('4')" onMouseOut="menuOff('4')" class="subMenuType" style="position:absolute; top: 235px; visibility:hidden;">
+			<table cellpadding=0 cellspacing=0 border=0 style="margin-top:11px;">
+				<tr>
+					<td class="subMenuTypeLeft">&nbsp;</td><!--321-->
+					<td>
+						<table cellpadding=0 cellspacing=0 border=0 class="subMenuLayerList">
+							<tr>
+								<td class="subMenuLink"><a href="javascript:go_menu('html','41')"><nobr>Instructions for Authors</nobr></a></td>
+								<td class="subMenuLink"><a href="javascript:go_menu('html','42')"><nobr>Research and Publication Ethics</nobr></a></td>
+								<td class="subMenuLink"><a href="javascript:go_menu('html','43')"><nobr>Checklist</nobr></a></td>
+								<td class="subMenuLink"><a href="javascript:go_menu('link','44')"><nobr>e-Submission</nobr></a></td>
+								<td class="subMenuLink"><a href="javascript:go_menu('html','45')"><nobr>Copyright Transfer Agreement</nobr></a></td>
+							</tr>
+					  </table>
+				  </td>
+					<td class="subMenuTypeRight">&nbsp;</td>
+				</tr>
+		</table>
+</span>
+
+<table cellpadding=0 cellspacing=0 border=0 class="menuType" ID="menu">
+	<tr>
+		<td class="menuTypeLeft"></td>
+		<td align=centerr>
+			<div class="mainMenu">
+			<table cellpadding=0 cellspacing=0 class="mainMenuList">
+				<tr>
+					<td  id="mainmenu" onMouseOver="menuOn('')" onMouseOut="menuOff('')">
+						<a >
+													</a>
+					</td>
+					<td  id="mainmenu1" onMouseOver="menuOn('1')" onMouseOut="menuOff('1')">
+						<a >
+							About						</a>
+					</td>
+					<td  id="mainmenu2" onMouseOver="menuOn('2')" onMouseOut="menuOff('2')">
+						<a >
+							Browse Archives						</a>
+					</td>
+					<td  id="mainmenu3" onMouseOver="menuOn('3')" onMouseOut="menuOff('3')">
+						<a  href=javascript:go_menu('link','3') >
+							Current Issue						</a>
+					</td>
+					<td  id="mainmenu4" onMouseOver="menuOn('4')" onMouseOut="menuOff('4')">
+						<a >
+							For Authors and Reviewers						</a>
+					</td>
+				</tr>
+			</table>
+			</div>
+			</td>
+					<td class="menuTypeRight"></td>
+		</tr>
+</table>
+
+<script type="text/javascript">
+$(document).ready(function() {
+		
+	//var use_yn = "";
+	//var level = "";
+	var use_yn = "Y";
+
+
+	$(document).on("click", "#icon_xml,#pubreader_view,#epub_down,#icon_pdf2", function() {
+		if(use_yn=='N'){
+							$("#popup_login").fadeIn(200);
+				return false;
+				
+		}
+	});
+});
+	
+</script>
+<script>
+function menuOn(name) {
+	$(".subMenuType").css("visibility","hidden");
+	var sub = $("#submenu" + name);
+	var ww = $("#mainmenu" + name).width();
+	ww = sub.width() - ww;
+	var o = $("#mainmenu" + name).offset();
+	var so = sub.offset();
+	var x = o.left - ww / 2;
+	var mm = $("#menu").offset();
+	var mmx = mm.left;
+	var mmw = $("#menu").width();
+	//메인메뉴 폭을 넘어갈 경우 안쪽으로 오도록 조절 - 13.11.13 장은수
+	if (x+sub.width() > mmx+mmw)
+	{
+		x = -sub.width()+mmx+mmw;
+	}
+	if (x<mmx)
+	{
+		x = mmx;
+	}
+	
+	var y = o.top+25;
+	sub.css({"left":x+"px"});//, "top":y+"px"});
+	sub.css("visibility","visible");
+
+}
+function menuOff(name) {
+	$(".subMenuType").css("visibility","hidden");
+}
+//if(top.frames.length != 2) top.location.href="/";
+//if(top.frames[0].name != 'dummy0') top.location.href="/";
+
+
+function getCookie(c_name)
+{
+	var i,x,y,ARRcookies=document.cookie.split(";");
+	for (i=0;i<ARRcookies.length;i++)
+	{
+		x=ARRcookies[i].substr(0,ARRcookies[i].indexOf("="));
+		y=ARRcookies[i].substr(ARRcookies[i].indexOf("=")+1);
+		x=x.replace(/^\s+|\s+$/g,"");
+		if (x==c_name)
+		{
+			return unescape(y);
+		}
+	}
+}
+</script>
+<div class='contents'><div class='current_bg'>
+<div class="full_page_wrap">
+<div>
+	<div>
+		<h1>About the Journal</h1>
+	</div>
+
+	
+</div>
+<div style="clear:both"></div>
+
+<div class="sub_contents">
+		<div class="book_select">
+			<div class="book_select_name">
+				Journal of the Korean Institute of Industrial Engineers -
+									Vol. 51,					No. 3				 
+											</div>
+
+						<div class="book_select_list">
+	[<a href="javascript:gotoPaperList()">Paper List</a>]
+	[<a href="javascript:gotoVolList('4046')"> Prev</a>]				[<a href="javascript:gotoVolList('')">Go to Volume List</a>]
+	[<a href="javascript:gotoVolList('4170')"> Next</a>]			</div>
+            		</div>
+
+<div style="clear:both"></div>
+
+<div id='side_box' style="display:inline-block;float:right; text-align:right; width:135px;overflow:hidden; margin-top: 20px;">
+		<!-- <div style="display:block;">
+			<a id="open-crossmark" href="#" style="margin: 20px 0 0 0;">
+				<img style="border: 0; display: none;" id="crossmark-icon" src="https://crossmark.crossref.org/images/crossmark_button.png" />
+			</a>
+		</div>
+		<div id="crossmark-dialog" style="display: none;" title="">
+			<iframe id="crossmark-dialog-frame" frameborder="0"></iframe>
+		</div> -->
+			<div style="display:block;clear:both;">
+			<img id="icon_pdf" src="/_common/images/icon_pdf.png" border="0" style="margin:5px 0px 0px 0px; cursor:pointer;"/>
+		</div>
+		
+		<div style="display:block;clear:both;">
+			<a href="/_PR/view/index.php?aidx=45763&bidx=4147" target="_blank"><img id="pubreader_view" src="/_common/images/pubreader_view.png" border="0" style="margin:5px 0px 0px 0px; "/></a>
+		</div>
+		<div style="display:block;clear:both;">
+			<a href="/_EP/view/index.php?aidx=45763&bidx=4147"><img id="epub_down" src="/_common/images/epub_down.png" border="0" style="margin:5px 0px 0px 0px; "/></a>
+		</div>
+		<div style="display:block;clear:both;">
+			<!-- <input type="text" class="domain" value="kiie" style="display: none;"/>
+			<input type="text" class="idx" value="45763" style="display: none;"/>
+			<input type="text" class="current-url" value="" style="display: none;"/> -->
+			<img id="quote_view" src="/_common/images/quote_view.svg" border="0" style="margin:5px 0px 0px 0px; cursor:pointer;" data-idx="45763" data-domain="kiie" data-bs-toggle="modal" data-bs-target="#addModal"/>
+		</div>
+				<script type="text/javascript" src="./quote/js/FileSaver.min.js"></script>
+<script type="text/javascript" src="./quote/js/quote.js"></script>
+<script type="text/javascript" src="./quote/js/xlsx.full.min.js"></script>
+<script type="text/javascript" src="./quote/js/bootstrap.bundle.min.js"></script>
+<link rel="stylesheet" media="screen" href="./quote/css/dp_qoute.min.css">
+<link rel="stylesheet" media="screen" href="./quote/css/boot_modal.css">
+<div class="modal" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="dpDimLayer" id="dpDimLayer" data-visible="visible" style="display: block;">
+          <div class="dpBgDimmed" id="dpDimBgLayer" data-visible="visible">
+          </div>
+          <dialog class="dpQuoteThesisChange" id="dpQuoteChangeLayer" style="display: block; z-index: 1101;" open="">
+              <section class="dpQuoteThesisChange__header">
+			  <div class="dpQuoteThesisChange__tit">인용하기<span class="dpQuoteThesisChange__form" id="quote-thesis-title">_APA 양식</span></div>
+                  <!-- <h1 class="dpQuoteThesisChange__tit">인용하기<span class="dpQuoteThesisChange__form" id="quote-thesis-title">_APA 양식</span></h1> -->
+                  <button class="dpQuoteThesisChange__closed closeModal" id="" data-bs-dismiss="modal"><span class="a11y" data-bs-dismiss="modal">닫기</span></button>
+              </section>
+              <section class="dpQuoteThesisChange__cont">
+                  <section class="dpQuoteThesisChange__listWrap">
+                      <ul class="dpQuoteThesisChange__list">
+                          <li data-tab="tab-0" class="dpQuoteThesisChange__btnQuo select" data-style="0">
+                              <input type="hidden" name="dev_quote_id" id="dev_quote_id0" value="9176">
+                              <span name="dev_quote_nm" value="테스트" id="dev_quote_nm0">APA</span>
+                          </li>
+                          <li class="dpQuoteThesisChange__btnQuo" data-style="1">
+                              <input type="hidden" name="dev_quote_id" id="dev_quote_id1" value="18">
+                              <span name="dev_quote_nm" value="IEEE" id="dev_quote_nm1">Chicago</span>
+                          </li>
+                          <li class="dpQuoteThesisChange__btnQuo" data-style="2">
+                              <input type="hidden" name="dev_quote_id" id="dev_quote_id2" value="17">
+                              <span name="dev_quote_nm" value="Harvard" id="dev_quote_nm2">MLA</span>
+                          </li>
+                          <li class="dpQuoteThesisChange__btnQuo" data-style="3">
+                              <input type="hidden" name="dev_quote_id" id="dev_quote_id3" value="9">
+                              <span name="dev_quote_nm" value="ACS" id="dev_quote_nm3">IEEE</span>
+                          </li>
+                          <li class="dpQuoteThesisChange__btnQuo" data-style="4">
+                              <input type="hidden" name="dev_quote_id" id="dev_quote_id4" value="5">
+                              <span name="dev_quote_nm" value="Chicago" id="dev_quote_nm4">Harvard</span>
+                          </li>
+                          <li class="dpQuoteThesisChange__btnQuo" data-style="5">
+                              <input type="hidden" name="dev_quote_id" id="dev_quote_id5" value="2">
+                              <span name="dev_quote_nm" value="MLA" id="dev_quote_nm5">ACS</span>
+                          </li>
+                      </ul>
+                  </section>
+                  <section class="dpQuoteThesisChange__quo">
+                      <div class="dpQuoteThesisChange__quoExam"></div>
+                      <div class="dpQuoteThesisChange__quoBtnWrap">
+                          <label class="dpQuoteThesisChange__label ko_select">
+                              <input type="radio" class="dpQuoteThesisChange__radio" id="input_language_radio_01" name="choice" value="K">
+                              <span class="dpQuoteThesisChange__txt" for="language_radio_01">한글</span>
+                          </label>
+                          <label class="dpQuoteThesisChange__label">
+                              <input type="radio" class="dpQuoteThesisChange__radio" id="input_language_radio_02" name="choice" value="E">
+                              <span class="dpQuoteThesisChange__txt" for="language_radio_02">English</span>
+                          </label>
+                          <button class="dpQuoteThesisChange__copy">복사하기</button>
+                      </div>
+                  </section>
+              </section>
+			  <div class="dpQuoteThesisChange__h2">서지정보 내보내기</div>
+              <!-- <h2 class="dpQuoteThesisChange__h2">서지정보 내보내기</h2> -->
+              <section class="dpQuoteThesisChange__btnWrap">
+                  <button class="dpQuoteThesisChange__export" type="button" data-type="0">Endnote</button>
+                  <button class="dpQuoteThesisChange__export" type="button" data-type="1">Refworks</button>
+                  <button class="dpQuoteThesisChange__export" type="button" data-type="2">Mendeley</button>
+                  <button class="dpQuoteThesisChange__export" type="button" data-type="3">Word/한글2018</button>
+                  <button class="dpQuoteThesisChange__export" type="button" data-type="4">Bibtex</button>
+                  <button class="dpQuoteThesisChange__export" type="button" data-type="5">Excel</button>
+              </section>
+              <div style="display:none;">
+                  <form style="display:none;" name="ExportRWForm" id="dev_exportRWForm" method="post" action="https://www.refworks.com/express/ExpressImport.asp?vendor=Nurimedia&filter=RefWorks%20Tagged%20Format&encoding=65001">
+                    <textarea name="ImportData" id="importData" readonly="" rows="20" cols="180"></textarea>
+                  </form>
+                </div>
+				 <div id="copyText"></div>
+          </dialog>
+        </div>
+			</div>
+		</div>
+	</div>		</div>
+
+
+<div class='NURIMEDIAXML' style="width:82% !important; display:inline-block;float:left;">
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+
+<link rel="stylesheet" type="text/css" href="/NuriXml.css"><link rel="stylesheet" type="text/css" href="./xslt_default.css"><link href="https://hangeul.pstatic.net/hangeul_static/css/NanumBarunGothicYetHangul.css" rel="stylesheet" type="text/css"><style type="text/css">
+				.tl-inline1{width:100%;}
+				.unit_01 {float:right; padding-right:10px;padding-left:50px;}
+				.table-scroll-container {width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-color: #8B8B8B #f1f1f1; scrollbar-width: thin;}
+				.table-scroll-container::-webkit-scrollbar-track {background: #f1f1f1;}
+				.table_padding{padding-left:5px;padding-right:5px;word-break:keep-all !important;}
+				.fig_line > .label{vertical-align: top;display: inline-block;width:5%;margin-right:1%;}
+				.fig_line > .capture-id > .tl-inline1{width:93%;margin-bottom:0px;}
+				.fig_line > .capture-id > p{font-size:10pt;margin:0px;}
+				.xml_graphic {max-width:400px; width:100%; border:2px solid #cccccc; padding:10px; margin-top:10px;}
+				.disp-formula {display:flex; align-items:center; margin:10px 0; padding:0 20px;}
+				.formula-content {flex:1; overflow-x:auto; white-space:nowrap; -webkit-overflow-scrolling:touch; scrollbar-color: #8B8B8B #f1f1f1; scrollbar-width: thin;}
+				.formula-content::-webkit-scrollbar-track {background: #f1f1f1;}
+				.formula-label {white-space:nowrap; padding-left:30px;}
+				.MathJax_Display{text-align:left !important;}
+				.MathJax_Display *{font-size:16px;}
+				</style>
+
+
+
+
+<div id="article-level-0-front" class="fm">
+
+<table width="100%" class="fm">
+<tr><td left-margine="10" width="30%" style="height:1px;"></td><td style="height:1px;"></td></tr>
+<tr><td valign="top" style="position:relative;"><span class="article-type">[ Article ]</span></td></tr><tr><td valign="top">Journal of the Korean Institute of Industrial Engineers - Vol. 51, No. 3, pp. 201-208<br>
+</td></tr><tr><td valign="top"><span class="gen">Abbreviation: </span>JKIIE</td></tr><tr><td valign="top"><span class="gen">ISSN: </span>1225-0988
+					(Print)
+				
+2234-6457
+					(Online)
+				
+</td></tr><tr><td><span class="gen">Print </span><span class="gen"> publication date </span><span class="gen"> </span>15 Jun 2025<br>
+</td></tr><tr><td colspan="2"><span class="gen">Received </span><span class="gen"> </span>14 Nov 2024
+<span class="gen">Revised </span><span class="gen"> </span>29 Nov 2024
+<span class="gen">Accepted </span><span class="gen"> </span>02 Dec 2024
+</td></tr><tr><td style="width:100%"><span class="gen">DOI: </span><a href="https://doi.org/10.7232/JKIIE.2025.51.3.201" target="_blank">https://doi.org/10.7232/JKIIE.2025.51.3.201</a><br><br></td></tr><tr><td colspan="2" valign="top"><span style="font-weight:bold;width:100%;" class="tl-document">&#44277;&#51089;&#44592;&#44228; &#47700;&#45684;&#50620; &#53945;&#54868; &#49373;&#49457;&#54805; &#50616;&#50612; &#47784;&#45944; &#44060;&#48156;</span></td></tr>
+<tr><td valign="top" align="left"><div id="enNameColon"><span class="capture-id"><span class="gen">&#51060;&#50696;&#50896;</span><sup>1</sup></span> ; <span class="capture-id"><span class="gen">&#48149;&#51452;&#50689;</span><sup>1</sup></span> ; <span class="capture-id"><span class="gen">&#44608;&#49884;&#50672;</span><sup>1</sup></span> ; <span class="capture-id"><span class="gen">&#51312;&#49457;&#50864;</span><sup>2</sup></span> ; <span class="capture-id"><span class="gen">&#50628;&#51452;&#47749;</span><sup>1</sup><sup><span class="gen">, </span>2</sup><span class="xref"><sup><span class="gen">, </span><a href="#cor1">&dagger;</a></sup></span></span>
+</div></td></tr><tr><td valign="top" align="left"></td></tr><tr><td valign="top" align="left"><span class="au-label">1</span>&#44221;&#55148;&#45824;&#54617;&#44368; &#49328;&#50629;&#44221;&#50689;&#44277;&#54617;&#44284;<br>
+</td></tr><tr><td valign="top" align="left"></td></tr><tr><td valign="top" align="left"><span class="au-label">2</span>&#44221;&#55148;&#45824;&#54617;&#44368; &#51064;&#44277;&#51648;&#45733;&#45824;&#54617;&#50896;<br>
+</td></tr>
+<tr><td colspan="2" valign="top"><br><span style="font-weight:bold;width:100%;" class="tl-document">Development of a Generative Language Model Specialized in CNC Machine Tool Manuals</span></td></tr>
+<tr><td valign="top" align="left"><div id="krNameColon"><span class="capture-id"><span class="gen">Yewon Lee</span><sup>1</sup></span> ; <span class="capture-id"><span class="gen">Ju-yeong Park</span><sup>1</sup></span> ; <span class="capture-id"><span class="gen">Siyeon Kim</span><sup>1</sup></span> ; <span class="capture-id"><span class="gen">Seongwoo Cho</span><sup>2</sup></span> ; <span class="capture-id"><span class="gen">Jumyung Um</span><sup>1</sup><sup><span class="gen">, </span>2</sup><span class="xref"><sup><span class="gen">, </span><a href="#cor1">&dagger;</a></sup></span></span>
+</div></td></tr><tr><td valign="top" align="left"><span class="au-label">1</span>Department of Industrial &amp; Management System Engineering, Kyung Hee University<br>
+</td></tr><tr><td valign="top" align="left"></td></tr><tr><td valign="top" align="left"><span class="au-label">2</span>Department of Artificial Intelligence, Kyung Hee University<br>
+</td></tr><tr><td valign="top" align="left"></td></tr>
+<br><tr><td valign="top"><span class="capture-id"><span class="gen" id="cor1">Correspondence to : </span><sup>&dagger;</sup>&#50628;&#51452;&#47749; &#44368;&#49688;, &#44221;&#44592;&#46020; &#50857;&#51064;&#49884; &#45909;&#50689;&#45824;&#47196; 1732 &#44221;&#55148;&#45824;&#54617;&#44256; &#44397;&#51228;&#52896;&#54140;&#49828;, Tel : 031-201-5443, Fax : 031-202-8106, E-mail : <a href="mailto:jayum@khu.ac.kr">jayum@khu.ac.kr</a><br>
+</span><br></td></tr>
+<tr><td colspan="2"><br>&copy; 2025 KIIE
+</td></tr><tr><td><div id="crossMark" class="crossMark" style="display:block; width:150px;height:30px;"><a id="open-crossmark" href="#"><img src="/_common/img/crossmark.png"></a></div><div id="crossmark-dialog" style="display: none;" title=""><iframe id="crossmark-dialog-frame" frameborder="0"></iframe></div></td></tr><tr><td><div id="citedLink" class="ctLink"></div><div id="citedLinkList"></div></td></tr><tr><td><div class="funding" id="funding">Funding Information &#9660;</div><div id="funding_info" style="display: none;"><div style="padding: 10px; border: 1px solid rgb(51, 51, 51); border-image: none;"><ul><li style="font-weight:bold;">Ministry of Science and ICT, South Korea</li><li></ul><ul><li style="font-weight:bold;">Institute of Information and Communications Technology Planning and Evaluation</li><li>RS-2022 -00155911</li></ul><ul><li style="font-weight:bold;">Ministry of Trade, Industry and Energy</li><li></ul><ul><li style="font-weight:bold;">Korea Institute for Advancement of Technology</li><li>20026431</li></ul></div></div></td></tr></table><td valign="top"><span class="tl-main-part"></span></td>
+
+
+<table border="0" width="100%" class="fm" xxxbackground="/__common/img/nuri_logo.png" style="background-repeat:no-repeat;">
+
+<tr><td leftmargine="10" width="50%" style="height:1px;"></td><td style="height:1px;"></td></tr>
+
+</table><tr><td colspan="2" valign="top"><hr class="section-rule"></td></tr>
+<tr><td valign="top"><span class="tl-main-part"><span class="tl-main-part">Abstract</span></span></td>
+<td valign="top"><p>Due to the advance of machine tool technology, operation manuals have been becoming more complex and diverse than before. Accordingly, if machine technicians solve individual troubles happened in own machines, the losses such as human error, increased idle time, and delays still occur because of fast retirements and the lack of expertise in manufacturing companies. In this paper, we propose localized Manual LLM, an AI-based language model that enables real-time problem solving by answering operators' questions on-site. The training data set was developed through rapid engineering using GPT-3.5 Turbo and is divided into two main categories: a question collection manual for general manual topics and an alarm manual for CNC warnings. Llama2 was selected as the pre-trained model and hyperparameters were optimized through fine-tuning through multiple tests, and the final evaluation was based on the training loss and response accuracy. The model can be accessed through a mobile app, allowing operators to receive immediate support.</p>
+</td><td valign="top"></td>
+</tr>
+<hr class="part-rule"><table width="100%" class="fm">
+<tr><td left-margine="10" width="30%" style="height:1px;"></td><td style="height:1px;"></td></tr>
+
+<tr>
+<td colspan="2" valign="top"><span class="tl-main-part">Keywords: </span><span class="capture-id">Manual LLM</span>, <span class="capture-id">Generative Language Model</span>, <span class="capture-id">Prompt Engineering</span>, <span class="capture-id">Natural Language Processing</span>, <span class="capture-id">Machine Tool</span>, <span class="capture-id">CNC Controller</span><br></td>
+</tr>
+</table>
+
+</div>
+
+<div id="article-level-0-body" class="body">
+
+<hr class="part-rule">
+
+<div id="JKIIE_2025_v51n3_201_sec1">
+<span class="tl-main-part" style="margin-bottom:10px;">1. &#49436; &#47200;</span>
+<div id="JKIIE_2025_v51n3_201_sec1-1">
+<span class="tl-lowest-section1">1.1 &#50672;&#44396; &#54596;&#50836;&#49457; &#48143; &#47785;&#51201;</span>
+<p>&#44277;&#51089;&#44592;&#44228; &#49328;&#50629;&#51032; &#48156;&#51204;&#50640; &#46384;&#46972;, &#44277;&#51089;&#44592;&#44228;&#50752; &#51060;&#47484; &#51228;&#50612;&#54616;&#45716; CNC (Computer Numerical Control) &#52968;&#53944;&#47204;&#47084;&#51032; &#51333;&#47448;&#46020; &#45796;&#50577;&#54644;&#51648;&#44256; &#51080;&#45796;. &#51060;&#50640; &#51089;&#50629;&#51088;&#46308;&#51008; &#45908; &#47566;&#51008; &#44277;&#51089;&#44592;&#44228;&#50752; CNC&#51032; &#47700;&#45684;&#50620; &#44032;&#51060;&#46300;&#48513;&#51012; &#49689;&#51648;&#54644;&#50556; &#54620;&#45796;&#45716; &#48512;&#45812;&#51012; &#44032;&#51648;&#44172; &#46108;&#45796;. &#51089;&#50629;&#51088;&#46308;&#51008; &#49688;&#52380; &#51901;&#50473; &#46104;&#45716; &#47700;&#45684;&#50620; &#44032;&#51060;&#46300;&#48513;&#51012; &#50516;&#44592;&#54624; &#49688; &#50630;&#51004;&#48064;&#47196; &#49328;&#50629; &#54788;&#51109;&#50640;&#49436; &#47928;&#51228;&#44032; &#48156;&#49373;&#54624; &#46412;&#47560;&#45796; &#46160;&#44732;&#50868; &#47700;&#45684;&#50620; &#44032;&#51060;&#46300;&#48513;&#51012; &#52286;&#50500;&#48372;&#44144;&#45208; &#44536;&#46041;&#50504; &#49939;&#51008; &#45432;&#54616;&#50864;&#47484; &#44592;&#48152;&#51004;&#47196; &#51060;&#47484; &#54644;&#44208;&#54616;&#44260; &#54620;&#45796;. &#51060;&#47088; &#48169;&#49885;&#51032; &#47928;&#51228; &#54644;&#44208;&#51008; &#46608; &#45796;&#47480; &#47928;&#51228;&#51216;&#51012; &#45235;&#44172; &#46108;&#45796;. &#52293;&#51088;&#47484; &#52286;&#51004;&#47728; &#47928;&#51228;&#47484; &#54644;&#44208;&#54616;&#47732; &#44536; &#50577;&#51060; &#48169;&#45824;&#54616;&#48064;&#47196; &#47928;&#51228;&#47484; &#54644;&#44208;&#54616;&#45716; &#45936; &#49548;&#50836;&#46104;&#45716; &#49884;&#44036;&#51060; &#45720;&#50612;&#45208;&#44172; &#46108;&#45796;. &#45432;&#54616;&#50864;&#47484; &#44592;&#48152;&#51004;&#47196; &#47928;&#51228;&#47484; &#54644;&#44208;&#54624; &#46412;&#45716; &#55092;&#47676; &#50640;&#47084;&#44032; &#48156;&#49373;&#54624; &#49688; &#51080;&#44256; &#51060;&#50640; &#46384;&#47480; &#49884;&#44036; &#49552;&#49892;&#51060; &#48156;&#49373;&#54620;&#45796;. &#47928;&#51228; &#54644;&#44208;&#51012; &#50948;&#54644; &#51204;&#47928; &#50644;&#51648;&#45768;&#50612;&#47484; &#48512;&#47476;&#45908;&#46972;&#46020; &#47928;&#51228;&#45716; &#44263;&#48148;&#47196; &#54644;&#44208;&#46104;&#51648; &#50506;&#45716;&#45796;. &#44288;&#47144; &#45436;&#47928;&#50640; &#46384;&#47476;&#47732; CNC &#44592;&#44228;&#50640; &#44208;&#54632;&#51060; &#48156;&#49373;&#54624; &#46412; &#52488;&#44553; &#50976;&#51648;&#48372;&#49688; &#44592;&#49696;&#51088;&#46308;&#51032; &#44221;&#54744; &#48512;&#51313;&#44284; &#44208;&#54632; &#50896;&#51064;&#51012; &#49888;&#49549;&#54616;&#44172; &#52286;&#51012; &#49688; &#51080;&#45716; &#44221;&#54744;&#51060; &#54413;&#48512;&#54620; &#50644;&#51648;&#45768;&#50612; &#49688;&#51032; &#48512;&#51313;&#51004;&#47196; &#44208;&#54632; &#51652;&#45800;&#50640; &#47928;&#51228;&#47484; &#44202;&#44256; &#51080;&#51020;&#51012; &#50508; &#49688; &#51080;&#50632;&#45796;(<span class="xref"><a href="#JKIIE_2025_v51n3_201_B2">Anzari <i>et al.</i>, 2023</a></span>; <span class="xref"><a href="#JKIIE_2025_v51n3_201_B10">Michael <i>et al.</i>, 2021</a></span>).</p>
+<p>&#51060;&#47084;&#54620; &#47928;&#51228;&#51216;&#51012; &#54644;&#44208;&#54616;&#44592; &#50948;&#54644; &#51089;&#50629;&#51088;&#44032; &#44277;&#51089;&#44592;&#44228;&#50752; CNC &#52968;&#53944;&#47204;&#47084;&#47484; &#45733;&#49689;&#54616;&#44172; &#49324;&#50857;&#54624; &#49688; &#51080;&#46020;&#47197; &#46020;&#50880;&#51012; &#51452;&#45716; &#51648;&#50896; &#54532;&#47196;&#44536;&#47016; &#48143; &#49884;&#49828;&#53596;&#51060; &#54596;&#50836;&#54624; &#44163;&#51060;&#45796;. &#51060;&#50640; &#48376; &#50672;&#44396;&#50640;&#49436;&#45716; &#44277;&#51089;&#44592;&#44228; &#49328;&#50629; &#54788;&#51109;&#50640;&#49436; &#51089;&#50629;&#51088;&#51032; &#50836;&#52397;&#50640; &#46384;&#46972; &#47928;&#51228; &#49324;&#54637;&#51012; &#54028;&#50501;&#54616;&#44256; &#54644;&#44208; &#48169;&#48277;&#51032; &#51593;&#44033;&#51201;&#51064; &#51228;&#49884;&#47484; &#53685;&#54644; &#51089;&#50629;&#51032; &#54952;&#50984;&#51012; &#44537;&#45824;&#54868;&#54616;&#45716; AI &#44592;&#48152; &#49373;&#49457;&#54805; &#50616;&#50612; &#47784;&#45944;, Manual LLM&#51012; &#44060;&#48156;&#54616;&#44256;&#51088; &#54620;&#45796;.</p>
+</div>
+<div id="JKIIE_2025_v51n3_201_sec1-2">
+<span class="tl-lowest-section1">1.2 &#50672;&#44396; &#45236;&#50857; &#48143; &#48169;&#48277;</span>
+
+<ul style="list-style-type: none; margin:20px 0;">
+
+<li style="margin-bottom:10px; text-indent:-20px; padding-left:40px;">1) &#47700;&#45684;&#50620; &#53581;&#49828;&#53944; &#51204;&#52376;&#47532;: &#50864;&#49440;, CNC &#44277;&#51089;&#44592;&#44228;&#51032; &#47700;&#45684;&#50620; &#44032;&#51060;&#46300;&#48513; pdf&#51032; &#53581;&#49828;&#53944;&#47484; &#52628;&#52636;&#54616;&#44256; &#51204;&#52376;&#47532;&#54620;&#45796;. &#51060; &#45800;&#44228;&#50640;&#49436;&#45716; &#53581;&#49828;&#53944; &#51221;&#51228;, &#53664;&#53360;&#54868;, &#48143; &#47928;&#51109; &#44396;&#51312; &#50976;&#51648;&#47484; &#50948;&#54620; &#51089;&#50629;&#51060; &#49688;&#54665;&#46108;&#45796;.
+</li>
+
+<li style="margin-bottom:10px; text-indent:-20px; padding-left:40px;">2) QA &#45936;&#51060;&#53552;&#49483; &#49373;&#49457;: &#51204;&#52376;&#47532;&#54620; &#53581;&#49828;&#53944;&#47484; &#44592;&#48152;&#51004;&#47196; QA(&#51656;&#47928;-&#45813;&#48320;) &#45936;&#51060;&#53552;&#49483;&#51012; &#49373;&#49457;&#54616;&#44592; &#50948;&#54644; &#53944;&#47004;&#49828;&#54252;&#47672; &#47784;&#45944;&#51012; &#54876;&#50857;&#54620;&#45796;. &#51060; &#45936;&#51060;&#53552;&#49483;&#51008; &#47700;&#45684;&#50620; &#44032;&#51060;&#46300;&#48513;&#51032; &#51204;&#48152;&#51201;&#51064; &#45236;&#50857;&#44284; &#51089;&#50629; &#54788;&#51109;&#50640;&#49436; &#48156;&#49373;&#54624; &#49688; &#51080;&#45716; &#44221;&#48372;&#47484; &#51473;&#49900;&#51004;&#47196; &#54620; QA &#45936;&#51060;&#53552;&#47196; &#54693;&#54980; &#47784;&#45944; &#54617;&#49845; &#48143; &#54217;&#44032;&#50640; &#49324;&#50857;&#46108;&#45796;.
+</li>
+
+<li style="margin-bottom:10px; text-indent:-20px; padding-left:40px;">3) &#47784;&#45944; &#54617;&#49845; &#48143; &#54217;&#44032;: &#54980;&#48372; &#47784;&#45944;(GPT-2, Llama2)&#51008; &#49373;&#49457;&#46108; QA &#45936;&#51060;&#53552;&#49483;&#51012; &#44592;&#48152;&#51004;&#47196; &#54617;&#49845;&#46108;&#45796;. &#54617;&#49845;&#46108; &#47784;&#45944;&#51008; &#51221;&#49457;&#51201; &#48143; &#51221;&#47049;&#51201; &#54217;&#44032;&#47484; &#44144;&#52432; &#49457;&#45733;&#51012; &#54217;&#44032;&#54616;&#44256; &#52572;&#51333; &#47784;&#45944;&#51012; &#49440;&#51221;&#54620;&#45796;.
+</li>
+
+<li style="margin-bottom:10px; text-indent:-20px; padding-left:40px;">4) &#54532;&#47196;&#53664;&#53440;&#51077;: &#49324;&#50857;&#51088; &#52828;&#54868;&#51201;&#51064; UI&#47484; &#44054;&#52632; &#47784;&#48148;&#51068; &#50528;&#54540;&#47532;&#52992;&#51060;&#49496;&#51012; &#44060;&#48156;&#54616;&#50668; &#52572;&#51333; &#47784;&#45944;&#51032; &#49324;&#50857;&#49457;&#51012; &#54693;&#49345;&#54620;&#45796;.
+</li>
+
+</ul></div>
+</div>
+
+<hr class="section-rule">
+<div id="JKIIE_2025_v51n3_201_sec2">
+<span class="tl-main-part" style="margin-bottom:10px;">2. &#44288;&#47144; &#50672;&#44396;</span>
+<div id="JKIIE_2025_v51n3_201_sec2-1">
+<span class="tl-lowest-section1">2.1 &#49373;&#49457;&#54805; &#50616;&#50612; &#47784;&#45944;</span>
+<p>&#44288;&#47144; &#45436;&#47928;&#51012; &#53685;&#54644; &#50864;&#47532;&#45716; Long Short-Term Memory &#51060;&#45208; Recurrent Neural Network &#48372;&#45796; &#45908; &#45208;&#51008; &#54140;&#54252;&#47676;&#49828;&#47484; &#48372;&#50668;&#51452;&#45716; &#53944;&#47004;&#49828;&#54252;&#47672; &#47784;&#45944;&#50640; &#44288;&#54620; &#45236;&#50857;&#44284; &#51060; &#53944;&#47004;&#49828;&#54252;&#47672;&#44032; BERT, GPT &#46321; &#51088;&#50672;&#50612; &#52376;&#47532; &#47784;&#45944;&#50640; &#50612;&#46523;&#44172; &#51201;&#50857;&#46104;&#44256; &#54876;&#50857;&#46104;&#45716;&#51648;&#50640; &#45824;&#54620; &#45236;&#50857;&#51012; &#50508; &#49688; &#51080;&#45796;(<span class="xref"><a href="#JKIIE_2025_v51n3_201_B16">Vaswani <i>et al.</i>, 2017</a></span>; <span class="xref"><a href="#JKIIE_2025_v51n3_201_B19">Wolf <i>et al.</i>, 2020</a></span>). &#46608;&#54620; &#54788;&#49884;&#51216; Natural Language Processing&#51032; &#44053;&#51088;&#51064; OpenAI&#50640; Microsoft&#51032; &#51648;&#49549;&#51201;&#51064; &#53804;&#51088;&#44032; &#51060;&#47336;&#50612;&#51648;&#44256; &#51080;&#51004;&#47728;, &#46160; &#54924;&#49324;&#44032; &#54028;&#53944;&#45320;&#49901;&#51012; &#44053;&#54868;&#54664;&#45796;. &#51060;&#50752; &#54632;&#44760;, NC&#49548;&#54532;&#53944;&#51032; &#47680;&#54000;&#47784;&#45804; &#49373;&#49457; AI , &#45348;&#51060;&#48260;&#51032; HyperCLOVA, &#52852;&#52852;&#50724;&#48652;&#47112;&#51064;&#51032; KoGPT &#46321; &#45796;&#50577;&#54620; &#50616;&#50612; &#47784;&#45944;&#46308;&#51060; Manual LLM &#44060;&#48156;&#51032; &#54596;&#50836;&#49457;&#51012; &#54869;&#48372;&#54624; &#49688; &#51080;&#50632;&#45796;(<span class="xref"><a href="#JKIIE_2025_v51n3_201_B13">Son <i>et al.</i>, 2024</a></span>; <span class="xref"><a href="#JKIIE_2025_v51n3_201_B20">Yoo <i>et al.</i>, 2024</a></span>; <span class="xref"><a href="#JKIIE_2025_v51n3_201_B18">Weitzmann, 2021</a></span>).</p>
+<div id="JKIIE_2025_v51n3_201_sec2-1-1">
+<span class="tl-inline1">(1)	GPT-2</span>
+<p>&#48376; &#50672;&#44396;&#50640;&#49436; &#45796;&#47336;&#44172; &#46112; &#50616;&#50612; &#47784;&#45944; &#51473; &#54616;&#45208;&#51064; GPT-2 &#47784;&#45944;&#51032; &#44396;&#51312;&#50752; &#51089;&#46041; &#50896;&#47532;&#47484; &#48516;&#49437;&#54616;&#50688;&#45796;. &#44277;&#51089;&#44592;&#44228; &#51089;&#50629;&#51088;&#47484; &#50948;&#54620; &#52311;&#48391; &#44060;&#48156;&#50640;&#45716; &#49324;&#45236; &#48372;&#50504;&#51012; &#50948;&#54644; &#44277;&#51109; &#45236; &#49436;&#48260;&#50640;&#49436; &#50868;&#50689; &#44032;&#45733;&#54620; &#44221;&#47049; &#47784;&#45944;&#51060; &#54596;&#50836;&#54616;&#50668; GPT-2&#47484; &#49440;&#53469;&#54616;&#50688;&#44256;, &#52572;&#49888; GPT-3.5&#45716; &#49457;&#45733;&#51008; &#46832;&#50612;&#45208;&#51648;&#47564; &#50868;&#50857; &#48372;&#50504; &#47928;&#51228;&#47196; &#48176;&#51228;&#54616;&#50688;&#45796;. GPT-2&#45716; OpenAI&#50640;&#49436; &#44060;&#48156;&#54620; &#51088;&#50672;&#50612; &#52376;&#47532;&#47484; &#50948;&#54620; &#46373;&#47084;&#45789; &#50616;&#50612; &#47784;&#45944; &#51473; &#54616;&#45208;&#47196;, 2019&#45380;&#50640; &#44277;&#44060;&#46104;&#50632;&#51004;&#47728; &#51088;&#50672;&#50612; &#52376;&#47532; &#48516;&#50556;&#50640;&#49436; &#54785;&#49888;&#51201;&#51064; &#49457;&#44284;&#47484; &#45236;&#45716; &#51064;&#44277; &#51648;&#45733; &#50616;&#50612; &#47784;&#45944;&#51060;&#45796;(<span class="xref"><a href="#JKIIE_2025_v51n3_201_B12">Radford <i>et al.</i>, 2019</a></span>). &#51060; &#47784;&#45944;&#51032; &#44396;&#51312;&#47484; &#51060;&#54644;&#54632;&#51004;&#47196;&#50024; &#50864;&#47532;&#45716; &#51088;&#50672;&#50612; &#49373;&#49457; &#48143; &#51060;&#54644; &#44284;&#51228;&#47484; &#48372;&#45796; &#54952;&#44284;&#51201;&#51004;&#47196; &#54644;&#44208;&#54624; &#49688; &#51080;&#51012; &#44163;&#51004;&#47196; &#44592;&#45824;&#54620;&#45796;. GPT-2&#45716; &#51088;&#50672;&#50612; &#52376;&#47532; &#51089;&#50629;&#50640;&#49436; &#46832;&#50612;&#45212; &#49457;&#45733;&#51012; &#48372;&#51060;&#47728;, &#50612;&#53584;&#49496; &#47700;&#52964;&#45768;&#51608;&#51012; &#54876;&#50857;&#54644; &#47928;&#51109; &#45236;&#51032; &#45800;&#50612; &#44036; &#49345;&#54840;&#51089;&#50857;&#51012; &#47784;&#45944;&#47553;&#54616;&#45716; transformer &#50500;&#53412;&#53581;&#52376;&#47484; &#44592;&#48152;&#51004;&#47196; &#54620;&#45796;. GPT-2&#45716; WebText&#46972; &#48520;&#47532;&#45716; 40GB &#53356;&#44592;&#51032; &#44144;&#45824;&#54620; &#53076;&#54140;&#49828;&#50752; &#51064;&#53552;&#45367;&#50640;&#49436; &#49688;&#51665;&#54620; &#45936;&#51060;&#53552;&#47484; &#44208;&#54633;&#54616;&#50668; &#54984;&#47144;&#54616;&#50688;&#45796;. &#50557; 117M &#44060;&#51032; &#44032;&#51109; &#51089;&#51008; GPT-2 &#47784;&#45944; &#54028;&#46972;&#48120;&#53552;&#46308;&#51012; &#51200;&#51109;&#54616;&#45716; &#45936; &#54596;&#50836;&#54620; &#51200;&#51109; &#44277;&#44036;&#47564; &#50557; 500MB&#51060;&#44256;, &#44032;&#51109; &#53360; GPT-2 &#47784;&#45944; &#54028;&#46972;&#48120;&#53552;&#46308;&#51012; &#51200;&#51109;&#54616;&#45716; &#45936;&#50640;&#45716; &#50557; 6.5GB&#51032; &#51200;&#51109; &#44277;&#44036;&#51060; &#54596;&#50836;&#54616;&#45796;. &#45796;&#50577;&#54620; &#53356;&#44592;&#50752; &#48260;&#51204;&#51004;&#47196; &#51228;&#44277;&#46104;&#47728; &#51089;&#51008; &#47784;&#45944;&#48512;&#53552; &#53360; &#47784;&#45944;&#44620;&#51648; &#45796;&#50577;&#54620; &#50857;&#46020;&#50752; &#50836;&#44396;&#49324;&#54637;&#50640; &#47582;&#44172; &#49440;&#53469;&#54624; &#49688; &#51080;&#45796;. GPT-2&#50752; &#44057;&#51008; pre-trained &#47784;&#45944;&#51008; &#53945;&#51221; &#51089;&#50629;&#50640; &#47582;&#44172; &#52628;&#44032;&#51201;&#51064; &#54617;&#49845;&#51012; &#53685;&#54644; &#49457;&#45733;&#51012; &#54693;&#49345;&#54624; &#49688; &#51080;&#51004;&#47728;, &#51060;&#47196;&#50024; &#49352;&#47196;&#50868; &#51089;&#50629;&#50640; &#47566;&#51008; &#50577;&#51032; &#45936;&#51060;&#53552;&#44032; &#54596;&#50836;&#54616;&#51648; &#50506;&#51004;&#47732;&#49436;&#46020; &#54952;&#44284;&#51201;&#51064; &#47784;&#45944;&#51012; &#49373;&#49457;&#54624; &#49688; &#51080;&#45796;.</p>
+</div>
+<div id="JKIIE_2025_v51n3_201_sec2-1-2">
+<span class="tl-inline1">(2)	Llama2</span>
+<p>&#48376; &#50672;&#44396;&#50640;&#49436; &#45796;&#47336;&#44172; &#46112; &#50616;&#50612; &#47784;&#45944; &#51473; &#45796;&#47480; &#54616;&#45208;&#51064; Llama2 &#47784;&#45944;&#51032; &#44396;&#51312;&#50752; &#51089;&#46041; &#50896;&#47532; &#46608;&#54620; &#48516;&#49437;&#54616;&#50688;&#45796;. Llama2&#45716; Meta&#50640;&#49436; 2023&#45380; &#52636;&#49884;&#54620; &#50724;&#54536;&#49548;&#49828; &#50616;&#50612; &#47784;&#45944;&#51060;&#45796; (<span class="xref"><a href="#JKIIE_2025_v51n3_201_B15">Touvrone <i>et al.</i>, 2023</a></span>). &#44277;&#44060;&#46108; &#48260;&#51204;&#51008; 7B, 13B, 34B, 70B&#51032; 4&#44032;&#51648;&#47196;, GPT-2 &#47784;&#45944;&#44284; &#48708;&#44368;&#54616;&#50668; &#55016;&#50476; &#47566;&#51008; &#53356;&#44592;&#51032; &#54028;&#46972;&#48120;&#53552;&#47484; &#44032;&#51648;&#44256; &#51080;&#45796;. Context&#51032; &#44600;&#51060;&#45716; Llama1 &#47784;&#45944;&#48372;&#45796; 2&#48176; &#51221;&#46020; &#45720;&#50612;&#45212; &#50557; 4K &#44060;, &#54617;&#49845;&#46108; &#53664;&#53360;&#51032; &#49688;&#45716; Llama1 &#47784;&#45944;&#48372;&#45796; &#50557; 1.5~2&#48176; &#51221;&#46020; &#45720;&#50612;&#45212; 2T &#44060;&#51060;&#45796;. Llama2 &#47784;&#45944;&#51008; &#54028;&#46972;&#48120;&#53552;&#51032; &#53356;&#44592;&#44032; &#53360; &#47784;&#45944;&#51068;&#49688;&#47197; train loss&#44032; &#53664;&#53360; &#52376;&#47532;&#50640; &#46384;&#46972; &#45908; &#44553;&#44201;&#55176; &#51460;&#50612;&#46304;&#45796;. Llama2 &#47784;&#45944; &#46608;&#54620; GPT-2&#50752; &#44057;&#51008; pre-trained &#47784;&#45944;&#47196;, &#53945;&#51221; &#51089;&#50629;&#50640; &#47582;&#44172; &#52628;&#44032;&#51201;&#51064; &#54617;&#49845;&#51012; &#53685;&#54644; &#49457;&#45733;&#51012; &#54693;&#49345;&#54624; &#49688; &#51080;&#51004;&#47728;, &#51060;&#47196;&#50024; &#49352;&#47196;&#50868; &#51089;&#50629;&#50640; &#47566;&#51008; &#50577;&#51032; &#45936;&#51060;&#53552;&#44032; &#54596;&#50836;&#54616;&#51648; &#50506;&#51004;&#47732;&#49436;&#46020; &#54952;&#44284;&#51201;&#51064; &#47784;&#45944;&#51012; &#49373;&#49457;&#54624; &#49688; &#51080;&#45796;.</p>
+</div>
+</div>
+<div id="JKIIE_2025_v51n3_201_sec2-2">
+<span class="tl-lowest-section1">2.2 LLM &#46020;&#47700;&#51064; &#52964;&#49828;&#53552;&#47560;&#51060;&#51669;</span>
+<p>&#48376; &#50672;&#44396;&#45716; GPT-2&#50752; Llama2&#47484; &#54876;&#50857;&#54616;&#50668; &#44277;&#51089;&#44592;&#44228; &#51089;&#50629;&#51088; &#51648;&#50896;&#51012; &#50948;&#54620; &#52311;&#48391;&#51012; &#44060;&#48156;&#54616;&#45716; &#45936; &#51080;&#50612;, &#46020;&#47700;&#51064; &#53945;&#54868; &#54617;&#49845;&#51012; &#49892;&#50857;&#51201;&#51004;&#47196; &#51201;&#50857;&#54620; &#50696;&#49884;&#47484; &#51228;&#44277;&#54620;&#45796;.</p>
+<p>&#44552;&#50997; &#47928;&#49436;&#47484; &#54876;&#50857;&#54620; QA &#45936;&#51060;&#53552; &#51613;&#44053;&#51012; &#53685;&#54644; &#53804;&#51088; &#48516;&#49437;&#50640; &#53945;&#54868;&#46108; LLM&#51012; &#44060;&#48156;&#54616;&#50688;&#45796;(<span class="xref"><a href="#JKIIE_2025_v51n3_201_B7">Li <i>et al.</i>, 2023</a></span>). &#51228;&#51312;&#50629; &#44277;&#51221; &#45936;&#51060;&#53552;&#47484; &#54876;&#50857;&#54616;&#50668; &#49444;&#48708; &#50976;&#51648;&#48372;&#49688;&#47484; &#50948;&#54620; &#52311;&#48391;&#51012; &#44396;&#52629;&#54616;&#50688;&#45796;(<span class="xref"><a href="#JKIIE_2025_v51n3_201_B17">Wang <i>et al.</i>, 2023</a></span>). &#51060;&#47084;&#54620; &#44592;&#51316; &#50672;&#44396;&#46308;&#44284; &#48708;&#44368;&#54664;&#51012; &#46412;, &#48376; &#50672;&#44396; &#50669;&#49884; &#53945;&#51221; &#46020;&#47700;&#51064; &#45936;&#51060;&#53552;&#47484; &#44592;&#48152;&#51004;&#47196; LLM&#51012; &#52964;&#49828;&#53552;&#47560;&#51060;&#51669;&#54616;&#50668; &#49892;&#47924; &#54876;&#50857;&#49457;&#51012; &#44160;&#51613;&#54664;&#45796;&#45716; &#44277;&#53685;&#51216;&#51012; &#51648;&#45772;&#45796;. &#44536;&#47084;&#45208; &#52264;&#48324;&#51216;&#51004;&#47196;&#45716; &#44592;&#51316; &#50672;&#44396;&#46308;&#51060; &#51452;&#47196; &#51032;&#47308;, &#44552;&#50997;, &#51228;&#51312; &#46321; &#48708;&#44368;&#51201; &#51096; &#50672;&#44396;&#46108; &#46020;&#47700;&#51064;&#50640; &#51665;&#51473;&#46108; &#44163;&#44284; &#45804;&#47532;, &#48376; &#50672;&#44396;&#45716; &#44277;&#51089;&#44592;&#44228; &#51089;&#50629;&#51088; &#51648;&#50896;&#51060;&#46972;&#45716; &#49345;&#45824;&#51201;&#51004;&#47196; &#48120;&#44060;&#52377;&#46108; &#48516;&#50556;&#50640;&#49436; LLM &#52964;&#49828;&#53552;&#47560;&#51060;&#51669;&#51032; &#49352;&#47196;&#50868; &#44032;&#45733;&#49457;&#51012; &#50676;&#50632;&#45796;&#45716; &#51216;&#51012; &#46308; &#49688; &#51080;&#45796;. &#44592;&#51316; &#50672;&#44396;&#46308;&#44284;&#51032; &#51452;&#50836; &#52264;&#48324;&#51216;&#51008; &#45796;&#51020;&#44284; &#44057;&#45796;.</p>
+
+<ul style="list-style-type: none; margin:20px 0;">
+
+<li style="margin-bottom:10px; text-indent:-20px; padding-left:40px;">1) &#44221;&#47049;&#54868; &#47784;&#45944; &#51201;&#50857;: Llama2&#47484; &#49440;&#53469;&#54616;&#50668; &#44060;&#51064; &#49436;&#48260;&#50640;&#49436; &#50868;&#50689;&#54624; &#49688; &#51080;&#46020;&#47197; &#52572;&#51201;&#54868;, &#50868;&#50689; &#54952;&#50984;&#49457;&#51012; &#51473;&#49884;&#54620; &#49444;&#44228;&#54620;&#45796;.
+</li>
+
+<li style="margin-bottom:10px; text-indent:-20px; padding-left:40px;">2) &#51088;&#46041;&#54868;&#46108; &#45936;&#51060;&#53552; &#49373;&#49457;: &#47700;&#45684;&#50620; &#48513;&#51012; &#44592;&#48152;&#51004;&#47196; QA &#45936;&#51060;&#53552;&#47484; &#51088;&#46041; &#49373;&#49457;&#54616;&#50668; &#54617;&#49845; &#48708;&#50857;&#51012; &#45824;&#54253; &#51208;&#44048;&#54620;&#45796;.
+</li>
+
+<li style="margin-bottom:10px; text-indent:-20px; padding-left:40px;">3) &#46020;&#47700;&#51064; &#47582;&#52644;&#54805; &#54617;&#49845;: &#44277;&#51089;&#44592;&#44228; &#51089;&#50629;&#51088;&#50640; &#53945;&#54868;&#46108; &#45936;&#51060;&#53552;&#47484; &#44592;&#48152;&#51004;&#47196; &#49457;&#45733;&#51012; &#54693;&#49345;&#49884;&#53020; &#49892;&#47924; &#51201;&#50857; &#44032;&#45733;&#49457;&#51012; &#44160;&#51613;&#54620;&#45796;.
+</li>
+
+</ul><p>&#51060;&#47196;&#50024; &#48376; &#50672;&#44396;&#45716; &#44592;&#51316;&#51032; LLM&#51012; &#53945;&#51221; &#46020;&#47700;&#51064;&#50640; &#52572;&#51201;&#54868;&#54616;&#45716; &#44592;&#51316; &#55120;&#47492;&#51012; &#44592;&#48152;&#51004;&#47196;, &#49892;&#51228; &#44277;&#51089;&#44592;&#44228; &#49328;&#50629; &#54872;&#44221;&#50640; &#51201;&#54633;&#54620; &#47784;&#45944;&#51012; &#44396;&#52629;&#54616;&#45716; &#45936; &#51473;&#50836;&#54620; &#44592;&#50668;&#47484; &#54620;&#45796;.</p>
+</div>
+</div>
+
+<hr class="section-rule">
+<div id="JKIIE_2025_v51n3_201_sec3">
+<span class="tl-main-part" style="margin-bottom:10px;">3. &#48376;&#47200;</span>
+<p>&#51228;&#50504;&#54620; &#49884;&#49828;&#53596;&#51008; 3&#44032;&#51648; &#45800;&#44228;&#50640; &#51032;&#54644;&#49436; &#44396;&#52629;&#51060; &#46108;&#45796;(&lt;<span class="xref"><a href="#JKIIE_2025_v51n3_201_F1">Figure 1</a></span>&gt;). &#47676;&#51200; &#47700;&#45684;&#50620; &#48513;&#50640;&#49436; QA &#45936;&#51060;&#53552; &#49483;&#51012; &#49373;&#49457;&#54616;&#45716; &#45800;&#44228;, Llama&#47784;&#45944;&#51012; &#54617;&#49845;&#49884;&#53412;&#45716; &#45800;&#44228; &#44536;&#47532;&#44256; 3) &#47784;&#48148;&#51068; &#49324;&#50857;&#51088;&#50752; &#53685;&#49888;&#54616;&#45716; &#45800;&#44228;&#47196; &#45208;&#45580; &#49688; &#51080;&#45796;. &#54644;&#45817; &#45800;&#44228;&#51032; &#44592;&#45733;&#50640; &#45824;&#54644;&#49436; &#49444;&#47749;&#54616;&#46020;&#47197; &#54620;&#45796;.</p>
+<div id="JKIIE_2025_v51n3_201_F1"><img class="xml_graphic" src="JKIIE_2025_v51n3_201_f001.jpg">
+<br><span class="label">Figure 1.&nbsp;
+				</span><br><span class="capture-id">
+<span class="tl-inline1">Procedures of Fine-tuning and Operations of the Proposed Manual LLM </span>
+</span><br><br></div><div id="JKIIE_2025_v51n3_201_sec3-1">
+<span class="tl-lowest-section1">3.1 Dataset</span>
+<div id="JKIIE_2025_v51n3_201_sec3-1-1">
+<span class="tl-inline1">(1)	&#45936;&#51060;&#53552; &#49688;&#51665;&#44284; &#51204;&#52376;&#47532;</span>
+<p>&#48376; &#50672;&#44396;&#50640;&#49436;&#45716; &#44277;&#51089;&#44592;&#44228; &#49324;&#50857;&#51088;&#47484; &#51648;&#50896;&#54616;&#44592; &#50948;&#54644; pdf &#54805;&#49885;&#51032; &#47700;&#45684;&#50620; &#44032;&#51060;&#46300;&#48513;&#51004;&#47196;&#48512;&#53552; &#53581;&#49828;&#53944;&#47484; &#52628;&#52636;&#54616;&#50668; &#49324;&#50857;&#54616;&#50688;&#45796;. &#50672;&#44396;&#50640; &#49324;&#50857;&#46108; &#47700;&#45684;&#50620; &#44032;&#51060;&#46300;&#48513;&#51008; 'FANUC MANUAL GUIDE i OPERATOR'S MANUAL'&#51060;&#45796;. FANUC MANUAL GUIDE i&#45716; CNC &#44592;&#44228; &#46020;&#44396;&#47484; &#51312;&#51089;&#54616;&#45716; &#45936; &#49324;&#50857;&#46104;&#45716; &#49548;&#54532;&#53944;&#50920;&#50612;&#51060;&#44256;, operator&rsquo;s manual&#51008; &#51060; &#49548;&#54532;&#53944;&#50920;&#50612;&#51032; &#49324;&#50857;&#51088; &#47700;&#45684;&#50620;&#47196; CNC &#51089;&#50629;&#51088;&#45208; &#54532;&#47196;&#44536;&#47000;&#47672;&#44032; FANUC MANUAL GUIDE i&#47484; &#49324;&#50857;&#54616;&#50668; CNC &#44592;&#44228; &#51089;&#50629;&#51012; &#49688;&#54665;&#54624; &#46412; &#54596;&#50836;&#54620; &#51648;&#52840;&#44284; &#46020;&#50880;&#47568;&#51012; &#51228;&#44277;&#54620;&#45796;. &#51060; pdf&#50640;&#49436; &#53581;&#49828;&#53944;&#47484; &#52628;&#52636;&#54616;&#45716; &#44163;&#51008; &#51088;&#46041;&#54868;&#46108; &#48169;&#49885;&#51004;&#47196; &#51060;&#47336;&#50612;&#51276;&#51004;&#47728;, &#52628;&#52636;&#46108; &#53581;&#49828;&#53944; &#45936;&#51060;&#53552;&#47484; &#51060;&#54980; &#54876;&#50857;&#54616;&#44592; &#50948;&#54644; &#51204;&#52376;&#47532;&#47484; &#51652;&#54665;&#54616;&#50688;&#45796;.</p>
+<p>&#52628;&#52636;&#46108; &#53581;&#49828;&#53944; &#45936;&#51060;&#53552;&#47196;&#48512;&#53552; &#54056;&#53556;&#51012; &#48156;&#44204;&#54616;&#44256;, &#51060;&#47484; &#44592;&#48152;&#51004;&#47196; &#47928;&#49436;&#51032; &#44396;&#51312;&#47484; &#51060;&#54644;&#54616;&#50688;&#45796;. &#53581;&#49828;&#53944; &#45936;&#51060;&#53552;&#45716; title, heading, content&#47196; &#45208;&#45572;&#50612; &#51200;&#51109;&#54616;&#50688;&#45796;. &#51060;&#46412; content&#45716; &#51060;&#54980; GPT-3.5 Turbo &#47784;&#45944;&#50640; &#45347;&#51012; &#44163;&#51060;&#48064;&#47196; content&#51032; &#53664;&#53360; &#49688;&#45716; &#47784;&#45944;&#51060; &#52376;&#47532; &#44032;&#45733;&#54620; &#52572;&#45824; &#53664;&#53360; &#49688;&#51064; &#50557; 4,000&#44060;&#50640; &#47582;&#44172; &#51221;&#51228;&#54616;&#50688;&#45796;.</p>
+</div>
+<div id="JKIIE_2025_v51n3_201_sec3-1-2">
+<span class="tl-inline1">(2)	&#47700;&#45684;&#50620; &#44032;&#51060;&#46300;&#48513; QA &#45936;&#51060;&#53552; &#49373;&#49457;</span>
+<p>&#51204;&#52376;&#47532;&#44032; &#45149;&#45212; &#45936;&#51060;&#53552;&#51032; title, heading, content&#47484; &#54633;&#52432; context&#47484; &#49373;&#49457;&#54616;&#50688;&#45796;. &#51060;&#54980; OpenAI API&#47484; &#54840;&#52636;&#54616;&#50668; GPT-3.5 Turbo &#47784;&#45944;&#51012; &#49324;&#50857;&#54616;&#50668; &#51656;&#47928;&#51012; &#49373;&#49457;&#54616;&#50688;&#45796;. &#51656;&#47928; &#49373;&#49457;&#50640; &#49324;&#50857;&#54620; &#54532;&#47212;&#54532;&#53944;&#45716; &lt;<span class="xref"><a href="#JKIIE_2025_v51n3_201_F2">Figure 2</a></span>&gt;&#50752; &#44057;&#45796;.</p>
+<div id="JKIIE_2025_v51n3_201_F2"><img class="xml_graphic" src="JKIIE_2025_v51n3_201_f002.jpg">
+<br><span class="label">Figure 2.&nbsp;
+				</span><br><span class="capture-id">
+<span class="tl-inline1">Prompt(1)</span>
+</span><br><br></div><p>&#51656;&#47928; &#45936;&#51060;&#53552;&#47484; &#49373;&#49457;&#54620; &#46244; &#44057;&#51008; &#47784;&#45944;&#50640; &#46608; &#45796;&#47480; &#54532;&#47212;&#54532;&#53944;&#47484; &#49324;&#50857;&#54616;&#50668; &#45813;&#48320;&#51012; &#49373;&#49457;&#54616;&#50688;&#45796;. &#45813;&#48320; &#49373;&#49457;&#50640; &#49324;&#50857;&#54620; &#54532;&#47212;&#54532;&#53944;&#45716; &lt;<span class="xref"><a href="#JKIIE_2025_v51n3_201_F3">Figure 3</a></span>&gt;&#44284; &#44057;&#45796;. QA &#45936;&#51060;&#53552; &#49373;&#49457; &#44284;&#51221;&#50640;&#49436;&#45716; GPT-3.5 Turbo &#47784;&#45944;&#50640; &#49324;&#50857;&#54620; &#54532;&#47212;&#54532;&#53944;&#50640; FANUC MANUAL GUIDE i&#47484; &#50616;&#44553;&#54632;&#51004;&#47196;&#50024; &#54788;&#51109;&#51032; &#51089;&#50629;&#51088;&#50640;&#44172; &#50976;&#50857;&#54620; &#51656;&#47928;&#44284; &#45813;&#48320;&#51012; &#51088;&#46041;&#51004;&#47196; &#49373;&#49457;&#54616;&#50688;&#45796;.</p>
+<div id="JKIIE_2025_v51n3_201_F3"><img class="xml_graphic" src="JKIIE_2025_v51n3_201_f003.jpg">
+<br><span class="label">Figure 3.&nbsp;
+				</span><br><span class="capture-id">
+<span class="tl-inline1">Prompt(2)</span>
+</span><br><br></div></div>
+<div id="JKIIE_2025_v51n3_201_sec3-1-3">
+<span class="tl-inline1">(3)	&#50508;&#46988; QA &#45936;&#51060;&#53552; &#49373;&#49457;</span>
+<p>&#50508;&#46988;&#50640; &#45824;&#54620; &#48512;&#48516;&#51008; &#51089;&#50629;&#51088;&#44032; &#44032;&#51109; &#47566;&#51008; &#50724;&#47448;&#47484; &#47564;&#45216; &#49688; &#51080;&#45716; &#44275; &#51473; &#54616;&#45208;&#51060;&#48064;&#47196;, &#45908; &#47566;&#51008; &#45936;&#51060;&#53552;&#47484; &#49373;&#49457;&#54616;&#50688;&#45796;. &#47700;&#45684;&#50620; &#44032;&#51060;&#46300;&#48513;&#51032; &lsquo;Appendix&rsquo;&#51032; &lsquo;Alarms&rsquo; &#49465;&#49496;&#50640;&#49436; &#50508;&#46988; &#48264;&#54840;, &#48156;&#49373;&#50896;&#51064;, &#54644;&#44208; &#48169;&#48277;&#51012; &#52628;&#52636;&#54616;&#50668; &#45936;&#51060;&#53552;&#54532;&#47112;&#51076;&#51004;&#47196; &#47564;&#46308;&#50632;&#45796;. &#51060;&#47484; &#44592;&#48152;&#51004;&#47196; &#46160; &#44032;&#51648; &#50976;&#54805;&#51032; QA&#47484; &#49373;&#49457;&#54616;&#50688;&#45796;.</p>
+<p>&#52395; &#48264;&#51704;&#45716; &#50508;&#46988; &#48156;&#49373;&#50896;&#51064;&#51060; &#51452;&#50612;&#51276;&#51012; &#46412; &#54644;&#44208; &#48169;&#48277;&#51012; &#47931;&#45716; &#51656;&#47928;&#50640; &#45824;&#54644; &#54644;&#44208; &#48169;&#48277;&#51012; &#45813;&#48320;&#51004;&#47196; &#51228;&#44277;&#54620;&#45796;.</p>
+<p>&#46160; &#48264;&#51704;&#45716; &#50508;&#46988; &#48264;&#54840;&#44032; &#51452;&#50612;&#51276;&#51012; &#46412; &#54644;&#44208; &#48169;&#48277;&#51012; &#47931;&#45716; &#51656;&#47928;&#50640; &#45824;&#54644; &#48156;&#49373;&#50896;&#51064;&#44284; &#54644;&#44208; &#48169;&#48277;&#51012; &#45813;&#48320;&#51004;&#47196; &#51228;&#44277;&#54620;&#45796;. &#51060;&#46412;&#45716; &#52395; &#48264;&#51704; &#44221;&#50864;&#48372;&#45796; &#45796;&#50577;&#54620; &#51656;&#47928;&#51012; &#49373;&#49457;&#54616;&#44256;&#51088; GPT-3.5 Turbo &#47784;&#45944;&#50640; prompt one-shot &#48169;&#49885;&#51012; &#49324;&#50857;&#54616;&#50688;&#45796;. &#49324;&#50857;&#54620; &#54532;&#47212;&#54532;&#53944;&#45716; &lt;<span class="xref"><a href="#JKIIE_2025_v51n3_201_F4">Figure 4</a></span>&gt;&#50752; &#44057;&#45796;.</p>
+<div id="JKIIE_2025_v51n3_201_F4"><img class="xml_graphic" src="JKIIE_2025_v51n3_201_f004.jpg">
+<br><span class="label">Figure 4.&nbsp;
+				</span><br><span class="capture-id">
+<span class="tl-inline1">Prompt(3)</span>
+</span><br><br></div></div>
+<div id="JKIIE_2025_v51n3_201_sec3-1-4">
+<span class="tl-inline1">(4)	&#52572;&#51333; &#45936;&#51060;&#53552;&#49483;</span>
+<p>2.1.(2)&#50752; 2.1.(3)&#50640;&#49436; &#47564;&#46304; QA &#45936;&#51060;&#53552;&#47484; &#53685;&#54633;&#54616;&#50668; &#52572;&#51333; &#54617;&#49845; &#45936;&#51060;&#53552;&#50752; &#44160;&#51613; &#45936;&#51060;&#53552;&#47484; &#47564;&#46308;&#50632;&#45796;. &#51060;&#46412; &#44160;&#51613; &#45936;&#51060;&#53552;&#45716; &#44592;&#51316; QA &#45936;&#51060;&#53552;&#47484; &#53945;&#51221; &#48708;&#50984;&#47196; &#45800;&#49692;&#55176; &#48516;&#47532;&#54624; &#44221;&#50864;, &#47700;&#45684;&#50620; &#44032;&#51060;&#46300;&#48513;&#51032; &#52309;&#53552;&#48324; &#45936;&#51060;&#53552; &#49688;&#45208; &#50508;&#46988; &#48264;&#54840;&#48324; &#45936;&#51060;&#53552; &#49688;&#44032; &#44512;&#46321;&#54616;&#51648; &#50506;&#50500;&#51656; &#49688; &#51080;&#51004;&#48064;&#47196; &#51060; &#51216;&#50640; &#50976;&#51032;&#54616;&#50668; &#54617;&#49845; &#45936;&#51060;&#53552;&#50752; &#44160;&#51613; &#45936;&#51060;&#53552;&#47484; &#47004;&#45924; &#49368;&#54540;&#47553; &#48169;&#49885;&#51004;&#47196; &#45208;&#45572;&#50632;&#51004;&#47728;, &#48708;&#50984;&#51008; 6:4&#47196; &#49444;&#51221;&#54616;&#50688;&#45796;. &#54617;&#49845; &#45936;&#51060;&#53552;&#45716; &#47700;&#45684;&#50620; &#44032;&#51060;&#46300;&#48513; QA &#45936;&#51060;&#53552; &#50557; 10,000&#44060;&#50752; &#50508;&#46988; QA &#45936;&#51060;&#53552; &#50557; 10,000&#44060;&#47196; &#51060;&#47336;&#50612;&#51276;&#45796;. &#44160;&#51613; &#45936;&#51060;&#53552;&#45716; &#47700;&#45684;&#50620; &#44032;&#51060;&#46300;&#48513; QA &#45936;&#51060;&#53552; &#50557; 4,500&#44060;&#50752; &#50508;&#46988; QA &#45936;&#51060;&#53552; 3,000&#44060;&#47196; &#44396;&#49457;&#46104;&#50632;&#45796;. &#45936;&#51060;&#53552;&#49483;&#51032; &#44160;&#51613;&#50640; &#45824;&#54644;&#49436;&#45716; &#47928;&#48277;&#51201; &#44160;&#51613; &#51208;&#52264;&#47484; &#49688;&#54665;&#54616;&#50688;&#51004;&#47728;, &#51204;&#47928;&#44032;&#50640; &#51032;&#54620; &#52968;&#53581;&#52768; &#44160;&#51613; &#51208;&#52264;&#47484; &#52628;&#54980;&#50640; &#49688;&#54665;&#54624; &#50696;&#51221;&#51060;&#45796;.</p>
+</div>
+</div>
+<div id="JKIIE_2025_v51n3_201_sec3-2">
+<span class="tl-lowest-section1">3.2 &#47784;&#45944; &#54617;&#49845;</span>
+<p>&#48376; &#50672;&#44396;&#51032; &#47785;&#51201;&#51008; &#44277;&#51089;&#44592;&#44228; &#51089;&#50629;&#51088;&#47484; &#50948;&#54620; &#47700;&#45684;&#50620;&#50640; &#53945;&#54868;&#46108; &#52311;&#48391;&#51012; &#47564;&#46300;&#45716; &#44163;&#51060;&#44592; &#46412;&#47928;&#50640; &#53945;&#51221; &#46020;&#47700;&#51064;&#50640;&#49436; &#52572;&#51201;&#51032; &#49457;&#45733;&#51012; &#51228;&#44277;&#54616;&#45716;fine-tuning &#48169;&#48277;&#51012; &#49440;&#53469;&#54664;&#45796;. fine-tuning&#51008; &#47784;&#45944; &#54028;&#46972;&#48120;&#53552;&#47484; &#51312;&#51221;&#54616;&#50668; &#53945;&#51221; &#46020;&#47700;&#51064;&#50640; &#52572;&#51201;&#54868;&#46108; &#49457;&#45733;&#51012; &#51228;&#44277;&#54624; &#49688; &#51080;&#45716; &#51217;&#44540; &#48169;&#49885;&#51060;&#45796;. &#48152;&#47732; Retrieval-Based Augmentation&#51008; &#47784;&#45944;&#51012; &#50629;&#45936;&#51060;&#53944;&#54616;&#51648; &#50506;&#44256; &#50808;&#48512; &#45936;&#51060;&#53552;&#48288;&#51060;&#49828;&#47484; &#54876;&#50857;&#54616;&#50668; &#54869;&#51109;&#49457;&#51012; &#51228;&#44277;&#54616;&#45208;, &#48376; &#50672;&#44396;&#45716; &#46020;&#47700;&#51064; &#53945;&#54868; &#49457;&#45733; &#44537;&#45824;&#54868;&#44032; &#51473;&#50836;&#54616;&#48064;&#47196; fine-tuning&#51060; &#51201;&#54633;&#54616;&#45796;&#44256; &#54032;&#45800;&#54616;&#50688;&#45796;. &#50864;&#47532;&#45716; GPT-2&#50752; Llama2&#51032; 2&#44032;&#51648; &#47784;&#45944;&#51012; fine-tuning&#54620;&#45796;. &#54644;&#45817; 2&#44032;&#51648; &#47784;&#45944;&#51008; &#49436;&#47196; &#45796;&#47480; &#44396;&#51312;&#50752; &#54617;&#49845; &#48169;&#49885;&#51012; &#44032;&#51648;&#44256; &#51080;&#51004;&#48064;&#47196; &#44592;&#51316;&#50640; &#45936;&#51060;&#53552;&#47484; &#51204;&#52376;&#47532;&#54620; &#44163;&#50640; &#52628;&#44032;&#51201;&#51064; &#51204;&#52376;&#47532; &#44284;&#51221;&#51060; &#54596;&#50836;&#54616;&#45796;. &#51060;&#50640; &#46384;&#46972; &#44033; &#47784;&#45944;&#51032; &#53945;&#49457;&#44284; &#50836;&#44396;&#49324;&#54637;&#50640; &#47582;&#44172; &#45936;&#51060;&#53552;&#47484; &#51312;&#51221;&#54616;&#44256; &#44032;&#44277;&#54616;&#50688;&#45796;. &#51068;&#48152;&#51201;&#51004;&#47196; &#51204;&#52376;&#47532;&#54620; &#45936;&#51060;&#53552;&#45716; question&#44284; answer &#50676;&#47196; &#44396;&#49457;&#46104;&#50612; &#51080;&#45796;.</p>
+<div id="JKIIE_2025_v51n3_201_sec3-2-1">
+<span class="tl-inline1">(1)	GPT-2 Fine-Tuning</span>
+<p>&#52488;&#44592; &#45800;&#44228;&#50640;&#49436;&#45716; &#50896;&#48376; &#45936;&#51060;&#53552;&#47484; &#53581;&#49828;&#53944; &#54028;&#51068; &#54805;&#53468;&#47196; &#51204;&#54872;&#54644;&#50556; &#54620;&#45796;. &#46608;&#54620; &#54617;&#49845; &#45936;&#51060;&#53552;&#51032; &#44396;&#51312;&#45208; &#54805;&#49885;&#51012; &#51312;&#51221;&#54644;&#50556; &#54620;&#45796;. &#51060;&#47484; &#50948;&#54644; &#50864;&#47532;&#45716; &#51656;&#47928; &#45936;&#51060;&#53552;&#50752; &#45813;&#48320; &#45936;&#51060;&#53552;&#50640; &#53945;&#48324;&#54620; &#53664;&#53360;&#51012; &#52628;&#44032;&#54664;&#45796;. &lsquo;question&rsquo; &#50676;&#50640; &#51080;&#45716; &#47784;&#46304; &#51656;&#47928; &#50526;&#50640;&#45716; &lsquo;[Q]&rsquo;&#46972;&#45716; &#54364;&#49884;&#47484; &#48537;&#50668;&#51452;&#50632;&#45796;. &#51060; &#54364;&#49884;&#45716; &#54644;&#45817; &#53581;&#49828;&#53944;&#44032; &#51656;&#47928;&#51076;&#51012; &#47784;&#45944;&#50640; &#50508;&#47140;&#51452;&#45716; &#50669;&#54624;&#51012; &#54620;&#45796;. &#47560;&#52268;&#44032;&#51648;&#47196; &lsquo;answer&rsquo; &#50676;&#50640; &#51080;&#45716; &#45813;&#48320;&#51032; &#49884;&#51089; &#48512;&#48516;&#50640;&#45716; &lsquo;[A]&rsquo;&#46972;&#45716; &#54364;&#49884;&#47484; &#48537;&#50668;&#51452;&#50632;&#45796;. &#51060; &#54364;&#49884;&#45716; &#54644;&#45817; &#53581;&#49828;&#53944;&#44032; &#45813;&#48320;&#51076;&#51012; &#47784;&#45944;&#50640; &#50508;&#47140;&#51452;&#45716; &#50669;&#54624;&#51012; &#54620;&#45796;. &#51060;&#47084;&#54620; &#48169;&#49885;&#51004;&#47196; &#47784;&#45944;&#51060; &#51656;&#47928;&#44284; &#45813;&#48320;&#51012; &#47749;&#54869;&#55176; &#44396;&#48516;&#54616;&#46020;&#47197; &#54616;&#50688;&#45796;.</p>
+<p>&#54728;&#44613;&#54168;&#51060;&#49828;&#51032; transformers &#46972;&#51060;&#48652;&#47084;&#47532;&#47484; &#49324;&#50857;&#54616;&#50668; GPT-2 &#47784;&#45944;&#51012; &#48520;&#47084;&#50728; &#54980; &#54617;&#49845;&#51012; &#51652;&#54665;&#54664;&#45796;. &#47784;&#45944; &#54617;&#49845;&#51008; &#44396;&#44544; &#53076;&#47017; &#54872;&#44221;&#50640;&#49436; &#51652;&#54665;&#54664;&#45796;. GPU&#45716; google colab&#51032; T4&#47484; &#49324;&#50857;&#54664;&#45796;. GPT-2 &#47784;&#45944; &#54617;&#49845;&#50640; &#49324;&#50857;&#46108; &#51452;&#50836; &#54028;&#46972;&#48120;&#53552;&#47196;&#45716; epoch&#50752; &#48176;&#52824; &#49324;&#51060;&#51592;&#44032; &#51080;&#45796;. &#47784;&#45944;&#51012; &#54617;&#49845;&#49884;&#53420; &#46412;, &#50668;&#47084; &#48264;&#51032; epoch&#47484; &#44144;&#52824;&#47728; &#54617;&#49845;&#51012; &#48152;&#48373;&#54616;&#44172; &#46104;&#47732;, &#47784;&#45944;&#51032; &#49457;&#45733;&#51008; &#51068;&#48152;&#51201;&#51004;&#47196; &#51216;&#52264; &#44060;&#49440;&#46108;&#45796;. &#54616;&#51648;&#47564; epoch &#49688;&#47484; &#51648;&#45208;&#52824;&#44172; &#45720;&#47532;&#47732;, &#44284;&#51201;&#54633;(overfitting)&#51060;&#46972;&#45716; &#47928;&#51228;&#50640; &#51649;&#47732;&#54624; &#44032;&#45733;&#49457;&#51060; &#51080;&#45796;. &#51060;&#45716; &#47784;&#45944;&#51060; &#54617;&#49845; &#45936;&#51060;&#53552;&#50640; &#45320;&#47924; &#53945;&#54868;&#46104;&#50612; &#49892;&#51228; &#54872;&#44221;&#50640;&#49436;&#51032; &#49457;&#45733;&#51060; &#46504;&#50612;&#51648;&#45716; &#54788;&#49345;&#51012; &#47568;&#54620;&#45796;. GPT-2 &#47784;&#45944; fine-tuning &#44284;&#51221;&#50640;&#49436;&#45716; epoch&#47484; 4&#47196; &#49444;&#51221;&#54616;&#50688;&#45796;. &#44536; &#51060;&#50976;&#45716; &#44160;&#51613; &#45936;&#51060;&#53552;&#49483;&#51012; &#53685;&#54644; &#54617;&#49845; &#44284;&#51221;&#51012; &#47784;&#45768;&#53552;&#47553; &#54644;&#48372;&#50520;&#51012; &#46412;, 5&#48264;&#51704; epoch&#48512;&#53552;&#45716; &#44284;&#51201;&#54633; &#54788;&#49345;&#51060; &#45208;&#53440;&#45228;&#44592; &#46412;&#47928;&#51060;&#45796;. &#44536;&#47532;&#44256; &#48176;&#52824; &#49324;&#51060;&#51592;&#45716; &#54620; &#48264;&#51032; &#54028;&#46972;&#48120;&#53552; &#50629;&#45936;&#51060;&#53944;&#47484; &#54624; &#46412; &#49324;&#50857;&#54616;&#45716; &#49368;&#54540;&#51032; &#49688;&#47484; &#47568;&#54620;&#45796;. &#48176;&#52824; &#49324;&#51060;&#51592;&#45716; 8&#47196; &#49444;&#51221;&#54616;&#50688;&#45796;.</p>
+</div>
+<div id="JKIIE_2025_v51n3_201_sec3-2-2">
+<span class="tl-inline1">(2)	Llama2 Fine-Tuning</span>
+<p>&#50864;&#49440;, &#51656;&#47928; &#53581;&#49828;&#53944;&#47484; &#52376;&#47532;&#54624; &#46412;, &#51656;&#47928;&#51032; &#49884;&#51089; &#48512;&#48516;&#50640;&#45716; [INST]&#46972;&#45716; &#53468;&#44536;&#47484; &#48537;&#50688;&#44256;, &#45149;&#48512;&#48516;&#50640;&#45716; [/INST] &#53468;&#44536;&#47484; &#48537;&#50688;&#45796;. &#51060;&#47111;&#44172; &#54644;&#49436; &#51656;&#47928;&#51032; &#49884;&#51089;&#44284; &#45149;&#51012; &#47749;&#54869;&#54616;&#44172; &#44396;&#48516;&#54624; &#49688; &#51080;&#44172; &#54664;&#45796;. &#44536; &#54980;&#50640;, &#54644;&#45817; &#51656;&#47928;&#50640; &#45824;&#54620; &#45813;&#48320; &#53581;&#49828;&#53944;&#47484; &#48148;&#47196; &#50672;&#44208;&#54644; &#54616;&#45208;&#51032; &#53685;&#54633;&#46108; &#50676;&#51012; &#49373;&#49457;&#54664;&#45796;. &#51060;&#47111;&#44172; &#47564;&#46308;&#50612;&#51652; &#53685;&#54633; &#50676;&#51032; &#49884;&#51089; &#48512;&#48516;&#50640;&#45716; &lt;s&gt; &#53468;&#44536;&#47484;, &#45149;&#48512;&#48516;&#50640;&#45716; &lt;/s&gt; &#53468;&#44536;&#47484; &#52628;&#44032;&#54664;&#45796;. &#50668;&#44592;&#49436; &lt;s&gt; &#53468;&#44536;&#45716; &#47928;&#51109;&#51060; &#49884;&#51089;&#46108;&#45796;&#45716; &#44163;&#51012; &#51032;&#48120;&#54616;&#47728;, [INST]&#45716; &#49324;&#50857;&#51088;&#51032; &#51077;&#47141; &#48512;&#48516;&#51012; &#50508;&#47140;&#51452;&#45716; &#53468;&#44536;&#45796;. &#50696;&#47484; &#46308;&#50612;, &lt;s&gt;&#50752; &lt;/s&gt; &#53468;&#44536; &#49324;&#51060;&#50640; &#51204;&#52404; &#51656;&#47928;&#44284; &#45813;&#48320; &#45236;&#50857;&#51060; &#54252;&#54632;&#46104;&#50612; &#51080;&#44256;, [INST]&#50752; [/INST] &#49324;&#51060;&#50640;&#45716; &#51656;&#47928; &#48512;&#48516;&#47564; &#46308;&#50612;&#44032; &#51080;&#45796;. &#47560;&#51648;&#47561;&#51004;&#47196;, &#51060;&#47111;&#44172; &#51204;&#52376;&#47532;&#46108; &#45936;&#51060;&#53552;&#45716; &#50896;&#47000; csv &#54028;&#51068; &#54805;&#49885;&#51004;&#47196; &#51200;&#51109;&#46104;&#50612; &#51080;&#50632;&#51648;&#47564;, &#45684;&#47092;&#45348;&#53944;&#50892;&#53356; &#46972;&#51060;&#48652;&#47084;&#47532;&#50752; &#54840;&#54872;&#46104;&#46020;&#47197; &#54616;&#44592; &#50948;&#54644;&#49436;&#45716; &#51060;&#47484; &#51204;&#50857; datasets &#54805;&#53468;&#47196; &#48320;&#54872;&#54644;&#50556; &#54620;&#45796;. &#50836;&#50557;&#54616;&#47732;, Llama2 &#47784;&#45944; &#54617;&#49845;&#51012; &#50948;&#54620; &#45936;&#51060;&#53552; &#51204;&#52376;&#47532;&#45716; &#44592;&#51316; &#45936;&#51060;&#53552;&#50640; &#53945;&#51221; &#53468;&#44536;&#47484; &#52628;&#44032;&#54616;&#50668; &#47928;&#51109;&#51032; &#49884;&#51089;, &#45149; &#48143; &#49324;&#50857;&#51088; &#51077;&#47141; &#48512;&#48516;&#51012; &#44396;&#48516;&#54616;&#44256;, &#51060;&#47484; &#45684;&#47092;&#45348;&#53944;&#50892;&#53356; &#46972;&#51060;&#48652;&#47084;&#47532;&#50752; &#54840;&#54872;&#46104;&#45716; &#54805;&#53468;&#47196; &#48320;&#54872;&#54616;&#45716; &#51089;&#50629;&#51012; &#54252;&#54632;&#54616;&#44256; &#51080;&#45796;.</p>
+<p>&#47676;&#51200;, &lsquo;datasets&rsquo;&#46972;&#45716; &#46972;&#51060;&#48652;&#47084;&#47532;&#45716; &#54728;&#44613;&#54168;&#51060;&#49828;&#50640;&#49436; &#51228;&#44277;&#54616;&#45716; &#44163;&#51004;&#47196;, &#51452;&#47196; &#54617;&#49845; &#45936;&#51060;&#53552;&#47484; &#52376;&#47532;&#54616;&#44256; &#48320;&#54872;&#54616;&#45716; &#45936; &#49324;&#50857;&#46108;&#45796;. &#54617;&#49845; &#45936;&#51060;&#53552;&#47484; &#54952;&#44284;&#51201;&#51004;&#47196; &#45796;&#47336;&#44592; &#50948;&#54620; &#45796;&#50577;&#54620; &#46020;&#44396;&#50752; &#44592;&#45733;&#46308;&#51060; &#54252;&#54632;&#46104;&#50612; &#51080;&#50612;, &#45936;&#51060;&#53552;&#51032; &#54805;&#49885; &#48320;&#54872;&#51060;&#45208; &#51201;&#51116; &#44284;&#51221;&#50640;&#49436; &#50976;&#50857;&#54616;&#45796;. &#45796;&#51020;&#51004;&#47196;, &lsquo;peft&rsquo;&#45716; &#47784;&#45944; &#54617;&#49845;&#50640; &#51080;&#50612;&#49436; &#54952;&#50984;&#51201;&#51064; &#48169;&#48277;&#51012; &#51228;&#44277;&#54616;&#45716; &#46972;&#51060;&#48652;&#47084;&#47532;&#45796;. &#51204;&#52404; &#47784;&#45944;&#51032; &#47784;&#46304; &#47588;&#44060;&#48320;&#49688;&#47484; &#48120;&#49464; &#51312;&#51221;&#54616;&#45716; &#45824;&#49888;, &#51068;&#48512; &#47588;&#44060;&#48320;&#49688;&#47564;&#51012; &#51312;&#51208;&#54616;&#44172; &#46104;&#47732;&#49436; &#44228;&#49328;&#47049;&#51060;&#45208; &#51200;&#51109; &#44277;&#44036; &#46321;&#51032; &#51088;&#50896;&#51012; &#53356;&#44172; &#51208;&#50557;&#54624; &#49688; &#51080;&#44172; &#46108;&#45796;. &#51060;&#47196; &#51064;&#54644;, fine-tuning &#44284;&#51221;&#51060; &#45908; &#48736;&#47476;&#44256; &#44221;&#51228;&#51201;&#51004;&#47196; &#51652;&#54665;&#46112; &#49688; &#51080;&#45796;. &lsquo;Bitsandbytes&rsquo;&#45716; &#47784;&#45944;&#51032; &#53356;&#44592; &#52572;&#51201;&#54868;&#47484; &#50948;&#54620; &#46020;&#44396;&#47196;&#50024;, 4bit &#50577;&#51088;&#54868; &#44592;&#49696;&#51012; &#54876;&#50857;&#54644; &#47784;&#45944;&#51032; &#53356;&#44592;&#47484; &#51460;&#51060;&#45716; &#45936; &#54952;&#44284;&#51201;&#51060;&#45796;. &#51060;&#47111;&#44172; &#54632;&#51004;&#47196;&#50024; &#47700;&#47784;&#47532; &#51228;&#50557;&#51060; &#51080;&#45716; &#54872;&#44221;&#50640;&#49436; &#47588;&#50864; &#50976;&#50857;&#54616;&#45796;. &#47560;&#51648;&#47561;&#51004;&#47196;, &lsquo;trl&rsquo; &#46972;&#51060;&#48652;&#47084;&#47532;&#45716; &#53945;&#48324;&#54620; &#54617;&#49845; &#48169;&#48277;&#47200;&#51012; &#51228;&#49884;&#54620;&#45796;. &lsquo;Transform&rsquo;, &lsquo;retrieve&rsquo;, &lsquo;label&rsquo;&#51032; &#49464; &#44032;&#51648; &#44284;&#51221;&#51012; &#44144;&#52432; &#54617;&#49845;&#51012; &#51652;&#54665;&#54616;&#45716;&#45936;, &#51060;&#45716; &#50896;&#48376; &#53581;&#49828;&#53944; &#45936;&#51060;&#53552;&#47484; &#48320;&#54872;&#54616;&#44256;, &#44536; &#51473;&#50640;&#49436;&#46020; &#44032;&#51109; &#51473;&#50836;&#54616;&#44256; &#44288;&#47144; &#45458;&#51008; &#51221;&#48372;&#47484; &#52628;&#52636;&#54616;&#50668;, &#44536; &#51221;&#48372;&#50640; &#51201;&#51208;&#54620; &#46972;&#48296;&#51012; &#48512;&#50668;&#54616;&#45716; &#44284;&#51221;&#51012; &#53685;&#54644; &#51652;&#54665;&#46108;&#45796;. epoch&#45716; 5&#47196; &#49444;&#51221;&#54616;&#44256; &#48176;&#52824; &#49324;&#51060;&#51592;&#45716; 4&#47196; &#49444;&#51221;&#54664;&#45796;. &#54617;&#49845;&#47456;(learning_rate)&#51008; 2e-4&#47196;, &#44032;&#51473;&#52824; &#44048;&#49548;&#50984;(weight decay)&#51008; 0.001&#47196; &#49444;&#51221;&#54616;&#50688;&#45796;. &#51060; &#46160; &#54028;&#46972;&#48120;&#53552;&#45716; &#47784;&#45944; &#54617;&#49845;&#51032; &#48169;&#54693;&#49457;&#44284; &#49549;&#46020;&#47484; &#51312;&#51208;&#54616;&#45716; &#45936; &#50689;&#54693;&#51012; &#48120;&#52828;&#45796;. &#52572;&#51201;&#54868; &#50508;&#44256;&#47532;&#51608;&#51004;&#47196;&#45716; AdamW&#47484; &#49324;&#50857;&#54616;&#50688;&#45796;. AdamW&#45716; Adam &#50508;&#44256;&#47532;&#51608;&#51032; &#48320;&#54805;&#51004;&#47196;, &#44032;&#51473;&#52824; &#44048;&#49548;&#44032; &#51201;&#50857;&#46108; &#50508;&#44256;&#47532;&#51608;&#51060;&#45796;. &#51060;&#45716; &#47784;&#45944;&#51032; &#51068;&#48152;&#54868;&#47484; &#46020;&#50752; &#44284;&#51201;&#54633;&#51012; &#48169;&#51648;&#54620;&#45796;. &#54617;&#49845;&#47456;&#51032; &#48320;&#54868;&#47484; &#51312;&#51208;&#54616;&#45716; &#48169;&#49885;&#51004;&#47196;&#45716; &#53076;&#49324;&#51064; &#44592;&#48152;&#51032; &#49828;&#52992;&#51460;&#47553;&#51012; &#49440;&#53469;&#54616;&#50688;&#45796;. &#53076;&#49324;&#51064; &#44592;&#48152; &#49828;&#52992;&#51460;&#47553;&#51008; &#54617;&#49845;&#47456;&#51060; &#54984;&#47144; &#44284;&#51221;&#50640;&#49436; &#53076;&#49324;&#51064; &#54632;&#49688;&#47484; &#46384;&#46972; &#44048;&#49548;&#54616;&#44172; &#54616;&#50668;, &#52488;&#44592;&#50640;&#45716; &#51204;&#50669; &#52572;&#51201;&#51216;&#51012; &#52286;&#44592; &#50948;&#54644; &#48736;&#47476;&#44172; &#53456;&#49353;&#54616;&#44256;, &#45208;&#51473;&#50640;&#45716; &#51648;&#50669; &#52572;&#51201;&#51216;&#50640; &#45908; &#49464;&#48128;&#54616;&#44172; &#51217;&#44540;&#54616;&#45716; &#48169;&#49885;&#51060;&#45796;. &#51060; &#48169;&#48277;&#51008; &#47784;&#45944;&#51060; &#51339;&#51008; &#49457;&#45733;&#50640; &#46020;&#45804;&#54616;&#47732; &#54617;&#49845;&#47456;&#51012; &#51460;&#50668;, &#49457;&#45733;&#51032; &#54693;&#49345;&#51012; &#50504;&#51221;&#54868;&#49884;&#53420; &#49688; &#51080;&#45796;. Llama2&#45716; GPT-2&#50752; &#47560;&#52268;&#44032;&#51648;&#47196; &#44396;&#44544; &#53076;&#47017; &#54872;&#44221;&#50640;&#49436; &#51652;&#54665;&#54616;&#50688;&#44256; GPU&#45716; T4&#47484; &#49324;&#50857;&#54664;&#45796;.</p>
+</div>
+</div>
+</div>
+
+<hr class="section-rule">
+<div id="JKIIE_2025_v51n3_201_sec4">
+<span class="tl-main-part" style="margin-bottom:10px;">4. &#54532;&#47196;&#53664;&#53440;&#51077; &#44060;&#48156; (UI)</span>
+<div id="JKIIE_2025_v51n3_201_sec4-1">
+<span class="tl-lowest-section1">4.1 &#47784;&#48148;&#51068; &#50528;&#54540;&#47532;&#52992;&#51060;&#49496; &#51228;&#51089;</span>
+<p>&#49324;&#50857;&#51088;&#45716; &#47784;&#48148;&#51068; &#50528;&#54540;&#47532;&#52992;&#51060;&#49496;(application, &#51060;&#54616; &#50545;)&#51012; &#53685;&#54644; &#44277;&#51089;&#44592;&#44228;&#50640; &#44288;&#54620; &#51656;&#47928;&#51012; &#54616;&#44256;, &#44536;&#50640; &#45824;&#54620; &#45813;&#48320;&#51012; &#48155;&#51012; &#49688; &#51080;&#45796;. &#50545; &#46356;&#51088;&#51064;&#51008; &#50504;&#46300;&#47196;&#51060;&#46300; &#50545; &#54532;&#47196;&#53664;&#53440;&#51060;&#54609; &#53812;&#51012; &#51060;&#50857;&#54644;&#49436; &#51652;&#54665;&#54664;&#45796;. &#50545;&#50640; &#51217;&#49549;&#54616;&#47732;, &#44277;&#51089;&#44592;&#44228; 3&#49324;&#51032; &#47196;&#44256;&#44032; &#54364;&#49884;&#46108;&#45796;. &#49324;&#50857;&#51088;&#44032; &#50896;&#54616;&#45716; &#44277;&#51089;&#44592;&#44228;&#50640; &#54644;&#45817;&#54616;&#45716; &#54924;&#49324;&#51032; &#47196;&#44256;&#47484; &#53364;&#47533;&#54616;&#47732;, &#50504;&#45236; &#54168;&#51060;&#51648;&#47196; &#45336;&#50612;&#44036;&#45796;. &#50504;&#45236; &#54168;&#51060;&#51648;&#50640;&#49436;&#45716; &#51064;&#49324;&#47568;&#44284; Manual LLM&#44032; &#50612;&#46500; &#50545;&#51064;&#51648;&#50640; &#45824;&#54620; &#44036;&#45800;&#54620; &#49444;&#47749;, example &#48512;&#48516;&#51032; &#50696;&#49884;&#47484; &#52280;&#44256;&#54644;&#49436; Manual LLM&#50640; &#51656;&#47928;&#51012; &#45347;&#51004;&#47732; &#46108;&#45796;&#45716; &#49444;&#47749;&#51060; &#51228;&#44277;&#46108;&#45796;. &#51060;&#54980; &lsquo;&#54869;&#51064;&rsquo; &#48260;&#53948;&#51012; &#45572;&#47476;&#47732; &#52292;&#54021;&#52285;&#51060; &#46888;&#44256;, &#47784;&#45944;&#50640; &#51656;&#47928;&#51012; &#45347;&#50632;&#51012; &#46412; &#45813;&#48320;&#51012; &#48155;&#45716; &#52292;&#54021;&#51060; &#51652;&#54665;&#46108;&#45796;. Fig. 6&#51008; Manual LLM &#54532;&#47196;&#53664;&#53440;&#51077; &#51060;&#48120;&#51648;&#51060;&#45796;.</p>
+<div id="JKIIE_2025_v51n3_201_F5"><img class="xml_graphic" src="JKIIE_2025_v51n3_201_f005.jpg">
+<br><span class="label">Figure 5.&nbsp;
+				</span><br><span class="capture-id">
+<span class="tl-inline1">Manual LLM Prototype</span>
+</span><br><br></div></div>
+<div id="JKIIE_2025_v51n3_201_sec4-2">
+<span class="tl-lowest-section1">4.2 &#49436;&#48260; &#52980;&#54504;&#53552; &#50672;&#46041;</span>
+<p>&#49324;&#50857;&#51088;&#44032; &#50545; &#51077;&#47141;&#52285;&#50640; &#51656;&#47928;&#51012; &#51077;&#47141;&#54616;&#47732; &#54644;&#45817; &#44050;&#51012; &#49436;&#48260; &#52980;&#54504;&#53552;&#47196; &#51204;&#49569;&#54644;&#49436; fine-tuning&#54620; Llama2 &#47784;&#45944;&#51012; &#53685;&#54644; &#45813;&#48320;&#51012; &#49373;&#49457;&#54620;&#45796;. Llama2 &#47784;&#45944;&#51060; &#45813;&#48320;&#51012; &#49373;&#49457;&#54616;&#47732; &#50545;&#50640; &#51204;&#49569;&#54644; &#49324;&#50857;&#51088;&#51032; &#54868;&#47732;&#50640; &#48372;&#50668;&#51456;&#45796;. &#51060;&#47484; &#51652;&#54665;&#54616;&#44592; &#50948;&#54644; Fast API&#47484; &#49324;&#50857;&#54616;&#50668; &#49436;&#48260; &#52980;&#54504;&#53552;&#50640; &#50937; &#50528;&#54540;&#47532;&#52992;&#51060;&#49496;&#51012; &#47564;&#46308;&#50632;&#44256;, &#50504;&#46300;&#47196;&#51060;&#46300; &#50545; &#54532;&#47196;&#53664;&#53440;&#51060;&#54609; &#53812;&#50640;&#49436; &#44396;&#54788;&#54616;&#50688;&#45796;.</p>
+<p>Fast API&#45716; &#54028;&#51060;&#50028; &#44592;&#48152;&#51032; &#50937; &#54532;&#47112;&#51076;&#50892;&#53356;&#47196;, Fast API&#47484; &#49324;&#50857;&#54620; &#49436;&#48260; &#52980;&#54504;&#53552;&#50752; &#50545; &#44036;&#51032; &#50672;&#46041;&#51008; &#49892;&#51228; &#49328;&#50629;&#50640;&#49436; &#45796;&#49688;&#51032; &#51060;&#51216;&#51012; &#51228;&#44277;&#54620;&#45796;. &#47676;&#51200;, &#50545; &#45236;&#50640;&#49436; &#47784;&#45944;&#51012; &#53457;&#51116;&#54616;&#45716; &#44221;&#50864; &#45936;&#51060;&#53552;&#44032; &#48320;&#44221;&#46112; &#46412;&#47560;&#45796; &#54028;&#51064;&#53916;&#45789;&#51012; &#54644;&#50556; &#54616;&#45716; &#45936; &#49884;&#44036;&#51060; &#47566;&#51060; &#49548;&#47784;&#46108;&#45796;&#45716; &#54620;&#44228;&#51216;&#51012; &#44537;&#48373;&#54624; &#49688; &#51080;&#45796;. &#49436;&#48260; &#52980;&#54504;&#53552;&#50640; &#54028;&#51064;&#53916;&#45789;&#46108; &#47784;&#45944;&#51012; &#53457;&#51116;&#54616;&#47732; &#51089;&#50629;&#51060; &#50857;&#51060;&#54644;&#51648;&#44256; &#49884;&#44036;&#51012; &#51208;&#50557;&#54624; &#49688; &#51080;&#44172; &#46108;&#45796;. &#46608;&#54620; &#48373;&#51105;&#54620; &#47784;&#45944;&#51032; &#44221;&#50864;, &#49324;&#50857;&#51088; &#44592;&#44592;&#50640;&#49436; &#49892;&#54665;&#54616;&#44592; &#50612;&#47157;&#44592; &#46412;&#47928;&#50640; &#49436;&#48260; &#52980;&#54504;&#53552;&#50640;&#49436; &#49892;&#54665;&#54632;&#51004;&#47196;&#50024; &#52572;&#49548;&#54620;&#51032; &#47532;&#49548;&#49828; &#49324;&#50857;&#51060; &#44032;&#45733;&#54616;&#45796;. &#51060;&#47111;&#44172; &#51473;&#50521; &#51665;&#51473;&#51201;&#51004;&#47196; &#47784;&#45944;&#51012; &#44288;&#47532;&#54620;&#45796;&#47732; &#45936;&#51060;&#53552;&#47484; &#48372;&#54840;&#54624; &#49688; &#51080;&#44256;, &#50868;&#50689; &#48143; &#50976;&#51648;&#48372;&#49688;&#44032; &#45908; &#54952;&#50984;&#51201;&#51004;&#47196; &#51060;&#47336;&#50612;&#51656; &#49688; &#51080;&#45796;.</p>
+<p>&#51060;&#47084;&#54620; &#48736;&#47480; &#51025;&#45813;, &#45936;&#51060;&#53552; &#48372;&#50504;, &#47532;&#49548;&#49828; &#52572;&#51201;&#54868;, &#54952;&#50984;&#51201;&#51064; &#50868;&#50689; &#48143; &#50976;&#51648;&#48372;&#49688; &#46321;&#51032; &#51109;&#51216;&#51012; &#44032;&#51652; Fast API&#47484; &#49324;&#50857;&#54616;&#50668; &#49436;&#48260; &#52980;&#54504;&#53552;&#50640; &#50937; &#50528;&#54540;&#47532;&#52992;&#51060;&#49496;&#51012; &#44396;&#52629;&#54616;&#50688;&#45796;. Fast API&#47484; &#51060;&#50857;&#54616;&#50668; &#49436;&#48260;&#47484; &#49444;&#51221;&#54616;&#44256; &#50545;&#51064;&#48292;&#53552;&#50640; &#51077;&#47141;&#46108; &#45936;&#51060;&#53552;&#47484; &#48155;&#50500;&#50728;&#45796;. &#48155;&#50500;&#50728; &#45936;&#51060;&#53552;&#45716; Llama2 &#47784;&#45944;&#50640; &#51077;&#47141;&#46104;&#50612;&#49436; &#52636;&#47141;&#54616;&#46020;&#47197; &#49444;&#44228;&#54616;&#50688;&#45796;. &#49324;&#50857;&#51088;&#51032; &#51656;&#47928;&#51012; &#51077;&#47141;&#51004;&#47196; &#48155;&#50500;, &#51060;&#47484; json &#54805;&#49885;&#51004;&#47196; &#48320;&#54872;&#54620; &#54980; &#44396;&#52629;&#54620; &#49436;&#48260; &#52980;&#54504;&#53552; &#50937;&#54168;&#51060;&#51648;&#47196; &#51204;&#49569;&#54620;&#45796;. &#51060;&#54980;, &#49436;&#48260;&#50640;&#49436;&#45716; Llama2 &#47784;&#45944;&#51012; &#54876;&#50857;&#54616;&#50668; &#51077;&#47141; &#44050;&#51012; &#52376;&#47532;&#54616;&#44256;, &#47784;&#45944;&#51032; &#52636;&#47141; &#44050;&#51012; &#44032;&#51256;&#50752; &#50545; &#54868;&#47732;&#50640; &#48372;&#50668;&#51452;&#46020;&#47197; &#44396;&#54788;&#54616;&#50688;&#45796;.</p>
+</div>
+</div>
+
+<hr class="section-rule">
+<div id="JKIIE_2025_v51n3_201_sec5">
+<span class="tl-main-part" style="margin-bottom:10px;">5. &#49457;&#45733; &#54217;&#44032; &#44208;&#44284;</span>
+<p>&#44277;&#51089;&#44592;&#44228;&#50640;&#49436; &#51452;&#50836; Alarm&#51012; &#51473;&#49900;&#51004;&#47196; &#50864;&#49440; &#52509; 30&#44060;&#51032; QA &#45936;&#51060;&#53552;&#47484; &#54217;&#44032; &#45824;&#49345;&#51004;&#47196; &#49440;&#51221;&#54616;&#50688;&#45796;. &#46160; &#44032;&#51648; &#47784;&#45944;&#51012; &#44033;&#44033; fine-tuned &#48260;&#51204;&#44284; baseline &#48260;&#51204;&#51004;&#47196; &#48516;&#47532;&#54616;&#50668; &#52509; &#45348; &#44032;&#51648;&#51032; &#47784;&#45944;&#50640; &#45824;&#54620; &#49457;&#45733; &#54217;&#44032;&#47484; &#51652;&#54665;&#54616;&#50688;&#45796;.</p>
+<p>&#44592;&#51316;&#50640;&#45716; baseline GPT-2, baseline Llama2, fine-tuned GPT-2, fine-tuned Llama2&#51032; &#45348; &#44032;&#51648; &#48260;&#51204;&#51012; &#47784;&#46160; &#44057;&#51008; &#44592;&#51456;&#51004;&#47196; &#54217;&#44032;&#54616;&#47140;&#44256; &#54616;&#50688;&#45796;. &#44536;&#47084;&#45208; &#54217;&#44032;&#47484; &#50948;&#54644; &#48977;&#51008; 30&#44060;&#51032; &#45936;&#51060;&#53552;&#47484; &#47784;&#45944;&#50640; &#51077;&#47141;&#54616;&#50668; &#45813;&#48320;&#51012; &#50619;&#51008; &#44208;&#44284; baseline&#51032; &#46160; &#44032;&#51648; &#47784;&#45944;&#51008; &#54617;&#49845;&#46108; &#47784;&#45944;&#46308;&#50640; &#48708;&#54644; &#45813;&#48320;&#51032; &#51656;&#51060; &#46504;&#50612;&#51648;&#44256;, &#47784;&#45944;&#51032; &#49457;&#45733;&#51060; &#48512;&#51313;&#54620; &#44208;&#44284;&#44032; &#45208;&#50728;&#45796;. &#46384;&#46972;&#49436; &#51228;&#50504;&#54620; fine-tuned GPT-2&#50752; fine-tuned Llama2&#51032; &#46160; &#44032;&#51648; &#48260;&#51204;&#51012; &#54217;&#44032;&#54616;&#50688;&#45796;.</p>
+<div id="JKIIE_2025_v51n3_201_sec5-1">
+<span class="tl-lowest-section1">5.1 &#51221;&#49457;&#51201; &#49457;&#45733; &#54217;&#44032;</span>
+<p>fine-tuned GPT-2 &#47784;&#45944;&#44284; fine-tuned Llama2 &#47784;&#45944;&#51012; &#48708;&#44368; &#54217;&#44032;&#54616;&#45716; &#48169;&#48277;&#51004;&#47196;&#45716; &#50696;&#49884; &#51656;&#47928;&#50640; &#45824;&#54620; &#45813;&#48320;&#51060; &#47784;&#48276; &#45813;&#48320;&#44284; &#48708;&#44368;&#54616;&#50668; &#50620;&#47560;&#45208; &#51221;&#54869;&#54620;&#51648;&#50640; &#45824;&#54620; &#51221;&#49457;&#51201; &#54217;&#44032; &#44592;&#51456;&#51012; &#48512;&#50668;&#54616;&#50668; &#54016; &#44396;&#49457;&#50896; 4&#47749;&#51060; &#44033;&#44033; &#54217;&#44032;&#54664;&#45796;. &#54644;&#45817; &#54217;&#44032;&#50640; &#45824;&#54620; &#44284;&#48152;&#51032; &#51032;&#44204;&#51012; &#51216;&#49688;&#47196; &#54872;&#49328;&#54616;&#50688;&#45796;. &#54217;&#44032; &#44592;&#51456;&#51008; &#45796;&#51020;&#44284; &#44057;&#45796;. 1) &#51656;&#47928;&#50640; &#45824;&#54616;&#50668; &#51221;&#54869;&#55176; &#47582;&#45716; &#45813;&#48320; &#46608;&#45716; &#54644;&#44208; &#48169;&#50504;&#51012; &#51228;&#49884;&#54616;&#45716; &#44221;&#50864;: O, 1&#51216; &#48512;&#50668;. 2) &#51656;&#47928;&#50640; &#45824;&#54616;&#50668; &#51221;&#54869;&#55176; &#47582;&#45716; &#45813;&#48320;&#51012; &#54252;&#54632;&#54616;&#51648;&#47564; &#44288;&#47144; &#50630;&#45716; &#45236;&#50857;&#51012; &#54632;&#44760; &#54252;&#54632;&#54620; &#44221;&#50864;, &#51656;&#47928;&#50640; &#45824;&#54620; &#45813;&#48320;&#51060; &#53952;&#47532;&#51648;&#45716; &#50506;&#50520;&#51004;&#45208; &#54364;&#54788;&#51060;&#45208; &#50857;&#50612; &#49440;&#53469;&#51060; &#50528;&#47588;&#54616;&#50668; &#51089;&#50629;&#51088;&#51032; &#54032;&#45800;&#50640; &#51032;&#51316;&#54644;&#50556; &#54616;&#45716; &#44221;&#50864;: &#9651;, 0.5&#51216; &#48512;&#50668;. 3) &#51656;&#47928;&#50640; &#45824;&#54620; &#45813;&#48320;&#51060; &#51096;&#47803;&#46108; &#44221;&#50864;: X, 0&#51216; &#48512;&#50668;.</p>
+<p>&lt;<span class="xref"><a href="#JKIIE_2025_v51n3_201_T1">Table1</a></span>&gt;&#51008; &#51656;&#47928;&#50640; &#45824;&#54620; fine-tuned GPT-2, Llama2 &#47784;&#45944;&#51032; &#45813;&#48320; &#50696;&#49884; &#48143; &#54217;&#44032; &#44208;&#44284;&#51060;&#45796;. &lt;<span class="xref"><a href="#JKIIE_2025_v51n3_201_T2">Table 2</a></span>&gt;&#45716; &#54217;&#44032; &#44208;&#44284;&#47484; &#51333;&#54633;&#54620; &#44050;&#51060;&#45796;.</p>
+<div class="capture-id" id="JKIIE_2025_v51n3_201_T1"><span class="label">Table 1.&nbsp;
+				</span><br><span class="capture-id"><span class="tl-inline1">
+<span class="tl-inline1">Example Answers and Evaluation Results for GPT-2 and Llama2 Models</span>
+</span></span><br></div>
+<div class="table-scroll-container"><table width="100%" class="bm" cellpadding="1" frame="hsides" rules="all">
+<tr><th class="table_padding"> Question #1</th>
+<td align="left" class="table_padding" style="width:80%;" colspan="2">I would like to ask a question about MANUAL GUIDE i of FANUC. I received an alarm says, "G codes that cannot be combined together. A figure block not available to the machining type block is specified." What should I check when this warning occurs?</td>
+</tr>
+<tr><th class="table_padding">Answer about Q #1<br>
+ (fine-tuned GPT-2)</th>
+<td align="left" class="table_padding">G codes that cannot be combined together. A figure block not available to the machining type block is specified. Modify the machining program to specify a correct combination of machining type block and figure block.</td>
+<td align="center" class="table_padding" style="width:8%;">O</td>
+</tr>
+<tr><th class="table_padding">Answer about Q #1 <br>
+(fine-tuned Llama2)</th>
+<td align="left" class="table_padding"> To resolve this warning, check the machining program to ensure that the necessary machining type block is available. Modify the program by replacing the machining type block with an appropriate one. </td>
+<td align="center" class="table_padding">O</td>
+</tr>
+<tr><th class="table_padding">Question #2</th>
+<td align="left" class="table_padding" colspan="2">I would like to ask a question about MANUAL GUIDE i of FANUC. What should I do if alarm number 3535 is raised?</td>
+</tr>
+<tr><th class="table_padding">Answer about Q #2 <br>
+(fine-tuned GPT-2)</th>
+<td align="left" class="table_padding">The groove depth specification is invalid. A value not specifiable as turning or other cut directions is entered. Modify the machining program to specify an appropriate cut direction.</td>
+<td align="center" class="table_padding">X</td>
+</tr>
+<tr><th class="table_padding">Answer about Q #2<br>
+(fine-tuned Llama2)</th>
+<td align="left" class="table_padding">The thread lead specification is invalid. A value not specifiable as the thread lead of a screw thread is entered. Modify the machining program to specify an appropriate value. <br>
+(Note) The thread lead is the angle under which a thread is made. It is a positive value.</td>
+<td align="center" class="table_padding">O</td>
+</tr>
+
+</table>
+</div><br><div class="capture-id" id="JKIIE_2025_v51n3_201_T2"><span class="label">Table 2.&nbsp;
+				</span><br><span class="capture-id"><span class="tl-inline1">
+<span class="tl-inline1">Example Answers to Questions by Model</span>
+</span></span><br></div>
+<div class="table-scroll-container"><table width="100%" class="bm" cellpadding="1" frame="hsides" rules="all">
+<thead><tr><th class="table_padding" colspan="2">GPT-2</th>
+<th class="table_padding" colspan="2"> Llama2</th>
+</tr>
+</thead>
+<tr><td align="center" class="table_padding">O</td>
+<td align="center" class="table_padding">8</td>
+<td align="center" class="table_padding">O</td>
+<td align="center" class="table_padding">18</td>
+</tr>
+<tr><td align="center" class="table_padding">&#9651;</td>
+<td align="center" class="table_padding">3</td>
+<td align="center" class="table_padding">&#9651;</td>
+<td align="center" class="table_padding">6</td>
+</tr>
+<tr><td align="center" class="table_padding">X</td>
+<td align="center" class="table_padding">19</td>
+<td align="center" class="table_padding">X</td>
+<td align="center" class="table_padding">6</td>
+</tr>
+<tr><td align="center" class="table_padding">Score</td>
+<td align="center" class="table_padding">9.5</td>
+<td align="center" class="table_padding">Score</td>
+<td align="center" class="table_padding">21</td>
+</tr>
+
+</table>
+</div><br></div>
+<div id="JKIIE_2025_v51n3_201_sec5-2">
+<span class="tl-lowest-section1">5.2 &#51221;&#47049;&#51201; &#54217;&#44032;</span>
+<p>GPT-2 &#47784;&#45944; &#45813;&#48320;, Llama2 &#47784;&#45944; &#45813;&#48320;&#50640; &#45824;&#54644;&#49436; Sentence Bert &#47784;&#45944;&#51012; &#49324;&#50857;&#54616;&#50668; &#50976;&#49324;&#46020;&#47484; &#44228;&#49328;&#54664;&#45796;. Bert &#47784;&#45944;&#51008; &#53581;&#49828;&#53944;&#51032; &#51032;&#48120;&#47200;&#51201; &#50976;&#49324;&#49457;&#51012; &#54028;&#50501;&#54616;&#45716; &#45936; &#49324;&#50857;&#46108;&#45796;. &#51221;&#49457;&#51201; &#54217;&#44032;&#50640; &#49324;&#50857;&#54620; 30&#44060;&#51032; &#51656;&#47928;&#50640; &#45824;&#54644;&#49436; QA &#45936;&#51060;&#53552; &#49464;&#53944;&#50640;&#49436; &#45813;&#48320;&#44284; &#44033; &#47784;&#45944;&#51032; &#45813;&#48320; &#50976;&#49324;&#46020;&#47484; &#44228;&#49328;&#54664;&#45796;. Sentence Bert&#51032; &#44396;&#51312;&#45716; &lt;<span class="xref"><a href="#JKIIE_2025_v51n3_201_T3">Table 3</a></span>&gt;&#44284;&#50752; &#44057;&#45796;. &#47676;&#51200; &#47928;&#51109;&#46308;&#51060; Bert &#47784;&#45944;&#51012; &#53685;&#44284;&#54616;&#44256; &#54400;&#47553;(pooling)&#51060; &#51652;&#54665;&#46104;&#47732; &#51076;&#48288;&#46377; &#48289;&#53552; u, v&#44032; &#49373;&#49457;&#46108;&#45796;. &#51060;&#54980; u&#50752; v &#48289;&#53552;&#51032; &#53076;&#49324;&#51064; &#50976;&#49324;&#46020;&#47484; &#44228;&#49328;&#54620;&#45796;.</p>
+<div class="capture-id" id="JKIIE_2025_v51n3_201_T3"><span class="label">Table 3.&nbsp;
+				</span><br><span class="capture-id"><span class="tl-inline1">
+<span class="tl-inline1">Quantitative Evaluation Results of Model-Specific Responses</span>
+</span></span><br></div>
+<div class="table-scroll-container"><table width="100%" class="bm" cellpadding="1" frame="hsides" rules="all">
+<thead><tr><th class="table_padding">Question</th>
+<th class="table_padding">GPT-2<br>
+(Base)</th>
+<th class="table_padding">GPT-2<br>
+(fine-tuned)</th>
+<th class="table_padding">Llama2<br>
+(Base)</th>
+<th class="table_padding">Llama2<br>
+(fine-tuned)</th>
+</tr>
+</thead>
+<tr><td align="center" class="table_padding">#1</td>
+<td align="center" class="table_padding">0.12337531</td>
+<td align="center" class="table_padding">0.864207268</td>
+<td align="center" class="table_padding">0.870586753</td>
+<td align="center" class="table_padding">0.91112673</td>
+</tr>
+<tr><td align="center" class="table_padding">#2</td>
+<td align="center" class="table_padding">0.18033087</td>
+<td align="center" class="table_padding">0.817527831</td>
+<td align="center" class="table_padding">0.579422951</td>
+<td align="center" class="table_padding">0.76273024</td>
+</tr>
+<tr><td align="center" class="table_padding">...</td>
+<td align="center" class="table_padding">...</td>
+<td align="center" class="table_padding">...</td>
+<td align="center" class="table_padding">...</td>
+<td align="center" class="table_padding">...</td>
+</tr>
+<tr><td align="center" class="table_padding">#29</td>
+<td align="center" class="table_padding">0.1883748</td>
+<td align="center" class="table_padding">0.281591296</td>
+<td align="center" class="table_padding">0.341123939</td>
+<td align="center" class="table_padding">0.46806327</td>
+</tr>
+<tr><td align="center" class="table_padding">#30</td>
+<td align="center" class="table_padding">0.2558555</td>
+<td align="center" class="table_padding">0.728332758</td>
+<td align="center" class="table_padding">0.529266596</td>
+<td align="center" class="table_padding">0.89345062</td>
+</tr>
+<tr><td align="center" class="table_padding">Average</td>
+<td align="center" class="table_padding">0.18950539</td>
+<td align="center" class="table_padding">0.719869162</td>
+<td align="center" class="table_padding">0.515347299</td>
+<td align="center" class="table_padding">0.79055304</td>
+</tr>
+
+</table>
+</div><br><p>&#51221;&#47049;&#51201; &#54217;&#44032;&#50640;&#49436; GPT-2 &#50976;&#49324;&#46020;&#45716; 0.72, Llama2 &#50976;&#49324;&#46020;&#45716; 0.79&#47196; Llama2 &#47784;&#45944;&#51060; &#49440;&#51221;&#46104;&#50632;&#45796;. &#52628;&#44032;&#51201;&#51004;&#47196; QA &#45936;&#51060;&#53552;&#49483;&#51012; &#47564;&#46308;&#51648; &#50506;&#44256; &#54617;&#49845;&#54620; Llama2 &#47784;&#45944;&#50640; &#45824;&#54644;&#49436; &#50976;&#49324;&#46020;&#47484; &#44228;&#49328;&#54620; &#44208;&#44284; &#54217;&#44512; &#50976;&#49324;&#46020;&#44032; 0.56&#51060; &#45208;&#50772;&#45796;. &#54616;&#51648;&#47564; &#49892;&#54744; &#51312;&#44148;&#51060; &#45796;&#47476;&#44592; &#46412;&#47928;&#50640; QA &#45936;&#51060;&#53552; &#49464;&#53944;&#47196; &#54617;&#49845;&#49884;&#53412;&#51648; &#50506;&#51008; &#47784;&#45944;&#51012; QA &#45936;&#51060;&#53552;&#47196; &#54617;&#49845; &#49884;&#53416; &#47784;&#45944;&#46308;&#44284; &#48708;&#44368;&#54624; &#49688; &#50630;&#45796;. &#54616;&#51648;&#47564; base-line &#47784;&#45944;&#46308;&#44284; &#48708;&#44368;&#54664;&#51012; &#46412; &#45908; &#45458;&#51008; &#44163;&#51004;&#47196; &#48372;&#47732; QA &#45936;&#51060;&#53552;&#47484; &#47564;&#46308;&#51648; &#50506;&#44256;&#46020; &#54617;&#49845;&#49884;&#53420; &#49688; &#51080;&#45796;&#45716; &#44163;&#51060;&#45796;. &#51221;&#49457;&#51201; &#54217;&#44032;&#50752; &#51221;&#47049;&#51201; &#54217;&#44032;&#47484; &#54620; &#44208;&#44284; &#47784;&#46160; fine-tuned Llama2 &#47784;&#45944;&#51032; &#49457;&#45733;&#51060; &#51228;&#51068; &#51339;&#50500; &#52572;&#51333; &#47784;&#45944;&#51012; Llama2 &#47784;&#45944;&#47196; &#49440;&#51221;&#54664;&#45796;. &#54693;&#54980; QA &#45936;&#51060;&#53552;&#47484; &#47564;&#46308;&#51648; &#50506;&#44256; &#47784;&#45944; &#51221;&#54869;&#46020;&#47484; &#45458;&#51068; &#49688; &#51080;&#45716; &#48169;&#48277;&#51012; &#44060;&#49440;&#54616;&#45716; &#48169;&#54693;&#51004;&#47196; &#50672;&#44396;&#47484; &#51652;&#54665;&#54624; &#44163;&#51060;&#45796;.</p>
+</div>
+</div>
+
+<hr class="section-rule">
+<div id="JKIIE_2025_v51n3_201_sec6">
+<span class="tl-main-part" style="margin-bottom:10px;">6. &#53664; &#47200;</span>
+<p>&#48376; &#45436;&#47928;&#51008; &#44277;&#51089;&#44592;&#44228; &#44060;&#48324; &#47588;&#45684;&#50620; &#51648;&#50896;&#50857; &#52964;&#49828;&#53552;&#47560;&#51060;&#51669; LLM&#51012; &#44060;&#48156;&#44284;&#51221;&#51012; &#49548;&#44060;&#54616;&#50688;&#51004;&#47728;, &#46160; &#44032;&#51648; LLM&#47784;&#45944;&#51032; &#49457;&#45733;&#48708;&#44368;&#50752; Fine-turning &#49457;&#45733; &#44208;&#44284;&#47484; &#48708;&#44368;&#54616;&#50688;&#45796;. &#47676;&#51200; Manual LLM &#49436;&#48260;-&#50545; &#44396;&#51312;&#47484; &#53685;&#54644;&#49436; &#45796;&#50577;&#54620; &#44277;&#51089;&#44592;&#44228; &#47784;&#45944;&#50640; &#54616;&#45208;&#51032; &#50976;&#51200;&#44032; &#44032;&#48320;&#51201;&#51004;&#47196; &#51217;&#49549; &#44032;&#45733;&#54632;&#51012; &#54869;&#51064;&#54616;&#50688;&#45796;. &#46608;&#54620; Local LLM&#51012; &#53685;&#54644; &#51228;&#51312;&#44592;&#50629;&#51032; &#48372;&#50504; &#50836;&#44396;&#50640; &#51201;&#54633;&#54616;&#44256;, &#44060;&#48324; &#51109;&#48708;&#50640; &#47582;&#44172; &#50868;&#50689;&#44032;&#45733;&#49457;&#51012; &#54869;&#51064;&#54616;&#50688;&#45796;. &#54620;&#54200; &#49457;&#45733;&#52769;&#47732;&#50640;&#49436;&#45716; Llama2&#44032; &#51221;&#49457;&#51201;, &#51221;&#47049;&#51201; &#54217;&#44032; &#47784;&#46160; &#50864;&#49688;&#54620; &#44208;&#44284;&#47484; &#48372;&#50688;&#51004;&#47728;, Fine-turning&#51012; &#53685;&#54644;&#49436; &#46160; &#47784;&#45944;&#51032; &#52264;&#51060;&#44032; 32%&#50640;&#49436; 7%&#44620;&#51648; &#51460;&#50612;&#46160;&#45716; &#44163;&#51012; &#54869;&#51064;&#54616;&#50688;&#45796;. &#51060;&#47196;&#50024; &#47784;&#45944;&#48372;&#45796;&#45716; Fine-tuning&#51032; &#51473;&#50836;&#49457;&#51060; &#48708;&#44368;&#46104;&#50632;&#45796;. &#46608;&#54620; &#54617;&#49845;&#50640; &#54596;&#50836;&#54620; &#47588;&#45684;&#50620;&#47196;&#48512;&#53552;&#51032; QA&#45936;&#51060;&#53552; &#44396;&#52629;&#51060; &#52964;&#49828;&#53552;&#47560;&#51060;&#51669; LLM &#44396;&#52629; &#49457;&#45733;&#50640; &#50689;&#54693;&#51012; &#47566;&#51060; &#48120;&#52824;&#45716; &#44163;&#51012; &#48380; &#49688; &#51080;&#45796;.</p>
+</div>
+
+<hr class="section-rule">
+<div id="JKIIE_2025_v51n3_201_sec7">
+<span class="tl-main-part" style="margin-bottom:10px;">7. &#44208; &#47200;</span>
+<div id="JKIIE_2025_v51n3_201_sec7-1">
+<span class="tl-lowest-section1">7.1 &#44592;&#45824; &#54952;&#44284;</span>
+<p>Manual LLM&#51060; &#49345;&#50857;&#54868; &#51060;&#54980; &#48372;&#44553;&#46104;&#47732; &#44277;&#51089;&#44592;&#44228;&#47484; &#48708;&#47215;&#54620; &#49328;&#50629; &#54788;&#51109;&#50640;&#49436; &#48156;&#49373;&#54616;&#45716; &#47928;&#51228;&#51216;&#50640; &#45824;&#54620; &#48736;&#47480; &#51648;&#50896; &#48143; &#47928;&#51228; &#54644;&#44208;&#47196; &#49373;&#49328;&#49457;&#51012; &#54693;&#49345;&#54624; &#49688; &#51080;&#51012; &#44163;&#51060;&#45796;. &#46608;&#54620; &#51204;&#47928; &#51648;&#49885;&#51032; &#44277;&#50976; &#48143; &#48372;&#51316;&#51032; &#51109;&#51216;&#51060; &#51080;&#51004;&#47728;, &#53945;&#55176; &#49352;&#47196;&#50868; &#51089;&#50629;&#51088;&#50640; &#45824;&#54620; &#44368;&#50977; &#48143; &#54984;&#47144;&#49884;&#44036;&#51012; &#51208;&#44048;&#54624; &#49688; &#51080;&#45796;&#45716; &#44592;&#45824;&#54952;&#44284;&#44032; &#51080;&#45796;. &#50526;&#49436; &#49436;&#47200;&#50640;&#49436; &#50616;&#44553;&#54620; &#45796;&#50577;&#54620; &#49345;&#54889;&#45824;&#52376;&#51032; &#50612;&#47140;&#50880;, &#45432;&#54616;&#50864; &#44592;&#48152;&#51032; &#47928;&#51228; &#54644;&#44208;, &#55092;&#47676; &#50640;&#47084; &#48156;&#49373;, &#50976;&#55092;&#49884;&#44036;&#44284; &#45824;&#44592; &#49552;&#49892;&#51032; &#48156;&#49373; &#48143; &#51613;&#44032;&#50640; &#45824;&#54620; &#47928;&#51228;&#47484; &#54644;&#44208;&#54624; &#49688; &#51080;&#51012; &#44163;&#51060;&#45796;.</p>
+</div>
+<div id="JKIIE_2025_v51n3_201_sec7-2">
+<span class="tl-lowest-section1">7.2 &#54620;&#44228;&#51216; &#48143; &#54693;&#54980; &#50672;&#44396; &#48169;&#54693;</span>
+<p>&#48376; &#50672;&#44396;&#50640;&#49436; &#49324;&#50857;&#54620; &#47700;&#45684;&#50620; &#44032;&#51060;&#46300;&#48513;&#51008; &#50557; 1,000&#51901;&#51032; pdf&#47196; FANUC&#51032; CNC &#44592;&#44228;&#50640; &#54620;&#51221;&#46104;&#50612; &#51080;&#45796;. &#45908; &#45796;&#50577;&#54620; pdf&#47484; &#49688;&#51665;&#54616;&#50668; &#47784;&#45944;&#51012; &#54617;&#49845;&#54620;&#45796;&#47732; &#47784;&#45944;&#51032; &#48276;&#50857;&#49457;&#51012; &#45458;&#51068; &#49688; &#51080;&#51012; &#44163;&#51060;&#45796;. &#46608;&#54620; &#45796;&#50577;&#54620; pdf&#47484; &#49324;&#50857;&#54616;&#45716; &#47564;&#53372; pdf&#47196;&#48512;&#53552; &#53581;&#49828;&#53944;&#47484; &#52628;&#52636;&#54664;&#51012; &#46412; &#44536; &#54056;&#53556;&#51012; &#51088;&#46041;&#51004;&#47196; &#54028;&#50501;&#54616;&#50668; QA &#45936;&#51060;&#53552;&#47484; &#47564;&#46308; &#49688; &#51080;&#46020;&#47197; &#54616;&#45716; &#44163;&#46020; &#51339;&#51012; &#44163;&#51060;&#45796;.</p>
+<p>&#51109;&#48708;&#45208; &#44592;&#44228;&#47484; &#45796;&#47344; &#46412;&#45716; &#44032;&#51109; &#51089;&#51008; &#50724;&#47448;&#45208; &#48512;&#51221;&#54869;&#54620; &#51221;&#48372;&#51312;&#52264;&#46020; &#53360; &#47928;&#51228;&#50752; &#49552;&#49892;&#51012; &#44032;&#51256;&#50732; &#49688; &#51080;&#45796;. &#46384;&#46972;&#49436; &#51221;&#48372; &#51228;&#44277; &#49884; &#44536; &#45236;&#50857;&#51032; &#51221;&#54869;&#49457;&#44284; &#49888;&#47280;&#49457;&#51008; &#47588;&#50864; &#51473;&#50836;&#54620; &#50836;&#49548;&#47196; &#51089;&#50857;&#54620;&#45796;. &#51656;&#47928;&#44284; &#45813;&#48320; &#45936;&#51060;&#53552;&#47484; &#49373;&#49457;&#54624; &#46412; &#49324;&#50857;&#54620; &#47784;&#45944;&#51008; &#54644;&#45817; &#47700;&#45684;&#50620; &#44032;&#51060;&#46300;&#48513;&#51012; &#54617;&#49845;&#54620; &#47784;&#45944;&#51060; &#50500;&#45768;&#45796;. &#44536;&#47000;&#49436; &#44592;&#48376;&#51201;&#51064; &#51221;&#48372;&#45208; &#51648;&#49885;&#51012; &#44032;&#51648;&#44256;&#45716; &#51080;&#51648;&#47564;, &#53945;&#51221; &#47700;&#45684;&#50620;&#50640; &#45824;&#54620; &#44396;&#52404;&#51201;&#51060;&#44256; &#49464;&#48512;&#51201;&#51064; &#51648;&#49885;&#51008; &#48512;&#51313;&#54620; &#49345;&#54889;&#51060;&#45796;. &#51060;&#47196; &#51064;&#54644; &#47784;&#45944; &#45813;&#48320;&#50640; &#45824;&#54620; &#49888;&#47280;&#49457; &#47928;&#51228;&#44032; &#49373;&#44600; &#44032;&#45733;&#49457;&#51060; &#51080;&#45796;.</p>
+<p>&#49373;&#49457;&#54805; &#50616;&#50612; &#47784;&#45944;&#51008; &#51088;&#50672;&#49828;&#47084;&#50868; &#47928;&#51109;&#51012; &#47564;&#46308;&#50612;&#45236;&#45716; &#45936;&#50640;&#45716; &#45733;&#49689;&#54616;&#51648;&#47564;, &#45320;&#47924; &#44596; &#47928;&#51109;&#51012; &#52636;&#47141;&#54616;&#45716; &#44221;&#54693;&#51060; &#51080;&#45796;. &#51060;&#47088; &#53945;&#49457;&#51008; &#51068;&#48152;&#51201;&#51064; &#49345;&#54889;&#50640;&#49436;&#45716; &#50976;&#50857;&#54624; &#49688; &#51080;&#51004;&#45208;, &#49892;&#47924; &#54872;&#44221;&#50640;&#49436;&#45716; &#51221;&#48372;&#51032; &#51221;&#54869;&#49457;&#44284; &#54632;&#44760; &#44036;&#44208;&#54632;&#46020; &#51473;&#50836;&#54616;&#44172; &#50668;&#44200;&#51652;&#45796;. &#44596; &#49444;&#47749;&#48372;&#45796;&#45716; &#51687;&#51648;&#47564; &#48516;&#47749;&#54616;&#44256; &#51221;&#54869;&#54620; &#45813;&#48320;&#51060; &#54596;&#50836;&#54620; &#44221;&#50864;&#44032; &#47566;&#44592; &#46412;&#47928;&#51060;&#45796;. &#51060;&#47484; &#44256;&#47140;&#54616;&#50668;, &#54788;&#51116; &#47784;&#45944;&#51032; &#54620;&#44228;&#47484; &#44537;&#48373;&#54616;&#44256;, &#45813;&#48320;&#51032; &#44600;&#51060;&#49104;&#47564; &#50500;&#45768;&#46972; &#45236;&#50857;&#51032; &#49888;&#47280;&#49457;&#46020; &#45458;&#51060;&#47140;&#44256; &#49884;&#46020;&#54624; &#50696;&#51221;&#51060;&#45796;. &#46608;&#54620; &#52628;&#54980; &#50672;&#44396;&#47196; &#51204;&#47928;&#51201;&#51064; &#54217;&#44032;&#47484; &#50948;&#54644;&#49436; &#44277;&#51089;&#44592;&#44228; &#50629;&#52404; &#51204;&#47928;&#44032;&#50752; &#51068;&#44288;&#49457; &#53685;&#44228;&#48516;&#49437;&#51012; &#53685;&#54620; &#54217;&#44032;&#48169;&#48277;&#51012; &#44060;&#48156;&#54616;&#44256; &#48152;&#48373; query&#50640; &#45824;&#54620; &#54217;&#44032; &#48516;&#49437;&#46020; &#49688;&#54665;&#54624; &#50696;&#51221;&#51060;&#45796;.</p>
+</div>
+</div>
+
+
+</div>
+
+<div id="article-level-0-back" class="bm">
+
+<hr class="part-rule">
+
+<div class="capture-id"><span class="tl-main-part" style="margin-bottom:10px;">Acknowledgments</span>
+<p>&#48376; &#50672;&#44396;&#45716; &#44284;&#54617;&#44592;&#49696;&#51221;&#48372;&#53685;&#49888;&#48512; &#51221;&#48372;&#53685;&#49888;&#44592;&#49696;&#44592;&#54925;&#54217;&#44032;&#50896;&#51032; &#51648;&#50896;&#44284;(No. RS-2022 -00155911, &#51064;&#44277;&#51648;&#45733;&#50997;&#54633;&#54785;&#49888;&#51064;&#47141;&#50577;&#49457;(&#44221;&#55148;&#45824;)), &#49328;&#50629;&#53685;&#49345;&#51088;&#50896;&#48512; &#54620;&#44397;&#49328;&#50629;&#44592;&#49696;&#54217;&#44032;&#50896;&#51032; &#51648;&#50896;&#51012; &#48155;&#50500; &#49688;&#54665;&#46104;&#50632;&#49845;&#45768;&#45796;(No.20026431).</p>
+</div><hr class="section-rule">
+<span class="tl-main-part" style="margin-bottom:10px;">References</span>
+<table width="100%" class="bm">
+<tr><td left-margine="10" width="30px" style="height:1px;"></td><td style="height:1px;"></td></tr>
+<tr>
+<td id="JKIIE_2025_v51n3_201_B1" valign="top" align="right" style="width:5%"><b><i>1. </i></b></td>
+<td valign="top">Anagnoste, S., Biclesanu, I., D'Ascenzo, F., and Savastano, M. (2021), The role of chatbots in end-to-end intelligent automation and future employment dynamics, <i>Business Revolution in a Digital Era: 14th International Conference on Business Excellence, ICBE 2020</i>, 287-302, Springer International Publishing.<br><img src="/_common/images/crossref.gif" doi="https://doi.org/10.1007/978-3-030-59972-0_20" id="crossref"></td>
+</tr><tr>
+<td id="JKIIE_2025_v51n3_201_B2" valign="top" align="right" style="width:5%"><b><i>2. </i></b></td>
+<td valign="top">Anzari, F., Sugiarto, D., and Luis, M. (2023), A fault diagnosis system for CNC hydraulic machines: A conceptual framework, <i>SINERGI</i>, <b>27</b>(1), 65-72.<br><img src="/_common/images/crossref.gif" doi="https://doi.org/10.22441/sinergi.2023.1.008" id="crossref"></td>
+</tr><tr>
+<td id="JKIIE_2025_v51n3_201_B3" valign="top" align="right" style="width:5%"><b><i>3. </i></b></td>
+<td valign="top">Brown, T., Mann, B., Ryder, N., Subbiah, M., Kaplan, J. D., Dhariwal, P., ... and Amodei, D. (2020), Language models are few-shot learners, <i>Advances in Neural Information Processing Systems</i>, <b>33</b>, 1877-1901.</td>
+</tr><tr>
+<td id="JKIIE_2025_v51n3_201_B4" valign="top" align="right" style="width:5%"><b><i>4. </i></b></td>
+<td valign="top">Devlin, J., Chang, M. W., Lee, K., and Toutanova, K. (2018), BERT: Pre-training of deep bidirectional transformers for language understanding, arXiv preprint arXiv:<a target="xrefwindow" style="word-break:break-all;" href="https://arxiv.org/abs/1810.04805">1810.04805</a>.</td>
+</tr><tr>
+<td id="JKIIE_2025_v51n3_201_B5" valign="top" align="right" style="width:5%"><b><i>5. </i></b></td>
+<td valign="top">Khan, J. Y. and Uddin, G. (2022), Automatic code documentation generation using GPT-3, <i>Proceedings of the 37th IEEE/ACM International Conference on Automated Software Engineering</i>, 1-6.<br><img src="/_common/images/crossref.gif" doi="https://doi.org/10.1145/3551349.3559548" id="crossref"></td>
+</tr><tr>
+<td id="JKIIE_2025_v51n3_201_B6" valign="top" align="right" style="width:5%"><b><i>6. </i></b></td>
+<td valign="top">Li, C., Park, J., Kim, H., and Chrysostomou, D. (2021), How can I help you? An intelligent virtual assistant for industrial robots, <i>Companion of the 2021 ACM/IEEE International Conference on Human-Robot Interaction</i>, 220-224.<br><img src="/_common/images/crossref.gif" doi="https://doi.org/10.1145/3434074.3447163" id="crossref"></td>
+</tr><tr>
+<td id="JKIIE_2025_v51n3_201_B7" valign="top" align="right" style="width:5%"><b><i>7. </i></b></td>
+<td valign="top">Li, Z., Huang, T., and Wang, L. (2023), Customizing large language models for financial question-answering tasks using augmented datasets, <i>Journal of Financial Data Science</i>, <b>5</b>(2), 101-120.</td>
+</tr><tr>
+<td id="JKIIE_2025_v51n3_201_B8" valign="top" align="right" style="width:5%"><b><i>8. </i></b></td>
+<td valign="top">Liu, R. and Shah, N. B. (2023), ReviewerGPT? An Exploratory Study on Using Large Language Models for Paper Reviewing, arXiv preprint arXiv:<a target="xrefwindow" style="word-break:break-all;" href="https://arxiv.org/abs/2306.00622">2306.00622</a></td>
+</tr><tr>
+<td id="JKIIE_2025_v51n3_201_B9" valign="top" align="right" style="width:5%"><b><i>9. </i></b></td>
+<td valign="top">Liu, X., Zhang, F., Hou, Z., Mian, L., Wang, Z., Zhang, J., and Tang, J. (2021), Self-supervised learning: Generative or contrastive, <i>IEEE Transactions on Knowledge and Data Engineering</i>, <b>35</b>(1), 857-876.<br><img src="/_common/images/crossref.gif" doi="https://doi.org/10.1109/TKDE.2021.3090866" id="crossref"></td>
+</tr><tr>
+<td id="JKIIE_2025_v51n3_201_B10" valign="top" align="right" style="width:5%"><b><i>10. </i></b></td>
+<td valign="top">Michael, G., Peng, J., Marinov, M. B., and Ovtcharova, J. (2021), Research on fault diagnosis expert system of CNC machine tool based on expert knowledge, <i>2021 XXX International Scientific Conference Electronics (ET)</i>, 1-4.<br><img src="/_common/images/crossref.gif" doi="https://doi.org/10.1109/ET52713.2021.9579568" id="crossref"></td>
+</tr><tr>
+<td id="JKIIE_2025_v51n3_201_B11" valign="top" align="right" style="width:5%"><b><i>11. </i></b></td>
+<td valign="top">Radford, A., Narasimhan, K., Salimans, T., and Sutskever, I. (2018), Improving language understanding by generative pre-training, <i>OpenAI Blog</i>, <b>1</b>(8), 9.</td>
+</tr><tr>
+<td id="JKIIE_2025_v51n3_201_B12" valign="top" align="right" style="width:5%"><b><i>12. </i></b></td>
+<td valign="top">Radford, A., Wu, J., Child, R., Luan, D., Amodei, D., and Sutskever, I. (2019), Language models are unsupervised multitask learners, <i>OpenAI Blog</i>, <b>1</b>(8), 9.</td>
+</tr><tr>
+<td id="JKIIE_2025_v51n3_201_B13" valign="top" align="right" style="width:5%"><b><i>13. </i></b></td>
+<td valign="top">Son, S.N., Oh, J. M., Jin, H. G., Jang, C. H., Jeong, J. B., and Kim, K. T., (2024), Varco Arena: A Tournament Approach to Reference-Free Benchmarking Large Language Models, arXiv preprint arXiv:<a target="xrefwindow" style="word-break:break-all;" href="https://arxiv.org/abs/2411.01281">2411.01281</a> (2024).</td>
+</tr><tr>
+<td id="JKIIE_2025_v51n3_201_B14" valign="top" align="right" style="width:5%"><b><i>14. </i></b></td>
+<td valign="top">Touvron, H., Lavril, T., Izacard, G., Martinet, X., Lachaux, M. A., Lacroix, T., ... and Lample, G. (2023), Llama: Open and efficient foundation language models, arXiv preprint arXiv:<a target="xrefwindow" style="word-break:break-all;" href="https://arxiv.org/abs/2302.13971">2302.13971</a>.</td>
+</tr><tr>
+<td id="JKIIE_2025_v51n3_201_B15" valign="top" align="right" style="width:5%"><b><i>15. </i></b></td>
+<td valign="top">Touvron, H., Martin, L., Stone, K., Albert, P., Almahairi, A., Babaei, Y., ... and Scialom, T. (2023), Llama 2: Open foundation and fine-tuned chat models, arXiv preprint arXiv:<a target="xrefwindow" style="word-break:break-all;" href="https://arxiv.org/abs/2307.09288">2307.09288</a>.</td>
+</tr><tr>
+<td id="JKIIE_2025_v51n3_201_B16" valign="top" align="right" style="width:5%"><b><i>16. </i></b></td>
+<td valign="top">Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., ... and Polosukhin, I. (2017), Attention is all you need, <i>Advances in Neural Information Processing Systems</i>, 30.</td>
+</tr><tr>
+<td id="JKIIE_2025_v51n3_201_B17" valign="top" align="right" style="width:5%"><b><i>17. </i></b></td>
+<td valign="top">Wang, Y., Zhang, X., and Chen, H. (2023), A chatbot system for predictive maintenance in manufacturing based on LLMs, <i>International Journal of Advanced Manufacturing Technology</i>, <b>127</b>(5), 987-1003.</td>
+</tr><tr>
+<td id="JKIIE_2025_v51n3_201_B18" valign="top" align="right" style="width:5%"><b><i>18. </i></b></td>
+<td valign="top">Weitzman, T. and Pyo, H. (2021), CloneBot: Personalized Dialogue-Response Predictions, arXiv preprint arXiv:<a target="xrefwindow" style="word-break:break-all;" href="https://arxiv.org/abs/2103.16750">2103.16750</a>.</td>
+</tr><tr>
+<td id="JKIIE_2025_v51n3_201_B19" valign="top" align="right" style="width:5%"><b><i>19. </i></b></td>
+<td valign="top">Wolf, T., Debut, L., Sanh, V., Chaumond, J., Delangue, C., Moi, A., ... and Rush, A. M. (2020), Transformers: State-of-the-art natural language processing, <i>Proceedings of the 2020 Conference on Empirical Methods in Natural Language Processing: System Demonstrations</i>, 38-45.<br><img src="/_common/images/crossref.gif" doi="https://doi.org/10.18653/v1/2020.emnlp-demos.6" id="crossref"></td>
+</tr><tr>
+<td id="JKIIE_2025_v51n3_201_B20" valign="top" align="right" style="width:5%"><b><i>20. </i></b></td>
+<td valign="top">Yoo, Kang Min, Jaegeun Han, Sookyo In, Heewon Jeon, Jisu Jeong, Jaewook Kang, Hyunwook Kim <i>et al.</i> (2024), HyperCLOVA X Technical Report, arXiv preprint arXiv:<a target="xrefwindow" style="word-break:break-all;" href="https://arxiv.org/abs/2404.01954">2404.01954</a>.</td>
+</tr><tr>
+<td id="JKIIE_2025_v51n3_201_B21" valign="top" align="right" style="width:5%"><b><i>21. </i></b></td>
+<td valign="top">Yoo, K. M., Han, J. G., In, S. K., Jeon, H. W., Jeong, J. S., Kang, J. W., Kim, H. W. (2024), HyperCLOVA X Technical Report, arXiv preprint arXiv:<a target="xrefwindow" style="word-break:break-all;" href="https://arxiv.org/abs/2404.01954">2404.01954</a>.</td>
+</tr></table>
+
+<hr class="section-rule">
+<div>
+<span class="tl-inline1">&#51200;&#51088;&#49548;&#44060;</span>
+<p><b>&#51060;&#50696;&#50896; :</b> &#44221;&#55148;&#45824;&#54617;&#44368; &#49328;&#50629;&#44221;&#50689;&#44277;&#54617;&#44284;&#50640;&#49436; 2024&#45380; &#54617;&#49324;&#54617;&#50948;&#47484; &#52712;&#46301;&#54616;&#44256; &#54788;&#51116; &#44221;&#55148;&#45824;&#54617;&#44368; &#49828;&#47560;&#53944;&#54057;&#53664;&#47532;&#50672;&#44396;&#49548; &#50672;&#44396;&#50896;&#51004;&#47196; &#44540;&#47924; &#51473;&#51060;&#45796;. &#50672;&#44396; &#44288;&#49900; &#48516;&#50556;&#45716; &#49828;&#47560;&#53944;&#54057;&#53664;&#47532;, &#51088;&#50672;&#50612; &#52376;&#47532;, &#49373;&#49457;&#54805; AI, Digital Twin, CAD/CAM&#51060;&#45796;.</p>
+<p><b>&#48149;&#51452;&#50689; :</b> &#44221;&#55148;&#45824;&#54617;&#44368; &#49328;&#50629;&#44221;&#50689;&#44277;&#54617;&#44284;&#50640; &#51116;&#54617; &#51473;&#51060;&#45796;. 2023&#45380;&#50640;&#45716; &#44221;&#55148;&#45824;&#54617;&#44368; &#49828;&#47560;&#53944;&#54057;&#53664;&#47532; &#50672;&#44396;&#49892;&#50640;&#49436; &#54617;&#48512;&#50672;&#44396;&#49373;&#51004;&#47196; &#54876;&#46041;&#54616;&#47728; &#51088;&#50672;&#50612; &#52376;&#47532;&#50752; &#49373;&#49457;&#54805; AI &#44288;&#47144; &#50672;&#44396; &#48143; &#54532;&#47196;&#51229;&#53944;&#47484; &#51652;&#54665;&#54664;&#45796;. &#54788;&#51116;&#45716; &#50640;&#46300;&#50892;&#46300; &#53076;&#47532;&#50500;&#50640;&#49436; &#51064;&#53556;&#51004;&#47196; &#44540;&#47924;&#54616;&#44256; &#51080;&#45796;.</p>
+<p><b>&#44608;&#49884;&#50672; : </b>&#44221;&#55148;&#45824;&#54617;&#44368; &#49328;&#50629;&#44221;&#50689;&#44277;&#54617;&#44284;&#50752; &#49548;&#54532;&#53944;&#50920;&#50612;&#50997;&#54633;&#54617;&#44284;&#50640;&#49436; 2024&#45380; &#54617;&#49324;&#54617;&#50948;&#47484; &#52712;&#46301;&#54616;&#44256; Universit&auml;t Heidelberg&#50640;&#49436; &#49437;&#49324;&#44284;&#51221;&#50640; &#51116;&#54617; &#51473;&#51060;&#45796;. &#50672;&#44396;&#48516;&#50556;&#45716; &#47672;&#49888;&#47084;&#45789;, &#49373;&#49457;&#54805;AI, &#51088;&#50672;&#50612;&#52376;&#47532;&#51060;&#45796;.</p>
+<p><b>&#51312;&#49457;&#50864; : </b>&#44221;&#55148;&#45824;&#54617;&#44368; &#49328;&#50629;&#44221;&#50689;&#44277;&#54617;&#44284;&#50640;&#49436; 2024&#45380; &#54617;&#49324;&#54617;&#50948;&#47484; &#52712;&#46301;&#54616;&#44256; &#54788;&#51116; &#44221;&#55148;&#45824;&#54617;&#44368; &#51064;&#44277;&#51648;&#45733;&#54617;&#44284; &#45824;&#54617;&#50896; &#49437;&#49324;&#44284;&#51221;&#50640; &#51116;&#54617;&#51473;&#51060;&#45796;. &#50672;&#44396; &#44288;&#49900; &#48516;&#50556;&#45716; &#51088;&#50672;&#50612; &#52376;&#47532;, &#51064;&#44036;-&#44592;&#44228; &#51064;&#53552;&#54168;&#51060;&#49828;, &#45824;&#44508;&#47784; &#50616;&#50612; &#47784;&#45944; &#48143; &#51060;&#48120;&#51648; &#49373;&#49457; &#47784;&#45944;&#44284; &#44057;&#51008; &#49373;&#49457;&#54805; AI&#47484; &#54252;&#54632;&#54620;&#45796;.</p>
+<p><b>&#50628;&#51452;&#47749; : </b>&#49457;&#44512;&#44288;&#45824;&#54617;&#44368; &#44592;&#44228;&#44277;&#54617;&#44284;&#50640;&#49436; 2003&#45380; &#54617;&#49324;&#47484;, POSTECH &#49328;&#50629;&#44221;&#50689;&#44277;&#54617;&#44284;&#50640;&#49436; 2012&#45380; &#49437;&#48149;&#53685;&#54633;&#51012; &#52712;&#46301;&#54616;&#50688;&#45796;. &#49828;&#50948;&#49828;&#47196;&#51092;&#50672;&#48169;&#44277;&#45824;, &#50689;&#44397; &#52992;&#51076;&#48652;&#47532;&#51648;&#45824;&#54617;&#44368;, &#46021;&#51068; &#51064;&#44277;&#51648;&#45733;&#50672;&#44396;&#49548; SmartFactoryKL&#50640;&#49436; &#50672;&#44396;&#50896;&#51004;&#47196; &#44540;&#47924;&#54616;&#50688;&#51004;&#47728;, 2018&#45380;&#48512;&#53552; &#49328;&#50629;&#44221;&#50689;&#44277;&#54617;&#44284; &#44368;&#49688;&#47196; &#51116;&#51649;&#54616;&#44256; &#51080;&#45796;. &#50672;&#44396;&#48516;&#50556;&#45716; &#49828;&#47560;&#53944;&#54057;&#53664;&#47532;, &#51228;&#51312;AI, CAD/CAM&#51060;&#45796;.</p>
+
+</div>
+
+</div>
+
+<div id="article-level-0-figs-and-tables" class="bm"></div>
+
+<div id="article-level-0-end-metadata" class="fm">
+<table width="100%" class="fm">
+<tr><td left-margine="10" width="30%" style="height:1px;"></td><td style="height:1px;"></td></tr>
+
+<tr>
+<td colspan="2" valign="top"></td>
+</tr>
+</table>
+
+</div>
+</div>
+
+<a style="clear:both; float:left;" name="__bottom">&nbsp;</a><!--1231-->
+<script type="text/javascript">
+	var bodyscrollTop = 0;
+	var doi="10.7232/JKIIE.2025.51.3.201";
+	var domainid="kiie";
+
+/* 5.01 */
+
+	function openList() {
+
+		$('#citedLinkList').toggle();
+
+		
+	}
+
+	$(document).ready(function() {
+		//var use_yn = "";
+		//var level = "";
+		var use_yn = "Y";
+
+		$("div.NURIMEDIAXML img").attr("src",function(i,src) { 
+			if( $(this).hasClass('graphic_p') ||
+				$(this).hasClass('xml_graphic') ) {
+				return "/xml//45763/" + src; 
+			}
+		}); 
+
+		$("div.NURIMEDIAXML img").load(function() { 
+		    var maxWidth = 800;
+		    if( $(this).width() > maxWidth )  
+		        $(this).css("width", maxWidth); // Set new width
+
+		});
+
+				$(document).on("click", "#icon_pdf", function() {
+			if(use_yn == "N") { 
+									$("#popup_login").fadeIn(200);
+					return false;
+				 
+			} else { 
+														var pdfw = window.open('/xml/45763/45763.pdf', 'pdfwin', 'resizable=1, scrollbars=1, status=1');
+										pdfw.focus();
+							 } 
+			/* 20170220
+						*/
+		});
+		$(document).on("click", "#icon_pdf_add", function() {
+			if(use_yn == "N") { 
+									$("#popup_login").fadeIn(200);
+					return false;
+				 
+			} else { 
+							 } 
+		});
+
+		$(document).on("click", "#crossref", function() {
+			var m = $(this).attr("doi"); 
+			var imgw = window.open(encodeURI(m), 'imgwin', 'resizable=1, scrollbars=1, status=1');
+			imgw.focus();
+		});
+
+		$(document).on("click", "#orcid", function() {
+			var m = $(this).attr("orcid"); 
+			var imgw = window.open(encodeURI(m), 'orcwin', 'resizable=1, scrollbars=1, status=1');
+			imgw.focus();
+		});
+
+		$(document).on("click", "#funding", function() {
+			
+				if($('#funding_info').css("display") == "block") {
+					$('#funding_info').css("display","none");
+				}
+				else {
+					$('#funding_info').css("display","block");			
+				}
+		});
+
+		
+		$(document).on("click", "#TextButton", function() {
+			if (use_yn=="N"){
+									$("#popup_login").fadeIn(200);
+					return false;
+					
+			} else {
+				if($('.body').css("display") == "block") {
+					var elem;
+					if($("#article-level-0-back > .capture-id > span:contains('Notes')").size() > 0){
+						elem = $("#article-level-0-back .capture-id").eq(0);
+					}else{
+						elem = $("#article-level-0-back .part-rule").eq(0);
+					}
+					elem = $("#article-level-0-back .part-rule").eq(0);
+					$("#level_check_button").detach().insertAfter("#article-level-0-back .part-rule:eq(0)");
+
+					$('.body').css("display","none");
+					$("#article-level-0-back > .capture-id > span:contains('Notes')").parent(".capture-id").css("display","none");
+					//var pos = $("#level_check_button").offset();
+					//window.scrollTo(pos.left,pos.top);
+					/*if($("#article-level-0-back > .capture-id > span:contains('Notes').length > 0")){
+						$("#article-level-0-back > .part-rule:first-child").css("display","none");
+					}*/
+				}
+				else {
+					$("#level_check_button").detach().insertAfter("#article-level-0-body .part-rule:eq(0)");
+
+					$('.body').css("display","block");		
+					$("#article-level-0-back > .capture-id > span:contains('Notes')").parent(".capture-id").css("display","block");
+					/*if($("#article-level-0-back > .capture-id > span:contains('Notes').length > 0")){
+						$("#article-level-0-back > .part-rule:first-child").css("display","block");
+					}*/
+				}
+			}
+		});
+		
+		/*
+				*/
+
+		
+	/*	document.querySelector('#quote_view').addEventListener('click', (e) => {
+		  e.preventDefault();
+		  e.stopImmediatePropagation();
+			document.querySelector('.current-url').value = window.location.href;
+
+			let nWidth = "960";
+			let nHeight = "345";
+
+			// 듀얼 모니터 고려한 윈도우 띄우기
+			let curX = window.screenLeft;
+			let curY = window.screenTop;
+			let curWidth = document.body.clientWidth;
+			let curHeight = document.body.clientHeight;
+				
+			let nLeft = curX + (curWidth / 2) - (nWidth / 2);
+			let nTop = curY + (curHeight / 2) - (nHeight / 2);
+		
+			let strOption = "";
+			strOption += "left=" + nLeft + ",";
+			strOption += "top=" + nTop + ",";
+			strOption += "width=" + nWidth + ",";
+			strOption += "height=" + nHeight + ",";
+			strOption += "toolbar=no, menubar=no, location=no, titlebar=no";
+ 
+			let myWindow = window.open('/_common/quote/quote_layer.html', '인용하기', strOption)
+		}); */
+		
+		$("div.NURIMEDIAXML img").click(function() { 
+			if( $(this).hasClass('xml_graphic') ) {
+
+				var m = $(this).attr("src"); 
+				if(m.substr(0,4) != "/xml") return;			
+				var imgw = window.open('/_common/vw_image.php?m=' + encodeURI(m), 'imgwin', 'width=600, height=400, resizable=1, scrollbars=1, status=1');
+				imgw.focus();
+			}
+		});
+
+
+		$.ajax({
+			url : "./citedLink.php",
+			dataType:"text",
+			type:"POST",
+			data:{"doi":doi, "domainid":domainid},
+			success:function(data)
+			{
+				$('#citedLink').html(data);
+				$.ajax({
+					url : "./citedLinkList.php",
+					dataType:"text",
+					type:"POST",
+					data:{"doi":doi, "domainid":domainid},
+					success:function(data)
+					{						
+						$('#citedLinkList').css("display","none");
+						$('#citedLinkList').html(data);
+						var contributor = $("contributor").last(); 
+						$('#citedLinkTR').css("display","");
+						
+						$("contributor").last().text(contributor.text().replace(/;/,''));
+					}
+				});
+			}
+		});
+
+
+/*
+		var indexCol = $("#enNameColon").children().length;
+
+		$("#enNameColon").children().each(function(i) {
+			
+			if( i < indexCol-1 ) {
+				var htm = $(this).find("sup").context.nodeName;
+				if(htm != "SUP" && $(this).text() != "†")
+					$(this).html($(this).html()+"; ");
+			}
+		});
+
+		var indexCol = $("#krNameColon").children().length;
+
+		$("#krNameColon").children().each(function(i) {
+			
+			if( i < indexCol-1 ) {
+				$(this).html($(this).html()+";");
+			}
+		});
+		*/
+		var initPosition = parseInt($("#Xslidemenu").css("top"));
+		$(window).scroll(function() {
+			if (document.compatMode && document.compatMode != 'BackCompat') {
+				position = document.documentElement.scrollTop;
+			}
+			else {
+				position = document.body.scrollTop;
+			}
+			$("#Xslidemenu").css({"right":"0px"});
+			$("#Xslidemenu").stop().animate({"top":position + initPosition+"px"},1000);
+		});
+	});
+</script>
+
+
+<style type="text/css">
+#Xslidemenu { z-index:10; position:absolute; top:280px; right:15px;}
+</style>
+
+<div id="Xslidemenu">
+	<table border=0 align=right cellpadding=1 cellspacing=0>
+		<tr><td align=right><a href="#" onClick="this.blur()"><img src="/_common/images/quickTop.png"></a></td></tr>
+		<tr><td align=right><a href="#__bottom" onClick="this.blur()"><img src="/_common/images/quickBottom.png"></a></td></tr>
+	</table>
+</div>
+</div>
+<form name='bsF' method='post'>
+	<input type="hidden" name="now_book_name" value="Journal of the Korean Institute of Industrial Engineers">
+	<input type="hidden" name="a" value="full">
+	<input type="hidden" name="b" value="12">
+	<input type="hidden" name="aidx" value="">
+	<input type="hidden" name="bidx" value="4147">
+</form>
+
+<script>
+	function doChangeGroup(obj) {
+		with(document.bsF) {
+			bidx.value = "";
+			now_book_name.value = obj.value
+			submit();
+		}
+	}
+	function gotoVolList(idx) {
+		with(document.bsF) {
+			bidx.value = idx;
+			submit();
+		}
+	}
+	function gotoPaperList() {
+		with(document.bsF) {
+			aidx.value = "";
+			submit();
+		}
+	}
+	
+	function doSelectBook(no) {
+		with(document.bsF) {
+			bidx.value = no;
+			submit();
+		}
+	}
+</script>
+
+
+		</div>
+</div></div>
+<!-- 하단 copyright  -->
+
+
+<div class="main_copyright">
+	<div class="copy_box">
+		<div class="logo"><a href="/"><img src="/images/basic/footer_logo.png"></a></div>
+		<div class="add"><p style="margin-bottom:10px;"><br>Copyright © The Korean Institute of Industrial Engineers. All rights reserved.<br># 2006, Jungang Royal,13 Seoun-ro, Seocho-gu, Seoul, Republic of Korea (06732)<br>Tel: <a href="tel:+82 2-523-3096">+82-2-523-3096</a> | Fax: +82-2-523-3090 | E-mail: <a href="mailto:journal@kiie.org" target="_blank">journal@kiie.org</a></p></div>
+	 </div>
+</div>
+<script>
+	jQuery(function($){
+		$( document ).ready( function() {
+			$( '.NURIMEDIAXML' ).parent('.current_bg').css('padding','30px 20px');
+			$( '.NURIMEDIAXML' ).parent('.sub_contents').parent('.current_bg').css('padding','30px 20px');
+			$('.sub_title2').after('<ul class="tab_menu"><li class="active"><a id="tab1" onclick="javascript:tabOn(\'1\');">ENGLISH</a></li><li><a id="tab2" onclick="javascript:tabOn(\'2\');">KOREAN</a></li>');
+			$( '.issue_table2 td a[href="#"]' ).parent('td').css('display','none');
+			$( '.title1' ).text('Vol. 47, No. 1 ~ : XML');
+			$( '.archive_thumb2' ).after('<h6 class="title2"><strong>Vol. 1 ~ Vol. 46 : PDF</strong></h6><IFRAME src="https://www.dbpia.co.kr/Society?pubId=11028&pid=2122&lang=en_US" width="100%" height="1500" border="0" frameBorder="0" marginWidth="0" marginHeight="0"></IFRAME>');
+			$('#sch_options').parent('form').parent('div.sub_contents').parent('div.contents_left').children('h1').text('Search for Archives');
+		});
+	});
+</script>
+<script>
+	for(var i=1;i<13;i++){
+		var tabmenu = document.getElementById("tab_"+i);
+	}
+	function tabOn(n)
+	{
+		var tabmenu = document.getElementById("tab_"+n);
+		$('.tab_menu li').removeClass();
+		$('.tab_con').css({'display':'none'});
+		$('#tab_'+n).css({'display':'block'});
+		$('#tab'+n).parent('li').addClass('active');
+	}
+</script>
+</body>
+</html>

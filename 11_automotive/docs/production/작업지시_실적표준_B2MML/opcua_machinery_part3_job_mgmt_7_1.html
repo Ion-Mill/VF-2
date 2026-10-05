@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Overview &#x2013; OPC UA for Machinery - Part 3: Job Management</title>
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/css/site.css?v=V5GQNmsbOl8B9o5m0N4IedP0ikjJeS8mhboD9acFTBw" />
+    <script>
+    (function () {
+        try {
+            var w = parseInt(localStorage.getItem('opc.tocWidth'), 10);
+            if (w >= 180 && w <= 900) {
+                document.documentElement.style.setProperty('--toc-w', w + 'px');
+            }
+        } catch (e) { /* private mode / storage disabled — keep the CSS default */ }
+    })();
+    </script>
+        <link rel="canonical" href="https://reference.opcfoundation.org/specs/OPC-40001-3/7.1" />
+        <meta property="og:url" content="https://reference.opcfoundation.org/specs/OPC-40001-3/7.1" />
+        <meta property="og:title" content="OPC UA for Machinery - Part 3: Job Management - 7.1 Overview" />
+        <meta name="description" content="ISA95 job control ( OPC 10031-4 ) defines mechanisms to add job order information using the 2: ISA95JobOrderDataType and mechanisms getting the result or&#x2026;" />
+        <meta property="og:description" content="ISA95 job control ( OPC 10031-4 ) defines mechanisms to add job order information using the 2: ISA95JobOrderDataType and mechanisms getting the result or&#x2026;" />
+        <link rel="prev" href="https://reference.opcfoundation.org/specs/OPC-40001-3/7" />
+        <link rel="next" href="https://reference.opcfoundation.org/specs/OPC-40001-3/7.2" />
+        <script type="application/ld&#x2B;json">{"@context":"https://schema.org","@type":"TechArticle","headline":"7.1 Overview","name":"7.1 Overview","description":"ISA95 job control ( OPC 10031-4 ) defines mechanisms to add job order information using the 2: ISA95JobOrderDataType and mechanisms getting the result or…","url":"https://reference.opcfoundation.org/specs/OPC-40001-3/7.1","inLanguage":"en","isPartOf":{"@type":"TechArticle","name":"OPC UA for Machinery - Part 3: Job Management","url":"https://reference.opcfoundation.org/specs/OPC-40001-3"},"breadcrumb":{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"7 Predefined Job-Order-Input and Job-Order-Response Information","item":"https://reference.opcfoundation.org/specs/OPC-40001-3/7"},{"@type":"ListItem","position":2,"name":"7.1 Overview","item":"https://reference.opcfoundation.org/specs/OPC-40001-3/7.1"}]}}</script>
+</head>
+<body>
+    <header b-9bvyxychcn class="site-header">
+        <div b-9bvyxychcn class="site-header-inner">
+                <button b-9bvyxychcn class="toc-toggle" aria-label="Open table of contents" aria-expanded="false" aria-controls="toc-pane">
+                    <span b-9bvyxychcn></span><span b-9bvyxychcn></span><span b-9bvyxychcn></span>
+                </button>
+            <a b-9bvyxychcn href="/" aria-label="OPC Foundation home">
+                <img src="/images/opclogo.png" class="site-logo" alt="OPC Foundation" />
+            </a>
+                <span b-9bvyxychcn class="site-header-spec">OPC UA for Machinery - Part 3: Job Management</span>
+                <form class="header-search" action="/specs/OPC-40001-3/search" method="get" role="search">
+                    <input b-9bvyxychcn type="search" name="q" placeholder="Search…" aria-label="Search this specification" />
+                    <button b-9bvyxychcn type="submit">Go</button>
+                </form>
+            <a b-9bvyxychcn class="header-report" href="mailto:webmaster@opcfoundation.org?subject=Online%20Reference%20Problem%20Report&amp;body=Current%20page%3A%20https%3A%2F%2Freference.opcfoundation.org%2Fspecs%2FOPC-40001-3%2F7.1" title="Report Problem" aria-label="Report Problem">
+                <svg b-9bvyxychcn viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
+                    <path b-9bvyxychcn fill="currentColor" d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" />
+                </svg>
+            </a>
+        </div>
+    </header>
+
+        <div b-9bvyxychcn class="spec-layout">
+            <nav b-9bvyxychcn id="toc-pane" class="toc-pane" aria-label="Table of contents">
+                        <a b-9bvyxychcn class="version-badge" href="/specs/OPC-40001-3">v1.0.1</a>
+                <ul class="toc-list"><li><a href="/specs/OPC-40001-3/1"><span class="toc-num">1</span><span class="toc-title">Scope</span></a></li><li><a href="/specs/OPC-40001-3/2"><span class="toc-num">2</span><span class="toc-title">Normative references</span></a></li><li><a href="/specs/OPC-40001-3/3"><span class="toc-num">3</span><span class="toc-title">Terms, definitions and conventions</span></a><ul><li><a href="/specs/OPC-40001-3/3.1"><span class="toc-num">3.1</span><span class="toc-title">Overview</span></a></li><li><a href="/specs/OPC-40001-3/3.2"><span class="toc-num">3.2</span><span class="toc-title">OPC UA for Machinery - Job Management terms</span></a><ul><li><a href="/specs/OPC-40001-3/3.2.1"><span class="toc-num">3.2.1</span><span class="toc-title">job order</span></a></li><li><a href="/specs/OPC-40001-3/3.2.2"><span class="toc-num">3.2.2</span><span class="toc-title">run</span></a></li><li><a href="/specs/OPC-40001-3/3.2.3"><span class="toc-num">3.2.3</span><span class="toc-title">Item</span></a></li></ul></li><li><a href="/specs/OPC-40001-3/3.3"><span class="toc-num">3.3</span><span class="toc-title">Abbreviated terms</span></a></li><li><a href="/specs/OPC-40001-3/3.4"><span class="toc-num">3.4</span><span class="toc-title">Conventions used in this document</span></a></li></ul></li><li><a href="/specs/OPC-40001-3/4"><span class="toc-num">4</span><span class="toc-title">General information to Machinery and OPC UA</span></a></li><li><a href="/specs/OPC-40001-3/5"><span class="toc-num">5</span><span class="toc-title">Use cases</span></a></li><li><a href="/specs/OPC-40001-3/6"><span class="toc-num">6</span><span class="toc-title">Machinery Job Management Information Model overview</span></a><ul><li><a href="/specs/OPC-40001-3/6.1"><span class="toc-num">6.1</span><span class="toc-title">Overview</span></a></li><li><a href="/specs/OPC-40001-3/6.2"><span class="toc-num">6.2</span><span class="toc-title">JobManagementType</span></a></li><li><a href="/specs/OPC-40001-3/6.3"><span class="toc-num">6.3</span><span class="toc-title">Integration into a MachineryItem</span></a></li><li><a href="/specs/OPC-40001-3/6.4"><span class="toc-num">6.4</span><span class="toc-title">Order of Execution of Job orders</span></a></li><li><a href="/specs/OPC-40001-3/6.5"><span class="toc-num">6.5</span><span class="toc-title">Predefined parameters for job management</span></a></li></ul></li><li><a href="/specs/OPC-40001-3/7"><span class="toc-num">7</span><span class="toc-title">Predefined Job-Order-Input and Job-Order-Response Information</span></a><ul><li><a class="active" href="/specs/OPC-40001-3/7.1"><span class="toc-num">7.1</span><span class="toc-title">Overview</span></a></li><li><a href="/specs/OPC-40001-3/7.2"><span class="toc-num">7.2</span><span class="toc-title">Predefined JobOrderParameters and JobResponseData</span></a></li><li><a href="/specs/OPC-40001-3/7.3"><span class="toc-num">7.3</span><span class="toc-title">Personnel</span></a></li><li><a href="/specs/OPC-40001-3/7.4"><span class="toc-num">7.4</span><span class="toc-title">Equipment</span></a></li><li><a href="/specs/OPC-40001-3/7.5"><span class="toc-num">7.5</span><span class="toc-title">Physical Assets</span></a></li><li><a href="/specs/OPC-40001-3/7.6"><span class="toc-num">7.6</span><span class="toc-title">Material</span></a></li></ul></li><li><a href="/specs/OPC-40001-3/8"><span class="toc-num">8</span><span class="toc-title">OPC UA ObjectTypes</span></a><ul><li><a href="/specs/OPC-40001-3/8.1"><span class="toc-num">8.1</span><span class="toc-title">JobManagementType ObjectType Definition</span></a></li></ul></li><li><a href="/specs/OPC-40001-3/9"><span class="toc-num">9</span><span class="toc-title">OPC UA DataTypes</span></a><ul><li><a href="/specs/OPC-40001-3/9.1"><span class="toc-num">9.1</span><span class="toc-title">JobExecutionMode</span></a></li><li><a href="/specs/OPC-40001-3/9.2"><span class="toc-num">9.2</span><span class="toc-title">JobResult</span></a></li><li><a href="/specs/OPC-40001-3/9.3"><span class="toc-num">9.3</span><span class="toc-title">OutputInformationDataType</span></a></li><li><a href="/specs/OPC-40001-3/9.4"><span class="toc-num">9.4</span><span class="toc-title">OutputInfoType</span></a></li><li><a href="/specs/OPC-40001-3/9.5"><span class="toc-num">9.5</span><span class="toc-title">BOMComponentInformationDataType</span></a></li><li><a href="/specs/OPC-40001-3/9.6"><span class="toc-num">9.6</span><span class="toc-title">BOMInformationDataType</span></a></li><li><a href="/specs/OPC-40001-3/9.7"><span class="toc-num">9.7</span><span class="toc-title">OutputPerformanceInfoDataType</span></a></li><li><a href="/specs/OPC-40001-3/9.8"><span class="toc-num">9.8</span><span class="toc-title">ProcessIrregularity</span></a></li></ul></li><li><a href="/specs/OPC-40001-3/10"><span class="toc-num">10</span><span class="toc-title">Profiles and ConformanceUnits</span></a><ul><li><a href="/specs/OPC-40001-3/10.1"><span class="toc-num">10.1</span><span class="toc-title">Conformance Units</span></a></li><li><a href="/specs/OPC-40001-3/10.2"><span class="toc-num">10.2</span><span class="toc-title">Profiles</span></a><ul><li><a href="/specs/OPC-40001-3/10.2.1"><span class="toc-num">10.2.1</span><span class="toc-title">Profile list</span></a></li><li><a href="/specs/OPC-40001-3/10.2.2"><span class="toc-num">10.2.2</span><span class="toc-title">Server Facets</span></a><ul><li><a href="/specs/OPC-40001-3/10.2.2.1"><span class="toc-num">10.2.2.1</span><span class="toc-title">Overview</span></a></li><li><a href="/specs/OPC-40001-3/10.2.2.2"><span class="toc-num">10.2.2.2</span><span class="toc-title">Machinery Job Management Base Server Facet</span></a></li></ul></li><li><a href="/specs/OPC-40001-3/10.2.3"><span class="toc-num">10.2.3</span><span class="toc-title">Client Facets</span></a><ul><li><a href="/specs/OPC-40001-3/10.2.3.1"><span class="toc-num">10.2.3.1</span><span class="toc-title">Overview</span></a></li></ul></li></ul></li></ul></li><li><a href="/specs/OPC-40001-3/11"><span class="toc-num">11</span><span class="toc-title">Namespaces</span></a><ul><li><a href="/specs/OPC-40001-3/11.1"><span class="toc-num">11.1</span><span class="toc-title">Namespace Metadata</span></a></li><li><a href="/specs/OPC-40001-3/11.2"><span class="toc-num">11.2</span><span class="toc-title">Handling of OPC UA Namespaces</span></a></li></ul></li><li><a href="/specs/OPC-40001-3/annex-a"><span class="toc-num">Annex A</span><span class="toc-title">Machinery - Job Management Namespace and mappings (Normative)</span></a><ul><li><a href="/specs/OPC-40001-3/a-1"><span class="toc-num">A.1</span><span class="toc-title">NodeSet and supplementary files for Machinery - Job Management Information Model</span></a></li></ul></li><li><a href="/specs/OPC-40001-3/annex-b"><span class="toc-num">Annex B</span><span class="toc-title">Examples (Informative)</span></a><ul><li><a href="/specs/OPC-40001-3/b-1"><span class="toc-num">B.1</span><span class="toc-title">Overview</span></a></li><li><a href="/specs/OPC-40001-3/b-2"><span class="toc-num">B.2</span><span class="toc-title">Example of a job order producing glass</span></a></li><li><a href="/specs/OPC-40001-3/b-3"><span class="toc-num">B.3</span><span class="toc-title">Example of a job breaking a tree down into a shelf floor, table legs and chips</span></a></li></ul></li></ul>
+            </nav>
+            <div b-9bvyxychcn id="toc-resizer" class="toc-resizer" role="separator" aria-orientation="vertical"
+                 aria-controls="toc-pane" aria-label="Resize table of contents" tabindex="0"
+                 aria-valuemin="180" aria-valuemax="900"
+                 title="Drag to resize · double-click to reset"></div>
+            <div b-9bvyxychcn class="toc-backdrop" aria-hidden="true"></div>
+            <main b-9bvyxychcn id="content" class="content-pane" role="main">
+                <h3><span class="sec-number">7.1</span> Overview</h3><p>ISA95 job control (<a class="xref" data-section-id="508037d9-d6ee-4c37-ba69-8e7b7d450ec3" data-anchor="ref_isa95jobcontrol" data-rid="ref_isa95jobcontrol" href="/specs/OPC-40001-3/2#ref_isa95jobcontrol">OPC 10031-4</a>) defines mechanisms to add job order information using the 2:<em data-term="isa95joborderdatatype" id="t-1">ISA95JobOrderDataType</em> and mechanisms getting the result or current status of the job order using the 2:<em data-term="isa95jobresponsedatatype" id="t-2">ISA95JobResponseDataType</em>. Both <em data-term="datatypes" id="t-3">DataTypes</em> define arrays of properties of a job order: general, personnel, equipment, physical assets, and material. The 2:<em data-term="isa95joborderdatatype" id="t-4">ISA95JobOrderDataType</em> uses the general properties to describe the job order and the other properties to define the requirements, whereas the 2:<em data-term="isa95jobresponsedatatype" id="t-5">ISA95JobResponseDataType</em> uses the general properties to describe the output and the other properties to provide the information what has been used.</p><p>This specification standardizes some of those parameters, which are application-specific from the view of OPC 10031-4.</p>
+
+            </main>
+        </div>
+
+    
+
+    <!-- In-page find bar (Ctrl+F) -->
+    <div b-9bvyxychcn id="find-bar" class="find-bar" hidden aria-label="Find on page">
+        <input b-9bvyxychcn id="find-input" type="text" placeholder="Find on page…" autocomplete="off" spellcheck="false" aria-label="Search text" />
+        <span b-9bvyxychcn id="find-count" class="find-count" aria-live="polite"></span>
+        <button b-9bvyxychcn id="find-prev" class="find-btn" title="Previous (Shift+Enter)">&#x2191;</button>
+        <button b-9bvyxychcn id="find-next" class="find-btn" title="Next (Enter)">&#x2193;</button>
+        <button b-9bvyxychcn id="find-close" class="find-btn find-close-btn" title="Close (Escape)" aria-label="Close">&#x2715;</button>
+    </div>
+
+    <script>
+    // ── ToC mobile drawer ────────────────────────────────────────────────────────
+    (function () {
+        var b = document.body;
+        function closeToc() {
+            b.classList.remove('toc-open');
+            var btn = document.querySelector('.toc-toggle');
+            if (btn) btn.setAttribute('aria-expanded', 'false');
+        }
+        document.addEventListener('click', function (e) {
+            if (e.target.closest('.toc-toggle')) {
+                var open = b.classList.toggle('toc-open');
+                var btn = e.target.closest('.toc-toggle');
+                btn.setAttribute('aria-expanded', String(open));
+            } else if (e.target.closest('.toc-backdrop') || e.target.closest('.toc-list a')) {
+                closeToc();
+            }
+        });
+    })();
+
+    // ── ToC pane resizer ─────────────────────────────────────────────────────────
+    // Writes --toc-w on <html> and persists it; the <head> script above replays it on
+    // the next page, so the width survives normal server-rendered navigation.
+    (function () {
+        var DEFAULT = 300, MIN = 180, KEY = 'opc.tocWidth';
+        var handle = document.getElementById('toc-resizer');
+        var layout = document.querySelector('.spec-layout');
+        if (!handle || !layout) return;
+
+        // Never let the ToC squeeze the content pane below a readable width.
+        function maxWidth() { return Math.max(MIN, Math.min(900, window.innerWidth - 320)); }
+
+        function current() {
+            var v = parseInt(getComputedStyle(document.documentElement)
+                             .getPropertyValue('--toc-w'), 10);
+            return isNaN(v) ? DEFAULT : v;
+        }
+
+        // The width the user asked for, before clamping — kept so a temporarily narrow
+        // window does not permanently shrink their preference.
+        var desired = current();
+
+        function apply(px, persist) {
+            var w = Math.round(Math.max(MIN, Math.min(maxWidth(), px)));
+            document.documentElement.style.setProperty('--toc-w', w + 'px');
+            handle.setAttribute('aria-valuenow', String(w));
+            if (persist) {
+                desired = w;
+                try { localStorage.setItem(KEY, String(w)); } catch (e) { }
+            }
+            return w;
+        }
+
+        handle.setAttribute('aria-valuenow', String(desired));
+
+        handle.addEventListener('pointerdown', function (e) {
+            if (e.button !== 0) return;
+            e.preventDefault();
+            handle.setPointerCapture(e.pointerId);
+            document.body.classList.add('toc-resizing');
+            var originX = layout.getBoundingClientRect().left;
+
+            function onMove(ev) { apply(ev.clientX - originX, false); }
+            function onUp(ev) {
+                handle.removeEventListener('pointermove', onMove);
+                handle.removeEventListener('pointerup', onUp);
+                handle.removeEventListener('pointercancel', onUp);
+                document.body.classList.remove('toc-resizing');
+                apply(ev.type === 'pointercancel' ? current() : ev.clientX - originX, true);
+            }
+            handle.addEventListener('pointermove', onMove);
+            handle.addEventListener('pointerup', onUp);
+            handle.addEventListener('pointercancel', onUp);
+        });
+
+        handle.addEventListener('dblclick', function () {
+            apply(DEFAULT, true);
+        });
+
+        handle.addEventListener('keydown', function (e) {
+            var step = e.shiftKey ? 50 : 10;
+            if (e.key === 'ArrowLeft')       { apply(current() - step, true); }
+            else if (e.key === 'ArrowRight') { apply(current() + step, true); }
+            else if (e.key === 'Home')       { apply(DEFAULT, true); }
+            else return;
+            e.preventDefault();
+        });
+
+        // A narrowed window can invalidate the stored width; re-clamp the *preference*
+        // (not the clamped value) so the chosen width returns when the window grows.
+        // Below the breakpoint the ToC is an overlay drawer sized by the stylesheet
+        // (min(--toc-w, 85vw)) — leave it alone rather than clamping against a viewport
+        // the drawer does not share with the content.
+        var narrow = window.matchMedia('(max-width: 768px)');
+        function sync() { if (!narrow.matches) { apply(desired, false); } }
+        window.addEventListener('resize', sync);
+        sync();
+    })();
+
+    // ── Scroll active ToC item into view on load ─────────────────────────────────
+    (function () {
+        var pane   = document.getElementById('toc-pane');
+        var active = pane && pane.querySelector('.toc-list a.active');
+        if (active) active.scrollIntoView({ block: 'center' });
+    })();
+
+    // ── In-page find bar (Ctrl/Cmd+F) ────────────────────────────────────────────
+    (function () {
+        var bar   = document.getElementById('find-bar');
+        var input = document.getElementById('find-input');
+        var count = document.getElementById('find-count');
+        var marks = [];
+        var cur   = -1;
+        var tocHits = [];   // ToC anchors holding a match — declipped while the find bar is open
+
+        // Content first, then the ToC: reading matches come before navigational ones.
+        function getPanes() {
+            var content = document.getElementById('content') ||
+                          document.querySelector('.content-pane') ||
+                          document.querySelector('main');
+            var toc = document.getElementById('toc-pane');
+            return [content, toc].filter(Boolean);
+        }
+
+        function clearMarks() {
+            marks.forEach(function (m) {
+                if (!m.parentNode) return;
+                m.parentNode.replaceChild(document.createTextNode(m.textContent), m);
+            });
+            getPanes().forEach(function (p) { p.normalize(); });
+            tocHits.forEach(function (a) { a.classList.remove('find-hit'); });
+            tocHits = [];
+            marks = [];
+            cur   = -1;
+        }
+
+        function highlightIn(pane, query) {
+            var lq = query.toLowerCase();
+            var walker = document.createTreeWalker(pane, NodeFilter.SHOW_TEXT, {
+                acceptNode: function (node) {
+                    var tag = node.parentElement && node.parentElement.tagName;
+                    return (tag === 'SCRIPT' || tag === 'STYLE')
+                        ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
+                }
+            });
+            var nodes = [];
+            var node;
+            while ((node = walker.nextNode())) nodes.push(node);
+            nodes.forEach(function (textNode) {
+                var text = textNode.textContent;
+                var lt   = text.toLowerCase();
+                var pos  = 0;
+                var frags = [];
+                var found = false;
+                while (pos < text.length) {
+                    var idx = lt.indexOf(lq, pos);
+                    if (idx < 0) { frags.push(document.createTextNode(text.slice(pos))); break; }
+                    found = true;
+                    if (idx > pos) frags.push(document.createTextNode(text.slice(pos, idx)));
+                    var m = document.createElement('mark');
+                    m.textContent = text.slice(idx, idx + query.length);
+                    frags.push(m);
+                    marks.push(m);
+                    pos = idx + lq.length;
+                }
+                if (!found) return;
+                var parent = textNode.parentNode;
+                var ref    = textNode.nextSibling;
+                // ToC titles are ellipsised to one line, so a match in the middle of a long
+                // title would be invisible — declip the entry that holds it.
+                var anchor = parent.closest ? parent.closest('.toc-list a') : null;
+                if (anchor && !anchor.classList.contains('find-hit')) {
+                    anchor.classList.add('find-hit');
+                    tocHits.push(anchor);
+                }
+                parent.removeChild(textNode);
+                frags.forEach(function (f) { parent.insertBefore(f, ref); });
+            });
+        }
+
+        function highlight(query) {
+            clearMarks();
+            count.textContent = '';
+            if (!query) return;
+            getPanes().forEach(function (pane) { highlightIn(pane, query); });
+            if (marks.length > 0) { scrollToMark(0); }
+            else { count.textContent = 'No results'; }
+        }
+
+        function inToc(m) {
+            return !!(m.closest && m.closest('#toc-pane'));
+        }
+
+        var tocOpenedByFind = false;
+        function setDrawer(open) {
+            document.body.classList.toggle('toc-open', open);
+            var btn = document.querySelector('.toc-toggle');
+            if (btn) btn.setAttribute('aria-expanded', String(open));
+        }
+
+        function scrollToMark(idx) {
+            if (!marks.length) return;
+            marks.forEach(function (m, i) { m.className = i === idx ? 'find-current' : ''; });
+            var m = marks[idx];
+            // On mobile the ToC is an off-screen drawer — open it before scrolling into it,
+            // and put it back when the walk returns to the content pane.
+            if (window.matchMedia('(max-width: 768px)').matches) {
+                if (inToc(m)) { setDrawer(true); tocOpenedByFind = true; }
+                else if (tocOpenedByFind) { setDrawer(false); tocOpenedByFind = false; }
+            }
+            m.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            cur = idx;
+            count.textContent = (cur + 1) + ' of ' + marks.length + (inToc(m) ? ' · contents' : '');
+        }
+
+        function openBar() { bar.hidden = false; input.focus(); input.select(); }
+        function closeBar() {
+            clearMarks();
+            if (tocOpenedByFind) { setDrawer(false); tocOpenedByFind = false; }
+            bar.hidden = true; input.value = ''; count.textContent = '';
+        }
+
+        document.addEventListener('keydown', function (e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'f') { e.preventDefault(); openBar(); }
+            if (e.key === 'Escape' && !bar.hidden) closeBar();
+        });
+        input.addEventListener('input', function () { highlight(input.value); });
+        input.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (marks.length) scrollToMark(e.shiftKey
+                    ? (cur - 1 + marks.length) % marks.length
+                    : (cur + 1) % marks.length);
+            }
+        });
+        document.getElementById('find-prev').addEventListener('click', function () {
+            if (marks.length) scrollToMark((cur - 1 + marks.length) % marks.length);
+        });
+        document.getElementById('find-next').addEventListener('click', function () {
+            if (marks.length) scrollToMark((cur + 1) % marks.length);
+        });
+        document.getElementById('find-close').addEventListener('click', closeBar);
+    })();
+
+    // ── Term click → keyword search ───────────────────────────────────────────────
+    (function () {
+        document.addEventListener('click', function (e) {
+            var el = e.target.closest('em[data-term]');
+            if (!el) return;
+            e.preventDefault();
+            var term = el.getAttribute('data-term');
+            if (!term) return;
+            var form   = document.querySelector('.header-search');
+            var action = form ? form.getAttribute('action') : null;
+            if (!action) {
+                var m = window.location.pathname.match(/^\/specs\/([^/]+)/);
+                action = m ? '/specs/' + m[1] + '/search' : null;
+            }
+            if (action) window.location.href = action + '?q=' + encodeURIComponent(term) + '&tab=term';
+        });
+    })();
+    </script>
+</body>
+</html>

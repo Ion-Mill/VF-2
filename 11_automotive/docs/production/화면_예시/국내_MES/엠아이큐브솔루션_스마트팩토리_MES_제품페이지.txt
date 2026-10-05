@@ -1,0 +1,318 @@
+SOURCE: https://www.micube.co.kr/smartfactory
+FETCHED: 2026-10-05
+
+스마트팩토리 스마트공장 - MES(생산관리시스템) 솔루션
+
+ 엠아이큐브솔루션㈜
+
+Industry
+
+Electric · Electronic
+
+Semiconductor
+
+Machinery
+
+Automotive
+
+Battery
+
+F&B
+
+Clients · Partners
+
+Solutions
+
+Smart Factory
+
+Manufacturing AI
+
+Digital Twin
+
+Consulting
+
+Resources
+
+Brochure
+
+Video
+
+Newsletter
+
+Tech Trend
+
+Careers
+
+About Us
+
+Who We Are
+
+IR
+
+News
+
+Contact Us
+
+KOR
+
+ ENG
+ CHN
+ JPN
+ VIE
+
+Contact Us
+
+ KOR
+ ENG
+ CHN
+ JPN
+ VIE
+
+Industry
+
+Electric · Electronic
+
+Semiconductor
+
+Machinery
+
+Automotive
+
+Battery
+
+F&B
+
+Clients · Partners
+
+Solutions
+
+Smart Factory
+
+Manufacturing AI
+
+Digital Twin
+
+Consulting
+
+Resources
+
+Brochure
+
+Video
+
+Newsletter
+
+Tech Trend
+
+Careers
+
+About Us
+
+Who We Are
+
+IR
+
+News
+
+Contact Us
+
+ Address
+ 서울 서초구 효령로55길 23 (서초동) 동산빌딩, 2~6F 
+
+ Tel
+ 02-553-2171
+
+ Email
+ sales@micube.co.kr
+
+ [IMG alt=엠아이큐브솔루션㈜ 블로그 바로가기]
+
+ [IMG alt=엠아이큐브솔루션㈜ 유튜브 바로가기]
+
+ [IMG alt=엠아이큐브솔루션㈜ 페이스북 바로가기]
+
+ Home
+
+ Solutions
+
+ Smart Factory
+
+ Smart Factory 
+
+관리의 사각지대는 사라지고
+ 의사 결정은 더욱 쉬워집니다.
+
+‘측정할 수 없는 것은 관리할 수 없다’라는 피터 드러커의 말처럼 데이터의 투명성을 확보하고 실시간 공유 체계를 마련하는 것은 생산성 향상을 위해 매우 중요합니다.
+
+제조 데이터를 투명하게 공유하여 현장에서 이슈가 발생할 경우 원인을 빠르게 추적하고, 민첩하고 정확한 의사 결정으로 골든 타임 내에 즉시 대응하도록 하는 MES 솔루션은 스마트 팩토리 시스템의 초석입니다.
+
+ [IMG alt=엠아이큐브솔루션]
+
+ [IMG alt=엠아이큐브솔루션]
+ [IMG alt=엠아이큐브솔루션]
+
+ SmartFactory
+
+ SmartEquipment
+
+ SmartUX
+
+ [IMG alt=엠아이큐브솔루션]
+ [IMG alt=엠아이큐브솔루션]
+
+SmartFactory 솔루션의 풍부한 기능과 모듈 중 필요한 것만 선택하여 초기 구축 비용을 절감하고, 데이터 보안성을 강화할 수 있는 클라우드 기반의 MES 솔루션입니다.
+ PDF Download
+
+ [IMG alt=엠아이큐브솔루션]
+
+실시간 생산 활동 정보 통합 모니터링
+
+제조 현장의 모든 데이터를 실시간으로 투명하게 공유하여 더욱 쉽고 빠른 의사 결정 지원
+
+우리 회사에 맞는 맞춤형 MES 설계
+
+업종 특성을 고려하여 선택적으로 모듈과 서비스를 적용할 수 있도록 캡슐화
+
+클라우드 버전 제공
+
+업무 단위별 독립적 서비스 제공 & Multi-Tenancy 구조로 유연성, 효율성 강화
+
+강화된 Lot Tracking
+
+현장 이슈에 신속하게 대응하기 위한 생산·품질·자재·설비 이력 추적 및 관리
+
+동적 GUI 기반의 UX/UI
+
+고객의 제조 현장에 최적화된 직관적 UX/UI 환경 제공
+
+ [IMG alt=엠아이큐브솔루션]
+ [IMG alt=엠아이큐브솔루션]
+
+설비와 스마트 팩토리 시스템(MES, EES 등) 간의 인터페이스를 통해 설비 제어 및 운영을 담당하는 설비 온라인 서버 구축을 위한 통합 솔루션입니다.
+ PDF Download
+
+ [IMG alt=엠아이큐브솔루션]
+
+다양한 통신 방식 및 프로토콜 지원
+
+HSMS/SECS, OPC, PLC, Socket 등 다양한 통신 프로토콜을 지원하여 현장의 다양한 장비를 간편하게 통합 관리
+
+Modeler, Emulator 기본 제공
+
+설비 정보 모델링부터 테스트까지 한 번에
+
+Auto-Failover 기능 지원
+
+No-Downtime을 위한 시스템 안정성 보장
+
+기준정보, 파라미터 업데이트 & 컴포넌트 Reloading
+
+실시간 파일 감지 (Excel, TXT, Word, PDF 등)
+
+ [IMG alt=엠아이큐브솔루션]
+ [IMG alt=엠아이큐브솔루션]
+
+차세대 웹 표준인 HTML5를 기반으로 Cross-browsing, Cross-platform을 지원하는 표준 UI 프레임워크로서 모듈 간의 종속성을 제거하여 확장이 용이하고 유연한 구조로 구성되어 있습니다.
+
+ [IMG alt=엠아이큐브솔루션]
+
+웹 표준(HTML5) 완벽 지원
+
+디바이스와 브라우저의 제약 없이 자유로운 사용 보장
+
+쉽고 간편한 시각화 도구
+
+쉽고 직관적인 UI Designer를 통한 화면 개발
+
+Custom Desktop 구현
+
+개인별 업무, 관리 포인트에 맞게 맞춤형 화면 구성
+
+개발 확장성, 유연성 보장
+
+확장이 용이한 구조, 쉽고 유연한 동적 화면 개발 환경 지원
+
+기대효과
+ 엠아이큐브솔루션은 최적의 솔루션을 제공합니다.
+
+ [IMG alt=엠아이큐브솔루션]
+ [IMG alt=엠아이큐브솔루션]
+
+제조 현장과 기간 시스템 간
+유기적 연계를 위한 MES 구축
+
+ [IMG alt=엠아이큐브솔루션]
+ [IMG alt=엠아이큐브솔루션]
+
+공정 관리의 투명성과 추적성을
+ 확보하여 생산성 향상
+
+ [IMG alt=엠아이큐브솔루션]
+ [IMG alt=엠아이큐브솔루션]
+
+실시간 데이터 공유를 통해
+ 신속하고 정확한 의사 결정 지원
+
+프롬프트를 입력해주세요
+
+ [IMG alt=엠아이큐브솔루션㈜]
+
+ 뉴스레터 구독하기
+
+ [IMG alt=엠아이큐브솔루션㈜ 블로그 바로가기]
+
+ [IMG alt=엠아이큐브솔루션㈜ 유튜브 바로가기]
+
+ [IMG alt=엠아이큐브솔루션㈜ 페이스북 바로가기]
+
+ 개인정보처리방침
+ 이용약관
+
+ CEO
+ 심효준
+
+ Address
+
+ [본사] 서울 서초구 효령로55길 23 (서초동) 동산빌딩, 2~6F
+ [수원지사] 경기도 수원시 영통구 삼성로 253 
+에이스스마트윙 영통 지식산업센터 716~717호
+ [남부지사] 경상남도 창원시 의창구 차룡로48번길 44 창원스마트업타워 제11층 1111호
+
+ Tel
+ 02-553-2171
+
+ Fax
+ 02-553-2172
+
+ Email 
+ sales@micube.co.kr
+
+ 뉴스레터 구독하기
+
+ 개인정보처리방침
+ 이용약관
+
+ ⓒ MICUBE Solution, Inc. All Rights Reserved.
+
+회사소개서 다운로드
+
+엠아이큐브솔루션에 관심 가져주셔서 감사합니다.
+아래 상세 내용을 입력해주세요.
+
+ 성명
+
+ 기업(기관)명
+
+ 직책/직급
+
+ 부서명
+
+ 이메일
+
+소재지
+
+ * 소재지의 경우 도/시를 기입해주세요.
+
+ 개인정보 수집 및 이용, 마케팅 목적의 광고성 정보 수신에 동의합니다. 
+
+ Submit

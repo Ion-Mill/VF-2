@@ -1,0 +1,506 @@
+{
+ "files": {
+  "Mazak01-20170111-20170112.txt": {
+   "trailing_state": "READY",
+   "trailing_hours": 0.0,
+   "observed_hours_incl_trailing": 11.17,
+   "active_pct_incl_trailing": 72.1,
+   "ready_pct_incl_trailing": 8.7,
+   "stopped_pct_incl_trailing": 19.0,
+   "state_changes_excl_unavailable": 100,
+   "observed_hours": 11.17,
+   "active_pct": 72.1,
+   "ready_pct": 8.7,
+   "stopped_pct": 19.0,
+   "feedhold_pct": 0.1,
+   "state_visits": {
+    "ACTIVE": 41,
+    "READY": 31,
+    "FEED_HOLD": 17,
+    "STOPPED": 10,
+    "INTERRUPTED": 1
+   },
+   "first": "2017-01-11 09:13:10.966000+00:00",
+   "last": "2017-01-11 20:23:33.564000+00:00",
+   "mode_minutes": {
+    "MANUAL_DATA_INPUT": 0.8,
+    "MANUAL": 127.6,
+    "AUTOMATIC": 541.8
+   },
+   "total_time_delta_over_elapsed_s": 1.0,
+   "total_time_delta_raw": 40230.0,
+   "auto_time_delta_over_elapsed_s": 0.723,
+   "auto_time_delta_raw": 29065.0,
+   "cut_time_delta_over_elapsed_s": 0.826,
+   "cut_time_delta_raw": 28093.0,
+   "PartCountAct_values": [
+    "0"
+   ]
+  },
+  "Mazak03-20180815-20180816.txt": {
+   "trailing_state": "READY",
+   "trailing_hours": 7.89,
+   "observed_hours_incl_trailing": 21.21,
+   "active_pct_incl_trailing": 47.8,
+   "ready_pct_incl_trailing": 45.0,
+   "stopped_pct_incl_trailing": 6.9,
+   "state_changes_excl_unavailable": 76,
+   "observed_hours": 13.32,
+   "active_pct": 76.1,
+   "ready_pct": 12.5,
+   "stopped_pct": 11.0,
+   "feedhold_pct": 0.42,
+   "state_visits": {
+    "ACTIVE": 25,
+    "READY": 23,
+    "STOPPED": 9,
+    "FEED_HOLD": 19
+   },
+   "first": "2018-08-15 07:01:44.724000+00:00",
+   "last": "2018-08-15 20:21:08.713000+00:00",
+   "mode_minutes": {
+    "MANUAL": 88.0,
+    "AUTOMATIC": 1068.9
+   },
+   "total_time_delta_over_elapsed_s": 1.0,
+   "total_time_delta_raw": 86400.0,
+   "auto_time_delta_over_elapsed_s": 0.255,
+   "auto_time_delta_raw": 26963.0,
+   "cut_time_delta_over_elapsed_s": 0.252,
+   "cut_time_delta_raw": 26626.0,
+   "PartCountAct_values": [
+    "0"
+   ]
+  }
+ },
+ "transition_counts": {
+  "ACTIVE": {
+   "ACTIVE": 0,
+   "FEED_HOLD": 28,
+   "INTERRUPTED": 1,
+   "READY": 35,
+   "STOPPED": 0
+  },
+  "FEED_HOLD": {
+   "ACTIVE": 36,
+   "FEED_HOLD": 0,
+   "INTERRUPTED": 0,
+   "READY": 0,
+   "STOPPED": 0
+  },
+  "INTERRUPTED": {
+   "ACTIVE": 1,
+   "FEED_HOLD": 0,
+   "INTERRUPTED": 0,
+   "READY": 0,
+   "STOPPED": 0
+  },
+  "READY": {
+   "ACTIVE": 27,
+   "FEED_HOLD": 8,
+   "INTERRUPTED": 0,
+   "READY": 0,
+   "STOPPED": 19
+  },
+  "STOPPED": {
+   "ACTIVE": 2,
+   "FEED_HOLD": 0,
+   "INTERRUPTED": 0,
+   "READY": 17,
+   "STOPPED": 0
+  }
+ },
+ "transition_prob": {
+  "ACTIVE": {
+   "ACTIVE": 0.0,
+   "FEED_HOLD": 0.545,
+   "INTERRUPTED": 0.015,
+   "READY": 0.409,
+   "STOPPED": 0.03
+  },
+  "FEED_HOLD": {
+   "ACTIVE": 0.778,
+   "FEED_HOLD": 0.0,
+   "INTERRUPTED": 0.0,
+   "READY": 0.222,
+   "STOPPED": 0.0
+  },
+  "INTERRUPTED": {
+   "ACTIVE": 1.0,
+   "FEED_HOLD": 0.0,
+   "INTERRUPTED": 0.0,
+   "READY": 0.0,
+   "STOPPED": 0.0
+  },
+  "READY": {
+   "ACTIVE": 0.673,
+   "FEED_HOLD": 0.0,
+   "INTERRUPTED": 0.0,
+   "READY": 0.0,
+   "STOPPED": 0.327
+  },
+  "STOPPED": {
+   "ACTIVE": 0.0,
+   "FEED_HOLD": 0.0,
+   "INTERRUPTED": 0.0,
+   "READY": 1.0,
+   "STOPPED": 0.0
+  }
+ },
+ "state_duration_s": {
+  "ACTIVE": {
+   "n": 66,
+   "mean": 992.4,
+   "p05": 1.1,
+   "p10": 1.3,
+   "p25": 6.3,
+   "p50": 12.4,
+   "p75": 532.4,
+   "p90": 4542.4,
+   "p95": 5947.6,
+   "min": 1.1,
+   "max": 8818.8,
+   "lognorm": {
+    "n": 66,
+    "sigma": 2.841,
+    "median_s": 48.1
+   },
+   "total_min": 1091.6
+  },
+  "FEED_HOLD": {
+   "n": 36,
+   "mean": 6.8,
+   "p05": 1.1,
+   "p10": 1.1,
+   "p25": 2.1,
+   "p50": 3.3,
+   "p75": 6.9,
+   "p90": 14.4,
+   "p95": 26.9,
+   "min": 1.0,
+   "max": 43.4,
+   "lognorm": {
+    "n": 36,
+    "sigma": 1.01,
+    "median_s": 3.8
+   },
+   "total_min": 4.1
+  },
+  "INTERRUPTED": {
+   "n": 1,
+   "mean": 4.2,
+   "p05": 4.2,
+   "p10": 4.2,
+   "p25": 4.2,
+   "p50": 4.2,
+   "p75": 4.2,
+   "p90": 4.2,
+   "p95": 4.2,
+   "min": 4.2,
+   "max": 4.2,
+   "lognorm": null,
+   "total_min": 0.1
+  },
+  "READY": {
+   "n": 52,
+   "mean": 182.7,
+   "p05": 1.1,
+   "p10": 1.1,
+   "p25": 2.5,
+   "p50": 10.1,
+   "p75": 56.0,
+   "p90": 184.0,
+   "p95": 510.5,
+   "min": 1.0,
+   "max": 5306.4,
+   "lognorm": {
+    "n": 52,
+    "sigma": 2.038,
+    "median_s": 13.5
+   },
+   "total_min": 158.4
+  },
+  "STOPPED": {
+   "n": 19,
+   "mean": 680.9,
+   "p05": 3.4,
+   "p10": 4.3,
+   "p25": 34.7,
+   "p50": 70.1,
+   "p75": 357.9,
+   "p90": 1821.8,
+   "p95": 3212.0,
+   "min": 2.3,
+   "max": 6208.2,
+   "lognorm": {
+    "n": 19,
+    "sigma": 2.176,
+    "median_s": 91.9
+   },
+   "total_min": 215.6
+  }
+ },
+ "time_share_pct_pooled": {
+  "ACTIVE": 74.3,
+  "FEED_HOLD": 0.3,
+  "INTERRUPTED": 0.0,
+  "READY": 10.8,
+  "STOPPED": 14.7
+ },
+ "visits_share_pct_pooled": {
+  "ACTIVE": 37.9,
+  "READY": 29.9,
+  "FEED_HOLD": 20.7,
+  "STOPPED": 10.9,
+  "INTERRUPTED": 0.6
+ },
+ "stopped_prev_state": {
+  "READY": 17,
+  "ACTIVE": 2
+ },
+ "state_changes_per_hour_observed": 7.1,
+ "alarm_episodes": 25,
+ "alarm_level_share_pct": {
+  "Warning": 76.0,
+  "Fault": 24.0
+ },
+ "alarm_level_by_file": {
+  "Mazak01-": {
+   "Fault": 0,
+   "Warning": 10
+  },
+  "Mazak03-": {
+   "Fault": 6,
+   "Warning": 9
+  }
+ },
+ "alarm_by_cond_key": {
+  "logic_cond": {
+   "Fault": 0,
+   "Warning": 8
+  },
+  "motion_cond": {
+   "Fault": 6,
+   "Warning": 0
+  },
+  "system_cond": {
+   "Fault": 0,
+   "Warning": 11
+  }
+ },
+ "alarm_distinct_codes": 12,
+ "alarm_dur_s": {
+  "n": 25,
+  "mean": 475.7,
+  "p05": 1.6,
+  "p10": 2.6,
+  "p25": 2.7,
+  "p50": 3.8,
+  "p75": 6.7,
+  "p90": 1658.2,
+  "p95": 3458.1,
+  "min": 1.2,
+  "max": 4934.7
+ },
+ "alarm_dur_s_by_level": {
+  "Fault": {
+   "n": 6,
+   "mean": 1604.1,
+   "p05": 4.6,
+   "p10": 5.3,
+   "p25": 7.6,
+   "p50": 449.8,
+   "p75": 3057.2,
+   "p90": 4357.3,
+   "p95": 4646.0,
+   "min": 4.0,
+   "max": 4934.7
+  },
+  "Warning": {
+   "n": 19,
+   "mean": 119.3,
+   "p05": 1.3,
+   "p10": 2.4,
+   "p25": 2.7,
+   "p50": 3.8,
+   "p75": 4.0,
+   "p90": 12.7,
+   "p95": 250.1,
+   "min": 1.2,
+   "max": 2171.0
+  }
+ },
+ "alarm_exec_state_at_start": {
+  "STOPPED": 13,
+  "ACTIVE": 7,
+  "READY": 5
+ },
+ "alarm_per_observed_hour": 1.02,
+ "alarm_per_file_per_observed_hour": {
+  "Mazak01-": 0.9,
+  "Mazak03-": 1.13
+ },
+ "alarm_hour_dist": {
+  "7": 1,
+  "8": 1,
+  "9": 5,
+  "11": 13,
+  "13": 2,
+  "14": 1,
+  "15": 1,
+  "19": 1
+ },
+ "alarm_followed_by_STOPPED_within_10min_pct": 56.0,
+ "hurco": {
+  "Hurco02_clean_2017-02-01": {
+   "events": 65933,
+   "span_hours": 35.34,
+   "program_status_transitions": 41,
+   "time_by_state_min": {
+    "READY": 496.6,
+    "ACTIVE": 201.7,
+    "FEED_HOLD": 0.0,
+    "PROGRAM_STOPPED": 1096.2,
+    "PROGRAM_COMPLETED": 325.7
+   },
+   "active_to_end": [
+    {
+     "end_state": "PROGRAM_STOPPED",
+     "min": 9.35
+    },
+    {
+     "end_state": "PROGRAM_STOPPED",
+     "min": 2.3
+    },
+    {
+     "end_state": "PROGRAM_STOPPED",
+     "min": 49.75
+    },
+    {
+     "end_state": "PROGRAM_STOPPED",
+     "min": 2.55
+    },
+    {
+     "end_state": "PROGRAM_STOPPED",
+     "min": 2.54
+    },
+    {
+     "end_state": "PROGRAM_COMPLETED",
+     "min": 2.49
+    },
+    {
+     "end_state": "PROGRAM_COMPLETED",
+     "min": 10.5
+    },
+    {
+     "end_state": "PROGRAM_STOPPED",
+     "min": 1.35
+    },
+    {
+     "end_state": "PROGRAM_COMPLETED",
+     "min": 5.05
+    },
+    {
+     "end_state": "PROGRAM_COMPLETED",
+     "min": 24.9
+    },
+    {
+     "end_state": "PROGRAM_COMPLETED",
+     "min": 25.7
+    },
+    {
+     "end_state": "PROGRAM_COMPLETED",
+     "min": 29.17
+    },
+    {
+     "end_state": "PROGRAM_STOPPED",
+     "min": 0.14
+    },
+    {
+     "end_state": "PROGRAM_COMPLETED",
+     "min": 6.51
+    },
+    {
+     "end_state": "PROGRAM_COMPLETED",
+     "min": 29.38
+    }
+   ],
+   "part_count_values": [
+    "1909",
+    "1910",
+    "1911",
+    "1912",
+    "1913",
+    "1914",
+    "1915",
+    "1916",
+    "1917"
+   ],
+   "part_count_interval_min": [
+    1511.6,
+    11.0,
+    17.9,
+    176.7,
+    55.3,
+    170.9,
+    21.6,
+    35.1
+   ],
+   "part_count_interval_stats": {
+    "n": 8,
+    "mean": 250.0,
+    "p05": 13.4,
+    "p10": 15.8,
+    "p25": 20.6,
+    "p50": 45.2,
+    "p75": 172.4,
+    "p90": 577.2,
+    "p95": 1044.4,
+    "min": 11.0,
+    "max": 1511.6
+   }
+  },
+  "Hurco02_box_op1": {
+   "events": 12430,
+   "span_hours": 0.54,
+   "program_status_transitions": 2,
+   "time_by_state_min": {
+    "ACTIVE": 29.8
+   },
+   "active_to_end": [
+    {
+     "end_state": "PROGRAM_COMPLETED",
+     "min": 29.85
+    }
+   ],
+   "part_count_values": []
+  },
+  "Hurco01_raw_20170518": {
+   "events": 2211,
+   "span_hours": 2750.79,
+   "program_status_transitions": 24,
+   "time_by_state_min": {
+    "READY": 16.2,
+    "FEED_HOLD": 0.1,
+    "ACTIVE": 1.6
+   },
+   "active_to_end": [],
+   "part_count_values": [
+    "3226"
+   ]
+  }
+ },
+ "hurco02_completed_cycle_min": {
+  "n": 8,
+  "mean": 16.71,
+  "p05": 3.39,
+  "p10": 4.28,
+  "p25": 6.14,
+  "p50": 17.7,
+  "p75": 26.57,
+  "p90": 29.23,
+  "p95": 29.31,
+  "min": 2.49,
+  "max": 29.38
+ }
+}

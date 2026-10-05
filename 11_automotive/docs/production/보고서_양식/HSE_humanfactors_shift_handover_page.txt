@@ -1,0 +1,276 @@
+Skip to content 
+
+ Search HSE.GOV.UK
+
+ Industries
+
+ Construction 
+
+ Health and social care services 
+
+ Pesticides 
+
+ Domestic gas 
+
+ Public services 
+
+ Agriculture 
+
+ Entertainment 
+
+ Waste management and recycling 
+
+ Motor vehicle repair 
+
+ Offshore oil and gas 
+
+ Industries A to Z 
+
+ Topics
+
+ Basics for your business 
+
+ RIDDOR 
+
+ COSHH 
+
+ Display screen equipment (DSE) 
+
+ Asbestos 
+
+ Work equipment and machinery 
+
+ Stress and mental health 
+
+ PAT testing (portable appliance testing) 
+
+ Work at height 
+
+ COMAH 
+
+ Topics A to Z 
+
+ About
+
+ About us 
+
+ News 
+
+ Sign up for free updates 
+
+ Contact us 
+
+ Statistics 
+
+ Careers 
+
+ Products
+
+ Books and tools 
+
+ Training and events 
+
+ Testing and monitoring 
+
+ Research and consultancy 
+
+ Home 
+
+ Topics 
+
+ Human factors 
+
+ Human factors - Common risks
+
+ variants -->
+
+ Shift handover
+
+ Effective communication is important in all organisations when a task and its associated responsibilities are handed over to another person or work team.  This can occur at shift changeover, between shift and day workers, or between different functions of an organisation within a shift eg operations and maintenance.  
+
+ Why is handover important?
+
+ The goal of handover is the accurate reliable communication of task-relevant information across shift changes or between teams thereby ensuring continuity of safe and effective working.  Effective handover consists of three elements:
+
+ a period of preparation by out-going personnel
+
+ handover where out-going and in-coming personnel communicate to exchange task-relevant information
+
+ cross-checking of information by in-coming personnel as they assume responsibility for the task
+
+ Many accidents have occurred because of failure of communication at shift handover, the majority of these involved planned maintenance work. In the 1983 Sellafield Beach Incident, highly radioactive waste liquor was accidentally discharged to sea, due to a failure of communication between shifts. The Cullen Report concluded that one of the many factors that contributed to the Piper Alpha disaster was failure of information transmission at shift handover.
+
+ Key principles in handover
+
+ To ensure safe handover, organisations should:
+
+ Identify higher risk handovers
+
+ develop staff's communication skills
+
+ emphasise the importance of shift handover
+
+ provide procedures for shift handover
+
+ plan for maintenance work to be completed within one shift if possible
+
+ Shift handover should be:
+
+ conducted face-to-face
+
+ two-way, with both participants taking joint responsibility
+
+ done using both verbal and written communication
+
+ based on an analysis of the information needs of incoming staff
+
+ given as much time and resource as necessary
+
+ Improvements should also be made by:
+
+ designing support equipment, such as logs and computer displays, with consideration of the operators needs
+
+ involving the end-users when implementing any changes to existing communication methods at shift handover
+
+ More information on safety critical communications 
+
+ Although several of these documents are about the specific communication issue of achieving an accurate, safe shift handover, many of the principles are relevant to other types of safety-critical communications.
+
+ Extract from inspectors human factors toolkit - Safety critical communications 
+
+ Reducing error and influencing behaviour (HSG48) 
+
+ HSE Books 1999, ISBN 0 7176 2452 8 (see page 38 - 'Effective Shift Communication')
+
+ Effective shift handover - a literature review OTO 96 003 
+
+ This report reviews theoretical work and published incidents, draws conclusions regarding the current state of knowledge and highlights implications for best practice.  
+
+ Improving communication at shift handover 
+
+ This methodology aims to characterise the type and quality of shift handover activities and influence the improvement of current practice.  
+
+ Safe communication at shift handover - setting and implementing standards
+
+ This paper describes a site-wide initiative to improve shift handover communication on a UK oil refinery.  
+
+ Person to person communication model
+
+ A one-page illustration of the key aspects in communications from a sender to receiver.  
+
+ Human factors aspects of remote operation in process plants
+
+ Contract research report 432/2002. When centralising control (eg to a central control room) communications often suffer and operators can lose their previous (hands-on) overview of the real plant. 
+
+ Related content
+
+ Ventilation of kitchens and catering establishments 
+
+ Preventing exposure to carbon monoxide in commercial kitchens 
+
+ Back to top
+
+ Is this page useful? 
+
+ Yes 
+ No 
+
+ Report a problem with this page 
+
+ Footer links
+
+ Industries
+
+ Construction 
+
+ Health and social care services 
+
+ Pesticides 
+
+ Domestic gas 
+
+ Public services 
+
+ Agriculture 
+
+ Entertainment 
+
+ Waste management and recycling 
+
+ Motor vehicle repair 
+
+ Offshore oil and gas 
+
+ Industries A to Z 
+
+ Topics
+
+ Basics for your business 
+
+ RIDDOR 
+
+ COSHH 
+
+ Display screen equipment (DSE) 
+
+ Asbestos 
+
+ Work equipment and machinery 
+
+ Stress and mental health 
+
+ PAT testing (portable appliance testing) 
+
+ Work at height 
+
+ COMAH 
+
+ Topics A to Z 
+
+ About
+
+ About us 
+
+ News 
+
+ Sign up for free updates 
+
+ Contact us 
+
+ Statistics 
+
+ Careers 
+
+ Products
+
+ Books and tools 
+
+ Training and events 
+
+ Testing and monitoring 
+
+ Research and consultancy 
+
+ Support links
+
+ Search 
+
+ Copyright 
+
+ Cookies 
+
+ Privacy 
+
+ Accessibility 
+
+ Disclosure of information 
+
+ Vulnerability disclosure 
+
+ Consultations 
+
+ Other languages 
+
+ All content is available under the Open Government Licence v3.0 , except where otherwise stated
+
+ 2024-10-29

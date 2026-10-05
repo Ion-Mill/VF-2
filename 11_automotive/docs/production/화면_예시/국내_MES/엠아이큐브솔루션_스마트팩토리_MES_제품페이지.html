@@ -1,0 +1,1243 @@
+
+
+<!DOCTYPE html>
+<html lang="ko" data-lang="ko" data-page-key="smartfactory">
+  <head>
+    <!--=================================================
+            메타 태그
+    ==================================================-->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=yes">
+
+    <title>스마트팩토리 스마트공장 - MES(생산관리시스템) 솔루션</title>
+    <meta name="title"      content="스마트팩토리 스마트공장 - MES(생산관리시스템) 솔루션">
+    <meta name="description"    content="엠아이큐브솔루션의 제조 설비 인터페이스 솔루션과 MES(생산관리시스템), 설비종합효율(OEE) 관리 솔루션 기반 스마트공장 구축, 고도화 사례">
+    <meta name="keywords"    content="스마트 팩토리, 스마트 공장, 제조 지능화, MES, EES, FA, OEE, APS, SPC, AI, smartfactory, manufacturing intelligence, manufacturing ai, 정부 지원사업, SI, 디지털 트윈, digital twin, CPS, RMS, EPT, FDC, PMS, MOM, 제조운영관리, 제조실행시스템, 설비종합효율">
+
+    <meta itemprop="name" content="스마트팩토리 스마트공장 - MES(생산관리시스템) 솔루션">
+    <meta itemprop="image" content="https://www.micube.co.kr/views/res/imgs/common/og.jpg">
+    <meta itemprop="url" content="https://www.micube.co.kr/smartfactory">
+    <meta itemprop="description" content="엠아이큐브솔루션의 제조 설비 인터페이스 솔루션과 MES(생산관리시스템), 설비종합효율(OEE) 관리 솔루션 기반 스마트공장 구축, 고도화 사례">
+    <meta itemprop="keywords" content="스마트 팩토리, 스마트 공장, 제조 지능화, MES, EES, FA, OEE, APS, SPC, AI, smartfactory, manufacturing intelligence, manufacturing ai, 정부 지원사업, SI, 디지털 트윈, digital twin, CPS, RMS, EPT, FDC, PMS, MOM, 제조운영관리, 제조실행시스템, 설비종합효율">
+
+    <meta property="og:type"    content="website">
+    <meta property="og:title"    content="스마트팩토리 스마트공장 - MES(생산관리시스템) 솔루션">
+    <meta property="og:description"  content="엠아이큐브솔루션의 제조 설비 인터페이스 솔루션과 MES(생산관리시스템), 설비종합효율(OEE) 관리 솔루션 기반 스마트공장 구축, 고도화 사례">
+    <meta property="og:image"    content="https://www.micube.co.kr/views/res/imgs/common/og.jpg">
+    <meta property="og:url"    content="https://www.micube.co.kr/smartfactory">
+
+    <meta name="twitter:card"    content="summary">
+    <meta name="twitter:title"    content="스마트팩토리 스마트공장 - MES(생산관리시스템) 솔루션">
+    <meta name="twitter:description"  content="엠아이큐브솔루션의 제조 설비 인터페이스 솔루션과 MES(생산관리시스템), 설비종합효율(OEE) 관리 솔루션 기반 스마트공장 구축, 고도화 사례">
+    <meta name="twitter:image"    content="https://www.micube.co.kr/views/res/imgs/common/og.jpg">
+    <meta name="twitter:domain"    content="https://www.micube.co.kr/smartfactory">
+    
+                        <script type="application/ld+json">
+        { 
+        "@context": "http://schema.org",
+        "@type": "Organization",
+        "name": "엠아이큐브솔루션",
+        "url": "https://www.micube.co.kr/",
+        "sameAs": ["https://blog.naver.com/micubesolution","https://www.youtube.com/channel/UCF5g4sqJGDC9S1PclsLDpVw","https://www.facebook.com/micube.official/"]
+        }
+      </script>
+        <meta name="naver-site-verification" content="95fbc51f5c2ca0cc705ba19f65aa462dade4c03b">
+    <meta name="google-site-verification" content="qhL3lODRaJ1tOkeFR4_9veITZO2vjRn7wXxCCMycFPc">
+
+        
+    <link rel="canonical" href="https://www.micube.co.kr/smartfactory">
+
+    <!--=================================================
+        파비콘
+    ==================================================-->
+    <link rel="shortcut icon" href="/views/res/imgs/common/favicon.png">
+
+              <!-- Google Tag Manager -->
+      <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer','GTM-TC4LWNF');</script>
+      <!-- End Google Tag Manager -->
+    
+    <!--=================================================
+        스타일시트
+    ==================================================-->
+    <!--#####===== 폰트 CSS 라이브러리 =====#####-->
+    <link  href="/views/res/fonts/font.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+            <!-- <link href="//fonts.googleapis.com/earlyaccess/nanumgothic.css" rel="stylesheet"> -->
+    <!-- <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900" rel="stylesheet">-->
+    <!-- <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:400,400i,700,700i" rel="stylesheet">-->
+
+    <!-- fontawesome -->
+    <link rel='stylesheet' href="/views/res/lib/default/fontawesome/css/all.min.css">
+
+    <!--#####===== 필수 CSS 라이브러리 =====#####-->
+    <!-- jQuery UI -->
+    <link rel="stylesheet" href="/views/res/lib/default/jquery-ui-1.12.1/jquery-ui.min.css">
+
+    <!--#####===== 공통 CSS =====#####-->
+    <link id="baseCss" href="/views/res/css/base.css?v=38" media="all" rel="stylesheet">
+    <link href="/views/res/css/common.css?v=38" media="all" rel="stylesheet">
+
+    <!--#####===== 파일 CSS =====#####-->
+    
+    <!--#####===== 페이지 CSS =====#####-->
+    
+    <!--#####===== 페이지 레이아웃 CSS 라이브러리 =====#####-->
+    
+    <!--#####===== 서브탑 (subTop) CSS =====#####-->
+          <link rel="stylesheet" href="/views/layout/subtop/subtop_original/style.css?v=38">
+    
+    <!--#####===== 페이지 레이아웃 CSS =====#####-->
+          <link rel="stylesheet" href="/views/layout/page/menu_solutions/smartfactory.css?v=38">
+    
+    
+    <!--#####===== 게시판 CSS =====#####-->
+    
+    <!--#####===== 프레임 CSS =====#####-->
+    
+          <!--#####===== 섹션 CSS =====#####-->
+      
+
+    <!--=================================================
+            스크립트
+    ==================================================-->
+    <!--[if lt IE 9]>
+    <script src="/views/res/lib/default/respond.min.js"></script>
+    <script src="/views/res/lib/default/excanvas.min.js"></script>
+    <![endif]-->
+    <script>
+      window.gReconers = {};
+      window.gReconers.current_lang = "ko";
+      window.gReconers.default_lang = "ko";
+      window.gReconers.currency = "원";
+      window.gReconers.VIEWURL = "/views/";
+      window.gReconers.BASEURL = "https://www.micube.co.kr/";
+    </script>
+
+    <!-- 초기화코드 스크립트 -->
+    <script src="/views/res/js/initialize.js"></script>
+    <!--#####===== 필수 JS 라이브러리 =====#####-->
+    <!-- 제이쿼리 -->
+    <script src="/views/res/lib/default/jquery-1.12.4/jquery-1.12.4.min.js"></script>
+    <!-- 제이쿼리 UI -->
+    <script src="/views/res/lib/default/jquery-ui-1.12.1/jquery-ui.min.js"></script>
+    <!-- 부트스트랩 -->
+    <script src="/views/res/lib/default/bootstrap_modal/js/bootstrap.min.js"></script>
+  </head>
+  <body id="smartfactory-smartfactory-body" class="" oncontextmenu='return false'>
+    <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TC4LWNF"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+  
+  <!--=================================================
+            네비게이션
+  ==================================================-->
+  <!--#####===== 네비 CSS =====#####-->
+<link rel="stylesheet" href="/views/layout/nav/nav6/style.css?v=38">
+
+<!--네비게이션-->
+<header class="header sub-header">
+  <div class="fixed-wrap">
+    <div class="header-inner">
+      <h1 class="logo">
+        <a href="/" class="logo-img">
+          <span class="sr-only">엠아이큐브솔루션㈜</span>
+        </a>
+      </h1>
+      <!-- PC 네비게이션 -->
+      <nav class="pc-nav">
+        <ul class="menu-list-wrap">
+                                    <li class="menu-list ">
+                <a href="/electric" target="_self" class="relative has-sub">
+                  <p class="text">Industry</p>
+                </a>
+                <ul class="sub-menu-list-wrap">
+                                    <li class="sub-menu-list li1 ">
+                    <a href="/electric" target="_self">
+                    <p class="text">Electric · Electronic</p>
+                    </a>
+                  </li>
+                                    <li class="sub-menu-list li2 ">
+                    <a href="/semiconductor" target="_self">
+                    <p class="text">Semiconductor</p>
+                    </a>
+                  </li>
+                                    <li class="sub-menu-list li3 ">
+                    <a href="/machinery" target="_self">
+                    <p class="text">Machinery</p>
+                    </a>
+                  </li>
+                                    <li class="sub-menu-list li4 ">
+                    <a href="/automotive" target="_self">
+                    <p class="text">Automotive</p>
+                    </a>
+                  </li>
+                                    <li class="sub-menu-list li5 ">
+                    <a href="/battery" target="_self">
+                    <p class="text">Battery</p>
+                    </a>
+                  </li>
+                                    <li class="sub-menu-list li6 ">
+                    <a href="/fnb" target="_self">
+                    <p class="text">F&B</p>
+                    </a>
+                  </li>
+                                    <li class="sub-menu-list li7 ">
+                    <a href="/clients" target="_self">
+                    <p class="text">Clients · Partners</p>
+                    </a>
+                  </li>
+                                  </ul>
+              </li>
+                                                <li class="menu-list on">
+                <a href="/smartfactory" target="_self" class="relative has-sub">
+                  <p class="text">Solutions</p>
+                </a>
+                <ul class="sub-menu-list-wrap">
+                                    <li class="sub-menu-list li1 on">
+                    <a href="/smartfactory" target="_self">
+                    <p class="text">Smart Factory</p>
+                    </a>
+                  </li>
+                                    <li class="sub-menu-list li2 ">
+                    <a href="/manufacturingai" target="_self">
+                    <p class="text">Manufacturing AI</p>
+                    </a>
+                  </li>
+                                    <li class="sub-menu-list li3 ">
+                    <a href="/digitaltwin" target="_self">
+                    <p class="text">Digital Twin</p>
+                    </a>
+                  </li>
+                                    <li class="sub-menu-list li4 ">
+                    <a href="/consulting" target="_self">
+                    <p class="text">Consulting</p>
+                    </a>
+                  </li>
+                                  </ul>
+              </li>
+                                                <li class="menu-list ">
+                <a href="/resources" target="_self" class="relative has-sub">
+                  <p class="text">Resources</p>
+                </a>
+                <ul class="sub-menu-list-wrap">
+                                    <li class="sub-menu-list li1 ">
+                    <a href="/resources/lists/introduction" target="_self">
+                    <p class="text">Brochure</p>
+                    </a>
+                  </li>
+                                    <li class="sub-menu-list li2 ">
+                    <a href="/resources/lists/video" target="_self">
+                    <p class="text">Video</p>
+                    </a>
+                  </li>
+                                    <li class="sub-menu-list li3 ">
+                    <a href="https://cubeletter.stibee.com/" target="_blank">
+                    <p class="icon-link">Newsletter</p>
+                    </a>
+                  </li>
+                                    <li class="sub-menu-list li4 ">
+                    <a href="/techtrend" target="_self">
+                    <p class="text">Tech Trend</p>
+                    </a>
+                  </li>
+                                  </ul>
+              </li>
+                                                <li class="menu-list ">
+                <a href="https://micube.career.greetinghr.com/" target="_blank">
+                  <p class="icon-link">Careers</p>
+                </a>
+              </li>
+                                                <li class="menu-list ">
+                <a href="/micube" target="_self" class="relative has-sub">
+                  <p class="text">About Us</p>
+                </a>
+                <ul class="sub-menu-list-wrap">
+                                    <li class="sub-menu-list li1 ">
+                    <a href="/micube" target="_self">
+                    <p class="text">Who We Are</p>
+                    </a>
+                  </li>
+                                    <li class="sub-menu-list li2 ">
+                    <a href="/ir" target="_self">
+                    <p class="text">IR</p>
+                    </a>
+                  </li>
+                                    <li class="sub-menu-list li3 ">
+                    <a href="/news" target="_self">
+                    <p class="text">News</p>
+                    </a>
+                  </li>
+                                    <li class="sub-menu-list li4 ">
+                    <a href="/contactus/write" target="_self">
+                    <p class="text">Contact Us</p>
+                    </a>
+                  </li>
+                                  </ul>
+              </li>
+                              </ul>
+      </nav>
+      <!-- MOBILE 네비게이션 -->
+      <div class="header-right-wrap">
+        <div class="language-wrap languageBtn">
+          <div class="language-btn"></div>
+          <div class="language-text">KOR</div>
+          <div class="language-box">
+                                                                                    <a href="/en/smartfactory">ENG</a>
+                                                                                        <a href="/zh-cn/smartfactory">CHN</a>
+                                                                                        <a href="/jp/smartfactory">JPN</a>
+                                                                                        <a href="/vi/smartfactory">VIE</a>
+                                                    </div>
+        </div>
+        <div class="menu-contact">
+          <a href="/contactus/write" class="" target="_blank">
+            <i class="icon"></i><p class="text">Contact Us</p>
+          </a>
+        </div>
+        <div class="btnPcNav menu-btn-wrap">
+          <div class="menu-btn">
+            <span class="line"></span>
+          </div>
+        </div>
+      </div>
+      <div class="navBg"></div>
+      </div>
+
+      <div class="open-nav-wrap">
+        <div class="area">
+          <div class="inner-wrap flex-row gutter-12-xl">
+            <div class="open-nav-group col-12 col-10-xl">
+              <!-- 언어 버튼 --> 
+              <div class="language-wrap languageBtn none-xl">
+                                                    <a class="lang-txt active" href="/smartfactory">KOR</a>
+                                                                      <a class="lang-txt " href="/en/smartfactory">ENG</a>
+                                                                      <a class="lang-txt " href="/zh-cn/smartfactory">CHN</a>
+                                                                      <a class="lang-txt " href="/jp/smartfactory">JPN</a>
+                                                                      <a class="lang-txt " href="/vi/smartfactory">VIE</a>
+                                                </div>
+              <ul class="menu-list-wrap">
+                                                      <li class="menu-list disabled">
+                      <a href="/electric" target="_self" class="relative has-sub">
+                        <p class="text">Industry</p>
+                        <div class="btn-more"></div>
+                      </a>
+                      <ul class="sub-menu-list-wrap">
+                                                <li class="sub-menu-list li1 disabled">
+                          <a href="/electric" target="_self">
+                            <p class="text">Electric · Electronic</p>
+                            <div class="btn-more"></div>
+                          </a>
+                        </li>
+                                                <li class="sub-menu-list li2 disabled">
+                          <a href="/semiconductor" target="_self">
+                            <p class="text">Semiconductor</p>
+                            <div class="btn-more"></div>
+                          </a>
+                        </li>
+                                                <li class="sub-menu-list li3 disabled">
+                          <a href="/machinery" target="_self">
+                            <p class="text">Machinery</p>
+                            <div class="btn-more"></div>
+                          </a>
+                        </li>
+                                                <li class="sub-menu-list li4 disabled">
+                          <a href="/automotive" target="_self">
+                            <p class="text">Automotive</p>
+                            <div class="btn-more"></div>
+                          </a>
+                        </li>
+                                                <li class="sub-menu-list li5 disabled">
+                          <a href="/battery" target="_self">
+                            <p class="text">Battery</p>
+                            <div class="btn-more"></div>
+                          </a>
+                        </li>
+                                                <li class="sub-menu-list li6 disabled">
+                          <a href="/fnb" target="_self">
+                            <p class="text">F&B</p>
+                            <div class="btn-more"></div>
+                          </a>
+                        </li>
+                                                <li class="sub-menu-list li7 disabled">
+                          <a href="/clients" target="_self">
+                            <p class="text">Clients · Partners</p>
+                            <div class="btn-more"></div>
+                          </a>
+                        </li>
+                                              </ul>
+                    </li>
+                                                                        <li class="menu-list on">
+                      <a href="/smartfactory" target="_self" class="relative has-sub">
+                        <p class="text">Solutions</p>
+                        <div class="btn-more"></div>
+                      </a>
+                      <ul class="sub-menu-list-wrap">
+                                                <li class="sub-menu-list li1 on">
+                          <a href="/smartfactory" target="_self">
+                            <p class="text">Smart Factory</p>
+                            <div class="btn-more"></div>
+                          </a>
+                        </li>
+                                                <li class="sub-menu-list li2 disabled">
+                          <a href="/manufacturingai" target="_self">
+                            <p class="text">Manufacturing AI</p>
+                            <div class="btn-more"></div>
+                          </a>
+                        </li>
+                                                <li class="sub-menu-list li3 disabled">
+                          <a href="/digitaltwin" target="_self">
+                            <p class="text">Digital Twin</p>
+                            <div class="btn-more"></div>
+                          </a>
+                        </li>
+                                                <li class="sub-menu-list li4 disabled">
+                          <a href="/consulting" target="_self">
+                            <p class="text">Consulting</p>
+                            <div class="btn-more"></div>
+                          </a>
+                        </li>
+                                              </ul>
+                    </li>
+                                                                        <li class="menu-list disabled">
+                      <a href="/resources" target="_self" class="relative has-sub">
+                        <p class="text">Resources</p>
+                        <div class="btn-more"></div>
+                      </a>
+                      <ul class="sub-menu-list-wrap">
+                                                <li class="sub-menu-list li1 disabled">
+                          <a href="/resources/lists/introduction" target="_self">
+                            <p class="text">Brochure</p>
+                            <div class="btn-more"></div>
+                          </a>
+                        </li>
+                                                <li class="sub-menu-list li2 disabled">
+                          <a href="/resources/lists/video" target="_self">
+                            <p class="text">Video</p>
+                            <div class="btn-more"></div>
+                          </a>
+                        </li>
+                                                <li class="sub-menu-list li3 disabled">
+                          <a href="https://cubeletter.stibee.com/" target="_blank">
+                            <p class="icon-link">Newsletter</p>
+                            <div class="btn-more"></div>
+                          </a>
+                        </li>
+                                                <li class="sub-menu-list li4 disabled">
+                          <a href="/techtrend" target="_self">
+                            <p class="text">Tech Trend</p>
+                            <div class="btn-more"></div>
+                          </a>
+                        </li>
+                                              </ul>
+                    </li>
+                                                                        <li class="menu-list disabled">
+                      <a href="https://micube.career.greetinghr.com/" target="_blank">
+                        <p class="icon-link">Careers</p>
+                      </a>
+                    </li>
+                                                                        <li class="menu-list disabled">
+                      <a href="/micube" target="_self" class="relative has-sub">
+                        <p class="text">About Us</p>
+                        <div class="btn-more"></div>
+                      </a>
+                      <ul class="sub-menu-list-wrap">
+                                                <li class="sub-menu-list li1 disabled">
+                          <a href="/micube" target="_self">
+                            <p class="text">Who We Are</p>
+                            <div class="btn-more"></div>
+                          </a>
+                        </li>
+                                                <li class="sub-menu-list li2 disabled">
+                          <a href="/ir" target="_self">
+                            <p class="text">IR</p>
+                            <div class="btn-more"></div>
+                          </a>
+                        </li>
+                                                <li class="sub-menu-list li3 disabled">
+                          <a href="/news" target="_self">
+                            <p class="text">News</p>
+                            <div class="btn-more"></div>
+                          </a>
+                        </li>
+                                                <li class="sub-menu-list li4 disabled">
+                          <a href="/contactus/write" target="_self">
+                            <p class="text">Contact Us</p>
+                            <div class="btn-more"></div>
+                          </a>
+                        </li>
+                                              </ul>
+                    </li>
+                                                </ul>
+            </div>
+            <div class="info-group none block-xl col-2-xl">
+              <address class="info-items">
+                <dl class="item">
+                  <dt class="title">Address</dt>
+                                    <dd class="cont">서울 서초구 효령로55길 23 (서초동) 동산빌딩, 2~6F</dd>                  
+                                  </dl>
+                <dl class="item">
+                  <dt class="title">Tel</dt>
+                                      <dd class="cont"><a href="tel:02-553-2171">02-553-2171</a></dd>
+                                  </dl>
+                <dl class="item">
+                  <dt class="title">Email</dt>
+                  <dd class="cont"><a href="mailto:sales@micube.co.kr">sales@micube.co.kr</a></dd>
+                </dl>
+              </address>
+              <div class="icon-sns-wrap">
+                <a class="icon-sns" href="https://blog.naver.com/micubesolution" target="_blank">
+                  <img src="/views/res/imgs/common/icon_sns_blog.svg" alt="엠아이큐브솔루션㈜ 블로그 바로가기">
+                </a>
+                <a class="icon-sns" href="https://www.youtube.com/channel/UCF5g4sqJGDC9S1PclsLDpVw" target="_blank">
+                  <img src="/views/res/imgs/common/icon_sns_youtube.svg" alt="엠아이큐브솔루션㈜ 유튜브 바로가기">
+                </a>
+                <a class="icon-sns" href="https://www.facebook.com/micube.official/" target="_blank">
+                  <img src="/views/res/imgs/common/icon_sns_facebook.svg" alt="엠아이큐브솔루션㈜ 페이스북 바로가기">
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+  <!--#####===== 네비 JS =====#####-->
+  <script src="/views/layout/nav/nav6/script.js"></script>
+
+  <!--=================================================
+          페이지 컨텐츠
+  ==================================================-->
+  <div class="page-wrap clear">
+
+      <!--서브탑-->
+    <div class="sub-top ">
+      <div class="sub-top-image none-md" style="background-image: url(/views/res/imgs/page/subtop/subtop_smartfactory-m@3x.jpg);"></div>
+    <div class="sub-top-image none block-md" style="background-image: url(/views/res/imgs/page/subtop/subtop_smartfactory.jpg);"></div>
+      <div class="sub-top-text-wrap">
+    <div class="area">
+      <div class="sub-top-inner">
+                <div class="bread-crumb">
+          <ul class="list-wrap">
+            <li class="list home">
+              <a href="/">Home</a>
+            </li>
+                          <li class="list">
+                                <a href="/smartfactory">Solutions</a>
+              </li>
+                          <li class="list">
+                                <a href="/smartfactory">Smart Factory</a>
+              </li>
+                      </ul>
+        </div>
+                <div class="sub-top-text">
+          <div>
+            Smart Factory          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!--.sub-top end-->
+    
+          <!--브레드크럼-->
+            
+  <!--=================================================
+            페이지 컨텐츠
+    ==================================================-->
+  <div id="smartfactory-smartfactory-page"
+       class="page-container relative"
+       data-layout="menu_solutions/smartfactory">
+    <div class="page-content-wrap">
+  
+<article class="common-intro-title-wrap">
+  <div class="area">
+    <div class="inner flex-row gutter-12-lg" data-scrollani="slideUp">
+      <div class="common-sub-title-wrap col-12 col-6-lg mb-25 mb-0-lg">
+        <h2 class="title">관리의 사각지대는 사라지고<br class="none block-lg"> 의사 결정은 더욱 쉬워집니다.</h2>
+      </div>
+      <div class="common-sub-title-wrap col-12 col-6-lg">
+                  <p class="desc">‘측정할 수 없는 것은 관리할 수 없다’라는 피터 드러커의 말처럼 데이터의 투명성을 확보하고 실시간 공유 체계를 마련하는 것은 생산성 향상을 위해 매우 중요합니다.</p>
+                  <p class="desc">제조 데이터를 투명하게 공유하여 현장에서 이슈가 발생할 경우 원인을 빠르게 추적하고, 민첩하고 정확한 의사 결정으로 골든 타임 내에 즉시 대응하도록 하는 MES 솔루션은 스마트 팩토리 시스템의 초석입니다.</p>
+              </div>
+    </div>
+    <div class="solutions-img-wrap" data-scrollani="slideUp"  data-scrollani-delay="0.15">
+      <img class="zoom-img none-lg" src="/views/res/imgs/common/zoom-in.svg" alt="엠아이큐브솔루션">
+      <div class="img-group">
+        <img class="img none-lg" src="/views/res/imgs/page/solutions/smartfactory-graphic_n1.svg" alt="엠아이큐브솔루션">
+        <img class="img none block-lg" src="/views/res/imgs/page/solutions/smartfactory-graphic_n1.svg" alt="엠아이큐브솔루션">
+      </div>
+    </div>
+  </div>
+</article>  <!-- solutions_sec1 -->
+<section class="solutions-sec1">
+  <ul id="tabMenu" class="tab-menu none block-lg">
+    <div class="inner">
+            <li class="menu SmartFactory">
+        <a href="#SmartFactory"><i class="icon"></i>SmartFactory</a>
+              </li>
+            <li class="menu SmartEquipment">
+        <a href="#SmartEquipment"><i class="icon"></i>SmartEquipment</a>
+              </li>
+            <li class="menu SmartUX">
+        <a href="#SmartUX"><i class="icon"></i>SmartUX</a>
+              </li>
+          </div>
+  </ul>
+  <div class="cont-wrap">
+        <div id="SmartFactory" class="cont-list">
+      <div class="area">
+        <div class="cont-list-inner flex-row gutter-12-lg">
+          <div class="list col-12 col-7-lg">
+            <div class="list-top">
+              <div class="inner">
+                <img class="icon-img none-lg" src="/views/res/imgs/page/solutions/solution-icon-01.svg" alt="엠아이큐브솔루션">
+                <img class="logo-img" src="/views/res/imgs/page/solutions/solution-logo-01.svg" alt="엠아이큐브솔루션">
+                <p class="desc" data-lang="ko">SmartFactory 솔루션의 풍부한 기능과 모듈 중 필요한 것만 선택하여 초기 구축 비용을 절감하고, 데이터 보안성을 강화할 수 있는 클라우드 기반의 MES 솔루션입니다.</p>
+                                <button class="btn-icon downloadLink" data-idx="1231">PDF Download<span class="icon-download"></span></button>
+                              </div>
+              <img class="icon-img none block-lg" src="/views/res/imgs/page/solutions/solution-icon-01.svg" alt="엠아이큐브솔루션">
+            </div>
+            <div class="list-bot">
+                            <div class="desc-wrap">
+                <div class="inner">
+                  <p class="title">실시간 생산 활동 정보 통합 모니터링</p>
+                                    <p class="desc">제조 현장의 모든 데이터를 실시간으로 투명하게 공유하여 더욱 쉽고 빠른 의사 결정 지원</p>
+                                  </div>
+              </div>
+                            <div class="desc-wrap">
+                <div class="inner">
+                  <p class="title">우리 회사에 맞는 맞춤형 MES 설계</p>
+                                    <p class="desc">업종 특성을 고려하여 선택적으로 모듈과 서비스를 적용할 수 있도록 캡슐화</p>
+                                  </div>
+              </div>
+                            <div class="desc-wrap">
+                <div class="inner">
+                  <p class="title">클라우드 버전 제공</p>
+                                    <p class="desc">업무 단위별 독립적 서비스 제공 & Multi-Tenancy 구조로 유연성, 효율성 강화</p>
+                                  </div>
+              </div>
+                            <div class="desc-wrap">
+                <div class="inner">
+                  <p class="title">강화된 Lot Tracking</p>
+                                    <p class="desc">현장 이슈에 신속하게 대응하기 위한 생산·품질·자재·설비 이력 추적 및 관리</p>
+                                  </div>
+              </div>
+                            <div class="desc-wrap">
+                <div class="inner">
+                  <p class="title">동적 GUI 기반의 UX/UI</p>
+                                    <p class="desc">고객의 제조 현장에 최적화된 직관적 UX/UI 환경 제공</p>
+                                  </div>
+              </div>
+                          </div>
+          </div>
+        </div>
+              </div>
+    </div>
+        <div id="SmartEquipment" class="cont-list">
+      <div class="area">
+        <div class="cont-list-inner flex-row gutter-12-lg">
+          <div class="list col-12 col-7-lg">
+            <div class="list-top">
+              <div class="inner">
+                <img class="icon-img none-lg" src="/views/res/imgs/page/solutions/solution-icon-02.svg" alt="엠아이큐브솔루션">
+                <img class="logo-img" src="/views/res/imgs/page/solutions/solution-logo-02.svg" alt="엠아이큐브솔루션">
+                <p class="desc" data-lang="ko">설비와 스마트 팩토리 시스템(MES, EES 등) 간의 인터페이스를 통해 설비 제어 및 운영을 담당하는 설비 온라인 서버 구축을 위한 통합 솔루션입니다.</p>
+                                <button class="btn-icon downloadLink" data-idx="1232">PDF Download<span class="icon-download"></span></button>
+                              </div>
+              <img class="icon-img none block-lg" src="/views/res/imgs/page/solutions/solution-icon-02.svg" alt="엠아이큐브솔루션">
+            </div>
+            <div class="list-bot">
+                            <div class="desc-wrap">
+                <div class="inner">
+                  <p class="title">다양한 통신 방식 및 프로토콜 지원</p>
+                                    <p class="desc">HSMS/SECS, OPC, PLC, Socket 등 다양한 통신 프로토콜을 지원하여 현장의 다양한 장비를 간편하게 통합 관리</p>
+                                  </div>
+              </div>
+                            <div class="desc-wrap">
+                <div class="inner">
+                  <p class="title">Modeler, Emulator 기본 제공</p>
+                                    <p class="desc">설비 정보 모델링부터 테스트까지 한 번에</p>
+                                  </div>
+              </div>
+                            <div class="desc-wrap">
+                <div class="inner">
+                  <p class="title">Auto-Failover 기능 지원</p>
+                                    <p class="desc">No-Downtime을 위한 시스템 안정성 보장</p>
+                                  </div>
+              </div>
+                            <div class="desc-wrap">
+                <div class="inner">
+                  <p class="title">기준정보, 파라미터 업데이트 & 컴포넌트 Reloading</p>
+                                  </div>
+              </div>
+                            <div class="desc-wrap">
+                <div class="inner">
+                  <p class="title">실시간 파일 감지 (Excel, TXT, Word, PDF 등)</p>
+                                  </div>
+              </div>
+                          </div>
+          </div>
+        </div>
+              </div>
+    </div>
+        <div id="SmartUX" class="cont-list">
+      <div class="area">
+        <div class="cont-list-inner flex-row gutter-12-lg">
+          <div class="list col-12 col-7-lg">
+            <div class="list-top">
+              <div class="inner">
+                <img class="icon-img none-lg" src="/views/res/imgs/page/solutions/solution-icon-03.svg" alt="엠아이큐브솔루션">
+                <img class="logo-img" src="/views/res/imgs/page/solutions/solution-logo-03.svg" alt="엠아이큐브솔루션">
+                <p class="desc" data-lang="ko">차세대 웹 표준인 HTML5를 기반으로 Cross-browsing, Cross-platform을 지원하는 표준 UI 프레임워크로서 모듈 간의 종속성을 제거하여 확장이 용이하고 유연한 구조로 구성되어 있습니다.</p>
+                              </div>
+              <img class="icon-img none block-lg" src="/views/res/imgs/page/solutions/solution-icon-03.svg" alt="엠아이큐브솔루션">
+            </div>
+            <div class="list-bot">
+                            <div class="desc-wrap">
+                <div class="inner">
+                  <p class="title">웹 표준(HTML5) 완벽 지원</p>
+                                    <p class="desc">디바이스와 브라우저의 제약 없이 자유로운 사용 보장</p>
+                                  </div>
+              </div>
+                            <div class="desc-wrap">
+                <div class="inner">
+                  <p class="title">쉽고 간편한 시각화 도구</p>
+                                    <p class="desc">쉽고 직관적인 UI Designer를 통한 화면 개발</p>
+                                  </div>
+              </div>
+                            <div class="desc-wrap">
+                <div class="inner">
+                  <p class="title">Custom Desktop 구현</p>
+                                    <p class="desc">개인별 업무, 관리 포인트에 맞게 맞춤형 화면 구성</p>
+                                  </div>
+              </div>
+                            <div class="desc-wrap">
+                <div class="inner">
+                  <p class="title">개발 확장성, 유연성 보장</p>
+                                    <p class="desc">확장이 용이한 구조, 쉽고 유연한 동적 화면 개발 환경 지원</p>
+                                  </div>
+              </div>
+                          </div>
+          </div>
+        </div>
+              </div>
+    </div>
+      </div>
+</section>  <!-- solutions_sec2 -->
+<section class="solutions-sec2">
+  <div class="area">
+    <div class="title-wrap">
+      <div class="subtitle">기대효과</div>
+      <h5 class="title">엠아이큐브솔루션은 최적의 솔루션을 제공합니다.</h5>
+    </div>
+    <ul class="effect-wrap flex-row gutter-12-lg">
+            <li class="list col-12 col-4-lg">
+        <div div class="img-wrap">
+          <img class="img none-lg" src="/views/res/imgs/page/solutions/smartfactory-effect-img-01-m.jpg" alt="엠아이큐브솔루션">
+          <img class="img none block-lg" src="/views/res/imgs/page/solutions/smartfactory-effect-img-01.jpg" alt="엠아이큐브솔루션">
+        </div>
+        <p class="desc">제조 현장과 기간 시스템 간<br>유기적 연계를 위한 MES 구축</p>
+      </li>
+            <li class="list col-12 col-4-lg">
+        <div div class="img-wrap">
+          <img class="img none-lg" src="/views/res/imgs/page/solutions/smartfactory-effect-img-02-m.jpg" alt="엠아이큐브솔루션">
+          <img class="img none block-lg" src="/views/res/imgs/page/solutions/smartfactory-effect-img-02.jpg" alt="엠아이큐브솔루션">
+        </div>
+        <p class="desc">공정 관리의 투명성과 추적성을<br> 확보하여 생산성 향상</p>
+      </li>
+            <li class="list col-12 col-4-lg">
+        <div div class="img-wrap">
+          <img class="img none-lg" src="/views/res/imgs/page/solutions/smartfactory-effect-img-03-m.jpg" alt="엠아이큐브솔루션">
+          <img class="img none block-lg" src="/views/res/imgs/page/solutions/smartfactory-effect-img-03.jpg" alt="엠아이큐브솔루션">
+        </div>
+        <p class="desc">실시간 데이터 공유를 통해<br> 신속하고 정확한 의사 결정 지원</p>
+      </li>
+          </ul>
+  </div>
+</section></div>
+  </div><!--/.page-container-->
+  </div>
+
+  <!--=================================================
+          팝업
+  ==================================================-->
+  <!--=================================================
+        알림 창
+==================================================-->
+<div id="alert_modal" class="modal alert-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <p class="modal-title"></p>
+        <button type="button" class="close btn-close" data-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn-popup btn-point modal-btn ok_btn" data-dismiss="modal"></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--=================================================
+        컨펌 창
+==================================================-->
+<div id="confirm_modal" class="alert-modal modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <p class="modal-title"></p> 
+        <button type="button" class="close btn-close" data-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body word-break"></div>
+      <div class="modal-footer">
+        <div class="btn-group">
+          <button type="button" class="btn-popup btn-outline-st1 cancel_btn" data-dismiss="modal"></button>
+          <button type="button" class="btn-popup btn-point ok_btn"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--=================================================
+        프롬프트 확인창
+==================================================-->
+<div id="prompt_modal" class="alert-modal modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <p class="modal-title">프롬프트를 입력해주세요</p>
+        <button type="button" class="close btn-close" data-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="prompt_text"></div>
+        <input type="text" class="form-control prompt_input">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-popup btn-point ok_btn" data-dismiss="modal"></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--=================================================
+        팝업
+==================================================-->
+
+
+  <!--=================================================
+          폼
+  ==================================================-->
+  <!--=================================================
+      삭제 폼
+==================================================-->
+<form id="delete_bc_form" action="/_board/delete" method="post">
+  <input type="hidden" name="ctn" value="994f5659f0d4ac11bc786e02fdb898d9" />
+  <input type="hidden" name="pkval">
+  <input type="hidden" name="redirect"  value="https://www.micube.co.kr/smartfactory">
+</form>
+
+<!--=================================================
+      리스트 폼
+==================================================-->
+<form id="list_form" action="/_crud/list_change" method="post">
+  <input type="hidden" name="table"    value="">
+  <input type="hidden" name="redirect"  value="https://www.micube.co.kr/smartfactory">
+  <input type="hidden" name="type">
+  <input type="hidden" name="json">
+</form>
+
+
+<!--=================================================
+      다운로드 폼
+==================================================-->
+<form id="download_form" action="/_files/download" method="get">
+  <input type="hidden" name="idx">
+</form>
+      
+<footer id="footer">
+  <div class="footer-content-wrap">
+    <div class="area">
+      <div class="footer-inner flex-row gutter-6">
+        <div class="footer-top col-12 col-6-md col-3-xl">
+          <div class="footer-logo">
+            <img src="/views/res/imgs/common/logo_img_footer.svg" alt="엠아이큐브솔루션㈜">
+          </div>
+          <div class="aside-group">
+                          <a class="newsletter none inline-flex-md" href=https://cubeletter.stibee.com/ target="_blank">뉴스레터 구독하기</a>
+                        <div class="icon-sns-wrap">
+                            <a class="icon-sns" href="https://blog.naver.com/micubesolution" target="_blank">
+                <img src="/views/res/imgs/common/icon_sns_blog.svg" alt="엠아이큐브솔루션㈜ 블로그 바로가기">
+              </a>
+                            <a class="icon-sns" href="https://www.youtube.com/channel/UCF5g4sqJGDC9S1PclsLDpVw" target="_blank">
+                <img src="/views/res/imgs/common/icon_sns_youtube.svg" alt="엠아이큐브솔루션㈜ 유튜브 바로가기">
+              </a>
+                            <a class="icon-sns" href="https://www.facebook.com/micube.official/" target="_blank">
+                <img src="/views/res/imgs/common/icon_sns_facebook.svg" alt="엠아이큐브솔루션㈜ 페이스북 바로가기">
+              </a>
+                          </div>
+            <div class="footer-link-wrap none block-md">
+              <div class="inner">
+                <a href="/ko/privacy" class="link-txt"><em class="point">개인정보처리방침</em></a>
+                                <a href="/ko/term" class="link-txt">이용약관</a>
+                              </div>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom col-12 col-6-md col-4-xl">
+          <div class="footer-content">
+            <address class="info-items">
+                            <dl class="item">
+                <dt class="title">CEO</dt>
+                <dd class="cont">심효준</dd>
+              </dl>
+                                          <dl class="item">
+                <dt class="title">Address</dt>
+                <div class="cont-wrap">
+                                    <dd class="cont">[본사] 서울 서초구 효령로55길 23 (서초동) 동산빌딩, 2~6F</dd>
+                  <dd class="cont">[수원지사] 경기도 수원시 영통구 삼성로 253 <br class="none block-xxl">에이스스마트윙 영통 지식산업센터 716~717호</dd>
+                  <dd class="cont">[남부지사] 경상남도 창원시 의창구 차룡로48번길 44 창원스마트업타워 제11층 1111호</dd>
+                                  </div>
+              </dl>
+              <dl class="item">
+                <dt class="title">Tel</dt>
+                                  <dd class="cont"><a href="tel:02-553-2171">02-553-2171</a></dd>
+                              </dl>
+              <dl class="item">
+                <dt class="title">Fax</dt>
+                                  <dd class="cont"><a href="javascript:;">02-553-2172</a></dd>
+                              </dl>
+              <dl class="item">
+                <dt class="title">Email</dt>                
+                <dd class="cont"><a href="mailto:sales@micube.co.kr">sales@micube.co.kr</a></dd>
+              </dl>
+            </address>
+          </div>
+          <div class="footer-bottom-aside">
+            <div class="footer-link-wrap none-md">
+                              <a class="newsletter" href=https://cubeletter.stibee.com/ target="_blank">뉴스레터 구독하기</a>
+                            <div class="inner">
+                <a href="/ko/privacy" class="link-txt"><em class="point">개인정보처리방침</em></a>
+                                <a href="/ko/term" class="link-txt">이용약관</a>
+                              </div>
+            </div>
+            <small class="copyright">
+              ⓒ <span class="site-name">MICUBE Solution, Inc. </span> All Rights Reserved.
+            </small>
+          </div>
+          </div>
+        </div>
+      </div>
+  </div>
+</footer>
+<!-- 모달 팝업-->
+
+  
+  <!--=================================================
+          언어데이터
+  ==================================================-->
+  <script>
+  var UTILS = {};
+
+  UTILS.langObj = {
+    //유효성 검사
+    require         : "필수값",
+
+    empty         : "입력",
+    select     : "선택",
+    radio     : "선택",
+    check      : "체크",
+    empty_comb      : "<%= label %><%= pp %> <%= action %>해주세요",
+
+    file_comb      : "파일 확장자는 <%= ext %>만 등록 가능합니다.",
+
+    length_min_txt      : "글자 이상",
+    length_max_txt      : "글자 이하",
+    length_min_comb      : "<%= label %><%= pp %> <%= min_len %> <%= length_min_txt %> 이어야 합니다",
+    length_max_comb      : "<%= label %><%= pp %> <%= max_len %> <%= length_max_txt %> 이어야 합니다",
+    length_all_comb      : "<%= label %><%= pp %> <%= min_len %> <%= length_min_txt %> <%= max_len %> <%= length_max_txt %> 이어야 합니다",
+
+    pwsame_confirm : "비밀번호가 일치하지 않습니다.",
+
+    num         : "숫자만 입력 가능합니다.",
+    dashnum     : "숫자, 특수기호(-)만 입력 가능합니다.",
+    low_eng     : "영문 소문자만 입력 가능합니다.",
+    up_eng      : "영문 대문자만 입력 가능합니다.",
+    eng         : "영문만 입력 가능합니다.",
+    kor         : "한글만 입력 가능합니다.",
+    low_eng_num : "영문 소문자, 숫자, 특수기호(_)만 입력 가능합니다.",
+    up_eng_num  : "영문 대문자, 숫자, 특수기호(_)만 입력 가능합니다.",
+    eng_num     : "영문, 숫자, 특수기호(_)만 입력 가능합니다.",
+    eng_num_dash: "",
+    email       : "올바른 이메일 주소만 입력 가능합니다.",
+    mobile      : "올바른 휴대폰 번호만 입력 가능합니다.",
+    phone       : "올바른 전화번호만 입력 가능합니다.",
+    url         : "올바른 도메인 정보만 입력 가능합니다.",
+    password    : "영어와 숫자가 조합 되어야 합니다.",
+    password2    : "영어대문자, 소문자, 숫자, 특수문자가 조합 되어야 합니다.",
+    regxp_comb    : "<%= label %><%= pp %> <%= regexp %>",
+    link    : "도메인 형식에 맞게 입력해주세요",
+
+    db_exist_comb    : "<%= label %>에 중복된 값이 존재합니다.",
+    
+    //성별
+    msg_남성 : "남성 Male", //남성
+    msg_여성 : "여성 Female", //여성
+
+    //회원가입
+    msg_이전 : "이전", // 이전
+    msg_다음 : "다음", // 다음
+    msg_가입하기 : "가입하기", // 가입하기
+
+
+    // [ Message ]
+    //공통
+    msg_확인 : "확인", // 확인
+    msg_확인2 : "Confirm", // 확인
+    msg_취소 : "취소", // 취소
+    msg_취소2 : "Cancel", // 취소
+    msg_등록 : "등록",// 등록
+    msg_수정 : "수정",// 수정
+    msg_되었습니다 : "되었습니다",// 되었습니다
+    msg_등록완료 : "등록되었습니다.",// 등록되었습니다.
+    msg_삭제완료 : "삭제되었습니다.",// 삭제되었습니다.
+    msg_삭제확인 : "삭제하시겠습니까?",// 삭제하시겠습니까?
+    msg_탈퇴확인 : "탈퇴하시겠습니까?", //탈퇴하시겠습니까?
+    msg_검색어입력 : "검색어를 입력해주세요.", // 검색어를 입력해주세요.
+    msg_잘못된요청 : "잘못된 요청입니다.",// 잘못된 요청입니다.
+    msg_인증실패 : "인증에 실패하였습니다.<br> 에러내용 : ",// 인증에 실패하였습니다.<br> 에러내용
+    msg_필수값입력 : "필수값을 입력해주세요.",//필수값을 입력해주세요.
+    msg_자동등록방지 : "자동등록방지를 체크해주세요.",//자동등록방지를 체크해주세요.
+    msg_최대길이1 : "최대 ",// 최대 @숫자
+    msg_최대길이2 : "자 이내로 작성해주세요",// @자 이내로 작성해주세요
+
+    //로그인&회원가입
+    msg_로그인_필요 : "로그인이 필요합니다.",//로그인이 필요합니다.
+    msg_로그인_필요_로그인페이지이동 : "로그인이 필요합니다.<br>로그인페이지로 이동하시겠습니까?",//로그인이 필요합니다. 로그인페이지로 이동하시겠습니까?
+    msg_회원가입_종료 : "회원가입을 종료하시겠습니까?",//회원가입을 종료하시겠습니까?
+
+    //상품
+    msg_선택 : "선택",// 선택
+    msg_선택된상품을 : "선택된 상품을",// 선택된 상품을 (영문은 '하시겠습니까?'와 반대 순서)
+    msg_하시겠습니까 : "하시겠습니까?",// 하시겠습니까?
+    msg_상품_상품선택 : "주문하실 상품을 선택하여 주세요.",// 주문하실 상품을 선택하여 주세요.
+    msg_상품_옵션선택 : "필수 옵션을 선택해 주세요.",// 필수 옵션을 선택해 주세요.
+    msg_상품_추가상품만구매불가 : "추가상품만 구매할 수 없습니다.",// 추가상품만 구매할 수 없습니다.
+    msg_상품_중복_추가상품 : "이미 선택된 추가상품 입니다.",// 이미 선택된 추가상품 입니다.
+    msg_상품_중복_옵션 : "이미 선택된 옵션입니다.",// 이미 선택된 옵션입니다.
+    msg_상품_최대수량 : "최대 주문가능 수량을 초과하셨습니다.",// 최대 주문가능 수량을 초과하셨습니다.
+    msg_상품_최소수량 : "최소 주문가능 수량입니다.",// 최소 주문가능 수량입니다.
+    msg_결제실패_에러 : "결제에 실패하였습니다.<br>에러내용 : ", // 결제에 실패했습니다.<br>에러내용: 
+    msg_모두구매확정_안내문구 : "구매 확정 시 같은 주문에 대한 모든 주문상품이 구매확정됩니다.", //구매 확정 시 같은 주문에 대한 모든 주문상품이 구매확정됩니다.
+    msg_반품취소교환상품은예외 : "단 이미 반품, 취소, 교환을 하거나 요청한 상품은 예외입니다.", // 단 이미 반품, 취소, 교환을 하거나 요청한 상품은 예외입니다.
+    msg_구매확정이후불가능 : "구매확정 이후에는 반품, 교환이 불가능합니다.", // 구매확정 이후에는 반품, 교환이 불가능합니다.
+    msg_구매확정 : "구매확정", // 구매확정 버튼에 사용
+    confirm_상품_바로구매_비회원 : "비회원으로 구매하셨을 경우,비회원 주문조회로 관련 내용을 확인할 수 있습니다.<br><p class='modal-notice'>비회원으로 상품 구매 시 적립금 증정, 쿠폰 등 다양한 혜택을 받아보기 어려운 점 참고 부탁드립니다.</p>", // 비회원으로 구매하셨을 경우,비회원 주문조회로 관련 내용을 확인하실 수 있습니다.
+
+    //위시리스트
+    msg_위시리스트_삭제확인 : "상품을 위시리스트에서 삭제하시겠습니까?",// 상품을 위시리스트에서 삭제하시겠습니까?
+
+    //장바구니
+    msg_장바구니_삭제확인 : "상품을 장바구니에서 삭제하시겠습니까?",// 상품을 장바구니에서 삭제하시겠습니까?
+    msg_장바구니_삭제_상품없음 : "삭제할 상품이 없습니다.",// 삭제할 상품이 없습니다.
+    msg_장바구니_선택해제 : "구매 불가능 상품 선택을 해제해주세요",// 구매 불가능 상품 선택을 해제해주세요
+    msg_필수옵션삭제 : "필수 옵션을 모두 삭제할 수는 없습니다.",// 필수 옵션을 모두 삭제할 수는 없습니다.
+
+    //작성 및 등록
+    msg_등록_파일제한_이미지 : "이미지 파일만 등록 가능합니다.",//이미지 파일만 등록 가능합니다.
+    msg_등록_파일확장자 : "<%= format %> 형식의 파일만 등록 가능 합니다.",//jpg,jpeg,gif,png,bmp 형식의 파일만 등록 가능 합니다
+    msg_등록_최대용량 : "최대 용량을 초과하였습니다. <br><%= max_size %> 이하로 등록해주세요.",//최대용량을 초과하였습니다.
+    msg_등록_최대업로드용량 : "최대 <%= max %>까지 첨부 가능합니다.",//최대용량을 초과하였습니다.
+    msg_등록_최대갯수 : "파일은 최대 <%= max %>개 까지 등록할 수 있습니다.",//사진은 최대 @개 까지 등록하실수 있습니다.
+    msg_등록_연속등록 : "연속해서 작성할 수 없습니다.<br>잠시 후에 다시 등록해주세요.", //연속해서 작성하실 수 없습니다.<br>잠시 후에 다시 등록해주세요.
+  
+    //댓글
+    msg_댓글_삭제확인 : "댓글을 삭제하시겠습니까?<br>삭제한 댓글은 복구할 수 없습니다.", //"Are you sure you want to delete the comments?<br>Any comments you delete cannot be recovered." //댓글을 삭제하시겠습니까?<br>삭제한 댓글은 복구할 수 없습니다.
+    msg_댓글_수정확인 : "댓글을 수정하기 위해<br>작성 시 입력한 비밀번호가 필요합니다.", //"Are you sure you want to update the comments?" //댓글을 수정하시겠습니까?
+
+    //문구
+    msg_품절 : "품절", // 품절, sold out
+
+    // 모달 문구
+    msg_장바구니로이동 : "장바구니로 이동하기", // 품절, sold out
+    msg_쇼핑계속하기 : "쇼핑 계속하기", // 품절, sold out
+    msg_로그인 : "로그인",
+    회원_비회원구매하기 : "비회원 구매하기",
+    msg_비밀번호불일치 : "비밀번호가 일치하지 않습니다.",
+  }
+</script>
+  
+  <!--=================================================
+          스크립트
+  ==================================================-->
+  <!--#####===== JS 라이브러리 =====#####-->
+  <!-- lodash -->  <script src="/views/res/lib/custom/lodash/lodash.min.js"></script>
+  
+  <!--#####===== 공통 JS =====#####-->
+  <script src="/views/res/js/utils/asyncLoader.js?v=38"></script>
+  <script src="/views/res/js/helper.js?v=38"></script>
+
+  <!--#####===== 페이지 레이아웃 JS 라이브러리 =====#####-->
+  
+  <!--#####===== 공통 JS =====#####-->
+  <script src="/views/res/js/script.js?v=38"></script>
+
+  <!--#####===== 파일 JS =====#####-->
+  
+  <!--#####===== 서브탑 (subTop) JS =====#####-->
+  
+  <!--#####===== 페이지 JS =====#####-->
+  
+  <!--#####===== 페이지 레이아웃 JS =====#####-->
+    <script src="/views/layout/page/menu_solutions/smartfactory.js?v=38"></script>
+  
+  
+  <!--#####===== 게시판 JS =====#####-->
+    <!--#####===== 프레임 JS =====#####-->
+  
+  <div id="download_modal" class="modal fade alert-modal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close btn-close" data-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <h2 class="modal-body-title">회사소개서 다운로드</h2>
+        <p class="modal-body-desc">엠아이큐브솔루션에 관심 가져주셔서 감사합니다.<br>아래 상세 내용을 입력해주세요.</p>
+        <div id="apply-form">
+          <form id="download_write_form" class="form-group-st4 form-field-st4" action="/ko/_board/create" method="post"
+            enctype="multipart/form-data" data-evt-type="submit" autocomplete="off">
+            <input type="hidden" name="ctn" value="994f5659f0d4ac11bc786e02fdb898d9" />
+            <input type="hidden" name="redirect" value="http://www.micube.co.kr/smartfactory">
+            <input type="hidden" name="bc_idx" value="">
+            <input type="hidden" name="bc_bd_idx" value="">
+            <input type="hidden" name="sub_category" value="">
+            <input type="hidden" name="bc_bcat_id" value="all">
+            <input type="hidden" name="bc_status" value="1">
+            <input type="hidden" name="bc_mem_idx" value="">
+            <input type="hidden" name="bc_order" value="10">
+            <input type="hidden" name="bc_regdate" value="">
+            <input type="hidden" name="alert_msg" value="다운로드가 완료되었습니다.">
+            <input type="hidden" name="bd_encryp_status" value="0">
+
+            <div class="form-body">
+              <div class="form-group">
+                <div class="form-title">
+                  <label for="modal_bc_writer_name" class="icon-neces">성명</label>
+                </div>
+                <div class="form-content">
+                  <input type="text" name="bc_writer_name" id="modal_bc_writer_name"
+                    class="input-default form-control valid_input" data-exp="" data-label="성명" value="">
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="form-title">
+                  <label for="modal_bc_data_company" class="icon-neces">기업(기관)명</label>
+                </div>
+                <div class="form-content">
+                  <input type="text" name="bc_data_company" id="modal_bc_data_company"
+                    class="input-default valid_input form-control" data-label="기업(기관)명" value="">
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="form-title">
+                  <label for="modal_bc_data_position" class="icon-neces">직책/직급</label>
+                </div>
+                <div class="form-content">
+                  <input type="text" name="bc_data_position" id="modal_bc_data_position"
+                    class="input-default form-control valid_input" data-label="직책/직급" value="">
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="form-title">
+                  <label for="modal_bc_data_department" class="icon-neces">부서명</label>
+                </div>
+                <div class="form-content">
+                  <input type="text" name="bc_data_department" id="modal_bc_data_department"
+                    class="input-default form-control valid_input" data-label="부서명" value="">
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="form-title">
+                  <label for="modal_bc_writer_email" class="icon-neces">이메일</label>
+                </div>
+                <div class="form-content">
+                  <input type="text" id="modal_bc_writer_email" name="bc_writer_email" class="input-default valid_input"
+                    data-exp="email" data-label="이메일" value="">
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="form-title placeholder"><label for="modal_bc_content">소재지</label>
+                </div>
+                <div class="form-content">
+                  <input type="text" id="modal_bc_content" name="bc_content" class="input-default" data-exp="email"
+                    data-label="소재지" value="">
+                  <span class="form-content-notice">* 소재지의 경우 도/시를 기입해주세요.</span>
+                </div>
+              </div>
+            </div>
+
+            <!--약관동의-->
+            <label class="ckbx-tag-1">
+              <input type="checkbox" id="agree" class="input-check valid_input" data-label="개인정보 수집 및 이용, 마케팅 목적의 광고성 정보 수신에 동의합니다."
+                data-term-type="download_privacy_collect">
+              <span class="custom-checked"></span>
+              <a href="#" class="text check-label modal-popup ajaxModal"
+                data-target="#modal-info-download_privacy_collect"
+                data-url="/_ajax/get_term/download_privacy_collect/ko">
+                개인정보 수집 및 이용, 마케팅 목적의 광고성 정보 수신에 동의합니다.              </a>
+            </label>
+                      </form>
+        </div>
+      </div>
+      <div class="modal-footer">
+                <div class="btn-group">
+          <button class="btn-lg btn-point downloadTrigger" data-form="download_write_form">Submit</button>
+          <a href="javascript:;" class="none downloadLink" data-idx="1867"></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  $(function () {
+    if (document.querySelector("#download_modal")) {
+      (function () {
+        var $formInput = $('#download_modal .form-content').children();
+
+        $formInput.on('focus', function () {
+          var $this = $(this);
+          $title = $this.parents().siblings('.form-title')
+          $title.addClass('ani-on');
+
+          $this.on('blur', function () {
+            if ($this.val() == false) {
+              $title.removeClass('ani-on');
+            }
+          });
+        });
+      })();
+    };
+
+    $(document).on("click", ".downloadTrigger", function () {
+      checkFormValid($(this), {
+        callback: function ($form) {
+          $('.downloadLink').trigger('click');
+          setTimeout(function () {
+            $form.submit();
+          }, 500);
+        }
+      });
+    });
+
+  });
+</script>  </body>
+</html>

@@ -1,0 +1,14 @@
+﻿family,cases,ok_ratio_woq_median,ok_ratio_p25,ok_ratio_p75,rej_sum,ok_sum
+Final Inspection Q.C.,176,0.939,0.8,1.0,233,12053
+Packing,175,0.947,0.803,1.0,0,12090
+Turning & Milling Q.C.,168,0.982,0.9,1.0,246,12641
+Laser Marking,167,0.984,0.9,1.0,14,12934
+Turning & Milling,158,0.967,0.9,1.0,27,14247
+Lapping,132,0.98,0.9,1.0,5,9178
+Round Grinding,93,0.941,0.8,1.0,21,8386
+Flat Grinding,59,0.99,0.917,1.0,2,3031
+Grinding Rework,33,0.0,0.0,0.0,0,72
+Turning Q.C.,27,1.0,0.979,1.0,6,2088
+Round Grinding - Manual,24,0.942,0.676,1.0,0,562
+Round Grinding - Q.C.,23,0.95,0.913,0.98,29,1358
+Turning,21,0.986,0.943,1.0,0,1256

@@ -1,0 +1,121 @@
+SOURCE: Haas Automation, "Lubricant, Grease, and Sealant Tables for Haas Machine Components - RD0040", Revision H - 12/2025
+ORIGINAL URL: https://www.haascnc.com/service/troubleshooting-and-how-to/reference-documents/lubricant--grease--and-sealant-tables-for-haas-machine-component.html
+CAPTURED FROM: https://web.archive.org/web/20260110212957/https://www.haascnc.com/service/troubleshooting-and-how-to/reference-documents/lubricant--grease--and-sealant-tables-for-haas-machine-component.html
+ACCESS DATE: 2026-10-03 (haascnc.com direct access blocked by bot protection; text extracted from the Wayback Machine rendering via browser innerText)
+NOTE: Text below is the page body (tab-separated tables) for sections relevant to a VMC (VF-2 NGC) plant.
+      Sections for rotary indexers/tables, lathe turret/live tooling/tailstock, Fanuc robot were OMITTED here (they exist in the original).
+      Copyright Haas Automation, Inc. Excerpt kept for internal student-project reference only.
+
+Lubricant, Grease, and Sealant Tables for Haas Machine Components
+RD0040
+Revision H - 12/2025
+
+Introduction
+This document contains the following tables:
+The Lubricant tables contain the recommended lubricant type and capacity for Haas machine components.
+The other tables contain information about the properties of the lubricants.
+The Specialty Grease and Sealant tables contain the description and part numbers for each item in the table.
+Go to WWW.HAASCNC.COM/HAAS-SERVICE-PARTS to order replacement parts and lubricants.
+Note: The lubricants in this table are for all Haas machines made after 1989.
+
+Spindle Lubricants
+MACHINE TYPE	PRIMARY LUBRICANT	ALTERNATE LUBRICANT	CAPACITY	HAAS PART NUMBER
+Mill	Mobil 1, 0W-20	Mobil 1, 5W-20	128 oz (3.79 L)	93-4203
+Lathe	Mobil 1, 0W-20	Mobil 1, 5W-20	128 oz (3.79 L)	93-4203
+
+Spindle Gearbox
+MACHINE TYPE	PRIMARY LUBRICANT	ALTERNATE LUBRICANT	CAPACITY	HAAS PART NUMBER
+40-Taper (VMC)	Mobil 1, 0W-20	Mobil 1, 0W-20	51 oz (1.5 L)	93-4203
+50-Taper (VMC)	Mobil 1, 75W90	Mobil 1, 15W-50	34 oz (1.0 L)	93-2365
+50-Taper (HMC)	Mobil 1, 75W90	Mobil 1, 15W-50	85 oz (2.5 L)	93-2365
+(lathe / SL / ZF gearbox rows omitted)
+
+Spindle Gearbox 16DP-C
+50-Taper (VMC) (With Square Sump Tank)	Mobil 1, 75W90	Mobil 1, 15W-50	101 oz (3.0 L)	93-2365
+50-Taper (VMC) (With Oval Sump Tank)	Mobil 1, 75W90	Mobil 1, 15W-50	85 oz (2.5 L)	93-2365
+50-Taper (HMC) (without oil pump)	Mobil SHC 634	Mobil 1, 15W-50	101 oz (3.0 L)	93-9141A
+
+Box Way Guide
+SB Series	Vactra No. 2	No Substitue	1 GL/3.78L	93-5656
+
+Linear Guide / Ball Screw
+COMPONENT	PRIMARY LUBRICANT	ALTERNATE LUBRICANT	CAPACITY	HAAS PART NUMBER
+Bijur Oiler (1988-on)	Mobil 1, 0W-20	Mobil 1, 5W-20	128 oz (3.79 L)	93-4203
+Pneumatic Grease-Gun Cartridge (High-Pressure)	Mobilith SHC 460	Mobil 1, Synthetic Grease	14 oz (0.41 L)	99-1686
+Reservoir Restrictor Flow and Equal Length Grease	Mobilith SHC 007	If your machine still has Red Grease convert it to Haas Axis Lubrication Oil by ordering part number 93-2755A and follow the conversion procedure.	N/A	N/A
+Haas Liquid Grease (HLG) (Note: No longer used for axis lubrication)	HLG	If your machine still has HLG, convert it to Haas Axis Lubrication Oil by ordering part number 93-3585 and follow the conversion procedure.	N/A	N/A
+Haas Axis Lubrication Oil	Mobil SHC GEAR 1500	SYNGEAR SH-1150 (Kluber/Summit product) or Klubersynth EG 4-1500	Approximately 32 oz (58 cu-in or 0.95 L)	93-3584 (AXIS LUBE OIL REFILL 1 GALLON); 93-3585 (AXIS LUBE CONVERSION KIT HLG TO OIL)
+Toolroom Mill	Mobil Grease XHP 222	Mobil 1, Synthetic Grease	2 full strokes monthly	99-1686
+Drill Center Axis Lubrication	Mobil 1 75W-90	Mobil 1, 15W-50	100 oz (3 L)	93-2365
+
+Pneumatics Lubricant
+Drill Center Air Regulator Lubricant	Mobil DTE 24 Ultra	None	8 oz (230 mL)	93-2546
+
+Side-Mount Tool Changer - Cam Box
+Vertical - Standard/SS	Mobil 1, 75W-90	Mobil 1, 15W-50	256 oz (7.57 L)	93-4578
+DT-1/DM-1	Mobil 1, 75W-90	Mobil 1, 15W-50	192 oz (5.68 L)	93-4578
+Horizontal	Mobil 1, 75W-90	Mobil 1, 15W-50	288 oz (8.52 L)	93-4578
+
+Hydraulic Systems (VMC-relevant rows)
+40 CF Counter Balance (Height = 23.0"/584 mm)	Mobil DTE 24 Ultra	ISO Grade 32, Anti Wear, Foam Resistant Hydraulic Fluid	64 oz (1.9 L) (Pump strokes needed = 93)	93-2546
+80 CF Counter Balance (Height = 36.0"/914 mm)	Mobil DTE 24 Ultra	ISO Grade 32 ...	96 oz (2.8 L) (Pump strokes needed = 140)	93-2546
+110 CF Counter Balance (Height = 42.0"/1070 mm)	Mobil DTE 24 Ultra	ISO Grade 32 ...	96 oz (2.8 L) (Pump strokes needed = 140)	93-2546
+(EC-1600, HPU, HRT brake, UMC brake rows omitted - all 93-2546)
+
+[Rotary - Indexer / Rotary table / Dual Axis / HRTSS / Tailstock, Machine Built-In Rotaries, Lathe - Turret / Live Tooling / Tailstocks, Fanuc Robot sections OMITTED]
+
+PulseJet Lubrication
+PRODUCT	TYPE	ISO VG
+White Oil Light	Generic Mineral Based Oil	10
+Mobil DTE 24 Ultra (Included when installed at the factory and in the field install kit)	Mineral Hydraulic Oil	32
+Mobil DTE 25 Ultra	Mineral Hydraulic Oil	46
+Mobil DTE Light	Mineral Circulating Oil	32
+WD 40	Penetrating Oil	3
+Coolube 2210 EP	Metalworking Oil	15
+Tapmatic #1 Gold	Tapping Oil	20
+Relton Rapid Tap	Tapping Oil	28
+"Lard Oil" for Aluminum and Soft Metals	Cutting/Tapping Oil	40
+
+Minimum-Quantity Lubrication
+Canola Oil (Recommended for all metal applications; not a Mobil product)	Min 5 oz (0.15L) / Max 28 oz (0.83L)	93-2364
+Tap Magic Eco-Oil Cutting Fluid	same capacity	N/A
+Ecocut Mikro Plus 20 (aluminum, cast iron, steel)	same capacity	N/A
+Ultra Lube MQL Cutting Oil	same capacity	N/A
+Dropsa MK Oil 150 20 Lt	same capacity	N/A
+
+WorkHolding
+Manual/ Pneumatic Vises	Mobilgrease XHP-322 Mine (Moly)	LubriMatic Moly Extreme Pressure Grease	N/A	N/A
+
+Mobil Oil - Special Properties (ISO VG / viscosity at 40C / at 100C)
+SHC 625	46	48.0	7.9
+SHC 627	100	99.1	13.9
+SHC 634	460	430.0	48.5
+Mobilgear 600 XP220	220	220	26
+Mobil DTE 24 Ultra	32	31.5	5.29
+Mobil 1, 75W-90	N/A	95.5	14.3
+Mobil 1, 0W-20	N/A	43.54	8.19
+
+Mobil Grease - Special Properties (NLGI / ISO VG / shelf life)
+Mobilith SHC 007	00	460
+Mobilith SHC 460	1.5	460
+Mobilgrease XHP-322 Mine (Moly)	2	320
+Haas Liquid Grease (HLG) - No longer used for axis lubrication; 50% SHC 625 + 50% Mobilith SHC 007	--	100	shelf life 2 years
+Mobilgrease XHP 222	2	220
+
+Specialty Grease
+GREASE NAME	DESCRIPTION	HAAS PART NUMBER
+Mobil Grease XHP 222	This helps the way covers move more easily across the casting.	99-1686
+Electrical Grease	This protects the electrical connectors from coolant.	99-1793
+
+Sealants
+SEALANT NAME	DESCRIPTION	HAAS PART NUMBER
+Sikaflex, 1A White	This seals sheet metal panels together.	99-4460A
+Sikaflex, 1A Gray	This seals the space between the panels.	99-0121
+RTV 108	Apply this to make a gasket.	99-4465
+Volara 4A	Sealant for the Y and X axes way covers.	N/A
+RTV ASI 335	Sealant for the Y and X axes way covers. Apply this to the linear scale machines.	99-4452
+
+Haas Spindle Chiller Fluid
+VR/GM Spindle Chiller	Mobil Velocite #3 Oil	8 Liters	93-4894
+HDC Spindle Chiller	Mobil Velocite #3 Oil	Approximately 25 Liters	93-4894
+(VR/GM heat exchanger and DC chiller use DOWFROST HD propylene glycol - not sold by Haas)

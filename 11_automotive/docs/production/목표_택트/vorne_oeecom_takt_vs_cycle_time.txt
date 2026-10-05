@@ -1,0 +1,175 @@
+TOPICS Understand 
+ What is OEE? OEE Factors Six Big Losses Hidden Factory Practical OEE 
+
+ Measure 
+ Calculate OEE Implement OEE Calculate TEEP Visual OEE ™ 
+
+ Improve 
+ Improve OEE World-Class OEE Address the Six Big Losses Takt Time 
+
+ Try Vorne XL free for 90 days 
+
+ FAQ 
+ GLOSSARY 
+ ABOUT US 
+ FREE TOOLS 
+
+ TOPICS 
+
+ FAQ 
+
+ GLOSSARY 
+
+ ABOUT US 
+
+ FREE TOOLS 
+
+ LEARN THE ART & SCIENCE OF MANUFACTURING IMPROVEMENT FROM VORNE 
+ Takt Time vs. Other Cycle Time Metrics
+
+ THE BIG IDEA 
+
+ Takt time is one of many cycle-related metrics used in manufacturing. Exploring, comparing, and contrasting cycle metrics based on their time domains, run time, and planned run time makes them easier and more intuitive to understand. 
+
+ Cycle Times in Manufacturing
+ There are many different metrics that measure how long it takes to manufacture one piece. One might say, too many. Part of the problem is that many of these metrics measure the same thing under different names. It can be very confusing.
+ The largest source of confusion is the inconsistency in how metrics are named and defined. To help sort this out, we can take a cue from software development best practices, where ubiquitous language refers to establishing a shared vocabulary used by everyone within a given problem domain. Let’s establish some ubiquitous language related to takt and cycle metrics.
+ Time Domains
+ We will start by naming and defining the two major time domains to which cycle-based metrics apply:
+ Run Time
+ Planned Run Time
+ Run Time
+ Run time is when the manufacturing process is actually running (parts are being produced). In terms of cycle metrics, ideal cycle time is the preferred benchmark metric. In terms of six big losses , run time includes slow cycles, small stops, and defects.
+ Planned Run Time
+ Planned run time is when the manufacturing process is expected to be running (parts are intended to be produced). In other words, it includes run time (actually running) and downtime (should be running). In terms of cycle metrics, operable takt time is the preferred benchmark metric. In terms of six big losses, planned run time includes slow cycles, small stops, defects, and downtime.
+ Ideal Cycle Time vs. Operable Takt Time
+ As two different time domains, run time and planned run time each have their own cycle-based benchmark.
+ Time Domain Cycle-Based Benchmark 
+ Run Time Ideal Cycle Time 
+ Planned Run Time Operable Takt Time 
+
+ We will define these in greater detail below, but for now:
+ Ideal cycle time is the theoretical fastest time your process can manufacture one piece on a sustained basis. It represents perfect production.
+ Operable takt time is the achievable time your process can manufacture one piece on a sustained basis. It represents real-world production.
+ Cycle Metrics for Run Time
+ Ideal cycle time and cycle time are cycle-based metrics that are measured across time that the manufacturing process is actually running. In other words, they use run time as their time base.
+ Ideal Cycle Time
+ Ideal cycle time is the absolute fastest time per part that can be achieved by your manufacturing process on a sustained basis. It is sometimes referred to as nameplate capacity. It represents perfect production.
+
+ Ideal Cycle Time Ideal Cycle Time is the absolute fastest time per part that can be achieved by your manufacturing process on a sustained basis. 
+ DEFINITION
+
+ Ideal cycle time is a very well-defined and important metric due to its integral role in OEE. In fact, the simplest formula for calculating OEE is:
+ OEE
+ =
+ Good Pieces
+ x
+ Ideal Cycle Time
+ ÷
+ Planned Production Time
+
+ OEE is calculated by multiplying Good Pieces by Ideal Cycle Time and then dividing that by Planned Production Time.
+ The numerator in this calculation, Good Pieces x Ideal Cycle Time , equates to fully productive time. In other words, it is just another way of saying manufacturing only good pieces as fast as possible (i.e., at ideal cycle time) with no downtime.
+ Cycle Time
+ Cycle time is a highly overloaded term. It is used in many different ways, by people in many different roles, and in many different contexts. For the sake of ubiquitous language, our definition will lean into the fact that ideal cycle time is a well-established and consistently defined metric (thank you, OEE). In other words, we will define cycle time in a way that pairs it nicely with ideal cycle time.
+ Ideal cycle time is the absolute fastest possible time per part that your manufacturing process can achieve on a sustained basis, which, by definition, must be while the process is running (with no downtime or planned stops).
+ Cycle time is the actual measured time per part achieved by your manufacturing process while it is running (with no downtime or planned stops).
+
+ Cycle Time Cycle time is the actual measured time per part that is achieved by your manufacturing process while it is running. 
+ DEFINITION
+
+ In other words, cycle times should only be measured while the process is actually running. The sum of all individual cycle times (i.e., total cycle time) should equal run time. Or, putting it another way, cycle time is a “run” phenomenon. It is not affected whatsoever by unplanned stop time or planned stop time.
+ This definition enables meaningful comparisons to be made between cycle time and ideal cycle time, which is an extremely valuable real-world tool. Cycle time should always be slower than or equal to ideal cycle time. If it is not, ideal cycle time is specified incorrectly (it is too slow, which will hide loss). This happens surprisingly often, usually because a budgeted rate number (described later) from an MES or ERP system is used to specify the ideal cycle time.
+
+ Verify that cycle time is slower than or equal to ideal cycle time for each part. If not (Parts D and H in this example), the ideal cycle time is specified incorrectly and your OEE will be inaccurate (overstated). 
+ Cycle Metrics for Planned Run Time
+ Takt time, operable takt time, and effective cycle time are cycle-based metrics that are measured across time that the manufacturing process is expected to be running. In other words, they use planned run time as their time base. Budgeted rate is a similar metric but is sometimes expressed as a rate.
+ Takt Time
+ Takt time is the amount of production time you have available to manufacture each part in order to exactly meet customer demand. It is a customer-centric metric.
+
+ Takt Time Takt time is the amount of production time you have available to manufacture each part in order to exactly meet customer demand. 
+ DEFINITION
+
+ Takt time is a well-defined metric due to its established role in lean manufacturing, where it is used to promote flow and balance (production moving to the rhythm and beat established by takt time).
+ Takt Time Formula
+ Traditionally, takt time is calculated as:
+ Takt Time
+ =
+ Available Production Time
+ ÷
+ Customer Demand
+
+ Takt time is traditionally calculated as Available Production Time divided by Customer Demand.
+ Available production time is defined as time when the manufacturing process is expected to be running (parts should be being produced). In other words, it includes run time (actually running) and budgeted downtime (should be running but is not), and it excludes planned stop time (e.g., changeovers).
+ For a more detailed discussion of calculating takt time, read our article about the Nuances of Calculating Takt Time .
+ The Manufacturing Productivity Improvement Device That Feels Like Magic In less than 8 hours you can benefit from automated, real-time accurate data. Learn About Vorne XL 
+
+ 42,000+ Installations 
+ 45+ Countries 
+ $4,690 One-Time Cost 
+ 8 Hours to Deploy 
+ 50+ Years in Business 
+
+ 8 Hours to Deploy 
+ 50+ Years in Business 
+
+ Operable Takt Time
+ Operable takt time is the amount of production time required to manufacture each part based on the current, real-world capabilities of your manufacturing process. It is a manufacturing-centric metric.
+
+ Operable Takt Time Operable Takt Time is the amount of production time, more specifically, planned run time, you need to manufacture each part based on the real-world capabilities of your current process. 
+ DEFINITION
+
+ Operable takt time is a measured value, not a calculated value. It reflects the pace of production you are able to achieve with your current equipment and people.
+ Operable Takt Time vs. Takt Time
+ Operable takt time is often used interchangeably with takt time, which can cause significant confusion. Each has a different role to play:
+ Takt time is the amount of production time you have available to manufacture each part in order to exactly meet customer demand. It is customer-centric.
+ Operable takt time is the amount of production time you need to manufacture each part based on your current process. It is manufacturing-centric.
+ Effective Cycle Time
+ Effective cycle time is the actual manufacturing time per part as measured across an extended period of time that includes down events (planned run time variant) or down events plus planned stop events (planned production time variant).
+
+ Effective Cycle Time Effective cycle time is the actual manufacturing time per part as measured across an extended period of time that includes down events or down events plus planned stop events. 
+ DEFINITION
+
+ There are two common variations of effective cycle time, which use different time domains:
+ Planned run time, which includes run time and unplanned stop time (i.e., downtime)
+ Planned production time, which includes run time, unplanned stop time, and planned stop time (e.g., changeovers)
+ Either variant is fine to use as long as you define it clearly and apply it consistently. We usually recommend using planned run time as the time domain as it enables you to directly compare effective cycle time to operable takt time.
+ Budgeted Rate
+ Budgeted rate is the expected rate of production used for scheduling and costing. As such, it includes expected or “budgeted” losses. It is a value that often comes from MES and ERP systems, and the name is likely to differ depending on the specific MES or ERP package.
+
+ Budgeted Rate Budgeted rate is the expected rate of production as used for scheduling and costing. As such, it includes expected or “budgeted” losses. 
+ DEFINITION
+
+ Budgeted rate is similar in concept to operable takt time or effective cycle time; although, sometimes, as its name suggests, it is expressed as a “rate” (e.g., parts per hour) instead of as a “cycle time” (e.g., seconds per part).
+ Note that when expressed in the same units of time, rate and cycle time are reciprocals of each other.
+
+ WHAT YOU SHOULD DO NEXT...
+ 1. Learn more about how our product, Vorne XL, can help you eliminate waste and significantly improve OEE.
+ Vorne XL is the simplest and fastest way to monitor and improve production. It's a one-time cost and takes just a day to install. And you can try it completely free for 90 days.
+ Learn More 2. Download our FREE package of tools to supercharge your manufacturing productivity
+ The package includes leadership lessons, training guides, meeting and report templates, summaries of key concepts, project organizers, and more. You'll also receive our monthly newsletter for free. Unsubscribe at any time.
+ DOWNLOAD FREE LEAN TOOLS 3. Sign up for our monthly newsletter
+ Get free monthly updates with proven methods for improving our manufacturing productivity. Unsubscribe at any time.
+
+ First Name* 
+ Last Name* 
+
+ Email* 
+ Phone Number* 
+ Company Name* 
+ What would you like to achieve with XL? 
+ Submit 
+
+ +1.630.875.3600 [email protected] 1445 Industrial Dr. Itasca, IL 60143 
+ Learn About OEE 
+ What is OEE? OEE Factors Six Big Losses Hidden Factory Practical OEE 
+ Calculate OEE Implement OEE Calculate TEEP Visual OEE ™ 
+ Improve OEE World-Class Address the Six Big Losses Takt Time 
+
+ Resources 
+ Free OEE Tools OEE Glossary FAQ 
+
+ About Us 
+ Our Company Vorne.com LeanProduction.com Vorne XL Free Trial 
+
+ © 2011-2026 Vorne Industries. All Rights Reserved | Privacy Policy | Cookie Policy

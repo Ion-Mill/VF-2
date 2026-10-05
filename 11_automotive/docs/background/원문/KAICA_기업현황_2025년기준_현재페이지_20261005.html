@@ -1,0 +1,719 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta content="IE=edge, chrome=1" http-equiv="X-UA-Compatible" />
+<meta name ="viewport" content= "width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+<title>한국자동차산업협동조합</title>
+<link rel="stylesheet" href="https://kaica.or.kr/theme/kaica/css/default.css?ver=2412358">
+<link rel="stylesheet" href="https://kaica.or.kr/js/font-awesome/css/font-awesome.min.css?ver=2412358">
+<!--[if lte IE 8]>
+<script src="https://kaica.or.kr/js/html5.js"></script>
+<![endif]-->
+
+<!-- Material+Icons -->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+<!-- Favicons -->
+<link href="img/favicon.png" rel="icon">
+<link href="img/apple-touch-icon.png" rel="apple-touch-icon">
+
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
+
+<!-- CSS -->
+<link rel="stylesheet" href="https://kaica.or.kr/theme/kaica/css/style.css?ver=2412358">
+<link rel="stylesheet" href="https://kaica.or.kr/theme/kaica/css/layout.css?ver=2412358">
+<link rel="stylesheet" href="https://kaica.or.kr/theme/kaica/css/contents.css?ver=2412358">
+<link rel="stylesheet" href="https://kaica.or.kr/theme/kaica/css/animate.css?ver=2412358">
+<link rel="stylesheet" href="https://kaica.or.kr/theme/kaica/css/swiper-bundle.min.css?ver=2412358">
+
+<script>
+// 자바스크립트에서 사용하는 전역변수 선언
+var g5_url       = "https://kaica.or.kr";
+var g5_bbs_url   = "https://kaica.or.kr/bbs";
+var g5_is_member = "";
+var g5_is_admin  = "";
+var g5_is_mobile = "";
+var g5_bo_table  = "";
+var g5_sca       = "";
+var g5_editor    = "";
+var g5_cookie_domain = ".kaica.or.kr";
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<script type="text/javascript" src="https://kaica.or.kr/theme/kaica/js/jquery-1.11.2.min.js?ver=2412300"></script>
+<script type="text/javascript" src="https://kaica.or.kr/theme/kaica/js/jquery.waypoints.min.js?ver=2412300"></script>
+<script type="text/javascript" src="https://kaica.or.kr/theme/kaica/js/jquery.counterup.min.js?ver=2412300"></script>
+<script type="text/javascript" src="https://kaica.or.kr/theme/kaica/js/main.js?ver=2412300"></script>
+<script type="text/javascript" src="https://kaica.or.kr/theme/kaica/js/swiper.min.js?ver=2412300"></script>
+
+
+<script src="https://kaica.or.kr/js/common.js?ver=2412300"></script>
+<script src="https://kaica.or.kr/js/wrest.js?ver=2412300"></script>
+<script src="https://kaica.or.kr/js/placeholders.min.js?ver=2412300"></script>
+</head>
+<body>
+
+
+<div id="wrap">
+    <!-- Top Visual2 -->
+    <section class="sec-wrap">
+        <!-- Header -->
+        <section class="header"> 
+         <!-- header_info -->
+            <div class="header_info">
+                <div class="top_set">
+                
+                 <a class="" href="https://kaica.or.kr/bbs/login.php">로그인</a> 
+                </div>
+                <ul class="">
+                    <li><a href="">English</a></li>
+                </ul>
+             </div>
+             <!-- //header_info -->
+          
+            <div class="menu_wrap">
+                                <a href="https://kaica.or.kr" class="logo" title="한국자동차산업협동조합"></a>
+				                
+                <ul class="menu">
+                                            <li><h2><a href="#">조합소개</a></h2>
+                            <ul class="depth-1">
+                                <li class="m-open"> 
+                                <a href="https://kaica.or.kr/coop/greeting.php" target="_self">인사말</a><a href="https://kaica.or.kr/coop/history.php" target="_self">연혁</a><a href="https://kaica.or.kr/coop/organization.php" target="_self">조직과업무</a><a href="https://kaica.or.kr/coop/biz.php" target="_self">사업안내</a><a href="https://kaica.or.kr/coop/member.php" target="_self">가입안내</a><a href="https://kaica.or.kr/coop/map.php" target="_self">오시는 길</a>                                </li>					
+                            </ul>
+                        </li> 
+                                            <li><h2><a href="#">부품산업현황</a></h2>
+                            <ul class="depth-1">
+                                <li class="m-open"> 
+                                <a href="https://kaica.or.kr/business/status1.php" target="_self">기업현황</a><a href="https://kaica.or.kr/business/status2.php" target="_self">매출·납품현황</a><a href="https://kaica.or.kr/business/status3.php" target="_self">수출·수입현황</a><a href="https://kaica.or.kr/business/company.php" target="_self">업체검색</a><a href="https://kaica.or.kr/business/company.php" target="_self">- 자동차부품기업 현황</a><a href="https://kaica.or.kr/business/members.php" target="_self">- 조합회원사 현황</a>                                </li>					
+                            </ul>
+                        </li> 
+                                            <li><h2><a href="#">알림마당</a></h2>
+                            <ul class="depth-1">
+                                <li class="m-open"> 
+                                <a href="https://kaica.or.kr/notice" target="_self">공지사항</a><a href="https://kaica.or.kr/schedule" target="_self">행사일정</a><a href="https://kaica.or.kr/biznews" target="_self">업계동향</a><a href="https://kaica.or.kr/gallery" target="_self">포토갤러리</a><a href="https://kaica.or.kr/contribute" target="_self">기고문</a>                                </li>					
+                            </ul>
+                        </li> 
+                                            <li><h2><a href="#">회원자료실</a></h2>
+                            <ul class="depth-1">
+                                <li class="m-open"> 
+                                <a href="https://kaica.or.kr/stats" target="_self">통계</a><a href="https://kaica.or.kr/stats" target="_self">- 자동차생산판매실적</a><a href="https://kaica.or.kr/inquiry" target="_self">- 자동차부품수출실적</a><a href="https://kaica.or.kr/sales" target="_self">- 분기별상장사 수익성</a><a href="https://kaica.or.kr/component" target="_self">월간 자동차부품</a><a href="https://kaica.or.kr/handbook" target="_self">자동차산업편람</a><a href="https://kaica.or.kr/report" target="_self">리포트</a>                                </li>					
+                            </ul>
+                        </li> 
+                                    </ul>	
+               <!--ul class="menu">
+                         <li><h2><a href="#">조합소개</a></h2>
+                            <ul class="depth-1" style='width:200px;'>
+                                <li class="m-open"> 
+                                <a href="#" target="_self">인사말</a>
+                                <a href="#" target="_self">연혁</a>
+                                <a href="#" target="_self">조직과업무</a>
+                                <a href="#" target="_self">사업안내</a>
+                                <a href="#" target="_self">가입안내</a>
+                                <a href="/coop/map.php" target="_self">오시는 길</a>                                
+                                </li>					
+                            </ul>
+                        </li> 
+                        <li><h2><a href="#">부품산업현황</a></h2>
+                            <ul class="depth-1" style='width:220px;'>
+                                <li class="m-open"> 
+                                <a href="/business/status1.php" target="_self">기업현황</a>
+                                <a href="/business/status2.php" target="_self">매출.납품현황</a>
+                                <a href="/business/status3.php" target="_self">수출.수입현황</a>
+                                <span>업체검색</span>
+                                <a href="#" target="_self" style='font-size:13px;'>&nbsp;&nbsp;&nbsp;- 자동차부품기업현황</a>
+                                <a href="#" target="_self" style='font-size:13px;'>&nbsp;&nbsp;&nbsp;- 조합사현황</a>                                
+                                </li>					
+                            </ul>
+                        </li> 
+                        <li><h2><a href="#">알림마당</a></h2>
+                            <ul class="depth-1" style='width:200px;'>
+                                <li class="m-open"> 
+                                <a href="/notice" target="_self">공지사항</a>
+                                <a href="/schedule" target="_self">행사일정</a>
+                                <a href="/biznews" target="_self">업계동향</a>
+                                <a href="/gallery" target="_self">포토갤러리</a>
+                                <a href="/contribute" target="_self">기고문</a>                                
+                                </li>					
+                            </ul>
+                        </li> 
+                        <li><h2><a href="#">회원자료실</a></h2>
+                            <ul class="depth-1" style='width:230px;'>
+                                <li class="m-open"> 
+                                <span>통계</span>
+                                <a href="#" target="_self" style='font-size:13px;'>&nbsp;&nbsp;&nbsp;- 자동차생산판매실적</a>
+                                <a href="#" target="_self" style='font-size:13px;'>&nbsp;&nbsp;&nbsp;- 자동차부품수출실적</a>
+                                <a href="#" target="_self" style='font-size:13px;'>&nbsp;&nbsp;&nbsp;- 분기별상장사매출현황</a>
+                                <a href="#" target="_self">월간자동차부품</a>
+                                <a href="#" target="_self">자동차산업편람</a>
+                                <a href="#" target="_self">리포트</a>                                
+                                </li>					
+                            </ul>
+                        </li> 
+                </ul>                
+                -->
+                <div class="btn_menu" onclick="sitemapToggle()">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>  				
+                <!-- Mobile_menu -->
+                <div id="sitemap" class=""><!-- open -->
+                    <div class="top_info">
+                    <a class="login" href="https://kaica.or.kr/bbs/login.php">로그인</a> 
+                    </div>
+                    <ul id="sitemap-menu">
+                                            <li><h2>조합소개<span class="material-icons material-symbols-outlined">arrow_drop_down</span></h2>
+                            <ul class="depth-1 " style="display:none">
+                                <li class="m-open"> 
+                                <a href="https://kaica.or.kr/coop/greeting.php" target="_self">인사말</a><a href="https://kaica.or.kr/coop/history.php" target="_self">연혁</a><a href="https://kaica.or.kr/coop/organization.php" target="_self">조직과업무</a><a href="https://kaica.or.kr/coop/biz.php" target="_self">사업안내</a><a href="https://kaica.or.kr/coop/member.php" target="_self">가입안내</a><a href="https://kaica.or.kr/coop/map.php" target="_self">오시는 길</a>                                </li>					
+                            </ul>
+                        </li> 
+                                            <li><h2>부품산업현황<span class="material-icons material-symbols-outlined">arrow_drop_down</span></h2>
+                            <ul class="depth-1 cPage" style="">
+                                <li class="m-open"> 
+                                <a href="https://kaica.or.kr/business/status1.php" target="_self">기업현황</a><a href="https://kaica.or.kr/business/status2.php" target="_self">매출·납품현황</a><a href="https://kaica.or.kr/business/status3.php" target="_self">수출·수입현황</a><a href="https://kaica.or.kr/business/company.php" target="_self">업체검색</a><a href="https://kaica.or.kr/business/company.php" target="_self">- 자동차부품기업 현황</a><a href="https://kaica.or.kr/business/members.php" target="_self">- 조합회원사 현황</a>                                </li>					
+                            </ul>
+                        </li> 
+                                            <li><h2>알림마당<span class="material-icons material-symbols-outlined">arrow_drop_down</span></h2>
+                            <ul class="depth-1 " style="display:none">
+                                <li class="m-open"> 
+                                <a href="https://kaica.or.kr/notice" target="_self">공지사항</a><a href="https://kaica.or.kr/schedule" target="_self">행사일정</a><a href="https://kaica.or.kr/biznews" target="_self">업계동향</a><a href="https://kaica.or.kr/gallery" target="_self">포토갤러리</a><a href="https://kaica.or.kr/contribute" target="_self">기고문</a>                                </li>					
+                            </ul>
+                        </li> 
+                                            <li><h2>회원자료실<span class="material-icons material-symbols-outlined">arrow_drop_down</span></h2>
+                            <ul class="depth-1 " style="display:none">
+                                <li class="m-open"> 
+                                <a href="https://kaica.or.kr/stats" target="_self">통계</a><a href="https://kaica.or.kr/stats" target="_self">- 자동차생산판매실적</a><a href="https://kaica.or.kr/inquiry" target="_self">- 자동차부품수출실적</a><a href="https://kaica.or.kr/sales" target="_self">- 분기별상장사 수익성</a><a href="https://kaica.or.kr/component" target="_self">월간 자동차부품</a><a href="https://kaica.or.kr/handbook" target="_self">자동차산업편람</a><a href="https://kaica.or.kr/report" target="_self">리포트</a>                                </li>					
+                            </ul>
+                        </li> 
+                                        </ul><!--nav-->
+                    </div>
+                </div>
+                <!-- //Mobile_menu -->
+        </section>		
+    <!-- //Header -->
+    <!-- Visual -->
+    </section>
+
+
+    <div id="hd">
+        </div>  
+
+    <!-- 서브페이지 -->
+            <section class="sub_visual sub_bg2">  	
+            <div class="subv_top">
+                <ul class="location">
+                    <li><a href="https://kaica.or.kr" class="home"><span class="hidden">홈으로</span></a></li>
+                    <li>부품산업현황</li>                    <li>기업현황</li>							
+                </ul>
+                <h1><span>기업현황</span><p></p></h1>   
+            </div>    
+
+        </section>
+         
+        <!-- 모바일 시 메뉴 -->
+        <div class="sub-depth-wrap">
+            <div class="sub-depth-1">  
+                <ul> 
+                    <li class="active"><a href="https://kaica.or.kr/business/status1.php">기업현황</a></li><li><a href="https://kaica.or.kr/business/status2.php">매출·납품현황</a></li><li><a href="https://kaica.or.kr/business/status3.php">수출·수입현황</a></li><li><a href="https://kaica.or.kr/business/company.php">업체검색</a></li>	
+                </ul>   
+            </div>
+            <div class="sub-depth-2">  
+                <a href="https://kaica.or.kr/business/status1.php">기업현황</a><a href="https://kaica.or.kr/business/status2.php">매출·납품현황</a><a href="https://kaica.or.kr/business/status3.php">수출·수입현황</a><a href="https://kaica.or.kr/business/company.php">업체검색</a><a href="https://kaica.or.kr/business/company.php">- 자동차부품기업 현황</a><a href="https://kaica.or.kr/business/members.php">- 조합회원사 현황</a>	
+            </div>  
+        </div>
+        <!-- //모바일 시 메뉴 -->
+    
+        <div id="contents_wrap">
+
+    
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+*, :after, :before {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+#ctt {background:#fff;font-size:18px}
+.ctt_admin {text-align:right}
+#ctt header h1 {position:absolute;font-size:0;line-height:0;overflow:hidden}
+#ctt_con {padding:5px;line-height:1.7em}
+#ctt_himg img, #ctt_timg img, #ctt_con img {max-width:100%;height:auto}
+.ctt_img {text-align:center}
+.tstyle_blue01  {
+	width: 100%;
+	border-collapse: collapse;
+	border-top: solid 2px #178acc;
+	border-left: solid 1px #b1cbd6;
+	}
+.tstyle_blue01  th  {
+	color: #000;
+	padding: 5px;
+	text-align: center;
+	background: #f2f7f9;
+	border-right: solid 1px #b1cbd6;
+	border-bottom: solid 1px #b1cbd6;
+	}
+.tstyle_blue01  td  {
+	padding: 3px 5px;
+	border-right: solid 1px #b1cbd6;
+	border-bottom: solid 1px #b1cbd6;
+	}
+
+.tstyle_blue02  {
+	width: 100%;
+	border-collapse: collapse;
+	border-top: solid 2px #178acc;
+	border-left: solid 1px #b1cbd6;
+	}
+.tstyle_blue02  th  {
+	color: #000;
+	padding: 5px;
+	text-align: center;
+	background: #f2f7f9;
+	border-right: solid 1px #b1cbd6;
+	}
+.tstyle_blue02  td  {
+	padding: 3px 5px;
+	border-right: solid 1px #b1cbd6;
+	border-bottom: solid 1px #b1cbd6;
+	}
+	
+	
+.txt_center {text-align: center}
+
+/*------------ Panels (Portlets) ----------*/
+.panel {box-shadow:none}
+.panel-body p:last-child {margin-bottom:0}
+.panel-primary {border-color:#0f70be}
+.panel-primary>.panel-heading {background-color:#2196F3;border-color:#0f70be}
+.panel-info {border-color:#1E88E5}
+.panel-info>.panel-heading {color:#104D92;background-color:#E3F2FD;border-color:#1E88E5}
+.panel-success {border-color:#4CAF50}
+.panel-success>.panel-heading {color:#205823;background-color:#E8F5E9;border-color:#4CAF50}
+.panel-warning {border-color:#FF9800}
+.panel-warning>.panel-heading {color:#AA3510;background-color:#FFF3E0;border-color:#FF9800}
+.panel-danger {border-color:#FF5722}
+.panel-danger>.panel-heading {color:#9c1F1F;background-color:#FBE9E7;border-color:#FF5722}
+.panel-default {border:0}
+.panel-default>.panel-heading {background-color:#F5F5F5;border:1px solid #D5D5D5}
+.panel-dark {border:0}
+.panel-dark>.panel-heading {color:#FFF;background-color:#4B4B4D;border:1px solid #4B4B4D}
+.panel-red {border:0}
+.panel-red>.panel-heading {color:#FFF;background-color:#FF4848;border:1px solid #FF4848}
+.panel-blue {border:0}
+.panel-blue>.panel-heading {color:#FFF;background-color:#53A5FA;border:1px solid #53A5FA}
+.panel-green {border:0}
+.panel-green>.panel-heading {color:#FFF;background-color:#73B852;border:1px solid #73B852}
+.panel-yellow {border:0}
+.panel-yellow>.panel-heading {color:#FFF;background-color:#FDAB29;border:1px solid #FDAB29}
+.panel-purple {border:0}
+.panel-purple>.panel-heading {color:#FFF;background-color:#907EEC;border:1px solid #907EEC}
+.panel-brown {border:0}
+.panel-brown>.panel-heading {color:#FFF;background-color:#8C6E63;border:1px solid #8C6E63}
+.panel-orange {border:0}
+.panel-orange>.panel-heading {color:#FFF;background-color:#FF6F42;border:1px solid #FF6F42}
+.panel-indigo {border:0}
+.panel-indigo>.panel-heading {color:#FFF;background-color:#6284F3;border:1px solid #6284F3}
+.panel-teal {border:0}
+.panel-teal>.panel-heading {color:#FFF;background-color:#14BAA8;border:1px solid #14BAA8}
+.panel-pink {border:0}
+.panel-pink>.panel-heading {color:#FFF;background-color:#ED407A;border:1px solid #ED407A}
+.panel-default>.panel-body, .panel-dark>.panel-body, .panel-red>.panel-body, .panel-blue>.panel-body, .panel-green>.panel-body, .panel-yellow>.panel-body, .panel-purple>.panel-body, .panel-brown>.panel-body, .panel-orange>.panel-body, .panel-indigo>.panel-body, .panel-teal>.panel-body, .panel-pink>.panel-body {border:1px solid #D5D5D5;border-top:0}
+
+/*---------- Accordions ----------*/
+.accordion-default .panel-heading {background:#FFF;position:relative}
+.accordion-default .panel-default>.panel-heading+.panel-collapse>.panel-body {border:1px solid #D5D5D5;border-top:0}
+.panel-group-control .panel-title > a:before {font-family:'Font Awesome\ 5 Free';font-size:14px;line-height:1;-webkit-font-smoothing:antialiased;-moz-osx-fontsmoothing:grayscale;-webkit-transition:all .3s linear 0s;-o-transition:all .3s linear 0s;transition:all .3s linear 0s;opacity:1}
+.panel-group-control .panel-title > a {padding-left:26px;display:inline-block}
+.panel-group-control .panel-title > a:before {content:"\f068";font-weight:900;position:absolute;top:50%;margin-top:-8px;left:15px}
+.panel-group-control .panel-title > a.collapsed:before {content:"\f067";font-weight:900;-ms-transform:rotate(-180deg);-webkit-transform:rotate(-180deg);-o-transform:rotate(-180deg);transform:rotate(-180deg);opacity:0.35}
+.panel-group-control.panel-group-control-right .panel-title > a {padding-left:0;padding-right:26px}
+.panel-group-control.panel-group-control-right .panel-title > a:before {left:auto;right:15px}
+
+
+.ptitle{font-weight:bold;font-size:22px;margin-bottom:20px;color:#055f93}
+.ptitle:before{content:url('h3bar.jpg') !important; vertical-align:-3px;margin-right: 2px;}
+
+@media (max-width: 992px) {
+  .hscroll {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+  
+  .hscroll > * {
+    flex: 0 0 auto;
+  }
+}
+
+</style>	
+<div class="business">
+
+<article id="ctt" class="ctt_company">
+    <header>
+        <h1>기업현황</h1>
+    </header>
+
+    <div id="ctt_con">
+        <h3 class="ptitle">자동차부품산업현황</h3>
+<br>
+<h4><span style="font-size:24px;color:#055f93;">기업규모별 업체수</span></h4>
+<div class="hscroll">  
+	        <table class="tstyle_blue02 txt_center"><tbody><tr><th scope="col" colspan="1" rowspan="2" width="14%" style="border-bottom: solid 1px #b1cbd6;">연도</th>
+	            <th scope="col" colspan="3">대기업</th>
+	            <th scope="col" colspan="1" rowspan="2" width="14%" style="border-bottom: solid 1px #b1cbd6;">중소기업</th>
+	            <th scope="col" colspan="1" rowspan="2" width="14%" style="border-bottom: solid 1px #b1cbd6;">계</th>
+	            <th scope="col" colspan="1" rowspan="2" width="14%" style="border-bottom: solid 1px #b1cbd6;">증감률(%)</th>
+	          </tr><tr><th scope="col" width="14%" style="border-bottom: solid 1px #b1cbd6;"></th>
+	           <th scope="col" width="14%"  style="border-bottom: solid 1px #b1cbd6;border-top: 1px solid #b1cbd6">대규모 기업집단</th>
+	           <th scope="col" width="14%"  style="border-bottom: solid 1px #b1cbd6;border-top: 1px solid #b1cbd6">중견기업</th>
+	             </tr><tr><td>2024<br /></td>
+			    <td>309<br /></td>
+			    <td>(30)</td>
+			    <td>(279)</td>
+			    <td>376<br /></td>
+			    <td>685<br /></td>
+			    <td>-0.9</td>
+	        </tr><tr><td>2025</td>
+			    <td>309<br /></td>
+			    <td>(29)</td>
+			    <td>(280)</td>
+			    <td>392<br /></td>
+			    <td>701<br /></td>
+			    <td>2.3</td>
+	             </tr>
+	        </tbody></table>
+</div>
+
+<div>
+	        <p style="margin:5px 0px 20px;"><span class="point02">(주)</span> 중소기업 기준 : 3개년도 평균매출액 1,000억원 이하(2015. 1. 1부터 적용) 
+	             ※ 중소기업 제외 기준 : 자산총액 5,000억원 이상, 상호출자제한집단 또는 채무보증제한기업집단에 속하는 회사, 자산총액 5,000억원 이상 법인이 주식 30% 이상 소유한 경우 등<br>
+	       </p>        
+	
+</div>	
+<div id="chart_div1" style="margin:0px auto;width:800px;"></div>
+<div>     
+	
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script>
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart1);
+      google.charts.setOnLoadCallback(drawChart2);
+      google.charts.setOnLoadCallback(drawChart3);
+
+      function drawChart1() {
+
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Topping');
+        data.addColumn('number', 'Slices');
+        data.addRows([
+          ['대기업(대규모집단) 29개사(4.1%)', 29],
+          ['대기업(중견기업) 280개사(40.0%)', 280],
+          ['중소기업 392개사(55.9%)', 392]
+        ]);
+
+		var options = {'title':'기업 구분 (2025)',
+                       'width':900,
+                       'height':500};
+        var chart = new google.visualization.PieChart(document.getElementById('chart_div1'));
+        chart.draw(data, options);
+      }
+
+      function drawChart2() {
+
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Topping');
+        data.addColumn('number', 'Slices');
+        data.addRows([
+          ['중소기업:392개사', 392],
+          ['중견기업:280개사', 280],
+          ['대규모집단:29개사', 29]
+        ]);
+        var options = {'title':'전문업종',
+                       'width':600,
+                       'height':400};
+        var chart = new google.visualization.PieChart(document.getElementById('chart_div2'));
+        chart.draw(data, options);
+      }
+
+      function drawChart3() {
+
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Topping');
+        data.addColumn('number', 'Slices');
+        data.addRows([
+          ['중소기업', 6],
+          ['중견기업', 12],
+          ['대규모집단', 7]
+        ]);
+        var options = {'title':'비전문업종',
+                       'width':600,
+                       'height':400};
+        var chart = new google.visualization.PieChart(document.getElementById('chart_div3'));
+        chart.draw(data, options);
+      }
+
+</script> 
+
+<div style="clear: both"></div>	
+<div>         
+		  <h4><span style="font-size:24px;color:#055f93;">완성차사별 납품업체수</span></h4>
+        <div  class="hscroll">
+        <table class="tstyle_blue01 txt_center"><tbody><tr><th scope="col" width="12%">구분</th>
+            <th scope="col" width="12%">현대</th>
+            <th scope="col" width="12%">기아</th>
+            <th scope="col" width="12%">한국GM</th>
+            <th scope="col" width="12%">르노코리아</th>
+            <th scope="col" width="12%">KG모빌리티</th>
+            <th scope="col" width="12%">타다대우</th>
+            <th scope="col">합계<br />
+              (실업체수)</th>
+          </tr><tr><td>2024<br/></td>
+            <td>353<br /></td>
+            <td>334<br /></td>
+            <td>185<br /></td>
+            <td>166<br /></td>
+            <td>218</td>
+            <td>174<br /></td>
+            <td>1,430<br />
+              (685) </td>
+          </tr>
+          <tr><td>2025</td>
+            <td>360</td>
+            <td>347</td>
+            <td>190</td>
+            <td>185</td>
+            <td>209</td>
+            <td>171</td>
+            <td>1,462<br />
+              (701) </td>
+          </tr></tbody></table>   
+        </div>
+</div>
+
+
+
+<div style="clear: both"></div>	
+<br><br>	
+        <h4><span style="font-size:24px;color:#055f93;padding-bottom:20px;">종업원 규모별 업체수</span></h4>
+        <div  class="hscroll">        
+        <table class="tstyle_blue01 txt_center"><tbody><tr><th colspan="2" scope="col">구분</th>
+            <th scope="col" width="12%">50인 미만</th>
+            <th scope="col" width="12%">50~99인</th>
+            <th scope="col" width="12%">100~299인</th>
+            <th scope="col" width="12%">300~499인</th>
+            <th scope="col" width="12%">500~999인</th>
+            <th scope="col" width="12%">1,000인 이상</th>
+            <th scope="col" width="12%">합계</th>
+          </tr><tr><td rowspan="2">2024</td>
+            <td>업체수</td>
+            <td>157</td>
+            <td>120</td>
+            <td>226</td>
+            <td>79</td>
+            <td>67</td>
+            <td>36</td>
+            <td>685</td>
+          </tr><tr><td>비율(%)</td>
+            <td>22.9</td>
+            <td>17.5</td>
+            <td>33.0</td>
+            <td>11.5</td>
+            <td>9.8</td>
+            <td>5.3</td>
+            <td>100.0</td>
+          </tr>
+          <tr><td rowspan="2">2025<br /></td>
+            <td>업체수</td>
+            <td>159<br /></td>
+            <td>117<br /></td>
+            <td>225<br /></td>
+            <td>78<br /></td>
+            <td>82<br /></td>
+            <td>40<br /></td>
+            <td>701<br /></td>
+          </tr><tr><td>비율(%)</td>
+            <td>22.7<br /></td>
+            <td>16.7<br /></td>
+            <td>32.1<br /></td>
+            <td>11.1<br /></td>
+            <td>11.7<br /></td>
+            <td>5.7<br /></td>
+            <td>100.0</td>
+          </tr></tbody></table>
+ </div> 
+ <!--
+<div style="clear: both"></div>	
+<br><br>
+        <h4><span style="font-size:24px;color:#055f93;">복수거래 업체수</span></h4>
+        <div  class="hscroll">        
+        <table class="tstyle_blue01 txt_center"><tbody><tr><th colspan="2" scope="col">구분</th>
+            <th scope="col" width="12%">1개사</th>
+            <th scope="col" width="12%">2개사</th>
+            <th scope="col" width="12%">3개사</th>
+            <th scope="col" width="12%">4개사</th>
+            <th scope="col" width="12%">5개사</th>
+            <th scope="col" width="12%">6개사</th>
+            <th scope="col" width="12%">합계</th>
+          </tr><tr><td rowspan="2">2024</td>
+            <td>납품업체수</td>
+            <td>288</td>
+            <td>208</td>
+            <td>92</td>
+            <td>48</td>
+            <td>36</td>
+            <td>13</td>
+            <td>685</td>
+          </tr><tr><td>비율(%)</td>
+            <td>42.0</td>
+            <td>30.4</td>
+            <td>13.4</td>
+            <td>7.0</td>
+            <td>5.3</td>
+            <td>1.9</td>
+            <td>100.0</td>
+          </tr>
+          <tr><td rowspan="2">2025<br /></td>
+            <td>납품업체수</td>
+            <td>290<br /></td>
+            <td>217<br /></td>
+            <td>98<br /></td>
+            <td>49<br /></td>
+            <td>34<br /></td>
+            <td>13<br /></td>
+            <td>701<br /></td>
+          </tr><tr><td>비율(%)</td>
+            <td>41.4<br /></td>
+            <td>31.0<br /></td>
+            <td>14.0<br /></td>
+            <td>7.0<br /></td>
+            <td>4.9<br /></td>
+            <td>1.9<br /></td>
+            <td>100.0</td>
+          </tr></tbody></table>
+ </div>
+<br>
+<div id="columnchart_material" style="width: 99%; height: 400px;"></div>
+
+<div style="clear: both"></div>	
+<br>
+<div>         
+		  <h4><span style="font-size:20px;color:#055f93;">승용차업체 5개사(현대, 기아, 한국지엠, 르노코리아, KG모빌리티) 단독거래 비율</span></h4>
+        <div  class="hscroll">
+        <table class="tstyle_blue01 txt_center"><tbody><tr>
+           <th scope="col" width="12%">2019</th>
+            <th scope="col" width="12%">2020</th>
+            <th scope="col" width="12%">2021</th>
+            <th scope="col" width="12%">2022</th>
+            <th scope="col" width="12%">2023</th>
+            <th scope="col" width="12%">2024</th>
+            <th scope="col" width="12%">2025</th>
+          </tr><tr>
+	        <td>15.4%<br />(217/1,414)</td>
+            <td>16.7%<br />(234/1,404)</td>
+            <td>16.7%<br />(230/1,376)</td>
+            <td>17.1%<br />(228/1,330)</td>
+            <td>15.9%<br />(200/1,259)</td>
+            <td>15.0%<br />(189/1,256)</td>
+            <td>15.4%<br />(199/1,291)</td>
+          </tr></tbody></table>   
+        </div>
+</div>
+<div id="linechart" style="width: 99%; height: 400px;"></div>
+</article>  
+
+
+
+<script type="text/javascript">
+  google.charts.load('current', {'packages':['bar']});
+  google.charts.setOnLoadCallback(drawChart);
+
+  function drawChart() {
+    var data = google.visualization.arrayToDataTable([
+      ['거래형태__','복수거래__', '단독거래__'],
+      ['현대', 328, 25],
+      ['기아', 321, 13],
+      ['한국GM', 137, 48],
+      ['르노코리아', 122, 44],
+      ['KG모빌리티', 159, 59],
+      ['타다대우', 75, 99]
+    ]);
+
+    var options = {
+      chart: {
+        title: '완성차 업체별 거래형태별 업체수',
+        subtitle: '',
+      }
+    };
+
+    var chart = new google.charts.Bar(document.getElementById('columnchart_material'));
+
+    chart.draw(data, google.charts.Bar.convertOptions(options));
+  }
+</script>
+<script>
+      google.load("visualization", "1", {packages:["corechart"]});      
+      google.setOnLoadCallback(drawChart);      
+      function drawChart() {        
+	      var data = google.visualization.arrayToDataTable([          
+	      ['','%'],         
+	      ['2019',  15.4],         
+	      ['2020',  16.7],         
+	      ['2021',  16.7],         
+	      ['2022',  17.1],          
+	      ['2023',  15.9],          
+	      ['2024',  15],        
+	      ['2025',  15.4]        
+	      ]); 
+	             
+	        var options = { 
+		        
+		        vAxis: {
+    title: '',
+    minValue: 13.5,
+    maxValue: 17.5
+  },  
+		        
+		              title: '연도별 단독거래 비율(승용차 5사기준)' };        
+	        var chart = new google.visualization.LineChart(document.getElementById('linechart'));        
+	        chart.draw(data, options);  
+ 
+			}
+</script>
+</div>
+-->
+<br><br>
+
+<!-- // 서브페이지 <div id="contents_wrap"> END -->
+</div>
+<!-- footer -->
+<footer id="footer">
+	<div class="foot_wrap">
+		<ul class="foot_menu">
+			<li><a href="https://kaica.or.kr/bbs/content.php?co_id=provision">회원약관</a></li>
+			<li><a href="https://kaica.or.kr/bbs/content.php?co_id=privacy">개인정보처리방침</a></li>
+		</ul>
+
+		<!-- 회사 정보 수정 -->
+		<div class="copyright">		
+			<address>
+				<strong>한국자동차산업협동조합</strong> &nbsp;서울특별시 서초구 서초대로62길 9-22(자동차산업회관)<br>
+				<span class="tel"> Tel. 02-587-0014 </span>&nbsp;
+				<span class="fax">Fax. 02-583-7340</span> &nbsp; E-mail. kaica@kaica.or.kr
+			</address>
+			<p class="copy">COPYRIGHTⓒ Korea Auto Industries Coop. Association</p>
+		</div>
+		<div class="foot_sns">
+			<!--a href="" target="_blank" rel="" title="관련링크"></a-->
+		</div>		
+
+	</div>
+</footer>
+</div>
+
+</body>
+</html>

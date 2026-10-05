@@ -1,0 +1,29 @@
+{
+  "source_path": "C:\\code\\1\\참고문서\\매뉴얼\\VF 시리즈 서비스 매뉴얼\\찐\\02_서보축_알람대응\\TG0125_servo-amplifier-tg-ngc\\TG0125__RevF-2026-08__20261003.html",
+  "source_name": "TG0125__RevF-2026-08__20261003.html",
+  "file_type": "html",
+  "content_hash": "sha256:ea9a5132d7527b73e6792659198cda4d91195875714a4e0093d12c4236f5c065",
+  "converter": "markitdown",
+  "converter_version": "0.1.8",
+  "converted_at": "2026-10-03T18:02:26",
+  "warnings": [
+    "HTML 전체 변환: 사이트 내비게이션·바닥글 포함"
+  ],
+  "doc_id": "TG0125",
+  "revision": "Revision F - 8/2026",
+  "last_updated": "10/14/2025",
+  "source_url": "https://www.haascnc.com/service/troubleshooting-and-how-to/troubleshooting/servo-amplifier---troubleshooting-guide---ngc.html",
+  "retrieved_at": "2026-10-03T18:02:26",
+  "retrieved_via": "direct",
+  "http_status": 200,
+  "applies_to": "",
+  "embedded_docs": [
+    {
+      "doc_id": "TG0125",
+      "revision": "Revision F - 8/2026"
+    }
+  ],
+  "title": "Servo Amplifier - Troubleshooting Guide - NGC - TG0125",
+  "pages": null,
+  "license_note": "Haas 저작물: 사이트 약관상 서면 허가 없는 사용 불가 표기. 내부 참고용 사본, 재배포 금지"
+}

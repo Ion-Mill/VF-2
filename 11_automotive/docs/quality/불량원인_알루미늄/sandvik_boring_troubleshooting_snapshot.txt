@@ -1,0 +1,16 @@
+SOURCE: Sandvik Coromant - "Boring troubleshooting"
+URL: https://www.sandvik.coromant.com/en-us/knowledge/boring/troubleshooting
+Accessed: 2026-10-03 (JavaScript-rendered page; rendered-text snapshot for internal reference only)
+Copyright: AB Sandvik Coromant. Internal study reference only; do not redistribute. Always check the live page.
+
+=== Rough boring ===
+- Chips too short/hard -> feed too high / speed too low / geometry -> decrease feed, increase vc, more open chip breaker.
+- Chips too long -> feed too low / speed too high -> increase feed, decrease vc, more closed chip breaker.
+- Tool vibration -> tool length/coupling ratio too high: largest coupling, damped/shorter bar; unstable: rigid clamping with face contact, two-insert rough boring tool, correct assembly torque, check spindle/workpiece clamping; too large depth: step boring; too high cutting force: lower ap, positive insert, smaller nose radius, no wiper on long overhang.
+- Machine power -> check torque/power, decrease cutting data, step boring.
+
+=== Fine boring (relevant to bore dia 45 H7) ===
+- Chip breaking: same logic as rough boring.
+- Tool vibration -> too high cutting force: light-cutting insert, smaller nose radius, sharp edges thin/uncoated, decrease ap, no wiper on long overhang; length/coupling ratio: rigid clamping, largest coupling, shorten assembly, damped tools; unstable conditions: check assembly torque, spindle, clamping, wear.
+- Friction instead of clean cutting -> increase depth of cut.
+- Surface finish issues: vibration -> reduce speed; feed marks -> light-cutting insert, larger nose radius, decrease feed; worn insert -> change edge; chip scratching surface -> improve chip breaking.

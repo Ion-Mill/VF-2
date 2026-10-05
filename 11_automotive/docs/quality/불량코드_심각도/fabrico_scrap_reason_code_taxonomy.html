@@ -1,0 +1,2916 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Scrap Reason Code Taxonomy: Codes, Fields and Rules</title>
+    <meta name="description" content="Copy a two-level scrap and rework reason code list: 12 categories, detail codes, the scrap record fields, and a worked shift where cost reorders count.">
+    <meta name="keywords" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+
+    <meta property="og:title" content="Scrap Reason Code Taxonomy: Codes, Fields and Rules"/>
+    <meta property="og:description" content="Copy a two-level scrap and rework reason code list: 12 categories, detail codes, the scrap record fields, and a worked shift where cost reorders count."/>
+    <meta property="og:image" content="https://s3.fabrico.io/uploads/quality-assurance-vs-quality-control-qa-qc-manufacturing.jpg"/>
+
+    
+        <link rel="canonical" href="https://www.fabrico.io/blog/scrap-reason-code-taxonomy/"/>
+    
+
+    
+        
+            <link rel="alternate" href="https://www.fabrico.io/blog/scrap-reason-code-taxonomy/" hrefLang="en"/>
+            
+            <link rel="alternate" href="https://www.fabrico.io/blog/scrap-reason-code-taxonomy/" hrefLang="x-default"/>
+            
+        
+    
+
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap" rel="stylesheet"> 
+
+    <!-- Styles  -->
+    <link href="/statics/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/statics/css/slick.css" rel="stylesheet">
+    <link href="/statics/css/slick-theme.css?v=2" rel="stylesheet">
+    <link href="/statics/css/global.css?v=52" rel="stylesheet">
+    <link href="/statics/css/switch.css" rel="stylesheet">
+
+    <link rel="icon" type="image/x-icon" href="/statics/img/fabrico_favicon.png">
+
+<!-- Structured data: who Fabrico is (Organization) and what the product is (SoftwareApplication). Same on every page. -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@graph": [
+        {
+            "@type": "Organization",
+            "@id": "https://www.fabrico.io/#organization",
+            "name": "Fabrico",
+            "url": "https://www.fabrico.io/",
+            "logo": "https://www.fabrico.io/statics/img/fabrico-logo-clean.svg",
+            "description": "Fabrico is a cloud-based MES and OEE platform for manufacturers: real-time production monitoring, automatic downtime tracking and OEE analytics, with AI computer vision. Maintenance management (CMMS) is built in.",
+            "knowsAbout": ["Manufacturing execution systems (MES)", "Overall equipment effectiveness (OEE)", "Production monitoring", "Downtime tracking", "Computerized maintenance management (CMMS)"],
+            "sameAs": [
+                "https://www.linkedin.com/company/fabricoio",
+                "https://www.facebook.com/fabrico.io"
+            ]
+        },
+        {
+            "@type": "SoftwareApplication",
+            "@id": "https://www.fabrico.io/#software",
+            "name": "Fabrico",
+            "url": "https://www.fabrico.io/",
+            "applicationCategory": "BusinessApplication",
+            "applicationSubCategory": "Manufacturing execution system (MES) and OEE software",
+            "operatingSystem": "Web, Android, iOS",
+            "description": "Fabrico is a cloud-based MES and OEE platform for manufacturers: real-time production monitoring, automatic downtime tracking and OEE analytics, with AI computer vision. Maintenance management (CMMS) is built in.",
+            "publisher": {"@id": "https://www.fabrico.io/#organization"}
+        }
+    ]
+}
+</script>
+    
+<link href="/statics/css/index.css?v=4" rel="stylesheet">
+<link href="/statics/css/article.css?v=11" rel="stylesheet">
+<link href="/statics/css/customers.css?v=4" rel="stylesheet">
+
+
+    <script>
+        var apiUrl = '/api/submit_contact_form/';
+        var registerUrl = '/api/register/';
+        var cookiesConsentUrl = '/cookies-consent/';
+        var blogPageUrl = '/blog-page/';
+        //var csrfToken = 'diHfZQIaa0GdqRHH1ScsVAgZbhEOkaapLB0diwXdaynhnpSfmanfeMC9gpwOcSvG';
+        var RECAPTCHA_SITE_KEY = '6Lf-t6coAAAAAK6Qd0bIEcpzrnC5aJeFRUVzsFN5'
+        var RECAPTCHA_V2_SITE_KEY = '6LcoB-grAAAAAOA57JsHZUbFrUvvc4LanptoMSF1'
+
+        var ACTIVE_COOKIES_TAB = 1;
+var DISABLED_COOKIES = {'statistics': true, 'marketing': true};
+var CONSENT_HASH = "";
+var CONSENT_DATE = "";
+
+    </script>
+
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+
+        gtag('consent', 'default', {
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied',
+        'analytics_storage': 'denied'
+        });
+
+        // Re-apply the visitor's stored cookie choice on every page load (Consent Mode: default denied, then update).
+        // Fails closed: only an explicit false ("not disabled") grants; anything else stays denied.
+        (function () {
+            var marketing = 'denied';
+            var statistics = 'denied';
+            try {
+                var choice = (typeof DISABLED_COOKIES === 'object' && DISABLED_COOKIES) ? DISABLED_COOKIES : {};
+                if (choice.marketing === false) { marketing = 'granted'; }
+                if (choice.statistics === false) { statistics = 'granted'; }
+            } catch (e) {}
+            if (marketing === 'granted' || statistics === 'granted') {
+                gtag('consent', 'update', {
+                    'ad_storage': marketing,
+                    'ad_user_data': marketing,
+                    'ad_personalization': marketing,
+                    'analytics_storage': statistics
+                });
+            }
+        })();
+    </script>
+</head>
+<body class="body-scrap-reason-code-taxonomy lang-en">
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WRPRKP4H"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<script id="mcjs">!function(c,h,i,m,p){m=c.createElement(h),p=c.getElementsByTagName(h)[0],m.async=1,m.src=i,p.parentNode.insertBefore(m,p)}(document,"script","https://chimpstatic.com/mcjs-connected/js/users/97355596d1a39c212504effed/58774e42a3799c1c17777feaa.js");</script>
+
+
+
+<header>
+    
+    <div class="mobile-menu" onclick="event.stopPropagation();">
+        <img src="/statics/img/menu.svg" alt="Menu" width="30" height="30">    
+    </div>
+
+    <div class="logo">
+        <a href="/">
+            <img src="/statics/img/fabrico-logo-clean.svg" alt="Fabrico.io" height="44">
+        </a>
+    </div>
+
+    <div class="header-buttons" onclick="event.stopPropagation();">
+        <div class="nav-menu">
+           
+            <div class="btn-group">
+                  <button class="btn btn-bd-primary shadow-none dropdown-toggle" style="padding-right: 15px;"
+                    type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="/statics/img/flag-en.svg" alt="English">
+                  </button>
+                  <ul class="dropdown-menu">
+                    
+                         
+                            
+                            <li>
+                                <a href="/bg/blog/" class="dropdown-item">
+                                    <img src="/statics/img/flag-bg.svg" alt="Bulgarian">
+                                    <span style="text-transform: capitalize">Bulgarian</span> 
+                                </a>
+                            </li>
+                            
+                         
+                            
+                            <li>
+                                <a href="/de/blog/" class="dropdown-item">
+                                    <img src="/statics/img/flag-de.svg" alt="German">
+                                    <span style="text-transform: capitalize">German</span> 
+                                </a>
+                            </li>
+                            
+                         
+                            
+                         
+                            
+                            <li>
+                                <a href="/fr/blog/" class="dropdown-item">
+                                    <img src="/statics/img/flag-fr.svg" alt="French">
+                                    <span style="text-transform: capitalize">French</span> 
+                                </a>
+                            </li>
+                            
+                         
+                            
+                            <li>
+                                <a href="/es/blog/" class="dropdown-item">
+                                    <img src="/statics/img/flag-es.svg" alt="Spanish">
+                                    <span style="text-transform: capitalize">Spanish</span> 
+                                </a>
+                            </li>
+                            
+                         
+                            
+                            <li>
+                                <a href="/pl/blog/" class="dropdown-item">
+                                    <img src="/statics/img/flag-pl.svg" alt="Polish">
+                                    <span style="text-transform: capitalize">Polish</span> 
+                                </a>
+                            </li>
+                            
+                         
+                            
+                         
+                            
+                         
+                            
+                        
+                    
+                  </ul>
+            </div>
+
+            <a href="https://app.fabrico.io" class="login" target="_blank">
+                <img src="/statics/img/login.svg" alt="Login" width="18" height="19">Login
+            </a>
+            <a href="/contacts/" class="btn btn-primary">Contact Us</a>
+        </div>
+
+
+    </div>
+
+    <nav class="navi" onclick="event.stopPropagation();">
+
+        <div class="mobile-menu-header">
+            <div class="mobile-logo">
+                <a href="/">
+                    <img src="/statics/img/logo-menu.svg" alt="Fabrico.io" width="153" height="44">
+                </a>
+            </div>
+
+            <div class="mobile-header-buttons">
+                <div class="btn-group">
+                    <button class="btn btn-bd-primary shadow-none dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="/statics/img/flag-en.svg" alt="English">
+                    </button>
+                    <ul class="dropdown-menu">
+                      
+                           
+                            
+                            <li>
+                                <a href="/bg/blog/" class="dropdown-item">
+                                    <img src="/statics/img/flag-bg.svg" alt="Bulgarian">
+                                    <span style="text-transform: capitalize">Bulgarian</span> 
+                                </a>
+                            </li>
+                            
+                           
+                            
+                            <li>
+                                <a href="/de/blog/" class="dropdown-item">
+                                    <img src="/statics/img/flag-de.svg" alt="German">
+                                    <span style="text-transform: capitalize">German</span> 
+                                </a>
+                            </li>
+                            
+                           
+                            
+                           
+                            
+                            <li>
+                                <a href="/fr/blog/" class="dropdown-item">
+                                    <img src="/statics/img/flag-fr.svg" alt="French">
+                                    <span style="text-transform: capitalize">French</span> 
+                                </a>
+                            </li>
+                            
+                           
+                            
+                            <li>
+                                <a href="/es/blog/" class="dropdown-item">
+                                    <img src="/statics/img/flag-es.svg" alt="Spanish">
+                                    <span style="text-transform: capitalize">Spanish</span> 
+                                </a>
+                            </li>
+                            
+                           
+                            
+                            <li>
+                                <a href="/pl/blog/" class="dropdown-item">
+                                    <img src="/statics/img/flag-pl.svg" alt="Polish">
+                                    <span style="text-transform: capitalize">Polish</span> 
+                                </a>
+                            </li>
+                            
+                           
+                            
+                           
+                            
+                           
+                            
+                          
+                      
+                    </ul>
+              </div>
+            </div>
+            
+            <div class="mobile-menu mobile-menu-close">
+                <img src="/statics/img/mobile-menu-close.png" alt="Menu" width="30" height="30">    
+            </div>
+        </div>
+
+
+        <ul class="nav-menu">
+
+            
+            <li class="nav-item">
+                <a class="navi-link" href="/">OEE & CMMS</a>
+            </li>
+
+            <li class="nav-item nav-item-with-submenu">
+                <a class="navi-link" href="javascript:;">Solutions</a>
+                <div class="nav-submenu">
+                    <div class="container-xl">
+                       <div class="row">
+                            
+                            <div class="col-12 col-lg-4 pe-lg-5 pb-5">
+                                <h3 class="nav-category">MES &amp; OEE</h3>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/mes-oee-solution-overview/">
+                                       Solution overview MES &amp; OEE
+                                    </a>
+                                </div>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/mes-oee-tracking-availability/">
+                                       Tracking Availability
+                                    </a>
+                                </div>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/mes-oee-machine-connectivity/">
+                                       Machine connectivity
+                                    </a>
+                                </div>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/mes-oee-production-planning/">
+                                       Production planning
+                                    </a>
+                                </div>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/mes-oee-computer-vision/">
+                                       Computer vision
+                                    </a>
+                                </div>
+                                
+                            </div>
+                            
+                            <div class="col-12 col-lg-4 pe-lg-5 pb-5">
+                                <h3 class="nav-category">CMMS</h3>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/cmms-solution-overview/">
+                                       CMMS Solution overview
+                                    </a>
+                                </div>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/emergency-repairs/">
+                                       Emergency repairs
+                                    </a>
+                                </div>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/preventive-maintenance/">
+                                       Preventive Maintenance
+                                    </a>
+                                </div>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/analytics-and-reporting/">
+                                       Analytics &amp; Reporting
+                                    </a>
+                                </div>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/task-management/">
+                                       Task Management &amp; Work Cards
+                                    </a>
+                                </div>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/smart-notifications/">
+                                       Smart notifications
+                                    </a>
+                                </div>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/inventory-management/">
+                                       Inventory Management
+                                    </a>
+                                </div>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/multi-accounts/">
+                                       Group and Multisite Overview and Management
+                                    </a>
+                                </div>
+                                
+                            </div>
+                            
+                            <div class="col-12 col-lg-4 pe-lg-5 pb-5">
+                                <h3 class="nav-category">AI add-ons</h3>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/ai-add-ons-overview/">
+                                       AI add-ons overview
+                                    </a>
+                                </div>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/ai-add-ons-inefficiencies/">
+                                       Inefficiencies zoom-in
+                                    </a>
+                                </div>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/ai-add-ons-ai-assistant/">
+                                       AI Assistant
+                                    </a>
+                                </div>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/ai-add-ons-ai-agent/">
+                                       AI Agent
+                                    </a>
+                                </div>
+                                
+                                <div class="nav-category-item">
+                                    <a href="/feature/ai-add-ons-custom-ai-modules/">
+                                       Custom AI modules
+                                    </a>
+                                </div>
+                                
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </li>
+            
+            <li class="nav-item nav-item-with-submenu">
+                <a class="navi-link" href="javascript:;">Resources</a>
+                <div class="nav-submenu">
+                    <div class="container-xl">
+                        <div class="row">
+
+                            <div class="col-12 col-lg-4">
+                                <a class="nav-submenu-item" href="/survey/">
+                                    <img 
+                                        src="/statics/img/icon-survey.svg" 
+                                        width="50"
+                                        height="50"
+                                        alt="Self-assessment test">
+                                    <h3>Self-assessment test</h3>
+                                    <p>Discover how maintenance management software can boost your production efficiency with our 2-min survey!</p>
+                                </a>
+                            </div>
+                            <div class="col-12 col-lg-4">
+                                <a class="nav-submenu-item" href="/calculator/">
+                                    <img 
+                                        src="/statics/img/icon-customers.svg" 
+                                        width="50"
+                                        height="50"
+                                        alt="ROI Calculator">
+                                    <h3>ROI Calculator</h3>
+                                    <p>See how businesses benefit</p>
+                                </a>
+                            </div>
+                            <div class="col-12 col-lg-4">
+                                <a class="nav-submenu-item" href="/calculator-oee/">
+                                    <img 
+                                        src="/statics/img/icon-hex-tasks.png" 
+                                        width="50"
+                                        height="50"
+                                        alt="OEE Calculator">
+                                    <h3>OEE Calculator</h3>
+                                    <p>Estimate your production potential</p>
+                                </a>
+                            </div>
+                            <div class="col-12 col-lg-4">
+                                <a class="nav-submenu-item" href="/knowledge-center/">
+                                    <img 
+                                        src="/statics/img/icon-hex-preventive.png" 
+                                        width="50"
+                                        height="50"
+                                        alt="Knowledge Center">
+                                    <h3>Knowledge Center</h3>
+                                    <p>Download our white papers and playbooks</p>
+                                </a>
+                            </div>
+                            
+                            <div class="col-12 col-lg-4">
+                                <a class="nav-submenu-item" href="/blog/">
+                                    <img 
+                                        src="/statics/img/icon-blog.svg"
+                                        width="50"
+                                        height="50"
+                                        alt="Blog">
+                                    <h3>Blog</h3>
+                                    <p>Read the latest articles</p>
+                                </a>
+                            </div>
+
+                            <div class="col-12 col-lg-4">
+                                <a class="nav-submenu-item" href="/glossary/">
+                                    <img 
+                                        src="/statics/img/icon-faq.svg" 
+                                        width="50"
+                                        height="50"
+                                        alt="Glossary">
+                                    <h3>Glossary</h3>
+                                    <p>Maintenance Terms and Definitions</p>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </li>
+            
+            <li class="nav-item nav-item-with-submenu">
+                <a class="navi-link" href="javascript:;">Industries</a>
+                <div class="nav-submenu">
+                    <div class="container-xl">
+                       <div class="row">
+                            
+                            <div class="col-12 col-lg-4 pe-lg-5 pb-5">
+                                <div class="nav-category-item">
+                                    <a href="/info/industry-aerospace/">
+                                        
+                                        <img src="https://s3.fabrico.io/uploads/rocket-solid.png" alt="Aerospace">
+                                        
+                                        Aerospace
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 col-lg-4 pe-lg-5 pb-5">
+                                <div class="nav-category-item">
+                                    <a href="/info/industry-chemical/">
+                                        
+                                        <img src="https://s3.fabrico.io/uploads/vial-circle-check-solid.png" alt="Chemical">
+                                        
+                                        Chemical
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 col-lg-4 pe-lg-5 pb-5">
+                                <div class="nav-category-item">
+                                    <a href="/info/industry-electonics/">
+                                        
+                                        <img src="https://s3.fabrico.io/uploads/charging-station-solid.png" alt="Electronics &amp; Automotive">
+                                        
+                                        Electronics &amp; Automotive
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 col-lg-4 pe-lg-5 pb-5">
+                                <div class="nav-category-item">
+                                    <a href="/info/industry-fmcg/">
+                                        
+                                        <img src="https://s3.fabrico.io/uploads/truck-fast-solid.png" alt="FMCG">
+                                        
+                                        FMCG
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 col-lg-4 pe-lg-5 pb-5">
+                                <div class="nav-category-item">
+                                    <a href="/info/industry-metal/">
+                                        
+                                        <img src="https://s3.fabrico.io/uploads/magnet-solid.png" alt="Metal and Aluminium">
+                                        
+                                        Metal and Aluminium
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 col-lg-4 pe-lg-5 pb-5">
+                                <div class="nav-category-item">
+                                    <a href="/info/industry-pharma/">
+                                        
+                                        <img src="https://s3.fabrico.io/uploads/capsules-solid.png" alt="Pharma">
+                                        
+                                        Pharma
+                                    </a>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </li>
+            
+            <li class="nav-item">
+                <a class="navi-link" href="/customers/">Customer stories</a>
+            </li>     
+
+            <!--    
+            <li class="nav-item">
+                <a class="navi-link" href="/pricing/">Pricing</a>
+            </li>
+            -->
+
+            <li class="nav-item nav-item-mobile">
+                <a class="navi-link" href="/survey/">Take our Survey</a>
+            </li>
+
+            <li class="nav-item nav-item-mobile">
+                <a class="navi-link" href="/demo/">Request a demo</a>
+            </li> 
+
+            <li class="nav-item nav-item-mobile">
+                <a class="navi-link" href="/contacts/">Contact us</a>
+            </li> 
+
+            <li class="nav-item nav-item-mobile">
+                <a class="navi-link" href="https://app.fabrico.io" target="_blank">Login</a>
+            </li> 
+
+        </ul>
+    </nav>
+</header>
+
+
+<!-- Page content -->
+
+
+
+    <section class="article-top-section">
+        <div class="container">
+
+                <div class="row">
+                    <div class="col-12 col-lg-5">
+
+                        
+                        <div class="blog-back">
+                            <a href="/blog/"><img src="/statics/img/icon-arrow-back.svg" alt="Back"> Blog</a>
+                        </div>
+
+                        
+                        <div class="article-mobile-image">
+                            <img 
+                                src="https://s3.fabrico.io/uploads/quality-assurance-vs-quality-control-qa-qc-manufacturing.jpg" 
+                                alt="Scrap and Rework Reason Codes: A Taxonomy You Can Copy"
+                                class="rounded-img">
+                        </div>
+                        
+                        <h1 class="article-title">
+                            Scrap and Rework Reason Codes: A Taxonomy You Can Copy
+                        </h1>
+                        
+                            
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        20 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        14 min.
+    </div>
+    
+</div>
+
+                        
+                        <div class="article-content html-content">
+                            Copy a two-level scrap and rework reason code list: 12 categories, detail codes, the scrap record fields, and a worked shift where cost reorders count.
+                        </div>
+                    </div>
+                    
+                    <div class="col-12 col-lg-7 ps-lg-6 article-desktop-image">
+                        <div class="article-image">
+                            <img 
+                                src="https://s3.fabrico.io/uploads/quality-assurance-vs-quality-control-qa-qc-manufacturing.jpg"  
+                                alt="Scrap and Rework Reason Codes: A Taxonomy You Can Copy"
+                                class="rounded-img">
+                        </div>
+                    </div>
+                    
+                </div>
+
+        </div>
+    </section>
+
+
+   <section class="pv-normal">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 col-lg-3 pe-lg-5">
+                    <div class="sticky-sidebar">
+
+                        <div class="article-contents" style="display: none;">Contents:</div>
+                        <div class="article-contents-items" id="contents-menu"></div>
+
+                    </div>
+                </div>
+                <div class="col-12 col-xl-6 col-lg-9 article-content-sections" id="contents-section">
+                    
+                    <div class="article-content-section html-content">
+                    <p><strong>Key takeaways</strong></p>
+<ul>
+<li>A <strong>flat list of scrap reasons</strong> stops being reliable at about 25 entries. At 60 the code tells you more about the order of the list than about the part.</li>
+<li>Use <strong>two levels</strong>: 10 to 14 category codes that are fixed for the whole plant, and a short detail list under each one that a line may tailor.</li>
+<li><strong>Scrap, rework and yield loss</strong> are three different events and need three different records. A reworked part is never a good part at first pass.</li>
+<li>The field pair almost every system omits is <strong>detected_at and caused_at</strong>. Without it, every scrap Pareto points at the inspection station.</li>
+<li>A Pareto <strong>by cost</strong> reorders the Pareto <strong>by count</strong>. The code that loses the most pieces is rarely the code that loses the most money.</li>
+</ul>
+
+<h2>Why a flat list of scrap reasons fails</h2>
+<p>Most plants start with one drop-down of scrap reasons, and it grows one entry at a time.</p>
+<p>Every complaint adds a code, nobody ever removes one, and two years later the list holds 60 entries in the order they were added.</p>
+<p>Three things then happen at the station.</p>
+<ul>
+<li>The operator cannot scan 60 items, so the choice collapses onto the entries visible without scrolling.</li>
+<li>Codes overlap, so two operators code the same defect differently and the trend for both codes becomes noise.</li>
+<li>"Other" grows, because hunting for the right entry costs more time than typing a few words.</li>
+</ul>
+<p>The fix is not a longer list, but a short list with a second level underneath.</p>
+
+<h3>How many codes are too many</h3>
+<p>A single flat list stays reliable to roughly 25 entries, the same range our guide to <a href="/blog/downtime-reason-code-design/">downtime reason code design</a> recommends for stops.</p>
+<p>Scrap needs more resolution than downtime, because a defect has a type <em>and</em> a place on the part. The answer is depth, not width.</p>
+<p>Keep the category level at 10 to 14 codes, and keep any single detail list under 8. The operator sees 12 choices, taps one, then sees 6.</p>
+
+<h2>The two-level structure that works</h2>
+<p>The <strong>category level</strong> is fixed for the whole plant and never changes without a formal decision. Every report, every plant comparison and every trend rolls up to it.</p>
+<p>The <strong>detail level</strong> sits under one category and may be tailored per line or per part family. A machining cell and a filling line share DIM but need different details under it.</p>
+<p>Two rules keep the categories mutually exclusive.</p>
+<ul>
+<li>The code describes <strong>what was wrong with the part</strong>, not who caused it and not what the machine was doing.</li>
+<li>If two codes fit, pick the one <strong>closest to the defect on the part</strong>, not the one closest to the suspected cause. The cause belongs in <strong>caused_<wbr>at</strong>, which is a different field.</li>
+</ul>
+<p>That rule stops the most common corruption of a scrap list: codes that turn into blame labels.</p>
+
+<h3>The category list you can copy</h3>
+<p>Twelve categories cover discrete and process plants. Change the names, but keep the count and keep them exclusive.</p>
+
+<table>
+<thead>
+<tr><th>Code</th><th>Covers</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>SET</strong></td><td>Setup and first-off: pieces consumed proving a setting at the start of a run</td></tr>
+<tr><td><strong>MAT</strong></td><td>Material and incoming: the defect arrived with the raw material or a bought part</td></tr>
+<tr><td><strong>DIM</strong></td><td>Dimen&shy;sional: a feature is outside a drawing tolerance</td></tr>
+<tr><td><strong>SUR</strong></td><td>Surface and cosmetic: visible defect with no dimen&shy;sional effect</td></tr>
+<tr><td><strong>ASM</strong></td><td>Assembly: wrong, missing, reversed or damaged component in a build</td></tr>
+<tr><td><strong>CON</strong></td><td>Contami&shy;nation: swarf, oil, water, dust, allergen or foreign body</td></tr>
+<tr><td><strong>HND</strong></td><td>Handling and transport: the part was made right and damaged afterwards</td></tr>
+<tr><td><strong>EQP</strong></td><td>Equip&shy;ment fault: a machine or tooling failure made the part bad</td></tr>
+<tr><td><strong>MET</strong></td><td>Operator method: the documented method was not followed</td></tr>
+<tr><td><strong>TST</strong></td><td>Test and inspec&shy;tion reject: failed a functional test with no single feature named</td></tr>
+<tr><td><strong>CHG</strong></td><td>Change&shy;over: product lost in the transition between two products</td></tr>
+<tr><td><strong>OTH</strong></td><td>Other: nothing above fits; free text mandatory, reviewed weekly</td></tr>
+</tbody>
+</table>
+
+<p><strong>SET</strong> and <strong>CHG</strong> are easy to confuse, so split them by what is being proved. SET is the first-off of one product, CHG is the material lost moving from product A to product B.</p>
+<p><strong>DIM</strong> and <strong>TST</strong> are the other pair that drifts. If you can name the feature that is out, it is DIM; if the part simply failed the test, it is TST.</p>
+<p>In the six big losses framework, SET and CHG are startup rejects, and everything else is a production reject. Our guide to the <a href="/blog/six-big-losses-oee/">six big losses</a> maps the rest of the losses the same way.</p>
+
+<h2>Detail codes under three categories</h2>
+<p>The detail level is where the resolution lives. Three worked lists follow, ready to lift into a configuration.</p>
+
+<h3>Under DIM (dimensional)</h3>
+<table>
+<thead>
+<tr><th>Detail code</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td>DIM-01</td><td>Oversize, above the upper limit</td></tr>
+<tr><td>DIM-02</td><td>Undersize, below the lower limit</td></tr>
+<tr><td>DIM-03</td><td>Position or true position out</td></tr>
+<tr><td>DIM-04</td><td>Form: flatness, round&shy;ness, profile</td></tr>
+<tr><td>DIM-05</td><td>Thread, tap or bore finish fault</td></tr>
+<tr><td>DIM-06</td><td>Feature missing or machined twice</td></tr>
+</tbody>
+</table>
+
+<h3>Under MAT (material and incoming)</h3>
+<table>
+<thead>
+<tr><th>Detail code</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td>MAT-01</td><td>Wrong material or wrong grade issued</td></tr>
+<tr><td>MAT-02</td><td>Inclusion, void or lamination in the stock</td></tr>
+<tr><td>MAT-03</td><td>Incoming stock outside size tolerance</td></tr>
+<tr><td>MAT-04</td><td>Surface defect on arrival: rust, scale</td></tr>
+<tr><td>MAT-05</td><td>Damaged in transit from the supplier</td></tr>
+<tr><td>MAT-06</td><td>Out of shelf life or wrongly stored</td></tr>
+</tbody>
+</table>
+
+<h3>Under SET (setup and first-off)</h3>
+<table>
+<thead>
+<tr><th>Detail code</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td>SET-01</td><td>First-off pieces to prove the setting</td></tr>
+<tr><td>SET-02</td><td>Offset or program correction after first-off</td></tr>
+<tr><td>SET-03</td><td>Fixture or clamping trial</td></tr>
+<tr><td>SET-04</td><td>Re-quali&shy;fication after a tool change mid run</td></tr>
+<tr><td>SET-05</td><td>Warm-up pieces after a long stop</td></tr>
+</tbody>
+</table>
+
+<p>A MAT‑02 trend points at a supplier, and a DIM‑01 trend points at tool wear. The same two events coded only as "material" and "dimensional" point at nothing.</p>
+
+<h2>Scrap, rework and yield loss are three different events</h2>
+<p>These three get merged in most systems, and the merge is expensive. They have different records, different costs and different effects on the OEE Quality factor.</p>
+
+<table>
+<thead>
+<tr><th>Event</th><th>Record</th><th>Quality factor</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Scrap</strong></td><td>Scrap record with reason and detail</td><td>Counts as a bad piece</td></tr>
+<tr><td><strong>Rework</strong></td><td>Rework record with reason, detail and minutes</td><td>Counts as a bad piece at first pass</td></tr>
+<tr><td><strong>Yield loss</strong></td><td>Material recon&shy;cil&shy;iation on the order</td><td>No effect: no piece exists</td></tr>
+</tbody>
+</table>
+
+<p><strong>Scrap</strong> is a piece that will never be sold. It leaves the order and the material is written off.</p>
+<p><strong>Rework</strong> is a piece that failed, was repaired and passed. It is sold, but it cost extra labour, extra machine time and a second inspection.</p>
+<p><strong>Yield loss</strong> is material consumed that never became a countable piece: purge, flush, offcuts, bar ends, trim and evaporation. No piece was ever counted, so no piece can be coded bad.</p>
+
+<h3>The rule that makes rework honest</h3>
+<p>In the <a href="/blog/oee-calculation/">OEE calculation</a>, the Quality factor is good count divided by total count, and a part that needed rework is <strong>not</strong> a good part.</p>
+<p>If you count reworked parts as good, Quality rises, OEE rises and the rework cell stays busy forever.</p>
+<p>Record the rework event separately, with its own reason code, detail code and minutes. See <a href="/blog/first-pass-yield-vs-rolled-throughput-yield/">first pass yield and rolled throughput yield</a> for why the first pass number moves behaviour.</p>
+
+<h2>The fields on a scrap record</h2>
+<p>A scrap record is a transaction, not a note. It belongs to one work order, one operation and one machine, like the quantity reports in a <a href="/blog/production-work-order-data-model/">production work order data model</a>.</p>
+
+<h3>Mandatory fields</h3>
+<table>
+<thead>
+<tr><th>Field</th><th>What it holds</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>work_<wbr>order_<wbr>no</strong></td><td>Order the pieces were made under</td></tr>
+<tr><td><strong>operation</strong></td><td>Operation number, for example 20</td></tr>
+<tr><td><strong>machine</strong></td><td>Asset or work centre code</td></tr>
+<tr><td><strong>part_<wbr>no</strong></td><td>Item number, with revision</td></tr>
+<tr><td><strong>qty_<wbr>scrapped</strong></td><td>Pieces or quantity scrapped</td></tr>
+<tr><td><strong>uom</strong></td><td>Unit: pcs, kg, m, L</td></tr>
+<tr><td><strong>reason_<wbr>code</strong></td><td>Category code: SET, DIM, CON</td></tr>
+<tr><td><strong>detail_<wbr>code</strong></td><td>Detail under that category</td></tr>
+<tr><td><strong>detected_<wbr>at</strong></td><td>Station where it was found</td></tr>
+<tr><td><strong>cost_<wbr>basis</strong></td><td>Accumu&shy;lated cost per piece, frozen now</td></tr>
+<tr><td><strong>recorded_<wbr>by</strong></td><td>User who wrote the record</td></tr>
+<tr><td><strong>timestamp</strong></td><td>When the record was written</td></tr>
+</tbody>
+</table>
+
+<h3>Conditional and context fields</h3>
+<table>
+<thead>
+<tr><th>Field</th><th>Rule</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>lot_<wbr>no</strong></td><td>Mandatory if the part is lot tracked</td></tr>
+<tr><td><strong>caused_<wbr>at</strong></td><td>Station that made it bad, or "not determined"</td></tr>
+<tr><td><strong>defect_<wbr>location</strong></td><td>Place on the part, from a fixed list</td></tr>
+<tr><td><strong>tool_<wbr>or_<wbr>cavity</strong></td><td>Mandatory on multi-cavity or multi-spindle work</td></tr>
+<tr><td><strong>shift</strong></td><td>Derived from the timestamp, never typed</td></tr>
+<tr><td><strong>comment</strong></td><td>Free text, mandatory only when reason_<wbr>code is OTH</td></tr>
+</tbody>
+</table>
+
+<h3>Which fields must be a list, never free text</h3>
+<p>Every field a report groups on has to come from a controlled list. Free text in a grouping field is the same as no data.</p>
+
+<table>
+<thead>
+<tr><th>Field</th><th>Source of the list</th></tr>
+</thead>
+<tbody>
+<tr><td>reason_<wbr>code, detail_<wbr>code</td><td>The taxonomy table, filtered by the category</td></tr>
+<tr><td>detected_<wbr>at, caused_<wbr>at</td><td>Station master for that line</td></tr>
+<tr><td>defect_<wbr>location</td><td>Fixed zone list per part family</td></tr>
+<tr><td>machine, operation</td><td>Asset register and the order routing</td></tr>
+<tr><td>part_<wbr>no, uom</td><td>Item master</td></tr>
+<tr><td>recorded_<wbr>by</td><td>User directory, never a typed name</td></tr>
+</tbody>
+</table>
+
+<p><strong>cost_basis</strong> deserves one extra rule. Store the accumulated standard cost of the piece at the moment the record is written, so that re-costing next year does not silently rewrite last year's Pareto.</p>
+<p>If the part is lot tracked, lot_<wbr>no is what connects a defect back to an incoming batch, as in our <a href="/blog/lot-traceability-data-model/">lot traceability data model</a>.</p>
+
+<h2>Detected-at versus caused-at: the pair most systems omit</h2>
+<p>A scrap record almost always captures where the defect was <strong>found</strong>. It rarely captures where the part was <strong>made bad</strong>.</p>
+<p>Those are usually different stations, and the gap between them is where the money is.</p>
+
+<h3>What happens with only detected-at</h3>
+<p>Take the 16 pieces coded TST‑01 below, all rejected at final test on operation 40.</p>
+<p>With only detected_<wbr>at, final test is the single biggest scrap source on the report. The plant adds an inspector, tightens the test and argues about the gauge.</p>
+<p>With caused_<wbr>at filled in, 11 of the 16 came from worn tooling at milling on operation 20, and 5 from the coating bath at operation 30.</p>
+
+<table>
+<thead>
+<tr><th>What you record</th><th>What the plant concludes</th></tr>
+</thead>
+<tbody>
+<tr><td>detected_<wbr>at only</td><td>"Final test rejects 16 pieces a shift." Action goes to operation 40</td></tr>
+<tr><td>detected_<wbr>at and caused_<wbr>at</td><td>"Milling tool life costs 11 pieces a shift." Action goes to operation 20</td></tr>
+</tbody>
+</table>
+
+<p>At the same illustrative €38.00 per piece, that is €418.00 a shift attached to a tool change interval, and it was invisible before.</p>
+<p>The other five rejects were caused at op 30, so €190.00. The two add back to the €608.00 that TST‑01 carries in the Pareto, now split between the two operations that caused it.</p>
+<p>Allow caused_<wbr>at to hold <strong>not determined</strong> and to be filled in later by the review, with the change logged. A field that must be guessed at the station will be guessed, and a guess in a database looks exactly like a fact.</p>
+<p>When caused_<wbr>at keeps naming the same machine, that is a maintenance job, linked through the machine record in a <a href="/blog/cmms-data-model/">CMMS data model</a>.</p>
+
+<h2>Worked example: one shift, 4,000 pieces</h2>
+<p>A machining and assembly line runs one part for a full shift. Every euro figure here is illustrative, chosen so the arithmetic stays checkable, and none of it is a price list.</p>
+<p>Every number below reconciles, so run the same arithmetic on your own costs.</p>
+
+<table>
+<thead>
+<tr><th>Item</th><th>Value</th></tr>
+</thead>
+<tbody>
+<tr><td>Pieces processed (total count)</td><td>4,000</td></tr>
+<tr><td>Good at first pass</td><td>3,750</td></tr>
+<tr><td>Reworked and recovered</td><td>90</td></tr>
+<tr><td>Scrapped</td><td>160</td></tr>
+<tr><td>Good pieces shipped</td><td>3,840</td></tr>
+<tr><td>Full standard cost, finished piece</td><td>€42.00</td></tr>
+</tbody>
+</table>
+
+<p>The three groups reconcile: 3,750 + 90 + 160 = 4,000 pieces.</p>
+
+<h3>1. The Quality factor</h3>
+<ul>
+<li>Counting rework as good: 3,840 ÷ 4,000 = <strong>96.0%</strong></li>
+<li>Counting rework as bad at first pass: 3,750 ÷ 4,000 = <strong>93.8%</strong></li>
+<li>OEE uses the second one, so Quality is <strong>93.8%</strong> (93.75% before rounding)</li>
+</ul>
+<p>With availability at 90.0% and performance at 95.0%, the shift scores 0.900 × 0.950 × 0.9375 = <strong>80.2%</strong> OEE.</p>
+<p>Counting rework as good would have reported 0.900 × 0.950 × 0.960 = <strong>82.1%</strong>. The same shift, 1.9 points apart, decided by one bookkeeping rule.</p>
+
+<h3>2. Scrap by count</h3>
+<p>The 160 scrapped pieces split across five codes.</p>
+
+<table>
+<thead>
+<tr><th>Code</th><th>Pieces</th><th>Share</th></tr>
+</thead>
+<tbody>
+<tr><td>SET-01 first-off</td><td>60</td><td>37.5%</td></tr>
+<tr><td>MAT-02 inclusion</td><td>40</td><td>25.0%</td></tr>
+<tr><td>DIM-03 position out</td><td>32</td><td>20.0%</td></tr>
+<tr><td>TST-01 test reject</td><td>16</td><td>10.0%</td></tr>
+<tr><td>SUR-01 handling scratch</td><td>12</td><td>7.5%</td></tr>
+<tr><td><strong>Total</strong></td><td><strong>160</strong></td><td><strong>100.0%</strong></td></tr>
+</tbody>
+</table>
+
+<p>Scrap rate by count is 160 ÷ 4,000 = <strong>4.0%</strong>, which is the figure our guide to <a href="/blog/scrap-rate/">scrap rate</a> defines.</p>
+<p>Read on its own, this table sends the team to the setup process, because SET‑01 is 37.5% of the pieces.</p>
+
+<h3>3. Scrap by cost</h3>
+<p>Now apply cost_<wbr>basis, the accumulated cost of a piece at the operation where it died.</p>
+
+<table>
+<thead>
+<tr><th>Code</th><th>Per piece</th><th>Cost</th></tr>
+</thead>
+<tbody>
+<tr><td>TST-01, 16 pcs</td><td>€38.00</td><td>€608.00</td></tr>
+<tr><td>DIM-03, 32 pcs</td><td>€17.50</td><td>€560.00</td></tr>
+<tr><td>SUR-01, 12 pcs</td><td>€24.00</td><td>€288.00</td></tr>
+<tr><td>SET-01, 60 pcs</td><td>€4.50</td><td>€270.00</td></tr>
+<tr><td>MAT-02, 40 pcs</td><td>€6.00</td><td>€240.00</td></tr>
+<tr><td><strong>Total</strong></td><td></td><td><strong>€1,966.00</strong></td></tr>
+</tbody>
+</table>
+
+<p>Scrap cost per good piece is €1,966.00 ÷ 3,840 = <strong>€0.51</strong>.</p>
+<p>Scrap rate by cost is €1,966.00 ÷ (3,840 × €42.00) = 1,966 ÷ 161,280 = <strong>1.22%</strong>, against 4.0% by count.</p>
+
+<h3>4. The two Paretos disagree</h3>
+<p>Ranking the same five codes by pieces and by money gives two different action lists.</p>
+
+<table>
+<thead>
+<tr><th>Rank</th><th>By count</th><th>By cost</th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>SET-01</td><td>TST-01</td></tr>
+<tr><td>2</td><td>MAT-02</td><td>DIM-03</td></tr>
+<tr><td>3</td><td>DIM-03</td><td>SUR-01</td></tr>
+<tr><td>4</td><td>TST-01</td><td>SET-01</td></tr>
+<tr><td>5</td><td>SUR-01</td><td>MAT-02</td></tr>
+</tbody>
+</table>
+
+<p>SET‑01 is 37.5% of the pieces and 13.7% of the money, because a first-off piece dies before any value has been added to it.</p>
+<p>TST‑01 is 10.0% of the pieces and 30.9% of the money, because those pieces died after four operations and a coating.</p>
+<p>SUR‑01 moves from last by count to third by cost, for the same reason.</p>
+<p>The rule to take away: <strong>rank by cost, then check whether the count tells a different story</strong>. Our guide to <a href="/blog/pareto-analysis-manufacturing/">Pareto analysis</a> covers the wider method.</p>
+
+<h3>5. Rework and yield loss on top</h3>
+<p>The 90 reworked pieces took 6 minutes each at €6.00 of labour and machine time, so rework cost <strong>€540.00</strong>.</p>
+<p>That €540.00 appears nowhere in the scrap Pareto, yet it would rank third if the two reports were merged: TST‑01 €608.00, DIM‑03 €560.00, rework €540.00.</p>
+<p>Material tells the third story. The order issued 2,050 kg of bar for 4,000 pieces at a theoretical 0.48 kg each, which is 1,920 kg.</p>
+<p>Yield loss is 2,050 - 1,920 = <strong>130 kg</strong>, and at €2.10 per kg that is <strong>€273.00</strong> of material that never became a piece.</p>
+<p>Total quality cost for the shift is €1,966.00 + €540.00 + €273.00 = <strong>€2,779.00</strong>. Only the first line was in the scrap report.</p>
+
+<h2>Keeping the list honest</h2>
+<p>A taxonomy is not a one-off design job. Without governance it returns to 60 entries within two years.</p>
+
+<h3>Who may add a code</h3>
+<p>One named owner, usually the quality or continuous improvement data steward, holds the list. Nobody else may create a code.</p>
+<p>A line requests a new code in writing, names the defect and attaches a recent example part. The decision happens at the monthly review, at the detail level only.</p>
+<p>Never let a station create codes on the fly. A station that can create a code will create a duplicate of one that already exists, spelled differently.</p>
+
+<h3>Review cadence</h3>
+<table>
+<thead>
+<tr><th>Every</th><th>What to check</th></tr>
+</thead>
+<tbody>
+<tr><td>Week</td><td>OTH rows and their free text; cluster them</td></tr>
+<tr><td>Month</td><td>Pareto by pieces and by cost; split any code over 40%</td></tr>
+<tr><td>Quarter</td><td>Detail lists per line; retire codes unused for two quarters</td></tr>
+<tr><td>Year</td><td>Category level only; expect no change, since a change breaks every trend</td></tr>
+</tbody>
+</table>
+
+<h3>When the "other" bucket grows</h3>
+<p>Set two thresholds, not one. OTH above <strong>5% of scrapped pieces</strong> or above <strong>5% of scrap cost</strong> in a month means the list is missing something.</p>
+<p>The cost threshold matters more. Three expensive assemblies in OTH are a hidden defect mode, while fifty cheap first-off pieces are only untidy.</p>
+<p>The audit is simple: pull a month of OTH rows with their comments, cluster them, and promote any cluster of five or more to its own detail code.</p>
+
+<h3>How to retire a code without breaking history</h3>
+<p>Never delete a code, and never re-use a code string for a new meaning. Both actions rewrite history silently.</p>
+<p>Give the taxonomy table its own fields: <strong>status</strong> (active or retired), <strong>valid_<wbr>from</strong>, <strong>valid_<wbr>to</strong> and <strong>replaced_<wbr>by</strong>.</p>
+<p>A retired code disappears from the station picker but stays in the dimension, so old records still resolve to a name.</p>
+<p>When a code is split into two, point <strong>replaced_by</strong> at the successor and build one reporting view that maps old to new. Trends then survive the change, and anyone can see where the join happened.</p>
+
+<h2>Five questions to ask a vendor about scrap capture</h2>
+<ol>
+<li><strong>Can an operator book scrap in under 15 seconds at the station?</strong> Ask to see it on the shop floor screen, with the work order and machine filled in already.</li>
+<li><strong>Are reason and detail two linked lists?</strong> Picking the category must filter the detail list, and details may differ per line while the categories stay fixed plant-wide.</li>
+<li><strong>Can we record detected_at and caused_at separately?</strong> Ask whether caused_at can stay unresolved, be filled in later, and log who changed it and when.</li>
+<li><strong>Can we retire a code without breaking historical reports?</strong> Ask what happens to last year's Pareto after a retirement, and whether the system blocks re-use of a retired code.</li>
+<li><strong>Does the scrap record carry a cost at the time of the event?</strong> If the report re-prices history with today's standard cost, your year-on-year comparison changes every time finance updates a rate.</li>
+</ol>
+
+<h2>How Fabrico helps</h2>
+<p>Fabrico records <strong>scrap against the work order and the machine</strong>, so every piece lost has a place and a job attached to it.</p>
+<p>It calculates <strong>real-time OEE</strong>, including the Quality factor, from data collected through <strong>PLC connections, IoT sensors and computer vision cameras</strong>.</p>
+<p>Operators work from <strong>mobile apps</strong> or a web screen, and <strong>QR codes</strong> on machines and parts open the right record without typing.</p>
+<p>Fabrico is <strong>not a quality management system</strong>. It does not hold your control plan or your non-conformance dossier, it does not do automatic root cause analysis, and it does not force a problem, cause and remedy code set before a work order can be closed.</p>
+<p>What it does hold is the measured history underneath those decisions, plus a <strong>full CMMS</strong> your team uses to act on the machine making bad parts.</p>
+<p>Want your scrap coded and costed per machine instead of estimated? Book <a href="/demo/">a 30 minute demo with a Fabrico consultant, no commitment</a>, or <a href="/contacts/">contact us</a> with your questions.</p>
+<p>For the wider picture, start with our guide to <a href="/blog/oee-for-manufacturing/">OEE for manufacturing</a>.</p>
+
+<section data-fab-faq="1">
+<h2>Frequently asked questions</h2>
+
+<h3>How many scrap reason codes should a plant have?</h3>
+<p>Use 10 to 14 category codes for the whole plant, with under 8 detail codes beneath each one. A single flat list stops being selected accurately above about 25 entries.</p>
+
+<h3>Does rework count as a good part in OEE?</h3>
+<p>No. The Quality factor counts only parts that were good at first pass, so a reworked part is a bad part in OEE even though it is later sold.</p>
+
+<h3>What is the difference between scrap and yield loss?</h3>
+<p>Scrap is a counted piece that will never be sold, so it lowers the Quality factor. Yield loss is material consumed that never became a countable piece, such as purge or offcuts, so it shows up in material reconciliation instead.</p>
+
+<h3>Why record both detected-at and caused-at?</h3>
+<p>Detected-at tells you which station found the defect, which is usually an inspection point rather than the source. Caused-at is what sends the action to the operation that actually made the part bad.</p>
+
+<h3>Should scrap be ranked by piece count or by cost?</h3>
+<p>Rank by cost first, then look at the count. In the example above the code with 37.5% of the pieces held 13.7% of the money, while the code with 10.0% of the pieces held 30.9%.</p>
+</section>
+                    </div>
+
+                    
+
+                    
+                    <div class="article-cta" style="background-color: #e9fdf3;">
+                        <div class="article-cta-title">
+                            Track OEE and downtime in real time
+                        </div>
+                        <div class="sidebar-cta-text">
+                            Fabrico is an MES and OEE platform with maintenance built in.
+                        </div>
+                        <div class="article-categories-more-list">
+                            <a class="article-category" href="/feature/mes-oee-solution-overview/">OEE software</a>
+                            <a class="article-category" href="/feature/mes-oee-tracking-availability/">Downtime tracking software</a>
+                            <a class="article-category" href="/feature/mes-oee-machine-connectivity/">Machine monitoring</a>
+                            <a class="article-category" href="/calculator-oee/">Free OEE calculator</a>
+                        </div>
+                    </div>
+
+                    
+
+                </div>
+                <div class="col-12 col-lg-12 col-xl-3">
+                    <div class="sticky-sidebar">
+                        <div class="sidebar-cta">
+                            <div class="sidebar-cta-text"> Take a live tour with a product expert</div>
+                            <div class="sidebar-cta-button">
+                                <a href="/demo/" class="btn btn-primary btn-tiny">Request a demo</a>
+                            </div>
+                        </div>
+
+                        
+                        <div class="article-categories-more">
+                            <div class="article-categories-see-more">
+                                Related articles:
+                            </div>
+                            <div class="article-categories-more-list">
+                                
+                                    <a class="article-category" 
+                                        href="/blog/category/oee/#categories">OEE</a>
+                                
+                            </div>
+                        </div>
+                        
+                        
+                        
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    
+
+    <section class="articles-section pv-normal" style="border-top: 1px solid rgba(0,0,0,0.1);">
+        <div class="container narrow-container">
+            <h2>Latest from our blog</h2>
+
+            <div class="customer-categories-scroll">
+                <div class="customer-categories">
+                    <a class="customer-category selected" 
+                        href="/blog/#categories">All articles</a>
+                    
+                        <a class="customer-category" 
+                            href="/blog/category/digitalization/#categories">Digitalization</a>
+                    
+                        <a class="customer-category" 
+                            href="/blog/category/oee/#categories">OEE</a>
+                    
+                        <a class="customer-category" 
+                            href="/blog/category/cmms/#categories">CMMS</a>
+                    
+                        <a class="customer-category" 
+                            href="/blog/category/events/#categories">Events</a>
+                    
+                        <a class="customer-category" 
+                            href="/blog/category/newsletter/#categories">Newsletter</a>
+                    
+                </div>
+            </div>
+            
+            <div class="row articles-grid">
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/mes-for-contract-manufacturers-prove-oee-performance-for-every-customer-job/"><img 
+            src="https://s3.fabrico.io/uploads/machine-oee.jpg" 
+            alt="MES for Contract Manufacturers: Prove OEE Performance for Every Customer Job"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        30 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        8 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/mes-for-contract-manufacturers-prove-oee-performance-for-every-customer-job/">MES for Contract Manufacturers: Prove OEE Performance for Every Customer Job</a>
+        </div>
+
+        <a href="/blog/mes-for-contract-manufacturers-prove-oee-performance-for-every-customer-job/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/mes-data-for-cfos-turning-oee-losses-into-cost-visibility/"><img 
+            src="https://s3.fabrico.io/uploads/machine-oee.jpg" 
+            alt="MES Data for CFOs: Turning OEE Losses into Cost Visibility"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        30 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        9 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/mes-data-for-cfos-turning-oee-losses-into-cost-visibility/">MES Data for CFOs: Turning OEE Losses into Cost Visibility</a>
+        </div>
+
+        <a href="/blog/mes-data-for-cfos-turning-oee-losses-into-cost-visibility/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/first-30-days-on-mes-and-oee-what-plants-learn-from-their-machines/"><img 
+            src="https://s3.fabrico.io/uploads/machine-oee.jpg" 
+            alt="First 30 Days on MES and OEE: What Plants Learn from Their Machines"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        30 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        7 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/first-30-days-on-mes-and-oee-what-plants-learn-from-their-machines/">First 30 Days on MES and OEE: What Plants Learn from Their Machines</a>
+        </div>
+
+        <a href="/blog/first-30-days-on-mes-and-oee-what-plants-learn-from-their-machines/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/comparing-mes-oee-calculations-definitions-filters-trustworthy-benchmarks/"><img 
+            src="https://s3.fabrico.io/uploads/machine-oee.jpg" 
+            alt="Comparing MES OEE Calculations: Definitions, Filters, Trustworthy Benchmarks"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        30 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        10 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/comparing-mes-oee-calculations-definitions-filters-trustworthy-benchmarks/">Comparing MES OEE Calculations: Definitions, Filters, Trustworthy Benchmarks</a>
+        </div>
+
+        <a href="/blog/comparing-mes-oee-calculations-definitions-filters-trustworthy-benchmarks/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/scaling-mes-from-pilot-line-to-plant-without-losing-data-discipline/"><img 
+            src="https://s3.fabrico.io/uploads/machine-oee.jpg" 
+            alt="Scaling MES from Pilot Line to Plant without Losing Data Discipline"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        30 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        9 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/scaling-mes-from-pilot-line-to-plant-without-losing-data-discipline/">Scaling MES from Pilot Line to Plant without Losing Data Discipline</a>
+        </div>
+
+        <a href="/blog/scaling-mes-from-pilot-line-to-plant-without-losing-data-discipline/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/mes-vs-erp-what-erp-misses-on-the-shop-floor-and-how-they-share-data/"><img 
+            src="https://s3.fabrico.io/uploads/metal-manufacturing.jpg" 
+            alt="MES vs ERP: What ERP Misses on the Shop Floor and How They Share Data"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        29 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        8 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/mes-vs-erp-what-erp-misses-on-the-shop-floor-and-how-they-share-data/">MES vs ERP: What ERP Misses on the Shop Floor and How They Share Data</a>
+        </div>
+
+        <a href="/blog/mes-vs-erp-what-erp-misses-on-the-shop-floor-and-how-they-share-data/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/oee-benchmarks-by-industry-what-good-looks-like-and-why-performance-gaps-persist/"><img 
+            src="https://s3.fabrico.io/uploads/machine-oee.jpg" 
+            alt="OEE Benchmarks by Industry, What Good Looks Like and Why Performance Gaps Persist"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        29 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        12 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/oee-benchmarks-by-industry-what-good-looks-like-and-why-performance-gaps-persist/">OEE Benchmarks by Industry, What Good Looks Like and Why Performance Gaps Persist</a>
+        </div>
+
+        <a href="/blog/oee-benchmarks-by-industry-what-good-looks-like-and-why-performance-gaps-persist/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/mes-vs-scada-why-plant-leaders-need-an-execution-layer-beyond-control/"><img 
+            src="https://s3.fabrico.io/uploads/metal-manufacturing.jpg" 
+            alt="MES vs SCADA: Why Plant Leaders Need an Execution Layer Beyond Control"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        29 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        8 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/mes-vs-scada-why-plant-leaders-need-an-execution-layer-beyond-control/">MES vs SCADA: Why Plant Leaders Need an Execution Layer Beyond Control</a>
+        </div>
+
+        <a href="/blog/mes-vs-scada-why-plant-leaders-need-an-execution-layer-beyond-control/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/cloud-mes-rollout-timeline-from-week-1-to-month-3/"><img 
+            src="https://s3.fabrico.io/uploads/oee-roles-responsibilities.jpg" 
+            alt="Cloud MES Rollout Timeline, from Week 1 to Month 3"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        29 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        10 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/cloud-mes-rollout-timeline-from-week-1-to-month-3/">Cloud MES Rollout Timeline, from Week 1 to Month 3</a>
+        </div>
+
+        <a href="/blog/cloud-mes-rollout-timeline-from-week-1-to-month-3/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/90-day-oee-improvement-program-what-plant-managers-should-see-mondays/"><img 
+            src="https://s3.fabrico.io/uploads/machine-oee.jpg" 
+            alt="90-Day OEE Improvement Program, What Plant Managers Should See Mondays"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        29 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        8 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/90-day-oee-improvement-program-what-plant-managers-should-see-mondays/">90-Day OEE Improvement Program, What Plant Managers Should See Mondays</a>
+        </div>
+
+        <a href="/blog/90-day-oee-improvement-program-what-plant-managers-should-see-mondays/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/mes-selection-guide-12-questions-for-smarter-production-and-maintenance/"><img 
+            src="https://s3.fabrico.io/uploads/oee-roles-responsibilities.jpg" 
+            alt="MES Selection Guide: 12 Questions for Smarter Production and Maintenance"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        29 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        8 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/mes-selection-guide-12-questions-for-smarter-production-and-maintenance/">MES Selection Guide: 12 Questions for Smarter Production and Maintenance</a>
+        </div>
+
+        <a href="/blog/mes-selection-guide-12-questions-for-smarter-production-and-maintenance/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/cloud-mes-buyers-guide-security-uptime-data-ownership-and-it-questions/"><img 
+            src="https://s3.fabrico.io/uploads/oee-roles-responsibilities.jpg" 
+            alt="Cloud MES buyers guide, security, uptime, data ownership and IT questions"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        29 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        8 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/cloud-mes-buyers-guide-security-uptime-data-ownership-and-it-questions/">Cloud MES buyers guide, security, uptime, data ownership and IT questions</a>
+        </div>
+
+        <a href="/blog/cloud-mes-buyers-guide-security-uptime-data-ownership-and-it-questions/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/production-monitoring-vs-oee-software-vs-mes-what-each-one-records-who-uses-it-and-when-a-plant-needs-the-next-level/"><img 
+            src="https://s3.fabrico.io/uploads/machine-oee.jpg" 
+            alt="Production Monitoring vs OEE Software vs MES: What Each One Records, Who Uses It, and When a Plant Needs the Next Level"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        29 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        11 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/production-monitoring-vs-oee-software-vs-mes-what-each-one-records-who-uses-it-and-when-a-plant-needs-the-next-level/">Production Monitoring vs OEE Software vs MES: What Each One Records, Who Uses It, and When a Plant Needs the Next Level</a>
+        </div>
+
+        <a href="/blog/production-monitoring-vs-oee-software-vs-mes-what-each-one-records-who-uses-it-and-when-a-plant-needs-the-next-level/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/computer-vision-for-oee-from-detecting-line-events-to-validating-stops-and-quality/"><img 
+            src="https://s3.fabrico.io/uploads/machine-oee.jpg" 
+            alt="Computer vision for OEE, from detecting line events to validating stops and quality"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        29 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        8 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/computer-vision-for-oee-from-detecting-line-events-to-validating-stops-and-quality/">Computer vision for OEE, from detecting line events to validating stops and quality</a>
+        </div>
+
+        <a href="/blog/computer-vision-for-oee-from-detecting-line-events-to-validating-stops-and-quality/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/winning-cfo-support-build-a-credible-mes-and-oee-business-case/"><img 
+            src="https://s3.fabrico.io/uploads/machine-oee.jpg" 
+            alt="Winning CFO Support: Build a Credible MES and OEE Business Case"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        29 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        12 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/winning-cfo-support-build-a-credible-mes-and-oee-business-case/">Winning CFO Support: Build a Credible MES and OEE Business Case</a>
+        </div>
+
+        <a href="/blog/winning-cfo-support-build-a-credible-mes-and-oee-business-case/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/maintenance-kitting-data-model/"><img 
+            src="https://s3.fabrico.io/uploads/automate-maintenance-kitting-using-cmms.jpg" 
+            alt="Maintenance Kitting Data Model: Fields, Reservations, Returns"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        20 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        17 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/maintenance-kitting-data-model/">Maintenance Kitting Data Model: Fields, Reservations, Returns</a>
+        </div>
+
+        <a href="/blog/maintenance-kitting-data-model/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/contractor-work-data-model/"><img 
+            src="https://s3.fabrico.io/uploads/quality-assurance-vs-quality-control-qa-qc-manufacturing.jpg" 
+            alt="Contractor Work Data Model: Fields, Rates and Real Cost"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        20 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        20 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/contractor-work-data-model/">Contractor Work Data Model: Fields, Rates and Real Cost</a>
+        </div>
+
+        <a href="/blog/contractor-work-data-model/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/nonconformance-data-model/"><img 
+            src="https://s3.fabrico.io/uploads/production-inspection.jpg" 
+            alt="Nonconformance Data Model: Fields, Disposition, Quantity"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        20 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        18 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/nonconformance-data-model/">Nonconformance Data Model: Fields, Disposition, Quantity</a>
+        </div>
+
+        <a href="/blog/nonconformance-data-model/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/warranty-claim-data-model/"><img 
+            src="https://s3.fabrico.io/uploads/unplanned-equipment-failure-manufacturing.jpg" 
+            alt="Warranty Claim Data Model: Terms, Coverage, Claims"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        20 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        17 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/warranty-claim-data-model/">Warranty Claim Data Model: Terms, Coverage, Claims</a>
+        </div>
+
+        <a href="/blog/warranty-claim-data-model/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/mro-purchasing-data-model/"><img 
+            src="https://s3.fabrico.io/uploads/Fabrico_cmms_oee_article_043.jpg" 
+            alt="MRO Purchasing Data Model: Requisition to Invoice Match"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        20 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        19 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/mro-purchasing-data-model/">MRO Purchasing Data Model: Requisition to Invoice Match</a>
+        </div>
+
+        <a href="/blog/mro-purchasing-data-model/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/rotable-spare-data-model/"><img 
+            src="https://s3.fabrico.io/uploads/equipment-maintenance-software.jpg" 
+            alt="Rotable Spare Part Data Model: Fields, States and Pool Size"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        20 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        18 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/rotable-spare-data-model/">Rotable Spare Part Data Model: Fields, States and Pool Size</a>
+        </div>
+
+        <a href="/blog/rotable-spare-data-model/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/condition-reading-data-model/"><img 
+            src="https://s3.fabrico.io/uploads/improve-preventive-maintenance-pm-compliance-mobile-cmms.jpg" 
+            alt="Condition Reading Data Model: Points, Limits and Alarm State"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        20 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        16 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/condition-reading-data-model/">Condition Reading Data Model: Points, Limits and Alarm State</a>
+        </div>
+
+        <a href="/blog/condition-reading-data-model/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/work-request-data-model/"><img 
+            src="https://s3.fabrico.io/uploads/people-in-a-factory.jpg" 
+            alt="Work Request Data Model: Fields, Status and Triage"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        20 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        17 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/work-request-data-model/">Work Request Data Model: Fields, Status and Triage</a>
+        </div>
+
+        <a href="/blog/work-request-data-model/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/meter-reading-data-model/"><img 
+            src="https://s3.fabrico.io/uploads/old-legacy-machine.jpg" 
+            alt="Meter and Counter Reading Data Model for Maintenance"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        20 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        18 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/meter-reading-data-model/">Meter and Counter Reading Data Model for Maintenance</a>
+        </div>
+
+        <a href="/blog/meter-reading-data-model/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/maintenance-labour-data-model/"><img 
+            src="https://s3.fabrico.io/uploads/maintenance-planning-scheduling-fabrico.jpg" 
+            alt="Maintenance Labour Data Model: The Time Booking Record"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        20 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        18 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/maintenance-labour-data-model/">Maintenance Labour Data Model: The Time Booking Record</a>
+        </div>
+
+        <a href="/blog/maintenance-labour-data-model/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/inspection-result-data-model/"><img 
+            src="https://s3.fabrico.io/uploads/cmms-software-reduce-manufacturing-micro-stops-guide.jpg" 
+            alt="Inspection and Checklist Result Data Model"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        20 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        17 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/inspection-result-data-model/">Inspection and Checklist Result Data Model</a>
+        </div>
+
+        <a href="/blog/inspection-result-data-model/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/shift-calendar-data-model/"><img 
+            src="https://s3.fabrico.io/uploads/oee-roles-responsibilities.jpg" 
+            alt="The Shift Calendar Data Model Behind Every OEE Number"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        20 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        17 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/shift-calendar-data-model/">The Shift Calendar Data Model Behind Every OEE Number</a>
+        </div>
+
+        <a href="/blog/shift-calendar-data-model/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/batch-process-data-model/"><img 
+            src="https://s3.fabrico.io/uploads/best-oee-software-breweries-distilleries.jpg" 
+            alt="The Batch Process Data Model: Recipes, Lots and Yield"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        20 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        19 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/batch-process-data-model/">The Batch Process Data Model: Recipes, Lots and Yield</a>
+        </div>
+
+        <a href="/blog/batch-process-data-model/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/spare-parts-availability-downtime/"><img 
+            src="https://s3.fabrico.io/uploads/manufacturing-supply-optimization.jpg" 
+            alt="Spare Parts Availability and Downtime: How to Measure the Link"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        20 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        16 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/spare-parts-availability-downtime/">Spare Parts Availability and Downtime: How to Measure the Link</a>
+        </div>
+
+        <a href="/blog/spare-parts-availability-downtime/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+                    <div class="col-12 col-lg-4">
+                         
+
+
+<div class="article-item">
+    
+    <div class="article-item-image">
+        <a href="/blog/bom-routing-data-model/"><img 
+            src="https://s3.fabrico.io/uploads/production-inspection.jpg" 
+            alt="BOM and Routing Data Model: Fields, Keys and Effectivity"     
+            class="rounded-img"></a>
+    </div>
+    
+    
+    <div class="article-item-content">
+        
+
+
+<div class="article-info">
+     
+    <div class="article-date">
+        20 Sep `26
+    </div>   
+    
+    <div class="article-clock">
+        <img src="/statics/img/icon-clock.svg">   
+    </div>
+    <div class="article-read-time">
+        18 min.
+    </div>
+    
+</div>
+
+      
+        <div class="article-item-title">
+            <a href="/blog/bom-routing-data-model/">BOM and Routing Data Model: Fields, Keys and Effectivity</a>
+        </div>
+
+        <a href="/blog/bom-routing-data-model/" class="learn-more">Read now</a>
+    </div>
+</div>
+                    </div>
+                
+            </div>
+        </div> 
+    </section>
+
+    <div style="background:#F8F9FA;">
+        
+
+
+<!-- DEMO -->
+<section id="home-demo" class="pv-normal">
+    <div class="container">
+        <div class="home-demo-title">
+            Define Your Reliability Roadmap
+        </div>
+        <div class="home-demo-subtitle">
+            Validate Your Potential ROI: Book a Live Demo
+        </div>
+        
+        <div class="home-demo-image">
+            <img src="https://s3.fabrico.io/uploads/demo.jpg" 
+                width="1156" 
+                height="567"  
+                alt="Define Your Reliability Roadmap"
+                class="rounded-img"
+                >    
+        </div>
+        
+        <div class="home-demo-content">
+            
+        </div>
+        <div class="home-demo-buttons">
+            <!-- <a href="/register/" class="btn btn-primary">Sign Up for Free</a> -->
+            <a href="/demo/" class="learn-more">Request a demo</a>
+        </div>
+    </div>
+</section> 
+    </div>
+    
+
+
+
+
+
+<footer class="pv-normal">
+    <div class="footer-container">
+        <div class="container-xl">
+            <div class="row">
+                <div class="col-12 col-sm-12 col-md-9 col-xl-4 footer-address-col">
+                    <div class="footer-address-col-in">
+                        <div class="footer-logo">
+                            <a href="/">
+                                <img src="/statics/img/fabrico-logo-clean.svg" alt="Fabrico.io" height="44">
+                            </a>
+                        </div>
+                        
+                        <div class="footer-addresses">
+                            <div class="footer-address">
+                                <img src="/statics/img/icon-location.svg" width="20" height="20" class="p-icon" alt="Location"/>
+                                <div class="footer-country"> United States</div>    
+                                <p> 180 N Stetson Ave, Chicago, IL 60601 United States</p>
+                            </div>
+                        </div>
+                        
+                        <div class="footer-addresses">
+                            <div class="footer-address">
+                                <img src="/statics/img/icon-location.svg" width="20" height="20" class="p-icon" alt="Location"/>
+                                <div class="footer-country"> United Kingdom</div>    
+                                <p> 18-22 Finchley Rd, London NW8 6EB</p>
+                            </div>
+                        </div>
+                        
+                        <div class="footer-addresses">
+                            <div class="footer-address">
+                                <img src="/statics/img/icon-location.svg" width="20" height="20" class="p-icon" alt="Location"/>
+                                <div class="footer-country"> Poland</div>    
+                                <p> Jana Pawła II 7 05-077 Warsaw</p>
+                            </div>
+                        </div>
+                        
+                        <div class="footer-addresses">
+                            <div class="footer-address">
+                                <img src="/statics/img/icon-location.svg" width="20" height="20" class="p-icon" alt="Location"/>
+                                <div class="footer-country"> Bulgaria</div>    
+                                <p> 40, Tsarigradsko shose Blvd, Sofia</p>
+                            </div>
+                        </div>
+                        
+                        <div class="footer-addresses">
+                            <div class="footer-address">
+                                <img src="/statics/img/icon-location.svg" width="20" height="20" class="p-icon" alt="Location"/>
+                                <div class="footer-country"> France</div>    
+                                <p> 66 Rue des Archives, Paris</p>
+                            </div>
+                        </div>
+                        
+                        <div class="footer-addresses">
+                            <div class="footer-address">
+                                <img src="/statics/img/icon-location.svg" width="20" height="20" class="p-icon" alt="Location"/>
+                                <div class="footer-country"> Netherlands</div>    
+                                <p> Nieuwstraat 11 B13, Maastricht</p>
+                            </div>
+                        </div>
+                        
+                        <div class="footer-addresses">
+                            <div class="footer-address">
+                                <img src="/statics/img/icon-location.svg" width="20" height="20" class="p-icon" alt="Location"/>
+                                <div class="footer-country"> Serbia</div>    
+                                <p> Mileve Maric 4, 21241 Kać</p>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+                <div class="col-12 col-sm-4 col-md-4 col-xl-2">
+
+                         
+                        <div class="footer-title">MES &amp; OEE</div>
+                        
+                            <div class="footer-link"><a href="/feature/mes-oee-solution-overview/">Solution overview MES &amp; OEE</a></div>
+                        
+                            <div class="footer-link"><a href="/feature/mes-oee-tracking-availability/">Tracking Availability</a></div>
+                        
+                            <div class="footer-link"><a href="/feature/mes-oee-machine-connectivity/">Machine connectivity</a></div>
+                        
+                            <div class="footer-link"><a href="/feature/mes-oee-production-planning/">Production planning</a></div>
+                        
+                            <div class="footer-link"><a href="/feature/mes-oee-computer-vision/">Computer vision</a></div>
+                         
+                        <div style="height: 20px;"></div>
+                         
+                        <div class="footer-title">CMMS</div>
+                        
+                            <div class="footer-link"><a href="/feature/cmms-solution-overview/">CMMS Solution overview</a></div>
+                        
+                            <div class="footer-link"><a href="/feature/emergency-repairs/">Emergency repairs</a></div>
+                        
+                            <div class="footer-link"><a href="/feature/preventive-maintenance/">Preventive Maintenance</a></div>
+                        
+                            <div class="footer-link"><a href="/feature/analytics-and-reporting/">Analytics &amp; Reporting</a></div>
+                        
+                            <div class="footer-link"><a href="/feature/task-management/">Task Management &amp; Work Cards</a></div>
+                        
+                            <div class="footer-link"><a href="/feature/smart-notifications/">Smart notifications</a></div>
+                        
+                            <div class="footer-link"><a href="/feature/inventory-management/">Inventory Management</a></div>
+                        
+                            <div class="footer-link"><a href="/feature/multi-accounts/">Group and Multisite Overview and Management</a></div>
+                         
+                        <div style="height: 20px;"></div>
+                         
+                        <div class="footer-title">AI add-ons</div>
+                        
+                            <div class="footer-link"><a href="/feature/ai-add-ons-overview/">AI add-ons overview</a></div>
+                        
+                            <div class="footer-link"><a href="/feature/ai-add-ons-inefficiencies/">Inefficiencies zoom-in</a></div>
+                        
+                            <div class="footer-link"><a href="/feature/ai-add-ons-ai-assistant/">AI Assistant</a></div>
+                        
+                            <div class="footer-link"><a href="/feature/ai-add-ons-ai-agent/">AI Agent</a></div>
+                        
+                            <div class="footer-link"><a href="/feature/ai-add-ons-custom-ai-modules/">Custom AI modules</a></div>
+                         
+                        <div style="height: 20px;"></div>
+                    
+
+                    
+                </div>
+                <div class="col-12 col-sm-4 col-md-4 col-xl-2">
+                    <div class="footer-title">Resources</div>
+                    <div class="footer-link"><a href="/customers/">Customer stories</a></div>  
+                    <div class="footer-link"><a href="/blog/">Blog</a></div>   
+                    <div class="footer-link"><a href="/survey/">Take our Survey</a></div>  
+                    <div class="footer-link"><a href="/calculator/">ROI Calculator</a></div> 
+                    <div class="footer-link"><a href="/calculator-oee/">OEE Calculator</a></div> 
+                    <div class="footer-link"><a href="/knowledge-center/">Knowledge Center</a></div> 
+                    <div class="footer-link"><a href="/faq/">FAQ</a></div>   
+                    <div class="footer-link"><a href="/glossary/">Glossary</a></div>   
+                </div>
+                <div class="col-12 col-sm-4 col-md-4 col-xl-2">
+                    <div class="footer-title">Information</div>
+                    <div class="footer-link"><a href="/about-us/">About Us</a></div>    
+                    <div class="footer-link"><a href="/pricing/">Pricing</a></div>
+                    <div class="footer-link"><a href="/contacts/">Contacts</a></div>
+                    <div class="footer-link"><a href="/security/">Security</a></div> 
+                    <div class="footer-link"><a href="/privacy-policy/">Privacy Policy</a></div>
+                    <div class="footer-link"><a href="/cookies-declaration/">Cookies Declaration</a></div>
+                    <div class="footer-link"><a href="/terms-and-conditions/">Terms and Conditions</a></div>
+                    
+
+                    <div class="social-links">
+                        <a href="https://www.facebook.com/fabrico.io" target="_blank">
+                            <img src="/statics/img/icon-facebook.svg" alt="Facebook" width="36" height="36"/>
+                        </a>
+                        <a href="https://www.linkedin.com/company/fabricoio" target="_blank">
+                            <img src="/statics/img/icon-linkedin.svg" alt="Instagram" width="36" height="36"/>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-12 col-md-3 col-xl-2 footer-apps-col">
+                    <div class="mobile-app"><span onclick="window.location='https://apps.apple.com/us/app/fabrico/id1617719283'" 
+                        aria-label="App Store"
+                        target="_blank" style="background-image:url(/statics/img/img-appstore.png)"></span></div>
+                    <div class="mobile-app"><span onclick="window.location='https://play.google.com/store/apps/details?id=io.fabrico.dev'"  
+                        aria-label="Google Play"
+                        target="_blank" style="background-image:url(/statics/img/img-playstore.png)"></span></div> 
+                </div>
+            </div>
+        </div>
+        
+
+        <div class="footer-vc">
+            Fabrico SaaS has been supported by "Vitosha Venture Partners Fund l", a private equity fund, 
+            co-financed by the European Structural and Investment Funds under the operational program 
+            “Innovation and Competitiveness 2014-2020”, managed by the Fund Manager of Financial Instruments in Bulgaria.
+        </div>
+    </div>
+</footer>
+
+
+<div id="cookies-settings" onclick="openCookies();"></div>
+
+<div id="cookies">
+    <div class="container">
+        <div class="cookies-content">
+            <div class="cookies-text">
+                By clicking the Accept button, you are giving your consent to the use of cookies when accessing this website and utilizing our services. To learn more about how cookies are used and managed, please refer to our 
+                <a href="/privacy-policy/">Privacy Policy</a> and 
+                <a href="/cookies-declaration/">Cookies Declaration</a>
+            </div>
+            <div class="cookies-button">
+                <a href="javascript:openCookies();" class="btn btn-white btn-small">Customize</a>
+                <a href="javascript:cookiesAccept([]);" class="btn btn-primary btn-small">Accept</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="shadow" onclick="closePopup()">
+    <div id="popup" onclick="event.stopPropagation()">
+
+        <div id="popup-video"></div>
+
+        <div id="popup-cookies" data-tab="1">
+            
+
+            <div class="cookies-consent-tabs">
+                <div class="cookies-consent-tab active" id="cookies-consent-tab-1" onclick="openCookiesTab(1)">
+                    <div class="cookies-consent-tab-title">Consent</div>
+                </div>
+                <div class="cookies-consent-tab" id="cookies-consent-tab-2" onclick="openCookiesTab(2)">
+                    <div class="cookies-consent-tab-title">Details</div>
+                </div>
+                <div class="cookies-consent-tab" id="cookies-consent-tab-3" onclick="openCookiesTab(3)">
+                    <div class="cookies-consent-tab-title">About</div>
+                </div>
+            </div>
+            <div class="cookies-consent-content">
+                <div class="cookies-consent-tab-content active" id="cookies-consent-tab-content-1">
+                   <h3>This website uses cookies</h3>
+                   <p>We use cookies to personalise content and ads, to provide social media features and to analyse our traffic. We also share information about your use of our site with our social media, advertising and analytics partners who may combine it with other information that you’ve provided to them or that they’ve collected from your use of their services.</p>
+
+                   <div id="cookies-consent-info">
+                        <div id="cookies-consent-info-cookies">
+                            <div class="cookies-consent-category-check active">Necessary</div> 
+                            <div class="cookies-consent-category-check" id="cookies-statistics-check">Statistics</div>      
+                            <div class="cookies-consent-category-check" id="cookies-marketing-check">Marketing</div>   
+                        </div>
+                        <div id="cookies-consent-info-details">
+                            <b>Consent date:</b>
+                            <div id="cookies-consent-date"></div>
+                            
+                            <b>Your consent ID:</b><br>
+                            <div id="cookies-consent-hash"></div>
+
+                            <a href="javascript:cookiesWithdraw()">Withdraw your consent</a>
+                        </div>
+                   </div>
+                </div>  
+                <div class="cookies-consent-tab-content" id="cookies-consent-tab-content-2">
+                    <div class="cookies-consent-category">
+                        <div class="cookies-consent-category-top">
+                            <div class="cookies-consent-category-top-switch switch-disabled"><input name="necessary" type="checkbox" checked disabled></div>  
+                            <div class="cookies-consent-category-top-title">Necessary</div>      
+                        </div>
+                        <div class="cookies-consent-category-text">Necessary cookies help make a website usable by enabling basic functions like page navigation and access to secure areas of the website. The website cannot function properly without these cookies.</div>
+                    </div>
+                    <div class="cookies-consent-category">
+                        <div class="cookies-consent-category-top">
+                            <div class="cookies-consent-category-top-switch" id="cat-statistics"><input name="statistics" type="checkbox"></div>  
+                            <div class="cookies-consent-category-top-title">Statistics</div>   
+                        </div>
+                        <div class="cookies-consent-category-text">Statistic cookies help website owners to understand how visitors interact with websites by collecting and reporting information anonymously.</div>
+                    </div>
+                    <div class="cookies-consent-category">
+                        <div class="cookies-consent-category-top">
+                            <div class="cookies-consent-category-top-switch" id="cat-marketing"><input name="marketing" type="checkbox"></div>   
+                            <div class="cookies-consent-category-top-title">Marketing</div>
+                        </div>
+                        <div class="cookies-consent-category-text">Marketing cookies are used to track visitors across websites. The intention is to display ads that are relevant and engaging for the individual user and thereby more valuable for publishers and third party advertisers.</div>
+                    </div>
+                </div>
+                <div class="cookies-consent-tab-content" id="cookies-consent-tab-content-3">
+                   <p>Cookies are small text files that can be used by websites to make a user&#39;s experience more efficient.<br />
+<br />
+The law states that we can store cookies on your device if they are strictly necessary for the operation of this site. For all other types of cookies we need your permission.&nbsp;This means that cookies which are categorized as necessary, are processed based on GDPR Art. 6 (1) (f). All other cookies, meaning those from the categories preferences and marketing, are processed based on GDPR Art. 6 (1) (a).<br />
+<br />
+This site uses different types of cookies. Some cookies are placed by third party services that appear on our pages.<br />
+<br />
+You can at any time change or withdraw your consent from the <a href="/cookies-declaration/" style="color: rgba(16, 50, 207, 1)">Cookie Declaration</a> on our website.<br />
+<br />
+Learn more about who we are, how you can contact us and how we process personal data in our <a href="/privacy-policy/" style="color: rgba(16, 50, 207, 1)">Privacy Policy</a>.</p> 
+                </div>
+            </div>
+            <div class="cookies-consent-buttons">
+                <a href="javascript:;" onclick="closePopup(true);cookiesAccept({'statistics':true,'marketing':true},false,true);" class="btn btn-red">Deny</a>
+                
+                <a href="javascript:;" onclick="openCookiesTab(2);" id="cookies-customize-open" class="btn btn-blank">Customize ></a>
+                <a href="javascript:;" onclick="closePopup(true);cookiesAccept(DISABLED_COOKIES);" id="cookies-customize-allow" class="btn btn-blank d-none">Allow selection</a>
+
+                <a href="javascript:;" onclick="closePopup(true);openCookiesTab(1);cookiesAccept({'statistics':false,'marketing':false},false,true);"  class="btn btn-primary">Accept</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-WRPRKP4H');</script>
+        <!-- End Google Tag Manager -->
+    
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-YYQT227GMZ"></script>
+        <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+   
+        gtag('js', new Date());
+        gtag('config', 'G-YYQT227GMZ');
+    </script>
+
+    <script>!function(key) {if (window.reb2b) return;window.reb2b = {loaded: true};var s = document.createElement("script");s.async = true;s.src = "https://ddwl4m2hdecbv.cloudfront.net/b/" + key + "/" + key + ".js.gz";document.getElementsByTagName("script")[0].parentNode.insertBefore(s, document.getElementsByTagName("script")[0]);}("9NMMZHRM8KNW");</script>
+
+
+<!-- Javascript  -->
+<script src="/statics/js/jquery-3.6.4.min.js"></script>
+<script src="/statics/js/jquery-ui.js"></script>
+
+<script src="/statics/js/bootstrap.bundle.min.js"></script>
+<script src="/statics/js/slick.min.js?v=1"></script>
+<script src="/statics/js/slick-config.js?v=8"></script>
+
+<script src="/statics/js/global.js?v=30"></script>
+<script>
+    // Mirror GA4 lead events as a GTM-readable dataLayer event: GTM cannot read gtag's arguments object.
+    // Must stay AFTER every gtag declaration on the page (the body GA4 snippet redeclares gtag) and BEFORE requester.js.
+    (function () {
+        var baseGtag = window.gtag;
+        if (typeof baseGtag !== 'function' || baseGtag.leadMirror) { return; }
+        var mirroring = false;
+        var wrapped = function () {
+            baseGtag.apply(this, arguments);
+            if (!mirroring && arguments[0] === 'event' && arguments[1] === 'generate_lead') {
+                mirroring = true;
+                try {
+                    var params = arguments[2] || {};
+                    window.dataLayer.push({'event': 'lead_submit', 'form_type': params.event_label || 'unknown'});
+                } catch (e) {
+                } finally {
+                    mirroring = false;
+                }
+            }
+        };
+        wrapped.leadMirror = true;
+        window.gtag = wrapped;
+    })();
+</script>
+<script src="/statics/js/requester.js?v=20"></script>
+<script src="/statics/js/switch.js?v=1"></script>
+
+
+<script>
+    $(function(){
+        
+        let contents = "";
+        let i = 0;
+        $('#contents-section').find('h1, h2').each(function(){
+            $(this).attr('data-id', i);
+            $(this).find('br').remove();
+            contents += $(this)[0].outerHTML;
+            i++;
+        });
+        
+        if(contents != ""){
+            $('.article-contents').show();
+
+            $('#contents-menu').prepend(`<div id="contents-links">${contents}</div>`);
+
+            $('#contents-menu').find('h1, h2').each(function(){
+                $(this).on('click', function(){ 
+                    const id = $(this).attr('data-id');
+                    const t = $('#contents-section').find(`[data-id=${id}]`).offset().top
+                    $('html, body').animate({scrollTop: (t - 120)}, 500);
+                })
+            });
+        }
+    });
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BlogPosting",
+      "headline": "Scrap and Rework Reason Codes: A Taxonomy You Can Copy",
+      
+      "datePublished": "2026-09-20",
+      "dateModified": "2026-09-20",
+      
+      "publisher": {
+        "@type": "Organization",
+        "name": "Fabrico",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://www.fabrico.io/statics/img/fabrico-logo-clean.svg"
+        }
+      },
+      "description": "Copy a two\u002Dlevel scrap and rework reason code list: 12 categories, detail codes, the scrap record fields, and a worked shift where cost reorders count."
+    }
+    
+  ]
+}
+</script>
+
+
+</body>
+</html>
+
+

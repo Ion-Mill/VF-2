@@ -1,0 +1,163 @@
+TOPICS Understand 
+ What is OEE? OEE Factors Six Big Losses Hidden Factory Practical OEE 
+
+ Measure 
+ Calculate OEE Implement OEE Calculate TEEP Visual OEE ™ 
+
+ Improve 
+ Improve OEE World-Class OEE Address the Six Big Losses Takt Time 
+
+ Try Vorne XL free for 90 days 
+
+ FAQ 
+ GLOSSARY 
+ ABOUT US 
+ FREE TOOLS 
+
+ TOPICS 
+
+ FAQ 
+
+ GLOSSARY 
+
+ ABOUT US 
+
+ FREE TOOLS 
+
+ LEARN THE ART & SCIENCE OF MANUFACTURING IMPROVEMENT FROM VORNE 
+ Nuances of Calculating Takt Time
+
+ THE BIG IDEA 
+
+ The takt time calculation is much more than a simple formula about time and demand. It is the perfect jumping off point for exploring different ways to analyze time in manufacturing and how that time can be best organized and utilized to meet demand - from both customer and manufacturing perspectives. 
+
+ The Takt Time Formula
+ Although the formula for calculating takt time is very simple, there are significant nuances in applying it effectively. Let's start with the canonical takt time formula, which is:
+ Takt Time
+ =
+ Available Production Time
+ ÷
+ Customer Demand
+
+ Takt Time is calculated as Available Production Time divided by Customer Demand.
+ Takt time represents the amount of production time time you have available to make each part in order to meet customer demand.
+ Customer demand is the quantity of product that you need to manufacture to satisfy demand over a specified time horizon, such as 1,260 pieces per week. The time horizon you choose will depend on whether your focus is capacity planning, process design, production scheduling, or plant floor operations , but it should always be long enough to provide an accurate picture of customer requirements.
+ Available production time is the amount of “planned run time” that will be used to manufacture the part within that same time horizon, such as 32 hours per week. This only includes time where you expect to be running. If you look at all time as falling in the categories of run, unplanned stop, planned stop, and not scheduled, the latter two are excluded.
+
+ Takt time is calculated across available production time, which includes run time and unplanned stop time. It does not include time where the process is not expected to be running: planned stop time and not scheduled time. 
+ Operable Takt Time
+ A very useful variant of the takt time formula focuses on the capabilities of your manufacturing process - what your process can actually achieve on a sustained basis. This is referred to as operable takt time .
+ Takt Time: The pace that exactly meets customer demand given available production time. This is a customer-focused metric.
+ Operable Takt Time: The pace you can actually achieve with your current process and equipment. This is a manufacturing-focused metric.
+ You can think of these as two sides of the same coin: takt time (driven by demand) and operable takt time (driven by your manufacturing process). When takt time and operable takt time are aligned, you are able to fully and efficiently meet customer demand.
+ Operable takt time is more or less “set” or “fixed” by the design of your manufacturing process. Over the short term, it can be incrementally improved through continuous improvement techniques. Over the long term, it can be more substantially improved through larger-scale improvement projects and process changes.
+ A Production Planning Perspective
+ With operable takt time in mind, the takt time formula can be rearranged and applied by production planners to estimate how much time a given part run or job will need. In this scenario, operable takt time should be considered a “living number” that is updated over time with changes to your process and people.
+ Planned Run Time
+ =
+ Operable Takt Time
+ x
+ Required Quantity
+
+ A variant of the takt time formula can be used for scheduling production. In this scenario, multiply Operable Takt Time by Required Quantity to determine Planned Run Time.
+ Planned run time is the time that your manufacturing process needs to be scheduled to “run” in order to meet production requirements. It includes run time (actually running) and downtime (expected to be running). It excludes planned stop time (e.g., changeovers and planned maintenance) and time not scheduled for production (e.g., breaks and time between shifts). One reason for calculating takt time with planned run time (a.k.a. available production time) is that doing so excludes blocks of time that may cause takt time to vary based on how those blocks are scheduled (e.g., changeovers, meetings, and planned maintenance).
+ Operable takt time is the takt time that your manufacturing process is capable of achieving on a sustained basis. This is largely determined by the constraints of your manufacturing process. It includes budgeted time for losses that occur during planned run time, such as downtime, small stops, slow cycles, and defects. Running at operable takt time is attainable production.
+ “ 
+
+ Operable takt time is the takt time that your manufacturing process is capable of achieving on a sustained basis. It is a manufacturing-focused metric. 
+
+ Required quantity is the quantity of product that you need to manufacture for this given part run. It is simply “customer demand” where the customer is internal (your production schedule).
+ The Manufacturing Productivity Improvement Device That Feels Like Magic In less than 8 hours you can benefit from automated, real-time accurate data. Learn About Vorne XL 
+
+ 42,000+ Installations 
+ 45+ Countries 
+ $4,690 One-Time Cost 
+ 8 Hours to Deploy 
+ 50+ Years in Business 
+
+ 8 Hours to Deploy 
+ 50+ Years in Business 
+
+ Customer Demand
+ Customer demand is the quantity of parts you need to manufacture over a specified time horizon to meet the requirements of your market. The time horizon is very important and will vary depending on whether your focus is capacity planning, process design, production scheduling, or plant floor operations . The horizon should be long enough to provide an accurate picture of customer requirements, whether the demand is external (e.g., used for capacity planning) or internal (e.g., used for production scheduling).
+ In the real world, demand often fluctuates, and it is important to have a strategy for dealing with that variability. There are three options when it comes to designing your manufacturing process:
+ Produce below average demand. This minimizes inventory, but at times you will be unable to meet customer demand. This leaves business on the table and can frustrate customers. However, this can be a viable option in a competitive market with many suppliers where you want to achieve the lowest possible cost of manufacturing by operating continually at a very consistent rate.
+ Produce to meet average demand. This will result in periods of inventory (when demand is low), as well as periods where there is not enough product to meet demand (when demand is high). Periods of high demand will temporarily result in either extended lead times (deliver late) or lost orders (don’t deliver at all). This can be a viable option if demand has limited variability.
+ Produce above average demand. You will be in a good position to fulfill orders, but you need to be vigilant against building up inventory. This can be a viable option if you want to always fully meet customer demand, and you can use production scheduling as a tool to keep inventory in balance.
+
+ Consistently producing above average demand will create inventory. The countermeasure is to use scheduling as a tool to stay aligned with demand. 
+ The best strategy will depend on the specifics of your market, your manufacturing process, and your labor force. The important thing is to make a conscious and reasoned decision on a strategy while understanding the ramifications.
+ Available Production Time
+ Available production time is exactly as it sounds - the amount of time that you have available to actually manufacture parts. Although available production time is the traditional term used in the context of takt time, we recommend using the term planned run time as it aligns better with the underlying intent. As a company with a large engineering team, we are big fans of ubiquitous language (which establishes a shared vocabulary for a given problem domain).
+ For the sake of ubiquitous language, let’s lean into the fact that planned run time includes all time where you intend to be running:
+ Run time (actually running)
+ Downtime (expected to be running)
+ And it excludes all time where you do not intend to be running:
+ Planned stop time (e.g., setup, changeovers, planned maintenance)
+ Not scheduled time (e.g., breaks, meetings, time between shifts)
+ As a calculation aligned to our ubiquitous language:
+ Planned Run Time
+ =
+ All Time
+ -
+ Planned Stop Time
+ -
+ Not Scheduled Time
+
+ Planned Run Time excludes Planned Stop Time (e.g., setup, changeovers, planned maintenance) and Not Scheduled Time (e.g., breaks, meetings, time between shifts).
+ What About Downtime?
+ A common question is whether “budgeted” downtime should be included in planned run time. The answer is unequivocally yes - budgeted downtime should be included in planned run time. Why? Because it is time where the process is intended to be running (i.e., where production is scheduled to be running).
+ Going a bit deeper, we recommend that all losses which typically occur while you expect to be running steady-state production should be budgeted within planned run time. From a six big losses perspective , this includes:
+ Unplanned Stops
+ Small Stops
+ Slow Cycles
+ Production Rejects
+ These are all losses that occur while running or while you expect to be running. If you don’t budget these losses, you will quickly devolve into scheduling based on perfect production - running as fast as possible, with no downtime and no defects. In other words, your takt time will equal your ideal cycle time. While a commendable goal - this represents 100% OEE and is not a practical way to schedule production.
+ What About Setups and Changeovers?
+ Another common question is whether setups and changeovers should be included in planned run time. The answer is no - for practical and historical reasons.
+ Setups and changeovers are not included in planned run time for three simple reasons.
+ Your process is not expected to be running during that time.
+ Setups and changeovers tend to be blocks of time that don’t vary with the length of the production run. Therefore, scheduling is more accurate when they are treated as a separate category of time.
+ Historically, setups and changeovers have not been included in takt time calculations.
+ It is helpful to think about these types of questions in more general terms. Let’s explore a simple model for thinking about time in manufacturing.
+ A Simple Model for Time in Manufacturing
+ A very useful, effective, and simple way to think about time from a manufacturing perspective is to categorize every moment of time into one of four buckets:
+
+ All time (24/7) can be categorized as run, unplanned stop, planned stop, or not scheduled. 
+ Run includes running normally, running slowly (slow cycles, small stops), and running poor quality (defects).
+ Unplanned Stop includes down (e.g., breakdowns, jams, minor adjustments, no material).
+ Planned Stop includes changeovers (e.g., material changes, roll changes, part changes, setup) and planned maintenance (e.g., cleaning, 5S, lubrication).
+ Not Scheduled includes breaks, meetings (e.g., shift handovers, safety, training), and no production (no shift scheduled).
+ We call these four categories impact states because they align with and impact a broad range of productivity metrics: takt, labor, OEE (overall equipment effectiveness) , and TEEP (total effective equipment performance) .
+ Here is an overview of the four impact states and how they related to productivity losses and productivity-based metrics:
+
+ WHAT YOU SHOULD DO NEXT...
+ 1. Learn more about how our product, Vorne XL, can help you eliminate waste and significantly improve OEE.
+ Vorne XL is the simplest and fastest way to monitor and improve production. It's a one-time cost and takes just a day to install. And you can try it completely free for 90 days.
+ Learn More 2. Download our FREE package of tools to supercharge your manufacturing productivity
+ The package includes leadership lessons, training guides, meeting and report templates, summaries of key concepts, project organizers, and more. You'll also receive our monthly newsletter for free. Unsubscribe at any time.
+ DOWNLOAD FREE LEAN TOOLS 3. Sign up for our monthly newsletter
+ Get free monthly updates with proven methods for improving our manufacturing productivity. Unsubscribe at any time.
+
+ First Name* 
+ Last Name* 
+
+ Email* 
+ Phone Number* 
+ Company Name* 
+ What would you like to achieve with XL? 
+ Submit 
+
+ +1.630.875.3600 [email protected] 1445 Industrial Dr. Itasca, IL 60143 
+ Learn About OEE 
+ What is OEE? OEE Factors Six Big Losses Hidden Factory Practical OEE 
+ Calculate OEE Implement OEE Calculate TEEP Visual OEE ™ 
+ Improve OEE World-Class Address the Six Big Losses Takt Time 
+
+ Resources 
+ Free OEE Tools OEE Glossary FAQ 
+
+ About Us 
+ Our Company Vorne.com LeanProduction.com Vorne XL Free Trial 
+
+ © 2011-2026 Vorne Industries. All Rights Reserved | Privacy Policy | Cookie Policy

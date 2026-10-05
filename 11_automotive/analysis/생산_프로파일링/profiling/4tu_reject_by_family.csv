@@ -1,0 +1,28 @@
+﻿family,rows,ok,rej,mrb,rows_with_rej,reject_pct,share_of_total_rej_pct,is_qc
+Turning & Milling Q.C.,522,12641,246,76,121,1.91,41.5,True
+Final Inspection Q.C.,550,12053,233,26,80,1.9,39.3,True
+Round Grinding - Q.C.,61,1358,29,3,8,2.09,4.9,True
+Turning & Milling,1272,14590,27,0,5,0.18,4.6,False
+Round Grinding,631,8422,21,0,5,0.25,3.5,False
+Laser Marking,252,12934,14,0,4,0.11,2.4,False
+Turn & Mill. & Screw Assem,35,282,10,0,1,3.42,1.7,False
+Turning Q.C.,55,2088,6,0,4,0.29,1.0,True
+Lapping,370,9178,5,0,2,0.05,0.8,False
+Flat Grinding,114,3031,2,0,1,0.07,0.3,False
+Deburring - Manual,9,142,0,0,0,0.0,0.0,False
+Grinding Rework,97,72,0,0,0,0.0,0.0,False
+Final Inspection - Weighting,1,3,0,0,0,0.0,0.0,True
+Fix,6,0,0,0,0,,0.0,False
+Fix EDM,4,4,0,0,0,0.0,0.0,False
+Change Version,4,147,0,0,0,0.0,0.0,False
+,2,0,0,0,0,,0.0,False
+Milling,30,106,0,0,0,0.0,0.0,False
+Milling Q.C.,1,1,0,0,0,0.0,0.0,True
+Round Grinding - Manual,84,597,0,0,0,0.0,0.0,False
+Rework Milling,2,0,0,0,0,,0.0,False
+Nitration Q.C.,4,663,0,0,0,0.0,0.0,True
+Packing,277,12090,0,0,0,0.0,0.0,False
+Turning,127,1302,0,0,0,0.0,0.0,False
+Stress Relief,3,90,0,0,0,0.0,0.0,False
+Turning Rework,3,16,0,0,0,0.0,0.0,False
+Wire Cut,27,709,0,0,0,0.0,0.0,False

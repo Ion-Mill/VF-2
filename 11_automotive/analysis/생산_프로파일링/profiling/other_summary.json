@@ -1,0 +1,258 @@
+{
+ "umich": {
+  "experiments": 18,
+  "columns": 48,
+  "sampling_ms": 100,
+  "duration_s_per_experiment": {
+   "n": 18,
+   "mean": 140.5,
+   "p05": 52.2,
+   "p10": 55.5,
+   "p25": 63.9,
+   "p50": 134.1,
+   "p75": 221.2,
+   "p90": 228.7,
+   "p95": 231.7,
+   "min": 46.2,
+   "max": 233.2
+  },
+  "duration_by_feedrate_median_s": {
+   "3": 226.4,
+   "6": 129.6,
+   "12": 130.1,
+   "15": 74.0,
+   "20": 60.2
+  },
+  "completed_pct": 77.8,
+  "passed_inspection_of_all_pct": 55.6,
+  "tool_condition": {
+   "worn": 10,
+   "unworn": 8
+  },
+  "has_alarm_or_order_or_partcount_columns": false,
+  "columns_sample": [
+   "X1_ActualPosition",
+   "X1_ActualVelocity",
+   "X1_ActualAcceleration",
+   "X1_CommandPosition",
+   "X1_CommandVelocity",
+   "X1_CommandAcceleration",
+   "M1_CURRENT_PROGRAM_NUMBER",
+   "M1_sequence_number",
+   "M1_CURRENT_FEEDRATE",
+   "Machining_Process"
+  ]
+ },
+ "kamp_mirror": {
+  "experiments": 25,
+  "train_material": [
+   "aluminum"
+  ],
+  "umich_train_material": [
+   "wax"
+  ],
+  "same_row_count_as_umich_exp01": true,
+  "corr_X_ActualPosition_vs_umich": 1.0,
+  "exact_equal_cells_pct_exp01": 47.9,
+  "first18_meta_identical_except_material": true,
+  "bad_label_pct": 48.0,
+  "rowcount_equal_for_exp01_18": true,
+  "extra_experiments_19_25": 7,
+  "kamp_site_files": [
+   "kamp_home.html",
+   "kamp_detail_cnc_seq3.html",
+   "aihub_search.html",
+   "datagokr_search.html",
+   "gh_kamp_cnc.json"
+  ],
+  "kamp_site_has_downloadable_data_locally": false
+ },
+ "mtconnect_probe": {
+  "demo_probe.xml": {
+   "devices": [
+    "Mazak",
+    "OKUMA"
+   ],
+   "data_items": 244,
+   "PART_COUNT": 2,
+   "EXECUTION": 2,
+   "PROGRAM": 3,
+   "ALARM_CONDITIONS": 31,
+   "category": {
+    "EVENT": 124,
+    "SAMPLE": 89,
+    "CONDITION": 31
+   }
+  },
+  "mazak_5610_probe.xml": {
+   "devices": [
+    "MFMS10-MC2"
+   ],
+   "data_items": 86,
+   "PART_COUNT": 1,
+   "EXECUTION": 1,
+   "PROGRAM": 2,
+   "ALARM_CONDITIONS": 21,
+   "category": {
+    "EVENT": 32,
+    "CONDITION": 21,
+    "SAMPLE": 33
+   }
+  },
+  "mazak_5611_probe.xml": {
+   "devices": [
+    "Mazak"
+   ],
+   "data_items": 104,
+   "PART_COUNT": 1,
+   "EXECUTION": 1,
+   "PROGRAM": 2,
+   "ALARM_CONDITIONS": 20,
+   "category": {
+    "EVENT": 45,
+    "SAMPLE": 39,
+    "CONDITION": 20
+   }
+  },
+  "mazak_5612_probe.xml": {
+   "devices": [
+    "MFMS18-MC1"
+   ],
+   "data_items": 113,
+   "PART_COUNT": 1,
+   "EXECUTION": 1,
+   "PROGRAM": 2,
+   "ALARM_CONDITIONS": 20,
+   "category": {
+    "EVENT": 47,
+    "SAMPLE": 46,
+    "CONDITION": 20
+   }
+  },
+  "mazak_5717_probe.xml": {
+   "devices": [
+    "M12346"
+   ],
+   "data_items": 117,
+   "PART_COUNT": 1,
+   "EXECUTION": 1,
+   "PROGRAM": 2,
+   "ALARM_CONDITIONS": 20,
+   "category": {
+    "EVENT": 64,
+    "SAMPLE": 33,
+    "CONDITION": 20
+   }
+  },
+  "mazak_probe.xml": {
+   "devices": [
+    "MFMS10-MC1"
+   ],
+   "data_items": 94,
+   "PART_COUNT": 1,
+   "EXECUTION": 1,
+   "PROGRAM": 2,
+   "ALARM_CONDITIONS": 22,
+   "category": {
+    "EVENT": 35,
+    "CONDITION": 22,
+    "SAMPLE": 37
+   }
+  }
+ },
+ "mtconnect_current": {
+  "demo_current.xml": {
+   "Execution": [
+    "ACTIVE",
+    "ACTIVE"
+   ],
+   "PartCount": [
+    "0",
+    "0"
+   ]
+  },
+  "mazak_5610_current.xml": {
+   "Execution": [
+    "ACTIVE"
+   ],
+   "PartCount": [
+    "125"
+   ]
+  },
+  "mazak_5611_current.xml": {
+   "PartCount": [
+    "125"
+   ],
+   "Execution": [
+    "ACTIVE"
+   ]
+  },
+  "mazak_5612_current.xml": {
+   "PartCount": [
+    "UNAVAILABLE"
+   ],
+   "Execution": [
+    "UNAVAILABLE"
+   ]
+  },
+  "mazak_5717_current.xml": {
+   "PartCount": [
+    "UNAVAILABLE"
+   ],
+   "Execution": [
+    "UNAVAILABLE"
+   ]
+  },
+  "mazak_current.xml": {
+   "Execution": [
+    "UNAVAILABLE"
+   ],
+   "PartCount": [
+    "UNAVAILABLE"
+   ]
+  }
+ },
+ "mtconnect_events": {
+  "demo_sample_events_conditions.xml": {
+   "execution_events": 21,
+   "partcount_events": 14,
+   "condition_counts": {
+    "Warning": 6,
+    "Normal": 6
+   },
+   "state_visits": {
+    "PROGRAM_COMPLETED": 7,
+    "READY": 7,
+    "ACTIVE": 6
+   },
+   "ACTIVE_seconds": [
+    17.0,
+    198.6,
+    652.3,
+    586.1,
+    17.0,
+    198.6
+   ],
+   "ACTIVE_median_s": 198.6,
+   "span_min": 28.2
+  },
+  "mazak_5610_sample_events_conditions.xml": {
+   "execution_events": 2,
+   "partcount_events": 0,
+   "condition_counts": {
+    "Warning": 2,
+    "Normal": 4,
+    "Fault": 1
+   },
+   "state_visits": {
+    "WAIT": 1
+   },
+   "span_min": 1.6
+  }
+ },
+ "verdict": {
+  "umich": "생산 파트: 쓸모없음(실험실 18회, 작업지시/수량/알람 없음). 참고: 작은 부품 1개 가공 시간 100~200초대, 100ms 샘플링",
+  "kamp_mirror": "쓸모없음 + 사용 금지(umich 복제·변형본, 재료 라벨만 aluminum으로 바뀜, 출처 불명)",
+  "mtconnect": "쓸모없음(공개 데모/시뮬레이터 에이전트의 일부 스냅샷, 시험 시나리오 값). 항목 이름 참고만"
+ }
+}

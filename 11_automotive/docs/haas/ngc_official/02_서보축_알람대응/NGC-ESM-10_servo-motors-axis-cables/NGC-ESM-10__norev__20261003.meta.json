@@ -1,0 +1,33 @@
+{
+  "source_path": "C:\\code\\1\\참고문서\\매뉴얼\\VF 시리즈 서비스 매뉴얼\\찐\\02_서보축_알람대응\\NGC-ESM-10_servo-motors-axis-cables\\NGC-ESM-10__norev__20261003.html",
+  "source_name": "NGC-ESM-10__norev__20261003.html",
+  "file_type": "html",
+  "content_hash": "sha256:582c95956db7cfad6d911b5be2225aab3f44a60e35c3c091cb3cabac01ef1751",
+  "converter": "markitdown",
+  "converter_version": "0.1.8",
+  "converted_at": "2026-10-03T18:03:37",
+  "warnings": [
+    "HTML 전체 변환: 사이트 내비게이션·바닥글 포함"
+  ],
+  "doc_id": "NGC-ESM-10",
+  "revision": "",
+  "last_updated": "",
+  "source_url": "https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---servo-motors-and-axis-cables.html",
+  "retrieved_at": "2026-10-03T18:03:37",
+  "retrieved_via": "direct",
+  "http_status": 200,
+  "applies_to": "Applies to machines built from July 2015",
+  "embedded_docs": [
+    {
+      "doc_id": "RD0003",
+      "revision": "Revision A - 01/2026"
+    },
+    {
+      "doc_id": "TG0033",
+      "revision": "Revision A - 07/2026"
+    }
+  ],
+  "title": "NGC - Servo Motors and Axis Cables - Haas Service Manual",
+  "pages": null,
+  "license_note": "Haas 저작물: 사이트 약관상 서면 허가 없는 사용 불가 표기. 내부 참고용 사본, 재배포 금지"
+}

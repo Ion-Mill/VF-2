@@ -1,0 +1,42 @@
+<!-- 출처: NGC-ESM-12 원본 HTML의 사이트 내비게이션 링크에서 추출. ESM-00 루트 페이지는 장 목록을 JavaScript로 그려 정적 본문이 없다. -->
+
+# NGC Electrical Service Manual 장 목록 (내비게이션 링크 기준)
+
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---24v-worklights.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---320v-power-supply.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---4th-and-5th-axis.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---8m-pcb.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---activation.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---broken-tool-detection.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---cabcool.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---camera-monitor-system-.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---can-systems.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---circuit-breaker-and-transformer.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---configuration---patch-files.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---control-icons.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---control-surge-proctector.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---error-report-and-backup.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---firmware-update.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---i-o.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---introduction.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---ipfdm-pcb.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---lvps.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---machine-data-collection.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---main-processor.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---mill---rotary-scale-cable-installation.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---myhaas.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---power-distribuition.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---regen.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---rjh.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---robot-and-automation.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---sensors-and-switches.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---servo-amplifiers.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---servo-motors-and-axis-cables.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---skbif-and-lcd-monitor.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---software-update.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---tmd-pcb-.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---usb.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---vector-drive.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---wire---wireless-networking.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---worklights-and-hil-.html
+- https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---wye---delta.html

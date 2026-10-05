@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NGC 공식 문서 목록</title>
+<style>
+:root{--bg:#fff;--fg:#1d1f23;--muted:#5f6670;--line:#dfe3e8;--card:#f5f7f9;--accent:#0b5cad;--warn:#9a5b00;--warnbg:#fff4e0}
+@media (prefers-color-scheme: dark){:root{--bg:#15171a;--fg:#e6e8eb;--muted:#9aa3ad;--line:#2c3036;--card:#1d2024;--accent:#6aa9ff;--warn:#f0b35a;--warnbg:#3a2d16}}
+*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 "Segoe UI","Malgun Gothic",sans-serif}
+main{max-width:1180px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:22px;margin:0 0 4px} h2{font-size:16px;margin:28px 0 2px} .count{color:var(--muted);font-weight:400;font-size:13px}
+.lead,.desc,.sub,.note{color:var(--muted)} .desc{margin:0 0 8px} .sub{font-size:12px}
+.notice{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin:16px 0}
+.notice ul{margin:6px 0 0;padding-left:18px}
+input[type=search]{width:100%;max-width:420px;padding:8px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg);font:inherit}
+.table-wrap{overflow-x:auto} table{width:100%;border-collapse:collapse}
+th,td{text-align:left;vertical-align:top;padding:7px 8px;border-bottom:1px solid var(--line)} th{font-size:12px;color:var(--muted);font-weight:600}
+td.id{font-family:Consolas,monospace;white-space:nowrap} td.feat{font-size:12px;color:var(--muted)}
+td.links{white-space:nowrap} td.links a{display:inline-block;margin:0 6px 2px 0}
+a{color:var(--accent)} a.primary{font-weight:600} a.muted{color:var(--muted)}
+.tag{display:inline-block;font-size:11px;padding:0 6px;border-radius:10px;border:1px solid var(--line);color:var(--muted);margin-left:4px}
+.tag.warn{color:var(--warn);background:var(--warnbg);border-color:transparent} .tag.old{text-decoration:line-through}
+@media (max-width:720px){td.feat,th:nth-child(4){display:none}}
+</style></head><body><main>
+<h1>Haas VF-2 (NGC) 공식 문서 목록</h1>
+<p class="lead">기능 폴더별 수집 문서 51건 · 생성 2026-10-03 19:02 · <a href="README.md">README.md</a></p>
+<div class="notice"><strong>열기 안내</strong>
+<ul><li><b>읽기</b> = 본문만 뽑은 <code>__body.html</code>. 그림은 Haas 공식 주소에서 불러오므로 인터넷 연결 시에만 보입니다.</li>
+<li><b>MD</b> = 검색·RAG용 텍스트. <b>원본</b> = 수집한 그대로의 HTML(증거 보관용, 사이트 메뉴 링크는 로컬에서 404가 정상).</li>
+<li>사실 확인의 기준은 원본과 공식 URL입니다. 모든 문서는 Haas 저작물이며 <b>내부 참고용·재배포 금지</b>입니다.</li></ul></div>
+<input type="search" id="q" placeholder="문서번호·제목·기능 검색 (예: 992, TG0125, MNT-03)" aria-label="문서 검색">
+<div class="table-wrap"><section data-folder>
+<h2>01_알람코드체계 <span class="count">19</span></h2>
+<p class="desc">NGC 알람 번호 형식과 알람별 공식 설명 · 알람 DB, MNT-02</p>
+<table><thead><tr><th>문서번호</th><th>제목</th><th>개정</th><th>쓰는 기능</th><th>열기</th></tr></thead>
+<tbody><tr data-search="rd0002 alarm search help guide - rd0002  알람db;mnt-02">
+<td class="id">RD0002</td>
+<td><div class="title">Alarm Search Help Guide - RD0002 </div></td>
+<td>—<div class="sub">Last updated 10/16/2025</div></td>
+<td class="feat">알람DB · MNT-02</td>
+<td class="links"><a class="primary" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/RD0002_alarm-search-help/RD0002__norev__20261003__body.html">읽기</a> <a href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/RD0002_alarm-search-help/RD0002__norev__20261003__body.md">MD</a> <a class="muted" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/RD0002_alarm-search-help/RD0002__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/troubleshooting-and-how-to/reference-documents/alarm-search-help.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="ngc_103 103 axis servo error too large  알람db;mnt-02">
+<td class="id">ngc_103</td>
+<td><div class="title">103 AXIS SERVO ERROR TOO LARGE </div></td>
+<td>—<div class="sub">Last updated 02/27/2026</div></td>
+<td class="feat">알람DB · MNT-02</td>
+<td class="links"><a class="primary" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_103__norev__20261003__body.html">읽기</a> <a href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_103__norev__20261003__body.md">MD</a> <a class="muted" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_103__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/alarm-search.alarm=ngc_103-0000.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="ngc_135 135  알람db;mnt-02">
+<td class="id">ngc_135</td>
+<td><div class="title">135 <span class="tag warn">NGC 정의 없음 · 시연 제외</span></div></td>
+<td>—<div class="sub">Last updated 02/27/2026</div></td>
+<td class="feat">알람DB · MNT-02</td>
+<td class="links"><a class="primary" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_135__norev__20261003__body.html">읽기</a> <a href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_135__norev__20261003__body.md">MD</a> <a class="muted" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_135__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/alarm-search.alarm=ngc_135-0000.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="ngc_179 179  알람db;mnt-02">
+<td class="id">ngc_179</td>
+<td><div class="title">179 <span class="tag warn">NGC 정의 없음 · 시연 제외</span></div></td>
+<td>—<div class="sub">Last updated 02/27/2026</div></td>
+<td class="feat">알람DB · MNT-02</td>
+<td class="links"><a class="primary" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_179__norev__20261003__body.html">읽기</a> <a href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_179__norev__20261003__body.md">MD</a> <a class="muted" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_179__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/alarm-search.alarm=ngc_179-0000.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="ngc_991 991 amplifier over temperature  알람db;mnt-02">
+<td class="id">ngc_991</td>
+<td><div class="title">991 AMPLIFIER OVER TEMPERATURE </div></td>
+<td>—<div class="sub">Last updated 02/27/2026</div></td>
+<td class="feat">알람DB · MNT-02</td>
+<td class="links"><a class="primary" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_991__norev__20261003__body.html">읽기</a> <a href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_991__norev__20261003__body.md">MD</a> <a class="muted" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_991__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/alarm-search.alarm=ngc_991-0000.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="ngc_992 992 amplifier over current  알람db;mnt-02">
+<td class="id">ngc_992</td>
+<td><div class="title">992 AMPLIFIER OVER CURRENT </div></td>
+<td>—<div class="sub">Last updated 02/27/2026</div></td>
+<td class="feat">알람DB · MNT-02</td>
+<td class="links"><a class="primary" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_992__norev__20261003__body.html">읽기</a> <a href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_992__norev__20261003__body.md">MD</a> <a class="muted" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_992__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/alarm-search.alarm=ngc_992-0000.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="ngc_993 993 amplifier short circuit  알람db;mnt-02">
+<td class="id">ngc_993</td>
+<td><div class="title">993 AMPLIFIER SHORT CIRCUIT </div></td>
+<td>—<div class="sub">Last updated 02/27/2026</div></td>
+<td class="feat">알람DB · MNT-02</td>
+<td class="links"><a class="primary" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_993__norev__20261003__body.html">읽기</a> <a href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_993__norev__20261003__body.md">MD</a> <a class="muted" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_993__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/alarm-search.alarm=ngc_993-0000.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="ngc_994 994 amplifier overload  알람db;mnt-02">
+<td class="id">ngc_994</td>
+<td><div class="title">994 AMPLIFIER OVERLOAD </div></td>
+<td>—<div class="sub">Last updated 02/27/2026</div></td>
+<td class="feat">알람DB · MNT-02</td>
+<td class="links"><a class="primary" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_994__norev__20261003__body.html">읽기</a> <a href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_994__norev__20261003__body.md">MD</a> <a class="muted" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_994__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/alarm-search.alarm=ngc_994-0000.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="ngc_108 108 axis servo overload  알람db;mnt-02">
+<td class="id">ngc_108</td>
+<td><div class="title">108 AXIS SERVO OVERLOAD </div></td>
+<td>—<div class="sub">Last updated 02/27/2026</div></td>
+<td class="feat">알람DB · MNT-02</td>
+<td class="links"><a class="primary" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_108__norev__20261003__body.html">읽기</a> <a href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_108__norev__20261003__body.md">MD</a> <a class="muted" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_108__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/alarm-search.alarm=ngc_108-0000.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="ngc_120 120 low air pressure or flow  알람db;mnt-02">
+<td class="id">ngc_120</td>
+<td><div class="title">120 LOW AIR PRESSURE OR FLOW </div></td>
+<td>—<div class="sub">Last updated 02/27/2026</div></td>
+<td class="feat">알람DB · MNT-02</td>
+<td class="links"><a class="primary" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_120__norev__20261003__body.html">읽기</a> <a href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_120__norev__20261003__body.md">MD</a> <a class="muted" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_120__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/alarm-search.alarm=ngc_120-0000.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="ngc_254 254 spindle motor overheat  알람db;mnt-02">
+<td class="id">ngc_254</td>
+<td><div class="title">254 SPINDLE MOTOR OVERHEAT </div></td>
+<td>—<div class="sub">Last updated 02/27/2026</div></td>
+<td class="feat">알람DB · MNT-02</td>
+<td class="links"><a class="primary" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_254__norev__20261003__body.html">읽기</a> <a href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_254__norev__20261003__body.md">MD</a> <a class="muted" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_254__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/alarm-search.alarm=ngc_254-0000.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="ngc_2073 2073 axis lubrication pressure not detected  알람db;mnt-02">
+<td class="id">ngc_2073</td>
+<td><div class="title">2073 AXIS LUBRICATION PRESSURE NOT DETECTED </div></td>
+<td>—<div class="sub">Last updated 02/27/2026</div></td>
+<td class="feat">알람DB · MNT-02</td>
+<td class="links"><a class="primary" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_2073__norev__20261003__body.html">읽기</a> <a href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_2073__norev__20261003__body.md">MD</a> <a class="muted" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_2073__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/alarm-search.alarm=ngc_2073-0000.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="ngc_2075 2075 axis lubrication reservoir empty  알람db;mnt-02">
+<td class="id">ngc_2075</td>
+<td><div class="title">2075 AXIS LUBRICATION RESERVOIR EMPTY </div></td>
+<td>—<div class="sub">Last updated 02/27/2026</div></td>
+<td class="feat">알람DB · MNT-02</td>
+<td class="links"><a class="primary" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_2075__norev__20261003__body.html">읽기</a> <a href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_2075__norev__20261003__body.md">MD</a> <a class="muted" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_2075__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/alarm-search.alarm=ngc_2075-0000.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="ngc_314 314 subprogram not in memory  알람db;mnt-02">
+<td class="id">ngc_314</td>
+<td><div class="title">314 SUBPROGRAM NOT IN MEMORY </div></td>
+<td>—<div class="sub">Last updated 02/27/2026</div></td>
+<td class="feat">알람DB · MNT-02</td>
+<td class="links"><a class="primary" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_314__norev__20261003__body.html">읽기</a> <a href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_314__norev__20261003__body.md">MD</a> <a class="muted" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_314__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/alarm-search.alarm=ngc_314-0000.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="ngc_174 174 tool load exceeded  알람db;mnt-02">
+<td class="id">ngc_174</td>
+<td><div class="title">174 TOOL LOAD EXCEEDED </div></td>
+<td>—<div class="sub">Last updated 02/27/2026</div></td>
+<td class="feat">알람DB · MNT-02</td>
+<td class="links"><a class="primary" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_174__norev__20261003__body.html">읽기</a> <a href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_174__norev__20261003__body.md">MD</a> <a class="muted" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_174__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/alarm-search.alarm=ngc_174-0000.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="ngc_362 362 tool-life limit reached  알람db;mnt-02">
+<td class="id">ngc_362</td>
+<td><div class="title">362 TOOL-LIFE LIMIT REACHED </div></td>
+<td>—<div class="sub">Last updated 02/27/2026</div></td>
+<td class="feat">알람DB · MNT-02</td>
+<td class="links"><a class="primary" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_362__norev__20261003__body.html">읽기</a> <a href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_362__norev__20261003__body.md">MD</a> <a class="muted" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_362__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/alarm-search.alarm=ngc_362-0000.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="ngc_4001 4001 low air during tool change  알람db;mnt-02">
+<td class="id">ngc_4001</td>
+<td><div class="title">4001 LOW AIR DURING TOOL CHANGE </div></td>
+<td>—<div class="sub">Last updated 02/27/2026</div></td>
+<td class="feat">알람DB · MNT-02</td>
+<td class="links"><a class="primary" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_4001__norev__20261003__body.html">읽기</a> <a href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_4001__norev__20261003__body.md">MD</a> <a class="muted" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_4001__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/alarm-search.alarm=ngc_4001-0000.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="ngc_160 160 low incoming ac line voltage  알람db;mnt-02">
+<td class="id">ngc_160</td>
+<td><div class="title">160 LOW INCOMING AC LINE VOLTAGE </div></td>
+<td>—<div class="sub">Last updated 02/27/2026</div></td>
+<td class="feat">알람DB · MNT-02</td>
+<td class="links"><a class="primary" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_160__norev__20261003__body.html">읽기</a> <a href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_160__norev__20261003__body.md">MD</a> <a class="muted" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_160__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/alarm-search.alarm=ngc_160-0000.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="ngc_966 966 excessive tool imbalance  알람db;mnt-02">
+<td class="id">ngc_966</td>
+<td><div class="title">966 EXCESSIVE TOOL IMBALANCE </div></td>
+<td>—<div class="sub">Last updated 02/27/2026</div></td>
+<td class="feat">알람DB · MNT-02</td>
+<td class="links"><a class="primary" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_966__norev__20261003__body.html">읽기</a> <a href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_966__norev__20261003__body.md">MD</a> <a class="muted" href="01_%EC%95%8C%EB%9E%8C%EC%BD%94%EB%93%9C%EC%B2%B4%EA%B3%84/ngc-alarms/ngc_966__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/alarm-search.alarm=ngc_966-0000.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr></tbody></table></section><section data-folder>
+<h2>02_서보축_알람대응 <span class="count">10</span></h2>
+<p class="desc">서보 앰프·축 모터·케이블·볼스크류 고장 안내와 LOTO 문구 · MNT-02, MNT-03</p>
+<table><thead><tr><th>문서번호</th><th>제목</th><th>개정</th><th>쓰는 기능</th><th>열기</th></tr></thead>
+<tbody><tr data-search="tg0125 servo amplifier - troubleshooting guide - ngc  mnt-02;mnt-03;mnt-01">
+<td class="id">TG0125</td>
+<td><div class="title">Servo Amplifier - Troubleshooting Guide - NGC </div></td>
+<td>Revision F - 8/2026<div class="sub">Last updated 10/14/2025</div></td>
+<td class="feat">MNT-02 · MNT-03 · MNT-01</td>
+<td class="links"><a class="primary" href="02_%EC%84%9C%EB%B3%B4%EC%B6%95_%EC%95%8C%EB%9E%8C%EB%8C%80%EC%9D%91/TG0125_servo-amplifier-tg-ngc/TG0125__RevF-2026-08__20261001.pdf">PDF</a> <a href="02_%EC%84%9C%EB%B3%B4%EC%B6%95_%EC%95%8C%EB%9E%8C%EB%8C%80%EC%9D%91/TG0125_servo-amplifier-tg-ngc/TG0125__RevF-2026-08__20261001.md">MD</a></td>
+</tr><tr data-search="id0003 amplifier inspection checklist  mnt-03">
+<td class="id">ID0003</td>
+<td><div class="title">Amplifier Inspection Checklist </div></td>
+<td>Rev B<div class="sub"></div></td>
+<td class="feat">MNT-03</td>
+<td class="links"><a class="primary" href="02_%EC%84%9C%EB%B3%B4%EC%B6%95_%EC%95%8C%EB%9E%8C%EB%8C%80%EC%9D%91/TG0125_servo-amplifier-tg-ngc/ID0003__RevB__20261003.pdf">PDF</a> <a href="02_%EC%84%9C%EB%B3%B4%EC%B6%95_%EC%95%8C%EB%9E%8C%EB%8C%80%EC%9D%91/TG0125_servo-amplifier-tg-ngc/ID0003__RevB__20261003.md">MD</a></td>
+</tr><tr data-search="tg0125 서보 앰프 - 문제 해결 가이드 - ngc (한국어 번역)  mnt-01">
+<td class="id">TG0125</td>
+<td><div class="title">서보 앰프 - 문제 해결 가이드 - NGC (한국어 번역) <span class="tag warn">번역·탐색용</span></div></td>
+<td>Revision F - 8/2026<div class="sub"></div></td>
+<td class="feat">MNT-01</td>
+<td class="links"><a class="primary" href="02_%EC%84%9C%EB%B3%B4%EC%B6%95_%EC%95%8C%EB%9E%8C%EB%8C%80%EC%9D%91/TG0125_servo-amplifier-tg-ngc/TG0125__RevF-2026-08__20261003.ko.md">MD</a></td>
+</tr><tr data-search="tg0033 axis servo motor and cables - troubleshooting guide - ngc - tg0033  mnt-02;mnt-03">
+<td class="id">TG0033</td>
+<td><div class="title">Axis Servo Motor and Cables - Troubleshooting Guide - NGC - TG0033 </div></td>
+<td>Revision A - 07/2026<div class="sub">Last updated 10/09/2025</div></td>
+<td class="feat">MNT-02 · MNT-03</td>
+<td class="links"><a class="primary" href="02_%EC%84%9C%EB%B3%B4%EC%B6%95_%EC%95%8C%EB%9E%8C%EB%8C%80%EC%9D%91/TG0033_axis-servo-motor-cables-tg-ngc/TG0033__RevA-2026-07__20261003__body.html">읽기</a> <a href="02_%EC%84%9C%EB%B3%B4%EC%B6%95_%EC%95%8C%EB%9E%8C%EB%8C%80%EC%9D%91/TG0033_axis-servo-motor-cables-tg-ngc/TG0033__RevA-2026-07__20261003__body.md">MD</a> <a class="muted" href="02_%EC%84%9C%EB%B3%B4%EC%B6%95_%EC%95%8C%EB%9E%8C%EB%8C%80%EC%9D%91/TG0033_axis-servo-motor-cables-tg-ngc/TG0033__RevA-2026-07__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/troubleshooting-and-how-to/troubleshooting/axis-servo-motor-and-cables---troubleshooting-guide---ngc.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="tg0125 servo amplifier - troubleshooting guide - ngc - tg0125  mnt-02;mnt-03;mnt-01">
+<td class="id">TG0125</td>
+<td><div class="title">Servo Amplifier - Troubleshooting Guide - NGC - TG0125 </div></td>
+<td>Revision F - 8/2026<div class="sub">Last updated 10/14/2025</div></td>
+<td class="feat">MNT-02 · MNT-03 · MNT-01</td>
+<td class="links"><a class="primary" href="02_%EC%84%9C%EB%B3%B4%EC%B6%95_%EC%95%8C%EB%9E%8C%EB%8C%80%EC%9D%91/TG0125_servo-amplifier-tg-ngc/TG0125__RevF-2026-08__20261003__body.html">읽기</a> <a href="02_%EC%84%9C%EB%B3%B4%EC%B6%95_%EC%95%8C%EB%9E%8C%EB%8C%80%EC%9D%91/TG0125_servo-amplifier-tg-ngc/TG0125__RevF-2026-08__20261003__body.md">MD</a> <a class="muted" href="02_%EC%84%9C%EB%B3%B4%EC%B6%95_%EC%95%8C%EB%9E%8C%EB%8C%80%EC%9D%91/TG0125_servo-amplifier-tg-ngc/TG0125__RevF-2026-08__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/troubleshooting-and-how-to/troubleshooting/servo-amplifier---troubleshooting-guide---ngc.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="ngc-esm-10 ngc - servo motors and axis cables - haas service manual rd0003 (revision a - 01/2026), tg0033 (revision a - 07/2026) mnt-02;알람db">
+<td class="id">NGC-ESM-10</td>
+<td><div class="title">NGC - Servo Motors and Axis Cables - Haas Service Manual </div><div class="sub">포함: RD0003 (Revision A - 01/2026), TG0033 (Revision A - 07/2026)</div></td>
+<td>—<div class="sub"></div></td>
+<td class="feat">MNT-02 · 알람DB</td>
+<td class="links"><a class="primary" href="02_%EC%84%9C%EB%B3%B4%EC%B6%95_%EC%95%8C%EB%9E%8C%EB%8C%80%EC%9D%91/NGC-ESM-10_servo-motors-axis-cables/NGC-ESM-10__norev__20261003__body.html">읽기</a> <a href="02_%EC%84%9C%EB%B3%B4%EC%B6%95_%EC%95%8C%EB%9E%8C%EB%8C%80%EC%9D%91/NGC-ESM-10_servo-motors-axis-cables/NGC-ESM-10__norev__20261003__body.md">MD</a> <a class="muted" href="02_%EC%84%9C%EB%B3%B4%EC%B6%95_%EC%95%8C%EB%9E%8C%EB%8C%80%EC%9D%91/NGC-ESM-10_servo-motors-axis-cables/NGC-ESM-10__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---servo-motors-and-axis-cables.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="ngc-esm-12 ngc - servo amplifiers - haas service manual rd0095 (revision b - 07/2026), ad0280 (revision c - 08/2026), tg0125 (revision f - 8/2026) mnt-02;mnt-03">
+<td class="id">NGC-ESM-12</td>
+<td><div class="title">NGC - Servo Amplifiers - Haas Service Manual </div><div class="sub">포함: RD0095 (Revision B - 07/2026), AD0280 (Revision C - 08/2026), TG0125 (Revision F - 8/2026)</div></td>
+<td>—<div class="sub"></div></td>
+<td class="feat">MNT-02 · MNT-03</td>
+<td class="links"><a class="primary" href="02_%EC%84%9C%EB%B3%B4%EC%B6%95_%EC%95%8C%EB%9E%8C%EB%8C%80%EC%9D%91/NGC-ESM-12_servo-amplifiers/NGC-ESM-12__norev__20261003__body.html">읽기</a> <a href="02_%EC%84%9C%EB%B3%B4%EC%B6%95_%EC%95%8C%EB%9E%8C%EB%8C%80%EC%9D%91/NGC-ESM-12_servo-amplifiers/NGC-ESM-12__norev__20261003__body.md">MD</a> <a class="muted" href="02_%EC%84%9C%EB%B3%B4%EC%B6%95_%EC%95%8C%EB%9E%8C%EB%8C%80%EC%9D%91/NGC-ESM-12_servo-amplifiers/NGC-ESM-12__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---servo-amplifiers.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="vfvm-sm-07 vf/vm - axis motion - haas service manual tg0033 (revision a - 07/2026), tg0038 (revision b - 08/2025) mnt-02;mnt-03">
+<td class="id">VFVM-SM-07</td>
+<td><div class="title">VF/VM - Axis Motion - Haas Service Manual </div><div class="sub">포함: TG0033 (Revision A - 07/2026), TG0038 (Revision B - 08/2025)</div></td>
+<td>—<div class="sub"></div></td>
+<td class="feat">MNT-02 · MNT-03</td>
+<td class="links"><a class="primary" href="02_%EC%84%9C%EB%B3%B4%EC%B6%95_%EC%95%8C%EB%9E%8C%EB%8C%80%EC%9D%91/VFVM-SM-07_axis-motion/VFVM-SM-07__norev__20261003__body.html">읽기</a> <a href="02_%EC%84%9C%EB%B3%B4%EC%B6%95_%EC%95%8C%EB%9E%8C%EB%8C%80%EC%9D%91/VFVM-SM-07_axis-motion/VFVM-SM-07__norev__20261003__body.md">MD</a> <a class="muted" href="02_%EC%84%9C%EB%B3%B4%EC%B6%95_%EC%95%8C%EB%9E%8C%EB%8C%80%EC%9D%91/VFVM-SM-07_axis-motion/VFVM-SM-07__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---axis-motion.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="ngc-esm-13 ngc - vector drive - haas service manual ad0056 (revision a - 05/2025), ad0294 (revision a - 05/2025), tg0158 (revision a - 03/2026) mnt-02;mnt-03">
+<td class="id">NGC-ESM-13</td>
+<td><div class="title">NGC - Vector Drive - Haas Service Manual </div><div class="sub">포함: AD0056 (Revision A - 05/2025), AD0294 (Revision A - 05/2025), TG0158 (Revision A - 03/2026)</div></td>
+<td>—<div class="sub"></div></td>
+<td class="feat">MNT-02 · MNT-03</td>
+<td class="links"><a class="primary" href="02_%EC%84%9C%EB%B3%B4%EC%B6%95_%EC%95%8C%EB%9E%8C%EB%8C%80%EC%9D%91/NGC-ESM-13_vector-drive/NGC-ESM-13__norev__20261003__body.html">읽기</a> <a href="02_%EC%84%9C%EB%B3%B4%EC%B6%95_%EC%95%8C%EB%9E%8C%EB%8C%80%EC%9D%91/NGC-ESM-13_vector-drive/NGC-ESM-13__norev__20261003__body.md">MD</a> <a class="muted" href="02_%EC%84%9C%EB%B3%B4%EC%B6%95_%EC%95%8C%EB%9E%8C%EB%8C%80%EC%9D%91/NGC-ESM-13_vector-drive/NGC-ESM-13__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---vector-drive.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="ngc-esm-15 ngc - 320v power supply - haas service manual  mnt-02;mnt-03">
+<td class="id">NGC-ESM-15</td>
+<td><div class="title">NGC - 320V Power Supply - Haas Service Manual </div></td>
+<td>—<div class="sub"></div></td>
+<td class="feat">MNT-02 · MNT-03</td>
+<td class="links"><a class="primary" href="02_%EC%84%9C%EB%B3%B4%EC%B6%95_%EC%95%8C%EB%9E%8C%EB%8C%80%EC%9D%91/NGC-ESM-15_320v-power-supply/NGC-ESM-15__norev__20261003__body.html">읽기</a> <a href="02_%EC%84%9C%EB%B3%B4%EC%B6%95_%EC%95%8C%EB%9E%8C%EB%8C%80%EC%9D%91/NGC-ESM-15_320v-power-supply/NGC-ESM-15__norev__20261003__body.md">MD</a> <a class="muted" href="02_%EC%84%9C%EB%B3%B4%EC%B6%95_%EC%95%8C%EB%9E%8C%EB%8C%80%EC%9D%91/NGC-ESM-15_320v-power-supply/NGC-ESM-15__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---320v-power-supply.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr></tbody></table></section><section data-folder>
+<h2>03_센서·공압·진단 <span class="count">5</span></h2>
+<p class="desc">센서 목록(Gauges), 공압 알람 120, 오류 보고 · 가상 데이터, PRD-01</p><p class="note">NGC Electrical Service Manual 장 목록: <a href="03_%EC%84%BC%EC%84%9C%C2%B7%EA%B3%B5%EC%95%95%C2%B7%EC%A7%84%EB%8B%A8/NGC-ESM-00_root-introduction/NGC-ESM-00__chapter-index__from-ESM-12-nav.md">NGC-ESM-00__chapter-index__from-ESM-12-nav.md</a> (첫 페이지는 정적 본문이 없어 ESM-12 내비게이션에서 추출)</p>
+<table><thead><tr><th>문서번호</th><th>제목</th><th>개정</th><th>쓰는 기능</th><th>열기</th></tr></thead>
+<tbody><tr data-search="ngc-esm-00 next gen control electrical - service manual  mnt-01">
+<td class="id">NGC-ESM-00</td>
+<td><div class="title">Next Gen Control Electrical - Service Manual <span class="tag warn">no-body</span></div></td>
+<td>—<div class="sub"></div></td>
+<td class="feat">MNT-01</td>
+<td class="links"><a class="primary" href="03_%EC%84%BC%EC%84%9C%C2%B7%EA%B3%B5%EC%95%95%C2%B7%EC%A7%84%EB%8B%A8/NGC-ESM-00_root-introduction/NGC-ESM-00__norev__20261003__body.html">읽기</a> <a href="03_%EC%84%BC%EC%84%9C%C2%B7%EA%B3%B5%EC%95%95%C2%B7%EC%A7%84%EB%8B%A8/NGC-ESM-00_root-introduction/NGC-ESM-00__norev__20261003__body.md">MD</a> <a class="muted" href="03_%EC%84%BC%EC%84%9C%C2%B7%EA%B3%B5%EC%95%95%C2%B7%EC%A7%84%EB%8B%A8/NGC-ESM-00_root-introduction/NGC-ESM-00__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="ngc-esm-01 ngc - introduction - haas service manual  mnt-01;mnt-03">
+<td class="id">NGC-ESM-01</td>
+<td><div class="title">NGC - Introduction - Haas Service Manual </div></td>
+<td>—<div class="sub"></div></td>
+<td class="feat">MNT-01 · MNT-03</td>
+<td class="links"><a class="primary" href="03_%EC%84%BC%EC%84%9C%C2%B7%EA%B3%B5%EC%95%95%C2%B7%EC%A7%84%EB%8B%A8/NGC-ESM-00_root-introduction/NGC-ESM-01__norev__20261003__body.html">읽기</a> <a href="03_%EC%84%BC%EC%84%9C%C2%B7%EA%B3%B5%EC%95%95%C2%B7%EC%A7%84%EB%8B%A8/NGC-ESM-00_root-introduction/NGC-ESM-01__norev__20261003__body.md">MD</a> <a class="muted" href="03_%EC%84%BC%EC%84%9C%C2%B7%EA%B3%B5%EC%95%95%C2%B7%EC%A7%84%EB%8B%A8/NGC-ESM-00_root-introduction/NGC-ESM-01__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---introduction.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="ngc-esm-06 ngc - error report and backup - haas service manual rd0102 (revision a - 08/2026) mnt-03">
+<td class="id">NGC-ESM-06</td>
+<td><div class="title">NGC - Error Report and Backup - Haas Service Manual </div><div class="sub">포함: RD0102 (Revision A - 08/2026)</div></td>
+<td>—<div class="sub"></div></td>
+<td class="feat">MNT-03</td>
+<td class="links"><a class="primary" href="03_%EC%84%BC%EC%84%9C%C2%B7%EA%B3%B5%EC%95%95%C2%B7%EC%A7%84%EB%8B%A8/NGC-ESM-06_error-report-backup/NGC-ESM-06__norev__20261003__body.html">읽기</a> <a href="03_%EC%84%BC%EC%84%9C%C2%B7%EA%B3%B5%EC%95%95%C2%B7%EC%A7%84%EB%8B%A8/NGC-ESM-06_error-report-backup/NGC-ESM-06__norev__20261003__body.md">MD</a> <a class="muted" href="03_%EC%84%BC%EC%84%9C%C2%B7%EA%B3%B5%EC%95%95%C2%B7%EC%A7%84%EB%8B%A8/NGC-ESM-06_error-report-backup/NGC-ESM-06__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---error-report-and-backup.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="ngc-esm-08 ngc - i/o and tc pcb - haas service manual tg0002 (revision c - 08/2026) prd-01;가상데이터;mnt-02">
+<td class="id">NGC-ESM-08</td>
+<td><div class="title">NGC - I/O and TC PCB - Haas Service Manual </div><div class="sub">포함: TG0002 (Revision C - 08/2026)</div></td>
+<td>—<div class="sub"></div></td>
+<td class="feat">PRD-01 · 가상데이터 · MNT-02</td>
+<td class="links"><a class="primary" href="03_%EC%84%BC%EC%84%9C%C2%B7%EA%B3%B5%EC%95%95%C2%B7%EC%A7%84%EB%8B%A8/NGC-ESM-08_io-tc-pcb/NGC-ESM-08__norev__20261003__body.html">읽기</a> <a href="03_%EC%84%BC%EC%84%9C%C2%B7%EA%B3%B5%EC%95%95%C2%B7%EC%A7%84%EB%8B%A8/NGC-ESM-08_io-tc-pcb/NGC-ESM-08__norev__20261003__body.md">MD</a> <a class="muted" href="03_%EC%84%BC%EC%84%9C%C2%B7%EA%B3%B5%EC%95%95%C2%B7%EC%A7%84%EB%8B%A8/NGC-ESM-08_io-tc-pcb/NGC-ESM-08__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---i-o.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="ngc-esm-29 ngc - sensors and switches - haas service manual tg0027 (revision c - 12/2025) mnt-02;prd-01">
+<td class="id">NGC-ESM-29</td>
+<td><div class="title">NGC - Sensors and Switches - Haas Service Manual </div><div class="sub">포함: TG0027 (Revision C - 12/2025)</div></td>
+<td>—<div class="sub"></div></td>
+<td class="feat">MNT-02 · PRD-01</td>
+<td class="links"><a class="primary" href="03_%EC%84%BC%EC%84%9C%C2%B7%EA%B3%B5%EC%95%95%C2%B7%EC%A7%84%EB%8B%A8/NGC-ESM-29_sensors-switches/NGC-ESM-29__norev__20261003__body.html">읽기</a> <a href="03_%EC%84%BC%EC%84%9C%C2%B7%EA%B3%B5%EC%95%95%C2%B7%EC%A7%84%EB%8B%A8/NGC-ESM-29_sensors-switches/NGC-ESM-29__norev__20261003__body.md">MD</a> <a class="muted" href="03_%EC%84%BC%EC%84%9C%C2%B7%EA%B3%B5%EC%95%95%C2%B7%EC%A7%84%EB%8B%A8/NGC-ESM-29_sensors-switches/NGC-ESM-29__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---sensors-and-switches.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr></tbody></table></section><section data-folder>
+<h2>04_전원·차단기 <span class="count">1</span></h2>
+<p class="desc">메인 차단기·변압기, LOTO 절차 · MNT-02, MNT-03</p>
+<table><thead><tr><th>문서번호</th><th>제목</th><th>개정</th><th>쓰는 기능</th><th>열기</th></tr></thead>
+<tbody><tr data-search="ngc-esm-17 ngc - circuit breaker and transformer - haas service manual ad1003 (revision a - 09/2026) mnt-02;mnt-03">
+<td class="id">NGC-ESM-17</td>
+<td><div class="title">NGC - Circuit Breaker and Transformer - Haas Service Manual </div><div class="sub">포함: AD1003 (Revision A - 09/2026)</div></td>
+<td>—<div class="sub"></div></td>
+<td class="feat">MNT-02 · MNT-03</td>
+<td class="links"><a class="primary" href="04_%EC%A0%84%EC%9B%90%C2%B7%EC%B0%A8%EB%8B%A8%EA%B8%B0/NGC-ESM-17_circuit-breaker-transformer/NGC-ESM-17__norev__20261003__body.html">읽기</a> <a href="04_%EC%A0%84%EC%9B%90%C2%B7%EC%B0%A8%EB%8B%A8%EA%B8%B0/NGC-ESM-17_circuit-breaker-transformer/NGC-ESM-17__norev__20261003__body.md">MD</a> <a class="muted" href="04_%EC%A0%84%EC%9B%90%C2%B7%EC%B0%A8%EB%8B%A8%EA%B8%B0/NGC-ESM-17_circuit-breaker-transformer/NGC-ESM-17__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/online-manuals/next-gen-control-electrical---service-manual/ngc---circuit-breaker-and-transformer.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr></tbody></table></section><section data-folder>
+<h2>05_윤활 <span class="count">1</span></h2>
+<p class="desc">HALO 축 윤활, 알람 2073/2075 · MNT-02, MNT-03</p>
+<table><thead><tr><th>문서번호</th><th>제목</th><th>개정</th><th>쓰는 기능</th><th>열기</th></tr></thead>
+<tbody><tr data-search="lube-sm-02 haas axis lubrication oil - haas service manual ad0659 (revision b - 09/2025), ad0660 (revision c - 04/2026) mnt-02;mnt-03">
+<td class="id">LUBE-SM-02</td>
+<td><div class="title">Haas Axis Lubrication Oil - Haas Service Manual </div><div class="sub">포함: AD0659 (Revision B - 09/2025), AD0660 (Revision C - 04/2026)</div></td>
+<td>—<div class="sub"></div></td>
+<td class="feat">MNT-02 · MNT-03</td>
+<td class="links"><a class="primary" href="05_%EC%9C%A4%ED%99%9C/LUBE-SM-02_haas-axis-lubrication-oil/LUBE-SM-02__norev__20261003__body.html">읽기</a> <a href="05_%EC%9C%A4%ED%99%9C/LUBE-SM-02_haas-axis-lubrication-oil/LUBE-SM-02__norev__20261003__body.md">MD</a> <a class="muted" href="05_%EC%9C%A4%ED%99%9C/LUBE-SM-02_haas-axis-lubrication-oil/LUBE-SM-02__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/online-manuals/lubrication-systems---service-manual/haas-axis-lubrication-oil.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr></tbody></table></section><section data-folder>
+<h2>06_스핀들·기어박스 <span class="count">2</span></h2>
+<p class="desc">40T 스핀들·스핀들 모터 · MNT-02</p>
+<table><thead><tr><th>문서번호</th><th>제목</th><th>개정</th><th>쓰는 기능</th><th>열기</th></tr></thead>
+<tbody><tr data-search="vfvm-sm-09 vf/vm - 40t - spindle - haas service manual ad0318 (revision b - 12/2025), tg0101 (revision b - 11/2025), tg0132 (revision a - 12/2025) mnt-02">
+<td class="id">VFVM-SM-09</td>
+<td><div class="title">VF/VM - 40T - Spindle - Haas Service Manual </div><div class="sub">포함: AD0318 (Revision B - 12/2025), TG0101 (Revision B - 11/2025), TG0132 (Revision A - 12/2025)</div></td>
+<td>—<div class="sub"></div></td>
+<td class="feat">MNT-02</td>
+<td class="links"><a class="primary" href="06_%EC%8A%A4%ED%95%80%EB%93%A4%C2%B7%EA%B8%B0%EC%96%B4%EB%B0%95%EC%8A%A4/VFVM-SM-09_40t-spindle/VFVM-SM-09__norev__20261003__body.html">읽기</a> <a href="06_%EC%8A%A4%ED%95%80%EB%93%A4%C2%B7%EA%B8%B0%EC%96%B4%EB%B0%95%EC%8A%A4/VFVM-SM-09_40t-spindle/VFVM-SM-09__norev__20261003__body.md">MD</a> <a class="muted" href="06_%EC%8A%A4%ED%95%80%EB%93%A4%C2%B7%EA%B8%B0%EC%96%B4%EB%B0%95%EC%8A%A4/VFVM-SM-09_40t-spindle/VFVM-SM-09__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---40t---spindle.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="vfvm-sm-10 vf/vm - 40t - spindle motor - haas service manual tg0010 (revision c - 04/2026) mnt-02">
+<td class="id">VFVM-SM-10</td>
+<td><div class="title">VF/VM - 40T - Spindle Motor - Haas Service Manual </div><div class="sub">포함: TG0010 (Revision C - 04/2026)</div></td>
+<td>—<div class="sub"></div></td>
+<td class="feat">MNT-02</td>
+<td class="links"><a class="primary" href="06_%EC%8A%A4%ED%95%80%EB%93%A4%C2%B7%EA%B8%B0%EC%96%B4%EB%B0%95%EC%8A%A4/VFVM-SM-10_40t-spindle-motor/VFVM-SM-10__norev__20261003__body.html">읽기</a> <a href="06_%EC%8A%A4%ED%95%80%EB%93%A4%C2%B7%EA%B8%B0%EC%96%B4%EB%B0%95%EC%8A%A4/VFVM-SM-10_40t-spindle-motor/VFVM-SM-10__norev__20261003__body.md">MD</a> <a class="muted" href="06_%EC%8A%A4%ED%95%80%EB%93%A4%C2%B7%EA%B8%B0%EC%96%B4%EB%B0%95%EC%8A%A4/VFVM-SM-10_40t-spindle-motor/VFVM-SM-10__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---40t-spindle-motor.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr></tbody></table></section><section data-folder>
+<h2>07_예방정비 <span class="count">4</span></h2>
+<p class="desc">VMC 정비 주기(RD0080), 주간 점검표 · MNT-03</p>
+<table><thead><tr><th>문서번호</th><th>제목</th><th>개정</th><th>쓰는 기능</th><th>열기</th></tr></thead>
+<tbody><tr data-search="rd0080 vmc maintenance schedule - rd0080  mnt-03;가상데이터">
+<td class="id">RD0080</td>
+<td><div class="title">VMC Maintenance Schedule - RD0080 </div></td>
+<td>Revision B - 5/2025<div class="sub">Last updated 10/17/2025</div></td>
+<td class="feat">MNT-03 · 가상데이터</td>
+<td class="links"><a class="primary" href="07_%EC%98%88%EB%B0%A9%EC%A0%95%EB%B9%84/RD0080_vmc-maintenance-schedule/RD0080__RevB-2025-05__20261003__body.html">읽기</a> <a href="07_%EC%98%88%EB%B0%A9%EC%A0%95%EB%B9%84/RD0080_vmc-maintenance-schedule/RD0080__RevB-2025-05__20261003__body.md">MD</a> <a class="muted" href="07_%EC%98%88%EB%B0%A9%EC%A0%95%EB%B9%84/RD0080_vmc-maintenance-schedule/RD0080__RevB-2025-05__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/troubleshooting-and-how-to/reference-documents/vmc-maintenance-schedule.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="rd0080 vmc maintenance schedule - rd0080  mnt-03;가상데이터">
+<td class="id">RD0080</td>
+<td><div class="title">VMC Maintenance Schedule - RD0080 <span class="tag">archive</span></div></td>
+<td>Revision B - 5/2025<div class="sub">Last updated 10/17/2025</div></td>
+<td class="feat">MNT-03 · 가상데이터</td>
+<td class="links"><a class="primary" href="07_%EC%98%88%EB%B0%A9%EC%A0%95%EB%B9%84/RD0080_vmc-maintenance-schedule/RD0080__RevB-2025-05__20261003__archive__body.html">읽기</a> <a href="07_%EC%98%88%EB%B0%A9%EC%A0%95%EB%B9%84/RD0080_vmc-maintenance-schedule/RD0080__RevB-2025-05__20261003__archive__body.md">MD</a> <a class="muted" href="07_%EC%98%88%EB%B0%A9%EC%A0%95%EB%B9%84/RD0080_vmc-maintenance-schedule/RD0080__RevB-2025-05__20261003__archive.html">원본</a> <a class="muted" href="https://web.archive.org/web/20260214053732/https://www.haascnc.com/service/troubleshooting-and-how-to/reference-documents/vmc-maintenance-schedule.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="vfvm-sm-18 vf/vm - maintenance - haas service manual  mnt-03">
+<td class="id">VFVM-SM-18</td>
+<td><div class="title">VF/VM - Maintenance - Haas Service Manual </div></td>
+<td>—<div class="sub"></div></td>
+<td class="feat">MNT-03</td>
+<td class="links"><a class="primary" href="07_%EC%98%88%EB%B0%A9%EC%A0%95%EB%B9%84/VFVM-SM-18_maintenance/VFVM-SM-18__norev__20261003__body.html">읽기</a> <a href="07_%EC%98%88%EB%B0%A9%EC%A0%95%EB%B9%84/VFVM-SM-18_maintenance/VFVM-SM-18__norev__20261003__body.md">MD</a> <a class="muted" href="07_%EC%98%88%EB%B0%A9%EC%A0%95%EB%B9%84/VFVM-SM-18_maintenance/VFVM-SM-18__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---maintenance.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="mill-checklist mill-checklist__norev__20261003.pdf  mnt-03">
+<td class="id">mill-checklist</td>
+<td><div class="title">mill-checklist__norev__20261003.pdf </div></td>
+<td>—<div class="sub"></div></td>
+<td class="feat">MNT-03</td>
+<td class="links"><a class="primary" href="07_%EC%98%88%EB%B0%A9%EC%A0%95%EB%B9%84/mill-checklist_mill-weekly-maintenance/mill-checklist__norev__20261003.pdf">PDF</a> <a href="07_%EC%98%88%EB%B0%A9%EC%A0%95%EB%B9%84/mill-checklist_mill-weekly-maintenance/mill-checklist__norev__20261003.md">MD</a> <a class="muted" href="https://www.haascnc.com/content/dam/haascnc/service/guides/how-to/vmc-maintenance-schedule/mill_maintenance_checklist.pdf" target="_blank" rel="noopener">공식 URL</a></td>
+</tr></tbody></table></section><section data-folder>
+<h2>08_운전·화면 <span class="count">3</span></h2>
+<p class="desc">Mill 운영자 매뉴얼 NGC · MNT-01</p>
+<table><thead><tr><th>문서번호</th><th>제목</th><th>개정</th><th>쓰는 기능</th><th>열기</th></tr></thead>
+<tbody><tr data-search="96-8210 mill operator&#x27;s manual - next generation control  mnt-01">
+<td class="id">96-8210</td>
+<td><div class="title">Mill Operator&#x27;s Manual - Next Generation Control <span class="tag old">구판</span></div></td>
+<td>Revision N December 2020<div class="sub"></div></td>
+<td class="feat">MNT-01</td>
+<td class="links"><a class="primary" href="08_%EC%9A%B4%EC%A0%84%C2%B7%ED%99%94%EB%A9%B4/96-8210_mill-operators-manual-ngc/96-8210__RevN__20261003.pdf">PDF</a></td>
+</tr><tr data-search="96-8210 english - mill operator’s manual - ngc - 2023  mnt-01">
+<td class="id">96-8210</td>
+<td><div class="title">English - Mill Operator’s Manual - NGC - 2023 </div></td>
+<td>T March 2023<div class="sub"></div></td>
+<td class="feat">MNT-01</td>
+<td class="links"><a class="primary" href="08_%EC%9A%B4%EC%A0%84%C2%B7%ED%99%94%EB%A9%B4/96-8210_mill-operators-manual-ngc/96-8210__RevT__20261003.pdf">PDF</a> <a href="08_%EC%9A%B4%EC%A0%84%C2%B7%ED%99%94%EB%A9%B4/96-8210_mill-operators-manual-ngc/96-8210__RevT__20261003.md">MD</a> <a class="muted" href="https://www.haascnc.com/content/dam/haascnc/en/service/manual/operator/english---mill-ngc---operator&#x27;s-manual---2023.pdf" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="96-8210 english - mill operator’s manual - ngc - 2024  mnt-01">
+<td class="id">96-8210</td>
+<td><div class="title">English - Mill Operator’s Manual - NGC - 2024 </div></td>
+<td>U December 2024<div class="sub"></div></td>
+<td class="feat">MNT-01</td>
+<td class="links"><a class="primary" href="08_%EC%9A%B4%EC%A0%84%C2%B7%ED%99%94%EB%A9%B4/96-8210_mill-operators-manual-ngc/96-8210__RevU__20261003.pdf">PDF</a> <a href="08_%EC%9A%B4%EC%A0%84%C2%B7%ED%99%94%EB%A9%B4/96-8210_mill-operators-manual-ngc/96-8210__RevU__20261003.md">MD</a> <a class="muted" href="https://www.haascnc.com/content/dam/haascnc/en/service/manual/operator/english---mill-ngc---operator&#x27;s-manual---2024.pdf" target="_blank" rel="noopener">공식 URL</a></td>
+</tr></tbody></table></section><section data-folder>
+<h2>09_설비사양·설치 <span class="count">6</span></h2>
+<p class="desc">VF-2 사양, 설치 요건, VF/VM 매뉴얼 1~3장 · 설비 마스터</p>
+<table><thead><tr><th>문서번호</th><th>제목</th><th>개정</th><th>쓰는 기능</th><th>열기</th></tr></thead>
+<tbody><tr data-search="vfvm-sm-01 vf/vm - introduction - haas service manual  mnt-01;mnt-03">
+<td class="id">VFVM-SM-01</td>
+<td><div class="title">VF/VM - Introduction - Haas Service Manual </div></td>
+<td>—<div class="sub"></div></td>
+<td class="feat">MNT-01 · MNT-03</td>
+<td class="links"><a class="primary" href="09_%EC%84%A4%EB%B9%84%EC%82%AC%EC%96%91%C2%B7%EC%84%A4%EC%B9%98/VFVM-SM-01_introduction/VFVM-SM-01__norev__20261003__body.html">읽기</a> <a href="09_%EC%84%A4%EB%B9%84%EC%82%AC%EC%96%91%C2%B7%EC%84%A4%EC%B9%98/VFVM-SM-01_introduction/VFVM-SM-01__norev__20261003__body.md">MD</a> <a class="muted" href="09_%EC%84%A4%EB%B9%84%EC%82%AC%EC%96%91%C2%B7%EC%84%A4%EC%B9%98/VFVM-SM-01_introduction/VFVM-SM-01__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---introduction.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="vfvm-sm-02 vf/vm - specifications - haas service manual  mnt-03">
+<td class="id">VFVM-SM-02</td>
+<td><div class="title">VF/VM - Specifications - Haas Service Manual </div></td>
+<td>—<div class="sub"></div></td>
+<td class="feat">MNT-03</td>
+<td class="links"><a class="primary" href="09_%EC%84%A4%EB%B9%84%EC%82%AC%EC%96%91%C2%B7%EC%84%A4%EC%B9%98/VFVM-SM-02_specifications/VFVM-SM-02__norev__20261003__body.html">읽기</a> <a href="09_%EC%84%A4%EB%B9%84%EC%82%AC%EC%96%91%C2%B7%EC%84%A4%EC%B9%98/VFVM-SM-02_specifications/VFVM-SM-02__norev__20261003__body.md">MD</a> <a class="muted" href="09_%EC%84%A4%EB%B9%84%EC%82%AC%EC%96%91%C2%B7%EC%84%A4%EC%B9%98/VFVM-SM-02_specifications/VFVM-SM-02__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---specifications.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="vfvm-sm-03 vf/vm - installation - haas service manual ad0456 (revision g - 09/2026) 설비마스터">
+<td class="id">VFVM-SM-03</td>
+<td><div class="title">VF/VM - Installation - Haas Service Manual </div><div class="sub">포함: AD0456 (Revision G - 09/2026)</div></td>
+<td>—<div class="sub"></div></td>
+<td class="feat">설비마스터</td>
+<td class="links"><a class="primary" href="09_%EC%84%A4%EB%B9%84%EC%82%AC%EC%96%91%C2%B7%EC%84%A4%EC%B9%98/VFVM-SM-03_installation/VFVM-SM-03__norev__20261003__body.html">읽기</a> <a href="09_%EC%84%A4%EB%B9%84%EC%82%AC%EC%96%91%C2%B7%EC%84%A4%EC%B9%98/VFVM-SM-03_installation/VFVM-SM-03__norev__20261003__body.md">MD</a> <a class="muted" href="09_%EC%84%A4%EB%B9%84%EC%82%AC%EC%96%91%C2%B7%EC%84%A4%EC%B9%98/VFVM-SM-03_installation/VFVM-SM-03__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/service/online-manuals/vf-vm-series---service-manual/vf-vm---installation.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="vf-2-spec vf-2 | 40-taper mill | vertical mills – haas cnc machines  설비마스터;가상데이터">
+<td class="id">VF-2-spec</td>
+<td><div class="title">VF-2 | 40-Taper Mill | Vertical Mills – Haas CNC Machines </div></td>
+<td>—<div class="sub"></div></td>
+<td class="feat">설비마스터 · 가상데이터</td>
+<td class="links"><a class="primary" href="09_%EC%84%A4%EB%B9%84%EC%82%AC%EC%96%91%C2%B7%EC%84%A4%EC%B9%98/VF-2-spec_vf-2-product-page/VF-2-spec__norev__20261003__body.html">읽기</a> <a href="09_%EC%84%A4%EB%B9%84%EC%82%AC%EC%96%91%C2%B7%EC%84%A4%EC%B9%98/VF-2-spec_vf-2-product-page/VF-2-spec__norev__20261003__body.md">MD</a> <a class="muted" href="09_%EC%84%A4%EB%B9%84%EC%82%AC%EC%96%91%C2%B7%EC%84%A4%EC%B9%98/VF-2-spec_vf-2-product-page/VF-2-spec__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/machines/vertical-mills/vf-series/models/small/vf-2.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="vf-2-spec vf-2 | 40-taper mill | vertical mills – haas cnc machines  설비마스터;가상데이터">
+<td class="id">VF-2-spec</td>
+<td><div class="title">VF-2 | 40-Taper Mill | Vertical Mills – Haas CNC Machines <span class="tag">archive</span></div></td>
+<td>—<div class="sub"></div></td>
+<td class="feat">설비마스터 · 가상데이터</td>
+<td class="links"><a class="primary" href="09_%EC%84%A4%EB%B9%84%EC%82%AC%EC%96%91%C2%B7%EC%84%A4%EC%B9%98/VF-2-spec_vf-2-product-page/VF-2-spec__norev__20261003__archive__body.html">읽기</a> <a href="09_%EC%84%A4%EB%B9%84%EC%82%AC%EC%96%91%C2%B7%EC%84%A4%EC%B9%98/VF-2-spec_vf-2-product-page/VF-2-spec__norev__20261003__archive__body.md">MD</a> <a class="muted" href="09_%EC%84%A4%EB%B9%84%EC%82%AC%EC%96%91%C2%B7%EC%84%A4%EC%B9%98/VF-2-spec_vf-2-product-page/VF-2-spec__norev__20261003__archive.html">원본</a> <a class="muted" href="http://web.archive.org/web/20230507091954/https://www.haascnc.com/machines/vertical-mills/vf-series/models/small/vf-2.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr><tr data-search="vf-2-preinstall vf-2 pre-install guide  설비마스터">
+<td class="id">VF-2-preinstall</td>
+<td><div class="title">VF-2 Pre-install Guide </div></td>
+<td>—<div class="sub"></div></td>
+<td class="feat">설비마스터</td>
+<td class="links"><a class="primary" href="09_%EC%84%A4%EB%B9%84%EC%82%AC%EC%96%91%C2%B7%EC%84%A4%EC%B9%98/VF-2-preinstall_pre-install-guide/VF-2-preinstall__norev__20261003__body.html">읽기</a> <a href="09_%EC%84%A4%EB%B9%84%EC%82%AC%EC%96%91%C2%B7%EC%84%A4%EC%B9%98/VF-2-preinstall_pre-install-guide/VF-2-preinstall__norev__20261003__body.md">MD</a> <a class="muted" href="09_%EC%84%A4%EB%B9%84%EC%82%AC%EC%96%91%C2%B7%EC%84%A4%EC%B9%98/VF-2-preinstall_pre-install-guide/VF-2-preinstall__norev__20261003.html">원본</a> <a class="muted" href="https://www.haascnc.com/owners/pre-install-guide/mills-pre-install/VF-2.html" target="_blank" rel="noopener">공식 URL</a></td>
+</tr></tbody></table></section></div>
+</main>
+<script>
+const q=document.getElementById('q');
+q.addEventListener('input',()=>{const v=q.value.trim().toLowerCase();
+document.querySelectorAll('section[data-folder]').forEach(s=>{let n=0;
+s.querySelectorAll('tbody tr').forEach(tr=>{const hit=!v||tr.dataset.search.includes(v);tr.hidden=!hit;if(hit)n++;});
+s.hidden=n===0;});});
+</script></body></html>

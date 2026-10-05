@@ -1,0 +1,108 @@
+TOPICS Understand 
+ What is OEE? OEE Factors Six Big Losses Hidden Factory Practical OEE 
+
+ Measure 
+ Calculate OEE Implement OEE Calculate TEEP Visual OEE ™ 
+
+ Improve 
+ Improve OEE World-Class OEE Address the Six Big Losses Takt Time 
+
+ Try Vorne XL free for 90 days 
+
+ FAQ 
+ GLOSSARY 
+ ABOUT US 
+ FREE TOOLS 
+
+ TOPICS 
+
+ FAQ 
+
+ GLOSSARY 
+
+ ABOUT US 
+
+ FREE TOOLS 
+
+ LEARN THE ART & SCIENCE OF MANUFACTURING IMPROVEMENT FROM VORNE 
+ Six Big Losses
+
+ THE BIG IDEA 
+
+ The three OEE factors map to the Six Big Losses, providing a concrete and manageable framework within which to categorize your losses. This makes it easier to see where your improvement efforts can have the greatest impact. 
+
+ OEE and TPM Losses
+ One of the major goals of TPM and OEE programs is to reduce and/or eliminate what are called the Six Big Losses – the most common causes of equipment-based productivity loss in manufacturing.
+ First, let’s define the Six Big Losses.
+
+ Capture the Six Big Losses to gain additional actionable insight to the OEE Factors of Availability, Performance, and Quality. Equipment Failure
+ Equipment Failure accounts for any significant period of time in which equipment is scheduled for production but is not running due to a failure of some sort. A more generalized way to think of equipment failure is as any unplanned stop or downtime. Equipment Failure is an Availability Loss.
+ Examples of common reasons for Equipment Failure include tooling failure, breakdowns, and unplanned maintenance. From the broader perspective of unplanned stops, other common reasons include lack of operators or materials, being starved by upstream equipment, or being blocked by downstream equipment.
+ There is flexibility on where to set the threshold between Equipment Failure (an Availability Loss) and a minor stop (a Performance Loss). A good rule of thumb is to set that threshold based on your policy for tracking reasons. For example, your policy might be that any downtime longer than two minutes should have a reason associated with it – and thus shall be considered Equipment Failure.
+ Setup and Adjustments
+ Setup and Adjustments accounts for any significant periods of time in which equipment is scheduled for production but is not running due to a changeover or other equipment adjustment. A more generalized way to think of Setups & Adjustments is as any planned stop. Setup and Adjustments is an Availability Loss.
+ Examples of common reasons for Setup and Adjustments include setup, changeovers, major adjustments, and tooling adjustments. From the broader perspective of planned stops, other common reasons include cleaning, warmup time, planned maintenance, and quality inspections.
+ The largest source of Setup and Adjustment time is typically changeovers (also referred to as make ready or setup), which can be addressed through a SMED (Single-Minute Exchange of Die) program.
+ Idling and Minor Stops
+ Idling and Minor Stops accounts for time where the equipment stops for a short period of time (typically a minute or two) with the stop resolved by the operator. Another name for Idling and Minor Stops is small stops. Idling and Minor Stops is a Performance Loss.
+ Examples of common reasons for Idling and Minor Stops include misfeeds, material jams, obstructed product flow, incorrect settings, misaligned or blocked sensors, equipment design issues, and periodic quick cleaning.
+ This category usually includes stops that are well under five minutes and that do not require maintenance personnel. The underlying problems are often chronic (same problem/different day), which can make operators somewhat blind to their impact. Most companies do not accurately track Idling and Minor Stops.
+ The Manufacturing Productivity Improvement Device That Feels Like Magic In less than 8 hours you can benefit from automated, real-time accurate data. Learn About Vorne XL 
+
+ 42,000+ Installations 
+ 45+ Countries 
+ $4,690 One-Time Cost 
+ 8 Hours to Deploy 
+ 50+ Years in Business 
+
+ 8 Hours to Deploy 
+ 50+ Years in Business 
+
+ Reduced Speed
+ Reduced Speed accounts for time where equipment runs slower than the Ideal Cycle Time (the theoretical fastest possible time to manufacture one part). Another name for reduced speed is slow cycles. Reduced speed is a Performance Loss.
+ Examples of common reasons for reduced speed include dirty or worn out equipment, poor lubrication, substandard materials, poor environmental conditions, operator inexperience, startup, and shutdown.
+ This category includes anything that keeps the process from running at its theoretical maximum speed (a.k.a. Ideal Run Rate or Nameplate Capacity) when the manufacturing process is actually running.
+ Process Defects
+ Process Defects account for defective parts produced during stable (steady-state) production. This includes scrapped parts as well as parts that can be reworked, since OEE measures quality from a First Pass Yield perspective. Process defects are a Quality Loss.
+ Examples of common reasons for process defects include incorrect equipment settings, operator or equipment handling errors, and lot expiration (e.g., in pharmaceutical plants).
+ Reduced Yield
+ Reduced Yield accounts for defective parts produced from startup until stable (steady-state) production is reached. This includes scrapped parts as well as parts that can be reworked, since OEE measures quality from a First Pass Yield perspective. Reduced Yield can occur after any equipment startup, however, it is most commonly tracked after changeovers. Reduced Yield is a Quality Loss.
+ Examples of common reasons for Reduced Yield include suboptimal changeovers, incorrect settings when a new part is run, equipment that needs warmup cycles, or equipment that inherently creates waste after startup (e.g., a web press).
+ Using the Six Big Losses
+ Using the Six Big Losses framework creates a concrete path to improve your OEE score. 
+ Working to reduce Availability Loss in the form of Equipment Failures or Setups and Adjustments protects you against preventable unplanned stops or downtime, as well as minimizes any planned stops. 
+ Addressing Performance Loss that results from Idling and Minor Stops, as well as Reduced Speed, prevents small stops and slow cycles from accumulating. 
+ Finally, minimizing Quality Loss in the form of Process Defects and Reduced Yield reduces the number of unusable parts produced before and during steady-state production.
+ In all, the Six Big Losses name and categorize problems that manufacturers face every day. Consistently working within this framework to take action, one loss at a time, will result in a consistently improving OEE score.
+ Download Free OEE Tools 
+
+ WHAT YOU SHOULD DO NEXT...
+ 1. Learn more about how our product, Vorne XL, can help you eliminate waste and significantly improve OEE.
+ Vorne XL is the simplest and fastest way to monitor and improve production. It's a one-time cost and takes just a day to install. And you can try it completely free for 90 days.
+ Learn More 2. Download our FREE package of tools to supercharge your manufacturing productivity
+ The package includes leadership lessons, training guides, meeting and report templates, summaries of key concepts, project organizers, and more. You'll also receive our monthly newsletter for free. Unsubscribe at any time.
+ DOWNLOAD FREE LEAN TOOLS 3. Sign up for our monthly newsletter
+ Get free monthly updates with proven methods for improving our manufacturing productivity. Unsubscribe at any time.
+
+ First Name* 
+ Last Name* 
+
+ Email* 
+ Phone Number* 
+ Company Name* 
+ What would you like to achieve with XL? 
+ Submit 
+
+ +1.630.875.3600 [email protected] 1445 Industrial Dr. Itasca, IL 60143 
+ Learn About OEE 
+ What is OEE? OEE Factors Six Big Losses Hidden Factory Practical OEE 
+ Calculate OEE Implement OEE Calculate TEEP Visual OEE ™ 
+ Improve OEE World-Class Address the Six Big Losses Takt Time 
+
+ Resources 
+ Free OEE Tools OEE Glossary FAQ 
+
+ About Us 
+ Our Company Vorne.com LeanProduction.com Vorne XL Free Trial 
+
+ © 2011-2026 Vorne Industries. All Rights Reserved | Privacy Policy | Cookie Policy

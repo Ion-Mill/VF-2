@@ -1,0 +1,230 @@
+<html class="no-js" lang="en-us">
+<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="copyright" content="(C) Minitab, LLC. All rights Reserved. 2026">
+<meta name="DC.rights.owner" content="(C) Minitab, LLC. All rights Reserved. 2026">
+<meta name="WT.cg_n" content="Support">
+<meta name="WT.cg_s" content="MSSSupport">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv="Page-Enter" content="blendTrans(Duration=0.001)">
+<meta http-equiv="Page-Exit" content="blendTrans(Duration=0.001)">
+<meta name="DC.Type" content="mtbtopic">
+<meta name="DC.Title" content="Interpret the key results for Crossed Gage R&amp;R Study">
+<meta name="abstract" content="Examine the results of a crossed gage R&amp;R study to look for significant sources of variability in your measurement system. Use the variance components and the graphs of measurement variability to evaluate repeatability and reproducibility.">
+<meta name="description" content="Examine the results of a crossed gage R&amp;R study to look for significant sources of variability in your measurement system. Use the variance components and the graphs of measurement variability to evaluate repeatability and reproducibility.">
+<meta name="DC.Relation" scheme="URI" content="../../quality-and-process-improvement/quality-improvement-index.html">
+<meta name="topicrole" content="pubtopic">
+<meta name="DC.Format" content="XHTML">
+<meta name="DC.Identifier" content="dctm_Chron0900045780264260">
+<meta name="DC.Language" content="en-US">
+
+
+<link rel="stylesheet" type="text/css" href="/en-us/minitab/themes/css/minitab.css">
+<link rel="stylesheet" type="text/css" href="/en-us/minitab/themes/css/pageFramework.css">
+<link rel="stylesheet" type="text/css" href="/en-us/minitab/themes/css/output_pane.css">
+<link rel="stylesheet" type="text/css" href="/en-us/minitab/themes/css/navStyles.css">
+<link rel="stylesheet" type="text/css" href="/en-us/minitab/themes/css/styleBody.css">
+
+
+
+
+
+<!--Google Tag Manager-->
+            <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-TZG4BD');</script>
+
+<script>
+   // Define dataLayer and the gtag function. 
+  window.dataLayer = window.dataLayer || []; 
+  function gtag(){dataLayer.push(arguments);} 
+  
+  gtag('set' , 'developer_id.dYWJhMj', true);
+
+  // Default ad_storage to 'denied'. 
+  gtag('consent', 'default', { 
+        ad_storage: "denied", 
+        analytics_storage: "denied", 
+        functionality_storage: "denied", 
+        personalization_storage: "denied", 
+        security_storage: "denied",
+        ad_user_data: "denied",
+        ad_personalization: "denied", 
+'wait_for_update': 500 
+
+  });
+ </script>
+<script type="text/javascript">
+window.uetq = window.uetq || [];
+window.uetq.push('consent', 'default', {
+    'ad_storage': 'denied'
+    });
+</script>
+<!-- OneTrust Cookies Consent Notice start for minitab.com -->
+<script type="text/javascript" src="https://cdn.cookielaw.org/consent/e962acd9-c4b4-4977-913d-795e7bbb846d/OtAutoBlock.js"></script>
+<script type="text/javascript" src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js" charset="UTF-8" data-domain-script="e962acd9-c4b4-4977-913d-795e7bbb846d"></script><script type="text/javascript">function OptanonWrapper() { 
+          $('#otp-toggle').click(function(e) {
+            e.preventDefault();
+            OneTrust.ToggleInfoDisplay();         
+            });
+            
+            if(OnetrustActiveGroups.includes("C0004")){
+$('.video__notice').css('display', 'none');
+ $('iframe[data-type="youtube"]').css('display', 'block');
+ $('.cmp-video__content .video-wrapper[data-videotype="youtube"]').css({"display":"block", "padding-top":"56.25%"});	
+  }else{
+  $('.video__notice').css('display', 'block');  
+	if($("iframe[data-type='youtube']:not([data-ot-ignore])")){
+	  console.log('view mode');
+	$('iframe[data-type="youtube"]').css('display','none');
+		$('.cmp-video__content .video-wrapper[data-videotype="youtube"]').css({"display":"none","padding":"0"});
+	}
+	else {
+	}
+  }
+
+
+window.OneTrust.OnConsentChanged(function () {
+    if (!window.OnetrustActiveGroups.includes('C0004')) {
+		location.reload();
+//update Microsoft Consent
+//window.uetq = window.uetq || [];
+window.uetq.push('consent', 'update', {
+    'ad_storage': 'granted'
+    });
+    } else {
+    }
+  });
+
+window.dataLayer.push({event:'OneTrustGroupsUpdated'}); 
+          
+          }</script>
+       <!-- [if (gte IE 6)&(lte IE 8)]>
+
+<script type="text/javascript" data-ot-ignore="" class="optanon-category-C0001 " src="/en-us/minitab/themes/js/respond.min.js"></script>
+<script type="text/javascript" data-ot-ignore="" class="optanon-category-C0001 " src="/en-us/minitab/themes/js/selectivizr.js"></script>
+<![endif]-->
+<title>Interpret the key results for Crossed Gage R&amp;R Study - Minitab</title>
+
+<link rel="shortcut icon" type="image/x-icon" href="/en-us/minitab/themes/img/favicon.ico"><link rel="icon" type="image/x-icon" href="/en-us/minitab/themes/img/favicon.ico"></head>
+<body class="- jumplinks.flat   noTransition brand-mss ">
+<div id="frame" class="pageContainer mainBody"><div id="page-top" class="productHeader minitab"><div class="menuButton" id="menuButton"><span class="material-icons">menu</span></div><div class="productTitlebar"><a href="/en-us/minitab/">Minitab<span id="reg">®</span>&nbsp; Support</a></div></div><div class="helpSearchBar"><input type="text" id="queryString" placeholder="Search Minitab Support"></div><div class="topicContainer"><div class="frame"><div class="inner"></div></div><div class="frame"><div class="inner"><div id="key-results" lang="en-US" class="topic mtbtopic - jumplinks.flat  "><div class="titlebar"><h1 class="topicHeader">Interpret the key results for <span class="ph mtbcommand">Crossed Gage R&R
+		Study</span></h1><div class="promo"><a target="_blank" href="https://www.minitab.com/products/minitab/">Learn more about Minitab </a></div></div><div class="abstract"><span class="shortdesc">Examine the results of a crossed gage R&amp;R study to look for significant sources of
+        variability in your measurement system. Use the variance components and the graphs of
+        measurement variability to evaluate repeatability and reproducibility. </span> </div><div class="jumplinks"><h4>In This Topic</h4><ul class="jumplinkList"><li><a href="#step-1-use-the-anova-table-to-identify-significant-factors-and-interactions">Step 1: Use the ANOVA table to identify significant factors and interactions</a></li><li><a href="#step-2-assess-the-variation-for-each-source-of-measurement-error">Step 2: Assess the variation for each source of measurement error</a></li><li><a href="#step-3-examine-the-graphs-for-more-information-on-the-gage-study">Step 3: Examine the graphs for more information on the gage study </a></li></ul><div class="clearing"></div></div><div id="step-1-use-the-anova-table-to-identify-significant-factors-and-interactions" lang="en-US" class="topic concept mtbconcept"><h2 class="title topictitle2" id="ariaid-title2">Step 1: Use the ANOVA table to identify significant factors and interactions</h2>
+<div class="body conbody mtbconbody"> 
+<div class="p">Use the ANOVA table to identify which sources of variability are significant. The ANOVA table includes the following terms in the Source column: 
+<ul class="ul"> 
+<li class="li" id="dctm_Chron09000457802f3d88__ID6EBDF158725743B6B6A8296684F1B70F_li">Part: The variation that is from the parts.</li>
+ 
+<li class="li" id="dctm_Chron09000457802f3d88__ID4303CE74D545452888934004A20B33FA_li">Operator: The variation that is from the operators.</li>
+ 
+<li class="li" id="dctm_Chron09000457802f3d88__ID809F511997E24089B995D317F9448433_li">Operator*Part: The variation that is from the operator and part interaction. An interaction exists when an operator measures different parts differently.</li>
+ 
+<li class="li" id="dctm_Chron09000457802f3d88__ID8C319E33F2E34AB99E6703C145573133_li">Error or repeatability: The variation that is not explained by part, operator, or the operator and part interaction.</li>
+</ul></div> 
+<div class="p"> 
+<div class="alert note"><h6 class="label">Note</h6><p class="notetext">If you select the Xbar and R option for <span class="ph uicontrol - current ">Method of
+		  Analysis</span>, Minitab does not display the ANOVA table.</p></div></div> 
+<p class="p">If the p-value for the operator and part interaction is 0.05 or higher, Minitab removes the interaction because it is not significant and generates a second ANOVA table without the interaction. </p> 
+<div class="p"> 
+<figure class="fig fignone" id="dctm_Chron09000457802f3d88__ID93B49BD348724DD499CB6991B92E842C_fig"><div data-id='f7bb33b5-37b3-4e75-99bf-810689816393' class='output table tableselectioncontainer'><h2 data-id='f7bb33b5-37b3-4e75-99bf-810689816393-title' id='f7bb33b5-37b3-4e75-99bf-810689816393-title' class='tabletitle'>Two-Way ANOVA Table With Interaction<div class='downarrow'></div></h2><table aria-labelledby='f7bb33b5-37b3-4e75-99bf-810689816393-title' class='stattable'><colgroup cId='165e9b2f-55b0-474b-9f0d-ecbbd3ae2a6f'></colgroup><colgroup cId='f2082a52-5ca3-4062-8455-eddbc4b6ba82'></colgroup><colgroup cId='05843377-82b2-4f8a-a533-02d55bb27776'></colgroup><colgroup cId='2d049a87-232d-43dc-9be6-79d9abcfb2b6'></colgroup><colgroup cId='c5593b58-f998-480a-9243-7d1d60f9a4ab'></colgroup><colgroup cId='17a83c05-4ab4-46f3-918f-86709870ecb3'></colgroup><tr class='finalheader'><th scope='col'class='lft finalheader rowheader' cId='165e9b2f-55b0-474b-9f0d-ecbbd3ae2a6f' data-column-id='165e9b2f-55b0-474b-9f0d-ecbbd3ae2a6f' >Source</th><th scope='col' class='rt finalheader' cId='f2082a52-5ca3-4062-8455-eddbc4b6ba82' data-column-id='f2082a52-5ca3-4062-8455-eddbc4b6ba82' >DF</th><th scope='col' class='rt finalheader' cId='05843377-82b2-4f8a-a533-02d55bb27776' data-column-id='05843377-82b2-4f8a-a533-02d55bb27776' >SS</th><th scope='col' class='rt finalheader' cId='2d049a87-232d-43dc-9be6-79d9abcfb2b6' data-column-id='2d049a87-232d-43dc-9be6-79d9abcfb2b6' >MS</th><th scope='col' class='rt finalheader' cId='c5593b58-f998-480a-9243-7d1d60f9a4ab' data-column-id='c5593b58-f998-480a-9243-7d1d60f9a4ab' >F</th><th scope='col' class='rt finalheader' cId='17a83c05-4ab4-46f3-918f-86709870ecb3' data-column-id='17a83c05-4ab4-46f3-918f-86709870ecb3' >P</th></tr><tr class='tdata'><th scope='row' class='lft' cId='165e9b2f-55b0-474b-9f0d-ecbbd3ae2a6f' data-column-id='165e9b2f-55b0-474b-9f0d-ecbbd3ae2a6f' >Part</th><td class='rt' cId='f2082a52-5ca3-4062-8455-eddbc4b6ba82' data-column-id='f2082a52-5ca3-4062-8455-eddbc4b6ba82' fpv='9.0000000000000000' >9</td><td class='rt' cId='05843377-82b2-4f8a-a533-02d55bb27776' data-column-id='05843377-82b2-4f8a-a533-02d55bb27776' fpv='88.3619344444444437' >88.3619</td><td class='rt' cId='2d049a87-232d-43dc-9be6-79d9abcfb2b6' data-column-id='2d049a87-232d-43dc-9be6-79d9abcfb2b6' fpv='9.8179927160493818' >9.81799</td><td class='rt' cId='c5593b58-f998-480a-9243-7d1d60f9a4ab' data-column-id='c5593b58-f998-480a-9243-7d1d60f9a4ab' fpv='492.2914226640750712' >492.291</td><td class='rt' cId='17a83c05-4ab4-46f3-918f-86709870ecb3' data-column-id='17a83c05-4ab4-46f3-918f-86709870ecb3' fpv='0.0000000000000000' >0.000</td></tr><tr class='tdata'><th scope='row' class='lft' cId='165e9b2f-55b0-474b-9f0d-ecbbd3ae2a6f' data-column-id='165e9b2f-55b0-474b-9f0d-ecbbd3ae2a6f' >Operator</th><td class='rt' cId='f2082a52-5ca3-4062-8455-eddbc4b6ba82' data-column-id='f2082a52-5ca3-4062-8455-eddbc4b6ba82' fpv='2.0000000000000000' >2</td><td class='rt' cId='05843377-82b2-4f8a-a533-02d55bb27776' data-column-id='05843377-82b2-4f8a-a533-02d55bb27776' fpv='3.1672622222222224' >3.1673</td><td class='rt' cId='2d049a87-232d-43dc-9be6-79d9abcfb2b6' data-column-id='2d049a87-232d-43dc-9be6-79d9abcfb2b6' fpv='1.5836311111111112' >1.58363</td><td class='rt' cId='c5593b58-f998-480a-9243-7d1d60f9a4ab' data-column-id='c5593b58-f998-480a-9243-7d1d60f9a4ab' fpv='79.4060492008270558' >79.406</td><td class='rt' cId='17a83c05-4ab4-46f3-918f-86709870ecb3' data-column-id='17a83c05-4ab4-46f3-918f-86709870ecb3' fpv='0.0000000011744776' >0.000</td></tr><tr class='tdata'><th scope='row' class='lft' cId='165e9b2f-55b0-474b-9f0d-ecbbd3ae2a6f' data-column-id='165e9b2f-55b0-474b-9f0d-ecbbd3ae2a6f' >Part * Operator</th><td class='rt' cId='f2082a52-5ca3-4062-8455-eddbc4b6ba82' data-column-id='f2082a52-5ca3-4062-8455-eddbc4b6ba82' fpv='18.0000000000000000' >18</td><td class='rt' cId='05843377-82b2-4f8a-a533-02d55bb27776' data-column-id='05843377-82b2-4f8a-a533-02d55bb27776' fpv='0.3589822222222221' >0.3590</td><td class='rt' cId='2d049a87-232d-43dc-9be6-79d9abcfb2b6' data-column-id='2d049a87-232d-43dc-9be6-79d9abcfb2b6' fpv='0.0199434567901235' >0.01994</td><td class='rt' cId='c5593b58-f998-480a-9243-7d1d60f9a4ab' data-column-id='c5593b58-f998-480a-9243-7d1d60f9a4ab' fpv='0.4337210301350989' >0.434</td><td class='rt' cId='17a83c05-4ab4-46f3-918f-86709870ecb3' data-column-id='17a83c05-4ab4-46f3-918f-86709870ecb3' fpv='0.9741064043297345' >0.974</td></tr><tr class='tdata'><th scope='row' class='lft' cId='165e9b2f-55b0-474b-9f0d-ecbbd3ae2a6f' data-column-id='165e9b2f-55b0-474b-9f0d-ecbbd3ae2a6f' >Repeatability</th><td class='rt' cId='f2082a52-5ca3-4062-8455-eddbc4b6ba82' data-column-id='f2082a52-5ca3-4062-8455-eddbc4b6ba82' fpv='60.0000000000000000' >60</td><td class='rt' cId='05843377-82b2-4f8a-a533-02d55bb27776' data-column-id='05843377-82b2-4f8a-a533-02d55bb27776' fpv='2.7589333333333594' >2.7589</td><td class='rt' cId='2d049a87-232d-43dc-9be6-79d9abcfb2b6' data-column-id='2d049a87-232d-43dc-9be6-79d9abcfb2b6' fpv='0.0459822222222227' >0.04598</td><td class='emptyline' cId='c5593b58-f998-480a-9243-7d1d60f9a4ab' data-column-id='c5593b58-f998-480a-9243-7d1d60f9a4ab' >&nbsp; </td><td class='emptyline' cId='17a83c05-4ab4-46f3-918f-86709870ecb3' data-column-id='17a83c05-4ab4-46f3-918f-86709870ecb3' >&nbsp; </td></tr><tr class='tdata'><th scope='row' class='lft' cId='165e9b2f-55b0-474b-9f0d-ecbbd3ae2a6f' data-column-id='165e9b2f-55b0-474b-9f0d-ecbbd3ae2a6f' >Total</th><td class='rt' cId='f2082a52-5ca3-4062-8455-eddbc4b6ba82' data-column-id='f2082a52-5ca3-4062-8455-eddbc4b6ba82' fpv='89.0000000000000000' >89</td><td class='rt' cId='05843377-82b2-4f8a-a533-02d55bb27776' data-column-id='05843377-82b2-4f8a-a533-02d55bb27776' fpv='94.6471122222222476' >94.6471</td><td class='emptyline' cId='2d049a87-232d-43dc-9be6-79d9abcfb2b6' data-column-id='2d049a87-232d-43dc-9be6-79d9abcfb2b6' >&nbsp; </td><td class='emptyline' cId='c5593b58-f998-480a-9243-7d1d60f9a4ab' data-column-id='c5593b58-f998-480a-9243-7d1d60f9a4ab' >&nbsp; </td><td class='emptyline' cId='17a83c05-4ab4-46f3-918f-86709870ecb3' data-column-id='17a83c05-4ab4-46f3-918f-86709870ecb3' >&nbsp; </td></tr></table><footer class='footnote'>α to remove interaction term = 0.05</footer></div>
+                    <div data-id='f1fad84c-0730-422f-a7a8-5faf5446469f' class='output table tableselectioncontainer'><h2 data-id='f1fad84c-0730-422f-a7a8-5faf5446469f-title' id='f1fad84c-0730-422f-a7a8-5faf5446469f-title' class='tabletitle'>Two-Way ANOVA Table Without Interaction<div class='downarrow'></div></h2><table aria-labelledby='f1fad84c-0730-422f-a7a8-5faf5446469f-title' class='stattable'><colgroup cId='56ef1e93-a0a6-42bb-a7d4-dd716f881945'></colgroup><colgroup cId='25a5d5c7-f146-470b-b51d-40ea37286aa3'></colgroup><colgroup cId='b0b652d4-8e30-4eef-9558-66819c5acc2d'></colgroup><colgroup cId='e1d27a9f-d7a7-48a7-89e9-5d5ba70f5d14'></colgroup><colgroup cId='d174840a-2834-46c8-ab31-39f40cb4ceae'></colgroup><colgroup cId='bdfff288-fdef-4d39-84cf-600a9c304df0'></colgroup><tr class='finalheader'><th scope='col'class='lft finalheader rowheader' cId='56ef1e93-a0a6-42bb-a7d4-dd716f881945' data-column-id='56ef1e93-a0a6-42bb-a7d4-dd716f881945' >Source</th><th scope='col' class='rt finalheader' cId='25a5d5c7-f146-470b-b51d-40ea37286aa3' data-column-id='25a5d5c7-f146-470b-b51d-40ea37286aa3' >DF</th><th scope='col' class='rt finalheader' cId='b0b652d4-8e30-4eef-9558-66819c5acc2d' data-column-id='b0b652d4-8e30-4eef-9558-66819c5acc2d' >SS</th><th scope='col' class='rt finalheader' cId='e1d27a9f-d7a7-48a7-89e9-5d5ba70f5d14' data-column-id='e1d27a9f-d7a7-48a7-89e9-5d5ba70f5d14' >MS</th><th scope='col' class='rt finalheader' cId='d174840a-2834-46c8-ab31-39f40cb4ceae' data-column-id='d174840a-2834-46c8-ab31-39f40cb4ceae' >F</th><th scope='col' class='rt finalheader' cId='bdfff288-fdef-4d39-84cf-600a9c304df0' data-column-id='bdfff288-fdef-4d39-84cf-600a9c304df0' >P</th></tr><tr class='tdata'><th scope='row' class='lft' cId='56ef1e93-a0a6-42bb-a7d4-dd716f881945' data-column-id='56ef1e93-a0a6-42bb-a7d4-dd716f881945' >Part</th><td class='rt' cId='25a5d5c7-f146-470b-b51d-40ea37286aa3' data-column-id='25a5d5c7-f146-470b-b51d-40ea37286aa3' fpv='9.0000000000000000' >9</td><td class='rt' cId='b0b652d4-8e30-4eef-9558-66819c5acc2d' data-column-id='b0b652d4-8e30-4eef-9558-66819c5acc2d' fpv='88.3619344444444437' >88.3619</td><td class='rt' cId='e1d27a9f-d7a7-48a7-89e9-5d5ba70f5d14' data-column-id='e1d27a9f-d7a7-48a7-89e9-5d5ba70f5d14' fpv='9.8179927160493818' >9.81799</td><td class='rt' cId='d174840a-2834-46c8-ab31-39f40cb4ceae' data-column-id='d174840a-2834-46c8-ab31-39f40cb4ceae' fpv='245.6139103855213932' >245.614</td><td class='rt' cId='bdfff288-fdef-4d39-84cf-600a9c304df0' data-column-id='bdfff288-fdef-4d39-84cf-600a9c304df0' fpv='0.0000000000000000' >0.000</td></tr><tr class='tdata'><th scope='row' class='lft' cId='56ef1e93-a0a6-42bb-a7d4-dd716f881945' data-column-id='56ef1e93-a0a6-42bb-a7d4-dd716f881945' >Operator</th><td class='rt' cId='25a5d5c7-f146-470b-b51d-40ea37286aa3' data-column-id='25a5d5c7-f146-470b-b51d-40ea37286aa3' fpv='2.0000000000000000' >2</td><td class='rt' cId='b0b652d4-8e30-4eef-9558-66819c5acc2d' data-column-id='b0b652d4-8e30-4eef-9558-66819c5acc2d' fpv='3.1672622222222224' >3.1673</td><td class='rt' cId='e1d27a9f-d7a7-48a7-89e9-5d5ba70f5d14' data-column-id='e1d27a9f-d7a7-48a7-89e9-5d5ba70f5d14' fpv='1.5836311111111112' >1.58363</td><td class='rt' cId='d174840a-2834-46c8-ab31-39f40cb4ceae' data-column-id='d174840a-2834-46c8-ab31-39f40cb4ceae' fpv='39.6172457097402244' >39.617</td><td class='rt' cId='bdfff288-fdef-4d39-84cf-600a9c304df0' data-column-id='bdfff288-fdef-4d39-84cf-600a9c304df0' fpv='0.0000000000013376' >0.000</td></tr><tr class='tdata'><th scope='row' class='lft' cId='56ef1e93-a0a6-42bb-a7d4-dd716f881945' data-column-id='56ef1e93-a0a6-42bb-a7d4-dd716f881945' >Repeatability</th><td class='rt' cId='25a5d5c7-f146-470b-b51d-40ea37286aa3' data-column-id='25a5d5c7-f146-470b-b51d-40ea37286aa3' fpv='78.0000000000000000' >78</td><td class='rt' cId='b0b652d4-8e30-4eef-9558-66819c5acc2d' data-column-id='b0b652d4-8e30-4eef-9558-66819c5acc2d' fpv='3.1179155555555815' >3.1179</td><td class='rt' cId='e1d27a9f-d7a7-48a7-89e9-5d5ba70f5d14' data-column-id='e1d27a9f-d7a7-48a7-89e9-5d5ba70f5d14' fpv='0.0399732763532767' >0.03997</td><td class='emptyline' cId='d174840a-2834-46c8-ab31-39f40cb4ceae' data-column-id='d174840a-2834-46c8-ab31-39f40cb4ceae' >&nbsp; </td><td class='emptyline' cId='bdfff288-fdef-4d39-84cf-600a9c304df0' data-column-id='bdfff288-fdef-4d39-84cf-600a9c304df0' >&nbsp; </td></tr><tr class='tdata'><th scope='row' class='lft' cId='56ef1e93-a0a6-42bb-a7d4-dd716f881945' data-column-id='56ef1e93-a0a6-42bb-a7d4-dd716f881945' >Total</th><td class='rt' cId='25a5d5c7-f146-470b-b51d-40ea37286aa3' data-column-id='25a5d5c7-f146-470b-b51d-40ea37286aa3' fpv='89.0000000000000000' >89</td><td class='rt' cId='b0b652d4-8e30-4eef-9558-66819c5acc2d' data-column-id='b0b652d4-8e30-4eef-9558-66819c5acc2d' fpv='94.6471122222222476' >94.6471</td><td class='emptyline' cId='e1d27a9f-d7a7-48a7-89e9-5d5ba70f5d14' data-column-id='e1d27a9f-d7a7-48a7-89e9-5d5ba70f5d14' >&nbsp; </td><td class='emptyline' cId='d174840a-2834-46c8-ab31-39f40cb4ceae' data-column-id='d174840a-2834-46c8-ab31-39f40cb4ceae' >&nbsp; </td><td class='emptyline' cId='bdfff288-fdef-4d39-84cf-600a9c304df0' data-column-id='bdfff288-fdef-4d39-84cf-600a9c304df0' >&nbsp; </td></tr></table></div>
+                <figcaption><h6>Key Result: P</h6><p class="p">In these results, the p-value is 0.974, so Minitab generates a second two-way
+                    ANOVA table that omits the interaction from the final model.</p></figcaption></figure>
+</div></div></div><div id="step-2-assess-the-variation-for-each-source-of-measurement-error" lang="en-US" class="topic concept mtbconcept"><h2 class="title topictitle2" id="ariaid-title3">Step 2: Assess the variation for each source of measurement error</h2>
+<div class="body conbody mtbconbody"> 
+<div class="p">Use the variance components (VarComp) and %Contribution to assess the variation for each source of measurement error. The sources are as follows: 
+<ul class="ul"> 
+<li class="li" id="dctm_Chron09000457802f3d89__IDCDAC213F3C2144D386B2D2E2602CAEB2_li">Total Gage R&amp;R: The sum of the repeatability and the reproducibility variance components.</li>
+ 
+<li class="li" id="dctm_Chron09000457802f3d89__IDEB2BBD1EF1A64B81A4A57E5918C91240_li">Repeatability: The variability in measurements when the same operator measures the same part multiple times. </li>
+ 
+<li class="li" id="dctm_Chron09000457802f3d89__IDA5A1FFBB3CDA439EAB1DF97AA7A1CB42_li">Reproducibility: The variability in measurements when different operators measure the same part. </li>
+ 
+<li class="li" id="dctm_Chron09000457802f3d89__ID7D3FE890D0F64BACA27396D6220EA405_li">Part-to-Part: The variability in measurements due to different parts.</li>
+</ul></div> 
+<p class="p">Ideally, very little of the variability should be due to repeatability and reproducibility. Differences between parts (Part-to-Part) should account for most of the variability. </p> 
+<div class="p"> 
+<figure class="fig fignone" id="dctm_Chron09000457802f3d89__ID4DE68CD7CD3A4AE1879826DD85B32B64_fig"><div data-id='54a306df-47c4-444e-a9ea-5a6e6209c376' class='output table tableselectioncontainer'><h2 data-id='54a306df-47c4-444e-a9ea-5a6e6209c376-title' id='54a306df-47c4-444e-a9ea-5a6e6209c376-title' class='tabletitle'>Variance Components<div class='downarrow'></div></h2><table aria-labelledby='54a306df-47c4-444e-a9ea-5a6e6209c376-title' class='stattable'><colgroup cId='6ed3f332-5065-4061-b4e7-dd9fc400c64a'></colgroup><colgroup cId='b77ed986-a8c8-4b90-b3c2-eb1790cbae1a'></colgroup><colgroup cId='70dae15a-f7f6-4aa1-b528-921cf0921bcc'></colgroup><tr class='finalheader'><th scope='col'class='lft finalheader rowheader' cId='6ed3f332-5065-4061-b4e7-dd9fc400c64a' data-column-id='6ed3f332-5065-4061-b4e7-dd9fc400c64a' >Source</th><th scope='col' class='rt finalheader' cId='b77ed986-a8c8-4b90-b3c2-eb1790cbae1a' data-column-id='b77ed986-a8c8-4b90-b3c2-eb1790cbae1a' >VarComp</th><th scope='col' class='rt finalheader' cId='70dae15a-f7f6-4aa1-b528-921cf0921bcc' data-column-id='70dae15a-f7f6-4aa1-b528-921cf0921bcc' >%Contribution<br/>(of VarComp)</th></tr><tr class='tdata'><th scope='row' class='lft' cId='6ed3f332-5065-4061-b4e7-dd9fc400c64a' data-column-id='6ed3f332-5065-4061-b4e7-dd9fc400c64a' >Total Gage R&amp;R</th><td class='rt' cId='b77ed986-a8c8-4b90-b3c2-eb1790cbae1a' data-column-id='b77ed986-a8c8-4b90-b3c2-eb1790cbae1a' fpv='0.0020816077658410' >0.0020816</td><td class='rt' cId='70dae15a-f7f6-4aa1-b528-921cf0921bcc' data-column-id='70dae15a-f7f6-4aa1-b528-921cf0921bcc' fpv='6.8159790511350087' >6.82</td></tr><tr class='tdata'><th scope='row' class='lft' cId='6ed3f332-5065-4061-b4e7-dd9fc400c64a' data-column-id='6ed3f332-5065-4061-b4e7-dd9fc400c64a' >&nbsp; Repeatability</th><td class='rt' cId='b77ed986-a8c8-4b90-b3c2-eb1790cbae1a' data-column-id='b77ed986-a8c8-4b90-b3c2-eb1790cbae1a' fpv='0.0011540972641044' >0.0011541</td><td class='rt' cId='70dae15a-f7f6-4aa1-b528-921cf0921bcc' data-column-id='70dae15a-f7f6-4aa1-b528-921cf0921bcc' fpv='3.7789553364438664' >3.78</td></tr><tr class='tdata'><th scope='row' class='lft' cId='6ed3f332-5065-4061-b4e7-dd9fc400c64a' data-column-id='6ed3f332-5065-4061-b4e7-dd9fc400c64a' >&nbsp; Reproducibility</th><td class='rt' cId='b77ed986-a8c8-4b90-b3c2-eb1790cbae1a' data-column-id='b77ed986-a8c8-4b90-b3c2-eb1790cbae1a' fpv='0.0009275105017366' >0.0009275</td><td class='rt' cId='70dae15a-f7f6-4aa1-b528-921cf0921bcc' data-column-id='70dae15a-f7f6-4aa1-b528-921cf0921bcc' fpv='3.0370237146911432' >3.04</td></tr><tr class='tdata'><th scope='row' class='lft' cId='6ed3f332-5065-4061-b4e7-dd9fc400c64a' data-column-id='6ed3f332-5065-4061-b4e7-dd9fc400c64a' >Part-To-Part</th><td class='rt' cId='b77ed986-a8c8-4b90-b3c2-eb1790cbae1a' data-column-id='b77ed986-a8c8-4b90-b3c2-eb1790cbae1a' fpv='0.0284585061374490' >0.0284585</td><td class='rt' cId='70dae15a-f7f6-4aa1-b528-921cf0921bcc' data-column-id='70dae15a-f7f6-4aa1-b528-921cf0921bcc' fpv='93.1840209488649975' >93.18</td></tr><tr class='tdata'><th scope='row' class='lft' cId='6ed3f332-5065-4061-b4e7-dd9fc400c64a' data-column-id='6ed3f332-5065-4061-b4e7-dd9fc400c64a' >Total Variation</th><td class='rt' cId='b77ed986-a8c8-4b90-b3c2-eb1790cbae1a' data-column-id='b77ed986-a8c8-4b90-b3c2-eb1790cbae1a' fpv='0.0305401139032900' >0.0305401</td><td class='rt' cId='70dae15a-f7f6-4aa1-b528-921cf0921bcc' data-column-id='70dae15a-f7f6-4aa1-b528-921cf0921bcc' fpv='100.0000000000000000' >100.00</td></tr></table></div><figcaption><h6>Key Results: VarComp, %Contribution</h6><p class="p">The %Contribution for part-to-part variation is 93.18%. Minitab divides the
+                    part-to-part variance component value, approximately 0.0285, by the total
+                    variation, approximately 0.0305, and multiplies by 100%. When the %Contribution
+                    from part-to-part variation is high, the measurement system can reliably
+                    distinguish between parts. </p></figcaption></figure>
+</div> 
+<div class="p"> 
+<figure class="fig fignone" id="dctm_Chron09000457802f3d89__IDDEF78889036446F4B855153B6A1600A2_fig"><div data-id='b5cf7fe9-191a-45df-8e3b-f5744164e54c' class='output table tableselectioncontainer'><h2 data-id='b5cf7fe9-191a-45df-8e3b-f5744164e54c-title' id='b5cf7fe9-191a-45df-8e3b-f5744164e54c-title' class='tabletitle'>Gage Evaluation<div class='downarrow'></div></h2><table aria-labelledby='b5cf7fe9-191a-45df-8e3b-f5744164e54c-title' class='stattable'><colgroup cId='9ce83015-7e52-4c6b-bd38-6b49e17b9bf9'></colgroup><colgroup cId='10597464-9a48-48de-8073-4fced2a8ec24'></colgroup><colgroup cId='4f069b27-e4c0-4f42-a862-36775bcec931'></colgroup><colgroup cId='ce03cfbc-46a6-4926-9c91-94c512f8401c'></colgroup><colgroup cId='e1ab7a4e-3985-4be1-87bb-aa858b39cde9'></colgroup><tr class='finalheader'><th scope='col'class='lft finalheader rowheader' cId='9ce83015-7e52-4c6b-bd38-6b49e17b9bf9' data-column-id='9ce83015-7e52-4c6b-bd38-6b49e17b9bf9' >Source</th><th scope='col' class='rt finalheader' cId='10597464-9a48-48de-8073-4fced2a8ec24' data-column-id='10597464-9a48-48de-8073-4fced2a8ec24' >StdDev (SD)</th><th scope='col' class='rt finalheader' cId='4f069b27-e4c0-4f42-a862-36775bcec931' data-column-id='4f069b27-e4c0-4f42-a862-36775bcec931' >Study Var<br/>(6 × SD)</th><th scope='col' class='rt finalheader' cId='ce03cfbc-46a6-4926-9c91-94c512f8401c' data-column-id='ce03cfbc-46a6-4926-9c91-94c512f8401c' >%Study Var<br/>(%SV)</th><th scope='col' class='rt finalheader' cId='e1ab7a4e-3985-4be1-87bb-aa858b39cde9' data-column-id='e1ab7a4e-3985-4be1-87bb-aa858b39cde9' >%Tolerance<br/>(SV/Toler)</th></tr><tr class='tdata'><th scope='row' class='lft' cId='9ce83015-7e52-4c6b-bd38-6b49e17b9bf9' data-column-id='9ce83015-7e52-4c6b-bd38-6b49e17b9bf9' >Total Gage R&amp;R</th><td class='rt' cId='10597464-9a48-48de-8073-4fced2a8ec24' data-column-id='10597464-9a48-48de-8073-4fced2a8ec24' fpv='0.0456246398982065' >0.045625</td><td class='rt' cId='4f069b27-e4c0-4f42-a862-36775bcec931' data-column-id='4f069b27-e4c0-4f42-a862-36775bcec931' fpv='0.2737478393892390' >0.27375</td><td class='rt' cId='ce03cfbc-46a6-4926-9c91-94c512f8401c' data-column-id='ce03cfbc-46a6-4926-9c91-94c512f8401c' fpv='26.1074300748561008' >26.11</td><td class='rt' cId='e1ab7a4e-3985-4be1-87bb-aa858b39cde9' data-column-id='e1ab7a4e-3985-4be1-87bb-aa858b39cde9' fpv='27.3747839389239012' >27.37</td></tr><tr class='tdata'><th scope='row' class='lft' cId='9ce83015-7e52-4c6b-bd38-6b49e17b9bf9' data-column-id='9ce83015-7e52-4c6b-bd38-6b49e17b9bf9' >&nbsp; Repeatability</th><td class='rt' cId='10597464-9a48-48de-8073-4fced2a8ec24' data-column-id='10597464-9a48-48de-8073-4fced2a8ec24' fpv='0.0339720070661775' >0.033972</td><td class='rt' cId='4f069b27-e4c0-4f42-a862-36775bcec931' data-column-id='4f069b27-e4c0-4f42-a862-36775bcec931' fpv='0.2038320423970649' >0.20383</td><td class='rt' cId='ce03cfbc-46a6-4926-9c91-94c512f8401c' data-column-id='ce03cfbc-46a6-4926-9c91-94c512f8401c' fpv='19.4395353248061618' >19.44</td><td class='rt' cId='e1ab7a4e-3985-4be1-87bb-aa858b39cde9' data-column-id='e1ab7a4e-3985-4be1-87bb-aa858b39cde9' fpv='20.3832042397064868' >20.38</td></tr><tr class='tdata'><th scope='row' class='lft' cId='9ce83015-7e52-4c6b-bd38-6b49e17b9bf9' data-column-id='9ce83015-7e52-4c6b-bd38-6b49e17b9bf9' >&nbsp; Reproducibility</th><td class='rt' cId='10597464-9a48-48de-8073-4fced2a8ec24' data-column-id='10597464-9a48-48de-8073-4fced2a8ec24' fpv='0.0304550570798448' >0.030455</td><td class='rt' cId='4f069b27-e4c0-4f42-a862-36775bcec931' data-column-id='4f069b27-e4c0-4f42-a862-36775bcec931' fpv='0.1827303424790687' >0.18273</td><td class='rt' cId='ce03cfbc-46a6-4926-9c91-94c512f8401c' data-column-id='ce03cfbc-46a6-4926-9c91-94c512f8401c' fpv='17.4270586006105503' >17.43</td><td class='rt' cId='e1ab7a4e-3985-4be1-87bb-aa858b39cde9' data-column-id='e1ab7a4e-3985-4be1-87bb-aa858b39cde9' fpv='18.2730342479068710' >18.27</td></tr><tr class='tdata'><th scope='row' class='lft' cId='9ce83015-7e52-4c6b-bd38-6b49e17b9bf9' data-column-id='9ce83015-7e52-4c6b-bd38-6b49e17b9bf9' >Part-To-Part</th><td class='rt' cId='10597464-9a48-48de-8073-4fced2a8ec24' data-column-id='10597464-9a48-48de-8073-4fced2a8ec24' fpv='0.1686964911829792' >0.168696</td><td class='rt' cId='4f069b27-e4c0-4f42-a862-36775bcec931' data-column-id='4f069b27-e4c0-4f42-a862-36775bcec931' fpv='1.0121789470978753' >1.01218</td><td class='rt' cId='ce03cfbc-46a6-4926-9c91-94c512f8401c' data-column-id='ce03cfbc-46a6-4926-9c91-94c512f8401c' fpv='96.5318708763406192' >96.53</td><td class='rt' cId='e1ab7a4e-3985-4be1-87bb-aa858b39cde9' data-column-id='e1ab7a4e-3985-4be1-87bb-aa858b39cde9' fpv='101.2178947097875295' >101.22</td></tr><tr class='tdata'><th scope='row' class='lft' cId='9ce83015-7e52-4c6b-bd38-6b49e17b9bf9' data-column-id='9ce83015-7e52-4c6b-bd38-6b49e17b9bf9' >Total Variation</th><td class='rt' cId='10597464-9a48-48de-8073-4fced2a8ec24' data-column-id='10597464-9a48-48de-8073-4fced2a8ec24' fpv='0.1747573000000000' >0.174757</td><td class='rt' cId='4f069b27-e4c0-4f42-a862-36775bcec931' data-column-id='4f069b27-e4c0-4f42-a862-36775bcec931' fpv='1.0485438000000000' >1.04854</td><td class='rt' cId='ce03cfbc-46a6-4926-9c91-94c512f8401c' data-column-id='ce03cfbc-46a6-4926-9c91-94c512f8401c' fpv='100.0000000000000000' >100.00</td><td class='rt' cId='e1ab7a4e-3985-4be1-87bb-aa858b39cde9' data-column-id='e1ab7a4e-3985-4be1-87bb-aa858b39cde9' fpv='104.8543800000000061' >104.85</td></tr></table><footer class='footnote'>Historical standard deviation is used to calculate some values for StdDev, Study Var, and<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;%Study Var.<br/>Values for %Process are not displayed because they are identical to values for %Study Var.</footer></div><figcaption><h6>Key Results: %Study Var</h6><p class="p">
+                    <p class="p">Use the percent study variation (%Study Var) to compare the measurement
+                        system variation to the total variation. The %Study Var uses the process
+                        variation, as defined by 6 times the process standard deviation. Minitab
+                        displays the %Tolerance column when you enter a tolerance value, and Minitab
+                        displays the %Process column when you enter a historical standard deviation. </p>
+                    <p class="p">According to AIAG guidelines, if the measurement system variation is less
+                        than 10% of the process variation, then the measurement system is
+                        acceptable. Because the %Study Var, the %Tolerance, and the %Process are all
+                        greater than 10%, the measurement system might need improvement. For more
+                        information, go to <a href="/en-us/minitab/help-and-how-to/quality-and-process-improvement/measurement-system-analysis/supporting-topics/gage-r-r-and-wheeler-s-emp-studies/is-my-measurement-system-acceptable/" title="The criteria for acceptability depends on the type of study.">Is my measurement system acceptable?</a>.</p>
+                </p></figcaption></figure>
+</div> 
+<div class="p"> 
+<figure class="fig fignone" id="dctm_Chron09000457802f3d89__ID596652A391C84F9CA5BDEB2D264E211E_fig"><img class="image" id="dctm_Chron09000457802f3d89__IDE376AF44D3614C4882BE283C2EAAA253_image" src="/en-us/minitab/media/generated-content/images/components_variation__xbarr_thickness_1.png"><figcaption><h6>Key Results: Components of Variation graph</h6><p class="p"> 
+<p class="p">The components of variation graph shows the variation from the sources of measurement error. Minitab displays bars for %Tolerance when you enter a tolerance value, and Minitab displays bars for %Process when you enter a historical standard deviation. </p> 
+<p class="p">This graph shows that part-to-part variability is higher than the variability from repeatability and reproducibility, but the total gage R&amp;R variation is higher than 10% and might be unacceptable.</p></p></figcaption></figure>
+</div></div></div><div id="step-3-examine-the-graphs-for-more-information-on-the-gage-study" lang="en-US" class="topic concept mtbconcept"><h2 class="title topictitle2" id="ariaid-title4">Step 3: Examine the graphs for more information on the gage study </h2>
+<div class="body conbody mtbconbody">
+<div class="p">The gage R&amp;R graphs provide information about the measurement system. 
+<dl class="dl">
+ 
+<dt class="dt dlterm first">Components of variation graph </dt> 
+<dd class="dd">Shows whether the largest of component of variation is part-to-part variation. </dd>
+ 
+<dd class="dd ddexpand">In an acceptable measurement system, the largest component of variation is part-to-part variation. </dd>
+ 
+ 
+<dt class="dt">R chart by operator </dt> 
+<dd class="dd">Shows whether any points fall above the upper control limit. </dd>
+ 
+<dd class="dd ddexpand">If the operators measure consistently, the points will fall within the control limits. </dd>
+ 
+ 
+<dt class="dt">Xbar chart by operator </dt> 
+<dd class="dd">Shows whether most points fall beyond the control limits. </dd>
+ 
+<dd class="dd ddexpand">The parts that you choose for a gage R&amp;R study should represent the typical part-to-part variability. Thus, you should expect more variation between part averages, and the graph should show that most points fall beyond the control limits. </dd>
+ 
+ 
+<dt class="dt">Measurements by part graph </dt> 
+<dd class="dd">Shows whether multiple measurements for each part are close together. </dd>
+ 
+<dd class="dd ddexpand">Multiple measurements for each part that are close together indicate small variation between the measurements of the same part. </dd>
+ 
+ 
+<dt class="dt">Measurements by operator graph </dt> 
+<dd class="dd">Shows whether differences between operators are small compared to the differences between parts. </dd>
+ 
+<dd class="dd ddexpand">A straight horizontal line across operators indicates that the mean measurements for each operator are similar. Ideally, the measurements for each operator vary an equal amount. </dd>
+ 
+ 
+<dt class="dt">The operator*part interaction graph </dt> 
+<dd class="dd">Shows whether the lines that connect the measurements from each operator are similar or whether the lines cross each other. </dd>
+ 
+<dd class="dd ddexpand">Lines that are coincident indicate that the operators measure similarly. Lines that are not parallel or that cross indicate that an operator's ability to measure a part consistently depends on which part is being measured. A line that is consistently higher or lower than the others indicates that an operator adds bias to the measurement by consistently measuring high or low. </dd>
+ </dl></div>
+<div class="p">
+<figure class="fig fignone"><img class="image" src="/en-us/minitab/media/generated-content/images/gage_crossed_parts.png"></figure>
+</div></div></div></div><div class="footerContainer"><div class="inner"><div class="minitabSites"><ul><li class="first"><a href="http://www.minitab.com/">Minitab.com</a></li><li><a href="https://licensing.minitab.com">License Portal</a></li><li><a href="http://store.minitab.com/781/purl-store">Store</a></li><li><a href="http://blog.minitab.com/">Blog</a></li><li><a href="http://www.minitab.com/contact-us/">Contact Us</a></li><li class="last"><a class="ot-sdk-show-settings" id="ot-sdk-btn" style="color:#666!important;font-size:14px;font-weight:inherit;font-family:inherit;padding:0 16px 0 16px;cursor:pointer;float:none;">Cookie Settings</a></li></ul></div><div class="copyAndLang"><div class="copyright">Copyright © 2026 Minitab, LLC. All rights Reserved.</div><div class="langSelector"><select id="lang" class="lang" name="ctl00$changeLang$lang"><option value="en-us">English</option><option value="fr-fr">Français</option><option value="de-de">Deutsch</option><option value="pt-br">Português</option><option value="es-mx">Español</option><option value="ja-jp">日本語</option><option value="ko-kr">한국어</option><option value="zh-cn">中文（简体）</option></select></div></div></div></div><div class="totop"><a class="back-to-top" href="#page-top" alt="Return to top"></a><div class="clearing"></div></div></div></div></div></div><div class="pageContainer offCanvasNav"><iframe class="nav optanon-category-C0001 " name="toc" id="toc" src="/en-us/minitab/nav_d1e35884?context=help-and-how-to/quality-and-process-improvement/measurement-system-analysis/how-to/gage-study/crossed-gage-r-r-study/interpret-the-results/key-results/"></iframe></div><div class="modal fade" id="speedbump" role="dialog"><div class="modal-dialog"><div class="modal-content"><div class="modal-header"><img alt="Minitab" class="main-logo ext-note" src="/en-us/minitab/themes/img//minitab-corp-logo.svg"><h4 class="modal-title">Notice</h4></div><div class="modal-body"><p class="mtb-ext-note">You are now leaving support.minitab.com.</p><p class="mtb-ext-redirect">Click Continue to proceed to: <span id="clickUrl"></span></p></div><div class="modal-footer text-center"><button type="button" class="btn btn-modal btn-continue cmp-button cmp-button__secondary light-bg" data-dismisss="modal" title="continue">Continue</button><button type="button" class="btn btn-modal btn-close cmp-button cmp-button__secondary light-bg" data-dismiss="modal" title="back">Go Back</button></div></div></div></div>
+
+<script type="text/javascript" src="/en-us/minitab/themes/js/modernizr-2.6.2.js"></script>
+
+<script type="text/javascript" data-ot-ignore="" class="optanon-category-C0001 " src="/en-us/minitab/themes/js/jquery-3.7.1.min.js"></script>
+<script type="text/javascript" data-ot-ignore="" class="optanon-category-C0001 " src="/en-us/minitab/themes/js/MC.cookieUtils.js"></script>
+<script type="text/javascript" data-ot-ignore="" class="optanon-category-C0001 " src="/en-us/minitab/themes/js/SMC.signInOutUtils.js"></script>
+<script type="text/javascript" data-ot-ignore="" class="optanon-category-C0001 " src="/en-us/minitab/themes/js/MC.languageUtils.js"></script>
+<script type="text/javascript" data-ot-ignore="" class="optanon-category-C0001 " src="/en-us/minitab/themes/js/MC.queryStringUtils.js"></script>
+<script type="text/javascript" data-ot-ignore="" class="optanon-category-C0001 " src="/en-us/minitab/themes/js/IMC.debuggingUtils.js"></script>
+<script type="text/javascript" data-ot-ignore="" class="optanon-category-C0001 " src="/en-us/minitab/themes/js/MC.siteSearch.js"></script><script type="text/javascript" data-ot-ignore="" class="optanon-category-C0001 " src="/en-us/minitab/themes/js/minitabCommon.js"></script><script type="text/javascript" data-ot-ignore="" class="optanon-category-C0001 " src="/en-us/minitab/themes/js/support.js"></script>
+<!-- Google Tag Manager (noscript) -->
+			<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TZG4BD" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+		<!-- End Google Tag Manager (noscript) -->
+
+</body>
+</html>

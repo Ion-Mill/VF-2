@@ -1,0 +1,710 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>기업현황 | 한국자동차산업협동조합</title>
+<link rel="stylesheet" href="http://kaica.or.kr/theme/kaica/css/default.css">
+<link rel="stylesheet" href="http://kaica.or.kr/skin/content/basic/style.css?ver=171222">
+<link rel="stylesheet" href="http://kaica.or.kr/theme/kaica/plugins/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="http://kaica.or.kr/theme/kaica/plugins/slick/slick.min.css">
+<link rel="stylesheet" href="http://kaica.or.kr/js/font-awesome/css/font-awesome.min.css">
+<link href="https://fonts.googleapis.com/css?family=Noto+Sans+KR:400,700&amp;subset=korean" rel="stylesheet">
+<link rel="stylesheet" href="http://kaica.or.kr/theme/kaica/css/common.css">
+<link rel="stylesheet" href="http://kaica.or.kr/theme/kaica/css/style.css">
+<!--[if lte IE 8]>
+<script src="http://kaica.or.kr/js/html5.js"></script>
+<![endif]-->
+<script>
+// 자바스크립트에서 사용하는 전역변수 선언
+var g5_url       = "http://kaica.or.kr";
+var g5_bbs_url   = "http://kaica.or.kr/bbs";
+var g5_is_member = "";
+var g5_is_admin  = "";
+var g5_is_mobile = "";
+var g5_bo_table  = "";
+var g5_sca       = "";
+var g5_editor    = "";
+var g5_cookie_domain = "";
+</script>
+<script src="http://kaica.or.kr/js/jquery-1.8.3.min.js"></script>
+<script src="http://kaica.or.kr/js/jquery.menu.js?ver=171222"></script>
+
+<script src="http://kaica.or.kr/js/common.js?ver=171222"></script>
+<script src="http://kaica.or.kr/js/wrest.js?ver=171222"></script>
+<script src="http://kaica.or.kr/js/placeholders.min.js"></script>
+<script src="http://kaica.or.kr/theme/kaica/plugins/bootstrap/js/bootstrap.min.js"></script>
+<script src="http://kaica.or.kr/theme/kaica/plugins/jquery.bootstrap-hover-dropdown.min.js"></script>
+<script src="http://kaica.or.kr/theme/kaica/plugins/sidebar/jquery.sidebar.min.js"></script>
+<script src="http://kaica.or.kr/theme/kaica/plugins/slick/slick.min.js"></script>
+<script src="http://kaica.or.kr/theme/kaica/js/app.js"></script>
+
+</head>
+<body>
+
+<div class="wrapper">
+    	<div class="wrapper-inner">
+				<header class="header">
+			<div class="header-top">
+				<div class="container clear-after">
+    									<h1 class="header-logo">
+						<a href="http://kaica.or.kr">
+							<img src="http://kaica.or.kr/theme/kaica/img/site_logo.png" alt="한국자동차산업협동조합">
+				        </a>
+			        </h1>
+    				
+    				    				<div class="top-bar clear-after">
+					    <ul class="top-bar-list list-unstyled">
+					        <li><a href="/eng/index.php"><span>English</span></a></li>
+                        					        <li><a href="http://kaica.or.kr/bbs/login.php"><i class="fa fa-power-off"></i> <span>로그인</span></a></li>
+                        												        <li class="mobile-nav-trigger top-bar-icon">
+					            <a href="#" class="sidebar-left-trigger" data-action="toggle" data-side="left">
+					                <i class="fa fa-bars"></i>
+					            </a>
+					        </li>
+					    </ul>
+				    </div>
+				</div>
+			</div>
+    				
+    		    		<div id="header-fixed" class="header-nav header-sticky">
+		        <div class="navbar" role="navigation">
+		            <div class="container">
+			            <nav class="sidebar left">
+				            <div class="sidebar-left-content">
+					            <h3>메인메뉴</h3>
+					            			                    <ul class="nav navbar-nav">
+                                                                                                        <li class=" dropdown division">
+                                        <a href="#" target="_self" class="dropdown-toggle disabled" data-hover="dropdown">
+                                            조합소개                                        </a>
+                                                                                <a href="#" class="cate-dropdown-open dorpdown-toggle hidden-lg hidden-md" data-toggle="dropdown"></a>
+                                                                                                                                                                                                                                                <ul class="dropdown-menu">
+                                                                                    <li class="dropdown-submenu ">
+                                                <a href="/page/?pid=location" target="_self">
+                                                    <span class="submenu-marker"></span>
+                                                    오시는 길                                                                                                                                                        </a>
+                                                                                                                                            </li>
+                                                                                                                                                                    <li class="dropdown-submenu ">
+                                                <a href="/bbs/content.php?co_id=greeting" target="_self">
+                                                    <span class="submenu-marker"></span>
+                                                    인사말                                                                                                                                                        </a>
+                                                                                                                                            </li>
+                                                                                                                                                                    <li class="dropdown-submenu ">
+                                                <a href="/bbs/content.php?co_id=director" target="_self">
+                                                    <span class="submenu-marker"></span>
+                                                    역대이사장                                                                                                                                                        </a>
+                                                                                                                                            </li>
+                                                                                                                                                                    <li class="dropdown-submenu ">
+                                                <a href="/bbs/content.php?co_id=history" target="_self">
+                                                    <span class="submenu-marker"></span>
+                                                    연혁                                                                                                                                                        </a>
+                                                                                                                                            </li>
+                                                                                                                                                                    <li class="dropdown-submenu ">
+                                                <a href="/bbs/content.php?co_id=organization" target="_self">
+                                                    <span class="submenu-marker"></span>
+                                                    조직과업무                                                                                                                                                        </a>
+                                                                                                                                            </li>
+                                                                                                                                                                    <li class="dropdown-submenu ">
+                                                <a href="/bbs/content.php?co_id=renown" target="_self">
+                                                    <span class="submenu-marker"></span>
+                                                    명예의전당                                                                                                                                                        </a>
+                                                                                                                                            </li>
+                                                                                                                                                                    <li class="dropdown-submenu ">
+                                                <a href="/page/?pid=leader" target="_self">
+                                                    <span class="submenu-marker"></span>
+                                                    월간지표지인물                                                                                                                                                        </a>
+                                                                                                                                            </li>
+                                                                                                                                                                    <li class="dropdown-submenu ">
+                                                <a href="/bbs/board.php?bo_table=gallery" target="_self">
+                                                    <span class="submenu-marker"></span>
+                                                    주요활동                                                                                                                                                        </a>
+                                                                                                                                            </li>
+                                                                                                                                                                    <li class="dropdown-submenu ">
+                                                <a href="/bbs/content.php?co_id=magazine" target="_self">
+                                                    <span class="submenu-marker"></span>
+                                                    발간자료                                                                                                                                                        </a>
+                                                                                                                                            </li>
+                                                                                                                                                                    <li class="dropdown-submenu ">
+                                                <a href="/page/?pid=member" target="_self">
+                                                    <span class="submenu-marker"></span>
+                                                    가입안내                                                                                                                                                        </a>
+                                                                                                                                            </li>
+                                                                                </ul>
+                                                                                                                                                            </li>
+                                                                        <li class=" dropdown division">
+                                        <a href="#" target="_self" class="dropdown-toggle disabled" data-hover="dropdown">
+                                            부품산업현황                                        </a>
+                                                                                <a href="#" class="cate-dropdown-open dorpdown-toggle hidden-lg hidden-md" data-toggle="dropdown"></a>
+                                                                                                                                                                                                                                                <ul class="dropdown-menu">
+                                                                                    <li class="dropdown-submenu ">
+                                                <a href="/bbs/content.php?co_id=company" target="_self">
+                                                    <span class="submenu-marker"></span>
+                                                    기업현황                                                                                                                                                        </a>
+                                                                                                                                            </li>
+                                                                                                                                                                    <li class="dropdown-submenu ">
+                                                <a href="/bbs/content.php?co_id=sales" target="_self">
+                                                    <span class="submenu-marker"></span>
+                                                    매출.납품현황                                                                                                                                                        </a>
+                                                                                                                                            </li>
+                                                                                                                                                                    <li class="dropdown-submenu ">
+                                                <a href="/bbs/content.php?co_id=export" target="_self">
+                                                    <span class="submenu-marker"></span>
+                                                    수출.수입현황                                                                                                                                                        </a>
+                                                                                                                                            </li>
+                                                                                </ul>
+                                                                                                                                                            </li>
+                                                                        <li class=" dropdown division">
+                                        <a href="/search/search.php?pid" target="_self" class="dropdown-toggle disabled" data-hover="dropdown">
+                                            업체검색                                        </a>
+                                                                                <a href="#" class="cate-dropdown-open dorpdown-toggle hidden-lg hidden-md" data-toggle="dropdown"></a>
+                                                                                                                                                                                                                                                <ul class="dropdown-menu">
+                                                                                    <li class="dropdown-submenu ">
+                                                <a href="/search/search.php?pid=" target="_self">
+                                                    <span class="submenu-marker"></span>
+                                                    조합등록업체검색                                                                                                                                                        </a>
+                                                                                                                                            </li>
+                                                                                                                                                                    <li class="dropdown-submenu ">
+                                                <a href="/search/iso_list.php?main=y&certi1=1&pid=" target="_self">
+                                                    <span class="submenu-marker"></span>
+                                                    ISO14000 인증업체                                                                                                                                                        </a>
+                                                                                                                                            </li>
+                                                                                                                                                                    <li class="dropdown-submenu ">
+                                                <a href="/search/iso_list.php?main=y&certi3=3&pid=" target="_self">
+                                                    <span class="submenu-marker"></span>
+                                                    ISO/TS16949 인증업체                                                                                                                                                        </a>
+                                                                                                                                            </li>
+                                                                                </ul>
+                                                                                                                                                            </li>
+                                                                        <li class=" dropdown division">
+                                        <a href="#" target="_self" class="dropdown-toggle disabled" data-hover="dropdown">
+                                            뉴스와자료                                        </a>
+                                                                                <a href="#" class="cate-dropdown-open dorpdown-toggle hidden-lg hidden-md" data-toggle="dropdown"></a>
+                                                                                                                                                                                                                                                <ul class="dropdown-menu">
+                                                                                    <li class="dropdown-submenu ">
+                                                <a href="/bbs/board.php?bo_table=notice" target="_self">
+                                                    <span class="submenu-marker"></span>
+                                                    공지사항                                                                                                                                                        </a>
+                                                                                                                                            </li>
+                                                                                                                                                                    <li class="dropdown-submenu ">
+                                                <a href="/bbs/board.php?bo_table=biznews" target="_self">
+                                                    <span class="submenu-marker"></span>
+                                                    업계소식                                                                                                                                                        </a>
+                                                                                                                                            </li>
+                                                                                                                                                                    <li class="dropdown-submenu ">
+                                                <a href="/bbs/board.php?bo_table=occasion" target="_self">
+                                                    <span class="submenu-marker"></span>
+                                                    회원사 경조사                                                                                                                                                        </a>
+                                                                                                                                            </li>
+                                                                                                                                                                    <li class="dropdown-submenu ">
+                                                <a href="/bbs/board.php?bo_table=pds" target="_self">
+                                                    <span class="submenu-marker"></span>
+                                                    자료실                                                                                                                                                        </a>
+                                                                                                                                            </li>
+                                                                                                                                                                    <li class="dropdown-submenu ">
+                                                <a href="/bbs/board.php?bo_table=sc" target="_self">
+                                                    <span class="submenu-marker"></span>
+                                                    SC사업                                                                                                                                                        </a>
+                                                                                                                                            </li>
+                                                                                </ul>
+                                                                                                                                                            </li>
+                                                                        <li class=" dropdown division">
+                                        <a href="#" target="_self" class="dropdown-toggle disabled" data-hover="dropdown">
+                                            회원자료실                                        </a>
+                                                                                <a href="#" class="cate-dropdown-open dorpdown-toggle hidden-lg hidden-md" data-toggle="dropdown"></a>
+                                                                                                                                                                                                                                                <ul class="dropdown-menu">
+                                                                                    <li class="dropdown-submenu ">
+                                                <a href="/bbs/board.php?bo_table=doc" target="_self">
+                                                    <span class="submenu-marker"></span>
+                                                    문서수신함                                                                                                                                                        </a>
+                                                                                                                                            </li>
+                                                                                                                                                                    <li class="dropdown-submenu ">
+                                                <a href="/bbs/board.php?bo_table=trend" target="_self">
+                                                    <span class="submenu-marker"></span>
+                                                    산업동향                                                                                                                                                        </a>
+                                                                                                                                            </li>
+                                                                                                                                                                    <li class="dropdown-submenu ">
+                                                <a href="/bbs/board.php?bo_table=stats" target="_self">
+                                                    <span class="submenu-marker"></span>
+                                                    통계                                                                                                                                                        </a>
+                                                                                                                                            </li>
+                                                                                                                                                                    <li class="dropdown-submenu ">
+                                                <a href="/bbs/board.php?bo_table=contribute" target="_self">
+                                                    <span class="submenu-marker"></span>
+                                                    기고문                                                                                                                                                        </a>
+                                                                                                                                            </li>
+                                                                                                                                                                    <li class="dropdown-submenu ">
+                                                <a href="/bbs/board.php?bo_table=component" target="_self">
+                                                    <span class="submenu-marker"></span>
+                                                    월간 자동차부품                                                                                                                                                        </a>
+                                                                                                                                            </li>
+                                                                                                                                                                    <li class="dropdown-submenu ">
+                                                <a href="/bbs/board.php?bo_table=webhard" target="_self">
+                                                    <span class="submenu-marker"></span>
+                                                    웹하드                                                                                                                                                        </a>
+                                                                                                                                            </li>
+                                                                                </ul>
+                                                                                                                                                            </li>
+                                                                        <li class="  division">
+                                        <a href="/bbs/board.php?bo_table=inquiry" target="_self" class="dropdown-toggle disabled" data-hover="dropdown">
+                                            수출인콰이어리                                        </a>
+                                                                                                                                                            </li>
+                                                                        <li class=" dropdown division">
+                                        <a href="#" target="_self" class="dropdown-toggle disabled" data-hover="dropdown">
+                                            관련사이트                                        </a>
+                                                                                <a href="#" class="cate-dropdown-open dorpdown-toggle hidden-lg hidden-md" data-toggle="dropdown"></a>
+                                                                                                                                                                                                                                                <ul class="dropdown-menu">
+                                                                                    <li class="dropdown-submenu ">
+                                                <a href="/bbs/content.php?co_id=site1" target="_self">
+                                                    <span class="submenu-marker"></span>
+                                                    정부기관/유관단체                                                                                                                                                        </a>
+                                                                                                                                            </li>
+                                                                                                                                                                    <li class="dropdown-submenu ">
+                                                <a href="/bbs/content.php?co_id=site2" target="_self">
+                                                    <span class="submenu-marker"></span>
+                                                    국내완성차회사                                                                                                                                                        </a>
+                                                                                                                                            </li>
+                                                                                </ul>
+                                                                                                                                                            </li>
+                                                                                                    </ul>
+				            </div>			            </nav>
+		            </div>		        </div>		    </div>		
+    	</header>
+    	
+    	<div class="header-sticky-space"></div>
+        
+        
+        				<div class="board-title" style="background-image:url(http://kaica.or.kr/theme/kaica/img/board_title/gr_.jpg);">
+			<div class="board-title-caption">
+				<div class="container">
+					<h2><span>부품산업현황</span></h2>
+				</div>
+
+            <ul class="list-inline">
+					<li><span style="font-weight: bold">기업현황</span></li>
+            </ul>
+			</div>
+		</div>
+		
+
+			    <div class="basic-body sub-basic-body">
+		    		    <div class="container">
+<!--서브메뉴 -->  
+<div id="aside" >
+<dl id="lnb">	
+				<dt><h3>
+					부품산업현황<div class="amf_cut_box amf_cut_1"></div><div class="amf_cut_box amf_cut_2"></div>				</h3></dt>
+				<dd class="on">
+					<a href="/bbs/content.php?co_id=company" target="_self">기업현황</a>
+				</dd>
+				<dd class="">
+					<a href="/bbs/content.php?co_id=sales" target="_self">매출.납품현황</a>
+				</dd>
+				<dd class="">
+					<a href="/bbs/content.php?co_id=export" target="_self">수출.수입현황</a>
+				</dd>
+				
+</dl>		    
+</div>            
+<div class="basic-body-sub">
+	    		    	
+			
+
+<article id="ctt" class="ctt_company">
+    <header>
+        <h1>기업현황</h1>
+    </header>
+
+    <div id="ctt_con">
+        <h3 class="ptitle">기업현황</h3>
+<div class="panel panel-structure panel-info">
+    <div class="panel-heading">
+        <h3 class="panel-title"><strong>자동차부품산업현황</strong></h3>
+    </div>
+    <div class="panel-body">
+        <p>2020년말 현재 자동차회사(현대, 기아, 한국지엠, 르노삼성, 쌍용, 타타대우)와 직접 거래하고 있는 1차 협력업체수는 전년대비 9.7% 감소*한 744개사이며, 이중 대기업이 266개사(35.8%), 중소기업이 478개사(64.2%)임<br />
+     ※ 법적 기준 강화 및 3년 유예기간 종료, 부품업체의 외형 증가 등으로 대기업이 매년 증가추세<br />
+     * 대우버스 : 2020. 6월 국내(울산)공장 폐쇄로 협력업체수 감소</p>
+    </div>
+</div>
+<h4><img alt="기업규모별 업체수" src="/img/industry/title_industry01_01.gif" /></h4>
+        <p align="right" class="warning" style="text-align:right;"> (단위 : 개) </p>
+        <table class="tstyle_blue01 txt_center"><tbody><tr><th scope="col">연도</th>
+            <th scope="col">대기업</th>
+            <th scope="col">중소기업</th>
+            <th scope="col">계</th>
+            <th scope="col">증감률</th>
+          </tr><tr><td>2013</td>
+            <td>229</td>
+            <td>669</td>
+            <td>898</td>
+            <td>1.2</td>
+          </tr><tr><td>2014</td>
+            <td>231</td>
+            <td>648</td>
+            <td>879</td>
+            <td>-2.1</td>
+          </tr><tr><td>2015</td>
+		    <td>241</td>
+		    <td>642</td>
+		    <td>883</td>
+		    <td>0.5</td>
+	    </tr><tr><td>2016</td>
+		    <td>242</td>
+		    <td>616</td>
+		    <td>858</td>
+		    <td>-2.8</td>
+	    </tr><tr><td>2017</td>
+		    <td>245</td>
+		    <td>606</td>
+		    <td>851</td>
+		    <td>-0.8</td>
+	      </tr><tr><td>2018</td>
+		    <td>257</td>
+		    <td>574</td>
+		    <td>831</td>
+		    <td>-2.4</td>
+	      </tr><tr><td>2019</td>
+		    <td>269</td>
+		    <td>555</td>
+		    <td>824</td>
+		    <td>-0.8</td>
+	      </tr><tr><td>2020</td>
+        <td>266</td>
+        <td>478</td>
+        <td>744</td>
+        <td>-9.7</td>
+        </tr></tbody></table><p style="margin:5px 0px 20px;"><span class="point02">(주)</span> 중소기업 기준 : 3개년도 평균매출액 1,000억원 이하(2015. 1. 1부터 적용)<br />
+             ※ 중소기업 제외 기준 : 자산총액 5,000억원 이상, 상호출자제한집단 또는 채무보증제한기업집단에 속하는 회사,<br />      자산총액 5,000억원 이상 법인이 주식 30% 이상 소유한 경우 등</p>
+        <h4><img alt="종업원 규모별 업체수" src="/img/industry/title_industry01_02.gif" /></h4>
+        <p align="right" class="warning" style="text-align:right;"> (단위 : 개,%)</p>
+        <table class="tstyle_blue01 txt_center"><tbody><tr><th colspan="2" scope="col">구분</th>
+            <th scope="col">50인 미만</th>
+            <th scope="col">50~99인</th>
+            <th scope="col">100~299인</th>
+            <th scope="col">300~499인</th>
+            <th scope="col">500~999인</th>
+            <th scope="col">1,000인 이상</th>
+            <th scope="col">합계</th>
+          </tr><tr><td rowspan="2">2019</td>
+            <td>업체수</td>
+            <td>234</td>
+            <td>151</td>
+            <td>257</td>
+            <td>79</td>
+            <td>68</td>
+            <td>35</td>
+            <td>824</td>
+          </tr><tr><td>비율(%)</td>
+            <td>28.4</td>
+            <td>18.3</td>
+            <td>31.2</td>
+            <td>9.6</td>
+            <td>8.3</td>
+            <td>4.2</td>
+            <td>100.0</td>
+          </tr><tr><td rowspan="2">2020</td>
+            <td>업체수</td>
+            <td>179</td>
+            <td>145</td>
+            <td>249</td>
+            <td>77</td>
+            <td>60</td>
+            <td>34</td>
+            <td>744</td>
+          </tr><tr><td>비율(%)</td>
+            <td>24.1</td>
+            <td>19.5</td>
+            <td>33.5</td>
+            <td>10.3</td>
+            <td>8.0</td>
+            <td>4.6</td>
+            <td>100.0</td>
+          </tr></tbody></table><br /><h4><img alt="지역별 업체수" src="/img/industry/title_industry01_03.gif" /></h4>
+        <p align="right" class="warning" style="text-align:right;"> (단위 : 개,%)</p>
+    <table class="tstyle_blue01 txt_center" style="margin-bottom:20px;"><tbody><tr><th rowspan="6">2019</th>
+            <th scope="col">구분</th>
+            <th scope="col">서울</th>
+            <th scope="col">부산</th>
+            <th scope="col">대구</th>
+            <th scope="col">인천</th>
+            <th scope="col">광주</th>
+            <th scope="col">대전</th>
+            <th scope="col">울산</th>
+			<th scope="col">세종</th>
+            <th scope="col">강원</th>
+          </tr><tr><td>업체수</td>
+            <td>37</td>
+            <td>67</td>
+            <td>47</td>
+            <td>50</td>
+            <td>28</td>
+            <td>8</td>
+            <td>33</td>
+			<td>8</td>
+            <td>4</td>
+          </tr><tr><td>비율(%)</td>
+			<td>4.5</td>
+			<td>8.1</td>
+			<td>5.7</td>
+			<td>6.1</td>
+			<td>3.4</td>
+			<td>1.0</td>
+			<td>4.0</td>
+			<td>1.0</td>
+			<td>0.5</td>
+		  </tr><tr><th scope="col">구분</th>
+            <th scope="col">경기</th>
+            <th scope="col">경남</th>
+            <th scope="col">경북</th>
+            <th scope="col">전남</th>
+            <th scope="col">전북</th>
+            <th scope="col">충남</th>
+            <th scope="col">충북</th>
+            <th colspan="2" scope="col">합계</th>  
+		  </tr><tr><td>업체수</td>
+            <td>177</td>
+            <td>118</td>
+            <td>68</td>
+            <td>8</td>
+            <td>72</td>
+            <td>78</td>
+            <td>21</td>
+            <td colspan="2">824</td>
+          </tr><tr><td>비율(%)</td>
+			<td>21.5</td>
+			<td>14.3</td>
+			<td>8.3</td>
+			<td>1.0</td>
+			<td>8.7</td>
+			<td>9.5</td>
+			<td>2.5</td>
+			<td colspan="2">100.0</td>
+		  </tr></tbody></table><table class="tstyle_blue01 txt_center" style="margin-bottom:10px;"><tbody><tr><th rowspan="6">2020</th>
+            <th scope="col">구분</th>
+            <th scope="col">서울</th>
+            <th scope="col">부산</th>
+            <th scope="col">대구</th>
+            <th scope="col">인천</th>
+            <th scope="col">광주</th>
+            <th scope="col">대전</th>
+            <th scope="col">울산</th>
+      <th scope="col">세종</th>
+            <th scope="col">강원</th>
+          </tr><tr><td>업체수</td>
+            <td>31</td>
+            <td>39</td>
+            <td>44</td>
+            <td>51</td>
+            <td>27</td>
+            <td>8</td>
+            <td>24</td>
+            <td>8</td>
+            <td>4</td>
+          </tr><tr><td>비율(%)</td>
+      <td>4.2</td>
+      <td>5.2</td>
+      <td>5.9</td>
+      <td>6.9</td>
+      <td>3.6</td>
+      <td>1.1</td>
+      <td>3.2</td>
+      <td>1.1</td>
+      <td>0.5</td>
+      </tr><tr><th scope="col">구분</th>
+            <th scope="col">경기</th>
+            <th scope="col">경남</th>
+            <th scope="col">경북</th>
+            <th scope="col">전남</th>
+            <th scope="col">전북</th>
+            <th scope="col">충남</th>
+            <th scope="col">충북</th>
+            <th colspan="2" scope="col">합계</th>  
+      </tr><tr><td>업체수</td>
+            <td>167</td>
+            <td>102</td>
+            <td>67</td>
+            <td>7</td>
+            <td>69</td>
+            <td>75</td>
+            <td>21</td>
+            <td colspan="2">744</td>
+          </tr><tr><td>비율(%)</td>
+      <td>22.4</td>
+      <td>13.7</td>
+      <td>9.0</td>
+      <td>0.9</td>
+      <td>9.3</td>
+      <td>10.1</td>
+      <td>2.8</td>
+      <td colspan="2">100.0</td>
+      </tr></tbody></table><h4><img alt="완성차사별 납품업체수" src="/img/industry/title_industry01_04.gif" /></h4>
+        <p align="right" class="warning" style="text-align:right;"> (단위 : 개)</p>
+        <table class="tstyle_blue01 txt_center"><tbody><tr><th scope="col">구분</th>
+            <th scope="col">현대</th>
+            <th scope="col">기아</th>
+            <th scope="col">한국GM</th>
+            <th scope="col">르노삼성</th>
+            <th scope="col">쌍용</th>
+            <th scope="col">타타대우</th>
+            <th scope="col">대우버스</th>
+            <th scope="col">합계<br />
+              (실업체수)</th>
+          </tr><tr><td>2019<br /></td>
+            <td>359<br /></td>
+            <td>343<br /></td>
+            <td>293<br /></td>
+            <td>197<br /></td>
+            <td>219<br /></td>
+            <td>184</td><td>176<br /></td>
+            <td>1,771<br />
+              (824) </td>
+          </tr><tr><td>2020</td>
+            <td>354</td>
+            <td>342</td>
+            <td>290</td>
+            <td>203</td>
+            <td>215</td>
+            <td>176</td>
+            <td>-</td>
+            <td>1,580<br />
+              (744) </td>
+          </tr></tbody></table>    </div>
+
+</article>                            </div>            </div>                    </div>
+                <footer class="footer">           
+            <div class="container">
+			    <div class="row">
+			    	<div class="col-md-8">
+    			    	                        <ul class="footer-menu list-unstyled list-inline">
+                            <li><a href="/bbs/content.php?co_id=privacy">개인정보처리방침</a></li>
+                            <li><a href="/page/?pid=location">찾아오시는 길</a></li>
+                        </ul>
+                        
+                                                <address class="footer-info">
+                            <span>주소 : 서울특별시 서초구 서초대로62길 9-22(자동차산업회관)</span>
+                            <span class="info-divider">|</span>
+                            <span>E-mail : <a href="mailto:kaica@kaica.or.kr">kaica@kaica.or.kr</a></span><br>
+                            <span>T. 02-587-0014</span>
+                            <span class="info-divider">|</span>
+                            <span>F. 02-583-7340</span>
+                        </address>
+                    </div>
+                    <!--div class="col-md-offset-1 col-md-3">
+	                    <img src="/img/kaicalogo.png" alt="한국자동차산업협동조합">
+				    							<dl class="family-site">
+							<dt><a href="" class="hte-font-hover">바로가기<i class="fa fa-sort-up"></i></a></dt>
+							<dd>
+								<ul class="list-unstyled">
+									<li><a href="#" >가입안내</a></li>
+									<li><a href="#" target="_blank">ㅇFamily site-02</a></li>
+									<li><a href="#" target="_blank">Family site-03</a></li>
+									<li><a href="#" target="_blank">Family site-04</a></li>
+									<li><a href="#" target="_blank">Family site-05</a></li>
+								</ul>
+							</dd>
+						</dl>
+									    	</div-->
+                </div>
+                <p class="copyright">Copyright &copy; 한국자동차산업협동조합. All Rights Reserved.</p>
+            </div>
+        </footer>
+            </div>    
+        <div class="fix-navi">
+	    <div class="btn-fix-navi"><i class="fa fa-caret-left"></i></div>
+	    <h3>환영합니다<br>Quick Menu</h3>
+	    <ul class="list-unstyled">
+	    	<li><a href="/page/?pid=member">가입안내</a></li>
+	    	<li><a href="/page/?pid=location">오시는 길</a></li>
+	    </ul>
+	    <div class="btn-fix-navi-top"><h6><i class="fa fa-chevron-up"></i>TOP</h6></div>
+    </div>
+    
+    <div class="back-to-top">
+        <i class="fa fa-angle-up"></i>
+    </div>
+</div>
+<div class="sidebar-left-mask sidebar-left-trigger" data-action="toggle" data-side="left"></div>
+<div class="sidebar-right-mask sidebar-right-trigger" data-action="toggle" data-side="right"></div>
+
+
+<div class="modal fade search-contents-modal" aria-hidden="true">
+    <div class="modal-box modal-sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="member-contents">
+                    <div class="member-contnets-mid">
+                        <form name="fsearchbox" method="get" action="http://kaica.or.kr/bbs/search.php" onsubmit="return fsearchbox_submit(this);">
+                            <input type="hidden" name="sfl" value="wr_subject||wr_content">
+                            <input type="hidden" name="sop" value="and">
+                            <label for="sch_stx" class="sound_only"><strong>검색어 입력 필수</strong></label>
+                            <div class="input input-button">
+                                <input type="text" name="stx" id="head_sch_stx" class="sch_stx" maxlength="20" placeholder="검색어 입력">
+                                <div class="button"><input type="submit"><i class="fa fa-search"></i></div>
+                            </div>
+                        </form>
+                        <script>
+                        function fsearchbox_submit(f)
+                        {
+                            if (f.stx.value.length < 2) {
+                                alert("검색어는 두글자 이상 입력하십시오.");
+                                f.stx.select();
+                                f.stx.focus();
+                                return false;
+                            }
+
+                            // 검색에 많은 부하가 걸리는 경우 이 주석을 제거하세요.
+                            var cnt = 0;
+                            for (var i=0; i<f.stx.value.length; i++) {
+                                if (f.stx.value.charAt(i) == ' ')
+                                    cnt++;
+                            }
+
+                            if (cnt > 1) {
+                                alert("빠른 검색을 위하여 검색어에 공백은 한개만 입력할 수 있습니다.");
+                                f.stx.select();
+                                f.stx.focus();
+                                return false;
+                            }
+
+                            return true;
+                        }
+                        </script>
+					</div>
+					<div class="member-contnets-bottom">
+						<button type="button" data-dismiss="modal"><i class="fa fa-close"></i> CLOSE</button>
+					</div>
+			    </div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+$(document).ready(function() {
+    App.init();
+});
+</script>
+
+<!-- } 하단 끝 -->
+
+
+
+<!-- ie6,7에서 사이드뷰가 게시판 목록에서 아래 사이드뷰에 가려지는 현상 수정 -->
+<!--[if lte IE 7]>
+<script>
+$(function() {
+    var $sv_use = $(".sv_use");
+    var count = $sv_use.length;
+
+    $sv_use.each(function() {
+        $(this).css("z-index", count);
+        $(this).css("position", "relative");
+        count = count - 1;
+    });
+});
+</script>
+<![endif]-->
+
+</body>
+</html>
