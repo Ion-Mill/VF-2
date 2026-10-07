@@ -3,14 +3,14 @@
 | 항목 | 내용 |
 |---|---|
 | 문서명 | 논리 ERD (논리 데이터 모델) |
-| 문서 버전 | **최종본** (2026-10-07, 2026-10-06 문서 검토 회의 반영) |
+| 문서 버전 | **최종본** (2026-10-07, 2026-10-06 문서 검토 회의 + 2026-10-07 팀 UI 검토 반영) |
 | 날짜 | 처음 작성 2026-10-05 (v1) → 최종본 2026-10-07 |
 | 상태 | **최종본 — 물리 ERD는 기술 선택 뒤 [선택 필요: 기술 회의]** (비서 LLM은 로컬 LLM으로 확정, 나머지 기술은 팀 선택) |
-| 근거 문서 | [가상데이터설계서_최종본.md](가상데이터설계서_최종본.md) 5장·9장, [기획서_최종본.md](기획서_최종본.md) 4.3·4.4·4.5·5장·12.4·13장·19장, [요구사항정의서_최종본.md](요구사항정의서_최종본.md), [UI설계서_최종본.md](UI설계서_최종본.md), [가상사내문서/](가상사내문서/) DOC-01~07 (Rev.1), [00_용어집.md](가상사내문서/00_용어집.md) |
+| 근거 문서 | [가상데이터설계서_최종본.md](가상데이터설계서_최종본.md) 5장·9장, [기획서_최종본.md](기획서_최종본.md) 4.3·4.4·4.5·5장·12.4·13장·19장, [요구사항정의서_최종본.md](요구사항정의서_최종본.md), [UI설계서_최종본.md](UI설계서_최종본.md), [가상사내문서/](가상사내문서/) DOC-01~07 (Rev.1, DOC-01·DOC-07은 Rev.2, 용어집은 Rev.3), [00_용어집.md](가상사내문서/00_용어집.md) |
 | 최종본 조사 근거 | R1 `docs/line/3D_설비규격/3D_설비규격_조사.md` (설비 크기·공장 배치), R2 `docs/background/데이터보관/데이터보관기간_조사.md` (보관 기간), R3 `docs/quality/CMM_자동입력/CMM_자동입력_조사.md` (CMM 자동 입력), R4 `docs/production/운영기준_근거/병목조치_반복알람_우선순위_조사.md` (반복 알람 2단계·보고 순위·필수 정지), R5 `docs/production/운영기준_근거/완제품_재고담당_현장화면_조사.md` (완제품·출하·재고 담당·06:00) |
-| 다음 문서 | 물리 ERD, API 명세서, AI 비서 설계 (기획서 18장 7·8·9번) |
+| 다음 문서 | 물리 ERD, API 명세서, AI 비서 설계 (기획서 18장 3·4·5번) |
 | 엔터티 수 | **58개** (8개 주제 영역) |
-| 코드 목록·관계·규칙 | 코드 목록 **54개** (6.1~6.54), 관계 **124개** (1~124), 규칙 **R-01~R-87** |
+| 코드 목록·관계·규칙 | 코드 목록 **54개** (6.1~6.54), 관계 **124개** (1~124), 규칙 **R-01~R-88** — R-20은 쓰지 않는 번호라 번호 규칙 87개 + 보조 규칙 4개(R-06a·R-24a·R-31a·R-45a) = **91개** |
 
 > 이 문서는 **논리 모델만** 다룬다: 엔터티, 속성, 키(PK/FK), 관계, 카디널리티, 필수 여부, 값의 뜻, 코드 목록. DB 제품·물리 자료형·인덱스·파티션은 정하지 않는다 → **물리 ERD에서 [선택 필요: 기술 회의]**.
 > 기획서 12.4와 설계서 5장의 이름이 다르면 **설계서 5장 이름**을 쓰고 10장 대응표에 적는다. 최종본에서 더한 엔터티·속성 이름은 **2026-10-07 변경 명세 4장 이름**(모든 문서 공통)을 쓴다.
@@ -345,6 +345,7 @@ erDiagram
         datetime end_at "교대 끝"
         int planned_time_min "계획 가동 시간 480"
         int target_qty "교대 목표 90"
+        int carry_over_qty "이월: 야간만 = max(0, 90 - 그날 주간 실적)"
         text supervisor_user_id FK "해당 교대 반장"
     }
     wip_buffer {
@@ -969,7 +970,7 @@ erDiagram
     shift_report {
         text shift_id PK, FK "교대"
         code status "문서 상태"
-        int target_qty "목표"
+        int target_qty "총 목표 (목표 + 이월)"
         int actual_qty "실적"
         int defect_qty "불량"
         decimal availability_pct "가동률 OP-30 설비별"
@@ -982,7 +983,7 @@ erDiagram
     daily_report {
         date work_date PK, FK "근무일"
         code status "문서 상태"
-        int target_qty "하루 목표 180"
+        int target_qty "하루 목표 180 고정"
         int actual_qty "실적"
         int defect_qty "불량"
         decimal oee_pct "OEE"
@@ -1278,6 +1279,7 @@ erDiagram
 | end_at | 끝 시각 | 날짜시각 | | ○ | 주간 17:00, 야간 다음 날 05:00 (휴식 1시간 포함) | 설계서 5.2 [가상] |
 | planned_time_min | 계획 가동 시간 | 정수 | | ○ | 480분 (휴식 제외) | 설계서 5.2, DOC-07 4.1 |
 | target_qty | 교대 목표 | 정수 | | ○ | 90개. MGR만 정함 | 설계서 5.3, FR-AST-02-16 |
+| carry_over_qty | 이월 | 정수 | | ○ | **야간만**: max(0, 같은 생산일 주간 target_qty − 주간 실적) (실적 = OP-50 GQ + RQ, R-46). **주간은 늘 0** (앞 근무일 야간의 부족은 넘기지 않는다). 야간 시작 때 프로그램이 채우고, 주간 교대 보고서가 확정되면 다시 계산한다. 주간 기록이 없으면 0. 총 목표 = target_qty + carry_over_qty (R-88) [가상] | 2026-10-07 팀 UI 검토 (UI설계서 9.5 #6), DOC-07 §4.1 |
 | supervisor_user_id | 담당 반장 | 문자 | FK | ○ | → app_user, 역할 SUP. 교대 보고서를 확정할 사람 | 설계서 5.16·5.17 |
 
 #### 5.A.7 `wip_buffer` 재공 위치
@@ -1458,7 +1460,7 @@ erDiagram
 | 속성(영문) | 한국어 이름 | 논리 형식 | 키 | 필수 | 값·규칙 | 출처 |
 |---|---|---|---|---|---|---|
 | lot_no | 로트 번호 | 문자 | PK | ○ | `LOT-2609-041-1` = 작업지시 번호 뒷부분 + `-순번` | 설계서 5.5, DOC-01 |
-| order_no | 작업지시 | 문자 | FK | ○ | → production_order. 작업지시 1 : 로트 1..N | 설계서 5.5 |
+| order_no | 작업지시 | 문자 | FK | ○ | → production_order. 작업지시 1 : 로트 0..N (대기 중 작업지시는 로트 없음, 관계 #9) | 설계서 5.5 |
 | lot_seq | 순번 | 정수 | | ○ | 1, 2 … (order_no, lot_seq)은 UK | 설계서 5.5 |
 | input_shift_id | 투입 교대 | 문자 | FK | ○ | → shift. OP-10 투입이 모두 이 교대 안 (R-07) | 설계서 5.5·9장 |
 | material_lot_no | 원자재 로트 | 문자 | FK | ○ | → raw_material_lot. 1개만 | 설계서 5.5, IATF FAQ [참고] |
@@ -1699,7 +1701,7 @@ erDiagram
 
 | 항목 | 내용 |
 |---|---|
-| 설명 | OP-30 설비의 센서 값. 하단 패널 추세와 다시 보기에 쓴다 |
+| 설명 | OP-30 설비의 센서 값. 비서 질문의 추세 답(UI SCR-10 [6])과 다시 보기에 쓴다 |
 | 쓰는 요구사항 | FR-PRD-01-12·14, FR-PRD-06-02·06, NFR-PERF-03 |
 | 대략 건수 | 평소 1분 평균, 알람·병목 전후 30분은 1초 간격 (30일 전부를 1초로 만들지 않음) |
 | 출처 | 설계서 5.9·5.19, DOC-07 3장 |
@@ -2248,12 +2250,12 @@ erDiagram
 |---|---|---|---|---|---|---|
 | shift_id | 교대 | 문자 | PK, FK | ○ | → shift. 교대 1 : 보고서 0..1 (교대가 끝나면 1) | 설계서 5.16 |
 | status | 상태 | 코드 | | ○ | 6.16. 과거 52개는 모두 확정 | 설계서 5.16 |
-| target_qty | 목표 | 정수 | | ○ | 교대 목표 (90) | 기획서 PRD-02 |
+| target_qty | 목표 | 정수 | | ○ | 교대 **총 목표** = shift.target_qty + shift.carry_over_qty (R-88. 예: 야간 90 + 3 = 93, 주간은 90) | 기획서 PRD-02, FR-PRD-02-02 |
 | actual_qty | 실적 | 정수 | | ○ | 그 교대 OP-50 GQ + RQ (R-46). 3D 라인 뷰 값과 같음 | DOC-07 4.3, FR-PRD-02-02 |
 | defect_qty | 불량 | 정수 | | ○ | 그 교대 SQ | 기획서 PRD-02 |
 | availability_pct | 가동률 | 소수 | | ○ | **OP-30 설비별 2개 값 (VF2-01, VF2-02)** — 가동률 주의를 거는 범위와 같다. **계산**: 그 교대 equipment_state_log에서 (R-45). 확정 때 값은 content_snapshot에 남음 | 기획서 PRD-02, DOC-07 10.1, UI설계서 9.3 #5, FR-PRD-02-02 |
 | notable_text | 특이 사항 | 긴 문자 | | ○ | 비서가 3~5문장. 문장 속 숫자는 표와 대조 | FR-PRD-02-07·10 |
-| handover_text | 인계 사항 | 긴 문자 | | ○ | 미해결 알람, 진행 중 작업지시, 기한 임박 정비, 교체할 공구, 재고 부족 (없으면 "없음"). **잠금 중 설비는 맨 위**, 그 아래는 보고 순위(6.43) 순서. 비서는 순서를 바꾸거나 빼지 않는다 (R-73) | FR-PRD-02-08·09, DOC-01 §3.3, R4 4.3 |
+| handover_text | 인계 사항 | 긴 문자 | | ○ | 미해결 알람, 보류·강화 검사 중인 로트, 진행 중 작업지시, 기한 임박 정비, 교체할 공구, 재고 부족 (빈 순위는 "-", 잠금·표지는 "잠금·표지 중인 설비 없음"). **잠금 중 설비는 맨 위**, 그 아래는 보고 순위(6.43) 순서. 비서는 순서를 바꾸거나 빼지 않는다 (R-73) | FR-PRD-02-08·09, DOC-01 §3.3, R4 4.3 |
 | confirmed_by | 확정자 | 문자 | FK | 조건 | → app_user. **shift.supervisor_user_id와 같아야 함** | 설계서 5.16, FR-PRD-02-11 |
 | confirmed_at | 확정 시각 | 날짜시각 | | 조건 | — | — |
 | current_version | 현재 버전 | 정수 | | ○ | 0 = AI비서 초안 | 기획서 4.5 |
@@ -2266,7 +2268,7 @@ erDiagram
 
 | 항목 | 내용 |
 |---|---|
-| 설명 | 2교대 하루 운영 보고서. 재료는 교대 보고서 2개 + 하루 집계. **생산일 다음 날 06:00에 AI비서 초안 생성** (확정 안 된 교대 칸은 잠정, R-72). **MGR이 확정** |
+| 설명 | 2교대 하루 운영 보고서. 재료는 교대 보고서 2개 + 하루 집계. **생산일 다음 날 06:00에 AI비서 초안 생성** (확정 안 된 교대 칸은 잠정, R-72). **MGR이 확정**. 화면(UI SCR-16)은 **제작 보류** — 만들지 않기로 하면 이 엔터티를 계속 둘지 함께 정한다 [선택 필요: 팀] |
 | 쓰는 요구사항 | FR-PRD-04-01~10, FR-AST-03-01, FR-AST-COM-21, FR-INV-01-11 |
 | 대략 건수 | 26행 (근무일마다 1개) |
 | 출처 | 설계서 5.16, 기획서 PRD-04·5.1, 기획서 12.4 `daily_report` |
@@ -2275,7 +2277,7 @@ erDiagram
 |---|---|---|---|---|---|---|
 | work_date | 근무일 (생산일) | 날짜 | PK, FK | ○ | → work_day (근무일만). 생산일 = 주간이 시작한 날 (D일 08:00 ~ D+1일 05:00). 예: 9/15 08:00 ~ 9/16 05:00 → "9/15 일일 보고서", 생성 9/16 06:00 | 설계서 5.16, R5 표 H3 [가상] |
 | status | 상태 | 코드 | | ○ | 6.16 | 설계서 5.16 |
-| target_qty | 하루 목표 | 정수 | | ○ | 180 | 기획서 PRD-04 |
+| target_qty | 하루 목표 | 정수 | | ○ | 하루 목표 = work_day.daily_target_qty(**180 고정**, 이월을 더하지 않음). 부족 수량 = 180 − actual_qty (다음 날로 넘기지 않음, R-88) | 기획서 PRD-04, FR-PRD-04-02 |
 | actual_qty | 실적 | 정수 | | ○ | 교대 보고서 2개 실적 합 (R-12) | 설계서 9장 |
 | defect_qty | 불량 | 정수 | | ○ | — | 기획서 PRD-04 |
 | oee_pct | OEE | 소수 | | ○ | 라인 OEE (OP-30 2대 합) | DOC-07 6.2 |
@@ -2336,7 +2338,7 @@ erDiagram
 |---|---|
 | 설명 | 가상 사내 문서 세트(DOC-01~07)와 용어집. 개정은 MGR 승인 뒤 반영. **비서 문서 검색 대상 = DOC-01~07 + 용어집** (원문은 검색하지 않음, D-05) |
 | 쓰는 요구사항 | FR-AST-03-01·09, FR-MNT-01-03·09, FR-AST-COM-04, FR-MNT-02-12 |
-| 대략 건수 | 8행 (GLOSSARY + DOC-01~07). 2026-10-07 Rev.1 개정 (고칠 것이 없는 문서는 Rev.0 유지 — 각 문서 표지) |
+| 대략 건수 | 8행 (GLOSSARY + DOC-01~07). 2026-10-07 Rev.1 개정, 같은 날 팀 UI 검토로 DOC-01·DOC-07은 Rev.2, GLOSSARY는 Rev.3 (각 문서 표지) |
 | 출처 | 설계서 13.6, 기획서 10장, 기획서 12.4 `internal_doc` |
 
 | 속성(영문) | 한국어 이름 | 논리 형식 | 키 | 필수 | 값·규칙 | 출처 |
@@ -2938,7 +2940,7 @@ erDiagram
 | REPEAT_ALARM | 반복 알람 (**1단계**) | 같은 설비·같은 알람이 7일 안에 3번 이상 → MNT·SUP. 관련 정보: 지난 조치(작업기록서·간이 작업기록 번호) + **DOC-03 해당 절 근거** + 관련 예방 정비 기한 | 주의 | alarm_event | DOC-07 10.2·§10.4, R4 3.2, D-09 |
 | REPEAT_ALARM_2 | 반복 알람 2단계 "지난 조치 효과 없음" (최종본) | 1단계 조치 계획을 저장한 뒤 7일 안에 같은 설비·같은 알람이 다시 남 (R-70) → MNT·SUP. 관련 정보: 1단계 조치 계획 원문 + 그 뒤 발생 기록 + 같은 알람의 발생·조치 이력. **OP-30이면 원인 점검 작업지시서 AI비서 초안 제안**, 다른 공정이면 DOC-03 §3 간이 대응 근거 + 원인 점검 요청(CAUSE_CHECK_REQUEST) | 주의 (등급은 DOC-02 심각도에서 나오므로 주의 유지) | alarm_event, equipment, notification (prev_stage) | R4 3.2, DOC-07 §10.4, DOC-03 §1.4, FR-AST-02-18 |
 | CAUSE_CHECK_REQUEST | 원인 점검 요청 (다른 공정, 최종본) | 다른 공정(OP-10·20·40·50)의 반복 알람 2단계 → **MNT에게** 원인 점검 요청. 결과는 간이 작업기록 | 주의 (2단계와 같게) [제안] | equipment, alarm_event, notification (prev_stage = 2단계 알림) | R4 3.2, DOC-03 §1.4, FR-AST-02-18 |
-| TARGET_RISK | 목표 미달 위험 | 예측 실적 < 교대 목표의 90% (81개) | 주의 | shift | DOC-07 8장·10.1 |
+| TARGET_RISK | 목표 미달 위험 | 예측 실적 < 총 목표(목표 + 이월, R-88)의 90% (이월 0이면 81개) | 주의 | shift | DOC-07 8장·10.1 |
 | BOTTLENECK_MOVE | 병목 발생·이동 | 병목 공정이 바뀜. 관련 정보 = **DOC-07 §7.5의 해당 원인 조치 줄** (비서는 제안만, 조치는 SUP — R-84) | 주의 | bottleneck_log | DOC-07 10.1·§7.5, FR-AST-02-19 |
 | WIP_WARN | 재공 경고 | 공정 사이 재공 20개 초과 (WIP-30-40 제외) | 주의 | buffer_code | DOC-07 10.1 |
 | LOT_DUE_RISK | 로트 납기 지연 위험 | 로트 예상 완료 시각 > 납기 | 주의 | production_lot | DOC-07 10.1 |
@@ -2950,7 +2952,7 @@ erDiagram
 | APPROVAL_WAIT_2H | 승인 대기 | 작업지시서 승인 대기 2시간 이상 | 주의 | maintenance_work_order | DOC-07 10.2 |
 | DOC_REVISED | 문서 수정 | 작업지시서 수정 → 담당 보전원, 보고서 수정 → 관리자, 사내 문서 개정 → 관련 역할 전체 | 참고 | document_revision | 기획서 4.5, FR-AST-03-07 |
 | SPC_OUT | 관리도 이상 | 점 1개가 +3σ 위 또는 −3σ 아래 → 반장 | 주의 | inspection_result | DOC-06 5.3 |
-| SHIFT_REPORT_PENDING | 교대 보고서 확정 요청 | **06:00** 일일 보고서 초안을 만들 때 그 생산일 교대 보고서가 미확정 → 그 교대 반장(SUP) | 참고 | shift | FR-AST-02-17, UI설계서 9장 #2, D-08 |
+| SHIFT_REPORT_PENDING | 교대 보고서 확정 요청 | **교대 끝(주간 17:00, 야간 05:00) 교대 보고서 AI비서 초안이 생길 때** → 그 교대 반장(SUP). 확정하면 자동 처리 (2026-10-07 최종 검토) | 참고 | shift | FR-AST-02-17, UI설계서 9장 #2, D-08 |
 | CMM_FILE_ERROR | CMM 결과 파일 오류 (최종본) | 결과 파일을 읽지 못함(양식 오류·열 빠짐·숫자 아님) 또는 확인 필요(지시와 다른 로트·순번, 항목 일부만 옴) → 작업자·반장 | 주의 [제안] | cmm_import | R3 5.4, FR-QLT-01-17 |
 | CMM_JUDGE_MISMATCH | CMM 판정 불일치 (최종본) | 측정기 판정 ≠ 플랫폼 판정 → 반장 (공차·측정 프로그램 확인) | 주의 | inspection_result | R3 5.4, FR-QLT-01-16 |
 | CMM_NO_RESULT | CMM 결과 미수신 (최종본) | 측정 시작 뒤 정한 시간 안에 결과 파일이 오지 않음 → 작업자·반장. **시간은 [선택 필요: 기술 회의]** (측정 시간 2.5분/개, 강화 5.0분/개보다 길게) | 주의 [제안] | production_lot, equipment (CMM-01) | R3 5.4, FR-QLT-01-18 |
@@ -3057,11 +3059,11 @@ erDiagram
 | R0 | **0** | 안전 | 잠금·표지 중인 설비 (R-53) | 잠금 시작 시각 이른 순 | **접지 않음**. 없으면 "잠금·표지 중인 설비 없음" | DOC-05 §2.3, R4 4.3 |
 | R0_1 | 0-1 | 오래 방치 | 24시간 넘게 처리 안 된 주의 알림 | 처리 안 된 시간 긴 순 | 접지 않음 | FR-AST-01-06, R4 4.3 |
 | R1 | **1** | 긴급 (정지) | 처리 안 된 정지 등급 알람 (ALARM_STOP), 지금 DOWN인 설비 | ① 지금 멈춰 있는 것 먼저 ② 정지 시간 긴 순 ③ 같으면 병목 공정(OP-30) 먼저 | 접지 않음 | R4 4.3 [참고: ISA-18.2 틀] |
-| R2 | **2** | 생산 위험 | 목표 미달 위험 (TARGET_RISK), 병목 발생·이동 (BOTTLENECK_MOVE, 재공 20개 초과 WIP_WARN 포함), 로트 납기 지연 위험 (LOT_DUE_RISK) | 목표 미달(부족 수량 큰 순) → 병목(속도 손실 수량 큰 순) → 납기(납기 이른 순) | 위에서 일부만 펼치고 나머지 접음 | R4 4.3 |
-| R3 | **3** | 주의 | ① 반복 알람 2단계(REPEAT_ALARM_2·CAUSE_CHECK_REQUEST) → 1단계(REPEAT_ALARM) ② 처리 안 된 주의 등급 알람 (ALARM_WARN) ③ 품질: 관리도 이상 (SPC_OUT), 보류·강화 로트, 의심 로트 제안, CMM 알림 3종 ④ 공구 수명 90% 이상 (TOOL_LIFE_90), 예방 정비 기한 넘김 (PM_OVERDUE), 재고 부족 (STOCK_LOW) ⑤ 승인 대기 2시간 이상 (APPROVAL_WAIT_2H) | 묶음 순서는 ①~⑤. 묶음 안: 반복 알람 = 발생 횟수 많은 순 / 공구 = 사용률 높은 순 / 정비 = 넘긴 일수 많은 순 / 재고 = (재고 ÷ 안전 재고) 작은 순 / 승인 = 대기 시간 긴 순 | 같음 | R4 4.3 (묶음 순서 [제안]) |
-| R4 | **4** | 참고 | 조작 안내 알람 (ALARM_GUIDE), 예방 정비 하루 전 (PM_DUE_SOON), 승인 대기 30분 (APPROVAL_WAIT_30M), 교대 보고서 확정 요청 (SHIFT_REPORT_PENDING), 문서 수정 알림 (DOC_REVISED) | 발생 시각 이른 순 | 기본으로 접음 | R4 4.3 |
+| R2 | **2** | 생산 위험 | 목표 미달 위험 (TARGET_RISK), 병목 발생·이동 (BOTTLENECK_MOVE, 재공 20개 초과 WIP_WARN 포함), 로트 납기 지연 위험 (LOT_DUE_RISK) | 목표 미달(부족 수량 큰 순) → 병목(속도 손실 수량 큰 순) → 납기(납기 이른 순) | 자세한 내용만 접음 | R4 4.3 |
+| R3 | **3** | 주의 | ① 반복 알람 2단계(REPEAT_ALARM_2·CAUSE_CHECK_REQUEST) → 1단계(REPEAT_ALARM) ② 처리 안 된 주의 등급 알람 (ALARM_WARN) ③ 품질: 관리도 이상 (SPC_OUT), 보류·강화 로트, 의심 로트 제안, CMM 알림 3종 ④ 공구 수명 90% 이상 (TOOL_LIFE_90), 예방 정비 기한 넘김 (PM_OVERDUE), 재고 부족 (STOCK_LOW) ⑤ 승인 대기 2시간 이상 (APPROVAL_WAIT_2H) | 묶음 순서는 ①~⑤. 묶음 안: 반복 알람 = 발생 횟수 많은 순 / 공구 = 사용률 높은 순 / 정비 = 넘긴 일수 많은 순 / 재고 = (재고 ÷ 안전 재고) 작은 순 / 승인 = 대기 시간 긴 순 | 자세한 내용만 접음 | R4 4.3 (묶음 순서 [제안]) |
+| R4 | **4** | 참고 | 조작 안내 알람 (ALARM_GUIDE), 예방 정비 하루 전 (PM_DUE_SOON), 승인 대기 30분 (APPROVAL_WAIT_30M), 교대 보고서 확정 요청 (SHIFT_REPORT_PENDING), 문서 수정 알림 (DOC_REVISED) | 발생 시각 이른 순 | 자세한 내용은 기본으로 접음 | R4 4.3 |
 
-- 모든 순위 공통: 화면 맨 위에 "전체 N건 (안전 a · 긴급 b · 생산 c · 주의 d · 참고 e)"를 항상 보인다. 건수 0인 순위도 이름과 "없음". 같은 설비·같은 원인은 한 줄로 묶어 높은 순위 쪽에 둔다. 동점은 발생 시각 이른 순. **개수를 잘라서 보여 주지 않는다** — 항목마다 한 줄은 항상 보이고, 자세한 내용만 접는다 (D-07, R4 4.3).
+- 모든 순위 공통: 화면 맨 위에 "전체 N건 (안전 a · 긴급 b · 생산 c · 주의 d · 참고 e)"를 항상 보인다. 건수 0인 순위도 이름과 "-" (순위 0은 "잠금·표지 중인 설비 없음"). 같은 설비·같은 원인은 한 줄로 묶어 높은 순위 쪽에 두고 **1건으로 센다** (N = 화면 줄 수). 0-1 오래 방치는 "주의" 건수에 센다. 동점은 발생 시각 이른 순. **개수를 잘라서 보여 주지 않는다** — 항목마다 한 줄은 항상 보이고, 자세한 내용만 접는다 (D-07, R4 4.3). 예외는 현장 보기 알람 띠 하나: 넘치면 마지막 줄을 "외 N건"으로 줄이고(머리의 N은 전체 수), 누르면 전부 펼친다.
 - 알림이 아닌 항목(잠금·표지 중 설비, DOWN 설비, 보류·강화 로트, 의심 로트 제안)도 같은 순위를 쓴다 — 저장하지 않고 계산.
 
 ### 6.44 출하 상태 (`shipment.status`) — 최종본
@@ -3173,7 +3175,7 @@ erDiagram
 | 7 | 알림과 처리 기록 (`notification`, `notification_recipient`) | L3 | 2년 | 삭제 | [가상] |
 | 8 | 공구·소모품·예비품 입출고 (`inventory_txn` 중 원자재·완제품 아닌 것) | L3 | 2년 | 삭제 | [가상] |
 | 9 | 로트 추적 사슬: `raw_material_lot`, `production_order`, `production_lot`, `operation_report`, `lot_hold`, `defect_record`, 원자재 투입·완제품 입출고 `inventory_txn`, 로트별 `tool_usage`·`tool_change`, `inspection_plan` | L4 | **로트 출하일부터 15년** | 운영 DB 2년 → 보관 저장소(읽기 전용) → 15년 뒤 삭제 | [참고] + [실제] |
-| 10 | 검사 결과 측정값 (`inspection_result`) — 최종본: 결과 파일 가져오기 기록 `cmm_import`도 같게 [제안] | L4 | 로트 출하일부터 15년 | #9와 같음. **합격·불합격만 남기고 측정값을 지우면 안 됨** | [참고] |
+| 10 | 검사 결과 측정값 (`inspection_result`). 결과 파일 가져오기 기록 `cmm_import`와 원본 결과 파일의 기간은 **[선택 필요: 팀]** (회의결과 5장 #3, DOC-07 §11) — 이 줄과 같게 하는 것을 [제안] | L4 | 로트 출하일부터 15년 | #9와 같음. **합격·불합격만 남기고 측정값을 지우면 안 됨** | [참고] |
 | 11 | 완제품 출하 기록 (`shipment`, `shipment_line`) | L4 | 출하일부터 15년 | #9와 같음 | [참고] |
 | 12 | 작업지시서·작업기록서 (잠금·표지 체크 포함) (`maintenance_work_order`, `work_order_step`, `work_order_part`, `work_record`, `work_record_check`, `work_record_part`) | L4 | 확정일부터 15년 | 운영 DB 2년 → 보관 저장소 → 삭제 | [참고] + [가상] |
 | 13 | 예방 정비 실시 기록 (`pm_record`) | L4 | 확정일부터 15년 | #12와 같음 | [참고] + [가상] |
@@ -3361,6 +3363,7 @@ erDiagram
 | R-07 | 한 생산 로트의 OP-10 투입(공정 실적)은 모두 로트의 투입 교대 안 | operation_report (OP-10).shift_id = production_lot.input_shift_id | 설계서 9장, FR-PRD-05-02 |
 | R-08 | 작업지시마다 로트 투입 수량 합 = 작업지시 수량. **취소된 작업지시는 이미 투입한 로트까지만 남아 합 ≤ 작업지시 수량** (대기 중 취소면 로트 0개, 취소 뒤 새 로트 없음) [제안: 로트는 OP-10 투입 때 생김] | production_lot.input_qty ↔ production_order.order_qty·status | 설계서 9장, FR-PRD-05-02, UI설계서 9.3 #8 |
 | R-19 | 공정 실적: 생산 수량(PQ) = 양품(GQ) + 재작업(RQ) + 불량(SQ) | operation_report | DOC-07 4.3 |
+| R-20 | (쓰지 않는 번호 — 논리ERD_v1부터 비어 있다. 뒤 규칙 번호를 바꾸지 않으려고 비워 둔다) | — | — |
 | R-21 | RUN이 아닌 구간마다 정지 사유 1개. 멈춘 시간 5분 미만은 순간 정지(조작 그룹), 5분 이상은 고장 정지. 사유 확정은 SUP만, 비서는 추천만 | equipment_state_log.reason_code·reason_status·reason_confirmed_by | DOC-07 2.2·5.1, FR-PRD-01-18·19 |
 | R-22 | DOWN은 정지 등급 알람 전용. MTTR·MTBF의 고장 횟수·수리 시간은 **정지 등급 DOWN만** 센다. SETUP·MAINT·BLOCKED·IDLE은 고장이 아니다 | equipment_state_log, alarm_event.severity_at_event | DOC-07 2.2·6.2, FR-PRD-01-22 |
 | R-23 | MAINT 구간은 예방 정비 기록을 가리킨다. MAINT는 고장으로 세지 않는다 | equipment_state_log.pm_record_id | 설계서 5.7, FR-MNT-04-07 |
@@ -3452,7 +3455,8 @@ erDiagram
 | R-45a | MTTR / MTBF | MTTR = 정지 등급 DOWN 수리 시간 합 ÷ 고장 횟수, MTBF = 고장 간격 합 ÷ 고장 횟수 (30일, 설비별). 고장 0건이면 "—" | DOC-07 6.2 |
 | R-46 | 교대 실적 | 그 교대에 OP-50을 마친 GQ + RQ | 설계서 5.3, DOC-07 4.3 |
 | R-47 | 손실 수량 (추정) | 정지 손실 = 정지 시간 ÷ 그 설비 기준 사이클 시간 (정지 1건마다, PLANNED 제외). 속도 손실 = 계획 생산 수(구간 ÷ 3.5분) − 실제 − 고장 손실 (병목 구간마다). 화면에 "추정" | 설계서 5.10, DOC-07 5.3 |
-| R-48 | 예측 실적 | 현재 실적 + 최근 1시간 생산 속도 × 남은 시간 (교대 시작 1시간 전에는 시작부터의 평균 속도). 예측 < 목표의 90% → 목표 미달 위험 | DOC-07 8장 |
+| R-48 | 예측 실적 | 현재 실적 + 최근 1시간 생산 속도 × 남은 시간 (교대 시작 후 1시간 안은 시작부터의 평균 속도). 예측 < **총 목표**(R-88)의 90% → 목표 미달 위험 | DOC-07 8장 |
+| R-88 | **이월·총 목표** (2026-10-07 팀 UI 검토) | 이월은 **같은 생산일 주간 → 야간만**: 야간 carry_over_qty = max(0, 주간 shift.target_qty − 주간 실적(R-46)), 주간 carry_over_qty = 0. **교대 총 목표 = shift.target_qty + shift.carry_over_qty** — 목표 대비 실적·예측 부족 수량·목표 미달 위험(R-48)·교대 보고서 목표에 쓴다. **하루 목표 = work_day.daily_target_qty(180) 고정**, 하루 부족 = 180 − 하루 실적으로 그날에 남기고 다음 날로 넘기지 않는다. 예: 주간 87 → 야간 93, 야간 86 → 하루 173, 부족 7 | DOC-07 §4.1·8장, FR-PRD-01-15, FR-AST-02-04 |
 | R-12 | 교대 보고서 2개의 실적 합 = 일일 보고서 실적 | shift_report.actual_qty ↔ daily_report.actual_qty | 설계서 9장 |
 | R-54 | 보고서 숫자 = 상태 기록·실적에서 계산한 값. 비서 문장 속 숫자는 표 값과 대조 | shift_report, daily_report | 설계서 5.16, FR-PRD-02-10·12, FR-AST-COM-05 |
 
@@ -3468,7 +3472,7 @@ erDiagram
 | R-52 | 사내 문서 개정은 MGR 승인 뒤 반영. 개정되면 문서 조각을 다시 만들고, 조각마다 **문서 번호·개정 번호·절**을 붙인다 (최종본: 원문 출처는 붙이지 않음, 원문 대응표 절은 조각에서 뺌 [제안] — R-85) | internal_doc.status·approved_by, doc_chunk | FR-AST-03-09, FR-MNT-01-10, D-03 |
 | R-38 | 알림 여부·중요도는 규칙(notification_rule)이 정하고 비서는 문장만. 알림마다 6.36의 관련 기록이 있어야 함. 1분 안 3번 묶기, 10분 10건 폭주, 24시간 미처리 주의 → **보고 순위 0-1 (잠금·표지 다음)** | notification, notification_rule | 기획서 4.3, FR-AST-02-11~14, FR-AST-01-06, R4 4.3 |
 | R-58 | 설정(설비·사용자·알림 규칙·목표 수량·안전 재고·**재고 관리 역할**)은 MGR만. 최종본: 설정 값 중 **라인 구성(공장 배치·배치 물체·설비 외형·부품 도형), 알림 기준값, 교대 시간은 설정 파일(JSON)** 로 둔다 (D-18). 이 문서의 해당 엔터티(plant_layout, layout_object, equipment_part_shape, equipment 배치 칸, notification_rule, shift 시각)는 논리 모양이고, 설정 파일에서 읽어 DB 기준 정보로 넣을지·바로 쓸지는 물리 ERD [선택 필요: 기술 회의]. 운영 데이터는 DB. MGR의 모든 기능 **조회**(R-76)와는 별개로, 설정을 **바꾸는** 것만 MGR로 제한 | notification_rule.updated_by, inventory_item.safety_stock_set_by·owner_role, shift.target_qty | 기획서 13.2, NFR-SEC-04, D-18 |
-| R-72 | **보고서 생성 시각** (최종본): 교대 보고서 AI비서 초안 = 교대 끝 (주간 17:00, 야간 05:00). **일일 보고서 AI비서 초안 = 생산일 다음 날 06:00** [가상] (야간 반장이 교대 보고서를 확정할 1시간, 08:00 시작 전). 생산일 = 주간이 시작한 날 (D일 08:00 ~ D+1일 05:00). 06:00까지 확정 안 된 교대 칸은 "잠정" + MGR [확정] 비활성 + 해당 SUP에게 확정 요청 알림 (SHIFT_REPORT_PENDING). 숫자는 06:00 기준 값 — 06:00에 판정 전인 야간 로트는 로트 칸에 "판정 대기", 완제품 입고는 다음 생산일 보고서에. 야간 반장의 05:00~06:00 확정 시간을 근무 계획에 넣을지는 [선택 필요: 팀] (R5 H7) | shift_report, daily_report.work_date, document_revision (v0 created_at), notification (SHIFT_REPORT_PENDING) | D-08, R5 4.3 표 H, FR-PRD-02-01, FR-PRD-04-01, FR-AST-02-17 |
+| R-72 | **보고서 생성 시각** (최종본): 교대 보고서 AI비서 초안 = 교대 끝 (주간 17:00, 야간 05:00). **일일 보고서 AI비서 초안 = 생산일 다음 날 06:00** [가상] (야간 반장이 교대 보고서를 확정할 1시간, 08:00 시작 전). 생산일 = 주간이 시작한 날 (D일 08:00 ~ D+1일 05:00). 06:00까지 확정 안 된 교대 칸은 "잠정" + MGR [확정] 비활성 (확정 요청 SHIFT_REPORT_PENDING은 교대 끝에 이미 감). 확정 전 교대 값은 다른 곳(브리핑·야간 이월)에서도 잠정. 숫자는 06:00 기준 값 — 06:00에 판정 전인 야간 로트는 로트 칸에 "판정 대기", 완제품 입고는 다음 생산일 보고서에. 야간 반장의 05:00~06:00 확정 시간을 근무 계획에 넣을지는 [선택 필요: 팀] (R5 H7) | shift_report, daily_report.work_date, document_revision (v0 created_at), notification (SHIFT_REPORT_PENDING) | D-08, R5 4.3 표 H, FR-PRD-02-01, FR-PRD-04-01, FR-AST-02-17 |
 | R-73 | **전부 보고·정해진 순서** (최종본): 교대 시작 브리핑 "먼저 챙길 일 (전체 N건)", 일일 보고서 "오늘의 문제 (전체 N건)", 손실 칸(손실 전체, 큰 순서), 교대 보고서 필수 정지 칸(R-74)·인계 사항은 **프로그램이 정해진 목록·기준으로 문제를 전부 모으고 6.43 순위로 정렬**한다. 비서는 그 순서대로 문장만 쓰고, 고르거나 빼거나 순서를 바꾸지 않는다. 개수를 자르지 않음, "전체 N건" + 순위별 건수 항상 표시, 같은 원인은 한 줄, 순위 0·0-1·1은 접지 않음. 브리핑 1분은 목표이고 1분에 맞추려고 항목을 빼지 않는다 (NFR-USE-07) | notification.report_rank, daily_report.issues_summary, shift_report.handover_text | D-07, R4 4.3, FR-AST-COM-21, FR-AST-01-04, FR-PRD-04-03·08, FR-PRD-02-08 |
 | R-76 | **MGR 전체 조회** (최종본): MGR은 **모든 기능·문서를 조회**할 수 있다 (지침카드 MNT-02, 예방 정비 MNT-04, 공구 수명 ML-01, 출하, CMM 결과 파일 기록 포함). 작성·수정·확정·승인 권한은 바꾸지 않는다. role_permission 처음 값에서 MGR의 "보기" 행이 빠진 대상이 없어야 한다 | role_permission (role_code MGR, action 보기, scope 전체) | D-11, NFR-SEC-02·03 |
 | R-85 | **출처 표시·검색 대상** (최종본): 비서 답·지침카드 칸·문서 초안·화면의 출처는 **사내 문서 이름 + 문서 번호 + §절**만 (예: "고장 대응 매뉴얼 DOC-03 §2.1", "용어집 §4"). 쪽 번호는 쓰지 않는다. **원문 출처는 저장·표시하지 않는다** (doc_chunk·alarm_guide_map의 원문 출처 칸 삭제, alarm_master.source_ref는 사람 추적용으로만). 검색 대상 = **DOC-01~07 + 용어집** (원문은 검색하지 않음). 출처에 마우스를 올리면 요약 카드(문서 이름, 번호·개정, 절 제목, 그 절 앞부분 2~3줄), 클릭하면 그 사내 문서가 팝업 창으로 열려 그 절로 이동 — 절 제목·앞부분은 그 사내 문서(file_ref)에서 가져온다 | doc_chunk (doc_no, doc_rev, section), internal_doc.doc_kind·is_search_target·file_ref, alarm_guide_map.section, work_order_step.source_section | D-03·D-04·D-05, FR-MNT-01-03·07·09·10, FR-AST-COM-02·04, CLAUDE.md (원문 저작권) |
@@ -3480,7 +3484,7 @@ erDiagram
 |---|---|---|---|
 | R-75 | **데이터 보관 기간** (NFR-DATA-13): 데이터 종류별 보관 기간과 지난 뒤 처리는 6.53 표를 따른다 — L1 OP-30 센서 1초 90일 / L2 1분 센서·재공 1년 → 1시간 집계 → 2년 뒤 삭제 / L3 사건 기록(상태·알람·병목·알림·공구·소모품 입출고) 2년 / L4 로트 추적 사슬·검사 결과·출하·확정 문서·수정 이력 15년(운영 DB 2년 → 보관 저장소(읽기 전용) → 삭제) / 접속 기록 1년 / 사용자 계정은 지우지 않고 비활성 / 기준 정보는 사용 중지 표시. 예외: 정지 등급 알람 + 작업기록서가 있는 1초 구간은 2년, 보류·의심 로트와 연결된 알람은 15년. **검사 측정값은 지우거나 합격·불합격만 남기지 않는다.** 보관 저장소로 옮긴 기록도 다시 꺼낼 수 있고 고칠 수 없어야 한다. 15년은 임시값 (고객 CSR이 정해지면 그 값) [선택 필요]. 실제 삭제·집계·이동 방식과 예외 표시 방법은 [선택 필요: 기술 회의]. 가상 데이터 30일(NFR-DATA-01)은 그대로 | 6.53 (모든 엔터티), app_user.is_active, sensor_sample, inspection_result | D-16, R2 1장·2장·4장, NFR-DATA-13, NFR-REL-02, DOC-07 §11 |
 | R-83 | **3D 배치 좌표** (FR-PRD-01-27): 좌표 = 공장 안쪽 남서쪽 벽 모서리 바닥 원점, X 동쪽(공정 흐름)·Y 북쪽·Z 위, mm (plant_layout). 설비·배치 물체는 바닥 사각형 가운데(또는 X·Y 범위)와 실제 크기로 둔다. 모든 설비 정면은 −Y(통로 쪽). 설비 사이 간격 ≥ 1,000 mm, 설비 앞 작업 띠 1,000 mm, 주 통로 2,000 mm [가상]. 설비·배치 물체(통로·문 제외)의 바닥 사각형은 서로 겹치지 않는다 (WSH-01 구역 안 부품, CMM-01 화면은 그 설비 도형) [제안]. 크기 근거 표시([실제]/[참고]/[가상])는 비면 안 된다. 크기만 실제이고 단순 도형(상자·원기둥)으로 그린다 — 사실적인 모델링 없음. MIL-01 모델 칸은 "3축 머시닝센터 [가상]" 유지(크기만 [참고]) | plant_layout, layout_object, equipment (size_·center_·facing·size_source_tag·ref_model), equipment_part_shape | D-02, R1 2장·5장·7장 (간격 점검), DOC-01 §2.4, FR-PRD-01-27·28 |
-| R-59 | 모든 운영 데이터는 가상이다. 화면에 "가상 운영 데이터" 표시. 데이터 묶음 단위로 가상 표시를 둘지 줄마다 둘지는 [선택 필요: 기술 회의] | (전체) | NFR-DATA-08, NFR-USE-06 |
+| R-59 | 모든 운영 데이터는 가상이다. 화면 구석의 "가상 운영 데이터" 표시는 2026-10-07 팀 UI 검토로 뺐다 (값 꼬리표 [가상]·비서 답의 "가상"은 그대로, NFR-USE-06). 데이터 묶음 단위로 가상 표시를 둘지 줄마다 둘지는 [선택 필요: 기술 회의] | (전체) | NFR-DATA-08, NFR-USE-06 |
 
 ---
 
@@ -3508,7 +3512,7 @@ erDiagram
 | ML-01 공구 수명 | FR-ML-01-01~08 | tool, tool_usage, tool_change | tool_type, operation_report, alarm_event (362·174) |
 | QLT-01 검사 기록·불량 집계 | FR-QLT-01-01~22 | inspection_plan, inspection_result, defect_record, inspection_item (Cpk 전수 표시), cmm_import, notification (CMM 알림) | production_lot, lot_hold, defect_code, equipment (CMM-01), app_user |
 | AI 비서 공통 | FR-AST-COM-01~21 | (규칙) document_revision.author_kind, equipment_state_log.reason_suggested_code, notification.report_rank (전부 보고 순서, 계산) | doc_chunk, internal_doc, alarm_master, alarm_guide_map, notification_rule |
-| 비기능: 데이터 | NFR-DATA-01~13 | 생성기가 모든 엔터티를 만든다 (NFR-DATA-12 역할 바꿔 보기는 화면 기능 — 새 엔터티 없음, app_user·role만 읽음). NFR-DATA-13 보관 기간 = 6.53 (모든 엔터티) | 8장 R-01~R-87 |
+| 비기능: 데이터 | NFR-DATA-01~13 | 생성기가 모든 엔터티를 만든다 (NFR-DATA-12 역할 바꿔 보기는 화면 기능 — 새 엔터티 없음, app_user·role만 읽음). NFR-DATA-13 보관 기간 = 6.53 (모든 엔터티) | 8장 R-01~R-88 |
 | 비기능: 보안·권한 | NFR-SEC-01~08 | app_user, role, role_permission (MGR 전체 조회 R-76) | 모든 `~_by` 칸. NFR-SEC-08(로컬 LLM, 외부 전송 없음)은 새 엔터티 없음 — doc_chunk·internal_doc·운영 기록을 밖으로 보내지 않음 (R-87) |
 | 비기능: 안전 | NFR-SAFE-01~05 | work_record_check, maintenance_work_order.safety_block_doc_rev | isolation_point, alarm_master.lockout_level, pm_task.lockout_level |
 | 비기능: 신뢰성·감사 | NFR-REL-01~03 | document_revision, `~_by`·`~_at` 칸 | — |
@@ -3600,7 +3604,7 @@ erDiagram
 | operation_report | operation_report (5.5) | `operation_report` | 수량을 DOC-07 PQ·GQ·RQ·SQ로 나눔 |
 | wip_log | wip_log (5.6) | `wip_log` + **`wip_buffer`** | 위치별 한도·경고 기준을 따로 뺌 |
 | bottleneck_log | bottleneck_log (5.18) | `bottleneck_log` | 속도 손실 칸을 더함 (설계서 5.10 "병목 구간마다 저장") |
-| shift_target | (5.2·5.3, 이름 없음) | **`shift`** (target_qty), **`work_day`** (daily_target_qty) | 교대 목표를 교대 엔터티 칸으로 넣음 |
+| shift_target | (5.2·5.3, 이름 없음) | **`shift`** (target_qty, carry_over_qty), **`work_day`** (daily_target_qty) | 교대 목표를 교대 엔터티 칸으로 넣음 |
 | — | (5.3 제품, 이름 없음) | **`product`**, **`process`** | 새로 둠 |
 | maintenance_work_order | maintenance_work_order (5.11) | `maintenance_work_order` + **`work_order_step`**, **`work_order_part`** | 작업 순서·예상 부품을 여러 줄로 뺌 |
 | work_record | work_record (5.11) | `work_record` + **`work_record_check`**, **`work_record_part`** | 체크칸·사용 부품을 여러 줄로 뺌 |
@@ -3620,7 +3624,7 @@ erDiagram
 - 기획서 12.4와 설계서 5장의 **이름이 서로 다른 것은 없었다.** 다른 점은 ① 기획서 12.4에 `sensor_sample`이 빠짐 ② 설계서에 이름이 없는 것(제품, 달력·교대, 알람 코드집, 알림, 사내 문서)이었다. ①은 설계서 이름을 쓰고, ②는 기획서 12.4 이름을 쓰거나 새로 [제안]했다.
 - 새로 둔 엔터티 **21개**: `process`, `product`, `work_day`, `isolation_point`, `wip_buffer`, `sensor_item`, `lot_hold`, `work_order_step`, `work_order_part`, `work_record_check`, `work_record_part`, `tool_type`, `tool_change`, `inspection_item`, `defect_code`, `defect_record`, `document_revision_change`, `notification_recipient`, `notification_rule`, `role`, `role_permission`. `shift`는 12.4의 `shift_target`을 바꾼 것, `sensor_sample`은 설계서에서 가져온 것.
 - 개수 맞추기: 기획서 12.4 30개 (`shift_target` → `shift`) + `sensor_sample` 1개 + 새 엔터티 21개 = **52개** (v1).
-- 최종본: 52개 + 2026-10-06 회의로 더한 6개 (`plant_layout`, `layout_object`, `equipment_part_shape`, `shipment`, `shipment_line`, `cmm_import`) = **58개**. 새 엔터티 이름은 변경 명세 4장 이름(모든 문서 공통)을 쓴다. 기획서_최종본 12.4에 이 6개가 없으면 이 문서 이름을 따른다.
+- 최종본: 52개 + 2026-10-06 회의로 더한 6개 (`plant_layout`, `layout_object`, `equipment_part_shape`, `shipment`, `shipment_line`, `cmm_import`) = **58개**. 새 엔터티 이름은 변경 명세 4장 이름(모든 문서 공통)을 쓴다. (기획서_최종본 12.4에는 이 6개가 모두 들어 있다.) 기획서 12.4에 이 6개가 없으면 이 문서 이름을 따른다.
 
 ---
 
@@ -3660,6 +3664,9 @@ erDiagram
 | v1 (같은 날 맞춤) | 2026-10-05 | 요구사항정의서_v1(277개)·UI설계서_v1과 맞춤. "UI 설계" [선택 필요] 9개를 UI설계서 9장·9.3으로 채움: 6.9 입고 검사 대기 + R-06a, 6.13 완료 계기, 6.15 간이 기록 초안 없음·확정자, 6.16 다시 확정 없음, shift_report.availability_pct, inventory_txn.txn_by, pm_record.done_by + **recorded_by·current_version 새 속성**, notification **process_kind·process_memo 새 속성** + 6.36 SHIFT_REPORT_PENDING·처리 표, R-08. 팀 확정 3개: pm_task_id [가상] 확정, 예방 정비 기록을 수정 이력 대상(6.17 PM_RECORD, 관계 93 6종), DOC-06 4.1 판정 대기. 공구 번호 T01~T05 [가상] (6.25, tool.tool_no). 9장 추적표에 새 요구사항 5개 범위 반영. 엔터티 수 52개 그대로 | 팀 |
 | **최종본** | 2026-10-07 | **2026-10-06 문서 검토 회의 결정(D-01~D-19) 반영** (변경 명세 4장, 조사 R1~R5). **엔터티 52 → 58** (새 6개: `plant_layout`, `layout_object`, `equipment_part_shape`, `shipment`, `shipment_line`, `cmm_import`). **코드 목록 41 → 54** (새 6.42 작업지시서 계기 ~ 6.54 반복 알람 단계 상태 — 13개), **관계 106 → 124** (새 107~124), **규칙 R-01~R-66 → R-01~R-87** (새 R-67~R-87, 21개). 속성 추가: `equipment`(외형 X·Y·Z, 배치 가운데 X·Y, 정면 방향, 크기 근거, 참고 모델), `inventory_item.owner_role` (품목 13개, 완제품 FG-BRK-A100, 완제품 안전 재고 비움), `inventory_txn`(fg_lot_no·shipment_no·ship_lot_no, 거래 종류 FG_IN·SHIP_OUT, 출처 LOT_PASS·SHIPMENT, txn_by 품목 관리 역할별), `inspection_result`(입력 방식, cmm_import 연결, 측정기 판정과 플랫폼 재계산 판정 분리, 판정 불일치·온도 확인 표시, 확인 상태·확인자, 재측정 순번·판정에 씀, 수동 입력자; 측정실 온도 필수 → 조건), `maintenance_work_order`(계기 trigger_kind — 여러 값, trigger_notification_id), `work_record.cause_check_notification_id`, `notification`(보고 순위 계산, cmm_import_id, prev_stage_notification_id, 반복 알람 단계 상태·효과 확인 기한), `internal_doc.doc_kind`(용어집 검색 대상 참). 속성 삭제: **`doc_chunk.original_source`·`alarm_guide_map.original_source`(원문 출처, D-03)**. 이름 변경: `daily_report.top3_summary` → `issues_summary` "오늘의 문제 (전체 N건)" (D-07). 코드 수정: 6.8(출하 가능 = 합격·해제), 6.13·6.14(2단계), 6.16(06:00), 6.17(용어집·출하 기록 SHIPMENT), 6.27(13개·관리 역할), 6.28, 6.36(REPEAT_ALARM_2·CAUSE_CHECK_REQUEST·CMM 알림 3종 → 22행, 병목 관련 정보 DOC-07 §7.5, 재고 부족 받는 사람), 6.37(재고 관리·MGR 전체 조회), 6.41. 규칙 수정: R-02, R-11, R-35(7종), R-36, R-38(0-1 순위), R-39, R-50, R-51, R-52(원문 출처 삭제), R-55, R-58(재고 관리 역할·설정 파일 JSON). 작업지시서·작업기록서 30일 건수 15~25 → **약 5~9건** (설계서_최종본 5.11). 생성기 설정 `config.yaml` → `config.json` (D-18). 반복 알람 2단계 가상 사례 VF2-02 108 (9/8·9/9·9/10 → 9/14 재발 → 9/15 원인 점검 확정). 30일 출하 25건, 출하 14:00 [가상]. 문서 이름 링크를 최종본으로 | 팀 (편집 담당 E) |
 | 최종본 (교차 점검, 2026-10-07) | 2026-10-07 | 문서끼리 맞춤 (엔터티 58개 그대로): 관계 93 "문서의 버전" 6종 → **7종**(shipment 추가, R-35·관계 124와 같게), 6.47 확인 상태 `NOT_NEEDED 확인 필요 없음` → **`NORMAL 정상`** (DOC-06 §3.5 정상 / 확인 필요 / 반장 확인), inspection_result.check_status 설명, 6.36 처리 표 CMM_NO_RESULT "(반장 확인)", doc_chunk.doc_rev 설명(개정은 호버 카드에만), ERD 그림의 source_section "원문" 삭제·current_rev 예 Rev.1·safety_block_doc_rev 예 "DOC-05 Rev.1", daily_report·doc_chunk 표 가운데 끼어 있던 설명 줄을 표 뒤로 옮김, 6.17 설명·12장 #6·#17 "해결", R-75 출처에 DOC-07 §11 | 교차 점검 |
+| 최종본 (문서 점검 + 팀 UI 검토, 2026-10-07) | 2026-10-07 | 엔터티 58개·관계 124개 그대로. **새 속성** `shift.carry_over_qty`(이월), **새 규칙 R-88**(이월·총 목표 — UI설계서 9.5 #6), R-48·6.x TARGET_RISK를 총 목표 기준으로, `shift_report.target_qty`·`daily_report.target_qty` = 총 목표. R-59 화면 구석 가상 표시 뺌(NFR-USE-06). 문서 점검: 6.43 보고 순위 공통 규칙(묶인 줄 1건, 빈 순위 "-", 현장 보기 띠만 "외 N건"), 6.53 #10 `cmm_import`·원본 결과 파일 기간 = [선택 필요: 팀] (회의결과 5장 #3과 같게), **R-20 자리 표시**(쓰지 않는 번호), 머리 규칙 수 91개로 바로잡음 | 팀 |
+| 최종본 (최종 검토, 2026-10-07) | 2026-10-07 | 엔터티·관계·규칙 수 그대로. SHIFT_REPORT_PENDING = **교대 끝** 초안 생성 때, R-72 확정 요청 문구, R-48 "시작 후 1시간 안", 6.43 순위 2·4 접기 문구·0-1은 주의에 셈, handover_text에 보류·강화 검사 로트·빈 순위 "-", production_lot.order_no 0..N(관계 #9와 같게), daily_report 화면 제작 보류 메모, 근거 문서·internal_doc 개정 번호(DOC-01·07·용어집 Rev.2), 10장 끝 문구 | 팀 |
+| 최종본 (재검토, 2026-10-07) | 2026-10-07 | 다음 문서 칸의 기획서 18장 번호(3·4·5번), sensor_sample 설명(비서 질문), 6.43 접기 문구 통일, 개정 번호(용어집 Rev.3) | 팀 |
 
 **문서끼리 다르던 점과 이 문서의 선택**
 
@@ -3673,7 +3680,7 @@ erDiagram
 | 6 | DOC-04 5장 "확정한 실시 기록을 고치면 수정 이력(AST-03)에 남는다" ↔ FR-AST-03-01 대상 문서 5종에 예방 정비 기록이 없음 | **대상에 넣음** [제안] (기획서 4.5 "모든 문서", 5장 흐름도 "모든 문서의 수정은 AST-03 수정 이력에 남음", 재고가 빠지는 확정 기록): 6.17 PM_RECORD, pm_record.current_version, FR-AST-03-01 "여섯 종류"로 고침 (v1 같은 날). 최종본에서 출하 기록을 더해 일곱 종류로 맞춤 (#17) (해결) |
 | 7 | 기획서 12.4 `production_lot`에 "상태·보류" 칸 ↔ DOC-06 4.1·4.2 보류·해제·폐기 승인(누가·언제) | `lot_hold`로 분리 (NFR-REL-03 "사람 결정마다 누가·언제") |
 | 8 | 기획서 12.4 `equipment`에 "차단 지점" 칸 ↔ DOC-05 §3 설비마다 2~3개 | `isolation_point`로 분리 |
-| 9 | 기획서 12.4 `shift_target` ↔ 설계서 5.2·5.3 달력·교대 (테이블 이름 없음) | `shift.target_qty`, `work_day.daily_target_qty`로 넣음 |
+| 9 | 기획서 12.4 `shift_target` ↔ 설계서 5.2·5.3 달력·교대 (테이블 이름 없음) | `shift.target_qty`, `work_day.daily_target_qty`로 넣음. 이월은 `shift.carry_over_qty` (R-88, 2026-10-07) |
 | 10 | 기획서 12.4에 `sensor_sample` 없음 ↔ 설계서 5.9 | 설계서 이름 `sensor_sample` |
 | 11 | 알람 번호 "WSH-01"·"WSH-02"(DOC-02 [가상 번호]) ↔ 설비 ID "WSH-01" (설계서 5.1) | 서로 다른 엔터티의 키라 그대로 둠. 화면에서 헷갈리지 않게 알람은 "알람 WSH-01"로 표시 [제안] |
 | 12 | 공구 번호: 설계서는 M6 탭 T05만 적음 | T01 페이스밀 인서트, T02 엔드밀 Ø10, T03 보링바 인서트, T04 드릴 Ø5.0, T05 M6 탭으로 **[가상] 확정** (6.25). 설계서 5.13, DOC-01 7.1, DOC-07 9장 표에도 같은 번호를 넣음 (해결) |
@@ -3693,6 +3700,6 @@ erDiagram
 |---|---|
 | 기술 회의 | DB 제품, 물리 자료형·인덱스·파티션 (11장), 사용자 ID·로그인, 여러 엔터티를 가리키는 칸의 물리 설계, 문서 내용 저장 형식, 예상 완료 시각 계산 방법, 알림 규칙의 기준 숫자를 칸으로 나눌지, 코드 목록 저장 방식, 권한 저장 방식, 가상 표시 방법, 사진 저장, 공구 사용 기록 단위. **최종본**: 보관 기간의 실제 삭제·집계·이동 방식, 로컬 LLM 모델·임베딩 모델·컴퓨터 사양·실행 도구, 설정 파일(JSON)과 DB 기준 정보의 관계, CMM 공유 폴더·파일 감시·결과 미수신 대기 시간·측정 시작 기록, 3D 엔진 좌표 변환, 작업지시서 계기(여러 값) 저장 방식 |
 | AI 비서 설계 (기술 회의 뒤) | `doc_chunk` 나누기·임베딩·검색 방식 |
-| 팀 | 15년 보관 임시값 (고객 CSR이 정해지면), 사용자 이름 처리(비활성 계정), 야간 반장 05:00~06:00 확정 시간을 근무 계획에 넣을지 (R5 H7) |
+| 팀 | 15년 보관 임시값 (고객 CSR이 정해지면), 사용자 이름 처리(비활성 계정), 야간 반장 05:00~06:00 확정 시간을 근무 계획에 넣을지 (R5 H7), `cmm_import`·원본 결과 파일 보관 기간 (6.53 #10), 일일 보고서 제작 여부·모니터링용 계정 역할 (UI설계서 9.5 #20 — 정해지면 `role`·`daily_report`를 고침) |
 
 - UI 설계·팀 확정·데이터 생성 때로 넘겼던 항목은 같은 날 맞춤에서 모두 정했다 (위 #1·5·6·12·13·14).
