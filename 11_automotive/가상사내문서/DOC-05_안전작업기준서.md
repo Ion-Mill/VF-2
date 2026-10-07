@@ -4,10 +4,10 @@
 |---|---|
 | 문서 번호 | DOC-05 |
 | 문서 이름 | 안전 작업 기준서 |
-| 개정 | Rev.0 (2026-10-05) |
+| 개정 | Rev.1 (2026-10-07) |
 | 승인 | 공장 관리자 (MGR) |
 | 구분 | **가상 사내 문서** (실제 문서를 바탕으로 작성) |
-| 제작 기준 | [가상데이터설계서_v3.md 13장](../가상데이터설계서_v3.md#13-가상-사내-문서-제작-기준), 용어는 [00_용어집.md](00_용어집.md) |
+| 제작 기준 | [가상데이터설계서_최종본.md 13장](../가상데이터설계서_최종본.md#13-가상-사내-문서-제작-기준), 용어는 [00_용어집.md](00_용어집.md) |
 | 같이 보는 문서 | DOC-02 알람 코드집 (심각도), DOC-03 고장 대응 매뉴얼 (점검 순서), DOC-04 예방 정비 기준서 |
 
 **표시 규칙:** [실제] 공개 문서·법령 그대로 (쪽·조항 표시) / [참고] 다른 모델·다른 회사 자료의 모양만 빌림 / [가상] 팀이 정함.
@@ -417,6 +417,7 @@ KOSHA M-9-2023은 **수동** 둥근톱 지침이다. HCS-80은 자동 콜드쏘�
 - 붙는 곳: 정지 등급 알람의 지침카드(MNT-02), 정비 작업지시서(MNT-03, OP-30), 다른 공정의 간이 작업기록 [가상].
 - `{ }` 칸만 프로그램이 설비 정보(§3)에서 채운다. 블록 끝에 문서 번호·개정을 붙여, 이 문서가 개정되면 서식도 같이 바뀐 것을 알 수 있게 한다.
 - 작업기록서(MNT-05)의 "잠금·표지 체크"는 이 블록의 체크칸 9개를 그대로 쓴다.
+- 블록 안의 출처 괄호는 **사내 문서 이름 + 번호 + §절**만 쓴다 (화면에 원문 출처를 쓰지 않는다, 2026-10-06 회의 결정 D-03). 고전압 줄의 원문 근거(Haas 서보 앰프 고장 대응 안내 Electrical Safety)는 §4.1 근거 칸과 §8 원문 대응표에 남긴다.
 
 ```
 ━━━━━━━━━━ 안전 작업 (고정 서식 · AI 작성 아님) ━━━━━━━━━━
@@ -433,7 +434,7 @@ KOSHA M-9-2023은 **수동** 둥근톱 지침이다. HCS-80은 자동 콜드쏘�
 
 [고전압 대기]  (VF2-01·VF2-02 제어반 작업 때)
  □ 고전압 표시등이 꺼진 뒤 최소 5분 기다린 뒤 제어반 작업 시작
-   (Haas 서보 앰프 고장 대응 안내 Electrical Safety)
+   (안전 작업 기준서 DOC-05 §4.1)
 
 [보호구]
  □ 보안경 · 안전화 · (소음 구역) 청력 보호구
@@ -446,7 +447,7 @@ KOSHA M-9-2023은 **수동** 둥근톱 지침이다. HCS-80은 자동 콜드쏘�
  □ 7.3 잠금장치·표지의 제거
 
 근거: 산업안전보건기준에 관한 규칙 제92조·제95조, KOSHA B-M-25-2026
-출처: DOC-05 안전 작업 기준서 Rev.0 §2·§4·§5
+출처: DOC-05 안전 작업 기준서 Rev.1 §2·§4·§5
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
@@ -473,7 +474,7 @@ KOSHA M-9-2023은 **수동** 둥근톱 지침이다. HCS-80은 자동 콜드쏘�
 | §2.2, §3.3 | Haas VF/VM Service Manual – Installation (VFVM-SM-03) | Air Connection, Electrical Connections 1·3·5단계 | 영어 | `docs/haas/ngc_official/09_설비사양·설치/VFVM-SM-03_installation/` |
 | §3.3 | Haas VF/VM Service Manual – Axis Motion (VFVM-SM-07) | 7.1 Overview, 7.5 Ballscrew Alignment | 영어 | `docs/haas/ngc_official/02_서보축_알람대응/VFVM-SM-07_axis-motion/` |
 | §3.3, §4.1, §4.2 | Haas NGC Electrical Service Manual – Circuit Breaker and Transformer (NGC-ESM-17) | Electrical Safety, 17.1 1단계 | 영어 | `docs/haas/ngc_official/04_전원·차단기/NGC-ESM-17_circuit-breaker-transformer/` |
-| §4.1, §7 | Servo Amplifier – Troubleshooting Guide – NGC, Rev B 5/2025 | Electrical Safety | 영어 | `docs/haas/web_snapshots/tsg_servo_amplifier_ngc.txt` |
+| §4.1, §7 (고전압 줄 — 블록에는 "DOC-05 §4.1"로 표시) | Servo Amplifier – Troubleshooting Guide – NGC, Rev B 5/2025 | Electrical Safety | 영어 | `docs/haas/web_snapshots/tsg_servo_amplifier_ngc.txt` |
 | §3.3, §4.3 | Single Stage Coolant Pump Troubleshooting Guide NGC, TG0138 Rev A 12/2025 | 6쪽 증상표, 10쪽 Incorrect phasing | 영어 | `docs/haas/ngc_official/10_절삭유/TG0138_single-stage-coolant-pump-tg-ngc/` |
 | §4.3 | Haas 알람 552 한국어 설명 | CSV 1281행 (DOC-02 4.14) | 한국어 | `docs/haas/haas_alarm_list_20250130_en_ko.csv` |
 | §1, §3.3, §4, §5, §6.2 | Haas 밀 조작자 매뉴얼 한국어판 96-KO8210 | 1.1.1~1.1.2 (2~5쪽), 1.7 안전 라벨 T1.4~T1.6 (13~16쪽) | 한국어 | `docs/haas/ko_96-KO8210_Mill.pdf` |
@@ -502,3 +503,4 @@ KOSHA M-9-2023은 **수동** 둥근톱 지침이다. HCS-80은 자동 콜드쏘�
 | 개정 | 날짜 | 내용 | 승인 |
 |---|---|---|---|
 | Rev.0 | 2026-10-05 | 처음 작성: 잠금·표지 6+3단계(KOSHA 원문 제목), 여러 명·교대, 설비 6대 차단 지점, 고전압 5분 대기, 552 CB3 리셋 주의, 보호구(법 제95조), 공정별 위험, 작업지시서 고정 서식 | MGR |
+| Rev.1 | 2026-10-07 | 최종본 (교차 점검, 2026-10-07): §7 고정 서식 블록의 고전압 줄 출처 괄호를 원문 이름 "(Haas 서보 앰프 고장 대응 안내 Electrical Safety)"에서 **"(안전 작업 기준서 DOC-05 §4.1)"** 로 바꿈 (D-03 화면에 원문 출처 없음, UI설계서 6.5와 글자 맞춤). 블록 끝 개정 표시 Rev.1. 원문 근거는 §4.1·§8 원문 대응표에 그대로 둠. 잠금·표지 단계·보호구 내용은 바뀌지 않음 | MGR |
