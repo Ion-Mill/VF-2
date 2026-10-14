@@ -379,9 +379,13 @@ def run(cfg: dict, out_dir: Path, masters: dict) -> dict:
     ss = pd.read_csv(out_dir / "sensor_sample.csv", usecols=["equipment_id", "sensor_code", "sampled_at", "value",
                                                              "interval_type"])
     names = {x["sensor_code"] for x in masters["sensor_item"]}
-    add("센서 값: VF2-01·02만, 7개 센서, 간격 MIN1_AVG/SEC1",
+    step = int(cfg["record_interval"]["sensor_around_event_sec"])
+    code = f"SEC{step}"
+    sec_s = ss.sampled_at[ss.interval_type == code].str[17:19].astype(int)
+    add(f"센서 값: VF2-01·02만, 7개 센서, 간격 MIN1_AVG/{code} ({step}초 값은 {step}초 단위 시각)",
         set(ss.equipment_id) == {"VF2-01", "VF2-02"} and set(ss.sensor_code) == names
-        and set(ss.interval_type) <= {"MIN1_AVG", "SEC1"}, ss.interval_type.value_counts().to_dict())
+        and set(ss.interval_type) <= {"MIN1_AVG", code} and (sec_s % step == 0).all(),
+        ss.interval_type.value_counts().to_dict())
     low = ss[(ss.sensor_code == "AirPressure") & ((ss.value < 100) | (ss.value > 110))]
     a120 = al[al.alarm_code == "120"]
     bad = 0
@@ -631,8 +635,9 @@ def run_realtime(cfg: dict, rt_dir: Path, past_dir: Path, masters: dict) -> dict
             o = ts(e.occurred_at)
             bad = bad[~((bad.equipment_id == e.equipment_id) & (bad.t >= o - pd.Timedelta(minutes=31)) & (bad.t <= o + pd.Timedelta(minutes=1)))]
         out_rng += len(bad)
-    add("센서: VF-2 2대 × 7개, 범위 밖 값은 사건(S1·S4) 알람 앞에서만. 1초 값은 주의·정지 알람 앞뒤 30분",
-        out_rng == 0 and set(ss.interval_type) <= {"MIN1_AVG", "SEC1"} and set(ss.equipment_id) == {"VF2-01", "VF2-02"},
+    code = f"SEC{int(cfg['record_interval']['sensor_around_event_sec'])}"
+    add(f"센서: VF-2 2대 × 7개, 범위 밖 값은 사건(S1·S4) 알람 앞에서만. {code[3:]}초 값은 주의·정지 알람 앞뒤 30분",
+        out_rng == 0 and set(ss.interval_type) <= {"MIN1_AVG", code} and set(ss.equipment_id) == {"VF2-01", "VF2-02"},
         f"그 밖의 범위 밖 {out_rng}, {ss.interval_type.value_counts().to_dict()}")
     ci = T["cmm_import"]
     drop = rt_dir / cfg["realtime"]["cmm_drop_dir"]

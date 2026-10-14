@@ -1,8 +1,8 @@
 {
   "stage": "5단계 ③: 과거 30일 + 측정값 판정 + 보고서·수정 이력·알림",
-  "created_at": "2026-10-14T10:29:32+09:00",
+  "created_at": "2026-10-14T15:14:01+09:00",
   "seed": 20260901,
-  "config_sha256": "5972fabc5aff5eb91731ca68f5814844da8d468e0c5c05bd34ac8104be60d061",
+  "config_sha256": "49d2490c4db3f15eb1fad67e1971a241897bd5cefc9739cdcbabc29ade2d5ca5",
   "masters_sha256": "b9c745cfdf7cd36c709703efdd97665cb12d8526ee889173f19151ecfa0e5885",
   "python": "3.12.10",
   "numpy": "2.4.3",
@@ -28,7 +28,7 @@
     "production_lot": 184,
     "production_order": 129,
     "raw_material_lot": 17,
-    "sensor_sample": 2578639,
+    "sensor_sample": 978271,
     "shift": 52,
     "shift_report": 52,
     "shipment": 25,
@@ -359,14 +359,14 @@
         "detail": "③ 4번, 보류 4건"
       },
       {
-        "name": "센서 값: VF2-01·02만, 7개 센서, 간격 MIN1_AVG/SEC1",
+        "name": "센서 값: VF2-01·02만, 7개 센서, 간격 MIN1_AVG/SEC5 (5초 값은 5초 단위 시각)",
         "result": "PASS",
-        "detail": "{'SEC1': 2000460, 'MIN1_AVG': 578179}"
+        "detail": "{'MIN1_AVG': 578179, 'SEC5': 400092}"
       },
       {
         "name": "공기 압력: 평소 100~110 psi, 밖은 알람 120 앞 30분 하락 구간뿐",
         "result": "PASS",
-        "detail": "범위 밖 15871개 중 알람 120 앞이 아닌 것 0개"
+        "detail": "범위 밖 3170개 중 알람 120 앞이 아닌 것 0개"
       },
       {
         "name": "교대 보고서 = 교대마다 1개, 확정자 = 그 교대 반장, 목표 = 목표 + 이월",
