@@ -1,0 +1,5 @@
+hold_id,lot_no,trigger_type,related_alarm_event_id,related_tool_id,hold_reason,held_by,held_at,enhanced_next_lots,released_by,released_at,scrap_proposed_qty,scrap_proposed_by,scrap_approved_by,scrap_approved_at,normal_resumed_by,normal_resumed_at,result
+1,LOT-2609-012-1,AI_SUSPECT,39,VF2-02-T02,공구 수명 한계(362)까지 쓴 공구로 가공한 로트 — 비서 의심 로트 제안,U11,2026-09-03T21:16:00+09:00,1,U11,2026-09-04T04:49:00+09:00,,,,,U11,2026-09-04T05:04:00+09:00,RELEASED
+2,LOT-2609-049-1,INSPECTION_FAIL,,VF2-02-T05,"측정 불합격 (DIM-03) — 보류 검토 로트, 남은 부품 전수 측정, 원인 후보 공구 VF2-02-T05",U10,2026-09-12T12:00:00+09:00,1,U10,2026-09-12T15:32:00+09:00,1,U10,U12,2026-09-12T15:27:00+09:00,U10,2026-09-12T17:06:00+09:00,RELEASED
+3,LOT-2609-055-2,AI_SUSPECT,165,,충돌 의심(108 → 994 → 992) 때 가공 중이던 로트 — 비서 의심 로트 제안,U10,2026-09-14T12:18:00+09:00,2,U10,2026-09-15T15:52:00+09:00,1,U11,U12,2026-09-15T15:37:00+09:00,U10,2026-09-15T16:15:00+09:00,RELEASED
+4,LOT-2609-073-1,INSPECTION_FAIL,,,"측정 불합격 (DIM-03) — 보류 검토 로트, 남은 부품 전수 측정, 108·충돌 직후 가공",U10,2026-09-18T13:48:00+09:00,2,U10,2026-09-18T15:50:00+09:00,2,U10,U12,2026-09-18T15:32:00+09:00,U11,2026-09-19T02:06:00+09:00,RELEASED

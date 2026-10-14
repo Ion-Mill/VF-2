@@ -1,0 +1,502 @@
+{
+  "stage": "5단계 ③: 과거 30일 + 측정값 판정 + 보고서·수정 이력·알림",
+  "created_at": "2026-10-14T10:29:32+09:00",
+  "seed": 20260901,
+  "config_sha256": "5972fabc5aff5eb91731ca68f5814844da8d468e0c5c05bd34ac8104be60d061",
+  "masters_sha256": "b9c745cfdf7cd36c709703efdd97665cb12d8526ee889173f19151ecfa0e5885",
+  "python": "3.12.10",
+  "numpy": "2.4.3",
+  "pandas": "3.0.1",
+  "rows": {
+    "alarm_event": 355,
+    "bottleneck_log": 34,
+    "cmm_import": 1301,
+    "daily_report": 26,
+    "defect_record": 43,
+    "document_revision": 566,
+    "document_revision_change": 70,
+    "equipment_state_log": 8581,
+    "inspection_plan": 184,
+    "inspection_result": 9909,
+    "inventory_txn": 768,
+    "lot_hold": 4,
+    "maintenance_work_order": 5,
+    "notification": 876,
+    "notification_recipient": 1220,
+    "operation_report": 1327,
+    "pm_record": 333,
+    "production_lot": 184,
+    "production_order": 129,
+    "raw_material_lot": 17,
+    "sensor_sample": 2578639,
+    "shift": 52,
+    "shift_report": 52,
+    "shipment": 25,
+    "shipment_line": 175,
+    "tool_change": 155,
+    "tool_usage": 2200,
+    "wip_log": 51556,
+    "work_day": 30,
+    "work_order_part": 1,
+    "work_order_step": 27,
+    "work_record": 64,
+    "work_record_check": 72,
+    "work_record_part": 1
+  },
+  "validation": {
+    "passed": 87,
+    "failed": 0,
+    "warned": 2,
+    "lines": [
+      {
+        "name": "VF2-01 RUN 비율 (계획 가동 시간 대비, 기준 55%~75%)",
+        "result": "PASS",
+        "detail": "71.7%"
+      },
+      {
+        "name": "VF2-01 하루 상태 변화 (기준 60~120회)",
+        "result": "PASS",
+        "detail": "64회"
+      },
+      {
+        "name": "VF2-02 RUN 비율 (계획 가동 시간 대비, 기준 55%~75%)",
+        "result": "PASS",
+        "detail": "71.5%"
+      },
+      {
+        "name": "VF2-02 하루 상태 변화 (기준 60~120회)",
+        "result": "PASS",
+        "detail": "61회"
+      },
+      {
+        "name": "전체 불량률 (기준 0.5%~1.0%)",
+        "result": "PASS",
+        "detail": "0.90% (44/4863)"
+      },
+      {
+        "name": "알람 중 조작 안내 비율 (기준 70% 이상)",
+        "result": "PASS",
+        "detail": "81.7%"
+      },
+      {
+        "name": "교대 실적 대부분 75~100개 (70% 이상)",
+        "result": "PASS",
+        "detail": "85% 안 (평균 92.2, 최소 45, 최대 137)"
+      },
+      {
+        "name": "정지 등급 알람 1건 = DOWN 구간 1개 (충돌 연쇄는 마지막 992만)",
+        "result": "PASS",
+        "detail": "정지 알람 4, DOWN 4"
+      },
+      {
+        "name": "OP-30 정지 등급 알람 = 작업지시서 1건·작업기록서 1건",
+        "result": "PASS",
+        "detail": "OP-30 정지 4, 작업지시서 5, 작업기록서 5"
+      },
+      {
+        "name": "작업지시서마다 계기 1개 이상, 모두 OP-30",
+        "result": "PASS",
+        "detail": "{'STOP_ALARM': 4, 'REPEAT_STAGE2': 1}"
+      },
+      {
+        "name": "작업지시서 수 (기준 5~9건)",
+        "result": "PASS",
+        "detail": "5건"
+      },
+      {
+        "name": "반복 알람(7일 안 3번)은 사례 2건뿐",
+        "result": "PASS",
+        "detail": "[('VF2-02', '108'), ('VF2-02', '2075')]"
+      },
+      {
+        "name": "설비 상태 구간이 겹치거나 비지 않음",
+        "result": "PASS",
+        "detail": "어긋남 0곳"
+      },
+      {
+        "name": "RUN이 아닌 구간마다 정지 사유 1개, RUN은 비움",
+        "result": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "모든 생산 로트에 원자재 로트가 있음",
+        "result": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "한 생산 로트의 OP-10 투입은 모두 한 교대 안 (= 투입 교대)",
+        "result": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "완료 작업지시: 로트 수량 합 = 작업지시 수량",
+        "result": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "판정 로트: OP-50 양품+재작업 + 폐기 = 투입 수량",
+        "result": "PASS",
+        "detail": "어긋남 0"
+      },
+      {
+        "name": "공구 누적 사용량 = 부품 수 × 부품당 사용량 (교체 때 0)",
+        "result": "PASS",
+        "detail": "어긋남 0"
+      },
+      {
+        "name": "9/30 끝 VF2-01 T05 사용률 90~94% (목표 90%, 10/1 브리핑 교체 권고 대상)",
+        "result": "PASS",
+        "detail": "90%"
+      },
+      {
+        "name": "작업기록서 수리 시간 = DOWN 구간 길이 (1분 이내)",
+        "result": "PASS",
+        "detail": "최대 차이 0.0분"
+      },
+      {
+        "name": "재공 0 이상, 한도 이하",
+        "result": "PASS",
+        "detail": "최대 {'WIP-10-20': 15, 'WIP-20-30': 30, 'WIP-30-40': 30, 'WIP-40-50': 30}"
+      },
+      {
+        "name": "BLOCKED 구간에는 뒤 재공이 한도에 참 (10분 이상 구간)",
+        "result": "PASS",
+        "detail": "어긋남 0/42"
+      },
+      {
+        "name": "알람 번호가 알람 코드집에 있고, 그 공정 설비에서 남",
+        "result": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "공정 실적의 설비가 그 공정 설비",
+        "result": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "로트 상태가 6.8 코드",
+        "result": "PASS",
+        "detail": "{'PASSED': 178, 'RELEASED': 4, 'IN_PROCESS': 2}"
+      },
+      {
+        "name": "합격·해제 로트 = 판정 시각 있음 = 검사 방식 판정 (합격 / 보류 검토)",
+        "result": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "강화 로트마다 강화 사유·계기 보류가 있음",
+        "result": "PASS",
+        "detail": "강화 10개"
+      },
+      {
+        "name": "로트 보류 건수 (기준 2~4건)",
+        "result": "PASS",
+        "detail": "4건"
+      },
+      {
+        "name": "보류 해제 건수 (기준 1~4건)",
+        "result": "PASS",
+        "detail": "4건"
+      },
+      {
+        "name": "보류마다: 보류 로트 1 + 다음 로트(공구 1·충돌 2) 강화, 보류 < 해제, 강화 로트 모두 판정 뒤 보통 복귀",
+        "result": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "보류·해제는 SUP·MGR, 폐기 승인은 MGR만",
+        "result": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "폐기 승인은 승인자의 근무 교대 안, 승인 ≤ 해제 (폐기 있는 보류는 승인 뒤 해제)",
+        "result": "PASS",
+        "detail": "폐기 있는 보류 3건"
+      },
+      {
+        "name": "측정값 판정 = 규격(DOC-06 §2)으로 다시 계산한 값 = 측정기 판정 (불일치 0)",
+        "result": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "부품 온도 16~26 ℃ 안, 측정실 20 ℃ (DOC-06 §6)",
+        "result": "PASS",
+        "detail": "20.0~25.0 ℃"
+      },
+      {
+        "name": "측정한 부품 1개 = 결과 파일 가져오기 성공 1건, 상태 모두 성공",
+        "result": "PASS",
+        "detail": "1301건"
+      },
+      {
+        "name": "보통 로트의 측정 부품 = 첫 부품 + 5번째마다 (강화 로트는 전부)",
+        "result": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "강화 측정: 1번 구멍을 위·중간·아래 3단 (DOC-06 §3.3)",
+        "result": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "측정 불합격 부품마다 불량 기록 1줄이 그 측정값을 가리킴 (DIM 불량)",
+        "result": "PASS",
+        "detail": "3건"
+      },
+      {
+        "name": "측정 불합격이 난 로트는 판정이 '보류 검토'이고 보류 기록이 있음 (DOC-06 §4.1)",
+        "result": "PASS",
+        "detail": "불합격 로트 3개"
+      },
+      {
+        "name": "항목별 30일 Cpk ≥ 최소 기준 (1번 1.67, 나머지 1.33 — DOC-06 §2)",
+        "result": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "재고 = 입고 − 사용 ± 조정, 어느 시각에도 음수 없음",
+        "result": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "재고 품목 13개, 거래 품목이 모두 품목표에 있음",
+        "result": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "입고·조정 거래의 기록한 사람 = 그 품목의 관리 역할",
+        "result": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "조정 거래에는 사유(메모)가 있음",
+        "result": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "9/30 끝 안전 재고 아래 품목 = 설정값 (축 윤활유·M6 탭)",
+        "result": "PASS",
+        "detail": "['CS-WLUB', 'TL-TAP6']"
+      },
+      {
+        "name": "완제품 합격 입고 = 합격(해제) 로트 수량, 시각 = 판정(해제) 시각, 다른 로트 입고 0",
+        "result": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "원자재 로트 투입 = 생산 로트 투입 수량",
+        "result": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "공구 교체 1회 = 사용 거래 1건 (충돌로 부러진 공구는 작업기록서 사용 부품)",
+        "result": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "출하 로트 상태: 출하 시각에 모두 합격(해제), 보류 로트 출하 0",
+        "result": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "출하 시각 > 그 로트 합격(해제) 시각",
+        "result": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "로트마다 출하 합 ≤ 합격 수량",
+        "result": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "FIFO: 먼저 합격한 로트를 두고 출하하면 사유가 있음",
+        "result": "PASS",
+        "detail": "사유 없는 예외 0건"
+      },
+      {
+        "name": "출하 약 25건, 늦은 출하 1~2건",
+        "result": "PASS",
+        "detail": "출하 25건, 늦은 출하 1건"
+      },
+      {
+        "name": "출하 확인자는 SUP",
+        "result": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "완제품 재고 = 합격 합 − 출하 합 ± 조정, 음수 없음",
+        "result": "PASS",
+        "detail": "9/30 끝 175개"
+      },
+      {
+        "name": "재공 기록 간격: 평소 5분(MIN5), 사건 전후 30분 1분(MIN1). 선반 수는 OP-40→50에만",
+        "result": "PASS",
+        "detail": "{'MIN5': 30784, 'MIN1': 20772}"
+      },
+      {
+        "name": "병목 원인 C1 횟수 (기준 5~10)",
+        "result": "PASS",
+        "detail": "8회"
+      },
+      {
+        "name": "병목 원인 C2 횟수 (기준 4~6)",
+        "result": "WARN",
+        "detail": "3회"
+      },
+      {
+        "name": "병목 원인 C3 횟수 (기준 2~4)",
+        "result": "PASS",
+        "detail": "4회"
+      },
+      {
+        "name": "병목 기록: 이전 병목 = 앞 줄 새 병목, 공정·원인이 바뀐 때만 한 줄, 고장이면 알람 있음, C4 없음",
+        "result": "PASS",
+        "detail": "{'BASE': 15, 'C1': 8, 'C3': 4, 'FAILURE': 4, 'C2': 3}"
+      },
+      {
+        "name": "병목 원인 ③(검사 강화)은 로트 보류 뒤에만 시작",
+        "result": "PASS",
+        "detail": "③ 4번, 보류 4건"
+      },
+      {
+        "name": "센서 값: VF2-01·02만, 7개 센서, 간격 MIN1_AVG/SEC1",
+        "result": "PASS",
+        "detail": "{'SEC1': 2000460, 'MIN1_AVG': 578179}"
+      },
+      {
+        "name": "공기 압력: 평소 100~110 psi, 밖은 알람 120 앞 30분 하락 구간뿐",
+        "result": "PASS",
+        "detail": "범위 밖 15871개 중 알람 120 앞이 아닌 것 0개"
+      },
+      {
+        "name": "교대 보고서 = 교대마다 1개, 확정자 = 그 교대 반장, 목표 = 목표 + 이월",
+        "result": "PASS",
+        "detail": "52개, 상태 {'CONFIRMED': 51, 'REVISED': 1}"
+      },
+      {
+        "name": "교대 보고서 확정: 주간 17:00~17:30, 야간 05:00~06:00 [가상]",
+        "result": "PASS",
+        "detail": "교대 끝 뒤 6~49분"
+      },
+      {
+        "name": "일일 보고서: 근무일마다 1개, 실적 = 교대 2개 합, 목표 180",
+        "result": "PASS",
+        "detail": "26개"
+      },
+      {
+        "name": "일일 보고서: 9/30만 확정 대기(AI비서 초안 v0), 나머지 MGR 확정",
+        "result": "PASS",
+        "detail": "{'CONFIRMED': 25, 'AI_DRAFT': 1}"
+      },
+      {
+        "name": "일일 보고서 라인 OEE (참고: 목표 65%)",
+        "result": "PASS",
+        "detail": "60.2~73.6, 평균 67.7"
+      },
+      {
+        "name": "문서 버전: AI비서 초안 문서는 v0 = AI, 사람이 처음 쓰는 문서(간이 작업기록·정비·출하)는 v0 = 사람, v1부터 사람",
+        "result": "PASS",
+        "detail": "{'AI': 88, 'HUMAN': 478}"
+      },
+      {
+        "name": "문서 버전: 문서마다 v0 1개",
+        "result": "PASS",
+        "detail": "{'WORK_ORDER': 5, 'WORK_RECORD': 64, 'SHIFT_REPORT': 52, 'DAILY_REPORT': 26, 'PM_RECORD': 333, 'SHIPMENT': 25}"
+      },
+      {
+        "name": "AI비서 초안 문서 중 사람이 고친 버전이 있는 비율 (설계서 5.16 약 60%)",
+        "result": "PASS",
+        "detail": "69% (61/88)"
+      },
+      {
+        "name": "사람이 고친 버전마다 바뀐 칸 1~2곳",
+        "result": "PASS",
+        "detail": "70줄"
+      },
+      {
+        "name": "확정 뒤 고친 버전(REVISED)은 사유가 있음 + 문서 수정 알림",
+        "result": "PASS",
+        "detail": "1건"
+      },
+      {
+        "name": "문서 행의 현재 버전 = 마지막 버전 번호",
+        "result": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "알림: 규칙 코드·중요도가 notification_rule과 같음",
+        "result": "PASS",
+        "detail": "18종"
+      },
+      {
+        "name": "알림마다 종류에 맞는 관련 기록 칸이 있음 (R-38)",
+        "result": "PASS",
+        "detail": "[]"
+      },
+      {
+        "name": "처리된 알림: 방법·처리자·시각이 있고 발생 뒤. 처리 안 된 알림은 비어 있음",
+        "result": "PASS",
+        "detail": "처리 867 / 전체 876"
+      },
+      {
+        "name": "정지 등급 알람 1건 = 긴급 알림 1건 (팝업·소리는 긴급만)",
+        "result": "PASS",
+        "detail": "5건"
+      },
+      {
+        "name": "반복 알람 사례 ① 2075 VF2-02: 1단계 알림, 처리 안 됨 (S1_OPEN, 9장 S-7)",
+        "result": "PASS",
+        "detail": "[('2026-09-29T23:12:00+09:00', 'S1_OPEN')]"
+      },
+      {
+        "name": "반복 알람 사례 ② 108 VF2-02: 1단계(조치 계획) → 2단계 → 원인 점검 확정 → 효과 확인, 작업지시서 계기 알림",
+        "result": "PASS",
+        "detail": "[('2026-09-10T10:08:00+09:00', 'ESCALATED'), ('2026-09-14T14:40:00+09:00', 'EFFECTIVE')]"
+      },
+      {
+        "name": "반복 알람은 위 두 사례뿐 (설계서 5.8 우연한 반복 막기)",
+        "result": "PASS",
+        "detail": "3건"
+      },
+      {
+        "name": "일일 보고서 확정 요청 = 근무일마다 1건, 9/30 것만 처리 안 됨",
+        "result": "PASS",
+        "detail": "26건, 처리 안 됨 1"
+      },
+      {
+        "name": "교대 보고서 확정 요청 = 교대마다 1건, 모두 처리",
+        "result": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "9/30 끝에 남은 알림 (10/1 브리핑 재료, 참고)",
+        "result": "PASS",
+        "detail": "{'STOCK_LOW': 2, 'PM_DUE_SOON': 2, 'PM_OVERDUE': 2, 'REPEAT_ALARM': 1, 'TOOL_LIFE_90': 1, 'DAILY_REPORT_PENDING': 1}"
+      },
+      {
+        "name": "알림 중요도 비율 (점검 목표 긴급 약 5%·주의 약 15%·참고 약 80%, DOC-07 10.3)",
+        "result": "WARN",
+        "detail": "{'CAUTION': 0.5, 'INFO': 0.49, 'URGENT': 0.01}"
+      },
+      {
+        "name": "알림 폭주 없음: 10분에 긴급+주의 10건 넘는 때 없음 (DOC-07 10.3)",
+        "result": "PASS",
+        "detail": "10분 최대 8건"
+      },
+      {
+        "name": "외래 키 (가리키는 값이 있음)",
+        "result": "PASS",
+        "detail": ""
+      },
+      {
+        "name": "MAINT 구간에 예방 정비 기록 연결 (원인 점검 구간은 아직 칸 없음)",
+        "result": "PASS",
+        "detail": "MAINT 3, 연결 2"
+      }
+    ]
+  },
+  "t05_force_m": [
+    42298,
+    5
+  ]
+}

@@ -1,0 +1,6 @@
+item_no,usage_unit,usage_per_part,life_limit,limit_basis,deduct_qty_per_change
+TL-FM50,FEED,0.5,400,[가상],5
+TL-EM10,FEED,2.5,200,[참고] 알루미늄(Al7050) 엔드밀 시험에서 약 200분에 급마모 단계 진입 (PMC10056421),1
+TL-BB45,HOLES,1,400,[가상],1
+TL-DR50,HOLES,4,1000,[가상] (품질·재고 담당 제안값),1
+TL-TAP6,HOLES,4,400,[참고] 알루미늄 M6 탭 수백~500구멍 (OSG M6 500구멍 × 0.8),1

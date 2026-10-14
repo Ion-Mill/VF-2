@@ -1,0 +1,6 @@
+process_code,process_name,seq,is_base_bottleneck
+OP-10,절단,1,false
+OP-20,황삭,2,false
+OP-30,정밀 가공,3,true
+OP-40,세척·디버링,4,false
+OP-50,측정,5,false

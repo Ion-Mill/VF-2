@@ -1,0 +1,5 @@
+buffer_code,from_process_code,to_process_code,limit_qty,warn_over_qty,warn_enabled,use_in_bottleneck
+WIP-10-20,OP-10,OP-20,30,20,true,true
+WIP-20-30,OP-20,OP-30,30,29,true,true
+WIP-30-40,OP-30,OP-40,60,,false,false
+WIP-40-50,OP-40,OP-50,30,20,true,true

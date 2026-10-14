@@ -1,0 +1,13 @@
+user_id,user_name,role_code,home_shift_type,home_process_code,home_process_code_2,is_active
+U01,작업자 주간 1,OPR,DAY,OP-10,OP-20,true
+U02,작업자 주간 2,OPR,DAY,OP-30,,true
+U03,작업자 주간 3,OPR,DAY,OP-50,OP-40,true
+U04,작업자 야간 1,OPR,NIGHT,OP-10,OP-20,true
+U05,작업자 야간 2,OPR,NIGHT,OP-30,,true
+U06,작업자 야간 3,OPR,NIGHT,OP-50,OP-40,true
+U07,보전 담당 1,MNT,DAY,,,true
+U08,보전 담당 2,MNT,DAY,,,true
+U09,보전 담당 3,MNT,NIGHT,,,true
+U10,반장 주간,SUP,DAY,,,true
+U11,반장 야간,SUP,NIGHT,,,true
+U12,공장 관리자,MGR,DAY,,,true

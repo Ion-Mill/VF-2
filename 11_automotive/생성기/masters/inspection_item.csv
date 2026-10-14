@@ -1,0 +1,9 @@
+product_code,item_seq,item_name,spec_text,nominal,lsl,usl,method,char_class,cpk_min,in_sampling,enhanced_extension,is_full_check_by_cpk
+BRK-A100,1,부싱 압입 구멍 지름,Ø45 H7 (+0.025 / 0 mm),45.000,45.000,45.025,CMM,SPECIAL,1.67,true,"위·중간·아래 3단 높이에서 측정 (기록만, 판정은 이 항목 기준)",false
+BRK-A100,2,전체 길이,150 ± 0.5 mm,150.0,149.5,150.5,CMM,GENERAL,1.33,true,,false
+BRK-A100,3,두께,12 ± 0.2 mm,12.0,11.8,12.2,CMM,GENERAL,1.33,true,,false
+BRK-A100,4,구멍 간 거리,± 0.1 mm (도면 값과의 차이로 기록),0.0,-0.1,0.1,CMM,GENERAL,1.33,true,모든 구멍의 구멍 간 거리,false
+BRK-A100,5,평면도 (부착면),0.05 mm 이하,,,0.05,CMM,GENERAL,1.33,true,,false
+BRK-A100,6,M6 나사 (6H),"통과 게이지가 끝까지 들어가고, 정지 게이지는 2회전 넘게 들어가지 않음",,,,GAUGE,GENERAL,,true,,false
+BRK-A100,7,외관,버·찍힘·구성인선 흔적(뜯긴 면)이 없음,,,,VISUAL,GENERAL,,false,확대경으로 구성인선 흔적 확인,false
+BRK-A100,8,폭,55 ± 0.3 mm,55.0,54.7,55.3,CMM,GENERAL,1.33,true,,false
