@@ -645,7 +645,7 @@ class Realtime:
         # 병목 기록
         out.write("bottleneck_log", S4.COLS["bottleneck_log"],
                   S4.bottleneck_rows(sim, self.bn_rows, now_m, id_start=past["bottleneck_log"] + 1))
-        # 센서: 1분 평균, 주의·정지 등급 알람 앞뒤 30분은 1초 (A안)
+        # 센서: 1분 평균, 주의·정지 등급 알람 앞뒤 30분은 5초 (A안)
         out.write_tuples("sensor_sample", S4.COLS["sensor_sample"], self._sensor_rows(new_al, now_m))
         # 사건·조작 기록
         with io.open(out.dir / "events.jsonl", "w", encoding="utf-8", newline="\n") as f:
@@ -700,6 +700,8 @@ class Realtime:
     def _sensor_rows(self, alarms: list[dict], now_m: int) -> list[tuple]:
         cal = self.sim.cal
         win = self.cfg["record_interval"]["around_event_window_min"]
+        step, code = S4.sec_step(self.cfg)
+        per = 60 // step
         rows = []
         r = self.rng.stream("rt-sensor-sec")
         for eq, mins in self.sensor_min.items():
@@ -714,13 +716,13 @@ class Realtime:
                     continue
                 nxt = mins.get(m + 1, v)
                 for k in SENSORS:
-                    seq = np.linspace(v[k], nxt[k], 60, endpoint=False) + r.normal(0, NOISE[k], 60)
+                    seq = np.linspace(v[k], nxt[k], per, endpoint=False) + r.normal(0, NOISE[k], per)
                     if k == "AirPressure" and min(v[k], nxt[k]) >= 100:
                         seq = np.clip(seq, 100, 110)
                     if k in ("SpindleLoadPct", "Xload", "Yload", "Zload"):
                         seq = np.clip(seq, 0, None)
                     base = cal.to_dt(m)
-                    rows += [(eq, k, base + timedelta(seconds=s), round(float(seq[s]), 1), "SEC1") for s in range(60)]
+                    rows += [(eq, k, base + timedelta(seconds=s * step), round(float(seq[s]), 1), code) for s in range(per)]
         return rows
 
 

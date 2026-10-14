@@ -207,7 +207,8 @@
     "wip_min": 5,
     "wip_around_event_min": 1,
     "sensor_avg_min": 1,
-    "sensor_around_event_sec": 1,
+    "sensor_around_event_sec": 5,
+    "_sensor_note": "사건 앞뒤 센서 간격(초). 60을 나누어떨어지게. 간격 코드는 SEC + 이 값 (2026-10-14 1초 → 5초 확정, DB 용량)",
     "around_event_window_min": 30
   },
   "realtime": {

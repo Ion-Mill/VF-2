@@ -457,11 +457,20 @@ def wip_rows(cfg, sim: Sim, centers: list[int]) -> list[dict]:
 
 # ---------- 센서 값 (설계서 5.9·5.19, DOC-07 3장) ----------
 
+def sec_step(cfg) -> tuple[int, str]:
+    """사건 앞뒤 센서 간격(초)과 간격 코드 (5초 → "SEC5", 2026-10-14)."""
+    step = int(cfg["record_interval"]["sensor_around_event_sec"])
+    assert 60 % step == 0, "sensor_around_event_sec는 60을 나누어떨어지게"
+    return step, f"SEC{step}"
+
+
 def build_sensors(cfg, sim: Sim, rng, bottleneck_rows):
-    """1분 평균 (평소) + 1초 (정지·주의 등급 알람과 OP-30 병목 기록 앞뒤 30분, 2026-10-13 A안).
+    """1분 평균 (평소) + 5초 (정지·주의 등급 알람과 OP-30 병목 기록 앞뒤 30분, 2026-10-13 A안, 2026-10-14 1초 → 5초).
     정상 범위는 sensor_item [참고]. 알람 기준값은 만들지 않고, 알람 앞 몇 분에 값이 움직이게 한다."""
     cal = sim.cal
     win = cfg["record_interval"]["around_event_window_min"]
+    step, code = sec_step(cfg)
+    per = 60 // step
     rows = []
     sensors = ["SpindleLoadPct", "SpindleMotorTemp", "AirPressure", "Xload", "Yload", "Zload", "DcVolt"]
     alarms = [e for e in sim.alarm_events if e["equipment_id"] in ("VF2-01", "VF2-02") and e["severity"] in ("WARN", "STOP")]
@@ -507,7 +516,7 @@ def build_sensors(cfg, sim: Sim, rng, bottleneck_rows):
                 for a in ("Xload", "Yload", "Zload"):
                     ax[a][max(0, m0 - 3):m0 + 1] = np.linspace(40, 115 if a != "Zload" else 90, m0 + 1 - max(0, m0 - 3))
         vals = {"SpindleLoadPct": spl, "SpindleMotorTemp": temp, "AirPressure": air, "DcVolt": dc, **ax}
-        # 1초 구간
+        # 5초 구간
         centers = [e["occurred_m"] for e in alarms if e["equipment_id"] == eq]
         centers += [b["_m"] for b in bottleneck_rows
                     if b["new_process_code"] == "OP-30" and b["cause_code"] in ("C1", "C2", "FAILURE")]
@@ -528,11 +537,11 @@ def build_sensors(cfg, sim: Sim, rng, bottleneck_rows):
                 v0, v1 = float(vals[s][m]), float(vals[s][nxt])
                 noise = {"SpindleLoadPct": 4.0, "Xload": 3.0, "Yload": 3.0, "Zload": 3.0, "AirPressure": 0.3,
                          "SpindleMotorTemp": 0.05, "DcVolt": 1.0}[s]
-                seq = np.linspace(v0, v1, 60, endpoint=False) + r.normal(0, noise, 60)
+                seq = np.linspace(v0, v1, per, endpoint=False) + r.normal(0, noise, per)
                 if not run[m] and s in ("SpindleLoadPct", "Xload", "Yload", "Zload"):
                     seq = np.clip(seq, 0, 3)
                 if s == "AirPressure" and min(v0, v1) >= 100:      # 평소 범위 100~110 psi 안 (알람 120 앞 하락 구간만 밖)
                     seq = np.clip(seq, 100, 110)
-                for k in range(60):
-                    rows.append((eq, s, base + timedelta(seconds=k), round(float(seq[k]), 1), "SEC1"))
+                for k in range(per):
+                    rows.append((eq, s, base + timedelta(seconds=k * step), round(float(seq[k]), 1), code))
     return rows
