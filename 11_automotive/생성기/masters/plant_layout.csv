@@ -1,0 +1,2 @@
+layout_id,width_x_mm,depth_y_mm,ceiling_z_mm,origin_desc,axis_desc,equipment_gap_mm,aisle_width_mm,work_band_mm
+BLDG,28000,8000,4000,"공장 안쪽 남서쪽 벽 모서리, 바닥","X = 동쪽(+), 공정 흐름 OP-10 → OP-50 / Y = 북쪽(+), 주 통로에서 멀어지는 쪽 / Z = 위(+), 바닥 0 / 단위 mm",1000,2000,1000

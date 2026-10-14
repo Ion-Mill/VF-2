@@ -1,0 +1,7 @@
+equipment_id,process_code,model,controller,std_cycle_min,batch_qty,batch_time_min,has_sensor,size_x_mm,size_y_mm,size_z_mm,center_x_mm,center_y_mm,facing,size_source_tag,ref_model
+SAW-01,OP-10,Haas HCS-80,Haas,1.0,,,false,2256,1999,1938,6022,4950,POS_X,REAL,
+MIL-01,OP-20,3축 머시닝센터,Siemens 840D sl,3.5,,,false,1990,2757,2935,9145,5179,NEG_Y,REFERENCE,DMG MORI CMX 600 V 기본형 (칩 컨베이어 없음)
+VF2-01,OP-30,Haas VF-2,Haas NGC,7.0,,,true,3147,2249,2724,12714,4925,NEG_Y,REAL,
+VF2-02,OP-30,Haas VF-2,Haas NGC,7.0,,,true,3147,2249,2724,16861,4925,NEG_Y,REAL,
+WSH-01,OP-40,초음파 세척기 + 텀블러(진동 바렐),,,30,25,false,3000,1500,1291,20935,4550,NEG_Y,VIRTUAL,진동 바렐 Kalamazoo KVF3급 + 초음파 세척기 Branson CPX8800H-E급
+CMM-01,OP-50,3차원 측정기,,0.9,,,false,1110,1266,2414,24857,4433,NEG_Y,REFERENCE,Hexagon TIGO SF 05.06.05

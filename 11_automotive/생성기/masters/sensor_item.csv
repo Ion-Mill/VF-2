@@ -1,0 +1,8 @@
+sensor_code,sensor_name,unit,normal_min,normal_max,normal_median,linked_alarm_code
+SpindleLoadPct,주축 부하,%,0,185,38,174
+SpindleMotorTemp,주축 모터 온도,℃,28,42,,254
+AirPressure,공기 압력,psi,100,110,105.3,120
+Xload,X축 부하,%,0,65,,108
+Yload,Y축 부하,%,0,65,,108
+Zload,Z축 부하,%,0,65,,108
+DcVolt,직류 버스 전압,V,300,330,317,

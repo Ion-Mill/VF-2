@@ -1,0 +1,21 @@
+reason_code,reason_group,reason_name,usual_state,six_loss,is_loss
+F01,FAILURE,서보·앰프,DOWN,고장 정지 로스,true
+F02,FAILURE,주축,DOWN,고장 정지 로스,true
+F03,FAILURE,공구 교환장치,DOWN,고장 정지 로스,true
+F04,FAILURE,윤활,DOWN,고장 정지 로스,true
+F05,FAILURE,공압,DOWN,고장 정지 로스,true
+F06,FAILURE,절삭유,DOWN,고장 정지 로스,true
+M01,MATERIALS,소재 대기,IDLE,6대 로스 밖 (설비 밖 원인),true
+M02,MATERIALS,앞 공정 대기,IDLE,흐름 손실 (병목의 영향),true
+M03,MATERIALS,뒤 공정 막힘,BLOCKED,흐름 손실 (병목의 영향),true
+S01,SETUP,작업지시 교체 (로트 교체),SETUP,준비 교체 로스,true
+S02,SETUP,공구 교체,SETUP,준비 교체 로스,true
+S03,SETUP,초품 검사,SETUP,준비 교체 로스,true
+S04,SETUP,교대 시작·끝 점검,SETUP,준비 교체 로스,true
+O01,OPERATION,프로그램 오류,IDLE,순간 정지 로스,true
+O02,OPERATION,모드 오류,IDLE,순간 정지 로스,true
+O03,OPERATION,도어 열림,IDLE,순간 정지 로스,true
+O04,OPERATION,부품 교체 대기,IDLE,순간 정지 로스,true
+P01,PLANNED,예방 정비,MAINT,계획 정지 (손실 아님),false
+P02,PLANNED,휴식,IDLE,계획 가동 시간 밖,false
+P03,PLANNED,계획 없음,IDLE,계획 가동 시간 밖,false

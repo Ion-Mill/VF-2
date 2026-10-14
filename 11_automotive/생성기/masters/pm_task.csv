@@ -1,0 +1,75 @@
+pm_task_id,equipment_id,doc04_section,area,item_name,cycle_code,lockout_level,default_role,default_item_no,on_calendar,source_tag
+PM-VF2-01-2.1-01,VF2-01,2.1,외함,창(유리) 손상 점검,DAILY,NONE,OPR,,true,REAL
+PM-VF2-01-2.1-02,VF2-01,2.1,외함,도어 인터록 작동 점검,DAILY,NONE,OPR,,true,REAL
+PM-VF2-01-2.1-03,VF2-01,2.1,교대 시작,절삭유 양 확인,DAILY,NONE,OPR,CS-COOL,false,REAL
+PM-VF2-01-2.1-04,VF2-01,2.1,교대 시작,공기 압력 확인,DAILY,NONE,OPR,,false,REAL
+PM-VF2-01-2.1-05,VF2-01,2.1,교대 시작,공기 배관 물 빼기,DAILY,NONE,OPR,,false,REAL
+PM-VF2-01-2.1-06,VF2-01,2.1,공구,공구 홀더·풀 스터드·테이퍼 손상 점검,DAILY,NONE,OPR,,false,REAL
+PM-VF2-01-2.1-07,VF2-01,2.1,교대 끝,"웨이 커버 칩 청소, 탱크 위 칩 필터 확인",DAILY,NONE,OPR,,false,REAL
+PM-VF2-01-2.2-01,VF2-01,2.2,공구 교환장치,공구 교환장치의 칩 청소,WEEKLY,FULL,MNT,,true,REAL
+PM-VF2-01-2.2-02,VF2-01,2.2,공압,주축 공기 조절기 압력 점검,WEEKLY,NONE,OPR,,true,REAL
+PM-VF2-01-2.2-03,VF2-01,2.2,절삭유,절삭유 양 점검,WEEKLY,NONE,OPR,CS-COOL,true,REAL
+PM-VF2-01-2.2-04,VF2-01,2.2,절삭유,"절삭유 농도 점검, 혼합·정비 기록지 작성",WEEKLY,NONE,OPR,CS-COOL,true,REAL
+PM-VF2-01-2.2-05,VF2-01,2.2,절삭유,"혼입유 제거, 필터 칩 제거",WEEKLY,NONE,OPR,,false,REAL
+PM-VF2-01-2.3-01,VF2-01,2.3,축 윤활,윤활유 저장소 양 점검·보충,MONTHLY,TWO_POINT,MNT,CS-WLUB,true,REAL
+PM-VF2-01-2.3-02,VF2-01,2.3,전기함,벡터 드라이브 환기구·필터 청소,MONTHLY,FULL,MNT,,true,REAL
+PM-VF2-01-2.3-03,VF2-01,2.3,외함,웨이 커버 점검·윤활,MONTHLY,FULL,MNT,CS-GRS,true,REAL
+PM-VF2-01-2.3-04,VF2-01,2.3,공구 교환장치,모터와 근접 센서 점검,MONTHLY,FULL,MNT,,true,REAL
+PM-VF2-01-2.3-05,VF2-01,2.3,공구 교환장치,가이드 레일 그리스 주입,MONTHLY,FULL,MNT,CS-GRS,true,REAL
+PM-VF2-01-2.3-06,VF2-01,2.3,공구 교환장치,공구 빼기 핑거 그리스 주입,MONTHLY,FULL,MNT,CS-GRS,true,REAL
+PM-VF2-01-2.3-07,VF2-01,2.3,주축 윤활,주축 윤활 탱크 양 점검,MONTHLY,TWO_POINT,MNT,CS-SLUB,true,REAL
+PM-VF2-01-2.3-08,VF2-01,2.3,주축,주축 테이퍼 점검,MONTHLY,FULL,MNT,,true,REAL
+PM-VF2-01-2.5-01,VF2-01,2.5,축 윤활,호스 갈라짐 점검,HALF_YEAR,FULL,MNT,,true,REAL
+PM-VF2-01-2.5-02,VF2-01,2.5,축 윤활,축 윤활 시험 실시,HALF_YEAR,NONE,MNT,,true,REAL
+PM-VF2-01-2.5-03,VF2-01,2.5,공압,호스 갈라짐 점검,HALF_YEAR,FULL,MNT,,true,REAL
+PM-VF2-01-2.5-04,VF2-01,2.5,절삭유,"절삭유 탱크 완전 청소, 절삭유 교체",HALF_YEAR,FULL,MNT,CS-COOL,true,REAL
+PM-VF2-01-2.5-05,VF2-01,2.5,절삭유,표준 절삭유 필터 청소 (+ 교체),HALF_YEAR,FULL,MNT,CS-CFLT,true,REAL
+PM-VF2-01-2.5-06,VF2-01,2.5,주축 윤활,주축 윤활 시험 실시,HALF_YEAR,NONE,MNT,,true,REAL
+PM-VF2-01-2.6-01,VF2-01,2.6,공압,공기 퍼지 솔레노이드 청소,YEARLY,FULL,MNT,,true,REAL
+PM-VF2-01-2.6-02,VF2-01,2.6,주축,주축 드로바 힘 측정,YEARLY,FULL,MNT,,true,REAL
+PM-VF2-01-2.6-03,VF2-01,2.6,공압,공기 필터 교체,YEARLY,FULL,MNT,CS-AFLT,true,REFERENCE
+PM-VF2-01-2.7-01,VF2-01,2.7,절삭유,필터 스크린 청소,AS_REQUIRED,FULL,MNT,,true,REAL
+PM-VF2-01-2.7-02,VF2-01,2.7,주축,주축 테이퍼 청소·윤활,AS_REQUIRED,FULL,MNT,,true,REAL
+PM-VF2-01-2.7-03,VF2-01,2.7,공구,풀 스터드 그리스 바르기,AS_REQUIRED,NONE,MNT,CS-GRS,true,REAL
+PM-VF2-02-2.1-01,VF2-02,2.1,외함,창(유리) 손상 점검,DAILY,NONE,OPR,,true,REAL
+PM-VF2-02-2.1-02,VF2-02,2.1,외함,도어 인터록 작동 점검,DAILY,NONE,OPR,,true,REAL
+PM-VF2-02-2.1-03,VF2-02,2.1,교대 시작,절삭유 양 확인,DAILY,NONE,OPR,CS-COOL,false,REAL
+PM-VF2-02-2.1-04,VF2-02,2.1,교대 시작,공기 압력 확인,DAILY,NONE,OPR,,false,REAL
+PM-VF2-02-2.1-05,VF2-02,2.1,교대 시작,공기 배관 물 빼기,DAILY,NONE,OPR,,false,REAL
+PM-VF2-02-2.1-06,VF2-02,2.1,공구,공구 홀더·풀 스터드·테이퍼 손상 점검,DAILY,NONE,OPR,,false,REAL
+PM-VF2-02-2.1-07,VF2-02,2.1,교대 끝,"웨이 커버 칩 청소, 탱크 위 칩 필터 확인",DAILY,NONE,OPR,,false,REAL
+PM-VF2-02-2.2-01,VF2-02,2.2,공구 교환장치,공구 교환장치의 칩 청소,WEEKLY,FULL,MNT,,true,REAL
+PM-VF2-02-2.2-02,VF2-02,2.2,공압,주축 공기 조절기 압력 점검,WEEKLY,NONE,OPR,,true,REAL
+PM-VF2-02-2.2-03,VF2-02,2.2,절삭유,절삭유 양 점검,WEEKLY,NONE,OPR,CS-COOL,true,REAL
+PM-VF2-02-2.2-04,VF2-02,2.2,절삭유,"절삭유 농도 점검, 혼합·정비 기록지 작성",WEEKLY,NONE,OPR,CS-COOL,true,REAL
+PM-VF2-02-2.2-05,VF2-02,2.2,절삭유,"혼입유 제거, 필터 칩 제거",WEEKLY,NONE,OPR,,false,REAL
+PM-VF2-02-2.3-01,VF2-02,2.3,축 윤활,윤활유 저장소 양 점검·보충,MONTHLY,TWO_POINT,MNT,CS-WLUB,true,REAL
+PM-VF2-02-2.3-02,VF2-02,2.3,전기함,벡터 드라이브 환기구·필터 청소,MONTHLY,FULL,MNT,,true,REAL
+PM-VF2-02-2.3-03,VF2-02,2.3,외함,웨이 커버 점검·윤활,MONTHLY,FULL,MNT,CS-GRS,true,REAL
+PM-VF2-02-2.3-04,VF2-02,2.3,공구 교환장치,모터와 근접 센서 점검,MONTHLY,FULL,MNT,,true,REAL
+PM-VF2-02-2.3-05,VF2-02,2.3,공구 교환장치,가이드 레일 그리스 주입,MONTHLY,FULL,MNT,CS-GRS,true,REAL
+PM-VF2-02-2.3-06,VF2-02,2.3,공구 교환장치,공구 빼기 핑거 그리스 주입,MONTHLY,FULL,MNT,CS-GRS,true,REAL
+PM-VF2-02-2.3-07,VF2-02,2.3,주축 윤활,주축 윤활 탱크 양 점검,MONTHLY,TWO_POINT,MNT,CS-SLUB,true,REAL
+PM-VF2-02-2.3-08,VF2-02,2.3,주축,주축 테이퍼 점검,MONTHLY,FULL,MNT,,true,REAL
+PM-VF2-02-2.5-01,VF2-02,2.5,축 윤활,호스 갈라짐 점검,HALF_YEAR,FULL,MNT,,true,REAL
+PM-VF2-02-2.5-02,VF2-02,2.5,축 윤활,축 윤활 시험 실시,HALF_YEAR,NONE,MNT,,true,REAL
+PM-VF2-02-2.5-03,VF2-02,2.5,공압,호스 갈라짐 점검,HALF_YEAR,FULL,MNT,,true,REAL
+PM-VF2-02-2.5-04,VF2-02,2.5,절삭유,"절삭유 탱크 완전 청소, 절삭유 교체",HALF_YEAR,FULL,MNT,CS-COOL,true,REAL
+PM-VF2-02-2.5-05,VF2-02,2.5,절삭유,표준 절삭유 필터 청소 (+ 교체),HALF_YEAR,FULL,MNT,CS-CFLT,true,REAL
+PM-VF2-02-2.5-06,VF2-02,2.5,주축 윤활,주축 윤활 시험 실시,HALF_YEAR,NONE,MNT,,true,REAL
+PM-VF2-02-2.6-01,VF2-02,2.6,공압,공기 퍼지 솔레노이드 청소,YEARLY,FULL,MNT,,true,REAL
+PM-VF2-02-2.6-02,VF2-02,2.6,주축,주축 드로바 힘 측정,YEARLY,FULL,MNT,,true,REAL
+PM-VF2-02-2.6-03,VF2-02,2.6,공압,공기 필터 교체,YEARLY,FULL,MNT,CS-AFLT,true,REFERENCE
+PM-VF2-02-2.7-01,VF2-02,2.7,절삭유,필터 스크린 청소,AS_REQUIRED,FULL,MNT,,true,REAL
+PM-VF2-02-2.7-02,VF2-02,2.7,주축,주축 테이퍼 청소·윤활,AS_REQUIRED,FULL,MNT,,true,REAL
+PM-VF2-02-2.7-03,VF2-02,2.7,공구,풀 스터드 그리스 바르기,AS_REQUIRED,NONE,MNT,CS-GRS,true,REAL
+PM-SAW-01-3.1-01,SAW-01,3.1,,절단 구역 칩·찌꺼기 청소,DAILY,FULL,MNT,,false,REAL
+PM-SAW-01-3.1-02,SAW-01,3.1,,톱날 상태 점검,DAILY,FULL,MNT,,true,REAL
+PM-SAW-01-3.1-03,SAW-01,3.1,,가이드 레일 윤활유 레벨 점검·보충,WEEKLY,ONE_POINT,MNT,,true,REFERENCE
+PM-SAW-01-3.1-04,SAW-01,3.1,,기어박스 오일 / 유압유 레벨 점검,WEEKLY,NONE,OPR,,false,REAL
+PM-SAW-01-3.1-05,SAW-01,3.1,,앞 바이스 리니어 가이드 그리스 주입,MONTHLY,ONE_POINT,MNT,CS-GRS,true,REFERENCE
+PM-SAW-01-3.1-06,SAW-01,3.1,,"공기 필터 교체, 유압유·기어 오일 교체",YEARLY,FULL,MNT,,false,REAL
+PM-MIL-01-3.2-01,MIL-01,3.2,,윤활 레벨·습동면 점검,DAILY,NONE,OPR,,true,VIRTUAL
+PM-WSH-01-3.3-01,WSH-01,3.3,,텀블러 베어링 그리스 주입,EVERY_8H_USE,ONE_POINT,MNT,CS-GRS,true,REFERENCE
+PM-WSH-01-3.3-02,WSH-01,3.3,,세척액 상태 점검,DAILY,UNPLUG,OPR,,true,REFERENCE
+PM-CMM-01-3.4-01,CMM-01,3.4,,측정기 중간 점검 (기준물 측정),WEEKLY,NONE,OPR,,true,VIRTUAL

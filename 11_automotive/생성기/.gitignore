@@ -1,0 +1,7 @@
+# 가상환경과 파이썬 임시 파일은 올리지 않는다
+.venv/
+__pycache__/
+.pytest_cache/
+
+# 센서 값 CSV는 약 130MB라 GitHub 한 파일 한도(100MB)를 넘는다. 같은 seed로 generate.py를 돌리면 똑같이 나온다
+out/sensor_sample.csv

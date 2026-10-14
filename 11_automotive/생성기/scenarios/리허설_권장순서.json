@@ -1,0 +1,104 @@
+{
+  "_about": "설계서 7장 권장 순서대로 사건 버튼·화면 조작을 넣는 리허설 대본 (2026-10-14). retry_real_sec = 조작이 안 될 때(대상 설비 가공 중 아님 등) 1초씩 흘리며 다시 시도하는 시간. 시각·숫자는 그때의 계산 값",
+  "steps": [
+    {
+      "wait_real_sec": 0,
+      "op": "speed",
+      "value": 60,
+      "_note": "08:00 교대 시작 브리핑 (T05 90% 교체 권고, 2075 미처리, 축 윤활유 부족, VF2-02 정비 예정)"
+    },
+    {
+      "wait_real_sec": 5,
+      "op": "inject",
+      "code": "S3",
+      "retry_real_sec": 30,
+      "_note": "S3 T05가 빨리 닳음 → 교체 알림"
+    },
+    {
+      "wait_real_sec": 12,
+      "op": "tool_change",
+      "tool_id": "VF2-01-T05",
+      "by": "U02",
+      "_note": "화면 [공구 교체] 기록 → 사용량 0 (한도 전에 교체)"
+    },
+    {
+      "wait_real_sec": 15,
+      "op": "inject",
+      "code": "S6",
+      "retry_real_sec": 60,
+      "_note": "S6 VF2-02 예방 정비 90분 → OP-30 1대 가동 → 재공 증가·병목 알림"
+    },
+    {
+      "wait_real_sec": 0,
+      "op": "speed",
+      "value": 180,
+      "_note": "기다리는 구간은 180배 (정비 90분 = 약 30초)"
+    },
+    {
+      "wait_real_sec": 32,
+      "op": "speed",
+      "value": 60
+    },
+    {
+      "wait_real_sec": 10,
+      "op": "inject",
+      "code": "S1",
+      "retry_real_sec": 60,
+      "_note": "S1 VF2-01 충돌: 축 부하 급상승 → 108 → 994 → 992 → DOWN (자동 ×10)"
+    },
+    {
+      "wait_real_sec": 40,
+      "op": "hold_suspect",
+      "by": "U10",
+      "retry_real_sec": 30,
+      "_note": "반장이 의심 로트 보류 → 그 로트와 다음 2개 전수 검사 (OP-50 병목)"
+    },
+    {
+      "wait_real_sec": 0,
+      "op": "speed",
+      "value": 60
+    },
+    {
+      "wait_real_sec": 60,
+      "op": "confirm_work_record",
+      "equipment_id": "VF2-01",
+      "by": "U07",
+      "_note": "작업기록서 [확정] → VF2-01 복귀"
+    },
+    {
+      "wait_real_sec": 15,
+      "op": "inject",
+      "code": "S4",
+      "retry_real_sec": 60,
+      "_note": "S4 공기 압력이 서서히 떨어짐 → 120 (자동 복귀)"
+    },
+    {
+      "wait_real_sec": 40,
+      "op": "speed",
+      "value": 60,
+      "_note": "S4 알람으로 ×10이 됐으니 다시 60배"
+    },
+    {
+      "wait_real_sec": 0,
+      "op": "release_held",
+      "by": "U10",
+      "retry_real_sec": 480,
+      "_note": "전수 판정이 끝나면 반장 해제 (폐기는 관리자 승인). 보류 로트와 다음 2개를 1개 5분으로 다 재야 해서 오후까지 걸릴 수 있음"
+    },
+    {
+      "wait_real_sec": 50,
+      "op": "skip",
+      "to": "TODAY_17:00",
+      "_note": "17:00으로 → 교대 보고서 장면"
+    },
+    {
+      "wait_real_sec": 0,
+      "op": "speed",
+      "value": 180
+    },
+    {
+      "wait_real_sec": 300,
+      "op": "end"
+    }
+  ]
+}

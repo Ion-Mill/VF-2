@@ -1,0 +1,9 @@
+doc_no,doc_kind,doc_name,current_rev,rev_date,status,approved_by,approved_at,is_search_target,file_ref
+DOC-01,MANUAL_DOC,공정별 운영 매뉴얼,Rev.9,2026-10-14,APPROVED,U12,2026-10-14T09:00:00+09:00,true,가상사내문서/DOC-01_공정별운영매뉴얼.md
+DOC-02,MANUAL_DOC,알람 코드집,Rev.2,2026-10-13,APPROVED,U12,2026-10-13T09:00:00+09:00,true,가상사내문서/DOC-02_알람코드집.md
+DOC-03,MANUAL_DOC,고장 대응 매뉴얼,Rev.2,2026-10-13,APPROVED,U12,2026-10-13T09:00:00+09:00,true,가상사내문서/DOC-03_고장대응매뉴얼.md
+DOC-04,MANUAL_DOC,예방 정비 기준서,Rev.2,2026-10-10,APPROVED,U12,2026-10-10T09:00:00+09:00,true,가상사내문서/DOC-04_예방정비기준서.md
+DOC-05,MANUAL_DOC,안전 작업 기준서,Rev.2,2026-10-10,APPROVED,U12,2026-10-10T09:00:00+09:00,true,가상사내문서/DOC-05_안전작업기준서.md
+DOC-06,MANUAL_DOC,검사 기준서,Rev.3,2026-10-13,APPROVED,U12,2026-10-13T09:00:00+09:00,true,가상사내문서/DOC-06_검사기준서.md
+DOC-07,MANUAL_DOC,설비 데이터·지표 정의서,Rev.10,2026-10-14,APPROVED,U12,2026-10-14T09:00:00+09:00,true,가상사내문서/DOC-07_설비데이터지표정의서.md
+GLOSSARY,GLOSSARY,용어집,Rev.4,2026-10-13,APPROVED,U12,2026-10-13T09:00:00+09:00,true,가상사내문서/00_용어집.md

@@ -1,0 +1,14 @@
+item_no,category,item_name,unit,owner_role,safety_stock,product_note
+TL-EM10,TOOL,엔드밀 Ø10,개,SUP,9,
+TL-DR50,TOOL,드릴 Ø5.0 (M6 탭 아랫구멍),개,SUP,5,
+TL-TAP6,TOOL,M6 탭,개,SUP,8,
+TL-BB45,TOOL,보링바 인서트,개,SUP,4,
+TL-FM50,TOOL,페이스밀 인서트,개,SUP,14,
+CS-WLUB,CONSUMABLE,축 윤활유,L,MNT,4,"Haas 축 윤활유 (1 gallon 통, 탱크 약 0.95 L)"
+CS-COOL,CONSUMABLE,절삭유 원액,L,MNT,20,"TRIM SC538 (Master Fluid Solutions, 반합성, 20 L 통)"
+CS-CFLT,CONSUMABLE,절삭유 필터,개,MNT,2,VF-2 표준 절삭유 필터
+CS-AFLT,CONSUMABLE,공기 필터,개,MNT,2,VF-2 공기/물 분리기 필터
+CS-SLUB,CONSUMABLE,주축 윤활유,L,MNT,4,Mobil 1 0W-20 (128 oz 통)
+CS-GRS,CONSUMABLE,그리스,개,MNT,2,Mobil Grease XHP 222 (14 oz 카트리지) — VF-2·SAW-01 앞 바이스·OP-40 텀블러 공용
+RM-6061,MATERIAL,6061-T6 봉재,개분,SUP,200,"압출 평각봉 19.05 × 57.15 mm, 12 ft (3,658 mm), ASTM B221 — 봉 1개 = 약 23개분"
+FG-BRK-A100,FINISHED,BRK-A100 완제품,개,SUP,,
