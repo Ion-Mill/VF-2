@@ -5,3 +5,5 @@ __pycache__/
 
 # 센서 값 CSV는 약 55MB라 GitHub 경고 크기(50MB)를 넘는다 (2026-10-14 센서 5초로 140MB에서 줄임). 같은 seed로 generate.py를 돌리면 똑같이 나온다
 out/sensor_sample.csv
+# 시연 데이터 서버(frontend/tools/sim_server.py)가 시연 중 떨어뜨리는 측정 결과 파일 — 처음으로 되돌리면 비움
+out_live/

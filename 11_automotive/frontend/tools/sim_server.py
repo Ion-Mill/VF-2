@@ -55,7 +55,7 @@ class State:
         data = HERE / "data.json"
         self.alarms = json.loads(data.read_text(encoding="utf-8"))["alarms"] if data.exists() else {}
         print("실시간 모드 준비 중 (10/1 08:00, 약 2초) …")
-        self.rt = Realtime(self.cfg, self.M)
+        self.rt = Realtime(self.cfg, self.M, drop_dir=GEN / "out_live" / self.cfg["realtime"]["cmm_drop_dir"])   # git 제외 폴더
         self.live = Live(self.rt, self.P)
         self.run_id = 1
         self.seq = 0

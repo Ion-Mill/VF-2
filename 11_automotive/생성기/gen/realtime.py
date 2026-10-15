@@ -72,12 +72,13 @@ class SensorLive:
 
 
 class Realtime:
-    def __init__(self, cfg: dict | None = None, masters: dict | None = None):
+    def __init__(self, cfg: dict | None = None, masters: dict | None = None, drop_dir: Path | None = None):
         self.cfg = cfg or load_config()
         self.M = masters or load_masters(self.cfg)
         self.rt = self.cfg["realtime"]
         self.scen = json.load(io.open(ROOT / self.rt["scenarios_dir"] / self.rt["event_file"], encoding="utf-8"))
-        self.drop_dir = ROOT / self.rt["out_dir"] / self.rt["cmm_drop_dir"]
+        # 측정 결과 파일 폴더. 시연 데이터 서버는 저장소 밖 폴더를 넘긴다 (out_realtime/cmm_drop은 리허설 결과라 커밋됨)
+        self.drop_dir = drop_dir or ROOT / self.rt["out_dir"] / self.rt["cmm_drop_dir"]
         self.force = self._t05_force()
         self.past = json.load(io.open(ROOT / self.cfg["run"]["out_dir"] / "manifest.json", encoding="utf-8"))["rows"]
         self.reset(log=False)
