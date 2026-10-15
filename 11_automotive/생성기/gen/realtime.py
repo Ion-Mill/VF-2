@@ -23,8 +23,10 @@ from . import quality as Q
 from . import records as R
 from . import stage4 as S4
 from .calendar import extend_calendar
-from .common import KST, ROOT, Out, _cell, fmt_dt, load_config, load_masters
+from .common import KST, ROOT, Out, _cell, at, fmt_dt, load_config, load_masters
+from .flow import MNT_BY_SHIFT, OPR_BY_PROC
 from .past import run_once, search_t05
+from .pm import PROC, next_due
 from .plan import MaintWindow, PlannedAlarm
 
 MTC = {"RUN": "ACTIVE", "IDLE": "READY", "BLOCKED": "READY", "DOWN": "STOPPED", "SETUP": None, "MAINT": None}
@@ -134,6 +136,8 @@ class Realtime:
         self.insp_rows, self.cmm_rows, self.fail_rid = [], [], {}
         self.pm_rows: list[dict] = []
         self.pm_inv: list[dict] = []
+        self.pm_rng = rng.stream("rt-pm")
+        self.pm_plan = self._plan_routine_pm()
         if self.drop_dir.exists():
             shutil.rmtree(self.drop_dir)
         self.drop_dir.mkdir(parents=True, exist_ok=True)
@@ -323,6 +327,49 @@ class Realtime:
                                     "txn_at": done_at, "txn_by": mnt, "source_kind": "PM_RECORD", "pm_record_id": rid})
         rec["pm_record_id"] = first
 
+    def _plan_routine_pm(self) -> list[tuple[int, str, date]]:
+        """10/1이 기한인 매일·매주 점검을 9월처럼 그날 오전에 한다 (gen/pm.py와 같은 시간대: 작업자 08:05~09:30, 보전 08:30~11:30).
+        안 하면 10/2 00:00에 "기한 넘김"이 된다. 매월 항목은 S6 정비, 기한 넘긴 2개(S2)는 시연 장면이라 뺀다."""
+        last: dict[str, str] = {}
+        with io.open(ROOT / self.cfg["run"]["out_dir"] / "pm_record.csv", encoding="utf-8") as f:
+            for r in csv.DictReader(f):
+                if r["done_at"]:
+                    last[r["pm_task_id"]] = max(last.get(r["pm_task_id"], ""), r["done_at"][:10])
+        cal = self.sim.cal
+        day = cal.to_dt(self.N).date()
+        overdue = self.cfg["sim"]["pm_plan"]["overdue_due"]
+        plan = []
+        for t in self.M["pm_task"]:
+            tid = t["pm_task_id"]
+            if t["on_calendar"] != "true" or t["cycle_code"] not in ("DAILY", "WEEKLY") or tid in overdue or tid not in last:
+                continue
+            due = next_due(date.fromisoformat(last[tid]), t["cycle_code"])
+            if due > day:
+                continue
+            hm = ("08:05", "09:30") if t["default_role"] == "OPR" else ("08:30", "11:30")
+            ms = [m for m in range(cal.to_min(at(day, hm[0])), cal.to_min(at(day, hm[1]))) if cal.is_work(m)]
+            plan.append((int(self.pm_rng.choice(ms)), tid, due))
+        return sorted(plan)
+
+    def _routine_pm(self, m: int, tid: str, due: date):
+        t = next(x for x in self.M["pm_task"] if x["pm_task_id"] == tid)
+        cal = self.sim.cal
+        sh = cal.shift_or_near(m)
+        mnt = MNT_BY_SHIFT[sh.shift_type][0]
+        by = OPR_BY_PROC[sh.shift_type][PROC[t["equipment_id"]]] if t["default_role"] == "OPR" else mnt
+        mv = mu = None
+        if tid.endswith("2.2-04"):                               # 절삭유 농도 (gen/pm.py와 같음)
+            mv, mu = round(float(self.pm_rng.uniform(6.6, 8.2)), 1), "%"
+        rid = self.past["pm_record"] + len(self.pm_rows) + 1
+        done_at = cal.to_dt(m)
+        self.pm_rows.append({"pm_record_id": rid, "pm_task_id": tid, "due_date": due, "done_at": done_at, "done_by": by,
+                             "recorded_by": mnt, "result": "REFILLED" if t["default_item_no"] else "NORMAL",
+                             "measured_value": mv, "measured_unit": mu, "memo": None, "status": "CONFIRMED", "current_version": 0})
+        if t["default_item_no"] == "CS-COOL":                    # 절삭유 보충 (gen/stage4.py와 같음, DOC-04 4.2)
+            q = 208 * 0.10 * 0.03 * 6 if tid.endswith("2.2-03") else float(self.pm_rng.uniform(0.2, 0.5))
+            self.pm_inv.append({"item_no": "CS-COOL", "txn_type": "USE", "qty_change": -round(q, 2), "txn_at": done_at,
+                                "txn_by": mnt, "source_kind": "PM_RECORD", "pm_record_id": rid})
+
     # ---------- 화면 조작 받기 ----------
     def suspect_lot(self) -> str | None:
         """S1 충돌(992) 때 가공 중이던 로트 (비서가 보류를 제안하는 의심 로트)."""
@@ -459,6 +506,8 @@ class Realtime:
         sh = cal.shift_at(m)
         if sh is not None and cal.to_min(sh.end) == m + 1:       # 교대 끝 (교대 보고서 AI비서 초안은 서버)
             self._emit("shift_end", at=fmt_dt(sh.end), shift_id=sh.shift_id)
+        while self.pm_plan and self.pm_plan[0][0] <= m:       # 일상 점검 실시 기록
+            self._routine_pm(*self.pm_plan.pop(0))
         self._watch_event(m)
         self.m += 1
         return self.events[n0:]
