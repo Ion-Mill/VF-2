@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,body{margin:0;height:100%;background:#eef1f4;}
+a{color:#0f6b7a;}
+a:hover{color:#0a4c57;}
+canvas{outline:none;display:block;}
+@keyframes introTitle{0%{opacity:0;transform:translateY(14px) scale(.98)}
+12%{opacity:0;transform:translateY(14px) scale(.98)}
+24%{opacity:1;transform:none}
+74%{opacity:1;transform:none}
+90%{opacity:0;transform:translateY(-10px)}
+100%{opacity:0}
+}
+@keyframes pulseDot{0%,100%{opacity:1}
+50%{opacity:.35}
+}
+@keyframes fxBob{0%,100%{transform:translateY(0)}
+50%{transform:translateY(-6px)}
+}
+@keyframes fxRing{0%{transform:scale(.7);opacity:.9}
+100%{transform:scale(2.3);opacity:0}
+}
+@keyframes cardShake{0%,14%,100%{transform:translateX(0)}
+2%,6%,10%{transform:translateX(-3px)}
+4%,8%,12%{transform:translateX(3px)}
+}
+@keyframes glowRed{0%,100%{box-shadow:0 12px 30px rgba(28,45,62,.16),0 0 0 0 rgba(229,72,77,.0)}
+50%{box-shadow:0 12px 30px rgba(28,45,62,.16),0 0 0 5px rgba(229,72,77,.28)}
+}
+@keyframes glowAmber{0%,100%{box-shadow:0 12px 30px rgba(28,45,62,.16),0 0 0 0 rgba(240,165,0,0)}
+50%{box-shadow:0 12px 30px rgba(28,45,62,.16),0 0 0 5px rgba(240,165,0,.3)}
+}
+@keyframes edgePulseSoft{0%,100%{box-shadow:inset 0 0 0 0 rgba(229,72,77,0)}
+50%{box-shadow:inset 0 0 40px 2px rgba(229,72,77,.12)}
+}
+@keyframes edgePulse{0%,100%{box-shadow:inset 0 0 0 0 rgba(229,72,77,0)}
+50%{box-shadow:inset 0 0 70px 6px rgba(229,72,77,.28)}
+}
+@keyframes bannerShake{0%,10%,100%{transform:translateX(0)}
+2%,6%{transform:translateX(-4px)}
+4%,8%{transform:translateX(4px)}
+}
+
+
+body{font-family:'Pretendard Variable',Pretendard,system-ui,sans-serif;}
+
+/* 데이터적용본: 화면 설정 "계산한 크기로 글자 키우기" (UI설계서 2.4 식) — 현장 보기 띠·3D 이름표 */
+.fs-scaled aside { font-size: var(--fs-body); }
+.fs-scaled [data-tier="tag"] span { font-size: var(--fs-big) !important; }
+
+/* 이브 = mom-assistant-widget 모양. 상단 바(52px)·범례(38px)는 가리지 않고, 긴급 팝업(z-40)·출처 창(z-50) 아래 */
+.ma-root { --ma-z: 25; font-family: inherit; }
+.ma-panel { top: 60px; bottom: 46px; }
+.ma-fab { bottom: 50px; }
+.ma-menu, .ma-toast { bottom: 126px; }
+/* 어두운 창 안의 기존 탭 내용 (밝은 화면용 Tailwind 색) */
+.ma-panel .text-slate-400, .ma-panel .text-slate-500 { color: var(--ma-panel-mute); }
+.ma-panel .text-slate-700 { color: var(--ma-panel-sub); }
+.ma-panel .text-\[\#9a6200\] { color: #FFC46B; }
+.ma-panel .border-slate-200, .ma-panel .border-slate-300 { border-color: rgba(255, 255, 255, 0.16); }
+.ma-panel .hover\:bg-slate-50:hover, .ma-panel .hover\:bg-slate-100:hover { background: rgba(255, 255, 255, 0.08); }
+.ma-panel select, .ma-panel input:not(.ma-input) { background: rgba(255, 255, 255, 0.06); color: var(--ma-panel-fg); }
+.ma-panel option { color: #15191C; }
