@@ -4,7 +4,7 @@
 |---|---|
 | 문서 번호 | DOC-04 |
 | 문서 이름 | 예방 정비 기준서 |
-| 개정 | Rev.2 (2026-10-10) |
+| 개정 | Rev.1 (2026-10-07) |
 | 승인 | 공장 관리자 (MGR) |
 | 구분 | **가상 사내 문서** (실제 문서를 바탕으로 작성) |
 | 제작 기준 | [가상데이터설계서_최종본.md 13장](../가상데이터설계서_최종본.md#13-가상-사내-문서-제작-기준), 값은 [설계서 5.12·5.14·15.3·15.5](../가상데이터설계서_최종본.md#15-가상-기준값-추천과-근거), 용어는 [00_용어집.md](00_용어집.md) |
@@ -26,7 +26,7 @@
 
 **잠금·표지 판단 규칙 [가상]:** ① 원문이 전원 끄기·[EMERGENCY STOP]·공기 차단을 요구하거나, ② 손이 움직이는 부위·제어반 안에 들어가거나, ③ 탱크를 비우는 작업이면 ○. 밖에서 보기만 하는 점검은 —.
 
-**누가 하나 [가상]:** 매일·매주 점검과 절삭유 보충은 작업자, ○ 표시 작업과 매월 이상 항목은 보전 담당자.
+**누가 하나 [가상]:** 매일·매주 점검과 절삭유 보충은 작업자가 한다. 매일 점검은 ○ 표시가 있어도 작업자가 하며, 잠금은 승인작업자로 지정된 작업자가 본인 자물쇠로 한다(DOC-05 §2). 그 밖의 ○ 표시 작업과 매월 이상 항목은 보전 담당자.
 
 ---
 
@@ -67,13 +67,13 @@
 
 | 부위 | 항목 | 방법 요약 | 쓰는 소모품 | 잠금·표지 | 근거·원문 |
 |---|---|---|---|---|---|
-| 외함 | 창(유리) 손상 점검 | 도어 창에 금·깨짐·긁힘이 없는지 본다. 있으면 가공을 멈추고 보전 담당자에게 알린다 | — | — | [실제] RD0080 99행 "Inspect windows for damage." |
-| 외함 | 도어 인터록 작동 점검 | 도어를 연 채로 가공이 시작되지 않는지, 알람 230 도어 열림이 뜨는지 확인한다 | — | — | [실제] RD0080 100행 "Inspect the door interlock operation." |
-| 교대 시작 | 절삭유 양 확인 | 교대 시작 때 탱크 수위를 본다. 줄었으면 보충한다 (4.2) | CS-COOL (보충 때) | — | [참고] OSHA 절삭유 매뉴얼 7쪽 "Check the sump level at the start of the shift" / Haas 밀 점검표 54행 "Check coolant level" |
-| 교대 시작 | 공기 압력 확인 | 제어기의 공기 압력이 운전 범위 안인지 본다. 공장 공기 최소 80 psi (5.5 bar) | — | — | [실제] Haas 밀 점검표 55행, VF-2 사양 "Air Pressure Min 80 psi" |
-| 교대 시작 | 공기 배관 물 빼기 | 에어건 방아쇠를 눌러 배관 속 물을 뺀다. 계속 물이 나오면 공장 공기를 점검한다 | — | — | [실제] Haas 밀 점검표 50~52행 |
-| 공구 | 공구 홀더·풀 스터드·테이퍼 손상 점검 | 칩을 털어 내고, 녹·긁힘(galling)이 있는 공구는 뺀다 | — | — | [실제] Haas 밀 점검표 62~64행 |
-| 교대 끝 | 웨이 커버 칩 청소, 탱크 위 칩 필터 확인 | 웨이 커버 위 칩을 치우고, 절삭유 탱크 위 칩 필터에 쌓인 칩을 덜어 낸다 | — | — | [실제] Haas 밀 점검표 68~69행 |
+| 외함 | 창(유리) 손상 점검 | 작업자가 도어 창에 금·깨짐·긁힘이 없는지 본다. 있으면 가공을 멈추고 보전 담당자에게 알린다 | — | — | [실제] RD0080 99행 "Inspect windows for damage." |
+| 외함 | 도어 인터록 작동 점검 | 작업자가 도어를 연 채로 가공이 시작되지 않는지, 알람 230 도어 열림이 뜨는지 확인한다 | — | — | [실제] RD0080 100행 "Inspect the door interlock operation." |
+| 교대 시작 | 절삭유 양 확인 | 작업자가 교대 시작 때 탱크 수위를 본다. 줄었으면 보충한다 (4.2) | CS-COOL (보충 때) | — | [참고] OSHA 절삭유 매뉴얼 7쪽 "Check the sump level at the start of the shift" / Haas 밀 점검표 54행 "Check coolant level" |
+| 교대 시작 | 공기 압력 확인 | 작업자가 제어기의 공기 압력이 운전 범위 안인지 본다. 공장 공기 최소 80 psi (5.5 bar) | — | — | [실제] Haas 밀 점검표 55행, VF-2 사양 "Air Pressure Min 80 psi" |
+| 교대 시작 | 공기 배관 물 빼기 | 작업자가 에어건 방아쇠를 눌러 배관 속 물을 뺀다. 계속 물이 나오면 공장 공기를 점검한다 | — | — | [실제] Haas 밀 점검표 50~52행 |
+| 공구 | 공구 홀더·풀 스터드·테이퍼 손상 점검 | 작업자가 칩을 털어 내고, 녹·긁힘(galling)이 있는 공구는 뺀다 | — | — | [실제] Haas 밀 점검표 62~64행 |
+| 교대 끝 | 웨이 커버 칩 청소, 탱크 위 칩 필터 확인 | 작업자가 웨이 커버 위 칩을 치우고, 절삭유 탱크 위 칩 필터에 쌓인 칩을 덜어 낸다 | — | — | [실제] Haas 밀 점검표 68~69행 |
 
 - "교대 시작·공구·교대 끝" 줄은 RD0080이 아니라 **Haas 밀 주간 정비 점검표**(Mill Weekly Maintenance Checklist, 개정 표기 없음)에서 가져왔다. MNT-04 달력에는 RD0080 2개만 올리고, 나머지는 교대 시작 점검표로 쓴다 [가상].
 
@@ -81,24 +81,24 @@
 
 | 부위 | 항목 | 방법 요약 | 쓰는 소모품 | 잠금·표지 | 근거·원문 |
 |---|---|---|---|---|---|
-| 공구 교환장치 | 공구 교환장치의 칩 청소 | 보호 덮개 위 칩을 치우고, 공구 빼기 포크·키가 많이 닳거나 상했는지 본다 | — | ○ | [실제] RD0080 61행 "Clean the chips from the tool changer." / 점검표 80~82행 (UMB) |
-| 공압 | 주축 공기 조절기 압력 점검 | 윤활 패널의 공기 조절기 게이지 값이 제어기 표시값과 같고, 허용 범위 안인지 본다 | — | — | [실제] RD0080 127행 "Inspect the spindle air regulator pressure." / 점검표 84~86행 |
-| 절삭유 | 절삭유 양 점검 | 탱크 수위계(플로트 게이지)가 제대로 움직이고, 표시가 실제 수위와 같은지 본다 | CS-COOL (보충 때) | — | [실제] RD0080 152행 "Inspect the coolant level." / 점검표 88~90행 |
-| 절삭유 | 절삭유 농도 점검, 혼합·정비 기록지 작성 | 굴절계로 재고, 원액 제조사 기준 안인지 본다. 값은 실시 기록에 남긴다 (4.2) | CS-COOL (조정 때) | — | [실제] RD0080 153행 "Inspect the coolant concentration. Fill out the Mixture - Maintenance Log sheet." / 점검표 92~94행 |
-| 절삭유 | 혼입유 제거, 필터 칩 제거 | 탱크 표면에 뜬 혼입유를 걷어 내고, 절삭유 필터의 칩을 뺀다 | — | — | [실제] Haas 밀 점검표 96~97행 |
+| 공구 교환장치 | 공구 교환장치의 칩 청소 | 보전 담당자가 보호 덮개 위 칩을 치우고, 공구 빼기 포크·키가 많이 닳거나 상했는지 본다 | — | ○ | [실제] RD0080 61행 "Clean the chips from the tool changer." / 점검표 80~82행 (UMB) |
+| 공압 | 주축 공기 조절기 압력 점검 | 작업자가 윤활 패널의 공기 조절기 게이지 값이 제어기 표시값과 같고, 허용 범위 안인지 본다 | — | — | [실제] RD0080 127행 "Inspect the spindle air regulator pressure." / 점검표 84~86행 |
+| 절삭유 | 절삭유 양 점검 | 작업자가 탱크 수위계(플로트 게이지)가 제대로 움직이고, 표시가 실제 수위와 같은지 본다 | CS-COOL (보충 때) | — | [실제] RD0080 152행 "Inspect the coolant level." / 점검표 88~90행 |
+| 절삭유 | 절삭유 농도 점검, 혼합·정비 기록지 작성 | 작업자가 굴절계로 재고, 원액 제조사 기준 안인지 본다. 값은 실시 기록에 남긴다 (4.2) | CS-COOL (조정 때) | — | [실제] RD0080 153행 "Inspect the coolant concentration. Fill out the Mixture - Maintenance Log sheet." / 점검표 92~94행 |
+| 절삭유 | 혼입유 제거, 필터 칩 제거 | 작업자가 탱크 표면에 뜬 혼입유를 걷어 내고, 절삭유 필터의 칩을 뺀다 | — | — | [실제] Haas 밀 점검표 96~97행 |
 
 ### 2.3 매월
 
 | 부위 | 항목 | 방법 요약 | 쓰는 소모품 | 잠금·표지 | 근거·원문 |
 |---|---|---|---|---|---|
-| 축 윤활 | 윤활유 저장소 양 점검·보충 | 탱크 양을 보고 보충한다. 전원 끄기 → 주 공기 밸브 닫기 → 압력 해제 밸브 링 당기기 → 탱크 빼기 → 나사산 아래 1/2" (13 mm)까지 채우기 → 손으로 조이고 3/4바퀴 더 (4.1) | **CS-WLUB** | ○ (간이 잠금, DOC-05 §2.4) | [실제] RD0080 78행 "Inspect oil reservoir level and refill." / 방법: LUBE-SM-02 119~129행 |
-| 전기함 | 벡터 드라이브 환기구·필터 청소 | 환기구와 필터의 먼지를 털어 낸다 | — | ○ | [실제] RD0080 93행 "Clean vector drive air vents / filter." |
-| 외함 | 웨이 커버 점검·윤활 | 웨이 커버가 걸림 없이 움직이는지 보고 그리스를 바른다 | **CS-GRS** (Mobil Grease XHP 222) | ○ | [실제] RD0080 101행 "Inspect waycovers and lubricate." / 그리스: RD0040 Specialty Grease |
-| 공구 교환장치 | 모터와 근접 센서 점검 | [EMERGENCY STOP] 뒤, 20개짜리 캐러셀의 근접 센서를 닦는다: ① 캐러셀 모터 판의 센서(캐러셀 모터 센서 2개)를 빼서 칩·찌꺼기를 없애고 주변을 깨끗한 천으로 닦는다 ② 캐리지와 슬립 클러치를 분리(캐리지 고정 볼트 풀기)하고 캐리지를 양쪽으로 밀어 셔틀 IN·OUT 센서 2개를 빼서 닦는다 ③ 뺀 순서 반대로 단다. 상태는 [DIAGNOSTIC] → I/O 탭에서 본다. "기계식 센서" 항목은 옛 기종(롤러 스위치)용이라 제외 | — | ○ | 항목 [실제] RD0080 63행 "Inspect motors and proximity sensors." / 센서 종류 [실제] VF/VM 서비스 매뉴얼 4.1 Shuttle Sensors "The shuttle assembly has two proximity sensors", 4.5 Rail Guides and Proximity Sensors "Older machine models use roller switches in place of the proximity sensors" / 방법 [실제] Umbrella TC Mechanical Switches and Proximity Sensors - Maintenance, 20-Pocket Carousel 절. 실제 기계에서 근접 센서인지 한 번 확인 [가상] |
-| 공구 교환장치 | 가이드 레일 그리스 주입 | 가이드 레일 = 셔틀 바퀴가 구르는 **위·아래 V 레일**. 먼저 V 레일과 바퀴에 칩이 없는지, 와이퍼가 닳거나 상하지 않았는지 본다 [실제]. 그 뒤 V 레일에 그리스를 **얇게** 바른다 [참고]. 주입 위치(그리스 니플 유무)·양은 원문에서 찾지 못함 → 첫 실시 때 보전 담당자가 정해 기록한다 [가상] | **CS-GRS** | ○ | 항목 [실제] RD0080 64행 "Grease the guide rails." / 레일·점검 [실제] VF/VM 서비스 매뉴얼 4.5 "Check the top and bottom V-rails, and the wheels for chips. Check for damaged or worn wipers." / 그리스 종류·"얇게" [참고] Haas Mill Maintenance Checklist (Monthly) 검색 요약 "Mobil Grease XHP 222 … lightly grease the V-rail guide rails" — 원본 PDF는 지금 Haas 서버에서 404라 원문 대조 못 함 |
+| 축 윤활 | 윤활유 저장소 양 점검·보충 | 보전 담당자가 탱크 양을 보고 보충한다. 전원 끄기 → 주 공기 밸브 닫기 → 압력 해제 밸브 링 당기기 → 탱크 빼기 → 나사산 아래 1/2" (13 mm)까지 채우기 → 손으로 조이고 3/4바퀴 더 (4.1) | **CS-WLUB** | ○ (간이 잠금, DOC-05 §2.4) | [실제] RD0080 78행 "Inspect oil reservoir level and refill." / 방법: LUBE-SM-02 119~129행 |
+| 전기함 | 벡터 드라이브 환기구·필터 청소 | 보전 담당자가 환기구와 필터의 먼지를 털어 낸다 | — | ○ | [실제] RD0080 93행 "Clean vector drive air vents / filter." |
+| 외함 | 웨이 커버 점검·윤활 | 보전 담당자가 웨이 커버가 걸림 없이 움직이는지 보고 그리스를 바른다 | **CS-GRS** (Mobil Grease XHP 222) | ○ | [실제] RD0080 101행 "Inspect waycovers and lubricate." / 그리스: RD0040 Specialty Grease |
+| 공구 교환장치 | 모터와 근접 센서 점검 | 보전 담당자가 [EMERGENCY STOP] 뒤, 20개짜리 캐러셀의 근접 센서를 닦는다: ① 캐러셀 모터 판의 센서(캐러셀 모터 센서 2개)를 빼서 칩·찌꺼기를 없애고 주변을 깨끗한 천으로 닦는다 ② 캐리지와 슬립 클러치를 분리(캐리지 고정 볼트 풀기)하고 캐리지를 양쪽으로 밀어 셔틀 IN·OUT 센서 2개를 빼서 닦는다 ③ 뺀 순서 반대로 단다. 상태는 [DIAGNOSTIC] → I/O 탭에서 본다. "기계식 센서" 항목은 옛 기종(롤러 스위치)용이라 제외 | — | ○ | 항목 [실제] RD0080 63행 "Inspect motors and proximity sensors." / 센서 종류 [실제] VF/VM 서비스 매뉴얼 4.1 Shuttle Sensors "The shuttle assembly has two proximity sensors", 4.5 Rail Guides and Proximity Sensors "Older machine models use roller switches in place of the proximity sensors" / 방법 [실제] Umbrella TC Mechanical Switches and Proximity Sensors - Maintenance, 20-Pocket Carousel 절. 실제 기계에서 근접 센서인지 한 번 확인 [가상] |
+| 공구 교환장치 | 가이드 레일 그리스 주입 | 가이드 레일 = 셔틀 바퀴가 구르는 **위·아래 V 레일**. 보전 담당자가 먼저 V 레일과 바퀴에 칩이 없는지, 와이퍼가 닳거나 상하지 않았는지 본다 [실제]. 그 뒤 V 레일에 그리스를 **얇게** 바른다 [참고]. 주입 위치(그리스 니플 유무)·양은 원문에서 찾지 못함 → 첫 실시 때 보전 담당자가 정해 기록한다 [가상] | **CS-GRS** | ○ | 항목 [실제] RD0080 64행 "Grease the guide rails." / 레일·점검 [실제] VF/VM 서비스 매뉴얼 4.5 "Check the top and bottom V-rails, and the wheels for chips. Check for damaged or worn wipers." / 그리스 종류·"얇게" [참고] Haas Mill Maintenance Checklist (Monthly) 검색 요약 "Mobil Grease XHP 222 … lightly grease the V-rail guide rails" — 원본 PDF는 지금 Haas 서버에서 404라 원문 대조 못 함 |
 | 공구 교환장치 | 공구 빼기 핑거 그리스 주입 | 위와 같음 | **CS-GRS** | ○ | [실제] RD0080 65행 "Grease the extractor fingers." |
-| 주축 윤활 | 주축 윤활 탱크 양 점검 | 탱크 양을 보고 부족하면 지정 오일로 채운다 (4.4) | **CS-SLUB** (Mobil 1 0W-20) | — (보기만) / 채울 때 간이 잠금 (DOC-05 §2.4) | [실제] RD0080 177행 "Inspect lubrication tank level." / 오일: RD0040 Spindle Lubricants |
-| 주축 | 주축 테이퍼 점검 | [EMERGENCY STOP] 뒤 손전등으로 마모·손상을 보고, 보풀 없는 천으로 닦고 기계유를 얇게 바른다 | — | ○ | [실제] VFVM-SM-18 18.2, 193~197·212행 |
+| 주축 윤활 | 주축 윤활 탱크 양 점검 | 보전 담당자가 탱크 양을 보고 부족하면 지정 오일로 채운다 (4.4) | **CS-SLUB** (Mobil 1 0W-20) | — (보기만) / 채울 때 간이 잠금 (DOC-05 §2.4) | [실제] RD0080 177행 "Inspect lubrication tank level." / 오일: RD0040 Spindle Lubricants |
+| 주축 | 주축 테이퍼 점검 | 보전 담당자가 [EMERGENCY STOP] 뒤 손전등으로 마모·손상을 보고, 보풀 없는 천으로 닦고 기계유를 얇게 바른다 | — | ○ | [실제] VFVM-SM-18 18.2, 193~197·212행 |
 
 - 시연 S2: VF2-02의 "윤활유 저장소 양 점검·보충"이 기한을 넘긴 상태에서 알람 2075 축 윤활유 저장소 비워짐이 반복된다 [가상, 설계서 7장]. 이 항목이 밀리면 AI 비서가 2075와 함께 안내한다.
 
@@ -112,20 +112,20 @@
 
 | 부위 | 항목 | 방법 요약 | 쓰는 소모품 | 잠금·표지 | 근거·원문 |
 |---|---|---|---|---|---|
-| 축 윤활 | 호스 갈라짐 점검 | 축 윤활 호스에 금·새는 곳이 없는지 본다 | — | ○ | [실제] RD0080 79행 "Inspect the hoses for cracking." |
-| 축 윤활 | 축 윤활 시험 실시 | [DIAGNOSTICS] → Maintenance 탭 → Lube 탭 → [F2]. 알람이 없어질 때까지 반복하고, 시험 사이 최소 1분 기다린다 | — | — | [실제] RD0080 80행 "Perform an Axis Lubrication Test." / LUBE-SM-02 137~145행 |
-| 공압 | 호스 갈라짐 점검 | 공압 호스에 금·새는 곳이 없는지 본다 | — | ○ | [실제] RD0080 128행 "Inspect the hoses for cracking." |
-| 절삭유 | 절삭유 탱크 완전 청소, 절삭유 교체 | 탱크를 비우고 칩·찌꺼기를 치운 뒤 새 절삭유를 채운다 (4.2) | **CS-COOL** | ○ | [실제] RD0080 154행 "Completely clean the coolant tank and replace the coolant." |
-| 절삭유 | 표준 절삭유 필터 청소 (+ 교체) | 필터를 청소한다. **청소할 때 새 필터로 바꾼다** [가상] | **CS-CFLT** 1개 | ○ | [실제] RD0080 155행 "Clean the standard coolant filter." / 교체: 설계서 15.3 [가상] |
-| 주축 윤활 | 주축 윤활 시험 실시 | 제어기의 주축 윤활 시험을 돌린다 | — | — | [실제] RD0080 178행 "Perform Spindle Lubrication Test." |
+| 축 윤활 | 호스 갈라짐 점검 | 보전 담당자가 축 윤활 호스에 금·새는 곳이 없는지 본다 | — | ○ | [실제] RD0080 79행 "Inspect the hoses for cracking." |
+| 축 윤활 | 축 윤활 시험 실시 | [DIAGNOSTICS] → Maintenance 탭 → Lube 탭 → [F2]. 보전 담당자가 알람이 없어질 때까지 반복하고, 시험 사이 최소 1분 기다린다 | — | — | [실제] RD0080 80행 "Perform an Axis Lubrication Test." / LUBE-SM-02 137~145행 |
+| 공압 | 호스 갈라짐 점검 | 보전 담당자가 공압 호스에 금·새는 곳이 없는지 본다 | — | ○ | [실제] RD0080 128행 "Inspect the hoses for cracking." |
+| 절삭유 | 절삭유 탱크 완전 청소, 절삭유 교체 | 보전 담당자가 탱크를 비우고 칩·찌꺼기를 치운 뒤 새 절삭유를 채운다 (4.2) | **CS-COOL** | ○ | [실제] RD0080 154행 "Completely clean the coolant tank and replace the coolant." |
+| 절삭유 | 표준 절삭유 필터 청소 (+ 교체) | 보전 담당자가 필터를 청소한다. **청소할 때 새 필터로 바꾼다** [가상] | **CS-CFLT** 1개 | ○ | [실제] RD0080 155행 "Clean the standard coolant filter." / 교체: 설계서 15.3 [가상] |
+| 주축 윤활 | 주축 윤활 시험 실시 | 보전 담당자가 제어기의 주축 윤활 시험을 돌린다 | — | — | [실제] RD0080 178행 "Perform Spindle Lubrication Test." |
 
 ### 2.6 1년
 
 | 부위 | 항목 | 방법 요약 | 쓰는 소모품 | 잠금·표지 | 근거·원문 |
 |---|---|---|---|---|---|
-| 공압 | 공기 퍼지 솔레노이드 청소 | 솔레노이드를 청소한다 | — | ○ | [실제] RD0080 129행 "Clean the Air Purge Solenoid." |
-| 주축 | 주축 드로바 힘 측정 | Haas 드로바 힘 측정 절차를 따른다 | — | ○ | [실제] RD0080 171행 "Spindle drawbar force measurement." |
-| 공압 | 공기 필터 교체 | 기계 뒤쪽 **공기·윤활 모듈(CALM)** 점검문 안의 **공기/물 분리기(Air/Water Separator)** 필터를 새것으로 바꾼다. 공기를 차단하고 압력을 뺀 뒤 한다(DOC-05 §3) [가상]. 필터를 빼고 나사산에 Sikaflex를 바르고 끼운다(스파크 플러그 플라이어 같은 공구로 풀고 조임). 케이싱·O링·스크린·캡도 닦는다. CS-AFLT = 이 필터(Haas P/N 58-1391 "Muffler Poly 100 Micron NPT-3/8M") | **CS-AFLT** 1개 | ○ | 위치 [실제] Mill 운영자 매뉴얼 96-8210 Rev V F2.5 "D Consolidated Air-Lubrication Module (CALM)" (PDF 60쪽), F2.9 Detail D "5. Air/Water Separator" (PDF 63쪽, 일반 수직 밀 그림) / 방법·부품번호 [실제] Tool Release Piston TSG "Water Separator Filter" 절 (원문은 공압 고장 때 점검·교체하는 절차) / 주기 [참고] Haas HCS-80 정비 일정 "Replace air-filter — Yearly" (다른 Haas 기계). RD0080에는 교체 주기가 없다 (설계서 15.3) |
+| 공압 | 공기 퍼지 솔레노이드 청소 | 보전 담당자가 솔레노이드를 청소한다 | — | ○ | [실제] RD0080 129행 "Clean the Air Purge Solenoid." |
+| 주축 | 주축 드로바 힘 측정 | 보전 담당자가 Haas 드로바 힘 측정 절차를 따른다 | — | ○ | [실제] RD0080 171행 "Spindle drawbar force measurement." |
+| 공압 | 공기 필터 교체 | 보전 담당자가 기계 뒤쪽 **공기·윤활 모듈(CALM)** 점검문 안의 **공기/물 분리기(Air/Water Separator)** 필터를 새것으로 바꾼다. 공기를 차단하고 압력을 뺀 뒤 한다(DOC-05 §3) [가상]. 필터를 빼고 나사산에 Sikaflex를 바르고 끼운다(스파크 플러그 플라이어 같은 공구로 풀고 조임). 케이싱·O링·스크린·캡도 닦는다. CS-AFLT = 이 필터(Haas P/N 58-1391 "Muffler Poly 100 Micron NPT-3/8M") | **CS-AFLT** 1개 | ○ | 위치 [실제] Mill 운영자 매뉴얼 96-8210 Rev V F2.5 "D Consolidated Air-Lubrication Module (CALM)" (PDF 60쪽), F2.9 Detail D "5. Air/Water Separator" (PDF 63쪽, 일반 수직 밀 그림) / 방법·부품번호 [실제] Tool Release Piston TSG "Water Separator Filter" 절 (원문은 공압 고장 때 점검·교체하는 절차) / 주기 [참고] Haas HCS-80 정비 일정 "Replace air-filter — Yearly" (다른 Haas 기계). RD0080에는 교체 주기가 없다 (설계서 15.3) |
 
 ### 2.7 필요할 때
 
@@ -139,38 +139,38 @@
 
 ## 3. 다른 공정 예방 정비 (간단히)
 
-공정당 1~3항목만 MNT-04 달력에 올린다 (기획서 MNT-04 표).
+공정당 1~2항목만 MNT-04 달력에 올린다 (기획서 MNT-04 표).
 
 ### 3.1 OP-10 HCS-80 (SAW-01)
 
 | 항목 | 주기 | 방법 요약 | 잠금·표지 | MNT-04 등록 | 근거 |
 |---|---|---|---|---|---|
-| 절단 구역 칩·찌꺼기 청소 | 매일 | 절단 구역의 칩을 치운다 | ○ | ○ (톱날 점검과 한 항목) | [실제] HCS-80 5.1 "Clean the cutting area of chips and debris — Daily" |
-| 톱날 상태 점검 | 매일 | 톱날 이 빠짐·마모를 본다. 톱날을 만질 때는 베임 방지 장갑 | ○ | ○ | [실제] HCS-80 5.1 "Check blade condition — Daily", 5.2 Caution |
-| 가이드 레일 윤활유 레벨 점검·보충 | **매주** | 윤활 캐비닛 안 윤활유 탱크 양을 보고 채운다 (Mobil Way Oil 68 Vactra No. 2, Haas 93-5656). 캐비닛을 열고 채울 때는 [EMERGENCY STOP] → 전원 끄기 → SAW-01-E1 자물쇠 + 표지 → 기동 안 됨 확인 → 보충 → 해제 뒤 경보 5303이 꺼졌는지 본다. 캐비닛을 열지 않고 레벨만 볼 때는 잠금 없음 | ○ (보충 때, **1점 잠금 SAW-01-E1**, DOC-05 §2.4) | ○ | 주기 [참고]: HCS-80 일정에 이 항목은 없고, 같은 표의 기름 레벨 점검이 매주. 경보 5303.00 가이드 레일 윤활유 레벨 낮음이 있어 둠 (설계서 15.3) / 오일 [실제] HCS-80 5.1 "Lubricating Oil 93-5656 Mobil Way Oil 68 Vactra No. 2" / 잠금 [가상] 근거는 DOC-05 §2.4 (HCS-80 2.1 "Motion is possible when the power is on and the machine is not in [EMERGENCY STOP]" [실제], 다른 기종 AD0630 "Power off the machine." [참고]) |
-| 기어박스 오일 / 유압유 레벨 점검 | 매주 | 레벨 표시를 본다 | — | — | [실제] HCS-80 5.1 "Inspect the gearbox oil level / hydraulic oil level — Weekly" |
-| 앞 바이스 리니어 가이드 그리스 주입 | **매월** | 기계 앞쪽 그리스 니플(zerk)로 Mobilgrease XHP 222(Haas 99-1686, CS-GRS)를 넣는다. 공용 그리스건 사용 | ○ (SAW-01-E1 1점, DOC-05 §2.4와 같게) | ○ | 방법·그리스 [실제] HCS-80 5.1 "Grease the linear guides of the front vise through the zerk fittings (3) in the front of the machine", 윤활유 표 "Grease 99-1686 Mobilgrease XHP 222". 주기는 원문에 없어 [참고]: 같은 Haas의 VF-2 공구 교환장치 가이드 레일 그리스 주입 주기(매월, RD0080 64행, 이 문서 2.3)를 빌림 |
-| 공기 필터 교체, 유압유·기어 오일 교체 | 1년 | 1년에 1번이라 MNT-04 달력에 올리지 않고 실시 기록만 남긴다. 공기 필터·오일은 재고 품목이 아니다 (4.6) | ○ | — | [실제] HCS-80 5.1 "Replace air-filter", "Replace hydraulic oil and gearbox oil — Yearly" |
+| 절단 구역 칩·찌꺼기 청소 | 매일 | 작업자가 절단 구역의 칩을 치운다 | ○ | ○ (톱날 점검과 한 항목) | [실제] HCS-80 5.1 "Clean the cutting area of chips and debris — Daily" |
+| 톱날 상태 점검 | 매일 | 작업자가 톱날 이 빠짐·마모를 본다. 톱날을 만질 때는 베임 방지 장갑 | ○ | ○ | [실제] HCS-80 5.1 "Check blade condition — Daily", 5.2 Caution |
+| 가이드 레일 윤활유 레벨 점검·보충 | **매주** | 보전 담당자가 윤활 캐비닛 안 윤활유 탱크 양을 보고 채운다 (Mobil Way Oil 68 Vactra No. 2, Haas 93-5656). 캐비닛을 열고 채울 때는 [EMERGENCY STOP] → 전원 끄기 → SAW-01-E1 자물쇠 + 표지 → 기동 안 됨 확인 → 보충 → 해제 뒤 경보 5303이 꺼졌는지 본다. 캐비닛을 열지 않고 레벨만 볼 때는 잠금 없음 | ○ (보충 때, **1점 잠금 SAW-01-E1**, DOC-05 §2.4) | ○ | 주기 [참고]: HCS-80 일정에 이 항목은 없고, 같은 표의 기름 레벨 점검이 매주. 경보 5303.00 가이드 레일 윤활유 레벨 낮음이 있어 둠 (설계서 15.3) / 오일 [실제] HCS-80 5.1 "Lubricating Oil 93-5656 Mobil Way Oil 68 Vactra No. 2" / 잠금 [가상] 근거는 DOC-05 §2.4 (HCS-80 2.1 "Motion is possible when the power is on and the machine is not in [EMERGENCY STOP]" [실제], 다른 기종 AD0630 "Power off the machine." [참고]) |
+| 기어박스 오일 / 유압유 레벨 점검 | 매주 | 작업자가 레벨 표시를 본다 | — | — | [실제] HCS-80 5.1 "Inspect the gearbox oil level / hydraulic oil level — Weekly" |
+| 앞 바이스 리니어 가이드 그리스 주입 | **매월** | 보전 담당자가 기계 앞쪽 그리스 니플(zerk)로 Mobilgrease XHP 222(Haas 99-1686, CS-GRS)를 넣는다. 공용 그리스건 사용 | ○ (SAW-01-E1 1점, DOC-05 §2.4와 같게) | ○ | 방법·그리스 [실제] HCS-80 5.1 "Grease the linear guides of the front vise through the zerk fittings (3) in the front of the machine", 윤활유 표 "Grease 99-1686 Mobilgrease XHP 222". 주기는 원문에 없어 [참고]: 같은 Haas의 VF-2 공구 교환장치 가이드 레일 그리스 주입 주기(매월, RD0080 64행, 이 문서 2.3)를 빌림 |
+| 공기 필터 교체, 유압유·기어 오일 교체 | 1년 | — | ○ | — | [실제] HCS-80 5.1 "Replace air-filter", "Replace hydraulic oil and gearbox oil — Yearly" |
 
 ### 3.2 OP-20 머시닝센터 (MIL-01)
 
 | 항목 | 주기 | 방법 요약 | 잠금·표지 | 근거 |
 |---|---|---|---|---|
-| 윤활 레벨·습동면 점검 | 매일 | 윤활유 레벨과 습동면에 윤활유가 고르게 있는지 본다 | — | [가상] 기계 제조사를 정하지 않아 근거 문서 없음 (설계서 15.3) |
+| 윤활 레벨·습동면 점검 | 매일 | 작업자가 윤활유 레벨과 습동면에 윤활유가 고르게 있는지 본다 | — | [가상] 기계 제조사를 정하지 않아 근거 문서 없음 (설계서 15.3) |
 
 ### 3.3 OP-40 세척기·텀블러 (WSH-01)
 
 | 항목 | 주기 | 방법 요약 | 잠금·표지 | 근거 |
 |---|---|---|---|---|
-| 텀블러 베어링 그리스 주입 | **8시간 사용마다** | 장비를 끄고(DOC-05 §2.4 1점 잠금), 뒤쪽 구멍으로 베어링 그리스 니플마다 그리스건을 **1번 누른다** (약 1.5 cm³). 그리스는 **CS-GRS (Mobil Grease XHP 222, 리튬 복합·EP·NLGI 2)** 를 쓰고 다른 그리스와 섞지 않는다. 위 덮개는 열지 않는다(회전 추 위험) (4.5) | ○ | 주기 [참고] 진동 바렐 KVF3 매뉴얼 3쪽 "LUBRICATE AFTER EVERY 8 HOURS OF USE WITH GREASE" (다른 모델, 종류 없음) / 그리스 종류 [참고] FAG TPI 197 인쇄 34쪽 "lithium soap greases with EP … penetration class 2" / 양 [참고·가상] 4.5 |
-| 세척액 상태 점검 | 매일 | 액 속에 고형 찌꺼기가 보이거나 색이 변했으면 빼고 새로 채운다 | ○ (뺄 때) | [참고] Kerry MKC 매뉴얼 20쪽 4.2.2 "Daily: Check condition of the cleaning fluid" (다른 모델) |
-| (참고) 세척액 수위 | 자주 | 운전 수위 아래로 3/8 inch (1 cm) 넘게 내려가지 않게 채운다. 액을 바꿀 때 탱크 오염을 보고 부드러운 천과 물로 닦는다 | ○ (뺄 때) | [참고] Bransonic 매뉴얼 PDF 14쪽 주의, 7.1 표 7.1 Tanks (PDF 68쪽) |
+| 텀블러 베어링 그리스 주입 | **8시간 사용마다** | 보전 담당자가 장비를 끄고(DOC-05 §2.4 1점 잠금), 뒤쪽 구멍으로 베어링 그리스 니플마다 그리스건을 **1번 누른다** (약 1.5 cm³). 그리스는 **CS-GRS (Mobil Grease XHP 222, 리튬 복합·EP·NLGI 2)** 를 쓰고 다른 그리스와 섞지 않는다. 위 덮개는 열지 않는다(회전 추 위험) (4.5) | ○ | 주기 [참고] 진동 바렐 KVF3 매뉴얼 3쪽 "LUBRICATE AFTER EVERY 8 HOURS OF USE WITH GREASE" (다른 모델, 종류 없음) / 그리스 종류 [참고] FAG TPI 197 인쇄 34쪽 "lithium soap greases with EP … penetration class 2" / 양 [참고·가상] 4.5 |
+| 세척액 상태 점검 | 매일 | 작업자가 액 속에 고형 찌꺼기가 보이거나 색이 변했으면 빼고 새로 채운다 | ○ (뺄 때) | [참고] Kerry MKC 매뉴얼 20쪽 4.2.2 "Daily: Check condition of the cleaning fluid" (다른 모델) |
+| (참고) 세척액 수위 | 매일 | 작업자가 운전 수위 아래로 3/8 inch (1 cm) 넘게 내려가지 않게 채운다. 액을 바꿀 때 탱크 오염을 보고 부드러운 천과 물로 닦는다 | ○ (뺄 때) | [참고] Bransonic 매뉴얼 PDF 14쪽 주의, 7.1 표 7.1 Tanks (PDF 68쪽) |
 
 ### 3.4 OP-50 3차원 측정기 (CMM-01)
 
 | 항목 | 주기 | 방법 요약 | 잠금·표지 | 근거 |
 |---|---|---|---|---|
-| 측정기 중간 점검 (기준물 측정) | **매주** [가상] | 기준물(링 게이지 등)과 스타일러스 끝을 먼지 없이 닦고, 평소 측정과 같은 방법·속도로 기준물을 잰다. 결과가 측정기 사양 안인지 본다. 충돌·큰 온도 변화 뒤에는 바로 한 번 더 | — | 주기 [가상]: NPL GPG 42는 "주기는 필요한 성능·환경·사용량에 따라 사용자가 정한다"고만 함 (PDF 60쪽). 방법 [참고]: NPL GPG 42 9장 (PDF 60·66·69쪽) |
+| 측정기 중간 점검 (기준물 측정) | **매주** [가상] | 작업자가 기준물(링 게이지 등)과 스타일러스 끝을 먼지 없이 닦고, 평소 측정과 같은 방법·속도로 기준물을 잰다. 결과가 측정기 사양 안인지 본다. 충돌·큰 온도 변화 뒤에는 바로 한 번 더 | — | 주기 [가상]: NPL GPG 42는 "주기는 필요한 성능·환경·사용량에 따라 사용자가 정한다"고만 함 (PDF 60쪽). 방법 [참고]: NPL GPG 42 9장 (PDF 60·66·69쪽) |
 
 ---
 
@@ -183,9 +183,9 @@
 | CS-WLUB | 축 윤활유 | 2.3 매월 점검·보충 | 실제로 부은 양 (L) | 4 L | 주기 [실제: RD0080 78행], 소비량 [가상] |
 | CS-COOL | 절삭유 원액 | 교대 시작 보충, 2.2 농도 조정, 2.5 탱크 교체 | 보충량 × 보충 농도 (아래 4.2) | 20 L | 4.2 |
 | CS-CFLT | 절삭유 필터 | 2.5 6개월 필터 청소 때 교체 | 1개 | 2개 | 청소 [실제: RD0080 155행], 교체 [가상] |
-| CS-AFLT | 공기 필터 | 2.6 VF-2 공기/물 분리기 필터 1년 교체 (SAW-01 공기 필터는 품목 아님, 4.6) | 1개 | 2개 | [참고: HCS-80 5.1] |
+| CS-AFLT | 공기 필터 | 2.6 1년 교체 | 1개 | 2개 | [참고: HCS-80 5.1] |
 | CS-SLUB | 주축 윤활유 (Mobil 1 0W-20) | 2.3 매월 탱크 양 점검 때 보충 | 실제로 부은 양 (L) | 4 L (1통) | 4.4 |
-| CS-GRS | 그리스 (Mobil Grease XHP 222, 14 oz 카트리지) | 2.3 웨이 커버·가이드 레일·핑거, 2.7 풀 스터드, 3.1 SAW-01 앞 바이스 (매월), 3.3 OP-40 텀블러 베어링 (8시간마다) | **새 카트리지를 그리스건에 끼울 때 1개** | **2개** | 4.5 |
+| CS-GRS | 그리스 (Mobil Grease XHP 222, 14 oz 카트리지) | 2.3 웨이 커버·가이드 레일·핑거, 2.7 풀 스터드, 3.3 OP-40 텀블러 베어링 (8시간마다) | **새 카트리지를 그리스건에 끼울 때 1개** | **2개** | 4.5 |
 
 - 그리스와 주축 윤활유는 2026-10-05에 재고 품목으로 넣었다 (설계서 5.14·15.5와 같음). 떨어지면 매월 정비를 못 하거나(그리스), 알람 805 주축 윤활 부족·주축 과열로 이어지기 때문이다(주축 윤활유, 4.4) [가상 판단, 근거는 4.4·4.5].
 - 세척액(OP-40)과 다른 공정의 윤활유(HCS-80 가이드 레일 오일 등)는 **재고 품목이 아니다.** 실시 기록에만 남긴다. 이유는 4.6.
@@ -217,11 +217,11 @@
 
 | 단계 | 규칙 | 근거 |
 |---|---|---|
-| ① 교대 시작 | 탱크 수위를 확인한다 | [참고] OSHA 절삭유 매뉴얼 7쪽 "Check the sump level at the start of the shift" |
-| ② 줄었으면 보충 | 매일 또는 수위가 10% 줄면 보충한다. 30% 넘게 낮으면 보충 전에 농도부터 잰다 | [참고] MSC 2023 4쪽 "Top off ... daily or whenever the coolant level drops by 10%" / OSHA 7쪽 "30% below the full mark ... Check the concentration!" |
+| ① 교대 시작 | 작업자가 탱크 수위를 확인한다 | [참고] OSHA 절삭유 매뉴얼 7쪽 "Check the sump level at the start of the shift" |
+| ② 줄었으면 보충 | 매일 또는 수위가 10% 줄면 작업자가 보충한다. 30% 넘게 낮으면 보충 전에 농도부터 잰다 | [참고] MSC 2023 4쪽 "Top off ... daily or whenever the coolant level drops by 10%" / OSHA 7쪽 "30% below the full mark ... Check the concentration!" |
 | ③ 보충 농도 | **약 3%** (알루미늄은 칩에 묻어 나가는 양이 많음). 원액 차감량 = 보충량 × 0.03 | [참고] MSC 2023 4쪽 "aluminum ... add a 3% concentration" |
 | ④ 농도 측정 | **매주** 굴절계로 잰다. **농도 = 굴절계 값 × 1.4** (TRIM SC538의 굴절계 계수) | 주기 [실제] RD0080 153행 / 식·계수 [실제] TRIM SC538 제품 자료(한국어) 2쪽 "% 농도 = 굴절률 판독값 x 굴절인수", "냉각수 굴절측정계 인수 % 브릭스 = 1.4" |
-| ⑤ 작업 농도 | **목표 7.0% (굴절계 약 5.0)**, 관리 범위 **6.5~8.5% (굴절계 약 4.6~6.1)**. 범위를 벗어나면 원액이나 물을 더해 맞추고 실시 기록에 남긴다 | 범위 [실제] SC538 2쪽 "일반절삭가공 (Moderate duty) 6.5% - 8.5%", 목표 [실제] 같은 쪽 "7% 이상에서 작동 시 최상의 탱크 수명 및 부식 방지 제공" / 제조사 기준을 따르라는 규칙 [실제] Haas 밀 점검표 56~58행. 일반절삭을 고른 이유 [가상]: 엔드밀·드릴·M6 탭을 함께 하는 OP-30 작업. Haas 구형 매뉴얼의 6~7%(2005 서비스 매뉴얼)와도 겹친다 |
+| ⑤ 작업 농도 | **목표 7.0% (굴절계 약 5.0)**, 관리 범위 **6.5~8.5% (굴절계 약 4.6~6.1)**. 범위를 벗어나면 작업자가 원액이나 물을 더해 맞추고 실시 기록에 남긴다 | 범위 [실제] SC538 2쪽 "일반절삭가공 (Moderate duty) 6.5% - 8.5%", 목표 [실제] 같은 쪽 "7% 이상에서 작동 시 최상의 탱크 수명 및 부식 방지 제공" / 제조사 기준을 따르라는 규칙 [실제] Haas 밀 점검표 56~58행. 일반절삭을 고른 이유 [가상]: 엔드밀·드릴·M6 탭을 함께 하는 OP-30 작업. Haas 구형 매뉴얼의 6~7%(2005 서비스 매뉴얼)와도 겹친다 |
 | ⑥ 6개월 교체 | 탱크를 완전히 청소하고 새로 채운다. 원액 차감량 = 208 L × 7.0% ≈ **14.6 L** | 주기 [실제] RD0080 154행 / 탱크 55 gal (208 L) [실제: VF-2 사양] / 7.0% = ⑤ 목표 |
 | ⑦ 섞는 법 | 물에 원액을 넣는다 (반대로 하지 않는다). 보충도 원액이 아니라 **섞은 액**으로 한다. 미네랄이 없는 물을 쓴다 | [실제] SC538 3쪽 혼합방법 "반드시 용수에 추천량의 원액을 투입하시고 (절대로 반대로 투입하면 안됨)", "보충유를 투입할 때는 반드시 희석액을 투입" |
 
@@ -269,9 +269,8 @@
 | 그리스 | Mobil Grease XHP 222 (NLGI 2) | [실제] RD0040 Specialty Grease "Mobil Grease XHP 222 — This helps the way covers move more easily across the casting. 99-1686", Mobil Grease 특성표 "XHP 222 — NLGI 2" |
 | 단위 | 카트리지 1개 = 14 oz (0.41 L) | [실제] RD0040 Linear Guide/Ball Screw 표에서 같은 부품 번호 99-1686에 "14 oz (0.41 L)" |
 | 쓰는 곳 (VF-2 2대) | 매월: 웨이 커버, 공구 교환장치 가이드 레일, 공구 빼기 핑거 / 필요할 때: 풀 스터드 | [실제] RD0080 101·64·65·184행 |
-| 쓰는 곳 (SAW-01) | 매월: 앞 바이스 리니어 가이드 (기계 앞쪽 니플 3개, 3.1). 공용 그리스건 사용 | [실제] HCS-80 5.1 "Grease the linear guides of the front vise through the zerk fittings (3) in the front of the machine" / 주기 [참고] (3.1) |
 | 차감 | 1회 주입량이 원문에 없어 g 단위로 빼지 않는다. **새 카트리지를 그리스건에 끼울 때 1개** 뺀다 | 주입량: RD0080·VFVM-SM-18에 없음 / 차감 방식 [가상] |
-| 안전 재고 | **2개** = 그리스건에 끼워 둔 수 1 (NCS 식의 "장비 부착 수") + 하루 사용량 × 3일 (6 cm³ × 3 = 18 cm³ ≈ 카트리지 0.04개) = 1.04 → 올림 | 식 [실제: NCS 치공구관리 90쪽] / 그리스건 1개 공용 (VF-2·SAW-01·텀블러) [가상] / 하루 사용량에는 텀블러만 넣는다 — VF-2·SAW-01의 매월 주입은 1회 양이 원문에 없어 0으로 봄 (설계서 15.5) / 올림은 설계서 15.5 M6 탭(7.4 → 8)과 같은 규칙 |
+| 안전 재고 | **2개** = 그리스건에 끼워 둔 수 1 (NCS 식의 "장비 부착 수") + 하루 사용량 × 3일 (6 cm³ × 3 = 18 cm³ ≈ 카트리지 0.04개) = 1.04 → 올림 | 식 [실제: NCS 치공구관리 90쪽] / 그리스건 1개 공용 (VF-2·텀블러) [가상] / 올림은 설계서 15.5 M6 탭(7.4 → 8)과 같은 규칙 |
 | OP-40 텀블러 — 종류 | **CS-GRS와 같은 그리스로 정함** [가상]. KVF3 매뉴얼에는 "WITH GREASE"뿐이라 종류가 없다. 진동 기계 베어링에는 EP 첨가 리튬 비누 그리스, 주도(penetration) 2급을 권한다는 베어링 회사 자료가 있고, XHP 222는 리튬 복합·EP·NLGI 2다. 다른 진동 바렐 회사 자료도 리튬 계열 그리스를 쓴다 | KVF3 3쪽 [참고, 종류 없음] / FAG TPI 197 인쇄 34쪽 "For normal operating conditions in vibratory machinery, we recommend lithium soap greases with EP (extreme pressure) and anti-corrosion additives corresponding to penetration class 2." [참고] / XHP 222 NLGI 2 [실제: RD0040 Mobil Grease 특성표], "lithium complex manufacturing technology", "Very good anti-wear and EP performance" [참고: Silmid 제품 페이지의 Mobil 설명] / Inovatec PZG(B)200 진동 바렐 운전 안내 6항 "lithium base grease (Q/ST1002-65)ZL—3" (중국 규격 3호, 우리 것보다 한 단계 굳음) [참고] / Inovatec 2025 정비 글 "Use a lithium-based grease … Mobil XHP 222" [참고] |
 | OP-40 텀블러 — 양 | 니플 1개당 그리스건 1번(약 1.5 cm³) × 니플 2개 × 하루 2회 = **하루 약 6 cm³** → 카트리지(0.41 L) 1개로 약 68일(약 2.6개월, 월 26일) | 1번 누름 양 [참고] SKF 1077600 H 그리스건 사양 "Volume per stroke: Approx 1,5 cm3 (0.09 in. 3)" (다른 회사 그리스건. 실제 그리스건 사양으로 바꾼다) / "작은 양을 짧은 간격으로" [참고] FAG TPI 197 인쇄 35쪽 "relubricate the bearings with small quantities of grease at short intervals" / 니플 2개 [가상] (KVF3 원문 "BEARING ZERK FITTINGS" 복수, 수는 그림뿐) / 하루 2회 [가상] = 텀블러 16시간 운전(설계서 5.2 교대 2개) ÷ 8시간 |
 | OP-40 텀블러 — 주의 | 그리스 종류를 바꾸지 않는다. 실제 설비를 들이면 그 매뉴얼의 그리스·양을 먼저 따른다 [가상: 팀 규칙] | FAG TPI 197 인쇄 34쪽 "Any change of grease type should be avoided if possible." [참고] |
@@ -281,14 +280,14 @@
 | 품목 | 넣지 않는 이유 | 다시 볼 때 |
 |---|---|---|
 | OP-40 세척액(세척제) | 세척기 기종과 탱크 용량이 [가상]이고, 세척제 제품을 정하지 않았다. 교체가 주기가 아니라 상태로 정해진다 ("Contaminated solution must be drained and replaced") → 하루 사용량을 계산할 수 없다 | 세척기 기종·세척제를 정하면 (탱크 용량 × 희석 농도 × 교체 횟수)로 계산. 교체 횟수는 설계서 알람 WSH-02(세정력 저하, 월 1~2건)를 쓸 수 있다 [Kerry MKC 4.2.2, PDF 20쪽] |
-| OP-10 가이드 레일 오일(Mobil Vactra No. 2), 유압유·기어 오일, 공기 필터 | 탱크 용량·소비량이 HCS-80 정비 장에 없다. 유압유·기어 오일·공기 필터는 1년에 1번 교체라 그때 따로 산다. HCS-80 공기 필터는 VF-2 공기/물 분리기 필터(CS-AFLT)와 다른 부품이다 | HCS-80 서비스 자료를 받으면 |
+| OP-10 가이드 레일 오일(Mobil Vactra No. 2), 유압유·기어 오일 | 탱크 용량·소비량이 HCS-80 정비 장에 없다. 유압유·기어 오일은 1년에 1번 교체라 그때 따로 산다 | HCS-80 서비스 자료를 받으면 |
 | OP-20 윤활유 | 기계 제조사를 정하지 않았다 (3.2) | 제조사를 정하면 |
 
 ---
 
 ## 5. 실시 기록 방법
 
-MNT-04 화면에서 항목을 열고 아래 칸을 채워 확정한다. 칸 구성은 [가상]이다 (pm_record, 설계서 5.12).
+보전 담당자가 MNT-04 화면에서 항목을 열고 아래 칸을 채워 확정한다. 칸 구성은 [가상]이다 (pm_record, 설계서 5.12).
 
 | 칸 | 넣는 것 | 예 |
 |---|---|---|
@@ -374,4 +373,3 @@ MNT-04 화면에서 항목을 열고 아래 칸을 채워 확정한다. 칸 구�
 |---|---|---|---|
 | Rev.0 | 2026-10-05 | 처음 작성: OP-30 VF-2 RD0080 적용 24항목 (+ 밀 점검표 교대 점검), 다른 공정 4개, 소모품 차감 규칙, 실시 기록 방법. 같은 날 보충: 5장 "항목 코드" 줄(`PM-{설비}-{절}-{순번}`), "실시자" 줄(작업자 항목은 보전 담당자가 기록) | MGR |
 | Rev.1 | 2026-10-07 | 2026-10-06 문서 검토 회의 반영: 4장 "재고 담당" 표 추가 (정비용 소모품 6종의 입고 등록·월 실사는 MNT, 부족 알림은 MNT·MGR), 1장 기록 줄 보충, 5장 "정비 시간 옮기기 검토 (병목)" 줄 추가 (DOC-07 §7.5 원인 ②와 연결), 기한 넘김 알림의 보고 순위 (DOC-07 §10.5), 제작 기준·원문 대응표의 파일 이름을 최종본으로 | MGR |
-| Rev.2 | 2026-10-10 | SAW-01 앞 바이스 그리스(매월)를 다른 문서와 맞춤 (`구현_중_수정사항/1010_수정간단내용.md` 9장): 3장 머리 "공정당 1~3항목", 3.1 1년 항목은 달력·재고 품목 아님, 4장 CS-AFLT = VF-2 공기/물 분리기 필터·CS-GRS 쓰는 곳에 3.1, 4.5 "쓰는 곳 (SAW-01)" 줄과 안전 재고 근거(매월 주입은 0으로 봄, 값 2개 그대로), 4.6에 HCS-80 공기 필터. 항목·주기는 바뀌지 않음 | MGR |
