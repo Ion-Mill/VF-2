@@ -68,3 +68,36 @@ export default function CardScreen({ alertId }: { alertId: string }) {
     </div>
   );
 }
+
+// 메뉴 "지침카드" — 전체 지침카드 목록, 누르면 그 지침카드 (페이지구조 v3 Q28)
+export function CardList() {
+  const { alerts, go } = useApp();
+  const [mach, setMach] = useState('');
+  const [lv, setLv] = useState('');
+  const list = [...alerts].filter((a) => (!mach || a.machine === mach) && (!lv || a.level === lv)).reverse();
+  const sel = 'h-11 rounded-md border border-slate-300 bg-white px-2 text-[14px]';
+  return (
+    <div className={PAGE}>
+      <div className="mx-auto flex max-w-[1100px] flex-col gap-3">
+        <div className="flex items-center justify-end gap-2">
+          <select value={mach} onChange={(e) => setMach(e.target.value)} className={sel}><option value="">설비 전체</option>{Object.entries(MACHINES).filter(([, m]) => m.eq).map(([k, m]) => <option key={k} value={k}>{m.name}</option>)}</select>
+          <select value={lv} onChange={(e) => setLv(e.target.value)} className={sel}><option value="">등급 전체</option>{['긴급', '주의', '참고'].map((l) => <option key={l}>{l}</option>)}</select>
+        </div>
+        {list.length === 0 ? <div className={CARD}>지침카드가 없습니다 (오늘 뜬 알람이 없음)</div> : (
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-3">
+            {list.map((a) => {
+              const v = LEVEL_VIEW[a.level];
+              return (
+                <button key={a.id} onClick={() => go('card', a.id)} className="flex flex-col gap-1 rounded-xl border border-slate-200 border-l-[6px] bg-white p-3 text-left shadow-sm hover:bg-slate-50" style={{ borderLeftColor: v.color }}>
+                  <b className="text-[17px]" style={{ color: v.color }}>{v.icon} {a.code}</b>
+                  <span className="truncate text-[15px] font-semibold">{alarmTitle(a.alarm, a.code)}</span>
+                  <span className="text-[13px] text-slate-500">{MACHINES[a.machine].name} · {md(a.time)} {hhmm(a.time)}{a.handled ? ' · 처리됨' : ''}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

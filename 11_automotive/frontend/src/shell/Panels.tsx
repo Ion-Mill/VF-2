@@ -1,26 +1,25 @@
 'use client';
-// SCR-04·05 하단 패널 (Claude Design 시안 2026-10-15): 윗줄 지표 [7]~[10] · 아래 시간대별 실적 [7] · 작업지시 진행 [11] · 설비 [6]. 값 = 시연 데이터 서버 (API-LINE-02~05).
+// SCR-04·05 하단 (페이지구조 v3): 왼쪽 생산현황 [7]~[9] · 오른쪽 작업지시 진행 [11] (보전 담당은 정비 현황), 설비를 누르면 오른쪽이 그 설비 [6]. 값 = 시연 데이터 서버.
 // field = SCR-26 현장 보기: 설비를 눌렀을 때 그 설비 [6]만 — 지금 알람·지침카드를 맨 위에 크게, 나머지는 작게. 생산 지표·작업지시 표는 SCR-04에만.
 import { useState } from 'react';
 import type { MachineId } from '@/components/types';
 import { useApp } from './ctx';
-import { CAUSE_KO, ID_OF, MACHINES, STATE_VIEW, WIP_NAME, stateOf } from './data';
+import { ID_OF, MACHINES, STATE_VIEW, stateOf } from './data';
 import { hm, md, useFetch, type Eq, type OrderRow, type Production } from './live';
 import { alarmTitle, type AlertRec } from './model';
 
 const AMBER = '#9a6200';
-const cell = 'flex min-w-0 flex-col justify-center border-r border-slate-200 px-5 py-3';
 const lbl = 'text-[14px] text-slate-500';
 const num = 'font-mono font-bold tabular-nums';
-const obtn = 'h-12 flex-1 rounded-lg border border-slate-300 bg-white text-[15px] font-semibold hover:bg-slate-50';
 
 function Bar({ pct, color = '#4b5a69' }: { pct: number; color?: string }) {
   return <div className="h-1.5 w-full rounded bg-slate-200"><div className="h-1.5 rounded" style={{ width: `${Math.max(0, Math.min(100, pct))}%`, background: color }} /></div>;
 }
 
-export default function Panels({ open = true, onToggle, field = false }: { open?: boolean; onToggle?: () => void; field?: boolean }) {
-  const { twin, alerts, wos, stopReasons, selected, go, openCard, openWo, user, connected, selectMachine } = useApp();
+export default function Panels({ field = false }: { field?: boolean }) {
+  const { twin, alerts, wos, stopReasons, selected, go, openCard, openWo, user, connected, selectMachine, pm } = useApp();
   const [why, setWhy] = useState<string | null>(null);
+  const [showDone, setShowDone] = useState(false); // 작업지시 완료 줄 접기 (훅이라 아래 return들보다 위)
   const dt = useFetch<{ downtimes: { equipment_id: string; start_at: string; state_code: string; minutes: number }[] }>(connected ? 'downtimes' : null, 10000);
   if (!twin) return <div className="flex h-full items-center gap-3 bg-white p-4 text-[14px] text-slate-500"><div className="h-3 w-40 animate-pulse rounded bg-slate-200" />데이터를 기다리는 중 (연결 끊김이면 위 띠를 보세요)</div>;
   const p = twin.production, k = twin.kpi.by;
@@ -85,117 +84,115 @@ export default function Panels({ open = true, onToggle, field = false }: { open?
     </div>
   );
 
+  // 오른쪽: 설비를 누르면 그 설비 정보 (닫으면 원래 칸, 페이지구조 v3 N9-C). 원래 칸은 계정마다 다름 (3.1)
+  const right = selected && selected !== 'inf' ? 'eq' : user.role === 'MNT' ? 'maint' : 'orders';
+  const myOrders = user.role === 'OPR' ? orders.filter((o) => user.procs.includes(o.current_process)) : user.role === 'MGR' ? [...orders].sort((a, b) => Number(!a.delay) - Number(!b.delay)) : orders;
+  const openFaults = [...alerts].filter((a) => !a.handled && a.kind !== 'guide').reverse();
+  const pmSoon = (pm?.tasks ?? []).filter((t) => t.state === 'OVERDUE' || t.state === 'DUE_SOON');
+  const stopMax = Math.max(1, ...Object.values(twin.equipment).map((e) => e.stop_min));
+  const sec = 'flex min-h-0 flex-col rounded-xl border border-slate-200 bg-white p-4';
+
   return (
-    <div className="flex h-full flex-col bg-white text-[#26303a]">
-      {/* 윗줄 지표 */}
-      <div className="grid h-[172px] shrink-0 grid-cols-[1.35fr_0.9fr_1.15fr_0.65fr_1fr_1.6fr_auto] border-b border-slate-200">
-        {/* [7] 실적 / 총 목표 */}
-        <button onClick={() => toggle('p')} className={`${cell} text-left`}>
-          <div className="flex justify-between"><span className={lbl}>실적 / 총 목표</span>
-            <b className={`text-[14px] ${done || p.risk ? '' : 'text-slate-500'}`} style={{ color: done ? '#13994f' : p.risk ? AMBER : undefined }}>{done ? '달성' : p.risk ? '▲ 미달 위험' : '진행 중'}</b></div>
-          <div className="my-1"><span className={`${num} text-[38px]`}>{p.actual_qty}</span><span className="font-mono text-[24px] text-slate-500"> / {p.total_target_qty}</span><span className="text-[18px] text-slate-500"> 개</span></div>
-          <div className="relative"><Bar pct={(p.actual_qty / scale) * 100} color="#0f9fbd" /><div className="absolute -top-1 h-3.5 w-0.5 bg-slate-800" style={{ left: `${(p.total_target_qty / scale) * 100}%` }} /></div>
-          <div className="mt-2 text-[13px] text-slate-500">목표 {p.target_qty} + 이월 {p.carry_over_qty} · {p.shift_type === 'DAY' ? '주간' : '야간'} {hm(p.start_at)}~{hm(p.end_at)}</div>
-        </button>
-        {/* 예측 */}
-        <button onClick={() => toggle('p')} className={`${cell} gap-2 text-left`}>
-          <div className="flex items-baseline justify-between"><span className={lbl}>예측</span><span><span className={`${num} text-[28px]`}>{p.forecast_qty}</span><span className="text-slate-500">개</span></span></div>
-          {p.short_qty > 0 && <div className="flex items-baseline justify-between"><span className={lbl}>부족</span><span style={{ color: AMBER }}><span className={`${num} text-[28px]`}>{p.short_qty}</span>개</span></div>}
-          <div className="flex items-baseline justify-between"><span className={lbl}>시간당</span><span><span className={`${num} text-[28px]`}>{p.rate_per_hour}</span><span className="text-slate-500">개</span></span></div>
-          <span className="text-[13px] text-slate-500">추정</span>
-        </button>
-        {/* [8] OEE — 처음 = 라인, OP-30 설비를 누르면 그 설비 */}
-        <button onClick={() => toggle('k')} className={`${cell} gap-1.5 text-left`}>
-          <div className="flex items-baseline justify-between"><span className={lbl}>OEE</span><span className={`${num} text-[32px]`} style={{ color: kp.warn.includes('OEE') ? AMBER : undefined }}>{kp.oee_pct ?? '—'}%{kp.warn.includes('OEE') ? ' ▲' : ''}</span></div>
-          {([['가동률', kp.availability_pct, kp.warn.includes('가동률')], ['성능', kp.performance_pct, false], ['양품률', kp.quality_pct, false]] as const).map(([t, v, w]) => (
-            <div key={t} className="grid grid-cols-[52px_1fr_64px] items-center gap-2 text-[14px]">
-              <span className="text-slate-500">{t}</span><Bar pct={v ?? 0} color={w ? AMBER : '#4b5a69'} /><span className={`${num} text-right text-[15px]`} style={{ color: w ? AMBER : undefined }}>{v ?? '—'}%{w ? '▲' : ''}</span>
-            </div>))}
-          <span className="text-[12px] text-slate-500">{isOp30 && selected ? eq : '라인 (OP-30 2대 합)'} · 이번 교대</span>
-        </button>
-        {/* [9] 손실 */}
-        <button onClick={() => toggle('l')} className={`${cell} text-left`}>
-          <span className={lbl}>손실</span>
-          <div className="my-1"><span className="text-[22px]">약 </span><span className={`${num} text-[30px]`}>{Math.round(p.loss_qty)}</span><span className="text-slate-500">개</span></div>
-          <span className="text-[13px] text-slate-500">추정</span>
-        </button>
-        {/* [10] 병목 */}
-        <div className={cell}>
-          <span className={lbl}>병목</span>
-          <div className={`${num} my-2 w-fit rounded-md border-2 border-dashed border-slate-800 px-3 py-1 text-[22px]`}>{twin.bottleneck.process_code}</div>
-          <span className="text-[13px] text-slate-500">{CAUSE_KO[twin.bottleneck.cause_code] ?? twin.bottleneck.cause_code}{twin.bottleneck.since_at ? ` · ${md(twin.bottleneck.since_at)} ${hm(twin.bottleneck.since_at)}부터` : ''}</span>
-        </div>
-        {/* 재공 (흐름 순) */}
-        <div className={`${cell} justify-start`}>
-          <span className={`${lbl} mb-2`}>재공 (흐름 순)</span>
-          <div className="flex flex-wrap items-center gap-1.5">
-            {Object.entries(twin.wip).map(([c, n], i) => {
-              const L = twin.wip_limits[c]; const o = !!(L?.warn && L.warn_over != null && n > L.warn_over);
-              return (<span key={c} className="flex items-center gap-1.5">{i > 0 && <span className="text-slate-400">›</span>}
-                <span className={`rounded-md border px-2.5 py-1 font-mono ${o ? 'border-[#e0a040] bg-[#fff8ec]' : 'border-slate-200'}`}>
-                  <span className="block text-[12px] text-slate-500">{WIP_NAME[c]}</span><span className={`${num} text-[20px]`} style={{ color: o ? '#b45309' : undefined }}>{n}{o ? ' ■' : ''}</span>
-                </span></span>);
-            })}
-            <span className="ml-1 rounded-md border border-slate-200 px-2.5 py-1"><span className="block text-[12px] text-slate-500">선반</span><span className={`${num} text-[20px]`}>{twin.soak_qty}</span></span>
+    <div className="grid h-full grid-cols-2 gap-3 bg-[#eef1f4] p-3 text-[#26303a]">
+      {/* 왼쪽: 생산현황 전부 */}
+      <section className={sec}>
+        <div className="mb-2 flex items-baseline justify-between"><b className="text-[17px]">생산현황</b>
+          <span className="text-[12px] text-slate-500">{p.shift_type === 'DAY' ? '주간' : '야간'} {hm(p.start_at)}~{hm(p.end_at)} · <span className="text-[#0f9fbd]">━</span> 실적 <b>┅</b> 예측 <span className="text-slate-400">┈</span> 총 목표</span></div>
+        <div className="grid min-h-0 flex-1 grid-cols-[1.7fr_1fr] gap-4">
+          <div className="min-h-0 rounded-lg border border-slate-200 p-2"><Graph p={p} /></div>
+          <div className="flex min-w-0 flex-col justify-around gap-2">
+            <button onClick={() => toggle('p')} className="text-left">
+              <div className="flex items-baseline justify-between"><span className={lbl}>생산</span>
+                <b className="text-[13px]" style={{ color: done ? '#13994f' : p.risk ? AMBER : '#64748b' }}>{done ? '달성' : p.risk ? '▲ 미달 위험' : '진행 중'}</b></div>
+              <div><span className={`${num} text-[34px]`}>{p.actual_qty}</span><span className="font-mono text-[22px] text-slate-500"> / {p.total_target_qty}</span><span className="text-[16px] text-slate-500"> 개</span></div>
+              <div className="relative"><Bar pct={(p.actual_qty / scale) * 100} color="#0f9fbd" /><div className="absolute -top-1 h-3.5 w-0.5 bg-slate-800" style={{ left: `${(p.total_target_qty / scale) * 100}%` }} /></div>
+            </button>
+            {/* OEE 한 줄 + 세 지표는 작은 칸 셋을 한 줄로 */}
+            <button onClick={() => toggle('k')} className="flex flex-col gap-1.5 text-left">
+              <div className="flex items-baseline justify-between"><span className={lbl}>OEE <span className="text-[11px]">{isOp30 && selected ? eq : '라인'}</span></span><span className={`${num} text-[28px]`} style={{ color: kp.warn.includes('OEE') ? AMBER : undefined }}>{kp.oee_pct ?? '—'}%{kp.warn.includes('OEE') ? ' ▲' : ''}</span></div>
+              <div className="grid grid-cols-3 gap-2">
+                {([['가동률', kp.availability_pct, kp.warn.includes('가동률')], ['성능', kp.performance_pct, false], ['양품률', kp.quality_pct, false]] as const).map(([t, v, w]) => (
+                  <div key={t} className="flex flex-col gap-1 rounded-md bg-slate-50 px-2 py-1">
+                    <span className="flex items-baseline justify-between text-[12px] text-slate-500">{t}<b className={`${num} text-[14px]`} style={{ color: w ? AMBER : '#26303a' }}>{v ?? '—'}{w ? '▲' : ''}</b></span>
+                    <Bar pct={v ?? 0} color={w ? AMBER : '#4b5a69'} />
+                  </div>))}
+              </div>
+            </button>
+            <button onClick={() => toggle('l')} className="flex items-baseline justify-between text-left"><span className={lbl}>손실 (추정)</span><span>약 <b className={`${num} text-[24px]`}>{Math.round(p.loss_qty)}</b>개</span></button>
           </div>
         </div>
-        {onToggle && <button onClick={onToggle} className="flex w-16 flex-col items-center justify-center gap-1 text-[13px] text-slate-600 hover:bg-slate-50"><span>{open ? '▾' : '▴'}</span>{open ? '접기' : '펴기'}</button>}
-      </div>
+        {why && (
+          <p className="mt-2 shrink-0 rounded bg-slate-50 px-3 py-2 text-[12px]">
+            {why === 'p' && <>예측 {p.forecast_qty}개 = 실적 {p.actual_qty} + 최근 1시간 속도 {p.rate_per_hour}개/시 × 남은 {Math.round(p.left_work_min)}분 (추정). 예측이 총 목표의 90%({p.risk_line_qty}개) 미만이면 ▲ — DOC-07 §8</>}
+            {why === 'k' && <>가동률 = 가동 {kp.apt_min}분 ÷ 계획 {kp.pbt_min}분 · 성능 = 7.0분 × 생산 {kp.pq}개 ÷ 가동 {kp.apt_min}분 · 양품률 = 양품 {kp.good_qty} ÷ 생산 {kp.pq} (DOC-07 §6.2)</>}
+            {why === 'l' && <>고장 손실 {p.failure_loss_qty}개 + 속도 손실 {p.speed_loss_qty}개. 순간 정지 {p.short_stops.count}건 {p.short_stops.minutes}분</>}
+          </p>
+        )}
+      </section>
 
-      {why && (
-        <p className="shrink-0 border-b border-slate-200 bg-slate-50 px-5 py-2 text-[13px]">
-          {why === 'p' && <>예측 = 실적 {p.actual_qty} + 최근 1시간 속도 {p.rate_per_hour}개/시 × 남은 {Math.round(p.left_work_min)}분 (추정, 시작 1시간 안은 평균 속도). 예측이 총 목표의 90%({p.risk_line_qty}개) 미만이면 ▲ — DOC-07 §8</>}
-          {why === 'k' && <>가동률 = 가동 {kp.apt_min}분 ÷ 계획 {kp.pbt_min}분 · 성능 = 7.0분 × 생산 {kp.pq}개 ÷ 가동 {kp.apt_min}분 · 양품률 = 양품 {kp.good_qty} ÷ 생산 {kp.pq} (DOC-07 §6.2). 주의: 가동률 60% 미만(OP-30 설비별)·OEE 59% 미만</>}
-          {why === 'l' && <>고장 손실 {p.failure_loss_qty}개 (필수 정지 시간 ÷ 기준 사이클) + 속도 손실 {p.speed_loss_qty}개 (병목 구간). 순간 정지 {p.short_stops.count}건 {p.short_stops.minutes}분. 나눈 값은 교대 보고서 [4]·[5]</>}
-        </p>
-      )}
+      {/* 오른쪽 */}
+      <section className={sec}>
+        {right === 'eq' && (<>
+          <div className="mb-2 flex flex-wrap items-center gap-2">
+            <b className="font-mono text-[20px]">{MACHINES[selId].name}</b>
+            <span className="rounded bg-slate-100 px-2 py-0.5 font-mono text-[13px]">{MACHINES[selId].op}</span>
+            <span className="rounded-full border border-slate-300 px-3 py-0.5 text-[14px] font-semibold" style={{ color: sv.color }}>{sv.icon} {sv.text} · {E.minutes}분째</span>
+            <button onClick={() => selectMachine(null)} className="ml-auto h-10 rounded-md border border-slate-300 px-3 text-[14px] font-semibold hover:bg-slate-50">닫기 ✕</button>
+          </div>
+          {cur && (
+            <div className={`mb-2 flex items-center justify-between rounded-lg border px-4 py-2 ${tone}`}>
+              <b className="text-[15px]">{mark(cur)} {alarmTitle(cur.alarm, cur.code)}</b>
+              <button onClick={() => openCard(cur.id)} className="h-10 rounded-md border border-slate-300 bg-white px-4 text-[14px] font-semibold text-[#26303a] hover:bg-slate-50">지침카드 →</button>
+            </div>
+          )}
+          <dl className="grid min-h-0 flex-1 grid-cols-[150px_1fr] content-start gap-x-3 gap-y-1.5 overflow-y-auto text-[14px]">
+            {!cur && <><dt className="text-slate-500">현재 알람</dt><dd>없음</dd></>}
+            {rows}
+          </dl>
+        </>)}
 
-      {open && (
-        <div className="grid min-h-0 flex-1 grid-cols-[1fr_1.45fr_1.6fr]">
-          {/* 시간대별 실적 */}
-          <section className="flex min-h-0 flex-col border-r border-slate-200 p-4">
-            <div className="mb-2 flex items-baseline justify-between"><b className="text-[17px]">시간대별 실적</b>
-              <span className="text-[12px] text-slate-500"><span className="text-[#0f9fbd]">━</span> 실적 <b>┅</b> 예측 <span className="text-slate-400">┈</span> 총 목표</span></div>
-            <div className="min-h-0 flex-1 rounded-lg border border-slate-200 p-2"><Graph p={p} /></div>
-          </section>
-
-          {/* [11] 작업지시 진행 */}
-          <section className="flex min-h-0 flex-col border-r border-slate-200 p-4">
-            <div className="mb-2 flex items-baseline justify-between"><b className="text-[17px]">작업지시 진행</b><span className="text-[12px] text-slate-500">행을 누르면 로트 화면</span></div>
-            <div className="min-h-0 flex-1 overflow-y-auto">
+        {right === 'orders' && (<>
+          <div className="mb-2 flex items-baseline justify-between"><b className="text-[17px]">작업지시 진행{user.role === 'OPR' ? ` · 내 공정 (${user.procs.join('·')})` : ''}</b>
+            <span className="text-[12px] text-slate-500">{user.role === 'MGR' ? '납기 위험 먼저 · ' : ''}행을 누르면 로트 화면</span></div>
+          <div className="min-h-0 flex-1 overflow-y-auto">
+            {myOrders.length === 0 ? <p className="p-2 text-slate-500">지금 내 공정에 있는 작업지시가 없습니다.</p> : (
               <table className="w-full text-left text-[14px]">
                 <thead className="sticky top-0 bg-slate-50 text-[13px] text-slate-500"><tr>{['작업지시', '진행 (완료/목표)', '공정', '납기', '상태'].map((h) => <th key={h} className="px-2 py-2 font-semibold">{h}</th>)}</tr></thead>
-                <tbody>{orders.map((o) => <OrderTr key={o.order_no} o={o} onClick={() => go('lots', o.lots[o.lots.length - 1] ?? null)} />)}</tbody>
+                <tbody>
+                  {myOrders.filter((o) => !isDone(o)).map((o) => <OrderTr key={o.order_no} o={o} onClick={() => go('lots', o.lots[o.lots.length - 1] ?? null)} />)}
+                  {myOrders.some(isDone) && <tr><td colSpan={5}><button onClick={() => setShowDone((v) => !v)} className="w-full py-2 text-left text-[13px] font-semibold text-slate-500 hover:bg-slate-50">{showDone ? '▴ 완료 접기' : `▾ 완료 ${myOrders.filter(isDone).length}건 보기`}</button></td></tr>}
+                  {showDone && myOrders.filter(isDone).map((o) => <OrderTr key={o.order_no} o={o} onClick={() => go('lots', o.lots[o.lots.length - 1] ?? null)} />)}
+                </tbody>
               </table>
-            </div>
-          </section>
-
-          {/* [6] 설비 */}
-          <section className="flex min-h-0 flex-col p-4 text-[15px]">
-            <div className="mb-3 flex flex-wrap items-center gap-2">
-              <b className="font-mono text-[22px]">{MACHINES[selId].name}</b>
-              <span className="rounded bg-slate-100 px-2 py-0.5 font-mono text-[13px]">{MACHINES[selId].op}</span>
-              <span className="rounded-full border border-slate-300 px-3 py-0.5 text-[14px] font-semibold" style={{ color: sv.color }}>{sv.icon} {sv.text} {E.state_code} · {E.minutes}분째</span>
-              {!selected && <span className="ml-auto text-[12px] text-slate-500">처음 열면 {user.role === 'OPR' ? '담당 공정' : '병목 공정'}</span>}
-            </div>
-            {cur && (
-              <div className={`mb-3 flex items-center justify-between rounded-lg border px-4 py-2 ${tone}`}>
-                <b className="text-[16px]">{mark(cur)} {alarmTitle(cur.alarm, cur.code)}</b>
-                <button onClick={() => openCard(cur.id)} className="h-10 rounded-md border border-slate-300 bg-white px-4 text-[14px] font-semibold text-[#26303a] hover:bg-slate-50">지침카드 →</button>
-              </div>
             )}
-            <dl className="grid min-h-0 flex-1 grid-cols-[170px_1fr] content-start gap-x-3 gap-y-1.5 overflow-y-auto">
-              {!cur && <><dt className="text-slate-500">현재 알람</dt><dd>없음</dd></>}
-              {rows}
-            </dl>
-            <div className="mt-3 flex shrink-0 gap-3">
-              <button onClick={() => go('stops')} className={obtn}>정지 사유</button>
-              {isOp30 && <button onClick={() => go('tools', eq)} className={obtn}>공구 수명</button>}
-              <button onClick={() => selectMachine(selId)} className="h-12 flex-1 rounded-lg bg-[#1f2933] text-[15px] font-semibold text-white hover:bg-black">설비 상세</button>
+          </div>
+        </>)}
+
+        {right === 'maint' && (<>
+          <b className="mb-2 text-[17px]">정비 현황</b>
+          <div className="grid min-h-0 flex-1 grid-cols-3 gap-3 text-[14px]">
+            <div className="flex min-h-0 flex-col">
+              <span className={lbl}>처리 안 된 고장 알람 <b className="text-[#26303a]">{openFaults.length}</b></span>
+              <ul className="mt-1 min-h-0 flex-1 overflow-y-auto">{openFaults.slice(0, 20).map((a) => (
+                <li key={a.id}><button onClick={() => openCard(a.id)} className="w-full border-l-4 py-1 pl-2 text-left hover:bg-slate-50" style={{ borderColor: a.level === '긴급' ? '#c62a2f' : a.level === '주의' ? '#e0892a' : '#94a3b8' }}>
+                  <b>{MACHINES[a.machine].name} {a.code}</b> <span className="text-slate-500">{hm(a.time)}</span><div className="truncate text-[12px] text-slate-600">{alarmTitle(a.alarm, a.code)}</div>
+                </button></li>))}{openFaults.length === 0 && <li className="text-slate-500">없음</li>}</ul>
             </div>
-          </section>
-        </div>
-      )}
+            <div className="flex min-h-0 flex-col">
+              <span className={lbl}>오늘 정지 (분)</span>
+              <ul className="mt-1 flex flex-col gap-1.5">{Object.entries(twin.equipment).map(([id, e]) => (
+                <li key={id} className="grid grid-cols-[62px_1fr_40px] items-center gap-2"><span className="font-mono text-[13px]">{id}</span><Bar pct={(e.stop_min / stopMax) * 100} color={e.state_code === 'DOWN' ? '#c62a2f' : '#4b5a69'} /><b className={`${num} text-right`}>{e.stop_min}</b></li>))}</ul>
+            </div>
+            <div className="flex min-h-0 flex-col">
+              <span className={lbl}>예방 정비 기한 임박 <b className="text-[#26303a]">{pmSoon.length}</b></span>
+              <ul className="mt-1 min-h-0 flex-1 overflow-y-auto">{pmSoon.slice(0, 12).map((t, i) => (
+                <li key={i}><button onClick={() => go('pm')} className="w-full py-1 text-left hover:bg-slate-50">
+                  <b style={{ color: t.state === 'OVERDUE' ? AMBER : undefined }}>{t.state === 'OVERDUE' ? '▲ 기한 넘김' : 'ⓘ 임박'}</b> {t.equipment_id}<div className="truncate text-[12px] text-slate-600">{t.item_name} · {md(t.next_due)}</div>
+                </button></li>))}{pmSoon.length === 0 && <li className="text-slate-500">없음</li>}</ul>
+            </div>
+          </div>
+        </>)}
+      </section>
     </div>
   );
 }
@@ -236,7 +233,7 @@ function Graph({ p }: { p: Production }) {
       <polyline points={pts.join(' ')} fill="none" stroke="#0f9fbd" strokeWidth="2.5" />
       {last && <line x1={x(Date.parse(last.at))} y1={y(last.cum)} x2={W - L} y2={y(p.forecast_qty)} stroke="#4b5a69" strokeDasharray="5 4" strokeWidth="2" />}
       {last && <text x={x(Date.parse(last.at))} y={y(last.cum) - 8} fontSize="14" fontWeight="700" textAnchor="middle" fill="#0f6f86">{last.cum}</text>}
-      {last && <text x={W - L} y={y(p.forecast_qty) + 16} fontSize="12" textAnchor="end" fill="#4b5a69">예측 {p.forecast_qty}</text>}
+      {last && <text x={W - L} y={y(p.forecast_qty) - 8} fontSize="13" fontWeight="600" textAnchor="end" fill="#4b5a69" stroke="#fff" strokeWidth="3" paintOrder="stroke">예측 {p.forecast_qty}</text>}
       {/* 시각 글자는 시연 시각 문자열 기준 (Date 시간대 변환 안 함) */}
       {ticks.map((t, i) => <text key={t} x={x(t)} y={H - 4} fontSize="12" textAnchor={i === 0 ? 'start' : 'middle'} fill="#8a97a4">{String((Number(p.start_at.slice(11, 13)) + i * 2) % 24).padStart(2, '0')}{p.start_at.slice(13, 16)}</text>)}
     </svg>
