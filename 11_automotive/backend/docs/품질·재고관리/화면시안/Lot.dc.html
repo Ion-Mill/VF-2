@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>SCR-19 로트 추적</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ECEFF4}
+a{color:#1F5FBF}a:hover{color:#1B1F24}
+button,select,input,textarea{font-family:inherit}
+button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid #1F5FBF;outline-offset:2px}
+@keyframes dcRise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes dcPop{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes dcFade{from{opacity:0}to{opacity:1}}
+@keyframes dcFlow{to{stroke-dashoffset:-24}}
+@keyframes dcPulse{0%{box-shadow:0 0 0 0 rgba(31,95,191,.5)}70%{box-shadow:0 0 0 9px rgba(31,95,191,0)}100%{box-shadow:0 0 0 0 rgba(31,95,191,0)}}
+section{box-shadow:0 1px 2px rgba(16,24,40,.05),0 2px 6px rgba(16,24,40,.05);transition:box-shadow .2s ease;animation:dcRise .35s ease-out both}
+section:hover{box-shadow:0 2px 4px rgba(16,24,40,.06),0 10px 24px rgba(16,24,40,.09)}
+h2{color:#1B2A47;font-size:17px!important;line-height:1.35;align-items:center!important}h2::before{content:"";width:10px;height:10px;border-radius:3px;background:#1F5FBF;flex:none}
+thead tr{background:#EAF0F9}
+tbody tr{transition:background-color .15s}
+tbody tr:hover{background-color:#F3F7FD}
+button,a,select,input,textarea{transition:background-color .15s,border-color .15s,box-shadow .15s,transform .08s,filter .15s}
+button:not(:disabled):not([style*="transparent"]):hover,a[style*="min-height"]:hover{filter:brightness(.95);box-shadow:0 3px 10px rgba(31,95,191,.20)}
+button:not(:disabled):not([style*="transparent"]):active,a[style*="min-height"]:active{transform:translateY(1px);box-shadow:none}
+button[aria-pressed="true"]:not([style*="transparent"]),button[aria-selected="true"]{box-shadow:0 2px 8px rgba(31,95,191,.32)}
+header button:not(:disabled):hover{background:rgba(255,255,255,.22)!important;filter:none;box-shadow:none}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#1F5FBF!important;box-shadow:0 0 0 3px rgba(31,95,191,.20)}
+[role="dialog"]{animation:dcPop .18s ease-out both;box-shadow:0 24px 56px rgba(16,24,40,.30)}
+footer{box-shadow:0 1px 2px rgba(16,24,40,.05)}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</helmet>
+<div style="min-height: 100vh; background: #ECEFF4; color: #1B1F24; font-family: 'IBM Plex Sans KR', sans-serif; font-size: 16px; line-height: 1.5; font-variant-numeric: tabular-nums;">
+
+<header style="background: #1B2A47; color: #FFFFFF; box-shadow: 0 2px 10px rgba(16,24,40,0.20);">
+<div style="max-width: 1440px; margin: 0 auto; padding: 8px 20px; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px;">
+<button aria-label="메뉴" aria-expanded="{{menuOpen}}" onClick="{{toggleMenu}}" style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.30); border-radius: 8px; color: #FFFFFF; cursor: pointer;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
+<span style="font-weight: 700; font-size: 19px; letter-spacing: -0.01em;">로트 추적</span>
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 15px; color: #CFDBEE;">10/1 (목) 주간 08:00~17:00 · 13:40</span>
+<span style="flex: 1 1 auto;"></span>
+<span style="font-weight: 600;">{{who.label}} {{who.name}}</span>
+<button aria-label="처리 안 된 알림 4건" style="min-height: 44px; display: inline-flex; align-items: center; gap: 6px; padding: 0 12px; background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.30); border-radius: 8px; color: #FFFFFF; font-size: 15px; cursor: pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10 21a2 2 0 0 0 4 0"></path></svg>미처리 4</button>
+<button style="min-height: 44px; padding: 0 14px; background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.30); border-radius: 8px; color: #FFFFFF; font-size: 15px; cursor: pointer;">비서</button>
+<button style="min-height: 44px; padding: 0 14px; background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.30); border-radius: 8px; color: #FFFFFF; font-size: 15px; cursor: pointer;">화면 설정</button>
+<label style="display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: #CFDBEE;"><span style="padding: 2px 8px; border: 1px dashed rgba(255,255,255,0.55); border-radius: 4px;">시연 모드</span>역할 바꿔 보기
+<select value="{{role}}" onChange="{{onRole}}" style="min-height: 44px; padding: 0 10px; border: 1px solid #7D8590; border-radius: 6px; background: #FFFFFF; color: #1B1F24; font-size: 15px;">
+<option value="OPR">작업자 OPR</option>
+<option value="MNT">보전 담당자 MNT</option>
+<option value="SUP">반장 SUP</option>
+<option value="MGR">관리자 MGR</option>
+</select></label>
+</div>
+</header>
+
+<sc-if value="{{menuOpen}}" hint-placeholder-val="{{ false }}">
+<nav aria-label="메뉴" style="background: #FFFFFF; border-bottom: 1px solid #D5D9DF;">
+<div style="max-width: 1440px; margin: 0 auto; padding: 10px 20px; box-sizing: border-box; display: flex; flex-wrap: wrap; gap: 6px;">
+<sc-for list="{{menu}}" as="m" hint-placeholder-count="12">
+<sc-if value="{{m.isLink}}" hint-placeholder-val="{{ false }}"><a href="{{m.href}}" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border-radius: 6px; border: 1px solid {{m.bd}}; background: {{m.bg}}; color: {{m.fg}}; text-decoration: none; font-weight: 600;">{{m.label}}</a></sc-if>
+<sc-if value="{{m.isOff}}" hint-placeholder-val="{{ true }}"><span aria-disabled="true" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border-radius: 6px; border: 1px dashed #D5D9DF; color: #5F6773;">{{m.label}}</span></sc-if>
+</sc-for>
+</div>
+</nav>
+</sc-if>
+
+<div style="max-width: 1440px; margin: 0 auto; padding: 16px 20px 32px; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px;">
+
+<section aria-label="로트 고르기" style="background: #FFFFFF; border: 1px solid #D5D9DF; border-radius: 8px; padding: 14px 20px; display: flex; flex-direction: column; gap: 12px;">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px;">
+<label style="display: inline-flex; align-items: center; gap: 8px; font-weight: 600;">로트
+<select value="{{lotKey}}" onChange="{{onLot}}" style="min-height: 48px; padding: 0 12px; border: 1px solid #7D8590; border-radius: 6px; background: #FFFFFF; font-size: 18px; font-weight: 600; font-family: 'IBM Plex Mono', monospace; color: #1B1F24;">
+<option value="041-1">LOT-2609-041-1</option>
+<option value="040-1">LOT-2609-040-1</option>
+<option value="031-1">LOT-2609-031-1</option>
+</select></label>
+<span>작업지시 <b style="font-family: 'IBM Plex Mono', monospace;">{{lot.po}}</b> · {{lot.shift}}</span>
+<span>원자재 <b style="font-family: 'IBM Plex Mono', monospace;">{{lot.mat}}</b></span>
+<sc-if value="{{isHold}}" hint-placeholder-val="{{ true }}"><span style="margin-left: auto; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; box-sizing: border-box; padding: 0 16px; border: 2px solid #1B1F24; border-radius: 8px; font-size: 18px; font-weight: 700;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1B1F24" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>보류 · 출하 금지</span></sc-if>
+<sc-if value="{{isPass}}" hint-placeholder-val="{{ false }}"><span style="margin-left: auto; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; box-sizing: border-box; padding: 0 16px; border: 1px solid #7D8590; border-radius: 8px; font-size: 18px; font-weight: 600;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1B1F24" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"></path></svg>합격 (출하 가능)</span></sc-if>
+<sc-if value="{{isShipped}}" hint-placeholder-val="{{ false }}"><span style="margin-left: auto; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; box-sizing: border-box; padding: 0 16px; border: 1px solid #7D8590; border-radius: 8px; font-size: 18px; font-weight: 600;">출하됨 — SHP-2609-025</span></sc-if>
+</div>
+<div role="group" aria-label="관련 로트" style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; padding-top: 12px; border-top: 1px solid #EEF0F3;">
+<span style="font-weight: 600; margin-right: 6px;">관련 로트</span>
+<sc-for list="{{related}}" as="x" hint-placeholder-count="3">
+<sc-if value="{{x.canOpen}}" hint-placeholder-val="{{ true }}"><button onClick="{{x.open}}" style="min-height: 44px; display: inline-flex; align-items: center; gap: 8px; padding: 0 14px; border-radius: 6px; border: 1px solid #A9BEDF; background: #FFFFFF; color: #1B1F24; font-size: 15px; cursor: pointer;"><b style="font-family: 'IBM Plex Mono', monospace; color: #174A96;">{{x.no}}</b><span style="display: inline-flex; align-items: center; gap: 4px; font-weight: {{x.fw}};"><sc-if value="{{x.isHold}}" hint-placeholder-val="{{ false }}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1B1F24" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></sc-if>{{x.state}}</span><span style="font-size: 13px; color: #4A525E;">{{x.why}}</span></button></sc-if>
+<sc-if value="{{x.plain}}" hint-placeholder-val="{{ false }}"><span style="min-height: 44px; box-sizing: border-box; display: inline-flex; align-items: center; gap: 8px; padding: 0 14px; border-radius: 6px; border: 1px dashed #A9B5C6; font-size: 15px;"><b style="font-family: 'IBM Plex Mono', monospace;">{{x.no}}</b><span>{{x.state}}</span><span style="font-size: 13px; color: #4A525E;">{{x.why}}</span></span></sc-if>
+</sc-for>
+</div>
+</section>
+
+<section aria-label="설비별 시간표" style="background: #FFFFFF; border: 1px solid #D5D9DF; border-radius: 8px; padding: 14px 20px 16px; display: flex; flex-direction: column; gap: 6px;">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; margin-bottom: 4px;">
+<h2 style="margin: 0; font-size: 16px; font-weight: 700; display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline;">설비별 시간표 — {{lotNo}}</h2>
+<span style="flex: 1 1 auto;"></span>
+<span style="display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: #4A525E;">
+<span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 20px; height: 12px; border-radius: 3px; background: #1F5FBF;"></span>고른 로트</span>
+<span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 20px; height: 12px; border-radius: 3px; background: #C3CCD9;"></span>다른 로트</span>
+<span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 20px; height: 12px; box-sizing: border-box; background: rgba(198, 47, 47, 0.14); border-top: 3px solid #C62F2F;"></span>고장</span>
+<span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 20px; height: 12px; background: repeating-linear-gradient(45deg, #9AA1AB 0 2px, #E6E9ED 2px 5px);"></span>정비</span>
+<span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 20px; height: 12px; box-sizing: border-box; border: 2px solid #D9731A; border-radius: 3px;"></span>병목</span>
+<span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 0; height: 14px; border-left: 2px solid #1F5FBF;"></span>지금</span>
+<span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 0; height: 14px; border-left: 2px dashed #1B1F24;"></span>보류</span>
+</span>
+</div>
+<div style="display: grid; grid-template-columns: 136px minmax(0, 1fr); gap: 0 12px;">
+<span></span>
+<div aria-hidden="true" style="position: relative; height: 42px;">
+<sc-for list="{{tl.ticks}}" as="t" hint-placeholder-count="7"><span style="position: absolute; left: {{t.left}}; bottom: 2px; transform: {{t.tx}}; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #4A525E; white-space: nowrap;">{{t.label}}</span></sc-for>
+<sc-if value="{{tl.hasHold}}" hint-placeholder-val="{{ true }}"><span style="position: absolute; left: {{tl.holdL}}; top: 0; transform: {{tl.holdTx}}; display: inline-flex; align-items: center; gap: 4px; padding: 0 8px; border: 1.5px solid #1B1F24; border-radius: 999px; background: #FFFFFF; font-size: 12px; font-weight: 700; white-space: nowrap;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1B1F24" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>보류 {{tl.holdT}}</span></sc-if>
+<sc-if value="{{tl.nowChip}}" hint-placeholder-val="{{ true }}"><span style="position: absolute; left: {{tl.nowL}}; top: 0; transform: {{tl.nowTx}}; padding: 0 8px; border-radius: 999px; background: #1F5FBF; color: #FFFFFF; font-size: 12px; font-weight: 700; white-space: nowrap;">지금 13:40</span></sc-if>
+</div>
+</div>
+<sc-for list="{{tl.rows}}" as="r" hint-placeholder-count="7">
+<div style="display: grid; grid-template-columns: 136px minmax(0, 1fr); gap: 0 12px; align-items: stretch;">
+<div style="display: flex; flex-direction: column; justify-content: center; min-height: 58px; border-top: 1px solid #E6E9ED;">
+<b style="font-size: 15px;">{{r.eq}}</b>
+<span style="font-size: 13px; color: #4A525E;">{{r.op}}</span>
+</div>
+<div style="position: relative; min-height: 58px; border-top: 1px solid #E6E9ED; background: {{r.rowBg}};">
+<sc-for list="{{r.grid}}" as="g" hint-placeholder-count="13"><span style="position: absolute; left: {{g.left}}; top: 0; bottom: 0; border-left: 1px solid {{g.c}};"></span></sc-for>
+<sc-for list="{{r.bands}}" as="b" hint-placeholder-count="1"><span style="position: absolute; left: {{b.left}}; width: {{b.w}}; top: 0; bottom: 0; box-sizing: border-box; background: {{b.bg}}; border-top: {{b.top}};"><span style="position: absolute; left: 4px; bottom: 2px; font-size: 12px; font-weight: 700; color: {{b.fg}}; white-space: nowrap;">{{b.label}}</span></span></sc-for>
+<sc-if value="{{r.hasBn}}" hint-placeholder-val="{{ false }}"><span style="position: absolute; left: {{r.bnL}}; width: {{r.bnW}}; top: 12px; height: 34px; box-sizing: border-box; border: 2px solid #D9731A; border-radius: 7px;"></span></sc-if>
+<sc-for list="{{r.bars}}" as="b" hint-placeholder-count="2"><span title="{{b.tip}}" style="position: absolute; left: {{b.left}}; width: {{b.w}}; top: 16px; height: 26px; box-sizing: border-box; border-radius: 5px; background: {{b.bg}}; color: {{b.fg}}; border-right: {{b.open}}; font-size: 13px; font-weight: 700; line-height: 26px; padding: 0 6px; overflow: hidden; white-space: nowrap; box-shadow: {{b.shadow}};">{{b.label}}</span></sc-for>
+<sc-for list="{{r.marks}}" as="m" hint-placeholder-count="1"><span style="position: absolute; left: {{m.left}}; top: 1px; transform: {{m.tx}}; padding: 0 6px; border-radius: 999px; background: #FFFFFF; border: 1px solid #A9B5C6; color: #1B1F24; font-size: 12px; font-weight: 700; white-space: nowrap;">{{m.label}}</span></sc-for>
+<sc-for list="{{r.events}}" as="e" hint-placeholder-count="2"><span style="position: absolute; left: {{e.left}}; top: 50%; transform: {{e.tx}} translateY(-50%); display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 999px; background: {{e.bg}}; border: 2px solid {{e.bd}}; color: {{e.fg}}; font-size: 14px; font-weight: {{e.fw}}; white-space: nowrap;"><sc-if value="{{e.isHold}}" hint-placeholder-val="{{ false }}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1B1F24" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg></sc-if>{{e.label}}</span></sc-for>
+<sc-if value="{{r.hasNow}}" hint-placeholder-val="{{ true }}"><span style="position: absolute; left: {{r.nowL}}; top: 0; bottom: 0; border-left: 2px solid #1F5FBF;"></span></sc-if>
+<sc-if value="{{r.hasHold}}" hint-placeholder-val="{{ true }}"><span style="position: absolute; left: {{r.holdL}}; top: 0; bottom: 0; border-left: 2px dashed #1B1F24;"></span></sc-if>
+</div>
+</div>
+</sc-for>
+</section>
+
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: stretch;">
+
+<section aria-label="수량" style="flex: 3 1 560px; min-width: 0; background: #FFFFFF; border: 1px solid #D5D9DF; border-radius: 8px; padding: 16px 20px; display: flex; flex-direction: column; gap: 10px;">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px;">
+<h2 style="margin: 0; font-size: 16px; font-weight: 700; display: flex; gap: 10px; align-items: baseline;">수량</h2>
+<span style="flex: 1 1 auto;"></span>
+<sc-if value="{{canInsp}}" hint-placeholder-val="{{ true }}"><a href="Main.dc.html" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border-radius: 6px; border: 1px solid #A9BEDF; color: #174A96; text-decoration: none; font-size: 15px;">검사 기록</a></sc-if>
+</div>
+<sc-for list="{{flowRows}}" as="r" hint-placeholder-count="4">
+<div style="display: grid; grid-template-columns: 96px minmax(0, 1fr) 132px; gap: 10px; align-items: center; font-size: 15px;">
+<span style="font-weight: 600;">{{r.label}}</span>
+<div role="img" aria-label="{{r.aria}}" style="display: flex; height: 24px; border-radius: 4px; overflow: hidden; background: #F1F3F6;">
+<sc-for list="{{r.segs}}" as="g" hint-placeholder-count="3"><span style="width: {{g.w}}; height: 100%; flex: none; box-sizing: border-box; background: {{g.bg}}; box-shadow: {{g.ring}}; border-right: 2px solid #FFFFFF;"></span></sc-for>
+</div>
+<span style="display: flex; flex-direction: column; align-items: flex-end; line-height: 1.25;"><b style="font-family: 'IBM Plex Mono', monospace; font-size: 18px;">{{r.val}}</b><span style="font-size: 13px; color: #4A525E;">{{r.note}}</span></span>
+</div>
+</sc-for>
+<div style="display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: #4A525E;"><span style="display: inline-flex; align-items: center; gap: 5px;"><span style="width: 12px; height: 12px; background: #4A525E;"></span>합격·완료</span><span style="display: inline-flex; align-items: center; gap: 5px; color: #B42323;"><span style="width: 12px; height: 12px; background: #C62F2F;"></span>불합격</span><span style="display: inline-flex; align-items: center; gap: 5px;"><span style="width: 12px; height: 12px; box-sizing: border-box; border: 1px solid #7D8590; background: #FFFFFF;"></span>기록 없음</span><span style="display: inline-flex; align-items: center; gap: 5px;"><span style="width: 12px; height: 12px; box-sizing: border-box; border: 2px solid #1B1F24; background: #FFFFFF;"></span>보류</span><span style="display: inline-flex; align-items: center; gap: 5px;"><span style="width: 12px; height: 12px; background: #E1E5EB;"></span>남음</span></div>
+</section>
+
+<sc-if value="{{canHold}}" hint-placeholder-val="{{ true }}">
+<section aria-label="보류·해제·폐기" style="flex: 2 1 420px; min-width: 0; background: #FFFFFF; border: 1px solid #D5D9DF; border-radius: 8px; padding: 16px 20px; display: flex; flex-direction: column; gap: 14px;">
+<h2 style="margin: 0; font-size: 16px; font-weight: 700; display: flex; gap: 10px; align-items: baseline;">보류·해제·폐기</h2>
+<div style="display: flex; flex-direction: column; gap: 14px;">
+<div style="display: flex; flex-direction: column; gap: 10px;">
+<sc-if value="{{holdFormOpen}}" hint-placeholder-val="{{ false }}">
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 15px; color: #1B1F24;">보류 사유 (필수)<textarea value="{{holdReason}}" onChange="{{onReason}}" rows="2" style="padding: 8px 10px; border: 1px solid #7D8590; border-radius: 6px; font-size: 16px; color: #1B1F24; resize: vertical;"></textarea></label>
+</sc-if>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px;">
+<button onClick="{{holdClick}}" disabled="{{holdDisabled}}" style="min-height: 48px; padding: 0 20px; border-radius: 6px; border: 1px solid {{holdBtn.bd}}; background: {{holdBtn.bg}}; color: {{holdBtn.fg}}; font-size: 16px; font-weight: 600; cursor: {{holdBtn.cursor}};">보류 — 사유 필수</button>
+<button disabled="{{releaseDisabled}}" style="min-height: 48px; padding: 0 20px; border-radius: 6px; border: 1px solid #D5D9DF; background: #EEF0F3; color: #5F6773; font-size: 16px; font-weight: 600; cursor: not-allowed;">해제</button>
+<span style="font-size: 15px; color: #4A525E;">{{holdHelp}}</span>
+</div>
+</div>
+<sc-if value="{{showScrapPropose}}" hint-placeholder-val="{{ true }}">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding-top: 14px; border-top: 1px solid #EEF0F3;">
+<button onClick="{{proposeScrap}}" disabled="{{scrapProposed}}" style="min-height: 48px; padding: 0 20px; border-radius: 6px; border: 1px solid {{scrapBtn.bd}}; background: {{scrapBtn.bg}}; color: {{scrapBtn.fg}}; font-size: 16px; font-weight: 600; cursor: {{scrapBtn.cursor}};">폐기 제안 — 불합격 2개 (순번 10, 11)</button>
+<span style="font-size: 15px; color: #4A525E;">{{scrapText}}</span>
+</div>
+</sc-if>
+<sc-if value="{{showScrapApprove}}" hint-placeholder-val="{{ false }}">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding-top: 14px; border-top: 1px solid #EEF0F3;">
+<button onClick="{{approveScrap}}" disabled="{{approveDisabled}}" style="min-height: 48px; padding: 0 20px; border-radius: 6px; border: 1px solid {{approveBtn.bd}}; background: {{approveBtn.bg}}; color: {{approveBtn.fg}}; font-size: 16px; font-weight: 600; cursor: {{approveBtn.cursor}};">폐기 승인</button>
+<span style="font-size: 15px; color: #4A525E;">{{approveText}}</span>
+</div>
+</sc-if>
+</div>
+</section>
+</sc-if>
+
+</div>
+
+<footer style="display: flex; flex-direction: column; gap: 6px; padding: 12px 16px; background: #FFFFFF; border: 1px solid #D5D9DF; border-radius: 8px; font-size: 14px; color: #1B1F24;">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px;">
+<b>범례</b>
+<span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 18px; height: 12px; background: #4A525E; border: 2px solid #8FCB9B; border-radius: 2px;"></span>가공</span>
+<span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 18px; height: 12px; background: #D5D9DF; border-radius: 2px;"></span>대기</span>
+<span style="display: inline-flex; align-items: center; gap: 6px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4A525E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4 2.5-2.5z"></path></svg>준비</span>
+<span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 18px; height: 12px; border-radius: 2px; background: repeating-linear-gradient(45deg, #9AA1AB 0 2px, #E6E9ED 2px 5px);"></span>정비</span>
+<span style="display: inline-flex; align-items: center; gap: 6px;"><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 1.5 21h21L12 2.5z" fill="#C62F2F"></path><path d="M12 9.5v5.5" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"></path><circle cx="12" cy="18" r="1.3" fill="#FFFFFF"></circle></svg>고장</span>
+<span style="display: inline-flex; align-items: center; gap: 6px;"><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#D9731A"></circle><rect x="6" y="10.5" width="12" height="3" rx="1" fill="#FFFFFF"></rect></svg>막힘</span>
+<span style="display: inline-flex; align-items: center; gap: 6px;"><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 1.5 21h21L12 2.5z" fill="#F2C200" stroke="#7A6100" stroke-width="1.6" stroke-linejoin="round"></path></svg>주의 알람</span>
+<span style="display: inline-flex; align-items: center; gap: 6px;"><b style="color: #9A4A00;">20</b>재공 주황</span>
+<span style="display: inline-flex; align-items: center; gap: 6px;"><span style="padding: 0 6px; border: 2px solid #D9731A; border-radius: 4px;">병목</span></span>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px;">
+<b>알림</b>
+<span style="display: inline-flex; align-items: center; gap: 6px;"><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 1.5 21h21L12 2.5z" fill="#C62F2F"></path><path d="M12 9.5v5.5" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"></path><circle cx="12" cy="18" r="1.3" fill="#FFFFFF"></circle></svg>긴급</span>
+<span style="display: inline-flex; align-items: center; gap: 6px;"><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 1.5 21h21L12 2.5z" fill="#F2C200" stroke="#7A6100" stroke-width="1.6" stroke-linejoin="round"></path><path d="M12 9.5v5.5" stroke="#1B1F24" stroke-width="2.2" stroke-linecap="round"></path><circle cx="12" cy="18" r="1.3" fill="#1B1F24"></circle></svg>주의</span>
+<span style="display: inline-flex; align-items: center; gap: 6px;"><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#7D8590"></circle><path d="M12 11v6" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"></path><circle cx="12" cy="7.5" r="1.3" fill="#FFFFFF"></circle></svg>참고</span>
+<span style="color: #4A525E;">· 이 화면:</span>
+<span style="display: inline-flex; align-items: center; gap: 6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1B1F24" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg><b>보류</b></span>
+<span style="display: inline-flex; align-items: center; gap: 6px;"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#C62F2F"></circle><path d="M8.5 8.5l7 7M15.5 8.5l-7 7" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round"></path></svg>불합격</span>
+</div>
+</footer>
+</div>
+
+<sc-if value="{{dlgOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; background: rgba(20, 30, 50, 0.50); backdrop-filter: blur(2px); animation: dcFade .15s ease-out both; display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 10;">
+<div role="dialog" aria-modal="true" aria-label="{{dlg.title}}" style="width: 100%; max-width: 440px; background: #FFFFFF; border-radius: 10px; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px;">
+<div style="font-weight: 700;">{{dlg.title}}</div>
+<div style="font-size: 15px; white-space: pre-line;">{{dlg.body}}</div>
+<div style="display: flex; justify-content: space-between; gap: 24px; margin-top: 8px;">
+<button onClick="{{dlgCancel}}" style="min-height: 44px; padding: 0 18px; border-radius: 6px; border: 1px solid #A9BEDF; background: #FFFFFF; color: #174A96; font-size: 16px; cursor: pointer;">취소</button>
+<button onClick="{{dlgOk}}" style="min-height: 44px; padding: 0 18px; border-radius: 6px; border: 1px solid #1F5FBF; background: #1F5FBF; color: #FFFFFF; font-size: 16px; font-weight: 600; cursor: pointer;">{{dlg.ok}}</button>
+</div>
+</div>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1200}}'>
+class Component extends DCLogic {
+  constructor(...args) {
+    super(...args);
+    this.state = { role: 'SUP', menu: false, lot: '041-1', hold040: false, holdForm: false, reason: '', scrapProposed: false, scrapApproved: false, dlg: null };
+  }
+
+  menuFor(role, current) {
+    const all = [
+      ['홈', null, true], ['현장 보기', null, true], ['교대 시작 브리핑', null, true], ['3D 라인 뷰', null, true], ['다시 보기', null, true],
+      ['알림', null, true], ['문서함', null, true], ['정지 사유', null, true],
+      ['로트 추적', 'Lot.dc.html', true], ['검사 기록', 'Main.dc.html', role !== 'MNT'], ['재고', 'Inventory.dc.html', true],
+      ['공구 수명', 'Tool.dc.html', true], ['예방 정비', null, role !== 'OPR'], ['사내 문서', null, true], ['설정', null, role === 'MGR']
+    ];
+    return all.filter((m) => m[2]).map((m) => {
+      const cur = m[1] === current;
+      return { label: m[0], href: m[1] || '', isLink: !!m[1], isOff: !m[1], bg: cur ? '#1F5FBF' : '#FFFFFF', fg: cur ? '#FFFFFF' : '#174A96', bd: cur ? '#1F5FBF' : '#A9BEDF' };
+    });
+  }
+
+  btn(on) {
+    return on ? { bg: '#1F5FBF', fg: '#FFFFFF', bd: '#1F5FBF', cursor: 'pointer' } : { bg: '#EEF0F3', fg: '#5F6773', bd: '#D5D9DF', cursor: 'not-allowed' };
+  }
+
+  renderVals() {
+    const s = this.state;
+    const ROLE = { OPR: ['작업자(OPR)', '김○○'], MNT: ['보전 담당자(MNT)', '최○○'], SUP: ['반장(SUP)', '박○○'], MGR: ['공장 관리자(MGR)', '정○○'] };
+    const role = s.role;
+    const supOrMgr = role === 'SUP' || role === 'MGR';
+    const held040 = s.hold040;
+
+    const LOTS = {
+      '041-1': {
+        po: 'PO-2609-041', shift: '10/1 주간', mat: 'MAT-2609-12', status: 'hold',
+        related: [['LOT-2609-040-1', '합격', '원자재', '040-1'], ['LOT-2609-041-2', '생산 중 · 강화 대기', '설비·교대', null], ['LOT-2609-042-1', '생산 중 · 강화 대기', '설비·교대', null]]
+      },
+      '040-1': {
+        po: 'PO-2609-040', shift: '9/30 야간', mat: 'MAT-2609-12', status: held040 ? 'hold' : 'pass',
+        related: [['LOT-2609-041-1', '보류', '원자재', '041-1'], ['LOT-2609-039-1', '합격', '교대', null]]
+      },
+      '031-1': {
+        po: 'PO-2609-031', shift: '9/29 주간', mat: 'MAT-2609-11', status: 'shipped',
+        related: [['LOT-2609-030-1', '출하됨', '출하·원자재', null], ['LOT-2609-032-1', '출하됨', '출하', null]]
+      }
+    };
+    const key = LOTS[s.lot] ? s.lot : '041-1';
+    const L = LOTS[key];
+    const isHold = L.status === 'hold', isPass = L.status === 'pass', isShipped = L.status === 'shipped';
+
+    // ---- 설비별 시간표 (시각은 예시 값, 고정 사건은 문서 그대로) ----
+    const DAYS = ['9/29', '9/30', '10/1'];
+    const T = (d, hm) => { const p = hm.split(':').map(Number); return DAYS.indexOf(d) * 1440 + p[0] * 60 + p[1]; };
+    const NOW = T('10/1', '13:40');
+    const hm = (t) => { const mm = ((t % 1440) + 1440) % 1440; return String(Math.floor(mm / 60)).padStart(2, '0') + ':' + String(mm % 60).padStart(2, '0'); };
+    const dayOf = (t) => DAYS[Math.floor(t / 1440)];
+    const EQS = [['SAW-01', 'OP-10 절단'], ['MIL-01', 'OP-20 황삭'], ['VF2-01', 'OP-30 정밀 가공'], ['VF2-02', 'OP-30 정밀 가공'], ['WSH-01', 'OP-40 디버링·세척'], ['CMM-01', 'OP-50 측정']];
+    // [설비, 로트, 시작, 끝(null = 진행 중), 고른 로트일 때 글자, 고른 로트일 때 덧붙일 말]
+    const BARS = [
+      ['SAW-01', '031-1', T('9/29', '08:15'), T('9/29', '08:50'), '031-1', ''],
+      ['MIL-01', '031-1', T('9/29', '08:55'), T('9/29', '11:05'), '031-1', ''],
+      ['VF2-01', '031-1', T('9/29', '09:10'), T('9/29', '12:20'), '031-1', ''],
+      ['VF2-02', '031-1', T('9/29', '09:10'), T('9/29', '12:20'), '031-1', ''],
+      ['WSH-01', '031-1', T('9/29', '11:40'), T('9/29', '12:40'), '031-1', ''],
+      ['CMM-01', '031-1', T('9/29', '09:40'), T('9/29', '15:35'), '발췌 8 · 합격', ''],
+      ['SAW-01', '040-1', T('9/30', '21:05'), T('9/30', '21:40'), '040-1', ''],
+      ['MIL-01', '040-1', T('9/30', '21:45'), T('9/30', '23:55'), '040-1', ''],
+      ['VF2-01', '040-1', T('9/30', '22:00'), T('10/1', '01:50'), '040-1', ''],
+      ['VF2-02', '040-1', T('9/30', '22:00'), T('10/1', '01:50'), '040-1', ''],
+      ['WSH-01', '040-1', T('10/1', '01:00'), T('10/1', '02:30'), '040-1', ''],
+      ['CMM-01', '040-1', T('10/1', '04:05'), T('10/1', '09:15'), '발췌 8 · 합격', ''],
+      ['SAW-01', '041-1', T('10/1', '08:12'), T('10/1', '08:30'), '041-1', '김○○'],
+      ['MIL-01', '041-1', T('10/1', '08:40'), T('10/1', '09:55'), '041-1', '이○○'],
+      ['VF2-01', '041-1', T('10/1', '08:55'), T('10/1', '10:20'), '041-1 · 1~13', '순번 1~13'],
+      ['VF2-02', '041-1', T('10/1', '10:05'), T('10/1', '10:55'), '041-1 · 14~20', '순번 14~20'],
+      ['WSH-01', '041-1', T('10/1', '10:30'), T('10/1', '11:10'), '041-1', ''],
+      ['CMM-01', '041-1', T('10/1', '09:20'), T('10/1', '09:30'), '초품 합격', ''],
+      ['CMM-01', '041-1', T('10/1', '11:20'), null, '강화 12/20', ''],
+      ['SAW-01', '041-2', T('10/1', '08:45'), T('10/1', '09:00'), '041-2', ''],
+      ['MIL-01', '041-2', T('10/1', '10:00'), T('10/1', '10:50'), '041-2', ''],
+      ['VF2-01', '041-2', T('10/1', '11:50'), T('10/1', '12:50'), '041-2', ''],
+      ['WSH-01', '041-2', T('10/1', '13:00'), null, '041-2', ''],
+      ['SAW-01', '042-1', T('10/1', '12:40'), T('10/1', '13:05'), '042-1', ''],
+      ['MIL-01', '042-1', T('10/1', '13:15'), null, '042-1', '']
+    ];
+    const BANDS = [['VF2-01', T('10/1', '10:20'), T('10/1', '11:45'), 'down', '고장 992'], ['VF2-02', T('10/1', '08:35'), T('10/1', '10:05'), 'maint', '정비']];
+    const MARKS = [['VF2-01', T('9/30', '15:05'), 'T04 교체'], ['VF2-02', T('9/30', '21:30'), 'T02 교체'], ['VF2-01', T('10/1', '09:10'), 'T05 교체'], ['VF2-01', T('10/1', '11:50'), 'T02 교체']];
+    const BN = ['CMM-01', T('10/1', '11:20'), NOW];
+    const HOLD = { '041-1': T('10/1', '11:05'), '040-1': held040 ? T('10/1', '13:41') : null, '031-1': null };
+    const LANE = {
+      '041-1': [],
+      '040-1': [[T('10/1', '09:20'), '입고 +36', 'in']].concat(held040 ? [[T('10/1', '13:41'), '보류 36', 'hold']] : []),
+      '031-1': [[T('9/29', '15:40'), '입고 +36', 'in'], [T('9/30', '14:00'), '출하 SHP-2609-025 · CUST-01 [가상]', 'ship']]
+    };
+    const WIN = { '041-1': [T('10/1', '08:00'), T('10/1', '14:00'), 60], '040-1': [T('9/30', '20:00'), T('10/1', '14:00'), 120], '031-1': [T('9/29', '08:00'), T('9/30', '16:00'), 240] };
+    const w0 = WIN[key][0], w1 = WIN[key][1], step = WIN[key][2], span = w1 - w0;
+    const pos = (t) => Math.min(100, Math.max(0, ((t - w0) / span) * 100));
+    const pc = (t) => pos(t).toFixed(2) + '%';
+    const wd = (a, b) => (((Math.min(b, w1) - Math.max(a, w0)) / span) * 100).toFixed(2) + '%';
+    const txOf = (t) => (pos(t) < 6 ? 'translateX(0)' : (pos(t) > 94 ? 'translateX(-100%)' : 'translateX(-50%)'));
+    const inWin = (t) => t >= w0 && t <= w1;
+    const ticks = [];
+    for (let t = w0; t <= w1; t += step) {
+      const first = t === w0, last = t + step > w1;
+      ticks.push({ label: (first || t % 1440 === 0 ? dayOf(t) + ' ' : '') + hm(t), left: pc(t), tx: first ? 'translateX(0)' : (last ? 'translateX(-100%)' : 'translateX(-50%)') });
+    }
+    const grid = [];
+    for (let t = w0, k = 0; t <= w1; t += step / 2, k++) grid.push({ left: pc(t), c: k % 2 === 0 ? '#E3E7EC' : '#F1F3F6' });
+    const hasNow = inWin(NOW);
+    const holdT = HOLD[key];
+    const hasHold = holdT !== null && inWin(holdT);
+    const nowChip = hasNow && !(hasHold && Math.abs(pos(holdT) - pos(NOW)) < 8);
+    const BAND_LOOK = { down: { bg: 'rgba(198, 47, 47, 0.12)', top: '3px solid #C62F2F', fg: '#B42323' }, maint: { bg: 'repeating-linear-gradient(45deg, #C3CCD9 0 2px, #F1F3F6 2px 6px)', top: '0', fg: '#4A525E' } };
+    const LANE_LOOK = { in: { bg: '#FFFFFF', bd: '#A9B5C6', fg: '#1B1F24', fw: '600' }, hold: { bg: '#FFFFFF', bd: '#1B1F24', fg: '#1B1F24', fw: '700' }, ship: { bg: '#EAF1FC', bd: '#1F5FBF', fg: '#174A96', fw: '700' } };
+    const lineFields = { grid: grid, hasNow: hasNow, nowL: pc(NOW), hasHold: hasHold, holdL: hasHold ? pc(holdT) : '0%' };
+    const tlRows = EQS.map(([eq, op]) => {
+      const bars = BARS.filter((b) => b[0] === eq && (b[3] === null ? NOW : b[3]) > w0 && b[2] < w1).map(([, lot, a, e, label, tip]) => {
+        const end = e === null ? NOW : e, sel = lot === key;
+        return {
+          left: pc(Math.max(a, w0)), w: wd(a, end), label: sel ? label : lot,
+          tip: 'LOT-2609-' + lot + ' · ' + dayOf(a) + ' ' + hm(a) + '~' + (e === null ? '진행 중' : hm(e)) + (sel && tip ? ' · ' + tip : ''),
+          bg: sel ? '#1F5FBF' : '#C3CCD9', fg: sel ? '#FFFFFF' : '#1B2A47',
+          open: e === null ? '3px dashed ' + (sel ? '#0F3E85' : '#7D8590') : '0',
+          shadow: sel ? '0 1px 3px rgba(31, 95, 191, 0.35)' : 'none'
+        };
+      });
+      const bands = BANDS.filter((b) => b[0] === eq && b[2] > w0 && b[1] < w1).map((b) => Object.assign({ left: pc(Math.max(b[1], w0)), w: wd(b[1], b[2]), label: b[4] }, BAND_LOOK[b[3]]));
+      const marks = MARKS.filter((m) => m[0] === eq && inWin(m[1])).map((m) => ({ left: pc(m[1]), tx: txOf(m[1]), label: m[2] }));
+      const bn = BN[0] === eq && BN[2] > w0 && BN[1] < w1;
+      return Object.assign({
+        eq: eq, op: op, rowBg: 'transparent', bars: bars, bands: bands, marks: marks, events: [],
+        hasBn: bn, bnL: bn ? (pos(Math.max(BN[1], w0)) - 0.4).toFixed(2) + '%' : '0%', bnW: bn ? (pos(Math.min(BN[2], w1)) - pos(Math.max(BN[1], w0)) + 0.8).toFixed(2) + '%' : '0%'
+      }, lineFields);
+    });
+    const txEv = (t) => (pos(t) < 20 ? 'translateX(0)' : (pos(t) > 75 ? 'translateX(-100%)' : 'translateX(-50%)'));
+    const events = LANE[key].filter((e) => inWin(e[0])).map(([t, label, kind]) => Object.assign({ left: pc(t), tx: txEv(t), label: label, isHold: kind === 'hold' }, LANE_LOOK[kind]));
+    tlRows.push(Object.assign({ eq: '완제품 · 출하', op: '', rowBg: '#FAFBFC', bars: [], bands: [], marks: [], events: events, hasBn: false, bnL: '0%', bnW: '0%' }, lineFields));
+    const tl = { ticks: ticks, rows: tlRows, hasHold: hasHold, holdL: hasHold ? pc(holdT) : '0%', holdTx: hasHold ? txOf(holdT) : 'translateX(-50%)', holdT: hasHold ? hm(holdT) : '', nowChip: nowChip, nowL: pc(NOW), nowTx: txOf(NOW) };
+
+    // ---- 수량 ----
+    const FC = { done: '#4A525E', fail: '#C62F2F', left: '#E1E5EB', none: '#FFFFFF', hold: '#FFFFFF' };
+    const sg = (n, tot, kind) => ({ w: ((n / tot) * 100).toFixed(2) + '%', bg: FC[kind], ring: kind === 'hold' ? 'inset 0 0 0 2px #1B1F24' : (kind === 'none' ? 'inset 0 0 0 1px #7D8590' : 'none') });
+    let qtyFlow;
+    if (key === '041-1') qtyFlow = [
+      ['투입', [sg(20, 20, 'done')], '20', ''],
+      ['OP-50 판정', [sg(9, 20, 'done'), sg(2, 20, 'fail'), sg(1, 20, 'none'), sg(8, 20, 'left')], '12 / 20', '합격 9 · 불합격 2'],
+      ['완제품 입고', [sg(20, 20, 'hold')], '0', '보류 20'],
+      ['출하', [], '0', '금지']
+    ];
+    else if (key === '040-1') qtyFlow = [
+      ['투입', [sg(36, 36, 'done')], '36', ''],
+      ['OP-50 판정', [sg(36, 36, 'done')], '36 / 36', '합격 36'],
+      ['완제품 입고', [sg(36, 36, held040 ? 'hold' : 'done')], held040 ? '0' : '36', held040 ? '보류 36' : '09:20'],
+      ['출하', [], '0', held040 ? '금지' : '남은 36']
+    ];
+    else qtyFlow = [
+      ['투입', [sg(36, 36, 'done')], '36', ''],
+      ['OP-50 판정', [sg(36, 36, 'done')], '36 / 36', '합격 36'],
+      ['완제품 입고', [sg(36, 36, 'done')], '36', '9/29 15:40'],
+      ['출하', [sg(36, 36, 'done')], '36', 'SHP-2609-025']
+    ];
+    const flowRows = qtyFlow.map(([label, segs, val, note]) => ({ label: label, segs: segs, val: val, note: note, aria: label + ' ' + val + (note ? ', ' + note : '') }));
+
+    const related = L.related.map(([no, state, why, k]) => ({
+      no: no, state: state, why: why, isHold: state === '보류', fw: state === '보류' ? '700' : '400',
+      canOpen: !!k, plain: !k, open: () => { if (k) this.setState({ lot: k, holdForm: false }); }
+    }));
+
+    // ---- 버튼 ----
+    const canHold = supOrMgr;
+    let holdDisabled = true, holdHelp = '';
+    if (key === '041-1') holdHelp = '해제: 전수 검사 끝난 뒤 (12 / 20)';
+    else if (key === '031-1') holdHelp = '출하됨 — 보류 불가';
+    else if (held040) holdHelp = '해제: 전수 검사 끝난 뒤';
+    else { holdDisabled = s.holdForm && !s.reason.trim(); holdHelp = s.holdForm ? '사유 입력 필요' : ''; }
+    const holdClick = () => {
+      if (key !== '040-1' || held040) return;
+      if (!this.state.holdForm) { this.setState({ holdForm: true }); return; }
+      if (!this.state.reason.trim()) return;
+      this.setState({ dlg: { title: 'LOT-2609-040-1을 보류할까요?', body: '사유: ' + this.state.reason + '\n출하·다음 공정 이동 막힘 · 다음 1~2개 로트 검사 강화', ok: '보류', act: 'hold' } });
+    };
+    const showScrapPropose = role === 'SUP' && key === '041-1';
+    const showScrapApprove = role === 'MGR' && key === '041-1';
+    const approveDisabled = !s.scrapProposed || s.scrapApproved;
+
+    const dlg = s.dlg || { title: '', body: '', ok: '' };
+    const dlgOk = () => {
+      const d = this.state.dlg;
+      if (!d) return;
+      if (d.act === 'hold') this.setState({ hold040: true, holdForm: false, dlg: null });
+      else if (d.act === 'approve') this.setState({ scrapApproved: true, dlg: null });
+      else this.setState({ dlg: null });
+    };
+
+    return {
+      role: role, who: { label: ROLE[role][0], name: ROLE[role][1] },
+      onRole: (e) => this.setState({ role: e.target.value, holdForm: false }),
+      menuOpen: s.menu, toggleMenu: () => this.setState({ menu: !this.state.menu }), menu: this.menuFor(role, 'Lot.dc.html'),
+      lotKey: key, onLot: (e) => this.setState({ lot: e.target.value, holdForm: false }),
+      lot: { po: L.po, shift: L.shift, mat: L.mat }, isHold: isHold, isPass: isPass, isShipped: isShipped,
+      related: related, lotNo: 'LOT-2609-' + key, tl: tl, flowRows: flowRows, canInsp: role !== 'MNT',
+      canHold: canHold,
+      holdFormOpen: s.holdForm && key === '040-1' && !held040, holdReason: s.reason, onReason: (e) => this.setState({ reason: e.target.value }),
+      holdClick: holdClick, holdDisabled: holdDisabled, holdBtn: this.btn(!holdDisabled), holdHelp: holdHelp,
+      releaseDisabled: true,
+      showScrapPropose: showScrapPropose, scrapProposed: s.scrapProposed, scrapBtn: this.btn(!s.scrapProposed),
+      proposeScrap: () => this.setState({ scrapProposed: true }),
+      scrapText: s.scrapProposed ? '제안 보냄 (박○○ 13:41) · 승인 대기' : '',
+      showScrapApprove: showScrapApprove, approveDisabled: approveDisabled, approveBtn: this.btn(!approveDisabled),
+      approveScrap: () => { if (!approveDisabled) this.setState({ dlg: { title: '폐기를 승인할까요?', body: 'LOT-2609-041-1 순번 10, 11 (DIM-01 치명) 2개 폐기\n승인하면 잠깁니다. 고치려면 사유가 필요합니다.', ok: '폐기 승인', act: 'approve' } }); },
+      approveText: s.scrapApproved ? '승인 (정○○ 13:42) · 폐기 2' : (s.scrapProposed ? '반장 제안 13:41' : '반장 제안 없음'),
+      dlgOpen: !!s.dlg, dlg: dlg, dlgCancel: () => this.setState({ dlg: null }), dlgOk: dlgOk
+    };
+  }
+}
+</script>
+</body>
+</html>

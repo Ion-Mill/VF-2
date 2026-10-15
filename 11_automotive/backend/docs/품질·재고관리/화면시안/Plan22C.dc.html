@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>SCR-22 배치 C 3D 매거진형</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0;background:#ECEFF4}
+a{color:#1F5FBF}a:hover{color:#174A96}
+button,select,input{font-family:inherit}
+button:focus-visible,a:focus-visible{outline:2px solid #1F5FBF;outline-offset:2px}
+@keyframes dcRise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+section{box-shadow:0 1px 2px rgba(16,24,40,.05),0 2px 6px rgba(16,24,40,.05);animation:dcRise .35s ease-out both}
+h2{color:#1B2A47;font-size:16px!important;line-height:1.35;align-items:center!important}h2::before{content:"";width:10px;height:10px;border-radius:3px;background:#1F5FBF;flex:none}
+button,a{transition:background-color .15s,box-shadow .15s,transform .08s,filter .15s}
+button:not(:disabled):not([style*="transparent"]):hover,a[style*="min-height"]:hover{filter:brightness(.96);box-shadow:0 3px 10px rgba(31,95,191,.20)}
+header button:not(:disabled):hover{background:rgba(255,255,255,.22)!important;filter:none;box-shadow:none}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</helmet>
+<div style="min-height: 100vh; background: #ECEFF4; color: #1B1F24; font-family: 'IBM Plex Sans KR', sans-serif; font-size: 15px; line-height: 1.45; font-variant-numeric: tabular-nums; display: flex; flex-direction: column;">
+
+<header style="background: #1B2A47; color: #FFFFFF; box-shadow: 0 2px 10px rgba(16,24,40,0.20);">
+<div style="max-width: 1440px; margin: 0 auto; padding: 6px 20px; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px;">
+<button aria-label="메뉴" style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.30); border-radius: 8px; color: #FFFFFF; cursor: pointer;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
+<span style="font-weight: 700; font-size: 19px;">공구 수명</span>
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 15px; color: #CFDBEE;">10/1 (목) 주간 08:00~17:00 · 13:40</span>
+<span style="flex: 1 1 auto;"></span>
+<span style="font-weight: 600;">작업자(OPR) 김○○</span>
+<button aria-label="처리 안 된 알림 2건" style="min-height: 44px; display: inline-flex; align-items: center; gap: 6px; padding: 0 12px; background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.30); border-radius: 8px; color: #FFFFFF; font-size: 15px; cursor: pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10 21a2 2 0 0 0 4 0"></path></svg>미처리 2</button>
+<button style="min-height: 44px; padding: 0 14px; background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.30); border-radius: 8px; color: #FFFFFF; font-size: 15px; cursor: pointer;">비서</button>
+<button style="min-height: 44px; padding: 0 14px; background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.30); border-radius: 8px; color: #FFFFFF; font-size: 15px; cursor: pointer;">화면 설정</button>
+<span style="padding: 2px 8px; border: 1px dashed rgba(255,255,255,0.55); border-radius: 4px; font-size: 13px; color: #CFDBEE;">시연 모드</span>
+</div>
+</header>
+
+<main style="flex: 1 1 auto; width: 100%; max-width: 1440px; margin: 0 auto; padding: 12px 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px;">
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px;">
+<span style="font-size: 13px; color: #4A525E; padding: 1px 8px; border: 1px solid #D5D9DF; border-radius: 4px; background: #FFFFFF;">공구 매거진 모식도 [가상] · 20칸 [참고]</span>
+<span style="flex: 1 1 auto;"></span>
+<span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #4A525E;"><span style="width: 16px; height: 16px; border-radius: 50%; background: conic-gradient(#4A525E 0 60%, #E6E9ED 60% 100%);"></span>사용률</span>
+<span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #4A525E;"><span style="width: 16px; height: 16px; border-radius: 50%; background: conic-gradient(#E0B000 0 92%, #E6E9ED 92% 100%);"></span>90% 이상</span>
+<span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #4A525E;"><span style="width: 16px; height: 16px; border-radius: 50%; border: 1.5px dashed #A9B5C6; box-sizing: border-box;"></span>빈 칸</span>
+</div>
+
+<div style="flex: 1 1 auto; display: flex; flex-wrap: wrap; gap: 12px; align-items: stretch;">
+<div style="flex: 999 1 760px; min-width: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-content: start;">
+<sc-for list="{{mags}}" as="mg" hint-placeholder-count="2">
+<section style="background: #FFFFFF; border: 1px solid {{mg.bd}}; border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px;">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px;">
+<h2 style="margin: 0; display: flex; gap: 8px; align-items: center; font-weight: 700;">{{mg.name}}</h2>
+<span style="display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: #4A525E;"><span style="width: 16px; height: 10px; background: #4A525E; border: 2px solid #8FCB9B; border-radius: 2px;"></span>{{mg.st}}</span>
+<span style="flex: 1 1 auto;"></span>
+<sc-if value="{{mg.warn}}" hint-placeholder-val="{{ false }}"><span style="display: inline-flex; align-items: center; gap: 5px; padding: 1px 10px; border-radius: 999px; background: #FFF5CC; border: 1px solid #E6CF6E; color: #5C4800; font-weight: 700; font-size: 14px;"><svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 1.5 21h21L12 2.5z" fill="#F2C200" stroke="#7A6100" stroke-width="1.8" stroke-linejoin="round"></path></svg>교체 준비 {{mg.warnN}}</span></sc-if>
+</div>
+<div style="position: relative; width: 100%; aspect-ratio: 560 / 340; background: #F4F7FB; border: 1px solid #DCE5F3; border-radius: 8px; overflow: hidden;">
+<svg viewBox="0 0 560 340" preserveAspectRatio="none" aria-hidden="true" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%;">
+<defs><filter id="magBlur" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="8"></feGaussianBlur></filter></defs>
+<ellipse cx="280" cy="206" rx="236" ry="86" fill="#1B2A47" fill-opacity="0.16" filter="url(#magBlur)"></ellipse>
+<ellipse cx="280" cy="186" rx="234" ry="88" fill="#A9B5C6" stroke="#5D6B7E" stroke-width="1.2"></ellipse>
+<rect x="46" y="166" width="468" height="20" fill="#A9B5C6"></rect>
+<ellipse cx="280" cy="166" rx="234" ry="88" fill="#E6EBF2" stroke="#5D6B7E" stroke-width="1.2"></ellipse>
+<ellipse cx="280" cy="166" rx="178" ry="66" fill="none" stroke="#C3CCD9" stroke-width="1" stroke-dasharray="4 4"></ellipse>
+<ellipse cx="280" cy="170" rx="62" ry="24" fill="#9AA7B9"></ellipse>
+<ellipse cx="280" cy="164" rx="62" ry="24" fill="#C3CCD9" stroke="#5D6B7E" stroke-width="1"></ellipse>
+</svg>
+<sc-for list="{{mg.pockets}}" as="p" hint-placeholder-count="20"><span aria-hidden="{{p.hidden}}" title="{{p.title}}" style="position: absolute; left: {{p.left}}; top: {{p.top}}; width: {{p.size}}px; height: {{p.size}}px; transform: translate(-50%, -50%); border-radius: 50%; background: {{p.bg}}; border: {{p.border}}; box-sizing: border-box; box-shadow: {{p.shadow}}; display: flex; align-items: center; justify-content: center;"><sc-if value="{{p.isTool}}" hint-placeholder-val="{{ false }}"><span style="width: 68%; height: 68%; border-radius: 50%; background: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: {{p.fs}}px; font-weight: 700; color: #1B2A47;">{{p.no}}</span></sc-if></span></sc-for>
+<sc-for list="{{mg.labels}}" as="l" hint-placeholder-count="5"><span style="position: absolute; left: {{l.left}}; top: {{l.top}}; transform: translate(-50%, 0); padding: 0 6px; border-radius: 999px; border: 1px solid {{l.bd}}; background: {{l.bg}}; color: {{l.fg}}; font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; white-space: nowrap;">{{l.text}}</span></sc-for>
+</div>
+<div style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px;">
+<sc-for list="{{mg.chips}}" as="c" hint-placeholder-count="5"><button aria-label="{{c.aria}}" style="display: flex; flex-direction: column; align-items: center; min-height: 44px; padding: 4px 2px; border-radius: 6px; border: 1px solid {{c.bd}}; background: {{c.bg}}; color: #1B1F24; cursor: pointer; font-size: 12px; line-height: 1.25;"><b style="font-size: 13px;">{{c.no}}</b><span style="font-family: 'IBM Plex Mono', monospace; color: {{c.fg}}; font-weight: 600;">{{c.pct}}</span></button></sc-for>
+</div>
+</section>
+</sc-for>
+</div>
+
+<section style="flex: 1 1 320px; min-width: 0; background: #FFFFFF; border: 1px solid #D5D9DF; border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px;">
+<span style="font-size: 13px; color: #4A525E;">고른 공구</span>
+<div style="display: flex; align-items: center; gap: 10px;">
+<span style="position: relative; width: 84px; height: 84px; border-radius: 50%; background: conic-gradient(#E0B000 0 91%, #E6E9ED 91% 100%); display: flex; align-items: center; justify-content: center;"><span style="width: 62px; height: 62px; border-radius: 50%; background: #FFFFFF; display: flex; align-items: center; justify-content: center; font-family: 'IBM Plex Mono', monospace; font-size: 18px; font-weight: 600;">91%</span></span>
+<span style="display: flex; flex-direction: column;"><b style="font-size: 18px;">VF2-02 · T02</b><span>엔드밀 Ø10</span><span style="display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 700; color: #5C4800;"><svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 1.5 21h21L12 2.5z" fill="#F2C200" stroke="#7A6100" stroke-width="1.8" stroke-linejoin="round"></path></svg>교체 준비</span></span>
+</div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; font-size: 14px;">
+<div style="padding: 6px 10px; border-radius: 8px; background: #F7FAFE; border: 1px solid #DCE5F3;"><div style="font-size: 12px; color: #4A525E;">누적 / 한도</div><b style="font-family: 'IBM Plex Mono', monospace;">182 / 200분</b></div>
+<div style="padding: 6px 10px; border-radius: 8px; background: #FFFBEA; border: 1px solid #E6CF6E;"><div style="font-size: 12px; color: #5C4800;">한도까지</div><b style="font-family: 'IBM Plex Mono', monospace;">18분</b></div>
+<div style="padding: 6px 10px; border-radius: 8px; background: #F7FAFE; border: 1px solid #DCE5F3;"><div style="font-size: 12px; color: #4A525E;">재고 엔드밀</div><b style="font-family: 'IBM Plex Mono', monospace;">10 / 9</b></div>
+<div style="padding: 6px 10px; border-radius: 8px; background: #F7FAFE; border: 1px solid #DCE5F3;"><div style="font-size: 12px; color: #4A525E;">참고값</div><b style="font-family: 'IBM Plex Mono', monospace;">—</b></div>
+</div>
+<button style="min-height: 52px; border-radius: 8px; border: 1px solid #1F5FBF; background: #1F5FBF; color: #FFFFFF; font-size: 17px; font-weight: 700; cursor: pointer;">공구 교체 기록</button>
+<div style="display: flex; flex-direction: column; gap: 4px; margin-top: 4px;">
+<b style="font-size: 14px;">사용률 높은 순</b>
+<sc-for list="{{top}}" as="t" hint-placeholder-count="3"><div style="display: grid; grid-template-columns: minmax(0, 1fr) 44px; gap: 8px; align-items: center; padding: 4px 0; border-top: 1px solid #EEF0F3; font-size: 14px;"><span>{{t.label}}</span><b style="text-align: right; font-family: 'IBM Plex Mono', monospace;">{{t.pct}}</b></div></sc-for>
+</div>
+</section>
+</div>
+</main>
+
+<footer style="width: 100%; max-width: 1440px; margin: 0 auto 10px; padding: 0 20px; box-sizing: border-box;">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; padding: 7px 14px; background: #FFFFFF; border: 1px solid #D5D9DF; border-radius: 8px; font-size: 13px;">
+<b>범례</b>
+<span style="display: inline-flex; align-items: center; gap: 5px;"><span style="width: 16px; height: 10px; background: #4A525E; border: 2px solid #8FCB9B; border-radius: 2px;"></span>가공</span>
+<span style="display: inline-flex; align-items: center; gap: 5px;"><span style="width: 16px; height: 10px; background: #D5D9DF; border-radius: 2px;"></span>대기</span>
+<span style="display: inline-flex; align-items: center; gap: 5px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4A525E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4 2.5-2.5z"></path></svg>준비</span>
+<span style="display: inline-flex; align-items: center; gap: 5px;"><span style="width: 16px; height: 10px; border-radius: 2px; background: repeating-linear-gradient(45deg, #9AA1AB 0 2px, #E6E9ED 2px 5px);"></span>정비</span>
+<span style="display: inline-flex; align-items: center; gap: 5px;"><svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 1.5 21h21L12 2.5z" fill="#C62F2F"></path><path d="M12 9.5v5.5" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"></path><circle cx="12" cy="18" r="1.3" fill="#FFFFFF"></circle></svg>고장</span>
+<span style="display: inline-flex; align-items: center; gap: 5px;"><svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#D9731A"></circle><rect x="6" y="10.5" width="12" height="3" rx="1" fill="#FFFFFF"></rect></svg>막힘</span>
+<span style="display: inline-flex; align-items: center; gap: 5px;"><svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 1.5 21h21L12 2.5z" fill="#F2C200" stroke="#7A6100" stroke-width="1.6" stroke-linejoin="round"></path></svg>주의 알람</span>
+<span style="display: inline-flex; align-items: center; gap: 5px;"><b style="color: #9A4A00;">20</b>재공</span>
+<span style="padding: 0 5px; border: 2px solid #D9731A; border-radius: 4px; line-height: 1.3;">병목</span>
+<span aria-hidden="true" style="color: #9AA1AB;">|</span>
+<b>알림</b>
+<span style="display: inline-flex; align-items: center; gap: 5px;"><svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 1.5 21h21L12 2.5z" fill="#C62F2F"></path><path d="M12 9.5v5.5" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"></path><circle cx="12" cy="18" r="1.3" fill="#FFFFFF"></circle></svg>긴급</span>
+<span style="display: inline-flex; align-items: center; gap: 5px;"><svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 1.5 21h21L12 2.5z" fill="#F2C200" stroke="#7A6100" stroke-width="1.6" stroke-linejoin="round"></path><path d="M12 9.5v5.5" stroke="#1B1F24" stroke-width="2.2" stroke-linecap="round"></path><circle cx="12" cy="18" r="1.3" fill="#1B1F24"></circle></svg>주의</span>
+<span style="display: inline-flex; align-items: center; gap: 5px;"><svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#7D8590"></circle><path d="M12 11v6" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"></path><circle cx="12" cy="7.5" r="1.3" fill="#FFFFFF"></circle></svg>참고</span>
+<span aria-hidden="true" style="color: #9AA1AB;">|</span>
+<span>▲ 교체 준비 (90%)</span>
+</div>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const SPEC = [['T01', '페이스밀', 400], ['T02', '엔드밀 Ø10', 200], ['T03', '보링 인서트', 400], ['T04', '드릴 Ø5.0', 1000], ['T05', 'M6 탭', 400]];
+    const USED = { 'VF2-01': { T01: 212, T02: 40, T03: 236, T04: 684, T05: 104 }, 'VF2-02': { T01: 91, T02: 182, T03: 148, T04: 868, T05: 312 } };
+    const VW = 560, VH = 340, CX = 280, CY = 166, RX = 206, RY = 77;
+    const pc = (v, t) => ((v / t) * 100).toFixed(2) + '%';
+    const mags = [['VF2-01', '가공 · 11:45 복귀'], ['VF2-02', '가공']].map(([name, st]) => {
+      const raw = [];
+      let warnN = 0;
+      for (let i = 0; i < 20; i++) {
+        const th = Math.PI / 2 + (i * Math.PI * 2) / 20;
+        const x = CX + RX * Math.cos(th), y = CY + RY * Math.sin(th);
+        const depth = (Math.sin(th) + 1) / 2;
+        const size = Math.round(34 + depth * 22);
+        const spec = i < 5 ? SPEC[i] : null;
+        let r = 0, warn = false, sel = false;
+        if (spec) { r = USED[name][spec[0]] / spec[2]; warn = r >= 0.9; if (warn) warnN++; sel = name === 'VF2-02' && spec[0] === 'T02'; }
+        const col = warn ? '#E0B000' : '#4A525E';
+        raw.push({
+          y: y, isTool: !!spec, no: spec ? spec[0] : '', hidden: spec ? 'false' : 'true',
+          title: spec ? name + ' ' + spec[0] + ' ' + spec[1] + ' ' + Math.round(r * 100) + '%' : '빈 칸',
+          left: pc(x, VW), top: pc(y, VH), size: size, fs: Math.max(10, Math.round(size * 0.28)),
+          bg: spec ? 'conic-gradient(' + col + ' 0 ' + (r * 100).toFixed(1) + '%, #E6E9ED ' + (r * 100).toFixed(1) + '% 100%)' : 'rgba(255,255,255,0.65)',
+          border: spec ? '1px solid #5D6B7E' : '1.5px dashed #A9B5C6',
+          shadow: sel ? '0 0 0 3px #FFFFFF, 0 0 0 6px #1F5FBF' : (spec ? '0 2px 4px rgba(16,24,40,0.25)' : 'none'),
+          pct: Math.round(r * 100) + '%', warn: warn, x: x
+        });
+      }
+      const pockets = raw.slice().sort((a, b) => a.y - b.y);
+      const labels = raw.filter((p) => p.isTool).map((p) => ({
+        text: p.pct, left: p.left, top: pc(p.y + p.size / 2 + 2, VH),
+        bg: p.warn ? '#FFF5CC' : '#FFFFFF', bd: p.warn ? '#E6CF6E' : '#C3CCD9', fg: p.warn ? '#5C4800' : '#1B1F24'
+      }));
+      const chips = SPEC.map(([no, nm, life]) => {
+        const r = USED[name][no] / life, warn = r >= 0.9, sel = name === 'VF2-02' && no === 'T02';
+        return { no: no, pct: Math.round(r * 100) + '%', fg: warn ? '#5C4800' : '#1B1F24', bg: sel ? '#EAF1FC' : (warn ? '#FFFBEA' : '#FFFFFF'), bd: sel ? '#1F5FBF' : (warn ? '#E6CF6E' : '#E1E5EB'), aria: name + ' ' + no + ' ' + nm + ' ' + Math.round(r * 100) + '%' };
+      });
+      return { name: name, st: st, pockets: pockets, labels: labels, chips: chips, warn: warnN > 0, warnN: warnN, bd: name === 'VF2-02' ? '#A9BEDF' : '#D5D9DF' };
+    });
+    const top = [['VF2-02 T02 엔드밀 Ø10', '91%'], ['VF2-02 T04 드릴 Ø5.0', '87%'], ['VF2-02 T05 M6 탭', '78%']].map(([label, pct]) => ({ label: label, pct: pct }));
+    return { mags: mags, top: top };
+  }
+}
+</script>
+</body>
+</html>

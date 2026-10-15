@@ -1,0 +1,6 @@
+# 셸 스크립트는 Windows에서 받아도 LF (컨테이너 bash가 CRLF를 못 읽음)
+*.sh   text eol=lf
+*.sql  text eol=lf
+*.py   text eol=lf
+Dockerfile text eol=lf
+*.yml  text eol=lf

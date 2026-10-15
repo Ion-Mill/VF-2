@@ -1,0 +1,48 @@
+# 프론트엔드 전용 (공통 규칙은 저장소 루트 .gitignore)
+
+# 의존성
+node_modules/
+.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# 빌드 결과
+dist/
+build/
+out/
+.next/
+.nuxt/
+.output/
+.svelte-kit/
+.vite/
+*.tsbuildinfo
+next-env.d.ts
+
+# 비밀 값 (예시 파일만 넣는다)
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# 테스트·캐시
+coverage/
+.eslintcache
+.stylelintcache
+.turbo/
+.vercel/
+
+# 로그
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# 에디터
+.vscode/*
+!.vscode/extensions.json
+.idea/

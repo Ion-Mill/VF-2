@@ -1,0 +1,16 @@
+{
+  "name": "mom-monorepo",
+  "private": true,
+  "description": "MOM 모노레포: backend(FastAPI :8000) + frontend(React :3000) 를 npm run dev 한 번으로 같이 띄운다",
+  "scripts": {
+    "dev": "concurrently -k -n api,web -c blue,green \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:api": "node scripts/py.mjs api",
+    "dev:web": "npm --prefix frontend start",
+    "setup": "npm install && npm run setup:api && npm run setup:web",
+    "setup:api": "cd backend && python -m venv .venv && cd .. && node scripts/py.mjs -m pip install -r requirements.txt",
+    "setup:web": "npm --prefix frontend install"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.5"
+  }
+}
