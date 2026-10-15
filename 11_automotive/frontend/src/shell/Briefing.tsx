@@ -27,7 +27,9 @@ export default function Briefing() {
   const open = alerts.filter((a) => !a.handled);
   const lockout = Object.entries(twin.equipment).filter(([, e]) => e.state_code === 'MAINT').map(([k]) => k);
   const p = twin.production;
-  const head = `교대 시작 브리핑 — ${md(twin.shift.start_at)} ${twin.shift.shift_type === 'DAY' ? '주간' : '야간'} (${twin.shift.start_at.slice(11, 16)}~${twin.shift.end_at.slice(11, 16)})`;
+  // 제목 = 그 계정에 브리핑할 내용 (페이지구조 v3 N1). 내용은 아직 이 앱 브리핑 그대로 (임시, Q6)
+  const title = { OPR: '교대 시작 브리핑 · 내 공정', MNT: '교대 시작 브리핑 · 정비', SUP: '교대 시작 브리핑', MGR: '일일 보고서 브리핑' }[user.role];
+  const head = `${title} — ${md(twin.shift.start_at)} ${twin.shift.shift_type === 'DAY' ? '주간' : '야간'} (${twin.shift.start_at.slice(11, 16)}~${twin.shift.end_at.slice(11, 16)})`;
   const pmToday = (pm?.tasks ?? []).filter((t) => t.state === 'OVERDUE' || t.state === 'DUE_SOON').filter((t) => t.cycle_code !== 'DAILY');
   const pmLine = pmToday.length ? pmToday.map((t) => `${t.equipment_id} ${t.item_name}(${t.state === 'OVERDUE' ? '▲ 기한 넘김' : '기한 임박'})`).join(' · ') : '없음';
   const btn = 'h-9 shrink-0 rounded-md border border-slate-300 px-3 text-[12px] font-semibold';
@@ -37,7 +39,7 @@ export default function Briefing() {
     const tools = Object.values(twin.equipment).filter((e) => user.procs.includes(e.process_code)).flatMap((e) => e.tools).filter((t) => t.warn);
     return (
       <div className="flex flex-col gap-3 text-[14px]">
-        <h3 className="font-bold">{head} · 내 공정 {user.procs.join('·')}</h3>
+        <h3 className="text-[16px] font-bold">{head} · {user.procs.join('·')}</h3>
         <p>🔒 잠금·표지 중인 설비 <b>{lockout.length ? lockout.join(' · ') + ' — 잠금 중, 전원을 넣지 마세요' : '없음'}</b></p>
         <p>지난 교대 <b>양품 {last ? Number(last.actual_qty) - Number(last.defect_qty) : '—'}개</b> {last && <button onClick={() => go('shift', last.shift_id)} className="ml-1 underline">교대 보고서 {last.shift_id.slice(5)}</button>}</p>
         <div>내 공정 알람 (처리 안 됨) — 전체 {mine.length}건
@@ -69,7 +71,7 @@ export default function Briefing() {
 
   return (
     <div className="flex flex-col gap-3 text-[14px]">
-      <h3 className="font-bold">{head}</h3>
+      <h3 className="text-[16px] font-bold">{head}</h3>
       <section>
         <h4 className="font-bold">먼저 챙길 일 — 전체 {total}건 <span className="font-normal text-slate-500">(안전 {by(['0'])} · 긴급 {by(['1'])} · 생산 {by(['2'])} · 주의 {by(['0-1', '3'])} · 참고 {by(['4'])})</span></h4>
         <p className="text-[11px] text-slate-500">순서는 프로그램 규칙(2.5 보고 순위). 인계 사항 출처: 교대 보고서 {last?.shift_id ?? '없음'}. 비서 문장 대신 목록 (로컬 LLM 연결 전)</p>

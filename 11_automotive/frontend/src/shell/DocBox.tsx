@@ -11,13 +11,13 @@ type Tab = '작업지시서' | '작업기록서' | '간이 작업기록' | '교�
 const WR_LABEL = { draft: '초안', editing: '수정 중', confirmed: '확정', checked: '확인됨' } as const;
 
 export default function DocBox() {
-  const { user, role, wos, wrs, srs, alerts, openWo, openRecord, go, back, history, shiftReports, dailyReports, pm } = useApp();
-  const [tab, setTab] = useState<Tab>('작업지시서');
+  const { user, role, wos, wrs, srs, alerts, openWo, openRecord, go, history, shiftReports, dailyReports, pm, key } = useApp();
+  // 카테고리는 왼쪽 문서함 목록에서 고른다 (App, 페이지구조 v3) — 화면 키 = 카테고리 이름
+  const tab: Tab = (['작업지시서', '작업기록서', '간이 작업기록', '교대 보고서', '일일 보고서'] as string[]).includes(key ?? '') ? (key as Tab) : '작업지시서';
   const [machine, setMachine] = useState('');
   const [code, setCode] = useState('');
   const [state, setState] = useState('');
   const [text, setText] = useState('');
-  const tabs: Tab[] = role === 'OPR' ? ['작업지시서', '간이 작업기록', '교대 보고서'] : ['작업지시서', '작업기록서', '간이 작업기록', '교대 보고서', '일일 보고서'];
   const old = (iso?: string | null) => !!iso && SIM.now() - tsOf(iso) > 864e5;
 
   // [1] 내 할 일 — 역할별
@@ -72,7 +72,7 @@ export default function DocBox() {
   return (
     <div className={PAGE}>
       <div className={CARD}>
-        <div className="flex items-center justify-between"><h2 className="text-[19px] font-bold">문서함</h2><button onClick={back} className={BTN}>닫기</button></div>
+        <h2 className="text-[19px] font-bold">{tab}</h2>
         <section className="mt-3 border-t border-slate-200 pt-3">
           <h3 className="mb-1 text-[14px] font-bold text-slate-500">내 할 일</h3>
           {todo.length === 0 ? <p className="text-[14px] text-slate-500">없음</p> : (
@@ -80,7 +80,6 @@ export default function DocBox() {
               <li key={t.text} className={`flex items-center justify-between gap-2 text-[14px] ${t.warn ? 'font-semibold text-[#9a6200]' : ''}`}><span>{t.text}</span>{t.go && <button onClick={t.go} className="h-10 shrink-0 rounded-md border border-slate-300 px-3 text-[13px] font-semibold hover:bg-slate-50">열기</button>}</li>))}</ul>
           )}
         </section>
-        <div className="mt-3 flex flex-wrap gap-1">{tabs.map((t) => <button key={t} onClick={() => { setTab(t); setState(''); }} className={`h-11 rounded-md border px-3 text-[14px] font-semibold ${tab === t ? 'border-[#0f9fbd] bg-[#e8f6fa]' : 'border-slate-300'}`}>{t}</button>)}</div>
         <div className="mt-2 flex flex-wrap items-center gap-2 text-[14px]">
           {stateOpts.length > 0 && <>상태 <select value={state} onChange={(e) => setState(e.target.value)} className={sel}><option value="">전체</option>{stateOpts.map((s) => <option key={s}>{s}</option>)}</select></>}
           설비 <select value={machine} onChange={(e) => setMachine(e.target.value)} className={sel}><option value="">전체</option>{['SAW-01', 'MIL-01', 'VF2-01', 'VF2-02', 'WSH-01', 'CMM-01'].map((m) => <option key={m}>{m}</option>)}</select>

@@ -171,7 +171,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
   };
   // 데이터적용본: 공장 28 × 8 m + 동쪽 자동창고 (x 30~39 m)
   PRESETS = {
-    front: { p: [17.5, 11.5, 17.5], t: [17.5, 2.2, -3.8] },
+    front: { p: [14, 9, 12.5], t: [14, 1.6, -3.8] }, // 사용자 요청 2026-10-15: 라인 가운데로 당김 (전엔 자동창고까지 [17.5, 11.5, 17.5])
     iso: { p: [-3.5, 17.5, 13.5], t: [15, 2.2, -3.8] },
     top: { p: [16, 37, -1.6], t: [16, 0, -2.1] },
     wh: { p: [25.5, 6.6, 4.5], t: [32.4, 1.8, -6.8] },
@@ -680,6 +680,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
       bgm(3200, 10000, 2400, 1900, 2.5, mat.white); bgm(7000, 10400, 2200, 1800, 2.4, mat.white);
       bgm(10600, 10200, 2000, 1800, 2.6, mat.green); bgm(-8000, 9000, 2000, 1800, 2.3, mat.green);
       cur = cur0;
+      decoG.visible = false; // 사용자 요청 2026-10-15: 뒷배경 하얀 사각형(건물·조명판·배경 설비) 숨김. 다시 보이려면 true
 
       const gl = (pts, color, op, nColor) => {
         const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3));
@@ -1353,6 +1354,8 @@ export default class FactoryDashboard extends React.Component<any, any> {
         drawSign(W0.stored, W0.inCnt, I && I.ph !== 'handed' ? 'FG 박스 입고 중 →' : C1.task ? '스태커 크레인 적치 중' : O ? '빈 박스 출고 →' : '');
       };
       this.bgStep = (dt) => { ctn.forEach(c0 => { c0.s = (c0.s + dt * 0.5) % CLL; const u = c0.s / CLL, p = cLoop.getPointAt(u), t = cLoop.getTangentAt(u); c0.g.position.copy(p); c0.g.rotation.y = Math.atan2(t.x, t.z); }); };
+      // 사용자 요청 2026-10-15: 자동창고(공장 밖)를 흐리게 — 라인이 먼저 보이게. 지금 붙은 것만 (나중에 들어오는 상자는 그대로)
+      WG.traverse(o => { if (o.material && !Array.isArray(o.material)) { o.material = o.material.clone(); o.material.transparent = true; o.material.opacity = 0.3; o.material.depthWrite = false; } });
       }
       const PM = { hood: M(0x9aa5af, { metalness: 0.55, roughness: 0.35 }), hole: new THREE.MeshBasicMaterial({ color: 0x0e1216 }), shut: M(0x3b4651, { metalness: 0.4, roughness: 0.4 }), lip: M(0xf2c230, { roughness: 0.5 }), lamp: new THREE.MeshBasicMaterial({ color: 0x22d36b }) };
       const ports = [];
@@ -2115,7 +2118,8 @@ export default class FactoryDashboard extends React.Component<any, any> {
       const ppm = Math.hypot((a.x - b.x) * Wd / 2, (a.y - b.y) * Ht / 2);
       const fitS = (ppm * 3.1) / 186;
       const compact = !sel && fitS < 0.75;
-      const s = sel ? 1 : compact ? Math.min(0.85, Math.max(0.75, (ppm * 3.1) / 130)) : Math.min(1.15, fitS);
+      const s0 = sel ? 1 : compact ? Math.min(0.85, Math.max(0.75, (ppm * 3.1) / 130)) : Math.min(1.15, fitS);
+      const s = EMB && !sel ? Math.max(1, s0) : s0; // 사용자 요청 2026-10-15: 이름표가 작아 안 읽혀서 최소 1배 (겹침은 아래 배치가 비켜 놓음)
       const nC = ov.querySelectorAll('[data-card]').length;
       if (compact !== this.compact || nC !== this.nCards) {
         this.compact = compact; this.nCards = nC;
@@ -2137,7 +2141,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
         if (el.dataset.anchor === 'ax-y') x = Math.max(x, 60);
         const sc = el.dataset.noscale ? 1 : s;
         if (!isFinite(x) || !isFinite(y) || !isFinite(sc)) return hide();
-        const pri = tier === 'fx' ? 0 : tier === 'card' ? (al ? 1 : 4) : tier === 'tag' ? 2 : tier === 'wip' ? (al ? 2 : 3) : 9;
+        const pri = tier === 'fx' ? 0 : tier === 'card' ? (al ? 1 : 4) : tier === 'tag' ? (el.dataset.anchor === 'tag-rack' ? 4 : 2) : tier === 'wip' ? (al ? 2 : 3) : 9; // 봉재 랙 이름표는 겹치면 숨김 (설비 이름표가 먼저)
         items.push({ el, x, y, sc, ctr: el.dataset.align === 'center', pri });
       });
       items.sort((p, q) => p.pri - q.pri);
@@ -2463,11 +2467,11 @@ export default class FactoryDashboard extends React.Component<any, any> {
       <div className="absolute left-0 top-0 invisible [transform-origin:50%_100%]" data-tier="wip" data-alert={w.alert} data-anchor={w.id}>
         <div className="flex flex-col items-stretch gap-[3px] min-w-[78px] p-[5px_9px_6px] rounded-[7px] [box-shadow:0_4px_12px_rgba(120,70,20,0.12)] whitespace-nowrap" style={{ background: w.bg, border: `1px solid ${w.bd}` } as any}>
           <div className="flex justify-between items-baseline gap-[8px]">
-            <span className="[font:700_12px_'JetBrains_Mono',monospace]" style={{ color: w.fg } as any}>{w.name}</span>
-            <span className="[font:700_12px_'JetBrains_Mono',monospace]" style={{ color: w.orange ? '#b45309' : w.fg } as any}>{w.cnt}</span>
+            <span className="[font:700_14px_'JetBrains_Mono',monospace]" style={{ color: w.fg } as any}>{w.name}</span>
+            <span className="[font:700_14px_'JetBrains_Mono',monospace]" style={{ color: w.orange ? '#b45309' : w.fg } as any}>{w.cnt}</span>
           </div>
           <div className="h-[4px] rounded-[2px] bg-[var(--sep)] overflow-hidden"><div className="h-full rounded-[2px]" style={{ width: w.barW, background: w.bar } as any}></div></div>
-          <span className="text-[11px] font-semibold" style={{ color: w.fg } as any}>{w.sub}</span>
+          <span className="text-[12px] font-semibold" style={{ color: w.fg } as any}>{w.sub}</span>
         </div>
       </div>
     </React.Fragment>))}
@@ -2476,9 +2480,9 @@ export default class FactoryDashboard extends React.Component<any, any> {
       <div className="absolute left-0 top-0 invisible [transform-origin:50%_100%] flex flex-col items-center" data-tier="tag" data-anchor={g.id} data-mid={g.mid}>
         <div className="pointer-events-auto cursor-pointer flex items-center gap-[7px] p-[6px_10px] rounded-[8px] bg-[var(--glass)] [backdrop-filter:blur(12px)_saturate(1.4)] [-webkit-backdrop-filter:blur(12px)_saturate(1.4)] [border:1px_solid_var(--gbd)] [box-shadow:0_8px_22px_rgba(28,45,62,0.13)] whitespace-nowrap" onClick={g.onSelect}>
           <span className="w-[7px] h-[7px] rounded-[50%] [box-shadow:0_0_0_3px_rgba(34,170,90,0.15)]" style={{ background: g.dot } as any}></span>
-          <span className={`${g.big ? 'text-[19px]' : 'text-[13px]'} font-bold`}>{g.name}</span>
-          <span className="[font:600_10px_'JetBrains_Mono',monospace] text-[color:var(--t3)] p-[2px_6px] rounded-[4px] bg-[var(--chip)]">{g.op}</span>
-          {g.st && (<span className={`${g.big ? 'text-[26px] leading-none' : 'text-[13px]'} font-bold`} style={{ color: g.stFg } as any}>{g.st}</span>)}
+          <span className={`${g.big ? 'text-[19px]' : 'text-[15px]'} font-bold`}>{g.name}</span>
+          <span className="[font:600_12px_'JetBrains_Mono',monospace] text-[color:var(--t3)] p-[2px_6px] rounded-[4px] bg-[var(--chip)]">{g.op}</span>
+          {g.st && (<span className={`${g.big ? 'text-[26px] leading-none' : 'text-[15px]'} font-bold`} style={{ color: g.stFg } as any}>{g.st}</span>)}
           {g.bn && (<span className="text-[12px] font-bold p-[1px_6px] rounded-[4px] bg-[#fff1e0] text-[#b45309] [border:1.5px_solid_#e8954a]">▭ 병목</span>)}
         </div>
         <div className="w-[1px] h-[16px] bg-[rgba(28,37,48,0.35)]"></div>

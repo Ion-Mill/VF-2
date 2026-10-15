@@ -58,10 +58,11 @@ export function Eve({ tab, onPick, onClose, badges, bubble, onBubble, brief, onN
   const [menu, setMenu] = useState(false);
   const [later, setLater] = useState<string | null>(null); // [나중에] 누른 말풍선 — 글이 바뀌면 다시 뜸
   const [gl, setGl] = useState(true), [snap, setSnap] = useState<string | null>(null);
+  const [focus, setFocus] = useState<string | null>(null);
   const closed = !tab && !menu;
   const toast = closed && bubble && bubble !== later ? bubble : null;
-  const total = EVE_TABS.reduce((s, t) => s + (badges[t] ?? 0), 0);
-  const pick = (t: EveTab) => { setMenu(false); onPick(t); };
+  const total = badges['알림'] ?? 0;
+  const pick = (t: EveTab) => { setMenu(false); setFocus(null); onPick(t); };
   useEffect(() => {
     const k = (e: KeyboardEvent) => { if (e.key === 'Escape') { setMenu(false); onClose(); } };
     document.addEventListener('keydown', k);
@@ -101,11 +102,11 @@ export function Eve({ tab, onPick, onClose, badges, bubble, onBubble, brief, onN
             <button type="button" className="ma-icon-btn" onClick={onClose} aria-label="창 닫기"><Icon d={['M6 6l12 12M18 6L6 18']} /></button>
           </header>
           <div className="ma-tabs" role="tablist" aria-label="이브 메뉴">
-            {EVE_TABS.map((t) => <button key={t} type="button" role="tab" className="ma-tab" aria-selected={tab === t} onClick={() => onPick(t)}>{t}{badge(t, 'ma-tab-badge')}</button>)}
+            {EVE_TABS.map((t) => <button key={t} type="button" role="tab" className="ma-tab" aria-selected={tab === t} onClick={() => { setFocus(null); onPick(t); }}>{t}{badge(t, 'ma-tab-badge')}</button>)}
           </div>
-          {tab === '채팅' ? <Chat /> : (
+          {tab === '채팅' ? <Chat focus={focus} /> : (
             <div className="ma-body text-[14px] leading-relaxed" role="tabpanel">
-              {tab === '채팅 기록' ? <ChatLog /> : <div className="ma-pad">{tab === '브리핑' ? brief : <AlertsTab onNotice={onNotice} />}</div>}
+              {tab === '채팅 기록' ? <ChatLog onOpen={(at) => { setFocus(at); onPick('채팅'); }} /> : <div className="ma-pad">{tab === '브리핑' ? brief : <AlertsTab onNotice={onNotice} />}</div>}
             </div>
           )}
         </aside>
@@ -119,17 +120,16 @@ export function Eve({ tab, onPick, onClose, badges, bubble, onBubble, brief, onN
   );
 }
 
-// ---------- SCR-07 알림 목록 ----------
+// ---------- SCR-07 알림 탭 (페이지구조 v3 2.4): 고장·확인 알림과 문서 알림을 한 목록에. 누르면 목록 대신 상세 ----------
 type Item = { kind: 'a'; a: AlertRec; n: number } | { kind: 'n'; x: Notice };
+// 왼쪽 띠 색: 긴급 빨강 · 주의 주황 · 참고 회색 (Q7)
+const BAR: Record<Level, string> = { 긴급: '#E5484D', 주의: '#F5A524', 참고: '#8B98A5' };
+const idOf = (it: Item) => (it.kind === 'a' ? it.a.id : it.x.id);
 function AlertsTab({ onNotice }: { onNotice: (n: Notice) => void }) {
-  const { alerts, myNotices, role, openCard, selectMachine, go, handleNotice, openSource, user } = useApp();
-  const [col, setCol] = useState<'고장·확인' | '문서'>('고장·확인');
+  const { alerts, myNotices, role, openCard, selectMachine, go, handleNotice, markAlert, openSource, user } = useApp();
   const [onlyOpen, setOnlyOpen] = useState(true);
-  const [lv, setLv] = useState<Level | ''>('');
-  const [mach, setMach] = useState('');
-  const [byRank, setByRank] = useState(false);
-  const [plan, setPlan] = useState<Record<string, string>>({});
-  const listN = myNotices.filter((n) => n.delivery === 'LIST'), docN = myNotices.filter((n) => n.delivery === 'BUBBLE');
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [plan, setPlan] = useState('');
 
   // 짧은 반복 묶기: 같은 설비·같은 알람 1분 안 → ×N (DOC-07 10.2)
   const grouped: Item[] = [];
@@ -137,103 +137,76 @@ function AlertsTab({ onNotice }: { onNotice: (n: Notice) => void }) {
     const g = grouped.find((x) => x.kind === 'a' && x.a.machine === a.machine && x.a.code === a.code && a.ts - x.a.ts <= 60000 && x.a.handled === a.handled) as { kind: 'a'; a: AlertRec; n: number } | undefined;
     if (g) g.n += 1; else grouped.push({ kind: 'a', a, n: 1 });
   });
-  let items: Item[] = [...grouped, ...listN.map((x) => ({ kind: 'n' as const, x }))];
-  items = items.filter((it) => {
-    const handled = it.kind === 'a' ? it.a.handled : it.x.handled, level = it.kind === 'a' ? it.a.level : it.x.level, m = it.kind === 'a' ? it.a.machine : it.x.machine;
-    return (!onlyOpen || !handled) && (!lv || level === lv) && (!mach || m === mach);
-  });
-  const tsOfI = (it: Item) => (it.kind === 'a' ? it.a.ts : it.x.ts), rk = (it: Item) => (it.kind === 'a' ? rankOfAlert(it.a) : rankOfNotice(it.x));
-  items.sort((a, b) => (byRank ? rk(a).localeCompare(rk(b)) || tsOfI(a) - tsOfI(b) : tsOfI(b) - tsOfI(a)));
-  // 알림 폭주: 10분 안 10건 넘으면 묶음 1건 (DOC-07 10.3)
+  const all: Item[] = [...grouped, ...myNotices.map((x) => ({ kind: 'n' as const, x }))];
+  const handledOf = (it: Item) => (it.kind === 'a' ? it.a.handled : it.x.handled);
+  const tsOfI = (it: Item) => (it.kind === 'a' ? it.a.ts : it.x.ts);
+  const items = all.filter((it) => !onlyOpen || !handledOf(it)).sort((a, b) => tsOfI(b) - tsOfI(a));
+  // 알림 폭주: 10분 안 10건 넘으면 띠 (DOC-07 10.3)
   const recent = alerts.filter((a) => SIM.now() - a.ts < 600000).length;
-  const openCount = alerts.filter((a) => !a.handled).length + listN.filter((n) => !n.handled).length;
   const chip = (on: boolean) => `h-9 whitespace-nowrap rounded-full border px-3 text-[12px] font-semibold ${on ? 'border-[#C8F03C] bg-[#C8F03C] text-[#1A1F23]' : 'border-slate-300'}`;
-  const ab = 'h-10 rounded-md border border-slate-300 px-3 text-[13px] font-semibold hover:bg-slate-50';
+  const ab = 'h-11 rounded-full border border-slate-300 px-4 text-[14px] font-semibold hover:bg-slate-50 disabled:text-slate-400';
+  const title = (it: Item) => (it.kind === 'a' ? `${MACHINES[it.a.machine].name} ${alarmTitle(it.a.alarm, it.a.code)}${it.n > 1 ? ` ×${it.n}` : ''}` : it.x.ruleName);
+  const level = (it: Item) => (it.kind === 'a' ? it.a.level : it.x.level);
+  const at = (it: Item) => (it.kind === 'a' ? it.a.time : it.x.at);
+
+  const cur = openId ? all.find((it) => idOf(it) === openId) : undefined;
+  if (cur) {
+    const lv = level(cur), done = handledOf(cur);
+    return (
+      <div className="flex flex-col gap-3">
+        <button onClick={() => { setOpenId(null); setPlan(''); }} className="w-fit text-[13px] font-semibold underline">← 목록</button>
+        <div className="rounded-xl border-l-[6px] bg-white/5 p-3" style={{ borderColor: BAR[lv] }}>
+          <div className="text-[12px] font-semibold" style={{ color: TONE[lv] }}>{LEVEL_VIEW[lv].icon} {lv} · {md(at(cur))} {hhmm(at(cur))} · {done ? '처리됨' : '처리 안 됨'}</div>
+          <b className="mt-1 block text-[17px] leading-snug">{title(cur)}</b>
+          {cur.kind === 'a' ? (<>
+            <p className="mt-2">{MACHINES[cur.a.machine].name}({MACHINES[cur.a.machine].op})에서 알람 {cur.a.code}{cur.a.alarm ? ` — ${sevText(cur.a.alarm)}` : ' — 알람 코드집에 없음, 보전 담당자 호출'}.{cur.a.scenario ? ` 사건 ${cur.a.scenario}.` : ''}{cur.a.lot ? ` 로트 ${cur.a.lot}.` : ''}{cur.a.cleared ? ` 설비 알람 ${hhmm(cur.a.cleared)} 해제.` : ''}</p>
+            {cur.a.alarm && <p className="mt-1 text-[12px] text-slate-500">관련: <button onClick={() => openSource('DOC-02', cur.a.alarm!.doc02.replace('DOC-02 ', ''))} className="underline">{cur.a.alarm.doc02}</button></p>}
+          </>) : (<>
+            <p className="mt-2">{cur.x.text}{cur.x.past && <span className="ml-1 text-[11px] text-slate-500">(9월 기록)</span>}</p>
+            {cur.x.related && <p className="mt-1 text-[12px] text-slate-500">관련: {cur.x.related}</p>}
+            {cur.x.plan && <p className="mt-1 text-[12px]">조치 계획: {cur.x.plan}</p>}
+          </>)}
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {cur.kind === 'a' && <button onClick={() => openCard(cur.a.id)} className={ab}>지침카드 열기</button>}
+          {cur.kind === 'a' && <button onClick={() => { go('line'); selectMachine(cur.a.machine); }} className={ab}>3D에서 보기</button>}
+          {cur.kind === 'a' && !done && <button onClick={() => markAlert([cur.a.id], user.name)} className={ab}>처리 완료</button>}
+          {cur.kind === 'n' && cur.x.open && <button onClick={() => onNotice(cur.x)} className={ab}>문서 열기</button>}
+          {cur.kind === 'n' && !done && (role === 'MGR' || cur.x.roles.includes(role)) && (<>
+            {cur.x.rule === 'REPEAT_ALARM' && <input value={plan} onChange={(e) => setPlan(e.target.value)} placeholder="조치 계획 (필수)" className="h-11 min-w-0 flex-1 rounded-full border border-slate-300 px-4 text-[13px]" />}
+            <button disabled={cur.x.rule === 'REPEAT_ALARM' && !plan.trim()} onClick={() => handleNotice(cur.x.id, cur.x.rule === 'REPEAT_ALARM' ? plan : undefined)} className={ab}>처리 완료</button>
+          </>)}
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex flex-col gap-1.5">
-      <div className="flex gap-1">
-        <button onClick={() => setCol('고장·확인')} className={chip(col === '고장·확인')}>고장·확인 알림 {openCount}건</button>
-        <button onClick={() => setCol('문서')} className={chip(col === '문서')}>문서 알림 {docN.filter((d) => !d.handled).length}건</button>
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center gap-1">
+        <button onClick={() => setOnlyOpen(true)} className={chip(onlyOpen)}>처리 안 됨 {all.filter((it) => !handledOf(it)).length}</button>
+        <button onClick={() => setOnlyOpen(false)} className={chip(!onlyOpen)}>전체</button>
       </div>
-      {col === '문서' ? (
-        docN.length === 0 ? <p className="text-slate-400">문서 알림이 없습니다.</p> : (
-          <ul className="flex flex-col gap-2">
-            {[...docN].sort((a, b) => Number(a.handled) - Number(b.handled) || b.ts - a.ts).map((d) => (
-              <li key={d.id} className="rounded-lg border border-slate-300 p-2">
-                <div className="flex items-baseline justify-between gap-2"><span className="font-bold" style={{ color: TONE[d.level] }}>{LEVEL_VIEW[d.level].icon} {d.level} · {md(d.at)} {hhmm(d.at)} · {d.ruleName}</span><span className="text-[11px] text-slate-500">{d.handled ? `처리됨 (${d.handledBy})` : '처리 안 됨'}</span></div>
-                <div>{d.text}</div>
-                {d.open && <button onClick={() => onNotice(d)} className={`${ab} mt-1`}>문서 열기</button>}
-              </li>
-            ))}
-          </ul>
-        )
-      ) : (<>
-        {recent > 10 && <div className="rounded-md bg-[#fff1cc] p-2 text-[13px] font-semibold text-[#7a4b00]">▲ 알림 폭주 — 10분 안 알람 {recent}건 (묶어서 보임)</div>}
-        <div className="flex flex-wrap items-center gap-1">
-          <button onClick={() => setOnlyOpen(true)} className={chip(onlyOpen)}>처리 안 됨</button>
-          <button onClick={() => setOnlyOpen(false)} className={chip(!onlyOpen)}>전체</button>
-          {(['긴급', '주의', '참고'] as Level[]).map((l) => <button key={l} onClick={() => setLv(lv === l ? '' : l)} className={chip(lv === l)}>{LEVEL_VIEW[l].icon} {l}</button>)}
-          <select value={mach} onChange={(e) => setMach(e.target.value)} className="h-9 rounded-full border border-slate-300 px-2 text-[12px]"><option value="">설비 전체</option>{Object.entries(MACHINES).map(([k, m]) => <option key={k} value={k}>{m.name}</option>)}</select>
-        </div>
-        <div className="flex items-center gap-1 text-[12px]">정렬
-          <button onClick={() => setByRank(false)} className={chip(!byRank)}>최근 순</button>
-          <button onClick={() => setByRank(true)} className={chip(byRank)}>보고 순위 순</button>
-          <span className="ml-auto text-slate-500">전체 {items.length}건</span>
-        </div>
-        {items.length === 0 ? <p className="text-slate-400">처리 안 된 알림이 없습니다.</p> : (
-          <ul className="flex flex-col gap-2">
-            {items.slice(0, 120).map((it) => {
-              if (it.kind === 'a') {
-                const a = it.a, v = LEVEL_VIEW[a.level], old = a.level === '주의' && !a.handled && SIM.now() - a.ts > 864e5;
-                return (
-                  <li key={a.id} className="rounded-lg border border-slate-300 p-2">
-                    <div className="flex items-baseline justify-between gap-2">
-                      <span className="font-bold" style={{ color: TONE[a.level] }}>{v.icon} {a.level} · {hhmm(a.time)} · {MACHINES[a.machine].name} · 알람 {a.code}{a.alarm ? ` (${sevText(a.alarm)})` : ''}{it.n > 1 ? ` ×${it.n} (1분 안)` : ''}</span>
-                      <span className="shrink-0 text-[11px] text-slate-500">{a.handled ? `처리됨${a.handledBy ? ` (${a.handledBy})` : ''}` : '처리 안 됨'}</span>
-                    </div>
-                    <div>{MACHINES[a.machine].name}에서 {alarmTitle(a.alarm, a.code)}{a.scenario ? ` · 사건 ${a.scenario}` : ''}{a.cleared ? ' · 설비 알람 해제됨' : ''}{old && <span className="ml-1 rounded bg-[#fff1cc] px-1 text-[11px] text-[#7a4b00]">24시간 넘음</span>}</div>
-                    {a.alarm && <div className="text-[12px] text-slate-500">관련: <button onClick={() => openSource('DOC-02', a.alarm!.doc02.replace('DOC-02 ', ''))} className="underline">{a.alarm.doc02}</button>{a.alarm.doc03[0] && <> · <button onClick={() => { const m = a.alarm!.doc03[0].match(/(DOC-\d+)\s+§?([\d.]+)/); if (m) openSource(m[1], m[2]); }} className="underline">{a.alarm.doc03[0]}</button></>}</div>}
-                    <div className="mt-1 flex flex-wrap items-center gap-2">
-                      <button onClick={() => openCard(a.id)} className={ab}>지침카드</button>
-                      <button onClick={() => { go('line'); selectMachine(a.machine); }} className={ab}>3D 라인 뷰</button>
-                      <span className="text-[11px] text-slate-500">{a.kind === 'guide' ? '처리: 작업자가 고치면 (알람 해제)' : '처리: 작업기록서·간이 작업기록 확정 때 자동'}</span>
-                    </div>
-                  </li>
-                );
-              }
-              const n = it.x, v = LEVEL_VIEW[n.level], old = n.level === '주의' && !n.handled && SIM.now() - n.ts > 864e5;
-              const isRepeat = n.rule === 'REPEAT_ALARM';
-              const canHandle = !n.handled && (role === 'MGR' || n.roles.includes(role));
-              return (
-                <li key={n.id} className="rounded-lg border border-slate-300 p-2">
-                  <div className="flex items-baseline justify-between gap-2">
-                    <span className="font-bold" style={{ color: TONE[n.level] }}>{v.icon} {n.level} · {md(n.at)} {hhmm(n.at)} · {n.ruleName}{n.count ? ` ×${n.count}` : ''}</span>
-                    <span className="shrink-0 text-[11px] text-slate-500">{n.handled ? `처리됨 (${n.handledBy})` : '처리 안 됨'}</span>
-                  </div>
-                  <div>{n.text}{n.past && <span className="ml-1 text-[11px] text-slate-500">(9월 기록)</span>}{old && <span className="ml-1 rounded bg-[#fff1cc] px-1 text-[11px] text-[#7a4b00]">24시간 넘음</span>}</div>
-                  {n.related && <div className="text-[12px] text-slate-500">관련: {n.related}</div>}
-                  {n.plan && <div className="text-[12px]">조치 계획: {n.plan}</div>}
-                  <div className="mt-1 flex flex-wrap items-center gap-2">
-                    {n.open && <button onClick={() => onNotice(n)} className={ab}>화면 열기</button>}
-                    {n.machine && <button onClick={() => { go('line'); selectMachine(n.machine!); }} className={ab}>3D 라인 뷰</button>}
-                    {canHandle && isRepeat && <input value={plan[n.id] ?? ''} onChange={(e) => setPlan({ ...plan, [n.id]: e.target.value })} placeholder="조치 계획 (필수)" className="h-10 min-w-0 flex-1 rounded-md border border-slate-300 px-2 text-[13px]" />}
-                    {canHandle && <button disabled={isRepeat && !(plan[n.id] ?? '').trim()} onClick={() => handleNotice(n.id, isRepeat ? plan[n.id] : undefined)} className={`${ab} disabled:text-slate-400`}>처리</button>}
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-        <p className="text-[11px] text-slate-500">처리 칸의 역할만 [처리]가 보입니다 ({user.name} · {role}). 알림은 시연 회차마다 이 브라우저에 남습니다.</p>
-      </>)}
+      {recent > 10 && <div className="rounded-md bg-[#fff1cc] p-2 text-[13px] font-semibold text-[#7a4b00]">▲ 알림 폭주 — 10분 안 알람 {recent}건</div>}
+      {items.length === 0 ? <p className="ma-empty">처리 안 된 알림이 없습니다.</p> : (
+        <ul className="flex flex-col gap-2">
+          {items.slice(0, 150).map((it) => (
+            <li key={idOf(it)}>
+              <button onClick={() => setOpenId(idOf(it))} className="flex w-full flex-col rounded-xl border-l-[6px] bg-white/5 px-3 py-2 text-left hover:bg-white/10" style={{ borderColor: BAR[level(it)] }}>
+                <span className="flex items-baseline justify-between gap-2"><b className="truncate">{title(it)}</b><span className="shrink-0 text-[12px] text-slate-500">{hhmm(at(it))}</span></span>
+                <span className="text-[12px] text-slate-500">{level(it)}{it.kind === 'n' ? ' · 문서·확인 알림' : ` · 알람 ${it.a.code}`}{handledOf(it) ? ' · 처리됨' : ''}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
 
 // ---------- SCR-10 채팅 ----------
 interface ChatRow { at: string; q: string; a: string; status: string; sources: { doc_no: string; doc_name: string; rev: string; section: string }[]; series?: Record<string, Record<string, number[]>> }
-function Chat() {
+function Chat({ focus }: { focus: string | null }) {
   const { user, role, screen, selected, openSource } = useApp();
   const [log, setLog] = useLocal<ChatRow[]>(`chat:${user.id}`, []);
   const [q, setQ] = useState('');
@@ -250,17 +223,21 @@ function Chat() {
     setLog((l) => [...l.filter((x) => Date.parse(x.at) > SIM.now() - 30 * 864e5), row]);
     setBusy(false);
   };
-  const today = log.slice(-12);
+  // 채팅 기록에서 열면 그 대화가 있는 날 대화 전부, 아니면 최근 12개
+  const today = focus ? log.filter((x) => md(x.at) === md(focus)) : log.slice(-12);
   const ex = role === 'MNT' || role === 'MGR' ? ['VF2-01 MTTR 알려줘', 'VF2-01 센서 추세', '2075 알람 뭐야', '이 화면 설명해 줘'] : ['2075 알람 뭐야', '잠금 표지 순서', '이 화면 설명해 줘', '병목 원인'];
   const body = useRef<HTMLDivElement>(null);
-  useEffect(() => { if (body.current) body.current.scrollTop = body.current.scrollHeight; }, [log.length, busy]);
+  useEffect(() => {
+    const el = focus && body.current?.querySelector(`[data-at="${focus}"]`);
+    if (el) el.scrollIntoView({ block: 'center' }); else if (body.current) body.current.scrollTop = body.current.scrollHeight;
+  }, [log.length, busy, focus]);
   return (
     <>
       <div ref={body} className="ma-body text-[14px]" role="tabpanel">
         <div className="ma-pad" aria-live="polite">
           <p className="text-[11px] text-slate-500">규칙 답 — 로컬 LLM 연결 전이라 프로그램 숫자와 사내 문서 절을 그대로 보입니다. 지금 화면·고른 설비({selected ? MACHINES[selected].name : '없음'})가 질문 배경으로 갑니다.</p>
           {today.length === 0 && !busy && <p className="ma-empty">라인 상황, 알람, 사내 문서 등 무엇이든 물어보세요.</p>}
-          {today.map((r, i) => <Bubble key={i} r={r} openSource={openSource} />)}
+          {today.map((r, i) => <div key={i} data-at={r.at} className={r.at === focus ? 'rounded-lg ring-2 ring-[#C8F03C]' : ''}><Bubble r={r} openSource={openSource} /></div>)}
           {busy && <p className="ma-msg-bot ma-typing">답변을 만드는 중…</p>}
         </div>
       </div>
@@ -291,21 +268,19 @@ export function Spark({ v, w = 80, h = 18 }: { v: number[]; w?: number; h?: numb
   const lo = Math.min(...v), hi = Math.max(...v), r = hi - lo || 1;
   return <svg width={w} height={h} className="inline align-middle"><polyline fill="none" stroke="#0f9fbd" strokeWidth="1.5" points={v.map((x, i) => `${(i / (v.length - 1)) * w},${h - 1 - ((x - lo) / r) * (h - 2)}`).join(' ')} /></svg>;
 }
-function ChatLog() {
-  const { user, openSource } = useApp();
+function ChatLog({ onOpen }: { onOpen: (at: string) => void }) {
+  const { user } = useApp();
   const [log] = useLocal<ChatRow[]>(`chat:${user.id}`, []);
-  const [openI, setOpenI] = useState<number | null>(null);
   const keep = log.filter((x) => Date.parse(x.at) > SIM.now() - 30 * 864e5).reverse();
   return (
     <div className="ma-history">
-      <p className="ma-history-group">내 채팅 기록 — 30일 보관, 본인 것만 (이 브라우저)</p>
+      <p className="ma-history-group">내 채팅 기록 — 30일 보관 · 누르면 채팅에서 다시 엶</p>
       {keep.length === 0 ? <p className="ma-empty">저장된 대화가 없습니다.</p> : keep.map((r, i) => (
         <Fragment key={i}>
           {(i === 0 || md(keep[i - 1].at) !== md(r.at)) && <p className="ma-history-group">{md(r.at)}</p>}
-          <button type="button" className="ma-history-item" aria-expanded={openI === i} onClick={() => setOpenI(openI === i ? null : i)}>
-            <strong>{r.q}</strong><span>{hhmm(r.at)} · {r.status === 'ok' ? '규칙 답' : r.status}</span>
+          <button type="button" className="ma-history-item" onClick={() => onOpen(r.at)}>
+            <strong>{r.q}</strong><span>{md(r.at)} {hhmm(r.at)}</span>
           </button>
-          {openI === i && <div className="px-2 pb-3"><Bubble r={r} openSource={openSource} /></div>}
         </Fragment>
       ))}
     </div>

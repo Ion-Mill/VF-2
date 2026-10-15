@@ -20,6 +20,9 @@ export default function SimPanel({ twin, refresh, toast, api3d, onClose }: { twi
     try { await api(path, body); toast(ok); refresh(); } catch (e) { toast((e as Error).message); }
   };
   const c = twin?.clock;
+  // 교대가 끝난 뒤(17:00~20:00, 05:00~)는 휴무(계획 정지) — 설비가 다 서 있어 배속을 바꿔도 3D가 안 움직인다
+  const off = !!twin && !!c && c.sim_at >= twin.shift.end_at;
+  const skipTo = twin?.shift.shift_type === 'DAY' ? (off ? '20:00' : '17:00') : null;
   const toggle = (k: string) => { const n = !fx[k]; setFx({ ...fx, [k]: n }); api3d()?.setState((s: any) => (k === 'night' || k === 'explode' ? { [k]: n } : { layers: { ...s.layers, [k]: n } })); };
   return (
     <div className="absolute right-0 top-[48px] z-30 w-[400px] rounded-lg border border-slate-300 bg-white p-3 text-[13px] shadow-lg">
@@ -41,9 +44,10 @@ export default function SimPanel({ twin, refresh, toast, api3d, onClose }: { twi
       <div className="mt-1 flex flex-wrap gap-1">
         {[180, 60, 10, 1].map((s) => <button key={s} disabled={!twin} onClick={() => call('sim/clock', { speed: s }, `배속 ×${s}`)} className={`${b} ${c?.speed === s ? 'border-[#0f9fbd] bg-[#e8f6fa]' : ''}`}>×{s}</button>)}
         <button disabled={!twin} onClick={() => call('sim/clock', { paused: !c?.paused }, c?.paused ? '다시 시작' : '일시정지 — 3D 움직임도 멈춤')} className={b}>{c?.paused ? '▶ 다시 시작' : '⏸ 일시정지'}</button>
-        <button disabled={!twin} onClick={() => call('sim/clock', { skip: 'TODAY_17:00' }, '17:00으로 넘김 — 남은 주간 교대를 만듦')} className={b}>17:00으로</button>
+        <button disabled={!skipTo} onClick={() => call('sim/clock', { skip: `TODAY_${skipTo}` }, skipTo === '17:00' ? '17:00으로 넘김 — 남은 주간 교대를 만듦' : '20:00으로 넘김 — 야간 교대 시작')} className={b}>{skipTo ? `${skipTo}으로` : '넘기기 없음'}</button>
         <button disabled={!twin} onClick={() => setReset(true)} className={b}>처음으로</button>
       </div>
+      {off && <p className="mt-1 rounded bg-[#fff1cc] px-2 py-1 text-[12px] font-semibold text-[#7a4b00]">{skipTo ? '휴무 (야간 20:00 시작)' : '휴무'} — 설비가 모두 서 있어 배속을 바꿔도 라인이 움직이지 않습니다. {skipTo ? '[20:00으로]를 누르면 바로 시작합니다.' : '[처음으로]를 누르세요.'}</p>}
       <p className="mt-1 text-[11px] text-slate-500">사건 알람이 뜨면 시뮬레이터가 스스로 ×10으로 감속합니다 (API-SIM-02). 다음 날 06:00 넘기기는 없음.</p>
       <div className="mb-1 mt-3 border-t border-slate-200 pt-2 font-bold">원본 3D 연출 (설계서에 없음)</div>
       <div className="flex flex-wrap gap-1">
