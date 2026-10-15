@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>운영 비서 위젯 데모</title>
+<link rel="stylesheet" href="assistant-widget.css">
+<style>
+  body { margin: 0; min-height: 100vh; background: #EEF0EC; font-family: 'Gothic A1', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; color: #15191C; }
+  .demo { max-width: 720px; padding: 32px 24px; }
+  .demo button { height: 40px; padding: 0 14px; border-radius: 10px; border: 1px solid #CDD2CA; background: #FFFFFF; font: inherit; font-weight: 700; cursor: pointer; }
+</style>
+</head>
+<body>
+<main class="demo">
+  <h1 style="margin:0 0 8px;font-size:20px">운영 비서 위젯 데모</h1>
+  <p style="margin:0 0 16px;color:#424A50">오른쪽 아래 로봇 버튼을 눌러 보세요. 아래 버튼은 교대 보고서 알림을 바로 띄워 보는 시험용이에요.</p>
+  <button type="button" id="testShift">교대 보고서 알림 띄우기</button>
+  <p id="log" style="color:#424A50"></p>
+</main>
+
+<script src="assistant-widget.js"></script>
+<script>
+  var assistant = new MomAssistant({
+    // 채팅 전송 → 실제로는 백엔드(LLM) API를 호출하는 자리
+    onSend: function (text) {
+      return new Promise(function (resolve) {
+        setTimeout(function () { resolve('“' + text + '”에 대한 답변 자리예요. 여기에 백엔드 응답을 연결하세요.'); }, 900);
+      });
+    },
+    // 교대 보고서 알림을 눌렀을 때 → 실제로는 보고서 작성 페이지로 이동
+    onOpenReport: function (shift) {
+      document.getElementById('log').textContent = shift + ' 교대 보고서 작성 페이지로 이동 (예: location.href = "/report/shift")';
+    },
+    // 이 시각이 되면 자동으로 교대 보고서 알림을 띄움 (시각이 지난 뒤 60분 안에 페이지를 열어도 뜸)
+    shiftReminders: [
+      { time: '17:20', shift: '주간조' },
+      { time: '05:20', shift: '야간조' }
+    ]
+  });
+
+  assistant.setData({
+    brief: {
+      title: '주간조 마감 브리핑', time: '17:20 기준', unread: true,
+      summary: '오늘 실적은 계획의 93%예요. 캘리퍼 하우징 60 EA가 야간조로 넘어가요.',
+      rows: [
+        { label: '생산', text: '2,050 / 2,200 EA', value: '93%', level: 'warn' },
+        { label: '설비', text: '비가동 2건 (공구 교체 등)', value: '40분', level: 'warn' },
+        { label: '품질', text: '불합격 1 LOT 보류 중', value: '97.6%', level: 'danger' },
+        { label: '재고', text: '안전재고 미만 3품목', value: '3', level: 'danger' },
+        { label: '출하', text: '18:30 휠 허브 1건 남음', value: '4/5' }
+      ],
+      handoverTitle: '야간조에 넘길 것',
+      handover: ['WO-1013-07 잔량 60 EA (약 1시간)', 'L261013-MCT02-008 재작업 판정 결과 확인', '18:30 휠 허브 출하 상차 확인'],
+      actions: [
+        { label: '교대 보고서 작성', primary: true, onClick: function () { assistant.close(); assistant.opts.onOpenReport('주간조'); } },
+        { label: '채팅으로 묻기', tab: 'chat' }
+      ]
+    },
+    alerts: [
+      { id: 'a1', level: 'warn', tag: '생산', time: '16:50 · WO-1013-07', title: '캘리퍼 하우징 60 EA가 야간조로 넘어가요', body: '실적 540 / 600 EA', unread: true },
+      { id: 'a2', level: 'danger', tag: '품질', time: '10:31 · MCT-02', title: '탭 깊이 미달 LOT 판정 대기', body: 'L261013-MCT02-008 · 17.62 (하한 17.80)', unread: true },
+      { id: 'a3', level: 'info', tag: '재고', time: '08:00', title: '안전재고 미만 3개 품목', body: '캘리퍼 하우징 소재 180 / 300 EA', unread: true },
+      { id: 'a4', level: 'done', tag: '설비', time: '11:35 · MCT-07 · 처리됨', title: '공구 T12 교체 완료' }
+    ],
+    history: [
+      { group: '오늘', title: 'WO-1013-07 오늘 안에 끝나?', meta: '대시보드 · 17:12' },
+      { group: '오늘', title: 'MCT-07 내경이 계속 올라가는 이유', meta: '품질 › 공정 검사 · 10:43' },
+      { group: '어제', title: '이번 주 출하 지연 가능 품목', meta: '출하 › 출하 관리 · 09:05' }
+    ]
+  });
+
+  document.getElementById('testShift').addEventListener('click', function () {
+    assistant.close();
+    assistant.notifyShiftReport('주간조', '17:20');
+  });
+</script>
+</body>
+</html>
