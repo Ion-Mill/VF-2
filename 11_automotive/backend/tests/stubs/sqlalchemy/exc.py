@@ -1,0 +1,2 @@
+class DBAPIError(Exception):
+    pass

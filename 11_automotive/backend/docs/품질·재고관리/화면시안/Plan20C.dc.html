@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>SCR-20 배치 C 작업자 태블릿 단계형</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0;background:#ECEFF4}
+a{color:#1F5FBF}a:hover{color:#174A96}
+button,select,input{font-family:inherit}
+button:focus-visible,a:focus-visible{outline:3px solid #1F5FBF;outline-offset:2px}
+@keyframes dcRise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes dcPulse{0%{box-shadow:0 0 0 0 rgba(31,95,191,.5)}70%{box-shadow:0 0 0 9px rgba(31,95,191,0)}100%{box-shadow:0 0 0 0 rgba(31,95,191,0)}}
+section{box-shadow:0 1px 2px rgba(16,24,40,.05),0 2px 6px rgba(16,24,40,.05);animation:dcRise .35s ease-out both}
+button{transition:background-color .15s,box-shadow .15s,transform .08s,filter .15s}
+button:not(:disabled):hover{filter:brightness(.96);box-shadow:0 3px 10px rgba(31,95,191,.20)}
+button:not(:disabled):active{transform:translateY(2px);box-shadow:none}
+header button:not(:disabled):hover{background:rgba(255,255,255,.22)!important;filter:none;box-shadow:none}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</helmet>
+<div style="min-height: 100vh; background: #ECEFF4; color: #1B1F24; font-family: 'IBM Plex Sans KR', sans-serif; font-size: 17px; line-height: 1.45; font-variant-numeric: tabular-nums; display: flex; flex-direction: column;">
+
+<header style="background: #1B2A47; color: #FFFFFF; box-shadow: 0 2px 10px rgba(16,24,40,0.20);">
+<div style="max-width: 1280px; margin: 0 auto; padding: 6px 20px; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px;">
+<button aria-label="메뉴" style="width: 52px; height: 52px; display: inline-flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.30); border-radius: 8px; color: #FFFFFF; cursor: pointer;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
+<span style="font-weight: 700; font-size: 20px;">검사 기록 · OP-50</span>
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 16px; color: #CFDBEE;">10/1 주간 · 13:40</span>
+<span style="flex: 1 1 auto;"></span>
+<span style="font-weight: 600;">작업자(OPR) 김○○</span>
+<button aria-label="처리 안 된 알림 2건" style="min-height: 52px; display: inline-flex; align-items: center; gap: 6px; padding: 0 14px; background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.30); border-radius: 8px; color: #FFFFFF; font-size: 16px; cursor: pointer;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10 21a2 2 0 0 0 4 0"></path></svg>미처리 2</button>
+<button style="min-height: 52px; padding: 0 16px; background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.30); border-radius: 8px; color: #FFFFFF; font-size: 16px; cursor: pointer;">비서</button>
+</div>
+</header>
+
+<main style="flex: 1 1 auto; width: 100%; max-width: 1280px; margin: 0 auto; padding: 14px 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px;">
+
+<ol aria-label="작업 단계" style="list-style: none; margin: 0; padding: 12px 16px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; background: #FFFFFF; border: 1px solid #D5D9DF; border-radius: 12px;">
+<sc-for list="{{steps}}" as="s" hint-placeholder-count="4"><li aria-current="{{s.cur}}" style="display: flex; align-items: center; gap: 10px; padding: 6px 10px; border-radius: 10px; background: {{s.bg}};">
+<span style="flex: none; width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 17px; background: {{s.dotBg}}; color: {{s.dotFg}}; border: 2px solid {{s.dotBd}};">{{s.mark}}</span>
+<span style="display: flex; flex-direction: column; line-height: 1.25;"><b style="font-size: 16px; color: {{s.fg}};">{{s.label}}</b><span style="font-size: 14px; color: #4A525E;">{{s.sub}}</span></span>
+</li></sc-for>
+</ol>
+
+<div style="flex: 1 1 auto; display: flex; flex-wrap: wrap; gap: 14px; align-items: stretch;">
+<section style="flex: 3 1 560px; min-width: 0; background: #FFFFFF; border: 1px solid #D5D9DF; border-radius: 12px; padding: 18px 22px; display: flex; flex-direction: column; gap: 18px;">
+<div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px;">
+<b style="font-size: 30px; line-height: 1.15;">순번 12</b>
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 18px; color: #4A525E;">LOT-2609-041-1</span>
+<span style="padding: 2px 10px; border-radius: 999px; background: #FFF5CC; border: 1px solid #E6CF6E; color: #5C4800; font-size: 15px; font-weight: 700;">▲ 강화 (전수)</span>
+</div>
+<div role="group" aria-label="M6 나사 게이지" style="display: flex; flex-direction: column; gap: 8px;">
+<b style="font-size: 18px;">M6 나사 게이지</b>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px;">
+<button aria-pressed="true" style="min-height: 92px; border-radius: 12px; border: 3px solid #1F5FBF; background: #1F5FBF; color: #FFFFFF; font-size: 26px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 10px;"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5L20 7"></path></svg>통과</button>
+<button aria-pressed="false" style="min-height: 92px; border-radius: 12px; border: 2px solid #A9BEDF; background: #FFFFFF; color: #174A96; font-size: 26px; font-weight: 700; cursor: pointer;">불합격</button>
+</div>
+</div>
+<div role="group" aria-label="외관" style="display: flex; flex-direction: column; gap: 8px;">
+<b style="font-size: 18px;">외관</b>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px;">
+<button aria-pressed="false" style="min-height: 92px; border-radius: 12px; border: 2px solid #A9BEDF; background: #FFFFFF; color: #174A96; font-size: 26px; font-weight: 700; cursor: pointer;">합격</button>
+<button aria-pressed="false" style="min-height: 92px; border-radius: 12px; border: 2px solid #A9BEDF; background: #FFFFFF; color: #174A96; font-size: 26px; font-weight: 700; cursor: pointer;">불합격 + 코드</button>
+</div>
+</div>
+<div style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 10px; background: #F4F7FB; font-size: 18px;">부품 판정 <b>외관 입력 기다림</b></div>
+</section>
+
+<section style="flex: 2 1 380px; min-width: 0; background: #FFFFFF; border: 1px solid #D5D9DF; border-radius: 12px; padding: 16px 18px; display: flex; flex-direction: column; gap: 12px;">
+<div style="display: flex; align-items: center; gap: 8px;"><b style="font-size: 18px;">CMM 결과</b><span style="font-size: 14px; color: #4A525E;">자동 · 13:18</span></div>
+<div style="display: flex; flex-direction: column; gap: 6px;">
+<sc-for list="{{cmm}}" as="r" hint-placeholder-count="6"><div style="display: grid; grid-template-columns: minmax(0, 1fr) auto 28px; gap: 10px; align-items: center; min-height: 40px; padding: 2px 12px; border-radius: 8px; background: {{r.bg}}; border: 1px solid {{r.bd}};">
+<span style="font-weight: 600;">{{r.name}}</span>
+<b style="font-family: 'IBM Plex Mono', monospace; font-size: 18px;">{{r.val}}</b>
+<span aria-label="{{r.aria}}" style="font-weight: 700; color: {{r.mc}}; text-align: center;">{{r.mark}}</span>
+</div></sc-for>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px; margin-top: auto;">
+<div style="display: flex; align-items: baseline; gap: 8px;"><b>로트 진행</b><span style="font-family: 'IBM Plex Mono', monospace; color: #4A525E;">12 / 20</span></div>
+<div aria-label="로트 부품 20개 상태" role="img" style="display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 4px;">
+<sc-for list="{{mini}}" as="c" hint-placeholder-count="20"><span style="position: relative; height: 30px; border-radius: 5px; border: {{c.bw}} {{c.dash}} {{c.bd}}; background: {{c.bg}}; color: {{c.fg}}; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700;">{{c.n}}<sc-if value="{{c.pulse}}" hint-placeholder-val="{{ false }}"><span aria-hidden="true" style="position: absolute; top: 3px; right: 3px; width: 6px; height: 6px; border-radius: 50%; background: #1F5FBF; animation: dcPulse 1.8s ease-out infinite;"></span></sc-if></span></sc-for>
+</div>
+</div>
+</section>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 12px 16px; background: #FFFFFF; border: 1px solid #D5D9DF; border-radius: 12px;">
+<button style="min-height: 64px; padding: 0 24px; border-radius: 12px; border: 2px solid #A9BEDF; background: #FFFFFF; color: #174A96; font-size: 19px; font-weight: 600; cursor: pointer;">이전 단계</button>
+<span style="flex: 1 1 auto; display: inline-flex; align-items: center; gap: 8px; font-size: 17px; color: #4A525E;"><span style="width: 10px; height: 10px; border-radius: 50%; background: #1F5FBF; animation: dcPulse 1.8s ease-out infinite;"></span>다음 순번 13 · CMM 측정 중</span>
+<span style="display: inline-flex; flex-direction: column; align-items: flex-end; gap: 2px;">
+<button disabled="{{ true }}" aria-describedby="nextWhy" style="min-height: 64px; padding: 0 32px; border-radius: 12px; border: 2px solid #D5D9DF; background: #EEF0F3; color: #5F6773; font-size: 20px; font-weight: 700; cursor: not-allowed;">다음 부품</button>
+<span id="nextWhy" style="font-size: 14px; color: #4A525E;">외관 입력 필요</span>
+</span>
+</div>
+</main>
+
+<footer style="width: 100%; max-width: 1280px; margin: 0 auto 10px; padding: 0 20px; box-sizing: border-box;">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; padding: 7px 14px; background: #FFFFFF; border: 1px solid #D5D9DF; border-radius: 8px; font-size: 13px;">
+<b>범례</b>
+<span style="display: inline-flex; align-items: center; gap: 5px;"><span style="width: 16px; height: 10px; background: #4A525E; border: 2px solid #8FCB9B; border-radius: 2px;"></span>가공</span>
+<span style="display: inline-flex; align-items: center; gap: 5px;"><span style="width: 16px; height: 10px; background: #D5D9DF; border-radius: 2px;"></span>대기</span>
+<span style="display: inline-flex; align-items: center; gap: 5px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4A525E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4 2.5-2.5z"></path></svg>준비</span>
+<span style="display: inline-flex; align-items: center; gap: 5px;"><span style="width: 16px; height: 10px; border-radius: 2px; background: repeating-linear-gradient(45deg, #9AA1AB 0 2px, #E6E9ED 2px 5px);"></span>정비</span>
+<span style="display: inline-flex; align-items: center; gap: 5px;"><svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 1.5 21h21L12 2.5z" fill="#C62F2F"></path><path d="M12 9.5v5.5" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"></path><circle cx="12" cy="18" r="1.3" fill="#FFFFFF"></circle></svg>고장</span>
+<span style="display: inline-flex; align-items: center; gap: 5px;"><svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#D9731A"></circle><rect x="6" y="10.5" width="12" height="3" rx="1" fill="#FFFFFF"></rect></svg>막힘</span>
+<span style="display: inline-flex; align-items: center; gap: 5px;"><svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 1.5 21h21L12 2.5z" fill="#F2C200" stroke="#7A6100" stroke-width="1.6" stroke-linejoin="round"></path></svg>주의 알람</span>
+<span style="display: inline-flex; align-items: center; gap: 5px;"><b style="color: #9A4A00;">20</b>재공</span>
+<span style="padding: 0 5px; border: 2px solid #D9731A; border-radius: 4px; line-height: 1.3;">병목</span>
+<span aria-hidden="true" style="color: #9AA1AB;">|</span>
+<b>알림</b>
+<span style="display: inline-flex; align-items: center; gap: 5px;"><svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 1.5 21h21L12 2.5z" fill="#C62F2F"></path><path d="M12 9.5v5.5" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"></path><circle cx="12" cy="18" r="1.3" fill="#FFFFFF"></circle></svg>긴급</span>
+<span style="display: inline-flex; align-items: center; gap: 5px;"><svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 1.5 21h21L12 2.5z" fill="#F2C200" stroke="#7A6100" stroke-width="1.6" stroke-linejoin="round"></path><path d="M12 9.5v5.5" stroke="#1B1F24" stroke-width="2.2" stroke-linecap="round"></path><circle cx="12" cy="18" r="1.3" fill="#1B1F24"></circle></svg>주의</span>
+<span style="display: inline-flex; align-items: center; gap: 5px;"><svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#7D8590"></circle><path d="M12 11v6" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"></path><circle cx="12" cy="7.5" r="1.3" fill="#FFFFFF"></circle></svg>참고</span>
+</div>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const STEP = [['측정 시작 확인', '바코드 · 본인 13:12', 'done'], ['CMM 측정', '결과 13:18', 'done'], ['게이지 · 외관', 'M6 통과 · 외관 남음', 'cur'], ['다음 부품', '순번 13', 'todo']];
+    const steps = STEP.map(([label, sub, st], i) => ({
+      label: label, sub: sub, cur: st === 'cur' ? 'step' : 'false',
+      mark: st === 'done' ? '✓' : String(i + 1),
+      bg: st === 'cur' ? '#EAF1FC' : 'transparent',
+      dotBg: st === 'done' ? '#4A525E' : (st === 'cur' ? '#1F5FBF' : '#FFFFFF'),
+      dotFg: st === 'todo' ? '#5F6773' : '#FFFFFF', dotBd: st === 'todo' ? '#C3CCD9' : (st === 'cur' ? '#1F5FBF' : '#4A525E'),
+      fg: st === 'todo' ? '#5F6773' : '#1B1F24'
+    }));
+    const CM = [['◆ Ø45 표준', '45.0221', 'ooc'], ['전체 길이', '150.03', 'ok'], ['폭', '55.02', 'ok'], ['두께', '12.01', 'ok'], ['구멍 간 거리', '+0.028', 'ok'], ['평면도', '0.019', 'ok']];
+    const cmm = CM.map(([name, val, st]) => ({
+      name: name, val: val, mark: st === 'ooc' ? '▲' : '✓', mc: st === 'ooc' ? '#7A6100' : '#4A525E',
+      bg: st === 'ooc' ? '#FFF5CC' : '#FFFFFF', bd: st === 'ooc' ? '#E6CF6E' : '#E6E9ED', aria: st === 'ooc' ? '관리도 3σ 밖' : '합격'
+    }));
+    const stateOf = (n) => (n <= 8 || n === 12 ? 'pass' : (n === 9 ? 'none' : (n === 10 || n === 11 ? 'fail' : (n === 13 ? 'run' : 'wait'))));
+    const LOOK = { pass: ['#FFFFFF', '#A9B5C6', '#1B1F24'], fail: ['#FBEAEA', '#C62F2F', '#B42323'], none: ['#F6F7F9', '#9AA1AB', '#4A525E'], run: ['#EAF1FC', '#1F5FBF', '#174A96'], wait: ['#F6F7F9', '#E1E5EB', '#5F6773'] };
+    const mini = [];
+    for (let n = 1; n <= 20; n++) {
+      const st = stateOf(n), lk = LOOK[st], on = n === 12;
+      mini.push({ n: n, bg: lk[0], bd: on ? '#1F5FBF' : lk[1], fg: lk[2], bw: on ? '2px' : '1px', dash: st === 'none' ? 'dashed' : 'solid', pulse: st === 'run' });
+    }
+    return { steps: steps, cmm: cmm, mini: mini };
+  }
+}
+</script>
+</body>
+</html>
