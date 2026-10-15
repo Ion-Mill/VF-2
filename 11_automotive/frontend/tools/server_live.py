@@ -9,7 +9,7 @@
 from __future__ import annotations
 
 import bisect
-from datetime import timedelta
+from datetime import date, datetime, timedelta
 
 from gen import records as R
 from gen import stage4 as S4
@@ -22,6 +22,8 @@ CYCLE_DAYS = {"DAILY": 1, "WEEKLY": 7, "MONTHLY": 30, "HALF_YEAR": 182, "YEARLY"
 
 
 def iso(v):
+    if isinstance(v, date) and not isinstance(v, datetime):     # 정비 기록 due_date 같은 날짜만 있는 값
+        return v.isoformat()
     return fmt_dt(v) if v is not None else None
 
 
@@ -47,7 +49,7 @@ class Live:
         return self.sim.cal.to_dt(m)
 
     def shift(self):
-        cal, m = self.sim.cal, self.rt.m
+        cal, m = self.sim.cal, min(self.rt.m, self.rt.end_m - 1)     # 시연 끝(10/2 08:00)에서도 마지막 교대
         return cal.shift_at(m) or cal.shift_or_near(m)
 
     def done_ms(self) -> list[int]:
@@ -344,8 +346,10 @@ class Live:
         for i in self.rt.M["inventory_item"]:
             s = round(stock.get(i["item_no"], 0.0), 2)
             saf = float(so.get(i["item_no"], i["safety_stock"] or 0))
+            s0 = round(self.P.stock.get(i["item_no"], 0.0), 2)        # 10/1 08:00 (9월 끝) 재고 — 그때 이미 부족하면 9월에 알림이 나감
             items.append({"item_no": i["item_no"], "category": i["category"], "item_name": i["item_name"], "unit": i["unit"],
-                          "owner_role": i["owner_role"], "safety_stock": saf, "stock_qty": s, "low": saf > 0 and s <= saf})
+                          "owner_role": i["owner_role"], "safety_stock": saf, "stock_qty": s, "low": saf > 0 and s <= saf,
+                          "low_at_start": saf > 0 and s0 <= saf})
         txns = [{**{k: (iso(v) if hasattr(v, "isoformat") and not isinstance(v, str) else v) for k, v in t.items()}} for t in live]
         return {"items": items, "held_lot_qty": held, "live_txns": txns}
 
@@ -375,7 +379,6 @@ class Live:
             if t["pm_task_id"] in overdue and not (l and l.get("live")):
                 due = overdue[t["pm_task_id"]]
             elif cyc and l and l.get("done_at"):
-                from datetime import date
                 due = str(date.fromisoformat(l["done_at"][:10]) + timedelta(days=cyc))
             elif t["cycle_code"] == "MONTHLY" and t["equipment_id"] in plan_due:
                 v = plan_due[t["equipment_id"]]

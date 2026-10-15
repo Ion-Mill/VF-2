@@ -566,7 +566,7 @@ def quality_summary(P, rt):
                         "out": [i for i, x in enumerate(xs) if x > mu + 3 * sig or x < mu - 3 * sig]})
         items.append(row)
     return {"defects": [{"defect_code": k, "qty": v} for k, v in cnt.most_common()], "defect_codes": P.defect_codes,
-            "items": items, "today_defects": [{k: (fmt_dt(v) if hasattr(v, "isoformat") else v) for k, v in d.items()} for d in live_def]}
+            "items": items, "live_from": fmt_dt(rt.sim.cal.to_dt(rt.N)), "today_defects": [{k: (fmt_dt(v) if hasattr(v, "isoformat") else v) for k, v in d.items()} for d in live_def]}
 
 
 class Handler(BaseHTTPRequestHandler):
