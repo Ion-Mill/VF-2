@@ -1,0 +1,45 @@
+# 개발·시연용: PostgreSQL 16 + API. 비밀 값은 .env (저장소에 넣지 않음 — .env.example 참고)
+#   docker compose up --build   →  http://localhost:8000/docs
+# 처음 띄울 때(빈 DB) 생성기 데이터·사내 문서를 넣는다 → VF-2/11_automotive 폴더가 필요 (AUTOMOTIVE_DIR, 기본 .. = 상위 11_automotive)
+# 처음부터 다시: docker compose down -v (DB 볼륨 지움) → up
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: mom
+      POSTGRES_USER: mom_owner
+      POSTGRES_PASSWORD: ${MOM_OWNER_DB_PASSWORD:?.env에 MOM_OWNER_DB_PASSWORD 필요}
+      TZ: Asia/Seoul
+      PGTZ: Asia/Seoul
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mom_owner -d mom"]
+      interval: 3s
+      retries: 20
+
+  api:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      PGHOST: db
+      PGUSER: mom_owner
+      PGPASSWORD: ${MOM_OWNER_DB_PASSWORD}
+      PGDATABASE: mom
+      MOM_DATABASE_URL: postgresql+psycopg://mom_app:${MOM_APP_DB_PASSWORD}@db:5432/mom
+      MOM_READONLY_DATABASE_URL: postgresql+psycopg://mom_ai_ro:${MOM_AI_DB_PASSWORD}@db:5432/mom
+      MOM_AUTOMOTIVE_DIR: /data/automotive
+    volumes:
+      - cmm:/data/cmm          # 측정기 PC 공유 폴더를 여기에 연결 (inbox / processed / error)
+      - ${AUTOMOTIVE_DIR:-..}:/data/automotive:ro   # 생성기 CSV·가상사내문서 (처음 적재 때만 읽음)
+    ports:
+      - "8000:8000"
+
+volumes:
+  pgdata:
+  cmm:

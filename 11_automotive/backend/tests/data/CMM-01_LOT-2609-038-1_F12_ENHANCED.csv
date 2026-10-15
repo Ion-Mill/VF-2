@@ -1,0 +1,22 @@
+#format,MOM-CMM-CSV v0.1 (예시 · 가상 데이터)
+#cmm_id,CMM-01
+#program,BRK-A100_OP50_ENH_R0
+#lot_no,LOT-2609-038-1
+#sample_no,F12
+#insp_kind,ENHANCED
+#operator,U06
+#measured_at,2026-09-15T15:10:44+09:00
+#room_temp_c,20.3
+#part_temp_c,20.9
+#temp_comp,ON
+#cte_um_per_m_k,23.6
+char_no,char_name,position,nominal,upper_tol,lower_tol,actual,deviation,cmm_judgement,unit
+1,부싱 압입 구멍 지름 Ø45 H7,STD,45.000,0.025,0.000,45.019,0.019,PASS,mm
+1,부싱 압입 구멍 지름 Ø45 H7,TOP,45.000,0.025,0.000,45.021,0.021,PASS,mm
+1,부싱 압입 구멍 지름 Ø45 H7,MID,45.000,0.025,0.000,45.018,0.018,PASS,mm
+1,부싱 압입 구멍 지름 Ø45 H7,BOT,45.000,0.025,0.000,45.016,0.016,PASS,mm
+2,전체 길이,STD,150.000,0.500,-0.500,149.980,-0.020,PASS,mm
+3,두께,STD,12.000,0.200,-0.200,12.010,0.010,PASS,mm
+4,구멍 간 거리 (기준 치수 임시값),STD,110.000,0.100,-0.100,109.991,-0.009,PASS,mm
+5,평면도 (부착면),STD,0.000,0.050,,0.024,0.024,PASS,mm
+8,폭,STD,55.000,0.300,-0.300,54.990,-0.010,PASS,mm

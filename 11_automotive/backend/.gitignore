@@ -1,0 +1,20 @@
+# 비밀 값이 든 파일은 넣지 않는다 (NFR-SEC-06). 예시 파일만 넣는다
+.env
+.env.*
+!.env.example
+!.env.supabase.example
+__pycache__/
+*.pyc
+.venv/
+# 서버를 Windows에서 띄울 때 생기는 CMM 감시 폴더
+cmm/
+# DB 덤프 = 로컬 백업 (다시 만드는 법: dist/README.md). 바이너리라 git 기록에 계속 남으므로 올리지 않는다
+dist/*.dump
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+node_modules/
+.vscode/
+*.log

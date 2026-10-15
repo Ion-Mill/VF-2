@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>SCR-22 공구 수명</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap">
+<style>
+body{margin:0;background:#ECEFF4}
+a{color:#1F5FBF}a:hover{color:#1B1F24}
+button,select{font-family:inherit}
+button:focus-visible,a:focus-visible,select:focus-visible{outline:2px solid #1F5FBF;outline-offset:2px}
+@keyframes dcRise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes dcPop{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes dcFade{from{opacity:0}to{opacity:1}}
+@keyframes dcPulse{0%{box-shadow:0 0 0 0 rgba(31,95,191,.5)}70%{box-shadow:0 0 0 9px rgba(31,95,191,0)}100%{box-shadow:0 0 0 0 rgba(31,95,191,0)}}
+section{box-shadow:0 1px 2px rgba(16,24,40,.05),0 2px 6px rgba(16,24,40,.05);transition:box-shadow .2s ease;animation:dcRise .35s ease-out both}
+section:hover{box-shadow:0 2px 4px rgba(16,24,40,.06),0 10px 24px rgba(16,24,40,.09)}
+h2{color:#1B2A47;font-size:17px!important;line-height:1.35;align-items:center!important}h2::before{content:"";width:10px;height:10px;border-radius:3px;background:#1F5FBF;flex:none}
+thead tr{background:#EAF0F9}
+tbody tr{transition:background-color .15s}
+tbody tr:hover{background-color:#F3F7FD}
+button,a,select,input,textarea{transition:background-color .15s,border-color .15s,box-shadow .15s,transform .08s,filter .15s}
+button:not(:disabled):not([style*="transparent"]):hover,a[style*="min-height"]:hover{filter:brightness(.95);box-shadow:0 3px 10px rgba(31,95,191,.20)}
+button:not(:disabled):not([style*="transparent"]):active,a[style*="min-height"]:active{transform:translateY(1px);box-shadow:none}
+button[aria-pressed="true"]:not([style*="transparent"]),button[aria-selected="true"]{box-shadow:0 2px 8px rgba(31,95,191,.32)}
+header button:not(:disabled):hover{background:rgba(255,255,255,.22)!important;filter:none;box-shadow:none}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#1F5FBF!important;box-shadow:0 0 0 3px rgba(31,95,191,.20)}
+[role="dialog"]{animation:dcPop .18s ease-out both;box-shadow:0 24px 56px rgba(16,24,40,.30)}
+footer{box-shadow:0 1px 2px rgba(16,24,40,.05)}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</helmet>
+<div style="min-height: 100vh; background: #ECEFF4; color: #1B1F24; font-family: 'IBM Plex Sans KR', sans-serif; font-size: 16px; line-height: 1.5; font-variant-numeric: tabular-nums;">
+
+<header style="background: #1B2A47; color: #FFFFFF; box-shadow: 0 2px 10px rgba(16,24,40,0.20);">
+<div style="max-width: 1440px; margin: 0 auto; padding: 8px 20px; box-sizing: border-box; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px;">
+<button aria-label="메뉴" aria-expanded="{{menuOpen}}" onClick="{{toggleMenu}}" style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.30); border-radius: 8px; color: #FFFFFF; cursor: pointer;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
+<span style="font-weight: 700; font-size: 19px; letter-spacing: -0.01em;">공구 수명</span>
+<span style="font-family: 'IBM Plex Mono', monospace; font-size: 15px; color: #CFDBEE;">10/1 (목) 주간 08:00~17:00 · 13:40</span>
+<span style="flex: 1 1 auto;"></span>
+<span style="font-weight: 600;">{{who.label}} {{who.name}}</span>
+<button aria-label="처리 안 된 알림 {{bell}}건" style="min-height: 44px; display: inline-flex; align-items: center; gap: 6px; padding: 0 12px; background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.30); border-radius: 8px; color: #FFFFFF; font-size: 15px; cursor: pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10 21a2 2 0 0 0 4 0"></path></svg>미처리 {{bell}}</button>
+<button style="min-height: 44px; padding: 0 14px; background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.30); border-radius: 8px; color: #FFFFFF; font-size: 15px; cursor: pointer;">비서</button>
+<button style="min-height: 44px; padding: 0 14px; background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.30); border-radius: 8px; color: #FFFFFF; font-size: 15px; cursor: pointer;">화면 설정</button>
+<label style="display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: #CFDBEE;"><span style="padding: 2px 8px; border: 1px dashed rgba(255,255,255,0.55); border-radius: 4px;">시연 모드</span>역할 바꿔 보기
+<select value="{{role}}" onChange="{{onRole}}" style="min-height: 44px; padding: 0 10px; border: 1px solid #7D8590; border-radius: 6px; background: #FFFFFF; color: #1B1F24; font-size: 15px;">
+<option value="OPR">작업자 OPR</option>
+<option value="MNT">보전 담당자 MNT</option>
+<option value="SUP">반장 SUP</option>
+<option value="MGR">관리자 MGR</option>
+</select></label>
+</div>
+</header>
+
+<sc-if value="{{menuOpen}}" hint-placeholder-val="{{ false }}">
+<nav aria-label="메뉴" style="background: #FFFFFF; border-bottom: 1px solid #D5D9DF;">
+<div style="max-width: 1440px; margin: 0 auto; padding: 10px 20px; box-sizing: border-box; display: flex; flex-wrap: wrap; gap: 6px;">
+<sc-for list="{{menu}}" as="m" hint-placeholder-count="12">
+<sc-if value="{{m.isLink}}" hint-placeholder-val="{{ false }}"><a href="{{m.href}}" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border-radius: 6px; border: 1px solid {{m.bd}}; background: {{m.bg}}; color: {{m.fg}}; text-decoration: none; font-weight: 600;">{{m.label}}</a></sc-if>
+<sc-if value="{{m.isOff}}" hint-placeholder-val="{{ true }}"><span aria-disabled="true" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px; border-radius: 6px; border: 1px dashed #D5D9DF; color: #5F6773;">{{m.label}}</span></sc-if>
+</sc-for>
+</div>
+</nav>
+</sc-if>
+
+<div style="max-width: 1440px; margin: 0 auto; padding: 16px 20px 32px; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px;">
+
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: stretch;">
+
+<section aria-label="공구 목록" style="flex: 0 1 400px; min-width: 0; background: #FFFFFF; border: 1px solid #D5D9DF; border-radius: 8px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px;">
+<h2 style="margin: 0; font-size: 16px; font-weight: 700; display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline;">공구 — OP-30 VF2-01 · VF2-02</h2>
+<div role="group" aria-label="설비" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px;">
+<sc-for list="{{filters}}" as="f" hint-placeholder-count="3"><button aria-pressed="{{f.on}}" onClick="{{f.pick}}" style="min-height: 44px; border-radius: 6px; border: 1px solid {{f.bd}}; background: {{f.bg}}; color: {{f.fg}}; font-size: 15px; font-weight: 600; cursor: pointer;">{{f.label}}</button></sc-for>
+</div>
+<div style="display: flex; justify-content: flex-end; align-items: center; gap: 6px; font-size: 13px; color: #4A525E;"><span style="height: 14px; border-left: 2px solid #1B2A47;"></span>눈금 = 90%</div>
+<div style="display: flex; flex-direction: column; gap: 4px;">
+<sc-for list="{{list}}" as="t" hint-placeholder-count="10"><button aria-pressed="{{t.on}}" aria-label="{{t.aria}}" onClick="{{t.pick}}" style="display: grid; grid-template-columns: minmax(0, 1fr) 52px; gap: 4px 8px; align-items: center; min-height: 52px; padding: 6px 12px; border-radius: 6px; border: {{t.border}}; background: {{t.bg}}; color: #1B1F24; text-align: left; cursor: pointer;">
+<span style="display: inline-flex; align-items: center; gap: 6px; font-size: 15px; overflow: hidden; white-space: nowrap;"><sc-if value="{{t.warn}}" hint-placeholder-val="{{ false }}"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" style="flex: none;"><path d="M12 2.5 1.5 21h21L12 2.5z" fill="#F2C200" stroke="#7A6100" stroke-width="1.8" stroke-linejoin="round"></path></svg></sc-if><b>{{t.eq}}</b>&nbsp;{{t.no}} {{t.name}}</span>
+<b style="text-align: right; font-family: 'IBM Plex Mono', monospace; font-size: 16px;">{{t.pct}}</b>
+<span style="grid-column: 1 / 3; position: relative; height: 8px; border-radius: 4px; background: #E6E9ED;"><span style="position: absolute; left: 0; top: 0; bottom: 0; width: {{t.w}}; border-radius: 4px; background: {{t.fill}};"></span><span style="position: absolute; left: 90%; top: -3px; bottom: -3px; border-left: 2px solid #1B2A47;"></span></span>
+</button></sc-for>
+</div>
+</section>
+
+<div style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column; gap: 16px;">
+<section aria-label="고른 공구" style="background: #FFFFFF; border: 1px solid #D5D9DF; border-radius: 8px; padding: 16px 20px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px;">
+<div style="display: flex; flex-direction: column; gap: 2px;"><span style="display: inline-flex; align-items: center; gap: 6px; font-size: 15px;"><b>{{cur.eq}}</b><span style="width: 14px; height: 9px; background: #4A525E; border: 2px solid #8FCB9B; border-radius: 2px;"></span>{{cur.st}}</span><b style="font-size: 26px; line-height: 1.2;">{{cur.no}} {{cur.name}}</b></div>
+<sc-if value="{{cur.warn}}" hint-placeholder-val="{{ true }}"><span style="display: inline-flex; align-items: center; gap: 6px; padding: 2px 12px; border-radius: 999px; background: #FFF5CC; border: 1px solid #E6CF6E; color: #5C4800; font-size: 16px; font-weight: 700;"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" style="flex: none;"><path d="M12 2.5 1.5 21h21L12 2.5z" fill="#F2C200" stroke="#7A6100" stroke-width="1.8" stroke-linejoin="round"></path></svg>교체 준비</span></sc-if>
+<span style="flex: 1 1 auto;"></span>
+<sc-if value="{{cur.showBtn}}" hint-placeholder-val="{{ true }}"><button onClick="{{cur.ask}}" style="min-height: 56px; padding: 0 28px; border-radius: 8px; border: 1px solid {{cur.btnBd}}; background: {{cur.btnBg}}; color: {{cur.btnFg}}; font-size: 18px; font-weight: 700; cursor: pointer;">공구 교체 기록</button></sc-if>
+<sc-if value="{{cur.done}}" hint-placeholder-val="{{ false }}"><span style="font-size: 16px; font-weight: 600;">교체 기록됨</span></sc-if>
+<sc-if value="{{hasNote}}" hint-placeholder-val="{{ false }}"><div style="flex: 1 1 100%; display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 6px; background: #F6F7F9; font-size: 15px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1B1F24" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex: none;"><path d="M5 12l5 5L20 7"></path></svg><span>{{note}}</span></div></sc-if>
+</section>
+
+<div style="display: flex; flex-wrap: wrap; gap: 16px; align-items: stretch;">
+<section aria-label="공구 수명" style="flex: 1 1 280px; min-width: 0; background: #FFFFFF; border: 1px solid #D5D9DF; border-radius: 8px; padding: 18px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;">
+<span role="img" aria-label="{{cur.aria}}" style="position: relative; width: 190px; height: 190px;"><svg width="190" height="190" viewBox="0 0 180 180" aria-hidden="true" style="transform: rotate(-90deg);"><circle cx="90" cy="90" r="72" fill="none" stroke="#E6E9ED" stroke-width="18"></circle><circle cx="90" cy="90" r="72" fill="none" stroke="{{cur.col}}" stroke-width="18" stroke-dasharray="{{cur.dash}}"></circle><line x1="135.3" y1="57.1" x2="166.0" y2="34.8" stroke="#1B2A47" stroke-width="3"></line></svg><span style="position: absolute; left: 0; top: 0; width: 190px; height: 190px; display: flex; flex-direction: column; align-items: center; justify-content: center;"><b style="font-family: 'IBM Plex Mono', monospace; font-size: 42px; font-weight: 600; line-height: 1;">{{cur.pct}}</b><span style="font-size: 14px; color: #4A525E;">공구 수명</span></span></span>
+</section>
+<section aria-label="사용량" style="flex: 2 1 360px; min-width: 0; background: #FFFFFF; border: 1px solid #D5D9DF; border-radius: 8px; padding: 18px 20px; display: flex; flex-direction: column; justify-content: center; gap: 14px;">
+<div style="display: flex; flex-direction: column; gap: 2px;"><span style="font-size: 15px; color: #4A525E;">누적 / 한도</span><span style="display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 8px;"><b style="font-family: 'IBM Plex Mono', monospace; font-size: 36px; font-weight: 500; line-height: 1.1;">{{cur.used}} / {{cur.life}}</b><span style="font-size: 18px;">{{cur.unit}}</span><span style="font-size: 14px; color: #4A525E;">{{cur.tag}}</span></span></div>
+<sc-if value="{{cur.hasAlarm}}" hint-placeholder-val="{{ false }}"><span style="display: inline-flex; align-items: center; gap: 6px; color: #B42323; font-size: 16px; font-weight: 700;"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" style="flex: none;"><path d="M12 2.5 1.5 21h21L12 2.5z" fill="#C62F2F"></path><path d="M12 9.5v5.5" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"></path><circle cx="12" cy="18" r="1.3" fill="#FFFFFF"></circle></svg>{{cur.alarm}}</span></sc-if>
+<sc-if value="{{cur.hasRef}}" hint-placeholder-val="{{ false }}"><span style="font-size: 15px; color: #4A525E;">참고값 {{cur.ref}}</span></sc-if>
+</section>
+</div>
+
+<section aria-label="교체 이력" style="background: #FFFFFF; border: 1px solid #D5D9DF; border-radius: 8px; padding: 14px 20px; display: flex; flex-direction: column; gap: 6px;">
+<h2 style="margin: 0 0 4px; font-size: 16px; font-weight: 700; display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline;">교체 이력 — {{cur.eq}} {{cur.no}}</h2>
+<sc-for list="{{cur.hist}}" as="h" hint-placeholder-count="2"><div style="display: grid; grid-template-columns: 140px minmax(0, 1fr); gap: 10px; align-items: center; min-height: 40px; border-top: 1px solid #EEF0F3; font-size: 15px;"><span style="font-family: 'IBM Plex Mono', monospace;">{{h.time}}</span><span>뺄 때 <b style="font-family: 'IBM Plex Mono', monospace;">{{h.used}}</b></span></div></sc-for>
+<sc-if value="{{cur.noHist}}" hint-placeholder-val="{{ false }}"><div style="min-height: 40px; display: flex; align-items: center; border-top: 1px solid #EEF0F3; color: #4A525E;">기록 없음</div></sc-if>
+</section>
+</div>
+</div>
+
+<footer style="display: flex; flex-direction: column; gap: 6px; padding: 12px 16px; background: #FFFFFF; border: 1px solid #D5D9DF; border-radius: 8px; font-size: 14px; color: #1B1F24;">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px;">
+<b>범례</b>
+<span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 18px; height: 12px; background: #4A525E; border: 2px solid #8FCB9B; border-radius: 2px;"></span>가공</span>
+<span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 18px; height: 12px; background: #D5D9DF; border-radius: 2px;"></span>대기</span>
+<span style="display: inline-flex; align-items: center; gap: 6px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4A525E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4 2.5-2.5z"></path></svg>준비</span>
+<span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 18px; height: 12px; border-radius: 2px; background: repeating-linear-gradient(45deg, #9AA1AB 0 2px, #E6E9ED 2px 5px);"></span>정비</span>
+<span style="display: inline-flex; align-items: center; gap: 6px;"><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 1.5 21h21L12 2.5z" fill="#C62F2F"></path><path d="M12 9.5v5.5" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"></path><circle cx="12" cy="18" r="1.3" fill="#FFFFFF"></circle></svg>고장</span>
+<span style="display: inline-flex; align-items: center; gap: 6px;"><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#D9731A"></circle><rect x="6" y="10.5" width="12" height="3" rx="1" fill="#FFFFFF"></rect></svg>막힘</span>
+<span style="display: inline-flex; align-items: center; gap: 6px;"><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 1.5 21h21L12 2.5z" fill="#F2C200" stroke="#7A6100" stroke-width="1.6" stroke-linejoin="round"></path></svg>주의 알람</span>
+<span style="display: inline-flex; align-items: center; gap: 6px;"><b style="color: #9A4A00;">20</b>재공 주황</span>
+<span style="display: inline-flex; align-items: center; gap: 6px;"><span style="padding: 0 6px; border: 2px solid #D9731A; border-radius: 4px;">병목</span></span>
+</div>
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px;">
+<b>알림</b>
+<span style="display: inline-flex; align-items: center; gap: 6px;"><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 1.5 21h21L12 2.5z" fill="#C62F2F"></path><path d="M12 9.5v5.5" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"></path><circle cx="12" cy="18" r="1.3" fill="#FFFFFF"></circle></svg>긴급</span>
+<span style="display: inline-flex; align-items: center; gap: 6px;"><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 1.5 21h21L12 2.5z" fill="#F2C200" stroke="#7A6100" stroke-width="1.6" stroke-linejoin="round"></path><path d="M12 9.5v5.5" stroke="#1B1F24" stroke-width="2.2" stroke-linecap="round"></path><circle cx="12" cy="18" r="1.3" fill="#1B1F24"></circle></svg>주의</span>
+<span style="display: inline-flex; align-items: center; gap: 6px;"><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#7D8590"></circle><path d="M12 11v6" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round"></path><circle cx="12" cy="7.5" r="1.3" fill="#FFFFFF"></circle></svg>참고</span>
+<span style="color: #4A525E;">· 이 화면:</span>
+<span>▲ 교체 준비 (90%)</span>
+</div>
+</footer>
+</div>
+
+<sc-if value="{{dlgOpen}}" hint-placeholder-val="{{ false }}">
+<div style="position: fixed; inset: 0; background: rgba(20, 30, 50, 0.50); backdrop-filter: blur(2px); animation: dcFade .15s ease-out both; display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 10;">
+<div role="dialog" aria-modal="true" aria-label="공구 교체 기록" style="width: 100%; max-width: 460px; background: #FFFFFF; border-radius: 10px; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px;">
+<div style="font-weight: 700;">{{dlg.title}}</div>
+<div style="font-size: 15px; white-space: pre-line;">{{dlg.body}}</div>
+<div style="display: flex; justify-content: space-between; gap: 24px; margin-top: 8px;">
+<button onClick="{{dlgCancel}}" style="min-height: 44px; padding: 0 18px; border-radius: 6px; border: 1px solid #A9BEDF; background: #FFFFFF; color: #174A96; font-size: 16px; cursor: pointer;">취소</button>
+<button onClick="{{dlgOk}}" style="min-height: 44px; padding: 0 18px; border-radius: 6px; border: 1px solid #1F5FBF; background: #1F5FBF; color: #FFFFFF; font-size: 16px; font-weight: 600; cursor: pointer;">기록</button>
+</div>
+</div>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(...args) {
+    super(...args);
+    this.state = { role: 'OPR', menu: false, filter: 'all', sel: 'vf2:T02', replaced: {}, dlg: null, last: '', hist: [] };
+  }
+
+  tg(on) {
+    return { on: on, bg: on ? '#1F5FBF' : '#FFFFFF', fg: on ? '#FFFFFF' : '#174A96', bd: on ? '#1F5FBF' : '#A9BEDF' };
+  }
+
+  menuFor(role, current) {
+    const all = [
+      ['홈', null, true], ['현장 보기', null, true], ['교대 시작 브리핑', null, true], ['3D 라인 뷰', null, true], ['다시 보기', null, true],
+      ['알림', null, true], ['문서함', null, true], ['정지 사유', null, true],
+      ['로트 추적', 'Lot.dc.html', true], ['검사 기록', 'Main.dc.html', role !== 'MNT'], ['재고', 'Inventory.dc.html', true],
+      ['공구 수명', 'Tool.dc.html', true], ['예방 정비', null, role !== 'OPR'], ['사내 문서', null, true], ['설정', null, role === 'MGR']
+    ];
+    return all.filter((m) => m[2]).map((m) => {
+      const cur = m[1] === current;
+      return { label: m[0], href: m[1] || '', isLink: !!m[1], isOff: !m[1], bg: cur ? '#1F5FBF' : '#FFFFFF', fg: cur ? '#FFFFFF' : '#174A96', bd: cur ? '#1F5FBF' : '#A9BEDF' };
+    });
+  }
+
+  renderVals() {
+    const s = this.state;
+    const ROLE = { OPR: ['작업자(OPR)', '김○○'], MNT: ['보전 담당자(MNT)', '최○○'], SUP: ['반장(SUP)', '박○○'], MGR: ['공장 관리자(MGR)', '정○○'] };
+    const role = s.role;
+    const canReplace = role === 'OPR' || role === 'MNT';
+    const SPEC = [
+      { no: 'T05', name: 'M6 탭', unit: '구멍', life: 400, tag: '[참고]', code: 'TL-TAP6', per: 1, stock: 8, safe: 8 },
+      { no: 'T04', name: '드릴 Ø5.0', unit: '구멍', life: 1000, tag: '[가상]', code: 'TL-DR50', per: 1, stock: 6, safe: 5 },
+      { no: 'T03', name: '보링 인서트', unit: '구멍', life: 400, tag: '[가상]', code: 'TL-BB45', per: 1, stock: 5, safe: 4 },
+      { no: 'T02', name: '엔드밀 Ø10', unit: '분', life: 200, tag: '[참고]', code: 'TL-EM10', per: 1, stock: 10, safe: 9 },
+      { no: 'T01', name: '페이스밀 인서트', unit: '분', life: 400, tag: '[가상]', code: 'TL-FM50', per: 5, stock: 20, safe: 14 }
+    ];
+    const USED = {
+      vf1: { T05: 104, T04: 684, T03: 236, T02: 40, T01: 212 },
+      vf2: { T05: 312, T04: 868, T03: 148, T02: 182, T01: 91 }
+    };
+    const EQ = { vf1: ['VF2-01', '가공'], vf2: ['VF2-02', '가공'] };
+    // 지난 교체 (예시 값): 공구별로 보임
+    const BASE_HIST = [
+      ['vf1:T02', '10/1 11:50', '102 / 200'], ['vf1:T05', '10/1 09:10', '376 / 400'],
+      ['vf2:T02', '9/30 21:30', '184 / 200'], ['vf1:T04', '9/30 15:05', '905 / 1,000']
+    ];
+    const out = {};
+    Object.keys(s.replaced).forEach((k) => { const sp = SPEC.find((x) => x.no === k.split(':')[1]); out[sp.code] = (out[sp.code] || 0) + sp.per; });
+    const RING = 2 * Math.PI * 72;
+
+    const tools = [];
+    Object.keys(EQ).forEach((eqk) => SPEC.forEach((sp) => {
+      const key = eqk + ':' + sp.no;
+      const rep = !!s.replaced[key];
+      const used = rep ? 0 : USED[eqk][sp.no];
+      const r = used / sp.life;
+      tools.push({ key: key, eqk: eqk, sp: sp, rep: rep, used: used, r: r, warn: r >= 0.9 });
+    }));
+    const warnN = tools.filter((t) => t.warn).length;
+    const filters = [['all', '전체 ' + tools.length], ['vf1', 'VF2-01'], ['vf2', 'VF2-02']].map(([k, label]) => Object.assign({ label: label, pick: () => this.setState({ filter: k }) }, this.tg(s.filter === k)));
+    const list = tools.filter((t) => s.filter === 'all' || t.eqk === s.filter).sort((a, b) => b.r - a.r).map((t) => {
+      const on = t.key === s.sel, pct = Math.round(t.r * 100) + '%';
+      return {
+        eq: EQ[t.eqk][0], no: t.sp.no, name: t.sp.name, pct: pct, w: (Math.min(1, t.r) * 100).toFixed(1) + '%', warn: t.warn, on: on,
+        fill: t.warn ? '#E0B000' : '#4A525E', bg: on ? '#EAF1FC' : (t.warn ? '#FFFBEA' : '#FFFFFF'),
+        border: on ? '2px solid #1F5FBF' : (t.warn ? '1px solid #E6CF6E' : '1px solid #E6E9ED'),
+        aria: EQ[t.eqk][0] + ' ' + t.sp.no + ' ' + t.sp.name + ' 공구 수명(사용률) ' + pct + (t.warn ? ', 교체 준비' : ''),
+        pick: () => this.setState({ sel: t.key })
+      };
+    });
+
+    const c = tools.find((t) => t.key === s.sel) || tools[0];
+    const stock = c.sp.stock - (out[c.sp.code] || 0);
+    const after = stock - c.sp.per;
+    const label = EQ[c.eqk][0];
+    const pct = Math.round(c.r * 100) + '%';
+    const hist = (s.hist || []).filter((h) => h.key === c.key).concat(BASE_HIST.filter((h) => h[0] === c.key).map((h) => ({ key: h[0], time: h[1], used: h[2] })));
+    const cur = {
+      eq: label, st: EQ[c.eqk][1], no: c.sp.no, name: c.sp.name, warn: c.warn, pct: pct,
+      used: c.used.toLocaleString('en-US'), life: c.sp.life.toLocaleString('en-US'), unit: c.sp.unit, tag: c.sp.tag,
+      dash: (Math.min(1, c.r) * RING).toFixed(1) + ' ' + RING.toFixed(1), col: c.warn ? '#E0B000' : '#4A525E',
+      aria: label + ' ' + c.sp.no + ' ' + c.sp.name + ' 공구 수명(사용률) ' + pct,
+      hasAlarm: false, alarm: '', hasRef: false, ref: '',
+      showBtn: canReplace && !c.rep, done: c.rep,
+      btnBg: c.warn ? '#1F5FBF' : '#FFFFFF', btnFg: c.warn ? '#FFFFFF' : '#174A96', btnBd: c.warn ? '#1F5FBF' : '#A9BEDF',
+      hist: hist.map((h) => ({ time: h.time, used: h.used })), noHist: hist.length === 0,
+      ask: () => {
+        if (this.state.replaced[c.key]) return;
+        this.setState({ dlg: {
+          title: label + ' ' + c.sp.no + ' ' + c.sp.name + ' 교체를 기록할까요?',
+          body: '지금 ' + c.used + ' / ' + c.sp.life + ' ' + c.sp.unit + ' (' + pct + ')\n재고 ' + stock + ' → ' + after + (after <= c.sp.safe ? ' · ▲ 부족' : ''),
+          key: c.key, msg: label + ' ' + c.sp.no + ' ' + c.sp.name + ' 교체 기록 · 재고 ' + stock + ' → ' + after + (after <= c.sp.safe ? ' · ▲ 부족' : ''),
+          hist: { key: c.key, time: '10/1 13:41', used: c.used + ' / ' + c.sp.life.toLocaleString('en-US') }
+        } });
+      }
+    };
+
+    const emStock = 10 - (out['TL-EM10'] || 0);
+    const d = s.dlg || { title: '', body: '' };
+
+    return {
+      role: role, who: { label: ROLE[role][0], name: ROLE[role][1] },
+      onRole: (e) => this.setState({ role: e.target.value }),
+      menuOpen: s.menu, toggleMenu: () => this.setState({ menu: !this.state.menu }), menu: this.menuFor(role, 'Tool.dc.html'),
+      bell: 2 + (emStock <= 9 ? 1 : 0),
+      filters: filters, list: list, cur: cur, warnN: warnN,
+      hasNote: !!s.last, note: s.last,
+      dlgOpen: !!s.dlg, dlg: d,
+      dlgCancel: () => this.setState({ dlg: null }),
+      dlgOk: () => {
+        const x = this.state.dlg;
+        if (!x) return;
+        const rep = Object.assign({}, this.state.replaced); rep[x.key] = true;
+        this.setState({ replaced: rep, last: x.msg, hist: [x.hist].concat(this.state.hist || []), dlg: null });
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

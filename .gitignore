@@ -20,18 +20,26 @@ env/
 .mypy_cache/
 .ruff_cache/
 
-# Secrets / env
+# Secrets / env (예시 파일 .env.example, .env.*.example 만 올린다)
 .env
 .env.*
+!.env.example
+!.env.*.example
 *.key
+*.pem
 
 # Office / PDF temp files
 ~$*
 *.tmp
 .~lock.*#
 
-# Node (if any front-end tooling gets added)
+# Node (프론트 전용 규칙은 11_automotive/frontend/.gitignore)
 node_modules/
+
+# Test coverage
+.coverage
+htmlcov/
+coverage/
 
 # Logs
 *.log

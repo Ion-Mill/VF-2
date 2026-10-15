@@ -44,7 +44,7 @@
     "pm_record": 8,
     "production_lot": 9,
     "production_order": 7,
-    "sensor_sample": 70546,
+    "sensor_sample": 29554,
     "tool_change": 8,
     "tool_usage": 90,
     "wip_log": 2236
