@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>이브 시험 화면</title>
+<style>
+  :root { --bg:#f6f6f4; --card:#fff; --line:#d9d9d4; --text:#1f2328; --muted:#6a6f76; --accent:#2f6f4f;
+          --warn:#a15c00; --stop:#b42318; --stopbg:#fdecea; --warnbg:#fff4e0; --infobg:#eaf2fb; --info:#1d5fa8; --code:#f1f1ee; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#17191c; --card:#22252a; --line:#3a3e45; --text:#e8e8e6; --muted:#a0a4ab; --accent:#7fc4a0;
+          --warn:#f0b35a; --stop:#ff8a80; --stopbg:#3a1f1d; --warnbg:#3a2e17; --infobg:#1b2a3b; --info:#8ab8f0; --code:#1c1e22; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:15px/1.6 system-ui, "Malgun Gothic", sans-serif; }
+  main { max-width: 920px; margin: 0 auto; padding: 16px; }
+  header { display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between; margin-bottom:12px; }
+  h1 { font-size:18px; margin:0; }
+  .note { color:var(--muted); font-size:13px; }
+  select, input, button { font:inherit; color:inherit; background:var(--card); border:1px solid var(--line); border-radius:8px; padding:8px 10px; }
+  button { cursor:pointer; } button.primary { background:var(--accent); color:#fff; border-color:var(--accent); }
+  .tabs { display:flex; gap:6px; margin-bottom:12px; } .tabs button[aria-selected="true"] { background:var(--accent); color:#fff; border-color:var(--accent); }
+  .panel[hidden] { display:none; }
+  #log { display:flex; flex-direction:column; gap:10px; min-height:300px; }
+  .msg { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:10px 12px; white-space:pre-wrap; word-break:break-word; }
+  .q { align-self:flex-end; max-width:85%; } .a { max-width:100%; }
+  .meta { margin-top:8px; display:flex; flex-wrap:wrap; gap:6px; font-size:13px; color:var(--muted); white-space:normal; }
+  .chip { border:1px solid var(--line); border-radius:999px; padding:2px 10px; background:transparent; font-size:13px; }
+  .status { font-weight:600; } .status.warn { color:var(--warn); }
+  form { display:flex; gap:8px; margin-top:12px; } form input { flex:1; min-width:0; }
+  #card { position:fixed; inset:auto 16px 16px 16px; max-width:560px; margin:0 auto; background:var(--card); border:1px solid var(--line);
+          border-radius:10px; padding:12px; white-space:pre-wrap; display:none; max-height:60vh; overflow:auto; box-shadow:0 6px 24px rgba(0,0,0,.2); z-index:5; }
+  /* 지침카드 */
+  .guide { display:grid; grid-template-columns: 260px 1fr; gap:12px; align-items:start; }
+  @media (max-width: 720px) { .guide { grid-template-columns: 1fr; } }
+  .events { background:var(--card); border:1px solid var(--line); border-radius:10px; max-height:70vh; overflow:auto; }
+  .events button { display:block; width:100%; text-align:left; border:0; border-bottom:1px solid var(--line); border-radius:0; padding:8px 10px; }
+  .events small { color:var(--muted); display:block; }
+  .gc { background:var(--card); border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+  .gc-head { padding:10px 12px; font-weight:600; border-bottom:1px solid var(--line); }
+  .gc-head.STOP { background:var(--stopbg); color:var(--stop); } .gc-head.WARN { background:var(--warnbg); color:var(--warn); } .gc-head.GUIDE { background:var(--infobg); color:var(--info); }
+  .gc-sec { padding:10px 12px; border-bottom:1px solid var(--line); }
+  .gc-sec h3 { font-size:13px; color:var(--muted); margin:0 0 4px; font-weight:600; }
+  .gc-sec ol { margin:0; padding-left:20px; }
+  .tag { font-size:12px; border:1px solid var(--line); border-radius:6px; padding:0 6px; color:var(--muted); margin-left:6px; }
+  pre.block { background:var(--code); border:1px solid var(--line); border-radius:8px; padding:10px; margin:6px 0 0; white-space:pre-wrap; font:13px/1.5 ui-monospace, Consolas, "D2Coding", monospace; overflow-x:auto; }
+  .big { font-size:17px; font-weight:600; }
+  details summary { cursor:pointer; color:var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div><h1>이브 시험 화면</h1><div class="note">구독 Claude 연결 확인용. 실제 UI(SCR-09·SCR-10)가 아닙니다. 데이터는 모두 가상입니다.</div></div>
+    <div><select id="user" aria-label="사용자"></select></div>
+  </header>
+  <div class="tabs" role="tablist">
+    <button role="tab" data-tab="chat" aria-selected="true">채팅</button>
+    <button role="tab" data-tab="guide" aria-selected="false">지침카드</button>
+  </div>
+
+  <section class="panel" id="panel-chat">
+    <div style="text-align:right;margin-bottom:8px"><button id="hist" type="button">채팅 기록</button></div>
+    <div id="log"></div>
+    <form id="f">
+      <input id="q" placeholder="예: 992 뜨면 뭐부터 봐? / VF2-01 MTTR 얼마야?" autocomplete="off">
+      <button class="primary" id="send">묻기</button>
+    </form>
+    <div class="note"><label><input type="checkbox" id="cont"> 앞 대화에 이어서 묻기</label></div>
+  </section>
+
+  <section class="panel" id="panel-guide" hidden>
+    <form id="gf" style="margin:0 0 12px">
+      <input id="gcode" placeholder="알람 번호 (예: 992, 2075, 25050, 314, WSH-02)" autocomplete="off">
+      <button class="primary">카드 열기</button>
+    </form>
+    <div class="guide">
+      <div><div class="note" style="margin-bottom:4px">최근 알람 기록 (S1 = 시연 충돌 사건)</div><div class="events" id="events"></div></div>
+      <div id="gc"><div class="note">왼쪽에서 알람을 고르거나 번호를 넣으세요. 처음 여는 알람은 비서가 "먼저 할 일"을 만드느라 15~30초 걸릴 수 있습니다.</div></div>
+    </div>
+  </section>
+</main>
+<div id="card" role="dialog"></div>
+<script>
+const USERS = [["U02","작업자 주간 2 (OPR)"],["U07","보전 담당 1 (MNT)"],["U10","반장 주간 (SUP)"],["U12","공장 관리자 (MGR)"]];
+const $ = id => document.getElementById(id);
+USERS.forEach(([v,t]) => $("user").add(new Option(t, v)));
+let lastChatId = null;
+
+function api(path, opts = {}) {
+  return fetch(path, { ...opts, headers: { "Content-Type": "application/json", "X-User-Id": $("user").value } })
+    .then(async r => { const d = await r.json(); if (!r.ok) throw new Error(d.message || r.status); return d; });
+}
+function el(tag, cls, text) { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+
+document.querySelectorAll("[role=tab]").forEach(b => b.onclick = () => {
+  document.querySelectorAll("[role=tab]").forEach(x => x.setAttribute("aria-selected", x === b));
+  $("panel-chat").hidden = b.dataset.tab !== "chat"; $("panel-guide").hidden = b.dataset.tab !== "guide";
+  if (b.dataset.tab === "guide" && !$("events").children.length) loadEvents();
+});
+
+function showCard(src, full) {
+  const view = full ? "full" : "card";
+  api(`/api/internal-docs/${encodeURIComponent(src.doc_no)}/sections/${encodeURIComponent(src.section)}?view=${view}`).then(d => {
+    const c = $("card"); c.textContent = "";
+    c.append(el("strong", null, `${d.doc_name} ${d.doc_no} ${d.rev} ${d.section} ${d.title}`), el("div", null, "\n" + (d.preview || d.text)));
+    if (!full) { const b = el("button", null, "문서 열기"); b.onclick = () => showCard(src, true); c.append(el("div", null, "\n"), b); }
+    const x = el("button", null, "닫기"); x.style.marginLeft = "8px"; x.onclick = () => c.style.display = "none"; c.append(x);
+    c.style.display = "block";
+  }).catch(e => alert(e.message));
+}
+
+/* ---------- 채팅 ---------- */
+function addAnswer(d) {
+  const box = el("div", "msg a", d.answer);
+  const meta = el("div", "meta");
+  meta.append(el("span", "status" + (d.status === "ok" ? "" : " warn"), d.status));
+  (d.sources || []).forEach(s => { const b = el("button", "chip", `${s.doc_name} ${s.doc_no} ${s.section}`); b.onclick = () => showCard(s, false); meta.append(b); });
+  (d.related || []).forEach(r => meta.append(el("span", "chip", r)));
+  if (d.chat_id) meta.append(el("span", null, `#${d.chat_id}`));
+  box.append(meta); $("log").append(box); box.scrollIntoView({ block: "end" });
+}
+$("f").onsubmit = e => {
+  e.preventDefault();
+  const question = $("q").value.trim(); if (!question) return;
+  $("log").append(el("div", "msg q", question)); $("q").value = ""; $("send").disabled = true;
+  const wait = el("div", "msg a note", "이브가 문서와 기록을 찾는 중… (보통 15~40초)"); $("log").append(wait);
+  api("/api/assistant/chat", { method: "POST", body: JSON.stringify({ question, chat_id: $("cont").checked ? lastChatId : null }) })
+    .then(d => { lastChatId = d.chat_id; addAnswer(d); })
+    .catch(err => $("log").append(el("div", "msg a", "오류: " + err.message)))
+    .finally(() => { wait.remove(); $("send").disabled = false; });
+};
+$("hist").onclick = () => api("/api/assistant/chat?days=30").then(d => {
+  $("log").textContent = "";
+  if (!d.items.length) $("log").append(el("div", "note", "채팅 기록이 없습니다."));
+  d.items.slice().reverse().forEach(i => { $("log").append(el("div", "msg q", `${i.asked_at.slice(0,16)}  ${i.question}`)); addAnswer(i); });
+}).catch(e => alert(e.message));
+$("user").onchange = () => { lastChatId = null; $("log").textContent = ""; };
+
+/* ---------- 지침카드 (SCR-09 순서 [1]~[10]) ---------- */
+const SEV = { STOP: "정지", WARN: "주의", GUIDE: "조작 안내" };
+function loadEvents() {
+  api("/api/test/alarm-events?limit=60").then(d => {
+    const box = $("events"); box.textContent = "";
+    d.items.forEach(e => {
+      const b = el("button");
+      b.append(el("span", null, `${e.alarm_code} ${e.name_ko || ""}`));
+      b.append(el("small", null, `${e.equipment_id} · ${SEV[e.severity] || e.severity} · ${e.occurred_at.slice(5,16).replace("T"," ")}${e.scenario_code ? " · " + e.scenario_code : ""} · #${e.alarm_event_id}`));
+      b.onclick = () => openCard(`/api/maint/guide-card/${e.alarm_event_id}`);
+      box.append(b);
+    });
+  }).catch(e => alert(e.message));
+}
+$("gf").onsubmit = e => { e.preventDefault(); const c = $("gcode").value.trim(); if (c) openCard(`/api/test/guide-card?alarm_code=${encodeURIComponent(c)}`); };
+
+function sec(title, ...children) { const s = el("div", "gc-sec"); s.append(el("h3", null, title), ...children); return s; }
+
+function openCard(path) {
+  const box = $("gc"); box.textContent = ""; box.append(el("div", "note", "카드를 여는 중…"));
+  api(path).then(c => {
+    box.textContent = "";
+    const card = el("div", "gc");
+    const sevCode = c.severity ? c.severity.code : "STOP";
+    card.append(el("div", "gc-head " + sevCode,
+      `지침카드 · ${c.equipment_id || "-"} (${c.process_code || "-"})` + (c.occurred_at ? ` · ${c.occurred_at.slice(5,16).replace("T"," ")} 발생` : " · 기록 없음(번호로 열기)")));
+    card.append(sec("[1] 알람", el("div", "big", `${c.alarm.code}  ${c.alarm.name_ko || ""}`)));
+    if (c.notice) { card.append(sec("안내", el("div", null, c.notice))); box.append(card); return; }
+    const sr = el("div"); sr.append(el("span", null, `${c.severity.icon} ${c.severity.label}`), el("span", null, "   ·   "),
+      el("span", null, c.responder.label + (c.responder.note ? ` (${c.responder.note})` : "")));
+    card.append(sec("[2] 심각도 · [3] 누가", sr));
+    if (c.chain) card.append(sec("[4] 연쇄 알람", el("div", null, `${c.chain.sequence}   "${c.chain.message}"`)));
+    const fa = el("ol"); (c.first_actions.items || []).forEach(i => fa.append(el("li", null, i.text)));
+    const faHead = c.first_actions.made_by === "ai" ? "비서 정리" : "프로그램 (비서 응답 없음)";
+    const faSec = sec(`[5] 먼저 할 일 — ${faHead}`, fa);
+    if (c.first_actions.note) faSec.append(el("div", "note", c.first_actions.note));
+    card.append(faSec);
+    card.append(sec(`[6] 안전 — ${c.safety.kind}`, el("pre", "block", c.safety.text)));
+    const pi = c.production_impact;
+    card.append(sec("[7] 생산 영향", el("div", null, pi ? `현재 로트 ${pi.lot_no || "-"} · ${pi.text}` + (pi.suspect_lots.length ? `\n의심 로트 제안 있음 → ${pi.suspect_lots.join(", ")}` : "") : "기록 없음")));
+    const pr = c.past_record;
+    card.append(sec("[8] 지난 기록", el("div", null, pr.line + (pr.record_no ? `  [${pr.record_no}]` : "") + (pr.repeat_stage ? `\n${pr.repeat_stage}` : ""))));
+    const bt = el("div"); c.buttons.forEach(b => bt.append(el("button", null, b.label)));
+    if (!c.buttons.length) bt.append(el("span", "note", "버튼 없음 (질문은 이브 → 채팅)"));
+    bt.append(el("div", "note", "문서 흐름: " + c.doc_flow));
+    card.append(sec("[9] 버튼", bt));
+    const det = el("details"); det.append(el("summary", null, "[10] 출처 더보기"));
+    const chips = el("div", "meta");
+    c.sources.forEach(s => { const b = el("button", "chip", `${s.field} — ${s.doc_name} ${s.doc_no} ${s.section}`); b.onclick = () => showCard(s, false); chips.append(b); });
+    det.append(chips); card.append(sec("", det));
+    box.append(card);
+  }).catch(e => { box.textContent = ""; box.append(el("div", "msg", "오류: " + e.message)); });
+}
+</script>
+</body>
+</html>
