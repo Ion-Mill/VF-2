@@ -1,0 +1,280 @@
+{
+ "_about": "질문 분류(route) 지시문 예시 (2026-10-10, backend/eval/qa_route.json의 pool 20문항에서 옮김 — 정책 고르기용 dev 문항과 겹치지 않는다). 규칙이 먼저 처리하는 알람·절차·사람만 할 일 질문은 넣지 않았다. 바꿀 때는 qa_route.json pool과 같이 고친다.",
+ "examples": [
+  {
+   "q": "일호기 어제 밤에 몇 번 섰어?",
+   "out": {
+    "kind": "ops",
+    "intents": [
+     "stops"
+    ],
+    "equipment": [
+     "VF2-01"
+    ],
+    "period": "yesterday",
+    "shift": "N",
+    "search_queries": []
+   }
+  },
+  {
+   "q": "VF2-02 최근 일주일 정지 기록 보여줘",
+   "out": {
+    "kind": "ops",
+    "intents": [
+     "stops"
+    ],
+    "equipment": [
+     "VF2-02"
+    ],
+    "period": "recent_7",
+    "shift": "none",
+    "search_queries": []
+   }
+  },
+  {
+   "q": "어제 낮근무 생산량 몇 개야?",
+   "out": {
+    "kind": "ops",
+    "intents": [
+     "production"
+    ],
+    "equipment": [],
+    "period": "yesterday",
+    "shift": "D",
+    "search_queries": []
+   }
+  },
+  {
+   "q": "모자란 소모품 있나?",
+   "out": {
+    "kind": "ops",
+    "intents": [
+     "inventory"
+    ],
+    "equipment": [],
+    "period": "none",
+    "shift": "none",
+    "search_queries": []
+   }
+  },
+  {
+   "q": "곧 갈아야 하는 공구 있어?",
+   "out": {
+    "kind": "ops",
+    "intents": [
+     "tool_life"
+    ],
+    "equipment": [],
+    "period": "none",
+    "shift": "none",
+    "search_queries": []
+   }
+  },
+  {
+   "q": "1호기 고장 나면 평균 몇 분 만에 고쳐?",
+   "out": {
+    "kind": "ops",
+    "intents": [
+     "kpi"
+    ],
+    "equipment": [
+     "VF2-01"
+    ],
+    "period": "none",
+    "shift": "none",
+    "search_queries": []
+   }
+  },
+  {
+   "q": "걸려 있는 정비 작업지시 몇 건이야?",
+   "out": {
+    "kind": "ops",
+    "intents": [
+     "work_orders"
+    ],
+    "equipment": [],
+    "period": "none",
+    "shift": "none",
+    "search_queries": []
+   }
+  },
+  {
+   "q": "예방 정비 밀린 거 있어?",
+   "out": {
+    "kind": "ops",
+    "intents": [
+     "pm_due"
+    ],
+    "equipment": [],
+    "period": "none",
+    "shift": "none",
+    "search_queries": []
+   }
+  },
+  {
+   "q": "2호기 지금 돌아가?",
+   "out": {
+    "kind": "ops",
+    "intents": [
+     "equipment_status"
+    ],
+    "equipment": [
+     "VF2-02"
+    ],
+    "period": "none",
+    "shift": "none",
+    "search_queries": []
+   }
+  },
+  {
+   "q": "로트 바뀌면 셋업하는 데 시간 얼마나 걸려?",
+   "out": {
+    "kind": "doc",
+    "intents": [],
+    "equipment": [],
+    "period": "none",
+    "shift": "none",
+    "search_queries": [
+     "작업지시 교체 셋업 시간",
+     "초품 검사"
+    ]
+   }
+  },
+  {
+   "q": "기계가 고장 나면 작업자는 뭘 하면 안 돼?",
+   "out": {
+    "kind": "doc",
+    "intents": [],
+    "equipment": [],
+    "period": "none",
+    "shift": "none",
+    "search_queries": [
+     "공통 안전 원칙 작업자",
+     "정지 등급 알람 잠금·표지"
+    ]
+   }
+  },
+  {
+   "q": "그리스는 재고에서 언제 차감해?",
+   "out": {
+    "kind": "doc",
+    "intents": [],
+    "equipment": [],
+    "period": "none",
+    "shift": "none",
+    "search_queries": [
+     "그리스 차감 카트리지",
+     "소모품 재고 차감"
+    ]
+   }
+  },
+  {
+   "q": "1호기 전원은 어디서 내려?",
+   "out": {
+    "kind": "doc",
+    "intents": [],
+    "equipment": [
+     "VF2-01"
+    ],
+    "period": "none",
+    "shift": "none",
+    "search_queries": [
+     "VF2-01 차단 지점 주 차단기",
+     "설비별 차단 지점"
+    ]
+   }
+  },
+  {
+   "q": "VF2-01 OEE 얼마고 OEE는 어떻게 구해?",
+   "out": {
+    "kind": "mixed",
+    "intents": [
+     "kpi"
+    ],
+    "equipment": [
+     "VF2-01"
+    ],
+    "period": "none",
+    "shift": "none",
+    "search_queries": [
+     "OEE 계산식 가동률 성능 양품률"
+    ]
+   }
+  },
+  {
+   "q": "예방 정비 기한 넘긴 거 있으면 실시 기록에는 뭘 적어?",
+   "out": {
+    "kind": "mixed",
+    "intents": [
+     "pm_due"
+    ],
+    "equipment": [],
+    "period": "none",
+    "shift": "none",
+    "search_queries": [
+     "예방 정비 실시 기록 방법"
+    ]
+   }
+  },
+  {
+   "q": "회사 셔틀버스 몇 시에 출발해?",
+   "out": {
+    "kind": "none",
+    "intents": [],
+    "equipment": [],
+    "period": "none",
+    "shift": "none",
+    "search_queries": []
+   }
+  },
+  {
+   "q": "다음 주 회식 장소 어디야?",
+   "out": {
+    "kind": "none",
+    "intents": [],
+    "equipment": [],
+    "period": "none",
+    "shift": "none",
+    "search_queries": []
+   }
+  },
+  {
+   "q": "LOT-2609-001-1 보류 좀 풀어줘",
+   "out": {
+    "kind": "action",
+    "intents": [],
+    "equipment": [],
+    "period": "none",
+    "shift": "none",
+    "search_queries": []
+   }
+  },
+  {
+   "q": "2호기 이송 속도 좀 낮춰 줘",
+   "out": {
+    "kind": "action",
+    "intents": [],
+    "equipment": [
+     "VF2-02"
+    ],
+    "period": "none",
+    "shift": "none",
+    "search_queries": []
+   }
+  },
+  {
+   "q": "보류 로트는 누가 해제해?",
+   "out": {
+    "kind": "doc",
+    "intents": [],
+    "equipment": [],
+    "period": "none",
+    "shift": "none",
+    "search_queries": [
+     "보류 로트 해제 반장",
+     "로트 상태 보류"
+    ]
+   }
+  }
+ ]
+}
