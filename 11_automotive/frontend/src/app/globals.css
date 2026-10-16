@@ -63,3 +63,7 @@ body{font-family:'Pretendard Variable',Pretendard,system-ui,sans-serif;}
 .ma-panel .hover\:bg-slate-50:hover, .ma-panel .hover\:bg-slate-100:hover { background: rgba(255, 255, 255, 0.08); }
 .ma-panel select, .ma-panel input:not(.ma-input) { background: rgba(255, 255, 255, 0.06); color: var(--ma-panel-fg); }
 .ma-panel option { color: #15191C; }
+
+/* 스크롤바 색은 테마에 맞춤 (페이지구조 v3 공통 규칙) */
+* { scrollbar-width: thin; scrollbar-color: #c3cad3 transparent; }
+.ma-panel * { scrollbar-color: rgba(255, 255, 255, 0.25) transparent; }

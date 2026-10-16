@@ -66,4 +66,5 @@ export const chainOf = (a: AlertRec, all: AlertRec[]): string[] => {
 export const responsible = (u: UserRec, m: MachineId) => u.role === 'MNT' || (u.role === 'OPR' && u.procs.includes(MACHINES[m].op));
 
 // 첫 화면 (4.1): OPR = 현장 보기, 나머지 = 3D 라인 뷰
-export const homeScreen = (r: Role) => (r === 'OPR' ? 'field' : 'line') as 'field' | 'line';
+// 모든 계정 첫 화면 = 메인 (페이지구조 v3 N7 — 현장 모니터는 메뉴 페이지)
+export const homeScreen = (_r: Role) => 'line' as const;

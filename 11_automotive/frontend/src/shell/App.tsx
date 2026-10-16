@@ -4,16 +4,16 @@
 import dynamic from 'next/dynamic';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { MachineId } from '@/components/types';
-import { ID_OF, LAYOUT, LEGEND, MACHINES, MENU, ROLES, ROLE_COL, type Role } from './data';
+import { ID_OF, LAYOUT, LEGEND, MACHINES, type Role } from './data';
 import { Ctx, DEFAULT_SETTINGS, type AppCtx, type History, type Inv, type Screen, type Settings } from './ctx';
 import { api, md, simIso, tsOf, useFetch, useLive, useLocal, usePersist, type SimEvent } from './live';
-import { ALARMS, ROLE_NAME, SHIFT_NAME, USERS, homeScreen, levelOfSev, type AlertRec, type Notice, type UserRec } from './model';
+import { ALARMS, SHIFT_NAME, USERS, homeScreen, levelOfSev, type AlertRec, type Notice, type UserRec } from './model';
 import { derive, fromEvents, fromPast, repeatOf, type RuleCtx } from './rules';
 import { LOCK } from './Safety';
 import { nextNo, pad, rev, type SimpleRecord, type StopReason, type WorkOrder, type WorkRecord } from './workflow';
 import { Eve, type EveTab } from './Eve';
 import Briefing from './Briefing';
-import CardScreen from './CardScreen';
+import CardScreen, { CardList } from './CardScreen';
 import DocBox from './DocBox';
 import FieldStrip from './FieldStrip';
 import Layout2D from './Layout2D';
@@ -42,14 +42,22 @@ const FactoryDashboard: any = dynamic(() => import('@/components/FactoryDashboar
 });
 
 const TITLE: Record<Screen, string> = {
-  line: '3D 라인 뷰', layout2d: '3D 라인 뷰 · 2D 배치도', field: '현장 보기 · BRK-A100 라인', card: '지침카드', wo: '정비 작업지시서', wr: '작업기록서', sr: '간이 작업기록',
+  line: '3D 라인 뷰', layout2d: '3D 라인 뷰 · 2D 배치도', field: '현장 모니터', cards: '지침카드', card: '지침카드', wo: '정비 작업지시서', wr: '작업기록서', sr: '간이 작업기록',
   stops: '정지 사유', docs: '문서함', replay: '다시 보기', shift: '교대 보고서', daily: '일일 보고서', revs: '수정 이력', lots: '로트 추적', quality: '검사 기록',
   inventory: '재고', tools: '공구 수명', pm: '예방 정비 일정', idocs: '사내 문서', settings: '설정',
 };
-const MENU_SCREEN: Record<string, Screen> = {
-  '현장 보기': 'field', '3D 라인 뷰': 'line', '다시 보기': 'replay', '문서함': 'docs', '정지 사유': 'stops', '로트 추적': 'lots', '검사 기록': 'quality',
-  '재고': 'inventory', '공구 수명': 'tools', '예방 정비': 'pm', '사내 문서': 'idocs', '설정': 'settings',
-};
+// 메뉴 (페이지구조 v3 5.1). 권한 없는 페이지는 흐리게 (N3) — 열 수 있는 역할 목록, 없으면 전원
+const MENU_V3: [string, Screen | 'home', Role[]?][] = [
+  ['홈', 'home'], ['지침카드', 'cards'], ['문서함', 'docs'], ['로트 추적', 'lots'], ['재고', 'inventory'], ['공구 수명', 'tools'],
+  ['예방 정비', 'pm', ['MNT', 'SUP', 'MGR']], ['정지 사유', 'stops'], ['다시 보기', 'replay'], ['현장 모니터', 'field'], ['설정', 'settings', ['MGR']],
+];
+// 문서함 카테고리 (v3 문서함 8개) — 고르면 오른쪽에 그 화면. 문서 하나를 열어도 문서함 안에 보임
+const DOC_CATS: [string, Screen, string | null, Role[]?][] = [
+  ['작업지시서', 'docs', '작업지시서'], ['작업기록서', 'docs', '작업기록서', ['MNT', 'SUP', 'MGR']], ['간이 작업기록', 'docs', '간이 작업기록'],
+  ['교대 보고서', 'docs', '교대 보고서'], ['일일 보고서', 'docs', '일일 보고서', ['MNT', 'SUP', 'MGR']],
+  ['검사 기록', 'quality', null, ['OPR', 'SUP', 'MGR']], ['수정 이력', 'revs', null], ['사내 문서', 'idocs', null],
+];
+const DOC_OF: Partial<Record<Screen, string>> = { wo: '작업지시서', wr: '작업기록서', sr: '간이 작업기록', shift: '교대 보고서', daily: '일일 보고서', quality: '검사 기록', revs: '수정 이력', idocs: '사내 문서' };
 const btn = 'h-11 rounded-md border border-slate-300 bg-white px-3 text-[14px] font-semibold hover:bg-slate-50';
 
 export default function App() {
@@ -206,23 +214,12 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
   const [menu, setMenu] = useState(false);
   const [demo, setDemo] = useState(false);
   const [setOpen, setSetOpen] = useState(false);
-  const [panelOpen, setPanelOpen] = useState(true);
+  const [acct, setAcct] = useState(false);
   const [side, setSide] = useState<EveTab | null>(null);
   const closeSide = useCallback(() => setSide(null), []);
   const [source, setSource] = useState<[string, string] | null>(null);
   const [toastMsg, setToast] = useState('');
   const toast = useCallback((m: string) => { setToast(m); setTimeout(() => setToast(''), 4500); }, []);
-
-  // 현장 보기 자동 복귀 (SCR-26 — 시간 [선택 필요: 기술 회의], 화면 설정에서 바꿈)
-  const lastAct = useRef(Date.now());
-  useEffect(() => {
-    const touch = () => { lastAct.current = Date.now(); };
-    window.addEventListener('pointerdown', touch); window.addEventListener('keydown', touch);
-    const t = setInterval(() => {
-      if (role === 'OPR' && screen !== 'field' && settings.autoReturnSec > 0 && Date.now() - lastAct.current > settings.autoReturnSec * 1000) { setScreen('field'); setSide(null); }
-    }, 2000);
-    return () => { window.removeEventListener('pointerdown', touch); window.removeEventListener('keydown', touch); clearInterval(t); };
-  }, [role, screen, settings.autoReturnSec]);
 
   // ---------- 문서 열기 ----------
   const openCard = (id: string) => { setAcked((s) => ({ ...s, [user.id]: [...(s[user.id] ?? []), id] })); go('card', id); };
@@ -262,7 +259,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
     markAlert: (ids, by) => setHandledA((h) => ({ ...h, ...Object.fromEntries(ids.map((i) => [i, { by, ts: Date.now() }])) })),
     screen, key, go, back, openCard, openWo, openRecord, openSimple: (id, kind) => openSimple(id, kind ?? 'alarm'),
     openSource: (doc, sec) => setSource([doc, sec]), openReplay: (at) => go('replay', at),
-    selectMachine: (m) => { api3d()?.select(m); setSnapSel(m); }, selected: snapSel,
+    selectMachine: (m) => { if (m) api3d()?.select(m); else api3d()?.setView('front'); setSnapSel(m); }, selected: snapSel,
     toast, settings, setSettings,
     inv: invF.data, reloadInv: invF.reload, history: hist.data, pm: pmF.data, reloadPm: pmF.reload,
     shiftReports: shiftF.data?.reports ?? null, dailyReports: dailyF.data?.reports ?? null, reloadReports: () => { shiftF.reload(); dailyF.reload(); },
@@ -292,9 +289,8 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
   const pxMM = (settings.monitorInch * 25.4 * 0.8716) / (typeof window !== 'undefined' ? window.screen.width || 1920 : 1920);
   const bigPx = Math.round((settings.distanceM * 1000 * 0.0058) / pxMM);
   const bodyPx = Math.round((settings.distanceM * 1000 * 0.00465) / pxMM);
-  // 하단 패널: 펼침 = 윗줄 지표 + 아래 3칸, 접기 = 윗줄 지표만 (172px)
-  // 현장 보기 = 설비 하나만 낮게 (3D를 크게 — SCR-26)
-  const style: Record<string, string> = { '--panelH': screen === 'field' ? '260px' : panelOpen ? 'clamp(420px,50vh,620px)' : '173px' };
+  // 하단: 생산현황 · 작업지시 (v3 3장). 현장 모니터 = 설비 하나만 낮게 (3D를 크게)
+  const style: Record<string, string> = { '--panelH': screen === 'field' ? '260px' : 'clamp(300px,38vh,440px)' };
   if (settings.fontScale) { style['--fs-big'] = `${bigPx}px`; style['--fs-body'] = `${bodyPx}px`; }
   const show3D = screen === 'line' || screen === 'field' || screen === 'replay';
   const fieldSel = screen === 'field' && !!snapSel;
@@ -304,40 +300,47 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
   return (
     <Ctx.Provider value={ctx}>
       <div className={`flex h-screen flex-col bg-[#e9ecef] text-[#26303a] ${settings.fontScale ? 'fs-scaled' : ''}`} style={style as React.CSSProperties}>
-        {/* 상단 바 [1]~[4],[7],[8],[14] */}
-        <header className="relative z-20 flex h-[52px] shrink-0 items-center gap-2 border-b border-slate-300 bg-white px-3">
-          <button onClick={() => setMenu((m) => !m)} className={btn} aria-label="메뉴">≡ 메뉴</button>
-          {screen !== 'line' && <h1 className="truncate text-[16px] font-bold">{TITLE[screen]}</h1>}
-          {/* 교대 이름 + 시연 날짜·시각 (크게) */}
+        {/* 상단 바 (페이지구조 v3 3장): 왼쪽 [≡][주간][날짜][시각] · 오른쪽 계정 [이름 ▾] [시연] [⚙ 화면 설정] */}
+        <header className="relative z-20 flex h-[56px] shrink-0 items-center gap-3 border-b border-slate-300 bg-white px-3">
+          <button onClick={() => setMenu((m) => !m)} className={btn} aria-label="메뉴">≡</button>
           <span className={`flex items-baseline gap-2 whitespace-nowrap ${connected ? 'text-[#1f2933]' : 'text-slate-400'}`}>
             {twin ? (<>
-              <span className="rounded bg-slate-100 px-2 py-0.5 text-[14px] font-semibold text-slate-600">{SHIFT_NAME[twin.shift.shift_type]}</span>
+              <span className="rounded-md bg-slate-100 px-2 py-0.5 text-[14px] font-semibold text-slate-600">{twin.clock.sim_at >= twin.shift.end_at ? '휴무' : SHIFT_NAME[twin.shift.shift_type]}</span>
               <b className="font-mono text-[22px] tabular-nums">{md(twin.clock.sim_at)}</b>
               <b className="font-mono text-[26px] tabular-nums">{twin.clock.sim_at.slice(11, 16)}</b>
             </>) : <b className="font-mono text-[22px]">--:--</b>}
           </span>
-          {twin && <span className="whitespace-nowrap rounded bg-slate-100 px-2 py-1 text-[12px] font-bold text-slate-600">시연 ×{twin.clock.speed}{twin.clock.paused ? ' · ⏸ 일시정지' : ''}{twin.clock.running_event ? ` · 사건 ${twin.clock.running_event}` : ''}</span>}
           <div className="relative ml-auto">
-            <button onClick={() => { setSetOpen((s) => !s); setDemo(false); }} className={btn}>화면 설정</button>
-            {setOpen && <SettingsPopover settings={settings} setSettings={setSettings} api3d={api3d} bigPx={bigPx} bodyPx={bodyPx} />}
+            <button onClick={() => { setAcct((o) => !o); setDemo(false); setSetOpen(false); }} className={`${btn} flex items-center gap-1`}>
+              <span className="font-normal text-slate-500">계정 :</span> {user.name} <span className="text-slate-400">▾</span>
+            </button>
+            {acct && (
+              <div className="absolute right-0 top-[48px] z-30 max-h-[70vh] w-[220px] overflow-y-auto rounded-xl border border-slate-300 bg-white py-1 shadow-lg">
+                {USERS.map((u) => <button key={u.id} onClick={() => { setAcct(false); setUser(u); }} className={`flex h-11 w-full items-center px-4 text-left text-[14px] hover:bg-slate-100 ${u.id === user.id ? 'font-bold text-[#0f6f86]' : ''}`}>{u.name}</button>)}
+                <button onClick={() => setUser(null)} className="flex h-11 w-full items-center border-t border-slate-200 px-4 text-left text-[14px] text-slate-500 hover:bg-slate-100">로그아웃</button>
+              </div>
+            )}
           </div>
           <div className="relative">
-            <button onClick={() => { setDemo((d) => !d); setSetOpen(false); }} className={btn}>시연 ▾</button>
+            <button onClick={() => { setDemo((d) => !d); setSetOpen(false); setAcct(false); }} className={btn}>시연</button>
             {demo && <SimPanel twin={twin} refresh={live.refresh} toast={toast} api3d={api3d} onClose={() => setDemo(false)} />}
           </div>
-          <button onClick={() => setUser(null)} title="누르면 로그아웃" className="whitespace-nowrap text-[13px] font-semibold hover:underline">
-            {ROLE_NAME[role]}({role}) {user.name}{user.procs.length ? ` · ${user.procs.join('·')}` : ''}
-          </button>
+          <div className="relative">
+            <button onClick={() => { setSetOpen((o) => !o); setDemo(false); setAcct(false); }} className={`${btn} px-3`} aria-label="화면 설정" title="화면 설정">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" /></svg>
+            </button>
+            {setOpen && <SettingsPopover settings={settings} setSettings={setSettings} api3d={api3d} bigPx={bigPx} bodyPx={bodyPx} />}
+          </div>
         </header>
 
         {menu && (
-          <nav className="absolute left-0 top-[52px] z-30 w-[250px] border-r border-slate-300 bg-white py-2 shadow-lg">
-            {MENU.filter((m) => m[ROLE_COL[role]] !== '—').map((m) => {
-              const s: Screen = m[0].startsWith('홈') ? homeScreen(role) : MENU_SCREEN[m[0]];
+          <nav className="absolute left-2 top-[60px] z-30 w-[240px] rounded-xl border border-slate-300 bg-white py-2 shadow-lg">
+            {MENU_V3.map(([name, s2, roles]) => {
+              const ok = !roles || roles.includes(role);
+              const target: Screen = s2 === 'home' ? homeScreen(role) : s2;
               return (
-                <button key={m[0]} onClick={() => { go(s); setMenu(false); }} className="flex h-11 w-full items-center justify-between px-4 text-left text-[14px] font-bold hover:bg-slate-100">
-                  <span>{m[0]}</span><span className="text-[11px] font-normal text-slate-500">{m[ROLE_COL[role]]}</span>
-                </button>
+                <button key={name} disabled={!ok} onClick={() => { go(target); setMenu(false); }} title={ok ? undefined : '이 계정은 볼 수 없습니다'}
+                  className="flex h-11 w-full items-center px-4 text-left text-[15px] font-semibold hover:bg-slate-100 disabled:cursor-not-allowed disabled:text-slate-300 disabled:hover:bg-transparent">{name}</button>
               );
             })}
           </nav>
@@ -356,6 +359,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
           </button>
         )}
 
+        {screen !== 'line' && screen !== 'layout2d' && screen !== 'docs' && !DOC_OF[screen] && <div className="flex h-11 shrink-0 items-center border-b border-slate-200 bg-white px-4 text-[17px] font-bold">{TITLE[screen]}</div>}
         <div className={`relative min-h-0 flex-1 overflow-hidden ${connected ? '' : 'grayscale-[0.6]'}`}>
           <div className="absolute" style={{ ...stagePos, visibility: show3D ? 'visible' : 'hidden', pointerEvents: show3D ? 'auto' : 'none' }}>
             <FactoryDashboard embedded dataMode layout={LAYOUT} quality="자동" introOnLoad={false} showCards={settings.cards} alarmText={alarmText} cardText={cardText}
@@ -381,25 +385,43 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
 
           {screen === 'layout2d' && <Layout2D />}
           {(screen === 'line' || screen === 'layout2d' || fieldSel) && (
-            <div className={`absolute bottom-0 left-0 ${screen === 'field' ? 'right-[360px]' : 'right-0'} h-[var(--panelH)] border-t border-slate-300`}><Panels open={panelOpen} onToggle={() => setPanelOpen((o) => !o)} field={screen === 'field'} /></div>
+            <div className={`absolute bottom-0 left-0 ${screen === 'field' ? 'right-[360px]' : 'right-0'} h-[var(--panelH)] border-t border-slate-300`}><Panels field={screen === 'field'} /></div>
           )}
           {screen === 'field' && <div className="absolute bottom-0 right-0 top-0 w-[360px]"><FieldStrip onBriefing={() => { setSeenBrief((s) => ({ ...s, [user.id]: twin?.shift.shift_id ?? '' })); setSide('브리핑'); }} /></div>}
           {screen === 'replay' && <ReplayScreen />}
+          {screen === 'cards' && <CardList />}
           {screen === 'card' && key && <CardScreen alertId={key} />}
-          {screen === 'wo' && key && <WorkOrderScreen no={key} />}
-          {screen === 'wr' && key && <WorkRecordScreen woNo={key} />}
-          {screen === 'sr' && key && <SimpleRecordScreen no={key} />}
+          {(screen === 'docs' || DOC_OF[screen]) && (() => {
+            const cur = screen === 'docs' ? (key ?? '작업지시서') : DOC_OF[screen];
+            return (
+              <div className="absolute inset-0 flex bg-[#e9ecef]">
+                <aside className="flex w-[200px] shrink-0 flex-col gap-1 overflow-y-auto border-r border-slate-300 bg-white p-2">
+                  <b className="px-2 py-2 text-[17px]">문서함</b>
+                  {DOC_CATS.map(([name, s2, k2, roles]) => {
+                    const ok = !roles || roles.includes(role);
+                    return <button key={name} disabled={!ok} onClick={() => go(s2, k2)} title={ok ? undefined : '이 계정은 볼 수 없습니다'}
+                      className={`h-11 rounded-lg px-3 text-left text-[15px] font-semibold disabled:cursor-not-allowed disabled:text-slate-300 ${cur === name ? 'bg-[#e8f6fa] text-[#0f6f86]' : 'hover:bg-slate-100'}`}>{name}</button>;
+                  })}
+                </aside>
+                <div className="relative min-w-0 flex-1">
+                  {screen === 'docs' && <DocBox />}
+                  {screen === 'wo' && key && <WorkOrderScreen no={key} />}
+                  {screen === 'wr' && key && <WorkRecordScreen woNo={key} />}
+                  {screen === 'sr' && key && <SimpleRecordScreen no={key} />}
+                  {screen === 'shift' && <ShiftReportScreen />}
+                  {screen === 'daily' && <DailyReportScreen />}
+                  {screen === 'quality' && <QualityScreen />}
+                  {screen === 'revs' && <RevisionsScreen />}
+                  {screen === 'idocs' && <DocsScreen />}
+                </div>
+              </div>
+            );
+          })()}
           {screen === 'stops' && <StopsScreen />}
-          {screen === 'docs' && <DocBox />}
-          {screen === 'shift' && <ShiftReportScreen />}
-          {screen === 'daily' && <DailyReportScreen />}
-          {screen === 'revs' && <RevisionsScreen />}
           {screen === 'lots' && <LotScreen />}
-          {screen === 'quality' && <QualityScreen />}
           {screen === 'inventory' && <InventoryScreen />}
           {screen === 'tools' && <ToolsScreen />}
           {screen === 'pm' && <PmScreen />}
-          {screen === 'idocs' && <DocsScreen />}
           {screen === 'settings' && <SettingsScreen />}
         </div>
 
@@ -435,8 +457,7 @@ function SettingsPopover({ settings, setSettings, api3d, bigPx, bodyPx }: { sett
       <div className="mt-2 border-t border-slate-200 pt-2 font-bold">글자 크기 (2.4 계산식 H = D × 0.0058)</div>
       <div className="flex items-center gap-2">모니터 <input type="number" value={settings.monitorInch} onChange={(e) => S('monitorInch', Number(e.target.value) || 55)} className="h-11 w-16 rounded border border-slate-300 px-2" />인치 · 거리 <input type="number" step="0.5" value={settings.distanceM} onChange={(e) => S('distanceM', Number(e.target.value) || 3)} className="h-11 w-16 rounded border border-slate-300 px-2" />m</div>
       <p className="text-[12px] text-slate-500">계산: 큰 숫자 {bigPx}px · 본문 {bodyPx}px (16:9 화면 가정). 값은 [선택 필요: 기술 회의] — 실제 장치에서 자로 재 확인</p>
-      <label className="flex min-h-[44px] items-center gap-2"><input type="checkbox" className="h-5 w-5" checked={settings.fontScale} onChange={() => S('fontScale', !settings.fontScale)} /> 계산한 크기로 현장 보기 글자 키우기</label>
-      <div className="flex items-center gap-2">현장 보기 자동 복귀 <input type="number" value={settings.autoReturnSec} onChange={(e) => S('autoReturnSec', Number(e.target.value) || 0)} className="h-11 w-20 rounded border border-slate-300 px-2" />초 <span className="text-[11px] text-slate-500">(OPR, 0 = 끔 · [가상])</span></div>
+      <label className="flex min-h-[44px] items-center gap-2"><input type="checkbox" className="h-5 w-5" checked={settings.fontScale} onChange={() => S('fontScale', !settings.fontScale)} /> 계산한 크기로 현장 모니터 글자 키우기</label>
     </div>
   );
 }
