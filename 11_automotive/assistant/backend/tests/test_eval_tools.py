@@ -300,7 +300,10 @@ def test_claude_modes_differ_from_step20_only_in_provider_model_and_time():
     assert set(names) >= {"claude-opus", "claude-sonnet", "claude-haiku"}
     for m in names:
         env = RE.MODES[m]
-        assert {k for k in env if env[k] != s20[k]} <= allowed and env["LLM_PROVIDER"] == "claude"
+        # 2026-10-15 OBLIGE_CHECK 실험: 복사본 전용 모드 claude-sonnet-med-obl0은 스위치 OBLIGE_CHECK 하나만 더 다르다
+        # (원래 가정은 "claude-* 모드는 공급자·모델·시간만 다르다"였다 — 새 모드가 일부러 깬 가정, 코드 결함 아님. test_oblige_check.py가 이 모드의 차이를 따로 못 박는다)
+        extra = {"OBLIGE_CHECK"} if m == "claude-sonnet-med-obl0" else set()
+        assert {k for k in env if env[k] != s20[k]} <= allowed | extra and env["LLM_PROVIDER"] == "claude"
         assert env["MOM_CLAUDE_MODEL"] in {"claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-5-5"}
     assert RE.MODES["claude-opus"]["MOM_CLAUDE_MODEL"] != RE.MODES["claude-haiku"]["MOM_CLAUDE_MODEL"]
     assert RE._BASE["MOM_CLAUDE_VIA"] == "cli" and not any(k.startswith(("CLAUDE", "ANTHROPIC")) for env in RE.MODES.values() for k in env)

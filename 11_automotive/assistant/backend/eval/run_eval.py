@@ -76,7 +76,11 @@ _BASE = {"LLM_ENABLED": "0", "LLM_JOBS": "", "RETRIEVAL": "bm25",
          # 번호 붙은 절차 표 채우기 (2026-10-15): 평가 기본은 끔 — 평가 모드를 따로 만들지 않았다(판정 보류)
          "TABLE_FILL_V18": "0",
          # 단계별 로그 (2026-10-15): 평가는 늘 끔 (로그는 앱 .env에서만 켜고, 평가가 로그 폴더에 쓰지 않게)
-         "STEP_LOG": "0"}
+         "STEP_LOG": "0",
+         # "해야 할 일 꼴" 코드 검사 끄기 실험 (2026-10-15): 기본은 켜짐(= 지금 동작). 끄는 모드는 claude-sonnet-med-obl0 하나뿐
+         "OBLIGE_CHECK": "1",
+         # 순수 외부 LLM 연결 (2026-10-15): 평가는 늘 끔 (이 길은 외부 Claude를 고른 요청 단위라 평가 도구가 켤 길이 없다)
+         "PURE_EXTERNAL": "0", "PURE_KEEP_SIGNALS": "0", "PURE_TOPK": "8", "PURE_STYLE": "0", "PURE_LAYOUT": "0"}
 
 
 def _m(**kw):
@@ -201,6 +205,9 @@ MODES.update({
     "claude-haiku": _m(**_STEP20, **_CLAUDE, MOM_CLAUDE_MODEL="claude-haiku-5-5"),
     "claude-opus-med": _m(**_STEP20, **_CLAUDE, MOM_CLAUDE_MODEL="claude-opus-5-5", MOM_CLAUDE_EFFORT="medium"),   # 선택: 생각 깊이 영향
 })
+# "해야 할 일 꼴" 코드 검사 끄기 실험 (2026-10-15, 시험용 복사본에서만 평가): 두 모드의 차이는 OBLIGE_CHECK 하나뿐
+MODES["claude-sonnet-med"] = _m(**_STEP20, **_CLAUDE, MOM_CLAUDE_MODEL="claude-sonnet-5-5", MOM_CLAUDE_EFFORT="medium", OBLIGE_CHECK="1")
+MODES["claude-sonnet-med-obl0"] = _m(**_STEP20, **_CLAUDE, MOM_CLAUDE_MODEL="claude-sonnet-5-5", MOM_CLAUDE_EFFORT="medium", OBLIGE_CHECK="0")
 ABSTAIN = ("문서에 없음", "근거 없음", "확인 필요")
 UNANSWERABLE = ("none", "insufficient")
 ANSWERABLE = ("doc", "ops", "mixed")

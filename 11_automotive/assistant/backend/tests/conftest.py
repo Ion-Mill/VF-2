@@ -87,5 +87,11 @@ def _llm_off(monkeypatch, tmp_path):
     monkeypatch.setenv("WRITE_TITLES", "0")
     monkeypatch.setenv("WRITE_RULES_V17", "0")   # 새 글 규칙 정밀도 (2026-10-14)
     monkeypatch.setenv("ANSWER_GATE_V17", "0")   # 답 문지기: 문서 길 부품번호·기본값 + 낱말 겹침 문턱 0.1 (2026-10-14)
+    monkeypatch.setenv("OBLIGE_CHECK", "1")      # "해야 할 일 꼴" 검사 끄기 실험 (2026-10-15): 시험 기본은 켜짐(지금 동작) — 끄는 시험은 안에서 명시
+    monkeypatch.setenv("PURE_EXTERNAL", "0")     # 순수 외부 LLM 연결 (2026-10-15): 시험 기본은 꺼짐(지금 동작) — 켜는 시험은 안에서 명시
+    monkeypatch.setenv("PURE_KEEP_SIGNALS", "0")
+    monkeypatch.setenv("PURE_TOPK", "8")
+    monkeypatch.setenv("PURE_STYLE", "0")        # 순수 길 말투 바꾸기 (2026-10-15): 시험 기본은 꺼짐(지금 말투) — 켜는 시험은 안에서 명시
+    monkeypatch.setenv("PURE_LAYOUT", "0")       # 순수 길 묶음 목록 형식 (2026-10-16): 시험 기본은 꺼짐(PURE_STYLE=1의 지금 형식) — 켜는 시험은 안에서 명시
     for _k in ("MOM_EXTERNAL_LLM_OK", "ANTHROPIC_API_KEY", "MOM_USAGE_LEDGER"):
         monkeypatch.delenv(_k, raising=False)

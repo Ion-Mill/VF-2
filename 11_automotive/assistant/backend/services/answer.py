@@ -23,6 +23,7 @@ from backend.rag.search import search, synonyms, tokens
 from backend.repositories.csv_repo import get_repo
 from backend.services import blocks_v2 as BL2
 from backend.services import followup_v2 as FU2
+from backend.services import pure_external as PURE   # 순수 외부 LLM 연결 (2026-10-15, PURE_EXTERNAL — 시험용 복사본 전용)
 from backend.services import steplog as SL
 from backend.services.routing import DOC_WORDS, Route, decide_route
 from backend.tools import query_tools as T
@@ -1997,7 +1998,8 @@ JOB_KO = {"select": "줄 고르기", "write": "문장 다듬기", "route": "질�
           "pick": "짧게 고르기",   # 이어 묻기 2판 (7차)
           "write_answer": "답 쓰기", "answer_faith": "쓴 답 검사",   # 10차 DOC_WRITE (2026-10-13)
           "lead_faith": "앞머리 검사",   # 10차 보강 LEAD_V12 (2026-10-14)
-          "safe_simplify": "점검 순서를 쉬운 말로 다시 쓰기"}   # 안전 영역 새로쓰기 (2026-10-14)
+          "safe_simplify": "점검 순서를 쉬운 말로 다시 쓰기",   # 안전 영역 새로쓰기 (2026-10-14)
+          "pure_answer": "순수 연결 답 (검사 없음)"}   # 순수 외부 LLM 연결 (2026-10-15)
 
 
 LLM_SAID_NO_V10 = ("답할 줄 없음", "답 못 함")
@@ -2173,6 +2175,8 @@ def _route_skip_reason(question: str, p: dict, s) -> str:
         return "절차 질문 — 규칙이 처리"
     if any(w in question for w in SAFETY_WORDS):
         return "안전 낱말 질문 — 규칙이 처리"
+    if PURE.enabled(s):
+        return "순수 외부 LLM — 분류 LLM을 부르지 않음 (PURE_KEEP_SIGNALS=1: 규칙 신호가 있어 규칙 길로 처리)"
     return "알 수 없음"
 
 
@@ -2959,6 +2963,125 @@ def answer_blocks(parts: list[str], ops_final: str | None, doc_lines: list[str],
     return out if rebuilt == conclusion else [{"kind": "text", "text": conclusion}]
 
 
+# ---------------------------------------------------------------- 순수 외부 LLM 연결 (PURE_EXTERNAL, 2026-10-15 — 시험용 복사본 전용, research_notes/순수외부LLM_연결_20261015.md)
+# 문서 질문 답 = 낱말 검색 상위 조각(PURE_TOPK) + 질문 → 외부 Claude 1번 → 그 답을 그대로 보인다. 줄 고르기·따로 검증·새 글 검사(코드 검사·안전 엄격 검사·뜻 판정·재시도)·
+# 낱말 겹침·답 종류 검사·표 채우기·분류 LLM은 이 길에서 부르지 않는다(코드는 그대로 두고 건너뛴다). 프로그램이 하는 일: 검색, 조각 번호 → 출처 변환, 근거 조각의 원문 줄 붙이기,
+# 원문 출처 표기 차단(FORBIDDEN — 저작권 규칙 D-03, 답 내용 검사가 아니다), 고정 주의 문구.
+PURE_MODE_V19 = "순수 연결 (검사 없음, 원문 출처 표기 차단만)"
+PURE_NO_DOC_V19 = "문서에 없음 — 사내 문서(DOC-01~07, 용어집)에서 질문에 답할 근거를 찾지 못해 답을 만들지 않았습니다."
+PURE_CAUTION_SAFETY_V19 = ("근거 안내이며 실행 지시가 아닙니다. 잠금·표지와 고전압 대기는 안전 작업 기준서 DOC-05 고정 서식을 따르고, "
+                           "전기 측정·수리는 자격자/HFO 작업입니다. 현장 담당자 확인이 필요합니다.")
+PURE_CAUTION_V19 = "근거 안내이며 실행 지시가 아닙니다."
+# 말투 바꾸기(PURE_STYLE=1, 2026-10-15): 검색 결과가 없어 Claude를 부르지 않을 때의 짧은 해요체 문구 (끔이면 위 PURE_NO_DOC_V19 그대로). 끝 안전 문구는 두 말투 모두 위 상수 그대로다
+PURE_NO_DOC_CHAT_V19 = "사내 문서에서 관련 내용을 찾지 못했어요. 쓰신 낱말을 바꿔서 다시 물어봐 주세요."
+
+
+def pure_scope_v19(p: dict, s) -> str | None:
+    """이 질문이 순수 외부 LLM 길로 가나 — 가는 까닭 글, 아니면 None. (권한·화면 설명·위험한 부탁·불량 원인·이어 묻기는 이 함수보다 앞에서 이미 처리됐다.)
+    PURE_KEEP_SIGNALS=0(기본): 알람 번호·날짜·설비·운영 낱말 신호가 있어도 전부 순수 길.
+    PURE_KEEP_SIGNALS=1: 규칙이 그 신호를 하나라도 찾은 질문은 기존 길(알람 카드·운영 조회) 그대로, 하나도 못 찾은 질문만 순수 길."""
+    if not PURE.enabled(s):
+        return None
+    if not s.pure_keep_signals:
+        return "신호 끔(PURE_KEEP_SIGNALS=0) — 알람 번호·날짜·설비·운영 낱말 길을 거치지 않고 순수 길로"
+    if PURE.has_signals(p):
+        return None
+    return "규칙이 알람 번호·설비·날짜·운영 낱말을 하나도 못 찾은 질문 (PURE_KEEP_SIGNALS=1)"
+
+
+def _pure_layout_blocks_v20(sections: list[dict], written: bool) -> list[dict]:
+    """묶음 목록 형식(PURE_LAYOUT=1)의 화면 블록: 묶음 순서대로 — title이 있으면 소제목(section), items가 있으면 머리(text, 비면 "") + 번호 목록(ops),
+    items가 없고 text가 있으면 한 문장 본문(text). 전체에서 맨 처음 나오는 한 문장 본문 하나만 lead(근거 조각이 있으면 written)다. 원문 줄 블록은 부른 쪽이 뒤에 붙인다."""
+    blocks: list[dict] = []
+    lead_done = False
+    for sec in sections:
+        if sec["title"]:
+            blocks.append({"kind": "section", "text": sec["title"]})
+        if sec["items"]:
+            blocks.append({"kind": "ops", "head": sec["text"], "items": list(sec["items"]), "source": None})
+        elif sec["text"]:
+            if lead_done:
+                blocks.append({"kind": "text", "text": sec["text"]})
+            else:
+                blocks.append({"kind": "lead", "text": sec["text"], **({"written": True} if written else {})})
+                lead_done = True
+    return blocks
+
+
+def _pure_answer_v19(question: str, p: dict, base: dict, s, memo: dict, prev: dict | None, why: str) -> dict:
+    """순수 외부 LLM 길의 답. 외부 호출이 실패하면 ExternalLlmFailure가 그대로 올라가 앱 입구가 EXTERNAL_LLM_UNAVAILABLE로 끝낸다 (자동 대체 없음)."""
+    k = s.pure_topk
+    style = bool(s.pure_style)   # 말투 바꾸기 (PURE_STYLE=1): 지시문·스키마·응답 조립만 다르다. 끄면 아래 모든 줄이 지금과 같다
+    layout = style and bool(s.pure_layout)   # 묶음 목록 형식 (PURE_LAYOUT=1, PURE_STYLE=1일 때만): 답을 sections로 받아 묶음마다 블록 하나씩. 끄면 PURE_STYLE=1의 지금 조립 그대로
+    hits = PURE.retrieve(question, k)
+    chunks = [c for _, c in hits]
+    mode = f"{s.llm_label} · {PURE_MODE_V19}"
+    traces: list[dict] = []
+    retrieval = {"mode": "bm25", "dense_used": False, "reason": None, "pure": True, "top_k": k, "chunk_ids": [c.chunk_id for c in chunks]}
+    base = {**base, "route": {"kind": "doc", "source": "순수 외부 LLM (분류 LLM 없음)"}}
+    memo.update(ops_texts=[], procedure=is_procedure(question), future=False, doc_lines=[], doc_cites=[], doc_lead="", doc_written="")
+    if SL.on():   # STEP_LOG: 순수 길로 간 까닭 · 분류 LLM 생략 · 찾은 조각 (읽기만 한다)
+        SL.step("1 규칙 판정", 결과="순수 외부 LLM 길", 까닭=why, 앞답있음=prev is not None)
+        SL.step("2 질문 분류", 사용=False, 까닭="순수 외부 LLM — 분류 LLM을 부르지 않음")
+        SL.step("3 찾기", 길="순수 외부 LLM", 질문=question, 방식="낱말 검색(BM25) — 원래 질문 그대로, 문턱·문지기·순위 바꾸기 없음", 요청조각수=k,
+                조각수=len(chunks), 상위=[{**_sl_chunk(c), "점수": round(sc, 2), "글자수": len(c.text)} for sc, c in hits])
+    if not chunks:   # 찾은 조각이 하나도 없으면 Claude를 부르지 않는다 — 호출 0번이라 화면이 "외부 LLM 호출 없음"이라고 사실대로 밝힌다
+        if SL.on():
+            SL.step("종료 사유", 결과="답 없음", 까닭="낱말 검색 결과가 없어 Claude를 부르지 않음")
+        return {**base, "status": "문서에 없음", "mode": f"{mode} — 검색 결과가 없어 Claude를 부르지 않음", "retrieval": retrieval,
+                "llm_trace": traces, "conclusion": PURE_NO_DOC_CHAT_V19 if style else PURE_NO_DOC_V19}
+    got = PURE.ask(question, chunks, prev, s)
+    traces.append({"job": PURE.JOB, "used": True, "reason": None, "tries": 1, "ms": got["ms"]})
+    cited, dropped = PURE.resolve_cites(got["cited_raw"], chunks)
+    if SL.on():   # STEP_LOG: Claude가 낸 답·인용 번호·"문서에 없음" 판단, 그리고 번호 → 출처 변환 결과 (모델이 쓴 출처 글자는 쓰지 않고 버린다)
+        SL.step("순수 호출 결과", 보낸글자수=got["sent_chars"], ms=got["ms"], 충분하지않음=got["insufficient"], 답=got["answer"], 받은인용=got["cited_raw"])
+        SL.step("출처 변환", 변환=[c.cite for c in cited], 버린항목=dropped)
+        if layout:   # STEP_LOG: 묶음 목록 형식 켬일 때만 — 받은 묶음 짜임 (읽기만 한다)
+            secs = got["sections"]
+            SL.step("순수 짜임", 말투바꾸기=True, 배치="묶음", 묶음수=len(secs), 소제목수=sum(1 for x in secs if x["title"]),
+                    목록항목수=[len(x["items"]) for x in secs], 충분하지않음=got["insufficient"])
+        elif style:   # STEP_LOG: 말투 바꾸기 켬일 때만 — 받은 짜임 (읽기만 한다. 끔이면 이 줄은 없다)
+            SL.step("순수 짜임", 말투바꾸기=True, 항목수=len(got["points"]), 마무리있음=bool(got["closing"]), 머리글자수=len(got["opening"]), 충분하지않음=got["insufficient"])
+    if got["insufficient"]:   # Claude가 "조각에 답이 없다"고 했다 — 지금 앱의 "문서에 없음" 응답 모양
+        if not style:
+            return {**base, "status": "문서에 없음", "mode": mode, "retrieval": retrieval, "llm_trace": traces, "conclusion": PURE_NO_DOC_V19}
+        # 말투 바꾸기: 고정 문구 대신 Claude가 쓴 이유와 다음 방법(opening — 묶음 형식에서는 모든 묶음 text를 이은 글)을 보인다. 상태 "문서에 없음"·근거·블록 없음은 그대로. 원문 출처 표기는 여기서도 막는다(D-03)
+        ins_text = got["answer"] if layout else got["opening"]
+        if FORBIDDEN.search(ins_text):
+            return {**base, "status": "확인 필요", "mode": mode, "retrieval": retrieval, "llm_trace": traces,
+                    "conclusion": "확인 필요 — 답에 원문 출처 표기가 섞여 내보내지 않았습니다."}
+        return {**base, "status": "문서에 없음", "mode": mode, "retrieval": retrieval, "llm_trace": traces, "conclusion": ins_text}
+    evidence = [_cite(c) for c in cited]
+    orig_lines: list[str] = []
+    line_cites: list[dict] = []
+    for c in cited:   # 근거 조각의 줄들 — 화면이 [원문 보기]로 접는다 (DOC_WRITE 새 글과 같은 응답 모양: lead.written + line.orig)
+        for ln in plain_lines(c):
+            orig_lines.append(ln)
+            line_cites.append(_line_cite(c))
+    memo.update(doc_lines=list(orig_lines), doc_cites=list(line_cites), doc_lead="", doc_written=got["answer"] if cited else "")   # doc_lead는 비운다: 검사를 안 지난 글을 "검사 지난 앞머리"로 이어 묻기가 다시 쓰지 않게
+    if layout:   # 묶음 목록 형식: 묶음 순서대로 소제목(section) · 머리 + 번호 목록(ops) · 한 문장(text, 맨 처음 문단 하나만 lead) — 화면은 이미 이 칸들을 그린다
+        blocks = _pure_layout_blocks_v20(got["sections"], bool(cited))
+    elif style:   # 말투 바꾸기: 항목이 있으면 머리 + 번호 목록(ops), 없으면 본문 한 칸(lead), 마무리가 있으면 그 아래 본문(text) — 화면은 이미 이 칸들을 그린다
+        blocks = ([{"kind": "ops", "head": got["opening"], "items": list(got["points"]), "source": None}] if got["points"]
+                  else [{"kind": "lead", "text": got["opening"], **({"written": True} if cited else {})}])
+        if got["closing"]:
+            blocks.append({"kind": "text", "text": got["closing"]})
+    else:
+        blocks = [{"kind": "lead", "text": got["answer"], **({"written": True} if cited else {})}]
+    blocks += [{**BL2.doc_line(x, cite), "orig": True} for x, cite in zip(orig_lines, line_cites)]
+    safety = any(w in (question + " ".join(e["title"] + e["snippet"] for e in evidence)) for w in SAFETY_WORDS)
+    caution = PURE_CAUTION_SAFETY_V19 if safety else (PURE_CAUTION_V19 if evidence else None)
+    out = {**base, "status": "답변", "conclusion": got["answer"], "evidence": evidence, "caution": caution,
+           "mode": mode if cited else f"{mode} · 근거 조각 번호 없음", "llm_trace": traces, "retrieval": retrieval, "blocks": blocks}
+    if cited:
+        out["written"] = True   # 화면 꼬리표 "AI가 문서를 보고 쓴 답 · 원문 아래" + 원문 줄 접기
+    blob = " ".join(str(v) for v in (out["conclusion"], out["steps"], out["evidence"], out["related"], out["caution"]))
+    if FORBIDDEN.search(blob):   # 원문 출처가 새어 나가면 내보내지 않는다 (D-03) — 답 내용 검사가 아니라 저작권 차단
+        return {**base, "status": "확인 필요", "mode": mode, "retrieval": retrieval, "llm_trace": traces,
+                "conclusion": "확인 필요 — 답에 원문 출처 표기가 섞여 내보내지 않았습니다."}
+    return out
+
+
 def _final_step_log(a: dict, memo: dict) -> dict:
     """STEP_LOG "12 최종" — 화면에 나간 것: 상태·꼬리표(mode)·보인 문서 줄(전문)·새로 쓴 답·출처·LLM 기록(llm_trace). 읽기만 한다."""
     tags = [a.get("mode")]
@@ -3019,9 +3142,12 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
     s = settings()
     p = parse(question)
     p["raw"] = question
+    pure_drop = PURE.drops_signals(s)   # 순수 외부 LLM (PURE_EXTERNAL=1 + 외부 요청 + PURE_KEEP_SIGNALS=0): 알람·날짜·설비·운영 길을 끈다
     # 지금 화면의 알람 (SCR-10 [1]): 질문에 알람 번호도 운영 질문도 없으면 화면의 알람을 질문 배경으로 쓴다
     ctx_alarm = (context.get("alarm_key") or "").strip()
-    if not p["alarms"] and ctx_alarm:
+    if pure_drop:   # 순수 방식: 화면 알람 맥락으로 알람을 정하지 않는다 (이어 묻기 감지가 보는 ctx_alarm은 그대로 둔다)
+        pass
+    elif not p["alarms"] and ctx_alarm:
         if s.parse_v2:  # "이 알람·이거"는 운영 낱말이 있어도 화면 알람으로 먼저 푼다 (2026-10-10: "이 알람 몇 번 났어?" → 문서에 없음이던 버그)
             use_ctx = re.search(r"이 알람|이 경보|이거|이것", question) or (not p["intents"] and re.search(r"뭐부터|먼저|점검|원인|안전", question))
         else:
@@ -3076,6 +3202,12 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
             if SL.on():
                 SL.step("1 규칙 판정", 결과="사람만 할 일·조작 요청 — 규칙이 거절·안내", status=guard.get("status"), mode=guard.get("mode"))
             return {**base, **guard}
+
+    # 순수 외부 LLM 연결 (PURE_EXTERNAL, 2026-10-15): 위 단계(권한·화면 설명·위험한 부탁 거절·불량 원인·이어 묻기)에서 걸러지지 않은 질문은
+    # 알람 카드·운영 조회·LLM 질문 분류를 거치지 않고 "낱말 검색 상위 조각 + 질문 → 외부 Claude 1번 → 답 그대로"로 답한다.
+    pure_why = pure_scope_v19(p, s)
+    if pure_why:
+        return _pure_answer_v19(question, p, base, s, memo, prev, pure_why)
 
     traces: list[dict] = []
     retrieval = None
@@ -3138,7 +3270,7 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
             SL.step("안전 새로쓰기", 대상="알람 점검 순서", 새글있음=bool(memo["steps_easy"]), 시도=traces[-1] if traces else None)
     # 질문 분류 (ROUTE_POLICY): llm_*면 LLM이 정해진 메뉴 안에서 주 분류, 규칙은 힌트 (계획 3단계 C)
     route = None
-    if use_llm_route(question, p, s):
+    if use_llm_route(question, p, s) and not PURE.enabled(s):   # 순수 방식에서는 분류 LLM(route)을 부르지 않는다 — PURE_KEEP_SIGNALS=1의 신호 있는 질문은 규칙 분류로(아래 else 길)
         route = decide_route(question, p, s)
         if route.trace:
             traces.append(route.trace)

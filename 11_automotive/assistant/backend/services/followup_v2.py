@@ -639,10 +639,11 @@ def missing_listed_v14(answer: str, question: str) -> str | None:
     return None
 
 
-def check_answer_v11(answer: str, lines: list[str], used_lines: set[int], question: str | None = None) -> str | None:
-    """되채운 답 글 검사 (원문 줄과 견줌). 통과면 None. question을 주면(LEAD_V12) "~해야 한다" 꼴도 본다."""
+def check_answer_v11(answer: str, lines: list[str], used_lines: set[int], question: str | None = None, oblige: bool = True) -> str | None:
+    """되채운 답 글 검사 (원문 줄과 견줌). 통과면 None. question을 주면(LEAD_V12) "~해야 한다" 꼴도 본다.
+    oblige=False (OBLIGE_CHECK=0 실험, 일반 새로 쓰기에서만): "~해야 한다" 꼴 검사 하나만 건너뛴다 — 다른 검사는 그대로."""
     src = " ".join(lines)
-    if question is not None and settings().lead_v12 and oblige_new_v12(answer, src, question):
+    if oblige and question is not None and settings().lead_v12 and oblige_new_v12(answer, src, question):
         return "해야 할 일 꼴 (원문·질문에 없음)"
     if question is not None and possib_new_v17(answer, src, question):   # WRITE_RULES_V17: 뜻 뒤집힘 ("떨어질 수 있으니")
         return "가능성 꼴 (원문·질문에 없음)"
@@ -831,7 +832,8 @@ def write_doc_answer(question: str, lines: list[str], safe: bool = False, titles
             new = tidy_acronym_v11b(new, vals)
         used_lines = {li for i in PH.findall(raw) for li in owner.get(int(i), ())}
         # 질문은 늘 준다 — "~해야 한다"·쓰지 않는 말 검사는 안에서 스위치(lead_v12·term_v13)를 본다 (2026-10-14)
-        why = why or check_answer_v11(new, lines, used_lines, question=question)
+        # OBLIGE_CHECK=0 실험: 일반 새로 쓰기(safe=False)에서만 "해야 할 일 꼴" 검사를 끈다 — 안전 영역 새로쓰기(safe=True)는 켠 채로 둔다
+        why = why or check_answer_v11(new, lines, used_lines, question=question, oblige=(s.oblige_check or safe))
         if not why and safe and new:
             why = check_answer_safe_v15(new, lines, question)   # 안전 영역: 안전 낱말·조건 말 보존 (2026-10-14; V17: 답에 쓴 칸에서만)
         if not why and new and s.parse_v8 and s.term_v13 and ENGLISH_Q_V13.search(question) and not re.search(r"[A-Za-z]", new):

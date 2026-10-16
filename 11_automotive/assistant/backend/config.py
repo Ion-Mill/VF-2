@@ -38,6 +38,14 @@ def _float(v: str, default: float) -> float:
         return default
 
 
+def _int_clamped(v: str, default: int, lo: int, hi: int) -> int:
+    """정수로 읽고 lo~hi로 제한한다. 정수가 아니면 기본값."""
+    try:
+        return max(lo, min(hi, int(str(v).strip())))
+    except ValueError:
+        return default
+
+
 def _dotenv() -> dict[str, str]:
     p = ROOT / ".env"
     out = {}
@@ -130,6 +138,23 @@ class Settings:
     # 번호 붙은 절차 표 채우기 (2026-10-15, 사용자 승인 계획 "전원 켜기 표 1·6번 빠짐"): 문서 답으로 고른 줄이 번호 붙은 절차 표(첫 칸 1·2·3…, 12줄 이하)의
     # 줄이면 같은 표의 나머지 줄도 문서 순서대로 함께 보인다(LLM 단계는 건드리지 않고 검사를 다 지난 뒤 보일 줄에서만). PARSE_V8이 켜졌을 때만. 기본 꺼짐
     table_fill_v18: bool = False
+    # "해야 할 일 꼴" 코드 검사 끄기 실험 (2026-10-15, research_notes/OBLIGE_끄기_실험_20261015.md): 기본 켜짐(True = 지금 동작).
+    # False면 새로 쓴 답(일반 새로 쓰기, safe=False)의 check_answer_v11에서 OBLIGE_V12 검사만 건너뛴다. 앞머리 검사·안전 영역 새로쓰기(safe=True)·이어 묻기는 그대로.
+    oblige_check: bool = True
+    # 순수 외부 LLM 연결 (2026-10-15, research_notes/순수외부LLM_연결_20261015.md — 시험용 복사본 전용): PURE_EXTERNAL=1이고 **외부 Claude를 고른 요청**일 때만,
+    # 위험한 부탁·권한·화면 설명·불량 원인·이어 묻기로 걸러지지 않은 질문을 "낱말 검색 상위 조각 + 질문 → 외부 Claude 1번 → 답을 그대로" 길로 보낸다
+    # (줄 고르기·따로 검증·새 글 검사·분류 LLM 없음). 기본 꺼짐 = 지금 동작. 로컬 요청이면 이 스위치와 상관없이 지금 동작 그대로.
+    # pure_keep_signals: 0(기본) = 알람 번호·날짜·설비·운영 낱말 길도 끄고 전부 순수 길 / 1 = 그 신호가 있는 질문은 기존 길 그대로(신호 없는 질문만 순수 길)
+    # pure_topk: 순수 길에서 Claude에 주는 조각 수 (1~20, 기본 8)
+    pure_external: bool = False
+    pure_keep_signals: bool = False
+    pure_topk: int = 8
+    # pure_style: 1이면 순수 길(위 pure_external)의 Claude 지시문·답 형식을 "옆자리 선배가 풀어서 말하는" 대화체로 바꾼다
+    # (opening·points·closing 짜임 — 서버가 화면의 번호 목록·본문 블록으로 조립. 코드 검사·재시도는 더하지 않는다). 기본 꺼짐 = 지금 말투 그대로.
+    pure_style: bool = False
+    # pure_layout: 1이면(그리고 pure_style=1일 때만 뜻이 있다) 순수 길의 답 형식을 "묶음 목록(sections: title·text·items)"으로 바꿔, 서로 다른 말을 묶음으로 나눠 담게 하고
+    # 서버가 묶음마다 화면 블록 하나씩(소제목 · 머리 + 번호 목록 · 한 문장)을 만든다. 코드 검사·재시도는 더하지 않는다. 기본 꺼짐 = PURE_STYLE=1의 지금 동작 그대로.
+    pure_layout: bool = False
     llm_provider: str = "local"
     # 스위치 이름은 MOM_CLAUDE_* — 이 PC의 Claude Code 환경에 CLAUDE_EFFORT 같은 값이 이미 있어(2026-10-14 확인) 같은 이름을 쓰면 섞인다.
     claude_model: str = "claude-opus-5-5"
@@ -175,7 +200,9 @@ class Settings:
                 "safe_write_card": self.safe_write_card, "safe_write_doc": self.safe_write_doc,
                 "safe_write_proc": self.safe_write_proc, "safe_write_words": self.safe_write_words,
                 "write_shots": self.write_shots, "write_titles": self.write_titles, "write_rules_v17": self.write_rules_v17,
-                "answer_gate_v17": self.answer_gate_v17, "table_fill_v18": self.table_fill_v18,
+                "answer_gate_v17": self.answer_gate_v17, "table_fill_v18": self.table_fill_v18, "oblige_check": self.oblige_check,
+                "pure_external": self.pure_external, "pure_keep_signals": self.pure_keep_signals, "pure_topk": self.pure_topk, "pure_style": self.pure_style,
+                "pure_layout": self.pure_layout,
                 "llm_provider": self.llm_provider, "claude_via": self.claude_via, "claude_model": self.claude_model,
                 "claude_effort": self.claude_effort,
                 "external_app": self.external_app, "proc_limit": self.proc_limit, "claude_app": self.claude_app,
@@ -260,6 +287,12 @@ def settings() -> Settings:
         write_rules_v17=get("WRITE_RULES_V17", "0") in ("1", "true", "yes"),
         answer_gate_v17=get("ANSWER_GATE_V17", "0") in ("1", "true", "yes"),
         table_fill_v18=get("TABLE_FILL_V18", "0") in ("1", "true", "yes"),
+        oblige_check=get("OBLIGE_CHECK", "1").strip().lower() not in ("0", "false", "no"),   # 기본 켜짐 — 모르는 값도 켜짐(지금 동작)
+        pure_external=get("PURE_EXTERNAL", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
+        pure_keep_signals=get("PURE_KEEP_SIGNALS", "0").strip().lower() in ("1", "true", "yes"),
+        pure_topk=_int_clamped(get("PURE_TOPK", "8"), 8, 1, 20),
+        pure_style=get("PURE_STYLE", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 말투)
+        pure_layout=get("PURE_LAYOUT", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐 (PURE_STYLE=1일 때만 뜻이 있다)
         llm_provider=provider,
         claude_model="claude-sonnet-5-5" if claude_app else get("MOM_CLAUDE_MODEL", "claude-opus-5-5").strip(),   # 앱 스위치: Sonnet 5.5 medium, 구독 로그인(cli) 고정
         claude_effort="medium" if claude_app else choice("MOM_CLAUDE_EFFORT", "low"),

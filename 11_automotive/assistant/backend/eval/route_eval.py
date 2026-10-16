@@ -131,7 +131,8 @@ def run_policy(items: list[dict], policy: str) -> dict:
                                            "DOC_WRITE", "PARSE_V11", "LEAD_V12", "TERM_V13",
                                            "SAFE_WRITE_CARD", "SAFE_WRITE_DOC", "SAFE_WRITE_PROC", "SAFE_WRITE_WORDS",
                                            "LLM_PROVIDER", "WRITE_SHOTS", "WRITE_TITLES", "WRITE_RULES_V17", "ANSWER_GATE_V17",
-                                           "EXTERNAL_LLM_APP", "EXTERNAL_PROC_LIMIT", "THINK_APP", "TABLE_FILL_V18", "STEP_LOG")}
+                                           "EXTERNAL_LLM_APP", "EXTERNAL_PROC_LIMIT", "THINK_APP", "TABLE_FILL_V18", "STEP_LOG", "OBLIGE_CHECK",
+                                           "PURE_EXTERNAL", "PURE_KEEP_SIGNALS", "PURE_TOPK", "PURE_STYLE", "PURE_LAYOUT")}
     os.environ.update({"NUM_MATCH": "token", "DOC_GATE": "lexical", "RETRIEVAL": "bm25", "LLM_JOBS": "write",
                        "PARSE_V3": "0", "SPLIT_Q": "0", "PARSE_V4": "0", "CAND_ORDER": "rank", "LLM_CACHE_PROMPT": "1",
                        "PARSE_V5": "0", "PARSE_V6": "0", "PARSE_V7": "0", "FOLLOWUP": "0", "PARSE_V8": "0", "FOLLOWUP_V2": "0",
@@ -139,7 +140,8 @@ def run_policy(items: list[dict], policy: str) -> dict:
                        "DOC_WRITE": "0", "PARSE_V11": "0", "LEAD_V12": "0", "TERM_V13": "0",
                        "SAFE_WRITE_CARD": "0", "SAFE_WRITE_DOC": "0", "SAFE_WRITE_PROC": "0", "SAFE_WRITE_WORDS": "0",
                        "LLM_PROVIDER": "local", "WRITE_SHOTS": "0", "WRITE_TITLES": "0", "WRITE_RULES_V17": "0", "ANSWER_GATE_V17": "0",
-                       "EXTERNAL_LLM_APP": "0", "EXTERNAL_PROC_LIMIT": "8", "THINK_APP": "0", "TABLE_FILL_V18": "0", "STEP_LOG": "0", **POLICY_ENV[policy]})
+                       "EXTERNAL_LLM_APP": "0", "EXTERNAL_PROC_LIMIT": "8", "THINK_APP": "0", "TABLE_FILL_V18": "0", "STEP_LOG": "0", "OBLIGE_CHECK": "1",
+                       "PURE_EXTERNAL": "0", "PURE_KEEP_SIGNALS": "0", "PURE_TOPK": "8", "PURE_STYLE": "0", "PURE_LAYOUT": "0", **POLICY_ENV[policy]})
     try:
         rows, conf, pairs, lat, bad, calls = [], Counter(), [], [], 0, 0
         for it in items:

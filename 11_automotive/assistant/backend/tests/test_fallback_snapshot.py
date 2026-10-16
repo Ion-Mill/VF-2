@@ -54,7 +54,8 @@ if __name__ == "__main__":
                        "PARSE_V10": "0", "FLOW_V10": "0", "BLOCKS_V3": "0", "DOC_WRITE": "0", "PARSE_V11": "0", "LEAD_V12": "0", "TERM_V13": "0",
                        "SAFE_WRITE_CARD": "0", "SAFE_WRITE_DOC": "0", "SAFE_WRITE_PROC": "0", "SAFE_WRITE_WORDS": "0",
                        "LLM_PROVIDER": "local", "WRITE_SHOTS": "0", "WRITE_TITLES": "0", "WRITE_RULES_V17": "0", "ANSWER_GATE_V17": "0",
-                       "EXTERNAL_LLM_APP": "0", "EXTERNAL_PROC_LIMIT": "8", "THINK_APP": "0", "TABLE_FILL_V18": "0", "STEP_LOG": "0"})  # conftest와 같은 기본스위치 (4차 PARSE_V5·5차 PARSE_V6 2026-10-11, 6차 PARSE_V7·FOLLOWUP·7차 PARSE_V8·FOLLOWUP_V2·8차 PARSE_V9·FLOW_V9·BLOCKS_V2 2026-10-12, 9차 PARSE_V10·FLOW_V10·BLOCKS_V3 2026-10-13 추가)
+                       "EXTERNAL_LLM_APP": "0", "EXTERNAL_PROC_LIMIT": "8", "THINK_APP": "0", "TABLE_FILL_V18": "0", "STEP_LOG": "0", "OBLIGE_CHECK": "1",
+                       "PURE_EXTERNAL": "0", "PURE_KEEP_SIGNALS": "0", "PURE_TOPK": "8", "PURE_STYLE": "0", "PURE_LAYOUT": "0"})  # conftest와 같은 기본스위치 (4차 PARSE_V5·5차 PARSE_V6 2026-10-11, 6차 PARSE_V7·FOLLOWUP·7차 PARSE_V8·FOLLOWUP_V2·8차 PARSE_V9·FLOW_V9·BLOCKS_V2 2026-10-12, 9차 PARSE_V10·FLOW_V10·BLOCKS_V3 2026-10-13 추가)
     # (PARSE_V3·SPLIT_Q도 꺼야 한다 — .env가 켜 두면 스냅숏이 새 동작을 담는다. 2026-10-10 step5 적용 때 빠진 것을 찾아 넣음)
     SNAP.parent.mkdir(exist_ok=True)
     SNAP.write_text(json.dumps({q: _shape(answer(q, "SUP")) for q in _questions()}, ensure_ascii=False, indent=1), encoding="utf-8")
