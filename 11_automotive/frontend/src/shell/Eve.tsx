@@ -6,6 +6,7 @@ import { Fragment, useEffect, useRef, useState } from 'react';
 import { useApp } from './ctx';
 import { MACHINES } from './data';
 import { SIM, api, md, simIso, useLocal } from './live';
+import { askAssistant, backendChatEnabled } from './assistantApi';
 import { LEVEL_VIEW, alarmTitle, hhmm, sevText, type AlertRec, type Level, type Notice } from './model';
 import { rankOfAlert, rankOfNotice } from './Briefing';
 import RobotIcon from './RobotIcon';
@@ -216,7 +217,9 @@ function Chat({ focus }: { focus: string | null }) {
     setBusy(true); setQ('');
     let row: ChatRow;
     try {
-      const r = await api<{ answer: string; status: string; sources: ChatRow['sources']; series?: ChatRow['series'] }>('assistant/chat', { question: text, role, user_id: user.id, context: { screen, equipment_id: selected ? MACHINES[selected].eq : null } });
+      const r = backendChatEnabled()   // NEXT_PUBLIC_MOM_API가 있으면 백엔드의 비서(외부 LLM)로 — assistantApi.ts. 없으면 옛 길(시연 서버의 규칙 답)
+        ? await askAssistant(text, user.id, screen, selected ? MACHINES[selected].eq : null)
+        : await api<{ answer: string; status: string; sources: ChatRow['sources']; series?: ChatRow['series'] }>('assistant/chat', { question: text, role, user_id: user.id, context: { screen, equipment_id: selected ? MACHINES[selected].eq : null } });
       row = { at: simIso(), q: text, a: r.answer, status: r.status, sources: r.sources ?? [], series: r.series };
     } catch (e) { row = { at: simIso(), q: text, a: '비서 응답 없음 — ' + (e as Error).message, status: '응답 없음', sources: [] }; }
     // 채팅 기록 30일 (FR-MNT-01-01, NFR-DATA-13)
@@ -235,7 +238,7 @@ function Chat({ focus }: { focus: string | null }) {
     <>
       <div ref={body} className="ma-body text-[14px]" role="tabpanel">
         <div className="ma-pad" aria-live="polite">
-          <p className="text-[11px] text-slate-500">규칙 답 — 로컬 LLM 연결 전이라 프로그램 숫자와 사내 문서 절을 그대로 보입니다. 지금 화면·고른 설비({selected ? MACHINES[selected].name : '없음'})가 질문 배경으로 갑니다.</p>
+          <p className="text-[11px] text-slate-500">{backendChatEnabled() ? '외부 LLM(Claude)이 사내 문서와 정해진 운영 조회 결과로 답합니다. 알람 카드·점검 순서 같은 안전 답은 AI에 보내지 않고 문서 그대로 보입니다. 질문과 문서 조각이 외부로 전송됩니다(지금은 가상 데이터).' : '규칙 답 — 로컬 LLM 연결 전이라 프로그램 숫자와 사내 문서 절을 그대로 보입니다.'} 지금 화면·고른 설비({selected ? MACHINES[selected].name : '없음'})가 질문 배경으로 갑니다.</p>
           {today.length === 0 && !busy && <p className="ma-empty">라인 상황, 알람, 사내 문서 등 무엇이든 물어보세요.</p>}
           {today.map((r, i) => <div key={i} data-at={r.at} className={r.at === focus ? 'rounded-lg ring-2 ring-[#C8F03C]' : ''}><Bubble r={r} openSource={openSource} /></div>)}
           {busy && <p className="ma-msg-bot ma-typing">답변을 만드는 중…</p>}

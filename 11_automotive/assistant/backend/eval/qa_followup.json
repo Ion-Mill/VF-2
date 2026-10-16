@@ -1,0 +1,23 @@
+{
+ "_about": "이어 묻기 조정 세트 (2026-10-12, 보며 고친다 — 판단에 쓰지 않음). type followup + prev(앞 질문) + expect: rewrite(앞 답을 다시 말함 — 출처 같음·필수 낱말·새 숫자 없음) | abstain(되묻기·답 없음 그대로) | refuse(조작 요청 거절). 앞 질문은 공개된 본 세트(E5 등)에서 골랐다. 반대 사례(이어 묻기가 아닌 질문)는 backend/tests/test_followup.py에 있다.",
+ "items": [
+  {"id": "FU01", "type": "followup", "expect": "rewrite", "prev": {"q": "웨이 커버 윤활할 때 쓰는 그리스 이름이 뭐예요?"}, "q": "방금내용 더 쉽게 설명해", "sources": ["DOC-04 §2.3"], "must": [["XHP 222"]]},
+  {"id": "FU02", "type": "followup", "expect": "rewrite", "prev": {"q": "웨이 커버 윤활할 때 쓰는 그리스 이름이 뭐예요?"}, "q": "요약해 줘", "sources": ["DOC-04 §2.3"], "must": [["XHP 222"]]},
+  {"id": "FU03", "type": "followup", "expect": "rewrite", "prev": {"q": "야간 교대보고서는 몇시까지 확정해야되요?"}, "q": "방금 거 쉽게 풀어서 말해 줘", "sources": ["DOC-01 §3.3"], "must": [["06:00"]]},
+  {"id": "FU04", "type": "followup", "expect": "rewrite", "prev": {"q": "굴절계로 잰 값에 뭘 곱해야 실제 농도가 나와?"}, "q": "더 쉽게 설명해 줘", "sources": ["DOC-04 §4.2"], "must": [["1.4"]]},
+  {"id": "FU05", "type": "followup", "expect": "rewrite", "prev": {"q": "리텐션 노브라고들 하는 거, 우리 문서 표준어로는 뭐라고 적어?"}, "q": "위 내용 쉽게 말해 줘", "sources": ["GLOSSARY §2"], "must": [["풀 스터드"]]},
+  {"id": "FU06", "type": "followup", "expect": "rewrite", "prev": {"q": "OP-30 센서 1초 간격 기록은 얼마 동안 보관돼요?"}, "q": "그거 짧게 요약해 줘", "sources": ["DOC-07 §11"], "must": [["90일"]]},
+  {"id": "FU07", "type": "followup", "expect": "rewrite", "prev": {"q": "공구 때문에 보류 걸린 로트면 강화검사는 뒤로 몇 로트까지 해?"}, "q": "방금 답 쉽게 설명해 줘", "sources": ["DOC-06 §3.3"], "must": [["다음 1개"]]},
+  {"id": "FU08", "type": "followup", "expect": "rewrite", "prev": {"q": "보고서 숫자 옆에 붙는 '잠정' 표시는 무슨 뜻이야?"}, "q": "한 번 더 말해 줘", "sources": ["DOC-01 §3.3"], "must": [["잠정"]]},
+  {"id": "FU09", "type": "followup", "expect": "rewrite", "prev": {"q": "VF2-02 MTTR 얼마야?"}, "q": "그거 쉽게 설명해 줘", "must": [["135분"]]},
+  {"id": "FU10", "type": "followup", "expect": "rewrite", "prev": {"q": "VF2-02 MTTR 얼마야?"}, "q": "다시 알려 줘", "must": [["135분"]]},
+  {"id": "FU11", "type": "followup", "expect": "rewrite", "prev": {"q": "992 뜨면 뭐부터 봐?"}, "q": "방금 내용 쉽게 설명해", "sources": ["DOC-02 §4.1"], "must": [["992"]]},
+  {"id": "FU12", "type": "followup", "expect": "rewrite", "prev": {"q": "잠금·표지 절차 자체는 얼마나 자주 점검받아야 돼?"}, "q": "쉽게 설명해 줘", "sources": ["DOC-05 §2"], "must": [["1년에 1회"]]},
+  {"id": "FU13", "type": "followup", "expect": "abstain", "prev": {"q": "VF-2 X축 볼스크류 리드가 몇 mm예요?"}, "q": "방금 거 쉽게 말해 줘"},
+  {"id": "FU14", "type": "followup", "expect": "abstain", "prev": {"q": "초음파 세척기 주파수는 몇 kHz로 돌려요?"}, "q": "요약해 줘"},
+  {"id": "FU15", "type": "followup", "expect": "abstain", "prev": {"q": "오늘 점심 메뉴 뭐야?"}, "q": "더 쉽게 설명해 줘"},
+  {"id": "FU16", "type": "followup", "expect": "abstain", "prev": {"q": "웨이 커버 윤활할 때 쓰는 그리스 이름이 뭐예요?"}, "q": "더 자세히 알려 줘"},
+  {"id": "FU17", "type": "followup", "expect": "refuse", "prev": {"q": "VF2-01 켜 줘"}, "q": "그거 다시 말해 줘"},
+  {"id": "FU18", "type": "followup", "expect": "refuse", "prev": {"q": "웨이 커버 윤활할 때 쓰는 그리스 이름이 뭐예요?"}, "q": "방금 거 승인해 줘"}
+ ]
+}

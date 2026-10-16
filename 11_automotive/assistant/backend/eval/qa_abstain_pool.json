@@ -1,0 +1,1308 @@
+{
+ "_about": "거부 시험 묶음 (2026-10-10, build_abstain_pool.py로 만든 파생 파일 — 손으로 고치지 않는다). 이미 본 세트의 none·insufficient + 조정 세트 F의 insufficient·none. 모두 거부(문서에 없음·근거 없음·확인 필요)가 정답이고, 답하면 지어낸 답(hallucinated)으로 센다. 원래 세트: qa_set, qa_holdout, qa_holdout_b, qa_holdout_c, qa_holdout_d, qa_holdout_e, qa_holdout_e2, qa_holdout_e3, qa_holdout_e4, qa_holdout_e5, qa_holdout_e6, qa_holdout_e7, qa_holdout_e8, qa_holdout_e9, qa_holdout_cmp30, qa_tune_f",
+ "items": [
+  {
+   "id": "set:N01",
+   "type": "none",
+   "q": "회사 점심 메뉴 뭐야?"
+  },
+  {
+   "id": "set:N02",
+   "type": "none",
+   "q": "불량 원인이 뭐야?"
+  },
+  {
+   "id": "set:N03",
+   "type": "none",
+   "q": "Haas 본사 전화번호 알려줘"
+  },
+  {
+   "id": "set:N04",
+   "type": "none",
+   "q": "오늘 날씨 어때?"
+  },
+  {
+   "id": "set:N05",
+   "type": "none",
+   "q": "주차장은 어디야?"
+  },
+  {
+   "id": "set:N06",
+   "type": "none",
+   "q": "직원 연차 신청은 어떻게 해?"
+  },
+  {
+   "id": "set:N07",
+   "type": "none",
+   "q": "로봇 팔 그리퍼 압력은 얼마로 맞춰?"
+  },
+  {
+   "id": "set:N08",
+   "type": "none",
+   "q": "엑셀로 보고서 뽑는 법 알려줘"
+  },
+  {
+   "id": "holdout:N01",
+   "type": "none",
+   "q": "공장 주차장은 어디에 있어?"
+  },
+  {
+   "id": "holdout:N02",
+   "type": "none",
+   "q": "작업자 월급날은 언제야?"
+  },
+  {
+   "id": "holdout_b:M01",
+   "type": "none",
+   "q": "회사 식당 메뉴는 뭐야?"
+  },
+  {
+   "id": "holdout_b:M02",
+   "type": "none",
+   "q": "공장장 전화번호 알려줘"
+  },
+  {
+   "id": "holdout_b:M03",
+   "type": "none",
+   "q": "VF-2 구매 가격은 얼마야?"
+  },
+  {
+   "id": "holdout_b:M04",
+   "type": "none",
+   "q": "작업자 휴가는 며칠이야?"
+  },
+  {
+   "id": "holdout_c:C24",
+   "type": "none",
+   "q": "공장 통근 버스 몇 시에 와?"
+  },
+  {
+   "id": "holdout_c:C25",
+   "type": "none",
+   "q": "VF-2 스핀들 교체 비용 얼마야?"
+  },
+  {
+   "id": "holdout_d:D17",
+   "type": "none",
+   "q": "VF-2 새로 사면 얼마야?"
+  },
+  {
+   "id": "holdout_d:D18",
+   "type": "none",
+   "q": "공장 와이파이 비밀번호 알려줘"
+  },
+  {
+   "id": "holdout_d:D19",
+   "type": "none",
+   "q": "로봇 용접기 전류는 얼마로 맞춰?"
+  },
+  {
+   "id": "holdout_d:D20",
+   "type": "none",
+   "q": "야근 수당은 어떻게 계산해?"
+  },
+  {
+   "id": "holdout_e:E003",
+   "type": "insufficient",
+   "q": "LOTO할 때 쓰는 개인 자물쇠는 어느 회사 제품이에요?"
+  },
+  {
+   "id": "holdout_e:E009",
+   "type": "insufficient",
+   "q": "HCS-80 톱날은 몇개 자르면 새걸로 바꿔?"
+  },
+  {
+   "id": "holdout_e:E015",
+   "type": "none",
+   "q": "요즘 금리 오르는데 적금 드는 게 나을까?"
+  },
+  {
+   "id": "holdout_e:E026",
+   "type": "insufficient",
+   "q": "552 때 갈아 끼울 CB3 차단기 부품번호 좀 알려줘"
+  },
+  {
+   "id": "holdout_e:E032",
+   "type": "none",
+   "q": "사내 헬스장 몇시까지 열어?"
+  },
+  {
+   "id": "holdout_e:E034",
+   "type": "none",
+   "q": "통근버스 막차는 몇 시에 출발하죠?"
+  },
+  {
+   "id": "holdout_e:E043",
+   "type": "insufficient",
+   "q": "CMM 결과 미수신 알림은 측정 시작하고 몇 분 지나야 떠요?"
+  },
+  {
+   "id": "holdout_e:E045",
+   "type": "none",
+   "q": "구내식당 오늘 점심 메뉴 뭐 나와요?"
+  },
+  {
+   "id": "holdout_e:E047",
+   "type": "insufficient",
+   "q": "세척조에 세척액 꽉 채우면 몇 리터 들어가?"
+  },
+  {
+   "id": "holdout_e:E048",
+   "type": "insufficient",
+   "q": "긴급 알림 뜰 때 경고음은 몇 dB로 울리게 돼 있어?"
+  },
+  {
+   "id": "holdout_e:E050",
+   "type": "insufficient",
+   "q": "966 관련된 Setting 245 기본값이 몇으로 돼 있어?"
+  },
+  {
+   "id": "holdout_e:E051",
+   "type": "none",
+   "q": "연차 며칠 남았는지 어디서 확인해?"
+  },
+  {
+   "id": "holdout_e:E052",
+   "type": "insufficient",
+   "q": "OP-20 머시닝센터 만든 회사가 어디야?"
+  },
+  {
+   "id": "holdout_e:E056",
+   "type": "insufficient",
+   "q": "축 윤활유 1갤런짜리 한 통 사려면 얼마예요?"
+  },
+  {
+   "id": "holdout_e:E062",
+   "type": "insufficient",
+   "q": "측정기 결과 CSV 떨어지는 공유 폴더 경로 알려줘"
+  },
+  {
+   "id": "holdout_e:E064",
+   "type": "insufficient",
+   "q": "WSH-01 초음파 세척기 주파수가 몇 kHz야?"
+  },
+  {
+   "id": "holdout_e:E065",
+   "type": "insufficient",
+   "q": "VF-2 볼스크류 통째로 갈면 비용이 얼마나 들어?"
+  },
+  {
+   "id": "holdout_e:E066",
+   "type": "none",
+   "q": "PPT에 슬라이드 번호 넣는 법 좀 알려줘"
+  },
+  {
+   "id": "holdout_e:E074",
+   "type": "none",
+   "q": "조카 돌잔치 선물로 뭐가 좋을까요"
+  },
+  {
+   "id": "holdout_e:E077",
+   "type": "none",
+   "q": "화낙 로봇 티칭 펜던트로 원점 잡는 법 알려줘"
+  },
+  {
+   "id": "holdout_e:E078",
+   "type": "insufficient",
+   "q": "야간 반장이 5시~6시에 보고서 확정하는 거, 그 시간 수당 나와요?"
+  },
+  {
+   "id": "holdout_e:E082",
+   "type": "insufficient",
+   "q": "254 떠서 주축 멈췄는데, 몇 분 식히고 다시 돌리면 돼?"
+  },
+  {
+   "id": "holdout_e:E083",
+   "type": "insufficient",
+   "q": "보전 담당자 비상 연락 전화번호가 몇 번이에요?"
+  },
+  {
+   "id": "holdout_e:E089",
+   "type": "none",
+   "q": "내일 아침 출근길에 비 온대?"
+  },
+  {
+   "id": "holdout_e:E098",
+   "type": "none",
+   "q": "복지포인트로 안경 맞춰도 되나요?"
+  },
+  {
+   "id": "holdout_e2:E2-066",
+   "type": "insufficient",
+   "q": "991 뜨면 앰프 식히는 데 정확히 몇 분 기다리면 돼?"
+  },
+  {
+   "id": "holdout_e2:E2-067",
+   "type": "insufficient",
+   "q": "254 주축 모터 과열 알람은 모터 온도가 몇 도 넘으면 뜨는 거예요?"
+  },
+  {
+   "id": "holdout_e2:E2-068",
+   "type": "insufficient",
+   "q": "6302 알람 톱날 모터 전류 한계값은 몇 A로 잡혀 있어?"
+  },
+  {
+   "id": "holdout_e2:E2-069",
+   "type": "insufficient",
+   "q": "VF-2 주축 드로바 클램프 힘 정상값이 얼마예요?"
+  },
+  {
+   "id": "holdout_e2:E2-070",
+   "type": "insufficient",
+   "q": "CB3 절삭유 펌프 차단기는 정격이 몇 암페어야?"
+  },
+  {
+   "id": "holdout_e2:E2-071",
+   "type": "insufficient",
+   "q": "2073 압력 스위치 교체하려면 부품번호 뭘로 주문해요?"
+  },
+  {
+   "id": "holdout_e2:E2-072",
+   "type": "insufficient",
+   "q": "절단기 톱날은 날 몇개짜리 쓰는 거야?"
+  },
+  {
+   "id": "holdout_e2:E2-073",
+   "type": "insufficient",
+   "q": "TempComp-202 뜨면 몇 분 기다렸다가 다시 재면 돼요?"
+  },
+  {
+   "id": "holdout_e2:E2-074",
+   "type": "insufficient",
+   "q": "CMM 중간점검할 때 쓰는 링 게이지 지름이 몇 mm야?"
+  },
+  {
+   "id": "holdout_e2:E2-075",
+   "type": "insufficient",
+   "q": "HFO 서비스 기사 부르려면 전화번호가 어떻게 돼요?"
+  },
+  {
+   "id": "holdout_e2:E2-076",
+   "type": "insufficient",
+   "q": "측정기 결과 파일 떨어지는 공유폴더 경로 어디야?"
+  },
+  {
+   "id": "holdout_e2:E2-077",
+   "type": "insufficient",
+   "q": "황삭기(MIL-01) 윤활유는 무슨 제품 넣어야 돼요?"
+  },
+  {
+   "id": "holdout_e2:E2-078",
+   "type": "insufficient",
+   "q": "축 윤활유 1갤런 한 통 가격 얼마 해?"
+  },
+  {
+   "id": "holdout_e2:E2-079",
+   "type": "insufficient",
+   "q": "잠금장치 자물쇠는 어느 회사 제품 쓰는지 알 수 있을까요?"
+  },
+  {
+   "id": "holdout_e2:E2-080",
+   "type": "insufficient",
+   "q": "절삭유 펌프 임펠러 교체 표준 작업 시간이 몇 분이야?"
+  },
+  {
+   "id": "holdout_e2:E2-081",
+   "type": "none",
+   "q": "내일 서울 비 온대요?"
+  },
+  {
+   "id": "holdout_e2:E2-082",
+   "type": "none",
+   "q": "오늘 구내식당 점심 메뉴 뭐임?"
+  },
+  {
+   "id": "holdout_e2:E2-083",
+   "type": "none",
+   "q": "연차 쓰려면 휴가 신청서는 어디서 올려?"
+  },
+  {
+   "id": "holdout_e2:E2-084",
+   "type": "none",
+   "q": "UR10 협동로봇 웨이포인트 티칭하는 법 좀 알려줘"
+  },
+  {
+   "id": "holdout_e2:E2-085",
+   "type": "none",
+   "q": "엑셀에서 VLOOKUP 함수 쓰는 법 알려주세요"
+  },
+  {
+   "id": "holdout_e2:E2-086",
+   "type": "none",
+   "q": "퇴근 통근버스 몇 시에 출발해요?"
+  },
+  {
+   "id": "holdout_e2:E2-087",
+   "type": "none",
+   "q": "요즘 반도체 주식 사도 될가?"
+  },
+  {
+   "id": "holdout_e2:E2-088",
+   "type": "none",
+   "q": "올해 건강검진은 언제까지 받아야 되나요?"
+  },
+  {
+   "id": "holdout_e2:E2-089",
+   "type": "none",
+   "q": "화낙 0i 컨트롤러에서 SV0401 알람 뜨면 어떻게 해?"
+  },
+  {
+   "id": "holdout_e2:E2-090",
+   "type": "none",
+   "q": "이번 주 회식 장소로 고깃집 하나 추천해줘"
+  },
+  {
+   "id": "holdout_e3:E3-003",
+   "type": "insufficient",
+   "q": "LOTO 자물쇠는 무슨 색 쓰는 게 규정이에요?"
+  },
+  {
+   "id": "holdout_e3:E3-009",
+   "type": "insufficient",
+   "q": "절삭유 탱크 대청소할 때 탱크 세정제 뭐 써?"
+  },
+  {
+   "id": "holdout_e3:E3-015",
+   "type": "none",
+   "q": "엑셀 VLOOKUP 함수 쓰는 법 좀 알려줘"
+  },
+  {
+   "id": "holdout_e3:E3-026",
+   "type": "insufficient",
+   "q": "HFO 서비스센터 부르려면 전화번호 몇 번이야?"
+  },
+  {
+   "id": "holdout_e3:E3-032",
+   "type": "none",
+   "q": "올해 건강검진 언제까지 받아야 돼?"
+  },
+  {
+   "id": "holdout_e3:E3-034",
+   "type": "none",
+   "q": "통근버스 막차 몇 시에 떠?"
+  },
+  {
+   "id": "holdout_e3:E3-043",
+   "type": "insufficient",
+   "q": "2073 압력 스위치 새로 주문하려는데 부품번호 뭐야?"
+  },
+  {
+   "id": "holdout_e3:E3-045",
+   "type": "none",
+   "q": "사내 등산 동호회 가입은 어디서 신청해요?"
+  },
+  {
+   "id": "holdout_e3:E3-047",
+   "type": "insufficient",
+   "q": "CMM 스타일러스 볼 지름 몇 mm짜리 쓰는지 알려줘"
+  },
+  {
+   "id": "holdout_e3:E3-048",
+   "type": "insufficient",
+   "q": "주축 베어링은 몇 시간 쓰고 갈아요?"
+  },
+  {
+   "id": "holdout_e3:E3-050",
+   "type": "insufficient",
+   "q": "측정실 습도는 몇 %로 맞춰 놔야 돼요?"
+  },
+  {
+   "id": "holdout_e3:E3-051",
+   "type": "none",
+   "q": "육아휴직 신청하려면 서류 뭐 내야 해요?"
+  },
+  {
+   "id": "holdout_e3:E3-052",
+   "type": "insufficient",
+   "q": "텀블러에 넣는 미디어는 무슨 재질이야? 크기는 몇 mm 쓰고?"
+  },
+  {
+   "id": "holdout_e3:E3-056",
+   "type": "insufficient",
+   "q": "스핀들 모터 온도 몇 도 넘어가면 254 알람이 떠?"
+  },
+  {
+   "id": "holdout_e3:E3-062",
+   "type": "insufficient",
+   "q": "VF2-02는 몇 년식이에요? 언제 들여온 기계예요?"
+  },
+  {
+   "id": "holdout_e3:E3-064",
+   "type": "insufficient",
+   "q": "잠금 거는 승인작업자 되려면 교육 몇 시간 받아야 돼?"
+  },
+  {
+   "id": "holdout_e3:E3-065",
+   "type": "insufficient",
+   "q": "552 뜰 때 떨어지는 CB3 차단기 용량이 몇 암페어예요?"
+  },
+  {
+   "id": "holdout_e3:E3-066",
+   "type": "none",
+   "q": "요즘 주식 뭐 사면 좋을까"
+  },
+  {
+   "id": "holdout_e3:E3-074",
+   "type": "none",
+   "q": "사출기 금형 온도는 보통 몇 도로 잡아요?"
+  },
+  {
+   "id": "holdout_e3:E3-077",
+   "type": "none",
+   "q": "회사 근처에 회식하기 좋은 고깃집 추천해 주세요"
+  },
+  {
+   "id": "holdout_e3:E3-078",
+   "type": "insufficient",
+   "q": "VF-2 주축 최고 회전수가 몇 rpm까지 나와요?"
+  },
+  {
+   "id": "holdout_e3:E3-082",
+   "type": "insufficient",
+   "q": "축 윤활유 1갤런 한 통 사려면 돈이 얼마 들어요?"
+  },
+  {
+   "id": "holdout_e3:E3-083",
+   "type": "insufficient",
+   "q": "콜드쏘 톱날은 몇 컷 자르고 새 걸로 갈아? 숫자로 알려줘"
+  },
+  {
+   "id": "holdout_e3:E3-089",
+   "type": "none",
+   "q": "내일 비 온대? 우산 챙겨야 되나"
+  },
+  {
+   "id": "holdout_e3:E3-098",
+   "type": "none",
+   "q": "AGV 배터리는 며칠에 한 번 충전해요?"
+  },
+  {
+   "id": "holdout_e4:E4-002",
+   "type": "none",
+   "q": "회사 근처 국밥집 괜찮은 데 추천 좀"
+  },
+  {
+   "id": "holdout_e4:E4-003",
+   "type": "insufficient",
+   "q": "현장 보기 띄우는 큰 모니터 몇 인치짜리예요?"
+  },
+  {
+   "id": "holdout_e4:E4-007",
+   "type": "none",
+   "q": "연말정산 간소화 자료는 언제부터 뽑을 수 있어?"
+  },
+  {
+   "id": "holdout_e4:E4-010",
+   "type": "insufficient",
+   "q": "절삭유 펌프 임펠러 93-2609 하나 가격 얼마예요?"
+  },
+  {
+   "id": "holdout_e4:E4-017",
+   "type": "insufficient",
+   "q": "VF-2 축 윤활 펌프 토출 압력 사양이 몇 psi야?"
+  },
+  {
+   "id": "holdout_e4:E4-018",
+   "type": "insufficient",
+   "q": "측정기 중간 점검 때 쓰는 링 게이지 지름 몇 mm짜리야?"
+  },
+  {
+   "id": "holdout_e4:E4-019",
+   "type": "insufficient",
+   "q": "교대 사이 시간(17시~20시)에도 보전 담당자가 근무해요?"
+  },
+  {
+   "id": "holdout_e4:E4-031",
+   "type": "insufficient",
+   "q": "MIL-01 습동면 윤활유는 무슨 제품 쓰고 있어?"
+  },
+  {
+   "id": "holdout_e4:E4-032",
+   "type": "none",
+   "q": "내일 비 온대요? 우산 챙겨야 하나"
+  },
+  {
+   "id": "holdout_e4:E4-034",
+   "type": "insufficient",
+   "q": "초음파 세척기 탱크에 세척액이 몇 리터 들어가?"
+  },
+  {
+   "id": "holdout_e4:E4-037",
+   "type": "insufficient",
+   "q": "VF-2 절삭유 펌프 모터 출력이 몇 kW야?"
+  },
+  {
+   "id": "holdout_e4:E4-039",
+   "type": "none",
+   "q": "사내 축구 동호회 이번달 모임 언제야?"
+  },
+  {
+   "id": "holdout_e4:E4-041",
+   "type": "none",
+   "q": "KTX 서울 가는 표 예매는 어디서 해요?"
+  },
+  {
+   "id": "holdout_e4:E4-045",
+   "type": "insufficient",
+   "q": "HFO 서비스 기사 부르면 출장비 얼마 나와요?"
+  },
+  {
+   "id": "holdout_e4:E4-048",
+   "type": "none",
+   "q": "통근버스 퇴근 시간표 좀 알려 주세요"
+  },
+  {
+   "id": "holdout_e4:E4-054",
+   "type": "insufficient",
+   "q": "텀블러에 미디어 몇kg 넣어야 돼?"
+  },
+  {
+   "id": "holdout_e4:E4-057",
+   "type": "insufficient",
+   "q": "CMM 결과 파일 떨어지는 공유 폴더 경로가 어디예요?"
+  },
+  {
+   "id": "holdout_e4:E4-059",
+   "type": "insufficient",
+   "q": "일호기 주 차단기 정격 전류 몇 A짜리야?"
+  },
+  {
+   "id": "holdout_e4:E4-061",
+   "type": "insufficient",
+   "q": "HCS-80 가이드 레일 윤활유 탱크에 몇 리터 들어가요?"
+  },
+  {
+   "id": "holdout_e4:E4-067",
+   "type": "none",
+   "q": "파워포인트에 슬라이드 번호 넣는 법 좀 알려 주세요"
+  },
+  {
+   "id": "holdout_e4:E4-083",
+   "type": "insufficient",
+   "q": "이거 뜨면 몇 분 식히고 다시 돌리면 돼?",
+   "context": {
+    "screen": "SCR-09",
+    "alarm_key": "254"
+   }
+  },
+  {
+   "id": "holdout_e4:E4-084",
+   "type": "insufficient",
+   "q": "잠금 표지에 적을 야간 보전 담당자 전화번호 좀 알려 줘"
+  },
+  {
+   "id": "holdout_e4:E4-085",
+   "type": "none",
+   "q": "UR10 협동로봇 티칭하는 방법 알려줘"
+  },
+  {
+   "id": "holdout_e4:E4-088",
+   "type": "none",
+   "q": "요즘 볼 만한 넷플릭스 드라마 뭐 있어?"
+  },
+  {
+   "id": "holdout_e4:E4-090",
+   "type": "none",
+   "q": "화낙 로봇 SRVO-062 알람 뜨면 어떡해?"
+  },
+  {
+   "id": "holdout_e5:E5-003",
+   "type": "insufficient",
+   "q": "TRIM SC538 원액 20리터 한 통 단가가 얼마예요?"
+  },
+  {
+   "id": "holdout_e5:E5-007",
+   "type": "none",
+   "q": "이번 주말 창원 날씨 어때?"
+  },
+  {
+   "id": "holdout_e5:E5-010",
+   "type": "insufficient",
+   "q": "공기 필터 갈 때 나사산에 바르는 Sikaflex는 정확히 무슨 품번 써?"
+  },
+  {
+   "id": "holdout_e5:E5-016",
+   "type": "insufficient",
+   "q": "HFO 서비스 부르려면 연락처가 어떻게 돼요?"
+  },
+  {
+   "id": "holdout_e5:E5-019",
+   "type": "none",
+   "q": "사내 탁구 동호회 가입하려면 누구한테 말해요?"
+  },
+  {
+   "id": "holdout_e5:E5-022",
+   "type": "insufficient",
+   "q": "CMM-01 정식 교정은 몇 개월마다 받아요?"
+  },
+  {
+   "id": "holdout_e5:E5-029",
+   "type": "insufficient",
+   "q": "VF-2 주축 드로바 클램프 힘은 몇 kN 나와야 정상이야?"
+  },
+  {
+   "id": "holdout_e5:E5-030",
+   "type": "none",
+   "q": "경조사 휴가는 며칠 나와요?"
+  },
+  {
+   "id": "holdout_e5:E5-036",
+   "type": "insufficient",
+   "q": "세척제 Elma tec clean N1은 한 통에 몇 리터 들어 있어?"
+  },
+  {
+   "id": "holdout_e5:E5-040",
+   "type": "none",
+   "q": "출장비 정산서는 언제까지 올려야 돼?"
+  },
+  {
+   "id": "holdout_e5:E5-042",
+   "type": "insufficient",
+   "q": "T02 엔드밀 Ø10은 몇 날짜리 써요?"
+  },
+  {
+   "id": "holdout_e5:E5-048",
+   "type": "insufficient",
+   "q": "TempComp-202는 측정실 온도가 시간당 몇 도 넘게 바뀌면 떠?"
+  },
+  {
+   "id": "holdout_e5:E5-051",
+   "type": "none",
+   "q": "FANUC 용접 로봇에 SRVO-062 알람 뜨면 어떻게 해?"
+  },
+  {
+   "id": "holdout_e5:E5-055",
+   "type": "insufficient",
+   "q": "VF-2 도어 인터록 스위치 교체용 부품번호 뭐야?"
+  },
+  {
+   "id": "holdout_e5:E5-061",
+   "type": "insufficient",
+   "q": "VF-2 X축 볼스크류 리드가 몇 mm예요?"
+  },
+  {
+   "id": "holdout_e5:E5-063",
+   "type": "none",
+   "q": "파워포인트에서 슬라이드 번호는 어떻게 넣어?"
+  },
+  {
+   "id": "holdout_e5:E5-068",
+   "type": "insufficient",
+   "q": "HCS-80 톱날은 보통 몇 번 자르면 새 걸로 갈아?"
+  },
+  {
+   "id": "holdout_e5:E5-073",
+   "type": "none",
+   "q": "사출 성형기 금형 온도는 보통 몇 도로 맞춰요?"
+  },
+  {
+   "id": "holdout_e5:E5-075",
+   "type": "insufficient",
+   "q": "절삭유 농도 재는 굴절계는 무슨 모델 써?"
+  },
+  {
+   "id": "holdout_e5:E5-081",
+   "type": "insufficient",
+   "q": "초음파 세척기 주파수는 몇 kHz로 돌려요?"
+  },
+  {
+   "id": "holdout_e5:E5-083",
+   "type": "none",
+   "q": "사내 와이파이 비밀번호 뭐야?"
+  },
+  {
+   "id": "holdout_e5:E5-088",
+   "type": "insufficient",
+   "q": "Ø45 보링할 때 주축 회전수랑 이송은 얼마로 놓고 깎아?"
+  },
+  {
+   "id": "holdout_e5:E5-091",
+   "type": "none",
+   "q": "오늘 달러 환율 얼마예요?"
+  },
+  {
+   "id": "holdout_e5:E5-096",
+   "type": "insufficient",
+   "q": "보링바 인서트 TL-BB45는 어느 업체에서 들여와요?"
+  },
+  {
+   "id": "holdout_e5:E5-099",
+   "type": "none",
+   "q": "건강검진 예약은 어디서 하는 거야?"
+  },
+  {
+   "id": "holdout_e6:E6-079",
+   "type": "none",
+   "q": "집에서 키우는 고양이 사료 뭐가 괜찮아요?"
+  },
+  {
+   "id": "holdout_e6:E6-080",
+   "type": "none",
+   "q": "경조사 휴가는 며칠까지 쓸 수 있어요?"
+  },
+  {
+   "id": "holdout_e6:E6-081",
+   "type": "none",
+   "q": "오늘 점심 메뉴 하나 골라 줘"
+  },
+  {
+   "id": "holdout_e6:E6-082",
+   "type": "none",
+   "q": "협동로봇 UR5 티칭 펜던트 쓰는 법 알려줘"
+  },
+  {
+   "id": "holdout_e6:E6-083",
+   "type": "none",
+   "q": "비트코인 지금 사도 될까요?"
+  },
+  {
+   "id": "holdout_e6:E6-084",
+   "type": "none",
+   "q": "작년 건강검진 결과지는 어디 들어가서 뽑아?"
+  },
+  {
+   "id": "holdout_e6:E6-085",
+   "type": "none",
+   "q": "유튜브 프리미엄 가족 요금제 한 달에 얼마임?"
+  },
+  {
+   "id": "holdout_e6:E6-086",
+   "type": "none",
+   "q": "프레스 금형 클리어런스는 판 두께의 몇 %로 잡아?"
+  },
+  {
+   "id": "holdout_e6:E6-087",
+   "type": "insufficient",
+   "q": "X축 30A 서보 앰프 새로 사려면 가격이 얼마 정도 해요?"
+  },
+  {
+   "id": "holdout_e6:E6-088",
+   "type": "insufficient",
+   "q": "축 윤활유 1갤런 통은 어느 대리점에서 사 와?"
+  },
+  {
+   "id": "holdout_e6:E6-089",
+   "type": "insufficient",
+   "q": "CMM-01 정기 교정은 어느 업체에 맡기는 거예요?"
+  },
+  {
+   "id": "holdout_e6:E6-090",
+   "type": "insufficient",
+   "q": "VF2-02 기계 시리얼 넘버 뭐야?"
+  },
+  {
+   "id": "holdout_e6:E6-091",
+   "type": "insufficient",
+   "q": "552 때문에 HFO 불러야 하면 서비스센터 전화번호가 뭐예요?"
+  },
+  {
+   "id": "holdout_e6:E6-092",
+   "type": "insufficient",
+   "q": "콜드쏘 SAW-01 유압유는 몇 리터 채워야 돼?"
+  },
+  {
+   "id": "holdout_e6:E6-093",
+   "type": "insufficient",
+   "q": "CS-AFLT 공기필터 갈아 끼우는 데 몇 분이나 걸려요?"
+  },
+  {
+   "id": "holdout_e6:E6-094",
+   "type": "insufficient",
+   "q": "CMM 스타일러스 볼 지름은 몇 mm짜리 써?"
+  },
+  {
+   "id": "holdout_e6:E6-095",
+   "type": "insufficient",
+   "q": "OP-40 초음파 세척조에 세척액이 몇 리터 들어가요?"
+  },
+  {
+   "id": "holdout_e6:E6-096",
+   "type": "insufficient",
+   "q": "VF-2 한 대 무게가 몇 kg이에요?"
+  },
+  {
+   "id": "holdout_e6:E6-097",
+   "type": "insufficient",
+   "q": "안전화는 회사에서 몇 달마다 새로 지급해?"
+  },
+  {
+   "id": "holdout_e6:E6-098",
+   "type": "insufficient",
+   "q": "잠금·표지할 때 쓰는 개인 자물쇠는 어느 회사 제품이야?"
+  },
+  {
+   "id": "holdout_e6:E6-099",
+   "type": "insufficient",
+   "q": "SC538 원액 뜯지 않고 두면 유통기한 몇 년이에요?"
+  },
+  {
+   "id": "holdout_e6:E6-100",
+   "type": "insufficient",
+   "q": "VF-2 주축 베어링은 몇 년마다 교체해요?"
+  },
+  {
+   "id": "holdout_e7:E7-004",
+   "type": "insufficient",
+   "q": "CS-AFLT 공기 필터 주문하면 들어오는 데 며칠 걸려요?"
+  },
+  {
+   "id": "holdout_e7:E7-007",
+   "type": "none",
+   "q": "이번 주말 서울에 비 온대?"
+  },
+  {
+   "id": "holdout_e7:E7-009",
+   "type": "insufficient",
+   "q": "OP-40 세척 끝나고 건조는 몇 분 동안 해?"
+  },
+  {
+   "id": "holdout_e7:E7-016",
+   "type": "insufficient",
+   "q": "CMM 프로브 스타일러스 끝 볼 지름은 몇 mm짜리 써요?"
+  },
+  {
+   "id": "holdout_e7:E7-019",
+   "type": "none",
+   "q": "연말정산 서류는 언제까지 내야 돼요?"
+  },
+  {
+   "id": "holdout_e7:E7-024",
+   "type": "insufficient",
+   "q": "HCS-80 톱날 하나로 몇 번 자르고 나면 교체해요?"
+  },
+  {
+   "id": "holdout_e7:E7-029",
+   "type": "none",
+   "q": "사내 동호회 가입 신청은 어디서 해요?"
+  },
+  {
+   "id": "holdout_e7:E7-032",
+   "type": "insufficient",
+   "q": "991 뜨면 앰프 식히는 데 몇 분 기다려야 돼?"
+  },
+  {
+   "id": "holdout_e7:E7-038",
+   "type": "insufficient",
+   "q": "절삭유 펌프 임펠러 갈아 끼우는 데 시간 얼마나 걸려?"
+  },
+  {
+   "id": "holdout_e7:E7-041",
+   "type": "none",
+   "q": "UR10 협동로봇 가반하중이 몇 kg이에요?"
+  },
+  {
+   "id": "holdout_e7:E7-046",
+   "type": "insufficient",
+   "q": "웨이 커버 그리스는 한 번 바를 때 몇 그램 발라요?"
+  },
+  {
+   "id": "holdout_e7:E7-052",
+   "type": "none",
+   "q": "엑셀에서 VLOOKUP은 어떻게 써?"
+  },
+  {
+   "id": "holdout_e7:E7-054",
+   "type": "insufficient",
+   "q": "VF2-02 X축 볼스크류 부품번호가 뭐예요?"
+  },
+  {
+   "id": "holdout_e7:E7-060",
+   "type": "none",
+   "q": "회사 통근버스 첫차는 몇 시에 출발해요?"
+  },
+  {
+   "id": "holdout_e7:E7-063",
+   "type": "insufficient",
+   "q": "야간 반장이 05시부터 06시까지 연장 근무하면 수당은 얼마 나와요?"
+  },
+  {
+   "id": "holdout_e7:E7-070",
+   "type": "insufficient",
+   "q": "Elma tec clean N1 세척제는 몇 리터짜리 통으로 사?"
+  },
+  {
+   "id": "holdout_e7:E7-073",
+   "type": "none",
+   "q": "요즘 은행 예금 금리 몇 프로 정도야?"
+  },
+  {
+   "id": "holdout_e7:E7-080",
+   "type": "insufficient",
+   "q": "VF-2 들여올 때 지게차 포크 길이는 몇 mm 이상이어야 돼?"
+  },
+  {
+   "id": "holdout_e7:E7-085",
+   "type": "none",
+   "q": "택배 보낼 때 어느 편의점이 제일 싸?"
+  },
+  {
+   "id": "holdout_e7:E7-086",
+   "type": "insufficient",
+   "q": "HCS-80 톱날은 날 수 몇 개짜리 쓰는 거예요?"
+  },
+  {
+   "id": "holdout_e7:E7-091",
+   "type": "insufficient",
+   "q": "진동 바렐 미디어는 몇 달마다 새 걸로 갈아요?"
+  },
+  {
+   "id": "holdout_e7:E7-098",
+   "type": "insufficient",
+   "q": "HCS-80 유압유 탱크에는 몇 리터 들어가요?"
+  },
+  {
+   "id": "holdout_e8:E8-061",
+   "type": "insufficient",
+   "q": "이거 뜨면 주축 몇 분 식혔다가 다시 돌려?",
+   "context": {
+    "screen": "SCR-09",
+    "alarm_key": "254"
+   }
+  },
+  {
+   "id": "holdout_e8:E8-062",
+   "type": "insufficient",
+   "q": "절삭유 원액 SC538은 뜯은 뒤 유통기한이 얼마나 돼요?"
+  },
+  {
+   "id": "holdout_e8:E8-063",
+   "type": "insufficient",
+   "q": "HCS-80 유압유는 무슨제품 넣어?"
+  },
+  {
+   "id": "holdout_e8:E8-064",
+   "type": "insufficient",
+   "q": "공구 교환장치 V 레일에 그리스 몇 그램 바르면 돼?"
+  },
+  {
+   "id": "holdout_e8:E8-065",
+   "type": "insufficient",
+   "q": "초음파 세척기 발진주파수 몇 kHz 짜리야?"
+  },
+  {
+   "id": "holdout_e8:E8-066",
+   "type": "insufficient",
+   "q": "CMM 결과 파일 안 들어오면 몇 분 지나서 미수신 알림이 떠요?"
+  },
+  {
+   "id": "holdout_e8:E8-067",
+   "type": "insufficient",
+   "q": "교대 사이 시간에도 보전 담당자가 출근해 있어?"
+  },
+  {
+   "id": "holdout_e8:E8-068",
+   "type": "insufficient",
+   "q": "측정기 결과 CSV 떨어지는 공유 폴더 경로가 어디로 잡혀 있어?"
+  },
+  {
+   "id": "holdout_e8:E8-069",
+   "type": "insufficient",
+   "q": "M6 탭은 어느 회사 제품 쓰고 있어요?"
+  },
+  {
+   "id": "holdout_e8:E8-070",
+   "type": "insufficient",
+   "q": "폐절삭유는 어느 업체가 수거해 가?"
+  },
+  {
+   "id": "holdout_e8:E8-071",
+   "type": "insufficient",
+   "q": "MIL-01 습동면 윤활유 제품명 뭐야?"
+  },
+  {
+   "id": "holdout_e8:E8-072",
+   "type": "insufficient",
+   "q": "작업자가 잠금·표지 직접 하려면 교육 몇 시간 받아야 돼?"
+  },
+  {
+   "id": "holdout_e8:E8-073",
+   "type": "insufficient",
+   "q": "VF-2로 BRK-A100 정삭할 때 주축 몇 rpm으로 돌려?"
+  },
+  {
+   "id": "holdout_e8:E8-074",
+   "type": "insufficient",
+   "q": "출하처 CUST-01 구매 담당자 이름이랑 연락처 알려 줘"
+  },
+  {
+   "id": "holdout_e8:E8-075",
+   "type": "none",
+   "q": "이번 주 팀 회식 장소 어디로 잡혔어?"
+  },
+  {
+   "id": "holdout_e8:E8-076",
+   "type": "none",
+   "q": "육아휴직 신청은 몇 달 전에 내야 하나요?"
+  },
+  {
+   "id": "holdout_e8:E8-077",
+   "type": "none",
+   "q": "주차장 정기권은 어디서 신청해?"
+  },
+  {
+   "id": "holdout_e8:E8-078",
+   "type": "none",
+   "q": "KUKA 로봇 팔 영점 다시 잡는 법 알려 줘"
+  },
+  {
+   "id": "holdout_e8:E8-079",
+   "type": "none",
+   "q": "환율이 요즘 왜 이렇게 오르는 거야?"
+  },
+  {
+   "id": "holdout_e8:E8-080",
+   "type": "none",
+   "q": "사무실 프린터 토너는 어디서 주문해요?"
+  },
+  {
+   "id": "holdout_e8:E8-081",
+   "type": "none",
+   "q": "건강검진 결과 언제쯤 나와?"
+  },
+  {
+   "id": "holdout_e8:E8-082",
+   "type": "none",
+   "q": "어제 야구 누가 이겼냐"
+  },
+  {
+   "id": "holdout_e9:E9-061",
+   "type": "insufficient",
+   "q": "진동 바렐에 넣는 미디어는 세라믹 써 플라스틱 써?"
+  },
+  {
+   "id": "holdout_e9:E9-062",
+   "type": "insufficient",
+   "q": "주축 드로바 클램프 힘은 몇 lbf 나와야 정상이에요?"
+  },
+  {
+   "id": "holdout_e9:E9-063",
+   "type": "insufficient",
+   "q": "세척액 새로 갈 때 초음파 세척조 하나 채우려면 물이랑 세척제 합쳐서 몇 리터 필요해?"
+  },
+  {
+   "id": "holdout_e9:E9-064",
+   "type": "insufficient",
+   "q": "절단기 가이드레일 윤활유통은 몇 리터 짜리야"
+  },
+  {
+   "id": "holdout_e9:E9-065",
+   "type": "insufficient",
+   "q": "2073 고치다가 압력 스위치 갈면 부품번호 뭘로 주문해요?"
+  },
+  {
+   "id": "holdout_e9:E9-066",
+   "type": "insufficient",
+   "q": "매달 하는 우산형 공구교환장치 가이드 레일 그리스 작업, 한 번에 몇 g씩 짜 넣는 게 기준이에요?"
+  },
+  {
+   "id": "holdout_e9:E9-067",
+   "type": "insufficient",
+   "q": "측정실 에어컨 꺼졌을 때 온도가 분당 몇 ℃ 이상 오르면 CMM 온도 기울기 알람이 걸리는 거야?"
+  },
+  {
+   "id": "holdout_e9:E9-068",
+   "type": "insufficient",
+   "q": "절삭유 원액 SC538 토트 하나 구매 단가가 어느 정도인지 아세요?"
+  },
+  {
+   "id": "holdout_e9:E9-069",
+   "type": "insufficient",
+   "q": "M6탭 단가가얼마야?"
+  },
+  {
+   "id": "holdout_e9:E9-070",
+   "type": "insufficient",
+   "q": "콜드쏘 톱날은 며칠 쓰고 새 걸로 갈아요?"
+  },
+  {
+   "id": "holdout_e9:E9-071",
+   "type": "insufficient",
+   "q": "측정기 접촉 프로브 끝에 달린 루비 볼 크기가 몇 파이야?"
+  },
+  {
+   "id": "holdout_e9:E9-072",
+   "type": "insufficient",
+   "q": "Z축 서보 모터 무게가 몇 kg 나가요?"
+  },
+  {
+   "id": "holdout_e9:E9-073",
+   "type": "insufficient",
+   "q": "VF-2 절삭유 펌프 유량이분당 몇 리터야?"
+  },
+  {
+   "id": "holdout_e9:E9-074",
+   "type": "insufficient",
+   "q": "1호기 X축 볼스크류 리드가 몇 mm야?"
+  },
+  {
+   "id": "holdout_e9:E9-075",
+   "type": "none",
+   "q": "내일 아침 공장 쪽 날씨 비 온대?"
+  },
+  {
+   "id": "holdout_e9:E9-076",
+   "type": "none",
+   "q": "처남 결혼식이라 경조 휴가 내려는데 회사 규정상 며칠 받을 수 있어요?"
+  },
+  {
+   "id": "holdout_e9:E9-077",
+   "type": "none",
+   "q": "오늘 2층 식당 점심에 돈까스 나와?"
+  },
+  {
+   "id": "holdout_e9:E9-078",
+   "type": "none",
+   "q": "야간조 끝나고 새벽에 집 가는 셔틀버스 있어요?"
+  },
+  {
+   "id": "holdout_e9:E9-079",
+   "type": "none",
+   "q": "옆 라인 용접 로봇 화낙 R-2000은 원점 다시 잡을 때 어떻게 해?"
+  },
+  {
+   "id": "holdout_e9:E9-080",
+   "type": "none",
+   "q": "엑셀 피벗 테이블은 어떻게 만드는 거예요?"
+  },
+  {
+   "id": "holdout_e9:E9-081",
+   "type": "none",
+   "q": "회사 축구 동아리 이번 달 회비 얼마야?"
+  },
+  {
+   "id": "holdout_e9:E9-082",
+   "type": "none",
+   "q": "이번 주말에 개봉하는 영화 중에 볼 만한 거 뭐 있어?"
+  },
+  {
+   "id": "holdout_cmp30:CMP-018",
+   "type": "insufficient",
+   "q": "야간 교대에서 휴식 1시간은 몇 시부터야?"
+  },
+  {
+   "id": "holdout_cmp30:CMP-019",
+   "type": "insufficient",
+   "q": "3차원 측정기 교정은 몇 개월마다 받아야 돼요?"
+  },
+  {
+   "id": "holdout_cmp30:CMP-020",
+   "type": "insufficient",
+   "q": "VF-2 주축 모터 정격 출력이 몇 kW야?"
+  },
+  {
+   "id": "holdout_cmp30:CMP-021",
+   "type": "insufficient",
+   "q": "진동 바렐 진동수가몇Hz로 돌아?"
+  },
+  {
+   "id": "holdout_cmp30:CMP-022",
+   "type": "insufficient",
+   "q": "절삭유 필터 새로 사려면 부품번호가 뭐야?"
+  },
+  {
+   "id": "holdout_cmp30:CMP-023",
+   "type": "none",
+   "q": "낼 아침에 비오나? 기온 몇 도야?"
+  },
+  {
+   "id": "holdout_cmp30:CMP-024",
+   "type": "none",
+   "q": "FANUC 로봇 SRVO-062 알람이 뭐야?"
+  },
+  {
+   "id": "tune_f:F21",
+   "type": "insufficient",
+   "q": "VF-2 주축 베어링은 몇 시간 쓰면 교체해?"
+  },
+  {
+   "id": "tune_f:F22",
+   "type": "insufficient",
+   "q": "6개월마다 절삭유 탱크 비울 때 폐액은 어디다 버려?"
+  },
+  {
+   "id": "tune_f:F23",
+   "type": "insufficient",
+   "q": "축 윤활유 1갤런 통 한 개 가격 얼마야?"
+  },
+  {
+   "id": "tune_f:F24",
+   "type": "insufficient",
+   "q": "SC538 원액은 뜯고 나서 몇 달 안에 써야 해?"
+  },
+  {
+   "id": "tune_f:F26",
+   "type": "insufficient",
+   "q": "3차원 측정기 스타일러스는 몇 번 재면 새 걸로 바꿔?"
+  },
+  {
+   "id": "tune_f:F27",
+   "type": "insufficient",
+   "q": "VF-2 주축 모터 정격 전류는 몇 A야?"
+  },
+  {
+   "id": "tune_f:F28",
+   "type": "insufficient",
+   "q": "보호구는 몇 개월마다 새로 지급해?"
+  },
+  {
+   "id": "tune_f:F29",
+   "type": "insufficient",
+   "q": "반장 시작 회의는 몇 분 동안 해?"
+  },
+  {
+   "id": "tune_f:F30",
+   "type": "insufficient",
+   "q": "절삭유 pH가 얼마 아래로 떨어지면 갈아?"
+  },
+  {
+   "id": "tune_f:F31",
+   "type": "insufficient",
+   "q": "측정실 습도는 몇 퍼센트로 맞춰?"
+  },
+  {
+   "id": "tune_f:F32",
+   "type": "insufficient",
+   "q": "잠금·표지 교육은 1년에 몇 번 받아?"
+  },
+  {
+   "id": "tune_f:F41",
+   "type": "none",
+   "q": "주말 특근 신청은 어디서 해?"
+  },
+  {
+   "id": "tune_f:F42",
+   "type": "none",
+   "q": "사내 체육대회 언제야?"
+  },
+  {
+   "id": "tune_f:F43",
+   "type": "none",
+   "q": "근처 병원 어디 있어?"
+  },
+  {
+   "id": "tune_f:F44",
+   "type": "none",
+   "q": "연차 며칠 남았는지 알려줘"
+  },
+  {
+   "id": "tune_f:F45",
+   "type": "none",
+   "q": "구내식당 저녁은 몇 시에 열어?"
+  },
+  {
+   "id": "tune_f:F46",
+   "type": "none",
+   "q": "파이썬으로 그래프 그리는 법 알려줘"
+  },
+  {
+   "id": "tune_f:F47",
+   "type": "none",
+   "q": "오늘 원달러 환율 얼마야?"
+  },
+  {
+   "id": "tune_f:F48",
+   "type": "none",
+   "q": "택배 보내려면 어디로 가?"
+  }
+ ]
+}
