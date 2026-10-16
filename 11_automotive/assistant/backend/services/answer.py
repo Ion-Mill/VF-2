@@ -1623,6 +1623,9 @@ def stops_pieces(r: dict, rng: str, eq: str | None) -> tuple[str, list[str], lis
         groups.append(s)
     cyc = r["cycle_min"]
     basis = ("기준 사이클 " + ", ".join(f"{k} {v:.1f}분" for k, v in cyc.items())) if cyc else "그 설비의 기준 사이클"
+    if r.get("partial"):   # [11_automotive 이식 2026-10-16] 백엔드 조회 도구는 손실 정지만 준다 — "정지 전체"·필수 정지·순간 정지는 말하지 않는다
+        return (f"{rng} {eq or '라인 전체'} 손실 정지 {r['total_count']}번 {r['total_minutes']:g}분", groups,
+                [f"고장 손실 약 {r['loss_qty_est_total']}개(추정 = 정지 1건마다 정지 시간 ÷ {basis})"])
     head = f"{rng} {eq or '라인 전체'} 정지 전체 {r['total_count']}번 {r['total_minutes']:g}분"
     report = [f"필수 정지(고장 5분 이상) {len(r['rows'])}번 {r['total_failure_min']:g}분",
               f"고장 손실 약 {r['loss_qty_est_total']}개(추정 = 정지 1건마다 정지 시간 ÷ {basis})",
@@ -1633,6 +1636,8 @@ def stops_pieces(r: dict, rng: str, eq: str | None) -> tuple[str, list[str], lis
 def stops_text(r: dict, rng: str, eq: str | None) -> str:
     """정지 답: 멈춘 기록 전부를 사유 그룹별로 + 교대 보고서 기준(필수 정지·순간 정지) + 손실 계산식 (DOC-07 §5.1·§5.3·§5.4)."""
     head, groups, report = stops_pieces(r, rng, eq)
+    if r.get("partial"):   # [11_automotive 이식 2026-10-16] "교대 보고서 기준"이 아니라 손실 추정 한 줄
+        return head + " — " + " · ".join(groups) + ". " + ", ".join(report)
     return head + " — " + " · ".join(groups) + ". 교대 보고서 기준: " + ", ".join(report)
 
 
@@ -1663,10 +1668,11 @@ def ops_answer(role: str, p: dict, needs: list[str] | None = None,
             else:
                 texts.append(stops_text(r, rng, eq))
                 head, groups, report = stops_pieces(r, rng, eq)
+                lead_ko = "손실 추정" if r.get("partial") else "교대 보고서 기준"   # [11_automotive 이식 2026-10-16]
                 if blocks3_on():   # 9차 F: 사유 그룹(번호 목록)과 교대 보고서 기준(작은 제목 + 따로 목록)을 나눈다
-                    add(head, groups, texts[-1], r, notes=("교대 보고서 기준", report))
+                    add(head, groups, texts[-1], r, notes=(lead_ko, report))
                 else:
-                    add(head, groups + ["교대 보고서 기준 — " + x for x in report], texts[-1], r)
+                    add(head, groups + [lead_ko + " — " + x for x in report], texts[-1], r)
                 # 사유 그룹·필수 정지·손실 계산식의 정의 출처
                 defs += [_cite(c) for c in (_chunk("DOC-07", "5.1"), _chunk("DOC-07", "5.4"), _chunk("DOC-07", "5.3")) if c]
         elif intent == "production":
@@ -1703,10 +1709,12 @@ def ops_answer(role: str, p: dict, needs: list[str] | None = None,
                 texts.append(f"{eq} 지표: 데이터 없음")
             else:
                 k = r["rows"][0]
-                mttr = "—" if k["mttr_30d_min"] is None else f"{k['mttr_30d_min']:g}분"
-                mtbf = "—" if k["mtbf_30d_h"] is None else f"{k['mtbf_30d_h']:g}시간"
                 texts.append(f"{eq} {rng}: OEE {k['oee_pct']}% (가동률 {k['availability_pct']}%, 성능 {k['performance_pct']}%, "
-                             f"양품률 {k['qbr_pct']}%), MTTR {mttr}, MTBF {mtbf} (30일, 고장 {k['failures_30d']}건)")
+                             f"양품률 {k['qbr_pct']}%)")
+                if not k.get("reliability_hidden"):   # [11_automotive 이식 2026-10-16] MTTR·MTBF는 MNT·MGR만 — 못 보는 역할에는 "—"도 보이지 않는다
+                    mttr = "—" if k["mttr_30d_min"] is None else f"{k['mttr_30d_min']:g}분"
+                    mtbf = "—" if k["mtbf_30d_h"] is None else f"{k['mtbf_30d_h']:g}시간"
+                    texts[-1] += f", MTTR {mttr}, MTBF {mtbf} (30일, 고장 {k['failures_30d']}건)"
             add("", [], texts[-1], r)   # 지표는 한 문장
         elif intent == "kpi" and needs is not None:
             needs.append("설비 (예: VF2-01)")
@@ -1714,7 +1722,10 @@ def ops_answer(role: str, p: dict, needs: list[str] | None = None,
             r = T.lots(role, p["lot"], p["order"])
             data.append(r)
             items = [f"{l['lot_id']} {l['qty']}개 {l['status']}" for l in r["rows"]]
-            texts.append("로트: " + (", ".join(items) or "데이터 없음"))
+            if r.get("unsupported"):   # [11_automotive 이식 2026-10-16] 작업지시 번호로 로트를 찾는 조회는 백엔드 도구에 없다 — "데이터 없음"이라고 하지 않는다
+                texts.append("로트: 작업지시 번호로는 아직 찾을 수 없습니다. 로트 번호(예: LOT-2609-001-1)로 물어봐 주세요")
+            else:
+                texts.append("로트: " + (", ".join(items) or "데이터 없음"))
             add("로트", items, texts[-1], r)
         elif intent == "lots" and needs is not None:
             needs.append("로트 번호 (예: LOT-2609-001-1) 또는 작업지시 번호")
@@ -1750,8 +1761,8 @@ def ops_answer(role: str, p: dict, needs: list[str] | None = None,
             r = T.alarms(role, eq, code, start=p["start"], end=p["end"], shift=p["shift"])
             data.append(r)
             by_eq = {}
-            for a in r["rows"]:
-                by_eq[a["equipment_id"]] = by_eq.get(a["equipment_id"], 0) + 1
+            for a in r["rows"]:   # [11_automotive 이식 2026-10-16] 백엔드 알람 도구는 설비·알람별 집계(times)다 — 건별 행이 아니다
+                by_eq[a["equipment_id"]] = by_eq.get(a["equipment_id"], 0) + int(a.get("times", 1))
             items = [f"{k} {v}번" for k, v in sorted(by_eq.items())]
             texts.append(f"{rng} 알람 {code} 발생: " + (", ".join(items) or "없음"))
             add(f"{rng} 알람 {code} 발생", items, texts[-1], r)
@@ -1760,7 +1771,9 @@ def ops_answer(role: str, p: dict, needs: list[str] | None = None,
         elif intent == "equipment_status":
             r = T.equipment_status(role, eq)
             data.append(r)
-            items = [f"{s['equipment_id']} 마지막 {s['last_state']} ({s['until'][11:16]}까지)" for s in r["rows"]]
+            # [11_automotive 이식 2026-10-16] 원본은 "마지막 상태 (HH:MM까지)" — 지금 상태 조회는 "상태 (HH:MM부터 N분)" + 열린 알람·잠금
+            items = [f"{s['equipment_id']} {s['last_state']} ({(s.get('since') or '')[11:16]}부터 {s.get('minutes') or 0:g}분)"
+                     + (f", 알람 {s['open_alarm_code']}" if s.get("open_alarm_code") else "") + (", 잠금" if s.get("is_locked") else "") for s in r["rows"]]
             texts.append("설비 상태: " + ", ".join(items))
             add("설비 상태", items, texts[-1], r)
     return texts, data, defs
@@ -1771,17 +1784,11 @@ def related_line(role: str, p: dict) -> str | None:
     if not p["alarms"]:
         return None
     code = p["alarms"][0]["code"]
+    # [11_automotive 이식 2026-10-16] 알람 횟수는 집계(times)로 센다. 반복 알람 단계·"처리 안 된 알림 N건"은 백엔드 조회 도구에 없어 말하지 않는다
     r7 = T.alarms(role, None, code, start=REF_DATE - timedelta(days=7), end=REF_DATE - timedelta(days=1))
     r30 = T.alarms(role, None, code)
-    reps = [x for x in get_repo().table("repeat_alarm") if x["alarm_code"] == code]
-    line = f"이 알람은 최근 7일 {len(r7['rows'])}번, 30일 {len(r30['rows'])}번 났습니다"
-    if reps:
-        last = reps[-1]
-        line += f" · {last['equipment_id']} 반복 알람 {last['stage']}단계 ({last['status']})"
-    open_ = [a for a in r30["rows"] if a["processed"] == "false"]
-    if open_:
-        line += f" · 처리 안 된 알림 {len(open_)}건"
-    return line + f" [{DATA_LABEL}]"
+    n7, n30 = sum(int(x["times"]) for x in r7["rows"]), sum(int(x["times"]) for x in r30["rows"])
+    return f"이 알람은 최근 7일 {n7}번, 30일 {n30}번 났습니다 [{DATA_LABEL}]"
 
 
 # ---------------------------------------------------------------- 사람만 하는 일·설비 조작 (SCR-10 [4], FR-AST-COM-10·11)

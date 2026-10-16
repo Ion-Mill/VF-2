@@ -24,11 +24,14 @@ from backend import config as C
 from backend.chat_mapping import UnknownStatus, role_gate, to_backend
 from backend.llm import external as EXT
 from backend.rag.chunker import CorpusError, load_corpus
+from backend.repositories import backend_tools as BT
 from backend.services.answer import answer
+from backend.tools.query_tools import ToolInputError
 
 log = logging.getLogger("assistant")
 
 UNAVAILABLE_MESSAGE = "비서가 지금 답하지 못합니다. 잠시 후 다시 시도해 주세요"
+DENIED_ANSWER = "이 정보는 지금 역할로는 볼 수 없어요. 값은 알려 드리지 않습니다. 권한이 있는 담당자에게 물어봐 주세요."
 CONTEXT_KEYS = ("screen", "equipment_id", "alarm_key", "alarm_event_id")     # answer()가 보는 화면 문맥 칸 (그 밖의 칸은 버린다)
 
 
@@ -99,7 +102,8 @@ def chat(req: ChatRequest) -> dict:
     if provider == "claude" and not C.settings().external_app:      # 서버 끄는 스위치 — 꺼져 있으면 외부로 한 글자도 안 보낸다
         raise Unavailable("external switch off")
     try:
-        with EXT.external_request(provider) as ext:                  # provider가 None이면 아무것도 안 바뀐다. 끝나면 되돌린다
+        # 누구를 대신해 묻는지·허용 도구는 이 요청 안에서만 (contextvars) — 허용 목록에 없는 조회 도구는 백엔드를 부르기 전에 막는다
+        with BT.acting_as(req.user.user_id, req.allowed_tools), EXT.external_request(provider) as ext:   # provider가 None이면 아무것도 안 바뀐다. 끝나면 되돌린다
             a = answer(req.question, req.user.role_code, _context(req.context))
             if ext is not None:
                 miss = ext.material_failure()                        # 재료를 정하는 단계의 외부 호출 실패 → 오류 (다른 LLM으로 몰래 바꾸지 않는다)
@@ -110,6 +114,11 @@ def chat(req: ChatRequest) -> dict:
         return to_backend(a)
     except Unavailable:
         raise
+    except BT.ToolDenied as e:      # 이 역할에 허용되지 않은 조회 — 값 없이 권한 밖으로 답한다 (사람 이름·값을 섞어 보내지 않는다)
+        log.info("권한 밖 도구: %s", e.tool)
+        return {"answer": DENIED_ANSWER, "sources": [], "related": [], "status": "OUT_OF_ROLE"}
+    except ToolInputError as e:     # 질문에서 읽은 설비·기간이 조회 도구가 받을 수 없는 값
+        raise Unavailable(f"tool input: {e}") from e
     except UnknownStatus as e:
         raise Unavailable(str(e)) from e
     except Exception as e:      # 답을 만들다 멈춤 (조회 도구 실패 포함) — 안쪽 사정은 로그에만

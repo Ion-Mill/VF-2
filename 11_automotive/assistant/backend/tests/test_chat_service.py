@@ -8,6 +8,7 @@ from backend import chat_service as CS
 from backend import config as C
 from backend.llm import external as EXT
 
+pytestmark = pytest.mark.own_backend            # 서비스 키·설정을 이 파일이 직접 준비한다 (conftest의 기본을 끈다)
 KEY = "test-service-key"
 H = {"X-Service-Key": KEY}
 client = TestClient(CS.app)

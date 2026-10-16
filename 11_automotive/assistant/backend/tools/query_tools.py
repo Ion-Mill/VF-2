@@ -1,27 +1,30 @@
-"""비서용 읽기 전용 조회 도구 10개 (FR-MNT-01-04, ai-operations-assistant 규칙 3.3).
+"""비서용 읽기 전용 조회 도구 11개 (FR-MNT-01-04, ai-operations-assistant 규칙 3.3).
 
-SQL을 쓰지 않고, 입력(설비·기간·역할)을 검증하고, 결과가 비어 있으면 숫자를 지어내지 않는다.
-모든 결과에 조회 도구명·데이터 범위·기준 시각·가상 여부를 붙인다.
+[11_automotive 이식 2026-10-16] 원본은 simulator/out CSV를 직접 읽었다. 여기서는 기존 백엔드의 비서 조회 도구(`/api/assistant/tools/{name}`, 14개)를
+`repositories/backend_tools.py`로 부르고, 결과를 **원본이 돌려주던 행 모양으로 번역**한다 — 3,000줄 넘는 `services/answer.py`가 읽는 칸 이름을 그대로 두기 위해서다.
+함수 이름·인자·`_result(...)` 모양은 원본 그대로다.
+
+SQL을 쓰지 않고, 입력(설비·기간)을 검증하고, 결과가 비어 있으면 숫자를 지어내지 않는다. 모든 결과에 조회 도구명·데이터 범위·기준 시각·가상 여부를 붙인다.
+백엔드 도구가 주지 않는 정보(건별 알람, 계획 정지·필수 정지, 작업지시 번호로 로트 찾기 …)는 **지어내지 않고** 결과에 `partial`/`unsupported` 표시를 달아 답 문장이 밝히게 한다.
+권한: 허용 목록(`allowed_tools`)에 없는 도구는 호출하지 않고 ToolDenied (chat_service가 권한 밖 답으로 바꾼다).
 """
 from __future__ import annotations
 
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 
-from backend.auth.permissions import require
 from backend.config import DATA_LABEL, REFERENCE_AT
-from backend.repositories.csv_repo import get_repo
+from backend.repositories import backend_tools as BT
 from backend.services import metrics as M
 
 EQUIPMENT = {"SAW-01", "MIL-01", "VF2-01", "VF2-02", "WSH-01", "CMM-01"}
 REF = datetime.fromisoformat(REFERENCE_AT[:19])
+KST = timezone(timedelta(hours=9))
+MAX_DAYS = 31            # 백엔드 도구의 기간 상한 (alarms·kpi·production·stop_reasons)
+CHUNK_DAYS = 30
 
 
 class ToolInputError(ValueError):
     pass
-
-
-def _dt(s: str) -> datetime:
-    return datetime.fromisoformat(s[:19])
 
 
 def _check_equipment(eq):
@@ -29,8 +32,8 @@ def _check_equipment(eq):
         raise ToolInputError(f"알 수 없는 설비: {eq}")
 
 
-def _result(tool, rows, data_range, **extra):
-    return {"tool": tool, "as_of": REFERENCE_AT, "range": data_range, "is_synthetic": True, "label": DATA_LABEL,
+def _result(tool, rows, data_range, as_of=None, **extra):
+    return {"tool": tool, "as_of": as_of or REFERENCE_AT, "range": data_range, "is_synthetic": True, "label": DATA_LABEL,
             "rows": rows, "empty": not rows, **extra}
 
 
@@ -43,6 +46,7 @@ def _period(start: date | None, end: date | None, default_days=30):
 
 
 SHIFT_KO = {"D": "주간", "N": "야간"}
+SHIFT_TYPE = {"D": "DAY", "N": "NIGHT"}
 
 
 def _range(start: date, end: date, shift: str | None) -> str:
@@ -50,198 +54,249 @@ def _range(start: date, end: date, shift: str | None) -> str:
     return f"{start} ~ {end}" + (f" {SHIFT_KO.get(shift, shift)}" if shift else "")
 
 
-def _in_shift_period(shift_id: str, start: date, end: date, shift: str | None):
-    rows = {s["shift_id"]: s for s in get_repo().table("calendar_shift")}
-    s = rows.get(shift_id)
-    return bool(s) and start <= date.fromisoformat(s["prod_date"]) <= end and (shift is None or s["shift"] == shift)
+def _dt(day: date, hour: int = 0) -> str:
+    return datetime(day.year, day.month, day.day, hour, tzinfo=KST).isoformat()
 
 
+def _date_chunks(start: date, end: date) -> list[tuple[date, date]]:
+    """백엔드 도구의 기간 상한(31일)을 넘지 않게 30일씩 나눈다."""
+    out, cur = [], start
+    while cur <= end:
+        stop = min(end, cur + timedelta(days=CHUNK_DAYS - 1))
+        out.append((cur, stop))
+        cur = stop + timedelta(days=1)
+    return out
+
+
+def _windows(start: date, end: date, shift: str | None) -> list[tuple[str, str]]:
+    """[시작, 끝) 시각 구간들. 교대를 정하면 날마다 교대 시간대만 (주간 08~17, 야간 20~다음 날 05 — 가상데이터설계서 5.2)."""
+    if shift is None:
+        return [(_dt(a), _dt(b + timedelta(days=1))) for a, b in _date_chunks(start, end)]
+    out, d = [], start
+    while d <= end:
+        out.append((_dt(d, 8), _dt(d, 17)) if shift == "D" else (_dt(d, 20), _dt(d + timedelta(days=1), 5)))
+        d += timedelta(days=1)
+    return out
+
+
+def _call(name: str, args: dict) -> BT.ToolResult:
+    return BT.call_tool(name, args)
+
+
+def _num(x, default=0.0):
+    return default if x is None else float(x)
+
+
+def _gather(name: str, windows: list[tuple[str, str]], extra: dict) -> tuple[list[dict], str | None]:
+    rows, now = [], None
+    for a, b in windows:
+        r = _call(name, {"from": a, "to": b, **extra})
+        rows += r.rows
+        now = r.now or now
+    return rows, now
+
+
+# ---------------------------------------------------------------- 설비 상태
 def equipment_status(role, equipment_id=None):
-    require(role, "view_ops")
     _check_equipment(equipment_id)
-    logs = get_repo().table("equipment_state_log")
-    last = {}
-    for r in logs:
-        if equipment_id and r["equipment_id"] != equipment_id:
-            continue
-        if r["equipment_id"] not in last or r["end"] > last[r["equipment_id"]]["end"]:
-            last[r["equipment_id"]] = r
-    rows = [{"equipment_id": k, "last_state": v["state"], "until": v["end"],
-             "note": "교대 사이(05:00~08:00) 라인 정지 — 기준 시각에는 가공하지 않음"} for k, v in sorted(last.items())]
-    return _result("설비 상태 조회", rows, "마지막 기록")
+    r = _call("equipment_status", {"equipment_id": equipment_id})
+    rows = [{"equipment_id": x["equipment_id"], "process_code": x.get("process_code"), "last_state": x.get("state_code"),
+             "since": x.get("state_since"), "minutes": x.get("state_minutes"), "open_alarm_code": x.get("open_alarm_code"),
+             "open_alarm_severity": x.get("open_alarm_severity"), "is_locked": bool(x.get("is_locked")),
+             "current_lot_no": x.get("current_lot_no")} for x in r.rows]
+    return _result("설비 상태 조회", sorted(rows, key=lambda x: x["equipment_id"]), "지금", as_of=r.now)
 
 
+# ---------------------------------------------------------------- 알람 (백엔드는 건별이 아니라 집계)
 def alarms(role, equipment_id=None, code=None, start=None, end=None, shift=None, unprocessed_only=False):
-    require(role, "view_ops")
+    """알람 횟수 — 설비·알람 번호별 집계(times·처음·마지막·정지 분). 건별 행과 처리 여부는 백엔드 도구에 없다(`partial`)."""
     _check_equipment(equipment_id)
     start, end = _period(start, end)
-    rows = []
-    for a in get_repo().table("alarm_event"):
-        if equipment_id and a["equipment_id"] != equipment_id:
-            continue
-        if code and a["alarm_code"] != code and a["code"] != code:
-            continue
-        if not _in_shift_period(a["shift_id"], start, end, shift):
-            continue
-        if unprocessed_only and a["processed"] == "true":
-            continue
-        rows.append({k: a[k] for k in ("alarm_event_id", "equipment_id", "axis", "alarm_code", "name_ko", "severity",
-                                       "occurred_at", "stop_min", "processed", "work_order_id", "work_record_id")})
-    rows.sort(key=lambda r: r["occurred_at"])
-    return _result("알람 조회", rows, _range(start, end, shift))
+    rows, now = _gather("alarms", _windows(start, end, shift), {"equipment_id": equipment_id, "alarm_code": code})
+    merged: dict[tuple, dict] = {}
+    for x in rows:
+        k = (x["equipment_id"], x["alarm_code"])
+        m = merged.setdefault(k, {"equipment_id": x["equipment_id"], "alarm_code": x["alarm_code"], "name_ko": x.get("name_ko"),
+                                  "severity": x.get("severity_at_event"), "times": 0, "first_at": x.get("first_at"),
+                                  "last_at": x.get("last_at"), "down_min": 0.0})
+        m["times"] += int(x.get("times") or 0)
+        m["down_min"] = round(m["down_min"] + _num(x.get("down_min")), 1)
+        if x.get("first_at") and (not m["first_at"] or x["first_at"] < m["first_at"]):
+            m["first_at"] = x["first_at"]
+        if x.get("last_at") and (not m["last_at"] or x["last_at"] > m["last_at"]):
+            m["last_at"] = x["last_at"]
+    out = sorted(merged.values(), key=lambda m: (m["equipment_id"], m["alarm_code"]))
+    return _result("알람 조회", out, _range(start, end, shift), as_of=now, aggregated=True, partial=True,
+                   note="알람은 설비·알람 번호별 횟수만 조회됩니다 (처리 여부·반복 알람 단계는 아직 조회할 수 없음)")
 
 
-STOP_GROUPS = [("FAILURE", "고장"), ("MATERIALS", "자재·흐름"), ("SETUP", "준비"), ("OPERATION", "조작"), ("PLANNED", "계획")]
+# ---------------------------------------------------------------- 정지 (백엔드는 손실 정지만)
+STOP_GROUPS = [("FAILURE", "고장"), ("MATERIALS", "자재·흐름"), ("SETUP", "준비"), ("OPERATION", "조작")]   # 계획(PLANNED)은 도구가 주지 않는다
 
 
 def stops(role, equipment_id=None, start=None, end=None, shift=None):
-    """정지 기록 전부를 사유 그룹별로 + 필수 정지 판정 (DOC-07 §5.1·§5.4). 지표·손실 조회의 한 부분.
-
-    rows = 필수 정지(교대 보고서 정지 칸). by_group = 멈춘 기록 전부를 그룹·사유별로 센 것
-    (2026-10-08: "몇 번 멈췄어?"에 고장만 세어 앞 공정 대기·준비 정지가 빠지던 문제, FR-MNT-01-04).
-    """
-    require(role, "view_ops")
+    """손실 정지를 사유 그룹별로. 계획 정지·필수 정지(고장 5분 이상)·순간 정지는 백엔드 도구에 없어 `partial`로 밝힌다 (DOC-07 §5.1·§5.4)."""
     _check_equipment(equipment_id)
     start, end = _period(start, end)
-    eq_cycle = {e["equipment_id"]: float(e["cycle_min"]) for e in get_repo().master("equipment")}
-    reasons = {r["code"]: r for r in get_repo().master("downtime_reason")}
-    rows = [d for d in get_repo().table("downtime")
-            if (not equipment_id or d["equipment_id"] == equipment_id) and _in_shift_period(d["shift_id"], start, end, shift)]
-    st = [M.Stop(d["downtime_id"], d["equipment_id"], d["start"], d["end"], float(d["minutes"]), d["reason_code"],
-                 eq_cycle[d["equipment_id"]], d["alarm_event_id"]) for d in rows]
-    req = M.required_stops(st)
-    out = [{"stop_id": s.stop_id, "equipment_id": s.equipment_id, "start": s.start, "minutes": s.minutes,
-            "reason_code": s.reason_code, "loss_qty_est": s.loss_qty, "alarm_event_id": s.alarm_event_id} for s in req["items"]]
+    rows, now = _gather("stop_reasons", _windows(start, end, shift), {"equipment_id": equipment_id})
+    agg: dict[tuple, dict] = {}
+    for x in rows:
+        k = (x["equipment_id"], x["reason_code"])
+        m = agg.setdefault(k, {"equipment_id": x["equipment_id"], "reason_code": x["reason_code"], "reason_name": x.get("reason_name"),
+                               "reason_group": x.get("reason_group"), "times": 0, "minutes": 0.0, "loss_qty": 0.0})
+        m["times"] += int(x.get("times") or 0)
+        m["minutes"] = round(m["minutes"] + _num(x.get("minutes")), 1)
+        m["loss_qty"] = round(m["loss_qty"] + _num(x.get("loss_qty")), 1)
+    out = sorted(agg.values(), key=lambda m: (-m["minutes"], m["equipment_id"], m["reason_code"]))
+    known = {g for g, _ in STOP_GROUPS}
     by_group = []
-    for group, group_ko in STOP_GROUPS:
-        mine = [s for s in st if reasons.get(s.reason_code, {}).get("group") == group]
-        codes = sorted({s.reason_code for s in mine})
-        by_group.append({"group": group, "group_ko": group_ko, "count": len(mine),
-                         "minutes": M.round_half_up(sum(s.minutes for s in mine), 1),
-                         "reasons": [{"code": c, "name": reasons[c]["name"], "count": sum(1 for s in mine if s.reason_code == c),
-                                      "minutes": M.round_half_up(sum(s.minutes for s in mine if s.reason_code == c), 1)} for c in codes]})
-    unknown = [s for s in st if s.reason_code not in reasons]
-    if unknown:  # 사유 코드표에 없는 기록도 빼지 않고 따로 센다 (합계가 맞아야 한다)
-        by_group.append({"group": "UNKNOWN", "group_ko": "코드표에 없음", "count": len(unknown),
-                         "minutes": M.round_half_up(sum(s.minutes for s in unknown), 1),
-                         "reasons": [{"code": c, "name": "코드표에 없음", "count": sum(1 for s in unknown if s.reason_code == c),
-                                      "minutes": M.round_half_up(sum(s.minutes for s in unknown if s.reason_code == c), 1)}
-                                     for c in sorted({s.reason_code for s in unknown})]})
-    cycles = {eq: eq_cycle[eq] for eq in sorted({s.equipment_id for s in req["items"]} | ({equipment_id} if equipment_id else set()))}
-    return _result("지표·손실 조회 (정지)", out, _range(start, end, shift),
-                   micro_count=req["micro_count"], micro_minutes=req["micro_minutes"],
-                   total_failure_min=sum(s.minutes for s in req["items"]),
-                   loss_qty_est_total=sum(s.loss_qty for s in req["items"]),
-                   total_count=len(st), total_minutes=M.round_half_up(sum(s.minutes for s in st), 1),
-                   by_group=by_group, cycle_min=cycles, all_empty=not st)
+    for group, group_ko in STOP_GROUPS + [("UNKNOWN", "코드표에 없음")]:
+        mine = [m for m in out if (m["reason_group"] if m["reason_group"] in known else "UNKNOWN") == group]
+        if group == "UNKNOWN" and not mine:
+            continue
+        by_group.append({"group": group, "group_ko": group_ko, "count": sum(m["times"] for m in mine),
+                         "minutes": M.round_half_up(sum(m["minutes"] for m in mine), 1),
+                         "reasons": [{"code": m["reason_code"], "name": m["reason_name"], "count": m["times"], "minutes": m["minutes"]}
+                                     for m in sorted(mine, key=lambda m: -m["minutes"])]})
+    fail = next((g for g in by_group if g["group"] == "FAILURE"), None)
+    return _result("지표·손실 조회 (정지)", out, _range(start, end, shift), as_of=now,
+                   total_count=sum(m["times"] for m in out), total_minutes=M.round_half_up(sum(m["minutes"] for m in out), 1),
+                   total_failure_min=fail["minutes"] if fail else 0.0, loss_qty_est_total=int(M.round_half_up(sum(m["loss_qty"] for m in out), 0)),
+                   by_group=by_group, cycle_min={}, all_empty=not out, partial=True,
+                   note="손실 정지만 조회됩니다 (계획 정지·필수 정지·순간 정지는 아직 조회할 수 없음)")
 
 
+# ---------------------------------------------------------------- 지표
 def kpi(role, equipment_id, start=None, end=None, shift=None):
-    """가동률·성능·양품률·OEE (교대 합), MTTR·MTBF (30일) — DOC-07 §6."""
-    require(role, "view_ops")
+    """가동률·성능·양품률·OEE (교대 합), MTTR·MTBF (30일, `reliability` 도구가 허용된 역할만) — DOC-07 §6.
+
+    교대별 행을 합친다: A = ΣAPT ÷ ΣPBT, E = 가동 시간 가중 평균(E = PRI × PQ ÷ APT 이므로 ΣPRI·PQ ÷ ΣAPT 와 같다),
+    QBR = Σ(GQ+RQ) ÷ ΣPQ, OEE = PBT 가중 평균(OEE = PRI × (GQ+RQ) ÷ PBT)."""
     if equipment_id is None:
         raise ToolInputError("설비를 정해야 한다")
     _check_equipment(equipment_id)
     start, end = _period(start, end)
-    eq = {e["equipment_id"]: e for e in get_repo().master("equipment")}[equipment_id]
-    ops = [o for o in get_repo().table("op_result")
-           if o["equipment_id"] == equipment_id and _in_shift_period(o["shift_id"], start, end, shift)]
-    if not ops:
-        return _result("지표 조회", [], f"{start} ~ {end}")
-    apt = sum(float(o["run_min"]) for o in ops)
-    pbt = sum(float(o["pbt_min"]) for o in ops)
-    pq = sum(int(o["pq"]) for o in ops)
-    gq = sum(int(o["gq"]) for o in ops)
-    a = M.availability(apt, pbt)
-    e = M.performance(float(eq["cycle_min"]), pq, apt)
-    q = M.quality_buy_rate(gq, 0, pq)
-    downs = sorted((a_ for a_ in get_repo().table("alarm_event")
-                    if a_["equipment_id"] == equipment_id and a_["severity"] == "STOP"), key=lambda x: x["occurred_at"])
-    ttr = [float(d["stop_min"]) for d in downs]
-    tbf = [(_dt(downs[i + 1]["occurred_at"]) - _dt(downs[i]["cleared_at"])).total_seconds() / 3600 for i in range(len(downs) - 1)]
-    row = {"equipment_id": equipment_id, "pbt_min": pbt, "apt_min": apt, "pq": pq, "gq": gq,
-           "availability_pct": a, "performance_pct": e, "qbr_pct": q,
-           "oee_pct": M.oee_from(apt, pbt, float(eq["cycle_min"]), pq, gq),
-           "mttr_30d_min": M.mttr(ttr), "mtbf_30d_h": M.mtbf(tbf, len(downs)), "failures_30d": len(downs),
+    rows, now = [], None
+    for a, b in _date_chunks(start, end):
+        r = _call("kpi", {"from_date": a.isoformat(), "to_date": b.isoformat(), "equipment_id": equipment_id,
+                          "shift_type": SHIFT_TYPE.get(shift)})
+        rows += r.rows
+        now = r.now or now
+    rng = _range(start, end, shift)
+    if not rows:
+        return _result("지표 조회", [], rng, as_of=now)
+    apt, pbt = sum(_num(x.get("run_min")) for x in rows), sum(_num(x.get("pbt_min")) for x in rows)
+    pq, gq, rq = (sum(int(x.get(k) or 0) for x in rows) for k in ("pq", "gq", "rq"))
+    perf = sum(_num(x.get("performance_pct")) * _num(x.get("run_min")) for x in rows) / apt if apt else None
+    oee = sum(_num(x.get("oee_pct")) * _num(x.get("pbt_min")) for x in rows) / pbt if pbt else None
+    row = {"equipment_id": equipment_id, "pbt_min": pbt, "apt_min": apt, "pq": pq, "gq": gq, "rq": rq,
+           "availability_pct": M.availability(apt, pbt), "performance_pct": None if perf is None else M.round_half_up(perf, 1),
+           "qbr_pct": M.quality_buy_rate(gq, rq, pq), "oee_pct": None if oee is None else M.round_half_up(oee, 1),
+           "mttr_30d_min": None, "mtbf_30d_h": None, "failures_30d": None, "reliability_hidden": True,
            "formula": "A = APT ÷ PBT, E = PRI × PQ ÷ APT, QBR = (GQ + RQ) ÷ PQ, OEE = A × E × QBR (DOC-07 §6.2)"}
-    return _result("지표 조회", [row], _range(start, end, shift))
+    if BT.is_allowed("reliability"):         # MTTR·MTBF는 채팅 권한상 MNT·MGR만 — 허용되지 않은 역할에는 값도 칸도 만들지 않는다
+        rel = _call("reliability", {"equipment_id": equipment_id}).rows
+        mine = next((x for x in rel if x.get("equipment_id") == equipment_id), None)
+        row.update(reliability_hidden=False,
+                   mttr_30d_min=None if not mine or mine.get("mttr_min") is None else float(mine["mttr_min"]),
+                   mtbf_30d_h=None if not mine or mine.get("mtbf_hours") is None else float(mine["mtbf_hours"]),
+                   failures_30d=int(mine["failure_count"]) if mine and mine.get("failure_count") is not None else 0)
+    else:
+        for k in ("mttr_30d_min", "mtbf_30d_h", "failures_30d"):
+            row.pop(k)
+    return _result("지표 조회", [row], rng, as_of=now)
 
 
+# ---------------------------------------------------------------- 생산
 def production(role, start=None, end=None, shift=None):
-    require(role, "view_ops")
     start, end = _period(start, end, default_days=1)
-    rows = [r for r in get_repo().table("shift_report")
-            if start <= date.fromisoformat(r["prod_date"]) <= end and (shift is None or r["shift"] == shift)]
-    keep = ("report_id", "prod_date", "shift", "target", "output", "scrap", "required_stop_min", "loss_qty_est", "status")
-    return _result("생산 실적 조회", [{k: r[k] for k in keep} for r in rows], _range(start, end, shift))
+    rows, now = [], None
+    for a, b in _date_chunks(start, end):
+        r = _call("production", {"from_date": a.isoformat(), "to_date": b.isoformat()})
+        rows += r.rows
+        now = r.now or now
+    out = []
+    for x in rows:
+        kind = "D" if x.get("shift_type") == "DAY" else "N"
+        if shift is not None and kind != shift:
+            continue
+        out.append({"report_id": x["shift_id"], "prod_date": x["shift_id"][:10], "shift": kind,
+                    "target": x.get("total_target_qty"), "output": x.get("actual_qty"), "scrap": x.get("defect_qty"),
+                    "status": "확정" if x.get("is_report_confirmed") else "미확정",
+                    "target_own_qty": x.get("target_qty"), "carry_over_qty": x.get("carry_over_qty"),
+                    "forecast_qty": x.get("forecast_qty"), "shortfall_qty": x.get("shortfall_qty"), "loss_qty": x.get("loss_qty"),
+                    "is_target_risk": x.get("is_target_risk"), "carry_over_is_provisional": x.get("carry_over_is_provisional")})
+    out.sort(key=lambda r: (r["prod_date"], r["shift"]))
+    return _result("생산 실적 조회", out, _range(start, end, shift), as_of=now,
+                   rule="목표 = 교대 목표 + 이월 (확정 전 교대 값·이월은 잠정)")
 
 
+# ---------------------------------------------------------------- 로트
 def lots(role, lot_id=None, order_id=None):
-    require(role, "view_ops")
     if not lot_id and not order_id:
         raise ToolInputError("로트 번호나 작업지시 번호가 필요하다")
-    rows = [l for l in get_repo().table("production_lot")
-            if (lot_id and l["lot_id"] == lot_id) or (order_id and l["order_id"] == order_id)]
-    return _result("로트·작업지시 조회", rows, lot_id or order_id)
+    if not lot_id:      # 백엔드 로트 도구는 로트 번호로만 찾는다
+        return _result("로트·작업지시 조회", [], order_id, unsupported="order_no",
+                       note="작업지시 번호로 로트를 찾는 조회는 아직 없습니다 (로트 번호로 물어봐 주세요)")
+    r = _call("lot", {"lot_no": lot_id})
+    rows = [{"lot_id": x["lot_no"], "lot_no": x["lot_no"], "qty": x.get("input_qty"), "status": x.get("status"),
+             "completed_qty": x.get("completed_qty"), "plan_mode": x.get("plan_mode"), "passed_at": x.get("passed_at"),
+             "shipped_qty": x.get("shipped_qty"), "shipment_nos": x.get("shipment_nos"), "trace": x.get("trace")} for x in r.rows]
+    return _result("로트·작업지시 조회", rows, lot_id, as_of=r.now)
 
 
+# ---------------------------------------------------------------- 정비
 def work_orders(role, equipment_id=None, status=None):
-    require(role, "view_ops")
     _check_equipment(equipment_id)
-    rows = [w for w in get_repo().table("maintenance_work_order")
-            if (not equipment_id or w["equipment_id"] == equipment_id) and (not status or w["status"] == status)]
-    return _result("작업지시 조회", rows, "2026-09-01 ~ 2026-09-30")
+    r = _call("work_orders", {"equipment_id": equipment_id})
+    rows = [{"work_order_id": x["wo_no"], "wo_no": x["wo_no"], "equipment_id": x.get("equipment_id"), "triggers": x.get("trigger_kind"),
+             "title": x.get("title"), "status": x.get("status"), "assignee": x.get("assignee_user_id"), "created_at": x.get("created_at"),
+             "approval_wait_min": x.get("approval_wait_min")} for x in r.rows if not status or x.get("status") == status]
+    return _result("작업지시 조회", rows, "최근 20건", as_of=r.now)
 
 
 def work_records(role, equipment_id=None, alarm_code=None):
-    require(role, "view_ops")
     _check_equipment(equipment_id)
-    by_alarm = {a["alarm_event_id"]: a for a in get_repo().table("alarm_event")}
-    wo_alarm = {w["work_order_id"]: w["alarm_event_id"] for w in get_repo().table("maintenance_work_order")}
-    rows = []
-    for w in get_repo().table("work_record"):
-        # 원인 점검 작업기록서는 알람이 아니라 작업지시서(계기: 반복 알람 2단계)에 붙어 있다
-        aid = w["alarm_event_id"] or wo_alarm.get(w["work_order_id"], "")
-        a = by_alarm.get(aid, {})
-        if equipment_id and w["equipment_id"] != equipment_id:
-            continue
-        if alarm_code and a.get("alarm_code") != alarm_code:
-            continue
-        rows.append({"work_record_id": w["work_record_id"], "kind": w["kind"], "equipment_id": w["equipment_id"],
-                     "alarm_code": a.get("alarm_code", ""), "start": w["start"], "repair_min": w["repair_min"],
-                     "cause": w["cause"], "action": w["action"], "confirmed_by": w["confirmed_by"]})
-    rows.sort(key=lambda r: r["start"])
-    return _result("작업기록 조회", rows, "2026-09-01 ~ 2026-09-30")
+    r = _call("work_records", {"equipment_id": equipment_id, "alarm_code": alarm_code})
+    rows = [{"work_record_id": x["record_no"], "record_no": x["record_no"], "kind": x.get("record_type"), "equipment_id": x.get("equipment_id"),
+             "alarm_code": x.get("alarm_code") or "", "start": x.get("confirmed_at") or "", "repair_min": x.get("repair_min"),
+             "cause": x.get("cause") or "", "action": x.get("action") or "", "confirmed_at": x.get("confirmed_at")} for x in r.rows]
+    rows.sort(key=lambda x: x["start"])                    # 백엔드는 최근 순 20건 — 원본처럼 오래된 것부터
+    return _result("작업기록 조회", rows, "확정된 최근 20건", as_of=r.now)
 
 
 def pm_due(role, equipment_id=None):
-    require(role, "view_ops")
     _check_equipment(equipment_id)
-    rows = [p for p in get_repo().table("pm_schedule")
-            if (not equipment_id or p["equipment_id"] == equipment_id) and (p["overdue"] == "true" or p["frequency"] == "계획")]
-    return _result("예방 정비 기한 조회", rows, "기준 시각까지 기한 넘김 + 2026-10-01 계획")
+    r = _call("pm_due", {"within_days": 0, "equipment_id": equipment_id})
+    rows = [{"pm_task_id": x.get("pm_task_id"), "equipment_id": x.get("equipment_id"), "item": x.get("item_name"),
+             "frequency": x.get("cycle_code") or "", "next_due": str(x.get("next_due_date") or ""),
+             "days_overdue": x.get("days_overdue"), "overdue": "true" if (x.get("days_overdue") or 0) > 0 else "false"} for x in r.rows]
+    return _result("예방 정비 기한 조회", rows, "오늘까지 기한", as_of=r.now)
 
 
 def tool_life(role, equipment_id=None, min_pct=0):
-    require(role, "view_ops")
     _check_equipment(equipment_id)
+    r = _call("tool_life", {"equipment_id": equipment_id})
     rows = []
-    for t in get_repo().table("tool_state"):
-        if equipment_id and t["equipment_id"] != equipment_id:
-            continue
-        pct = M.tool_usage_pct(float(t["used"]), float(t["limit"]))
+    for t in r.rows:
+        pct = _num(t.get("usage_rate_pct"))
         if pct >= min_pct:
-            rows.append({**{k: t[k] for k in ("equipment_id", "tool_no", "tool_name", "usage_unit", "used", "limit", "since")},
-                         "usage_pct": pct})
-    rows.sort(key=lambda r: -r["usage_pct"])
-    return _result("공구 수명 조회", rows, "기준 시각", rule="공구 수명 90% 이상 = 교체 알림 (DOC-07 §9, 가상 규칙)")
+            rows.append({"equipment_id": t.get("equipment_id"), "tool_no": t.get("tool_no"), "tool_name": t.get("item_name"),
+                         "usage_unit": t.get("usage_unit"), "used": t.get("cum_usage"), "limit": t.get("life_limit"),
+                         "usage_pct": pct, "remaining_pct": t.get("remaining_pct"), "parts_left": t.get("parts_left")})
+    rows.sort(key=lambda x: -x["usage_pct"])
+    return _result("공구 수명 조회", rows, "지금", as_of=r.now, rule="공구 수명 90% 이상 = 교체 알림 (DOC-07 §9, 가상 규칙)")
 
 
+# ---------------------------------------------------------------- 재고
 def inventory(role, item_id=None, short_only=False):
-    require(role, "view_ops")
-    rows = [i for i in get_repo().table("inventory_state")
-            if (not item_id or i["item_id"] == item_id) and (not short_only or i["short"] == "true")]
-    return _result("재고 조회", rows, "기준 시각", rule="재고 부족 = 재고 ≤ 안전 재고 (DOC-07 §10.2)")
+    r = _call("inventory", {"item_no": item_id})
+    rows = [{"item_id": x["item_no"], "item_no": x["item_no"], "name": x.get("item_name"), "category": x.get("category"), "unit": x.get("unit"),
+             "on_hand": x.get("on_hand_qty"), "safety_stock": x.get("safety_stock"), "short": "true" if x.get("is_low") else "false",
+             "shipped_7d": x.get("shipped_7d")} for x in r.rows]
+    if short_only:
+        rows = [x for x in rows if x["short"] == "true"]
+    return _result("재고 조회", rows, "지금", as_of=r.now, rule="재고 부족 = 재고 ≤ 안전 재고 (DOC-07 §10.2)")
 
 
 TOOLS = {
