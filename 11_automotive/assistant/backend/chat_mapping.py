@@ -51,12 +51,70 @@ def _step_text(s) -> str:
     return str(s)
 
 
-def to_answer_text(a: dict) -> str:
-    """conclusion + 점검 순서(steps) + 관련 운영 정보 한 줄(related) + 주의(caution)를 한 글로."""
-    parts = [(a.get("conclusion") or "").strip()]
+def _block_text(b: dict, key: str = "text") -> str:
+    v = b.get(key)
+    return v.strip() if isinstance(v, str) else ""
+
+
+def blocks_to_text(a: dict) -> str | None:
+    """원본의 화면 블록(section·lead·text·ops·steps·line)을 글자 하나로 푼다. 화면 말풍선은 블록을 그리지 못하므로(디자인은 안 바꾼다)
+    소제목은 "■ 제목", 목록은 "1. …"로 글자에 담는다. 접어 두던 원문 줄(orig: true)은 글자로는 안 보낸다(출처 버튼은 그대로).
+    소제목은 바로 다음 블록 하나와 한 덩어리(줄만 바꿈), 그 밖의 블록은 각각 한 덩어리, 덩어리 사이는 빈 줄. 이어지는 원문 줄(line)끼리는 한 덩어리.
+    글자가 하나도 안 나오면 None → 부른 쪽이 예전 방식(conclusion)을 쓴다."""
+    blocks = a.get("blocks")
+    if not isinstance(blocks, list) or not blocks:
+        return None
     steps = [_step_text(s).strip() for s in (a.get("steps") or []) if s]
-    if steps:
-        parts.append("\n".join(steps))
+    groups: list[list[str]] = []
+    attach = False                          # 방금 소제목이 나왔다 → 다음 블록 하나는 그 덩어리에 붙는다
+    last_kind: str | None = None
+    used_steps = False
+
+    for b in blocks:
+        if not isinstance(b, dict) or b.get("orig"):
+            continue
+        kind = b.get("kind")
+        if kind == "section":
+            t = _block_text(b)
+            if t:
+                groups.append([f"■ {t}"])
+                attach, last_kind = True, "section"
+            continue
+        if kind in ("lead", "text", "line"):    # line = 원문 줄이 답 자체인 옛 길 (orig 표시가 없는 것만)
+            lines = [_block_text(b)]
+        elif kind == "ops":
+            items = [str(x).strip() for x in (b.get("items") or []) if str(x).strip()]
+            lines = [_block_text(b, "head")] + [f"{i}. {x}" for i, x in enumerate(items, 1)]
+        elif kind == "steps":
+            lines = list(steps)
+            used_steps = used_steps or bool(steps)
+        else:
+            continue                            # 모르는 종류는 건너뛴다
+        lines = [x for x in lines if x]
+        if not lines:
+            continue
+        if attach and groups:
+            groups[-1].extend(lines); attach = False
+        elif kind == "line" and last_kind == "line" and groups:
+            groups[-1].extend(lines)
+        else:
+            groups.append(lines)
+        last_kind = kind
+    if steps and not used_steps and groups:      # 블록에 점검 순서 칸이 없으면 내용을 잃지 않게 끝에 붙인다
+        groups.append(list(steps))
+    return "\n\n".join("\n".join(g) for g in groups) if groups else None
+
+
+def to_answer_text(a: dict) -> str:
+    """답 본문(블록이 있으면 블록을 글자로 푼 것, 없으면 conclusion + 점검 순서) + 관련 운영 정보 한 줄(related) + 주의(caution)를 한 글로."""
+    body = blocks_to_text(a)
+    if body is not None:
+        parts = [body]
+    else:
+        parts = [(a.get("conclusion") or "").strip()]
+        steps = [_step_text(s).strip() for s in (a.get("steps") or []) if s]
+        if steps:
+            parts.append("\n".join(steps))
     related = a.get("related")
     if isinstance(related, str) and related.strip():
         parts.append(related.strip())           # 묶음의 related는 기록 번호 목록이 아니라 문장 한 줄이라 본문에 붙인다

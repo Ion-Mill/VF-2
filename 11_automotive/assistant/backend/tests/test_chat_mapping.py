@@ -78,3 +78,58 @@ def test_role_gate_only_for_topics_that_are_out_of_role():
     assert role_gate("VF2-01 MTTR 알려줘", []) is None                  # 이 역할은 볼 수 있다
     assert role_gate("VF2-01 MTTR 알려줘", [SENSOR]) is None            # 센서만 빠진 역할이 MTTR을 묻는 경우
     assert role_gate("VF2-01 오늘 생산 실적 알려줘", [MNT_MGR, SENSOR]) is None
+
+
+# ---------------------------------------------------------------- 블록 → 글자 ([11_automotive 이식 2026-10-16], 화면 디자인은 안 바꾸고 글자로 푼다)
+from backend.chat_mapping import blocks_to_text  # noqa: E402
+
+
+def test_blocks_alarm_card_gets_section_headings_and_steps():
+    a = {"conclusion": "알람 2075 설명.", "steps": ["★1 (작업자) 수위를 본다", "5 (보전) 체크밸브를 본다"], "related": "이 알람은 최근 7일 3번 났습니다", "caution": "근거 안내입니다.",
+         "blocks": [{"kind": "section", "text": "알람 설명"}, {"kind": "text", "text": "알람 2075 설명."},
+                    {"kind": "section", "text": "점검 순서 (사내 문서)"}, {"kind": "steps"}]}
+    assert to_answer_text(a) == ("■ 알람 설명\n알람 2075 설명.\n\n■ 점검 순서 (사내 문서)\n★1 (작업자) 수위를 본다\n5 (보전) 체크밸브를 본다"
+                                 "\n\n이 알람은 최근 7일 3번 났습니다\n\n주의: 근거 안내입니다.")
+
+
+def test_blocks_pure_layout_lead_sections_lists_and_closing_text():
+    a = {"conclusion": "무시되는 한 줄", "caution": "근거 안내이며 실행 지시가 아닙니다.",
+         "blocks": [{"kind": "lead", "text": "윤활유를 채우면 돼요.", "written": True},
+                    {"kind": "section", "text": "이유"}, {"kind": "ops", "head": "", "items": ["압력이 떨어져요.", "저장소가 비었어요."], "source": None},
+                    {"kind": "section", "text": "확인할 것"}, {"kind": "ops", "head": "", "items": ["수위를 봐요."]},
+                    {"kind": "text", "text": "계속 뜨면 보전 담당자에게 알려요."},
+                    {"kind": "line", "text": "원문 줄 하나", "orig": True}, {"kind": "line", "text": "원문 줄 둘", "orig": True}]}
+    t = to_answer_text(a)
+    assert t == ("윤활유를 채우면 돼요.\n\n■ 이유\n1. 압력이 떨어져요.\n2. 저장소가 비었어요.\n\n■ 확인할 것\n1. 수위를 봐요.\n\n"
+                 "계속 뜨면 보전 담당자에게 알려요.\n\n주의: 근거 안내이며 실행 지시가 아닙니다.")
+    assert "무시되는 한 줄" not in t and "원문 줄" not in t            # conclusion 은 블록을 쓸 때 중복으로 붙이지 않고, 접던 원문 줄은 글자로 안 보낸다
+
+
+def test_blocks_ops_with_head_and_numbered_items():
+    a = {"blocks": [{"kind": "ops", "head": "정지 전체 3번", "items": ["고장 2번", "준비 1번"], "source": None}]}
+    assert to_answer_text(a) == "정지 전체 3번\n1. 고장 2번\n2. 준비 1번"
+
+
+def test_blocks_consecutive_lines_stay_together_and_unknown_kinds_are_skipped():
+    a = {"blocks": [{"kind": "lead", "text": "문서에는 이렇게 있어요."}, {"kind": "line", "text": "첫째 줄"}, {"kind": "line", "text": "둘째 줄"},
+                    {"kind": "mystery", "text": "새면 안 되는 글"}, "문자열 블록", {"kind": "text", "text": ""}]}
+    assert to_answer_text(a) == "문서에는 이렇게 있어요.\n\n첫째 줄\n둘째 줄"
+
+
+def test_blocks_missing_steps_block_still_keeps_the_steps():
+    a = {"steps": ["1 (작업자) 확인한다"], "blocks": [{"kind": "text", "text": "본문"}]}
+    assert to_answer_text(a) == "본문\n\n1 (작업자) 확인한다"
+    a2 = {"steps": ["1 (작업자) 확인한다"], "blocks": [{"kind": "text", "text": "본문"}, {"kind": "steps"}]}
+    assert to_answer_text(a2).count("1 (작업자) 확인한다") == 1          # 점검 순서 칸이 있으면 두 번 붙이지 않는다
+
+
+@pytest.mark.parametrize("blocks", [None, [], [{"kind": "line", "text": "원문", "orig": True}], [{"kind": "section", "text": ""}], [{"kind": "mystery"}]])
+def test_blocks_that_produce_no_text_fall_back_to_the_old_way(blocks):
+    a = {"conclusion": "결론 글", "steps": ["1 단계"], "blocks": blocks}
+    assert blocks_to_text(a) is None
+    assert to_answer_text(a) == "결론 글\n\n1 단계"
+
+
+def test_to_backend_with_blocks_still_has_exactly_the_contract_fields():
+    out = to_backend({"status": "답변", "conclusion": "x", "evidence": [], "blocks": [{"kind": "text", "text": "본문"}]})
+    assert set(out) == {"answer", "sources", "related", "status"} and out["answer"] == "본문"

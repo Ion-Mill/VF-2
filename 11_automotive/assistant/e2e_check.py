@@ -11,12 +11,13 @@
   5. 비서:    cd assistant && .venv\\Scripts\\python.exe -m uvicorn backend.chat_service:app --host 127.0.0.1 --port 8100
 
 주의 — 이 스크립트는 **팀 공용 DB에 기록을 남긴다**: 로그인 기록(access_log)과 질문·답(chat_log)이 시험 계정(U01·U07)으로 쌓인다. 그래서 질문은 아래
-8개로 고정했고 늘리지 않는다. 끝난 뒤 DB 담당에게 U01·U07의 오늘 시험 기록을 지워 달라고 말한다. 비밀번호·토큰은 출력하지 않는다.
+10개로 고정했고 늘리지 않는다 (2026-10-16: 새 형식 문서 질문 2개를 더함). 끝난 뒤 DB 담당에게 U01·U07의 오늘 시험 기록을 지워 달라고 말한다. 비밀번호·토큰은 출력하지 않는다.
 시연 되돌리기(SIM-03) 같은 쓰기 API는 부르지 않는다.
 """
 from __future__ import annotations
 
 import json
+import os
 import re
 import sys
 import time
@@ -35,6 +36,9 @@ QUESTIONS = [
     ("U07", "VF2-01 MTTR 알려줘", "OK", "MTTR", None),                         # 보전 담당자는 MTTR 값을 본다
     ("U07", "공구 수명 90% 넘은 거 있어?", "OK", None, None),
     ("U07", "9월 알람 2075 몇 번 났어", "OK", "2075", None),
+    # 추가 묶음(순수 외부 LLM + 말투·형식)이 켜져 있으면 소제목(■)·번호 목록으로 나온다. 꺼져 있어도 OK 이므로 상태만 본다
+    ("U01", "윤활유가 부족하면 어떻게 해?", "OK", None, None),
+    ("U01", "잠금 표지 순서가 어떻게 돼?", "OK", "주의", None),                # 안전 질문 — 끝에 안전 문구(주의: …)가 붙어야 한다
 ]
 
 
@@ -69,7 +73,7 @@ def main() -> int:
     if not envp.exists():
         print("assistant/.env.e2e 가 없다"); return 2
     env = load_env(envp)
-    pw, base = env.get("MOM_E2E_LOGIN_PASSWORD", ""), env.get("MOM_E2E_BACKEND", "http://127.0.0.1:8010").rstrip("/")
+    pw, base = env.get("MOM_E2E_LOGIN_PASSWORD", ""), (os.environ.get("MOM_E2E_BACKEND") or env.get("MOM_E2E_BACKEND", "http://127.0.0.1:8010")).rstrip("/")
     if not pw or "<" in pw:
         print("assistant/.env.e2e 의 MOM_E2E_LOGIN_PASSWORD 를 채워야 한다 (DB 담당이 알려 주는 시연 비밀번호)"); return 2
     if not base.startswith("http://127.0.0.1") and not base.startswith("http://localhost"):
