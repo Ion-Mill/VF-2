@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { USERS, type UserRec } from './model';
 
 // 시연용: 모든 계정 비밀번호 0000 (사용자 결정 2026-10-15)
-const DEMO_PW = '0000';
+export const DEMO_PW = '0000';   // assistantApi.ts(이브 채팅의 백엔드 로그인)도 같은 값을 쓴다
 
 export default function Login({ onLogin }: { onLogin: (u: UserRec) => void }) {
   const [id, setId] = useState('');
