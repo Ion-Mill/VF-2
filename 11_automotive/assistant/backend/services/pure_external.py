@@ -343,6 +343,49 @@ def expand(hits: list[tuple[float, Chunk]], max_chunks: int = EXPAND_MAX_CHUNKS,
     return out
 
 
+# ---------------------------------------------------------------- PURE_PERIOD (2026-10-18) — 기간 말로 묻는 정비 질문의 거짓 "문서에 없다"를 막는다
+# "한 달에 한 번 하는 정비 뭐야?"에서 DOC-04 §2.3 "매월"이 낱말 검색 74~88위로 밀려 Claude에게 가지 않았고 "문서에 없다"는 거짓 답이 나왔다 (측정: 261003_창민/
+# 다른문서_놓침_측정_성과_20261018.md). DOC-04의 기간 표는 제목이 "매월·6개월·1년"처럼 한두 낱말뿐이라 현장 말("한 달에 한 번·반기·매년")이 맞을 곳이 없다.
+# 제목에 현장 말을 병기해도 그 낱말과 똑같을 때만 듣는다(탐침 16개 중 4개). 그래서 질문에 **기간 낱말**과 **정비 낱말**이 함께 있으면 그 기간의 절 조각을 보장한다
+# (PURE_EXPAND=1 안에서, 스위치 PURE_PERIOD). 정규식은 공백을 선택으로 둔다 — 공백을 모두 지우면 "5분 기준"이 "분기"가 된다. 숫자 기간은 앞에 숫자가 없을 때만
+# ("2021년"·"16개월"을 "1년"·"6개월"로 읽지 않는다). "2년마다"·"두 달마다"처럼 이 절들이 아닌 기간은 일부러 넣지 않았다.
+PERIOD_DOC = "DOC-04"                                   # 예방 정비 기준서
+PERIOD_TERMS = {                                        # 절 번호 → 기간 낱말 (정규식, 절 번호 순서가 보장 순서)
+    "2.1": r"매일|하루에|하루\s?마다|하루\s?한\s?번|일일\s?점검|교대마다|매\s?교대",
+    "2.2": r"매주|주\s?1\s?회|일주일|한\s?주에|주마다|주간\s?점검",
+    "2.3": r"매월|매\s?달|월\s?1\s?회|월간|한\s?달(?:에|마다|\s?단위)|(?<!\d)1\s?개월|다달이|(?<!개)월마다|월\s?단위|월별",
+    "2.4": r"(?<!\d)3\s?개월|분기|석\s?달|세\s?달|(?<!\d)3\s?달|삼\s?개월",
+    "2.5": r"(?<!\d)6\s?개월|반\s?년|반기|여섯\s?달|(?<!\d)6\s?달|육\s?개월",
+    "2.6": r"(?<!\d)1\s?년|매\s?년|연간|연\s?1\s?회|일\s?년|한\s?해|해마다|(?<!\d)12\s?개월|열두\s?달|연례|연\s?단위",
+    "2.7": r"필요할\s?때|필요하면|필요\s?시|수시|그때그때",
+}
+PERIOD_RE = {sec: re.compile(pat) for sec, pat in PERIOD_TERMS.items()}
+PERIOD_CONTEXT_RE = re.compile(r"정비|점검|교체|청소|보충|윤활|소모품|주기|항목|그리스|필터")      # 함께 있어야 발동 ("매일 몇 시에 퇴근?"에는 발동하지 않는다)
+
+
+def period_sections(question: str) -> list[str]:
+    """질문의 기간 낱말이 가리키는 DOC-04 절 번호들 (절 번호 순서). 정비 낱말이 없으면 빈 목록."""
+    q = question.lower()
+    if not PERIOD_CONTEXT_RE.search(q):
+        return []
+    return [sec for sec, rx in PERIOD_RE.items() if rx.search(q)]
+
+
+def guarantee_period(question: str, hits: list[tuple[float, Chunk]]) -> list[tuple[float, Chunk]]:
+    """질문의 기간에 해당하는 DOC-04 절 조각이 상위 조각에 없으면 맨 앞에 더한다 (점수 0.0 = 검색 점수가 아니라는 표시). 이미 있거나 기간이 없으면 목록을 그대로 돌려준다."""
+    secs = period_sections(question)
+    if not secs:
+        return hits
+    corpus = load_corpus()
+    have = {c.chunk_id for _, c in hits}
+    add = []
+    for sec in secs:
+        anchor = next((c for c in corpus if c.doc_id == PERIOD_DOC and c.section == sec), None)
+        if anchor is not None and anchor.chunk_id not in have:
+            add.append((0.0, anchor))
+    return add + list(hits) if add else hits
+
+
 # ---------------------------------------------------------------- PURE_SAFETY (2026-10-18) — 안전 질문의 거짓 "문서에 없다"를 원천 차단
 # "톱 정비 전에 어디를 차단해야 해?"가 DOC-05 §3.1(톱 차단 지점)을 검색 68위로 놓쳐 "문서에서 찾지 못했어요"(NOT_IN_DOCS)가 나왔다. 현장 말("톱")과 문서 말("SAW-01·콜드쏘")이
 # 다르면 낱말 검색은 정답 절을 못 올린다. 그리고 "못 찾음"을 "문서에 없음"으로 말하는 것이 진짜 위험이다. 그래서 ① 안전 질문에는 안전 작업 기준서(DOC-05)를 통째로 주고
@@ -399,12 +442,14 @@ def unsure_candidates(question: str, hits: list[tuple[float, Chunk]], n: int = 3
 
 
 def context(question: str, k: int, s: Settings) -> list[tuple[float, Chunk]]:
-    """Claude에 줄 조각: 낱말 검색 상위 k개 (+ PURE_EXPAND=1이면 잠금 낱말 질문의 부모 조각 보장 + 아래 절) (+ PURE_SAFETY=1이면 안전 질문에 DOC-05 통째로).
+    """Claude에 줄 조각: 낱말 검색 상위 k개 (+ PURE_EXPAND=1이면 잠금 낱말 질문의 부모 조각 보장 + 아래 절) (+ PURE_PERIOD=1이면 기간·정비 낱말 질문에 DOC-04 해당 기간 절) (+ PURE_SAFETY=1이면 안전 질문에 DOC-05 통째로).
     둘 다 끄면 retrieve()와 똑같다."""
     hits = retrieve(question, k)
     if s.pure_expand:
         hits, first = guarantee(question, hits)
         hits = expand(hits, first=first)
+        if s.pure_period:
+            hits = guarantee_period(question, hits)
     if s.pure_safety and is_safety(question):
         hits = add_safety_doc(hits)
     return hits

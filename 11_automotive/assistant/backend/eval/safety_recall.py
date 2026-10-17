@@ -33,7 +33,7 @@ def apply_recommended_env() -> None:
     """명령으로 돌릴 때만 부른다 (import만으로는 환경을 바꾸지 않는다 — 시험이 이 모듈을 import한다)."""
     # 규칙 해석(parse)은 PARSE_V* 같은 스위치에 따라 결과가 달라진다. .env가 없는 곳(작업 폴더 사본·시험)에서도 같은 값이 나오도록
     # 예시 파일의 권장 값(비밀값이 없는 허용 목록 항목만)을 기본으로 깐다. 이미 정해져 있으면(.env·환경변수) 그대로 둔다.
-    _SAFE_KEYS = re.compile(r"^(PARSE_V\d+|FLOW_V\d+|BLOCKS_V\d+|LEAD_V\d+|TERM_V\d+|NUM_MATCH|ROUTE_POLICY|DOC_GATE|SPLIT_Q|RETRIEVAL|LLM_JOBS|PURE_TOPK|PURE_EXPAND|PURE_SAFETY)$")
+    _SAFE_KEYS = re.compile(r"^(PARSE_V\d+|FLOW_V\d+|BLOCKS_V\d+|LEAD_V\d+|TERM_V\d+|NUM_MATCH|ROUTE_POLICY|DOC_GATE|SPLIT_Q|RETRIEVAL|LLM_JOBS|PURE_TOPK|PURE_EXPAND|PURE_SAFETY|PURE_PERIOD)$")
     for _line in (ROOT / ".env.example").read_text(encoding="utf-8").splitlines():
         _m = re.match(r"^([A-Z0-9_]+)=(\S*)\s*$", _line.strip())
         if _m and _SAFE_KEYS.match(_m.group(1)):
