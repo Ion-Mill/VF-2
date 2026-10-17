@@ -1,2 +1,4 @@
 # 평가를 돌리면 생기는 결과물은 올리지 않는다 (평가 도구와 질문 세트 qa_*.json 은 올린다)
 backend/eval/results*
+# start_all.ps1 이 쓰는 로그와 pid 기록
+.run/

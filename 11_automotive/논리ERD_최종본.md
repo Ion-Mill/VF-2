@@ -595,7 +595,7 @@ erDiagram
         code sensor_code PK, FK "센서"
         datetime sampled_at PK "시각"
         decimal value "값"
-        code interval_type "1분 평균, 1초"
+        code interval_type "1분 평균, 5초"
     }
     process ||--o{ alarm_master : "적용 공정"
     alarm_master ||--o{ alarm_guide_map : "고장 대응 절"
@@ -3779,6 +3779,7 @@ erDiagram
 | 최종본 수정 (사건 버튼 구현, 2026-10-14) | 2026-10-14 | 엔터티·속성 수 그대로. 생성기 실시간 기록에서 `alarm_event.is_injected`·`scenario_code`(6.40 S1·S3·S4)가 채워지고, S6 정비 기록은 `pm_record.status` DRAFT로 남음 (MNT 확인) (`구현_중_수정사항/1014_수정간단내용.md` 4장) | 데이터·ML |
 | 최종본 수정 (보고서·수정 이력·알림, 재공 경고, 2026-10-14) | 2026-10-14 | 엔터티·속성·관계 수 그대로. 생성기가 `shift_report`·`daily_report`·`document_revision`·`document_revision_change`·`notification`·`notification_recipient`를 채움 (대략 건수에 생성 결과). 기준 정보 `notification_rule`(25)·`internal_doc`(8) CSV 추가 → 11.1 masters 22개. `notification.message_source` 코드 AI/DEFAULT [제안]. **WIP-20-30 경고 = 한도 30 도달** (`warn_over_qty` 29, 6.39·R-56·6.36 WIP_WARN — 병목 앞이라 평소 20~30). 6.36: TARGET_RISK 교대 시작 1시간 뒤·교대에 1번, REPEAT_ALARM 주의·정지 등급만, PM 기한 알림은 주 1회 이상 주기만, WIP_WARN 교대에 1번 (`구현_중_수정사항/1014_수정간단내용.md` 5장) | 데이터·ML |
 | 최종본 수정 (센서 5초, 2026-10-14) | 2026-10-14 | 엔터티·속성·관계 수 그대로. `sensor_sample` 건수 978,271행·`interval_type` 코드 `SEC1` → **`SEC5`**, 6.53·R-75 보관 표 "5초 구간", 11장 #5·11.1 큰 파일 크기 (`구현_중_수정사항/1014_수정간단내용.md` 7장) |
+| 최종본 수정 (정리 누락 바로잡기, 2026-10-17) | 2026-10-17 | 엔터티·속성·관계 수 그대로. 3장 ER 그림 `sensor_sample.interval_type`의 "1초"를 "5초"로 (5장 표·`SEC5`와 맞춤) (`구현_중_수정사항/1017_수정간단내용.md` 3장) |
 
 **문서끼리 다르던 점과 이 문서의 선택**
 
