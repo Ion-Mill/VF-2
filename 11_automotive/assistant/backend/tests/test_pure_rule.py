@@ -212,9 +212,11 @@ def pure_calls(runner):
     return [c for c in runner.calls if c["props"] == ("answer", "cited", "insufficient")]
 
 
+# 끝에서 끝 시험의 질문은 문서 제목 병기와 무관한 것을 쓴다: "홀드"는 DOC-06 §4.2 제목에 병기돼(Rev.4, 2026-10-18) 끈 상태의 기존 길에서도 문서 후보가 잡히고,
+# 그러면 기존 길이 "줄 고르기"를 시험용 가짜 Claude에게 시켜 스키마가 안 맞아 오류가 난다 (문서 제목이 바뀔 때마다 이 시험이 흔들리지 않게 한다).
 def test_end_to_end_on_answers_a_rule_question_from_the_documents(e2e, monkeypatch):
     monkeypatch.setenv("PURE_RULE", "1")
-    r = ask("홀드 걸린 로트도 내보낼 수 있어?").json()
+    r = ask("정비 기한이 지나면 알림이 가?").json()
     assert len(pure_calls(e2e)) == 1                                              # 문서 길로 Claude를 한 번 불렀다
     assert r["status"] == "답변" and r["conclusion"] == "문서 답이에요."
     assert "순수 외부 LLM" in (r.get("route") or {}).get("source", "")
@@ -222,14 +224,14 @@ def test_end_to_end_on_answers_a_rule_question_from_the_documents(e2e, monkeypat
 
 def test_end_to_end_off_keeps_the_old_path_for_the_same_question(e2e, monkeypatch):
     monkeypatch.setenv("PURE_RULE", "0")
-    r = ask("홀드 걸린 로트도 내보낼 수 있어?").json()
+    r = ask("정비 기한이 지나면 알림이 가?").json()
     assert len(pure_calls(e2e)) == 0
     assert r["conclusion"] != "문서 답이에요."
 
 
 def test_when_the_document_path_finds_nothing_the_answer_is_exactly_the_old_one(e2e_unsure, monkeypatch):
     """되돌리기: 문서 길이 "문서에 없음"이면 끈 것과 같은 답(상태·본문)이 나온다. 늘어나는 것은 Claude 호출 1회뿐."""
-    q = "홀드 걸린 로트도 내보낼 수 있어?"
+    q = "정비 기한이 지나면 알림이 가?"
     monkeypatch.setenv("PURE_RULE", "0")
     off = ask(q).json()
     n_off = len(pure_calls(e2e_unsure))
@@ -278,7 +280,7 @@ def e2e_fail(monkeypatch):
 
 def test_the_rule_route_prompt_carries_the_operations_note_and_other_routes_do_not(e2e, monkeypatch):
     monkeypatch.setenv("PURE_RULE", "1")
-    ask("홀드 걸린 로트도 내보낼 수 있어?")
+    ask("정비 기한이 지나면 알림이 가?")
     ask("사내 체육대회 누가 정해?")                                              # 신호가 없는 질문 — 원래 순수 길
     calls = [c for c in e2e.calls if c["props"] == ("answer", "cited", "insufficient")]
     assert len(calls) == 2
@@ -298,7 +300,7 @@ def test_ask_adds_the_note_to_the_system_prompt_only_when_asked(monkeypatch):
 
 def test_when_the_claude_call_fails_a_rule_routed_question_is_answered_by_the_old_path(e2e_fail, monkeypatch):
     """PURE_RULE는 규칙 질문일 수도 있다는 추측으로 보낸 호출이다 — 그 호출이 실패해도 예전에 답이 나오던 질문이 오류(503)가 되면 안 된다."""
-    q = "홀드 걸린 로트도 내보낼 수 있어?"
+    q = "정비 기한이 지나면 알림이 가?"
     monkeypatch.setenv("PURE_RULE", "0")
     off = ask(q)
     monkeypatch.setenv("PURE_RULE", "1")
