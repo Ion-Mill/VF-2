@@ -22,6 +22,7 @@ log = logging.getLogger("assistant")
 MAX_LINES = 40
 MAX_IN_CHARS = 600
 TRIES = 2                       # 첫 요청 + 사유를 붙인 다시 요청 1번
+TITLE_MAX = 60                  # 작업지시서 제목 길이 (한 줄)
 
 
 class ComposeFailed(Exception):
@@ -86,7 +87,7 @@ def schema(ids: list[str], max_chars: int) -> dict:
                                                               "text": {"type": "string", "minLength": 1, "maxLength": max_chars}}}}}}
 
 
-def _line_problem(kind: str, src: str, text: str) -> str | None:
+def _line_problem(kind: str, src: str, text: str, line_id: str = "") -> str | None:
     k = KINDS[kind]
     if "\n" in text or "\r" in text:
         return "줄바꿈"
@@ -97,6 +98,8 @@ def _line_problem(kind: str, src: str, text: str) -> str | None:
             return f"금지 글자 '{bad.strip() or bad}'"
     if len(text) > min(k.max_chars, int(len(src) * 1.6) + 60):
         return "너무 김"
+    if kind == "work_order" and line_id == "title" and len(text) > TITLE_MAX:     # 작업지시서 제목은 한 줄 입력칸이다
+        return f"제목이 {TITLE_MAX}자를 넘음"
     if sentences(text) != sentences(src):
         return f"문장 수 {sentences(src)}개를 {sentences(text)}개로 바꿈"
     if src.rstrip()[-1:] in ".!?" and text.rstrip()[-1:] not in ".!?":      # 화면이 마침표 뒤 공백으로 문장을 쪼개 쓴다 — 끝 부호를 지키지 않으면 문장이 붙는다
@@ -122,7 +125,7 @@ def check(kind: str, draft: list[dict], out: dict) -> tuple[list[dict] | None, s
     for d, g in zip(draft, got):
         text = adapter.tidy(str(g.get("text", "")).strip(), d["text"])
         text = numbers.tidy(text, d["text"])
-        why = _line_problem(kind, d["text"], text)
+        why = _line_problem(kind, d["text"], text, d["id"])
         if why:
             problems.append(f"{d['id']}: {why}")
         cleaned.append({"id": d["id"], "text": text})

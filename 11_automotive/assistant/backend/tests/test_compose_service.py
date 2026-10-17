@@ -238,3 +238,18 @@ def test_format_error_from_the_model_is_retried_once_not_given_up():
     r = use(short, GOOD)
     res = post()
     assert res.status_code == 200 and res.json()["tries"] == 2 and len(r.calls) == 2
+
+
+# ------------------------------------------------------------------ 작업지시서 제목·증상
+WO = [{"id": "title", "text": "VF2-01 알람 2075 (공기압 낮음) 점검"}, {"id": "symptom", "text": "공기압이 낮다는 알람 2075가 떴다."}]
+
+
+def test_work_order_title_and_symptom_are_polished_and_the_title_stays_short():
+    good = {"lines": [{"id": "title", "text": "VF2-01 알람 2075 공기압 낮음 점검"}, {"id": "symptom", "text": "공기압이 낮다는 알람 2075가 발생했다."}]}
+    use(good)
+    res = post("work_order", WO)
+    assert res.status_code == 200 and [l["id"] for l in res.json()["lines"]] == ["title", "symptom"]
+    long_title = {"lines": [{"id": "title", "text": "VF2-01 알람 2075 공기압 낮음 점검 " + "아주 " * 20 + "급함"}, good["lines"][1]]}
+    r = use(long_title, long_title)
+    assert_503(post("work_order", WO))
+    assert len(r.calls) == 2 and "제목이" in r.calls[1]["stdin"]
