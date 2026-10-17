@@ -343,13 +343,71 @@ def expand(hits: list[tuple[float, Chunk]], max_chunks: int = EXPAND_MAX_CHUNKS,
     return out
 
 
+# ---------------------------------------------------------------- PURE_SAFETY (2026-10-18) — 안전 질문의 거짓 "문서에 없다"를 원천 차단
+# "톱 정비 전에 어디를 차단해야 해?"가 DOC-05 §3.1(톱 차단 지점)을 검색 68위로 놓쳐 "문서에서 찾지 못했어요"(NOT_IN_DOCS)가 나왔다. 현장 말("톱")과 문서 말("SAW-01·콜드쏘")이
+# 다르면 낱말 검색은 정답 절을 못 올린다. 그리고 "못 찾음"을 "문서에 없음"으로 말하는 것이 진짜 위험이다. 그래서 ① 안전 질문에는 안전 작업 기준서(DOC-05)를 통째로 주고
+# ② 그래도 답이 없으면 "문서에 없다"가 아니라 "자동으로 확인하지 못함"이라고 말한다 (answer.py `_pure_unsure_v19`). 발동은 낱말로만 한다 — 검색 순위로 발동하면
+# "체육대회·병원" 같은 상관없는 질문에서도 DOC-05가 상위에 올라 발동했다 (2026-10-18 실험).
+SAFETY_DOC = "DOC-05"            # 안전 작업 기준서
+SAFETY_SCORE = -1.0              # 통째로 더한 조각의 표시: 검색 점수가 아니다 (0.0은 PURE_EXPAND가 쓴다)
+SAFETY_MAX_CHARS = 20000         # 통째로 더하는 글자 수 상한 (지금 DOC-05는 16,621자 — 문서가 커져도 프롬프트가 폭증하지 않게)
+# answer.SAFETY_WORDS(답 끝 안전 문구를 붙이는 낱말)를 모두 포함해야 한다 (시험이 지킨다). 그 뒤는 현장에서 쓰는 낱말과 일반 안전 낱말.
+SAFETY_TERMS = ("잠금", "표지", "고전압", "전기", "저항", "차단", "LOTO", "케이블", "앰프",
+                "보호구", "감전", "안전", "위험", "자물쇠", "잠그", "잠가", "잠궈", "차단기", "공압", "압축 공기", "절삭유", "알루미늄 칩", "칩 치",
+                "톱", "절단", "콜드쏘", "밀링", "머시닝", "세척", "측정기", "프로브", "바렐", "주축", "제어반", "트립", "에너지",
+                "정비 전", "정비할", "정비 시작", "수리 전", "전원", "전압", "도어", "협력업체")
+EQUIPMENT_RE = re.compile(r"(?<![A-Za-z0-9])(?:(?:SAW|MIL|VF2|WSH|CMM)-\d{2}|VF-2|CMM)(?![A-Za-z0-9])", re.I)     # 설비 이름 (한글이 바로 붙어도 잡는다)
+UNSURE_DEFAULT_SECTIONS = ("2", "3", "5")      # 가까운 절을 못 고를 때: 잠금·표지 절차 / 설비별 차단 지점 / 보호구
+
+
+def is_safety(question: str) -> bool:
+    """안전 질문인가 — 낱말만 본다 (대소문자 무시). 이 판정이 켜져야 DOC-05를 통째로 주고 "자동으로 확인하지 못함" 문구를 쓴다."""
+    q = question.upper()
+    return any(w.upper() in q for w in SAFETY_TERMS) or bool(EQUIPMENT_RE.search(question))
+
+
+def add_safety_doc(hits: list[tuple[float, Chunk]]) -> list[tuple[float, Chunk]]:
+    """검색 결과 뒤에 DOC-05 조각 중 아직 없는 것을 문서 순서로 더한다 (점수 SAFETY_SCORE, 상한 SAFETY_MAX_CHARS). 원래 조각의 순서·점수는 그대로."""
+    have = {c.chunk_id for _, c in hits}
+    out = list(hits)
+    chars = 0
+    for c in load_corpus():
+        if c.doc_id != SAFETY_DOC or c.chunk_id in have:
+            continue
+        if chars + len(c.text) > SAFETY_MAX_CHARS:
+            break
+        out.append((SAFETY_SCORE, c))
+        have.add(c.chunk_id)
+        chars += len(c.text)
+    return out
+
+
+def unsure_candidates(question: str, hits: list[tuple[float, Chunk]], n: int = 3) -> list[Chunk]:
+    """"자동으로 확인하지 못함" 때 보여 줄 가까운 안전 문서 절 (최대 n개, 중복 없음): 검색 점수가 있는 DOC-05 조각 → 전체 검색 순위의 DOC-05 조각 → 기본 절(§2·§3·§5)."""
+    out: list[Chunk] = []
+
+    def take(chunks):
+        for c in chunks:
+            if c.doc_id == SAFETY_DOC and all(c.chunk_id != x.chunk_id for x in out) and len(out) < n:
+                out.append(c)
+    take(c for sc, c in hits if sc > 0)
+    if len(out) < n:
+        take(c for _, c in search(question, 300))
+    if len(out) < n:
+        take(c for c in load_corpus() if c.doc_id == SAFETY_DOC and c.section in UNSURE_DEFAULT_SECTIONS)
+    return out
+
+
 def context(question: str, k: int, s: Settings) -> list[tuple[float, Chunk]]:
-    """Claude에 줄 조각: 낱말 검색 상위 k개 (+ PURE_EXPAND=1이면 잠금 낱말 질문의 부모 조각 보장 + 아래 절). 끄면 retrieve()와 똑같다."""
+    """Claude에 줄 조각: 낱말 검색 상위 k개 (+ PURE_EXPAND=1이면 잠금 낱말 질문의 부모 조각 보장 + 아래 절) (+ PURE_SAFETY=1이면 안전 질문에 DOC-05 통째로).
+    둘 다 끄면 retrieve()와 똑같다."""
     hits = retrieve(question, k)
-    if not s.pure_expand:
-        return hits
-    hits, first = guarantee(question, hits)
-    return expand(hits, first=first)
+    if s.pure_expand:
+        hits, first = guarantee(question, hits)
+        hits = expand(hits, first=first)
+    if s.pure_safety and is_safety(question):
+        hits = add_safety_doc(hits)
+    return hits
 
 
 def build_messages(question: str, chunks: list[Chunk], prev: dict | None = None, system: str = SYSTEM) -> list[dict]:

@@ -2974,17 +2974,23 @@ PURE_CAUTION_SAFETY_V19 = ("근거 안내이며 실행 지시가 아닙니다. �
 PURE_CAUTION_V19 = "근거 안내이며 실행 지시가 아닙니다."
 # 말투 바꾸기(PURE_STYLE=1, 2026-10-15): 검색 결과가 없어 Claude를 부르지 않을 때의 짧은 해요체 문구 (끔이면 위 PURE_NO_DOC_V19 그대로). 끝 안전 문구는 두 말투 모두 위 상수 그대로다
 PURE_NO_DOC_CHAT_V19 = "사내 문서에서 관련 내용을 찾지 못했어요. 쓰신 낱말을 바꿔서 다시 물어봐 주세요."
+# 안전 질문(PURE_SAFETY=1)의 "답 없음" 문구 (2026-10-18): 못 찾은 것을 "문서에 없다"고 말하지 않는다. 상태는 기존 "확인 필요"(API로는 OK) — 새 상태 값을 만들지 않는다.
+PURE_UNSURE_V19 = "자동으로 확인하지 못했습니다. 문서에 없다는 뜻은 아닙니다. 안전에 관한 질문이니 아래 안전 작업 기준서(DOC-05) 절을 직접 확인하거나 현장 담당자에게 확인해 주세요."
+PURE_UNSURE_CHAT_V19 = "자동으로 확인하지 못했어요. 문서에 없다는 뜻은 아니에요. 안전에 관한 질문이니 아래 안전 작업 기준서(DOC-05) 절을 직접 확인하거나 현장 담당자에게 확인해 주세요."
 
 
-def pure_scope_v19(p: dict, s) -> str | None:
+def pure_scope_v19(p: dict, s, question: str = "") -> str | None:
     """이 질문이 순수 외부 LLM 길로 가나 — 가는 까닭 글, 아니면 None. (권한·화면 설명·위험한 부탁·불량 원인·이어 묻기는 이 함수보다 앞에서 이미 처리됐다.)
     PURE_KEEP_SIGNALS=0(기본): 알람 번호·날짜·설비·운영 낱말 신호가 있어도 전부 순수 길.
-    PURE_KEEP_SIGNALS=1: 규칙이 그 신호를 하나라도 찾은 질문은 기존 길(알람 카드·운영 조회) 그대로, 하나도 못 찾은 질문만 순수 길."""
+    PURE_KEEP_SIGNALS=1: 규칙이 그 신호를 하나라도 찾은 질문은 기존 길(알람 카드·운영 조회) 그대로, 하나도 못 찾은 질문만 순수 길. (예외: PURE_SAFETY=1이고 신호가 설비 이름뿐인 안전 질문은 문서 질문이라 순수 길 — 안전망을 거친다.)"""
     if not PURE.enabled(s):
         return None
     if not s.pure_keep_signals:
         return "신호 끔(PURE_KEEP_SIGNALS=0) — 알람 번호·날짜·설비·운영 낱말 길을 거치지 않고 순수 길로"
     if PURE.has_signals(p):
+        only_equipment = bool(p.get("equipment")) and not (p.get("alarms") or p.get("intents") or p.get("start") or p.get("lot") or p.get("order"))
+        if s.pure_safety and question and only_equipment and PURE.is_safety(question):   # "VF2-01 차단 지점"·"SAW-01 정비 전에 어디를 차단해?": 운영 조회가 아니라 안전 문서 질문
+            return "신호가 설비 이름뿐인 안전 질문 — 문서 질문으로 보고 순수 길로 (PURE_SAFETY=1)"
         return None
     return "규칙이 알람 번호·설비·날짜·운영 낱말을 하나도 못 찾은 질문 (PURE_KEEP_SIGNALS=1)"
 
@@ -3015,19 +3021,24 @@ def _pure_answer_v19(question: str, p: dict, base: dict, s, memo: dict, prev: di
     layout = style and bool(s.pure_layout)   # 묶음 목록 형식 (PURE_LAYOUT=1, PURE_STYLE=1일 때만): 답을 sections로 받아 묶음마다 블록 하나씩. 끄면 PURE_STYLE=1의 지금 조립 그대로
     hits = PURE.context(question, k, s)         # PURE_EXPAND=1이면 상위 조각의 아래 절을 더한다 ("잠금 표지 순서" 결함 수정). 끄면 retrieve()와 같다
     chunks = [c for _, c in hits]
+    safety_guard = bool(s.pure_safety) and PURE.is_safety(question)   # 안전 질문: DOC-05를 통째로 받았고, 그래도 답이 없으면 "문서에 없다"고 하지 않는다 (PURE_SAFETY=1)
     mode = f"{s.llm_label} · {PURE_MODE_V19}"
     traces: list[dict] = []
     retrieval = {"mode": "bm25", "dense_used": False, "reason": None, "pure": True, "top_k": k, "chunk_ids": [c.chunk_id for c in chunks]}
     if s.pure_expand:
         retrieval["expanded_ids"] = [c.chunk_id for sc, c in hits if sc == 0.0]       # 확장으로 더해진 조각 (끄면 이 칸이 없다 — 응답이 지금과 같다)
+    if s.pure_safety:
+        retrieval["safety_added_ids"] = [c.chunk_id for sc, c in hits if sc == PURE.SAFETY_SCORE]       # 안전 문서 통째로 더해진 조각 (끄면 이 칸이 없다)
     base = {**base, "route": {"kind": "doc", "source": "순수 외부 LLM (분류 LLM 없음)"}}
     memo.update(ops_texts=[], procedure=is_procedure(question), future=False, doc_lines=[], doc_cites=[], doc_lead="", doc_written="")
     if SL.on():   # STEP_LOG: 순수 길로 간 까닭 · 분류 LLM 생략 · 찾은 조각 (읽기만 한다)
         SL.step("1 규칙 판정", 결과="순수 외부 LLM 길", 까닭=why, 앞답있음=prev is not None)
         SL.step("2 질문 분류", 사용=False, 까닭="순수 외부 LLM — 분류 LLM을 부르지 않음")
         SL.step("3 찾기", 길="순수 외부 LLM", 질문=question, 방식="낱말 검색(BM25) — 원래 질문 그대로, 문턱·문지기·순위 바꾸기 없음", 요청조각수=k,
-                조각수=len(chunks), 상위=[{**_sl_chunk(c), "점수": round(sc, 2), "글자수": len(c.text), **({"확장으로 더해짐": True} if s.pure_expand and sc == 0.0 else {})} for sc, c in hits])
+                조각수=len(chunks), 상위=[{**_sl_chunk(c), "점수": round(sc, 2), "글자수": len(c.text), **({"확장으로 더해짐": True} if s.pure_expand and sc == 0.0 else {}), **({"안전 문서 통째로 더해짐": True} if sc == PURE.SAFETY_SCORE else {})} for sc, c in hits])
     if not chunks:   # 찾은 조각이 하나도 없으면 Claude를 부르지 않는다 — 호출 0번이라 화면이 "외부 LLM 호출 없음"이라고 사실대로 밝힌다
+        if safety_guard:   # ② 안전 질문은 검색이 비어도 "문서에 없다"고 하지 않는다
+            return _pure_unsure_v19(question, hits, base, mode, retrieval, traces, style)
         if SL.on():
             SL.step("종료 사유", 결과="답 없음", 까닭="낱말 검색 결과가 없어 Claude를 부르지 않음")
         return {**base, "status": "문서에 없음", "mode": f"{mode} — 검색 결과가 없어 Claude를 부르지 않음", "retrieval": retrieval,
@@ -3045,6 +3056,8 @@ def _pure_answer_v19(question: str, p: dict, base: dict, s, memo: dict, prev: di
         elif style:   # STEP_LOG: 말투 바꾸기 켬일 때만 — 받은 짜임 (읽기만 한다. 끔이면 이 줄은 없다)
             SL.step("순수 짜임", 말투바꾸기=True, 항목수=len(got["points"]), 마무리있음=bool(got["closing"]), 머리글자수=len(got["opening"]), 충분하지않음=got["insufficient"])
     if got["insufficient"]:   # Claude가 "조각에 답이 없다"고 했다 — 지금 앱의 "문서에 없음" 응답 모양
+        if safety_guard:   # ② Claude가 "조각에 답이 없다"고 해도 안전 질문은 "문서에 없다"고 하지 않는다 (Claude가 쓴 문장은 버린다)
+            return _pure_unsure_v19(question, hits, base, mode, retrieval, traces, style)
         if not style:
             return {**base, "status": "문서에 없음", "mode": mode, "retrieval": retrieval, "llm_trace": traces, "conclusion": PURE_NO_DOC_V19}
         # 말투 바꾸기: 고정 문구 대신 Claude가 쓴 이유와 다음 방법(opening — 묶음 형식에서는 모든 묶음 text를 이은 글)을 보인다. 상태 "문서에 없음"·근거·블록 없음은 그대로. 원문 출처 표기는 여기서도 막는다(D-03)
@@ -3082,6 +3095,20 @@ def _pure_answer_v19(question: str, p: dict, base: dict, s, memo: dict, prev: di
         return {**base, "status": "확인 필요", "mode": mode, "retrieval": retrieval, "llm_trace": traces,
                 "conclusion": "확인 필요 — 답에 원문 출처 표기가 섞여 내보내지 않았습니다."}
     return out
+
+
+def _pure_unsure_v19(question: str, hits: list, base: dict, mode: str, retrieval: dict, traces: list, style: bool) -> dict:
+    """안전 질문의 "답 없음" (PURE_SAFETY=1): "문서에 없다" 대신 "자동으로 확인하지 못했어요 — 문서에 없다는 뜻은 아니다" + 가까운 DOC-05 절 후보.
+    상태는 기존 "확인 필요"(chat_mapping에서 OK) — 백엔드·화면의 상태 값 목록을 늘리지 않는다. 끝 안전 문구는 그대로 붙인다."""
+    cand = PURE.unsure_candidates(question, hits)
+    head = PURE_UNSURE_CHAT_V19 if style else PURE_UNSURE_V19
+    text = head + (" 가까운 절: " + ", ".join(f"DOC-05 §{c.section} {c.title}" for c in cand) + "." if cand else "")
+    if FORBIDDEN.search(text):   # 절 제목에 원문 출처 표기가 섞이면 (D-03) 이름 없이 고정 문구만
+        text = head
+    if SL.on():
+        SL.step("종료 사유", 결과="자동으로 확인하지 못함", 까닭="안전 질문 — 답이 없어도 \"문서에 없다\"고 하지 않음 (PURE_SAFETY=1)", 후보=[c.chunk_id for c in cand])
+    return {**base, "status": "확인 필요", "mode": f"{mode} · 안전 질문 — 자동으로 확인하지 못함", "retrieval": retrieval, "llm_trace": traces,
+            "conclusion": text, "evidence": [_cite(c) for c in cand], "caution": PURE_CAUTION_SAFETY_V19}
 
 
 def _final_step_log(a: dict, memo: dict) -> dict:
@@ -3207,7 +3234,7 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
 
     # 순수 외부 LLM 연결 (PURE_EXTERNAL, 2026-10-15): 위 단계(권한·화면 설명·위험한 부탁 거절·불량 원인·이어 묻기)에서 걸러지지 않은 질문은
     # 알람 카드·운영 조회·LLM 질문 분류를 거치지 않고 "낱말 검색 상위 조각 + 질문 → 외부 Claude 1번 → 답 그대로"로 답한다.
-    pure_why = pure_scope_v19(p, s)
+    pure_why = pure_scope_v19(p, s, question)
     if pure_why:
         return _pure_answer_v19(question, p, base, s, memo, prev, pure_why)
 

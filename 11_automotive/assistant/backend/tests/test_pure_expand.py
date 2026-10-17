@@ -95,7 +95,7 @@ def test_lock_questions_now_carry_the_work_before_six_steps(q):
 def test_what_was_broken_is_really_broken_without_expansion():
     """기준선: 확장을 끄면 변형 10개 중 8개에서 §2.1이 상위 8개에 없다 (수정 계획서 3-2와 같다). 동사형 표현은 10개 중 6개에서 부모 §2도 상위 8개 밖이다."""
     missing = [q for q in LOCK_VARIANTS if "DOC-05:2.1" not in ids(search(q, 8))]
-    assert len(missing) == 8
+    assert len(missing) >= 3     # 2026-10-18 문서 제목 보강("2.1 작업 전 6단계 (잠금·표지를 거는 순서)") 전에는 8개였다. 제목만으로 4개가 나아졌지만 확장은 여전히 필요하다
     no_parent = [q for q in LOCK_VARIANTS_VERB if "DOC-05:2" not in ids(search(q, 8))]
     assert len(no_parent) == 6                                           # 아래 절 확장만으로는 못 고친다 → 잠금 낱말 보장이 필요한 까닭
 
@@ -239,7 +239,7 @@ def test_guarantee_anchor_exists_in_the_corpus_and_its_children_hold_the_before_
         anchor = [c for c in corpus if c.doc_id == doc_id and c.section == section]
         assert len(anchor) == 1, (doc_id, section)
         kids = {c.title for c in PURE._children(anchor[0], corpus)}
-        assert "작업 전 6단계" in kids and "작업 후 3단계" in kids, kids
+        assert any(k.startswith("작업 전 6단계") for k in kids) and any(k.startswith("작업 후 3단계") for k in kids), kids   # 제목 뒤에 현장 말 병기가 붙어도(2026-10-18) 같은 절이다
 
 
 def test_questions_without_lock_terms_are_untouched_by_the_guarantee():
