@@ -213,3 +213,28 @@ def test_claude_process_timeout_is_503():
 def test_unreadable_claude_output_is_503():
     r = use({"unexpected": "shape"}, {"unexpected": "shape"})
     assert_503(post())
+
+
+# ------------------------------------------------------------------ 화면이 기대는 모양 (마침표로 문장 쪼개기, 앞머리 꼬리표)
+def test_sentence_end_mark_must_be_kept_because_the_screen_splits_on_it():
+    no_dot = out("실적은 87개로 총 목표 90개보다 적습니다 (-3개)", GOOD["lines"][1]["text"], GOOD["lines"][2]["text"])
+    r = use(no_dot, no_dot)
+    assert_503(post())
+    assert len(r.calls) == 2 and "끝 부호" in r.calls[1]["stdin"]
+
+
+def test_leading_category_tag_of_a_daily_item_must_be_kept():
+    items = [{"id": "i1", "text": "[긴급] VF2-01 고장 85분"}, {"id": "i2", "text": "[주의] 보류 로트 LOT-2609-041-1"}]
+    dropped = {"lines": [{"id": "i1", "text": "VF2-01이 85분 고장이었습니다"}, {"id": "i2", "text": "[주의] 로트 LOT-2609-041-1이 보류 중입니다"}]}
+    kept = {"lines": [{"id": "i1", "text": "[긴급] VF2-01이 85분 동안 고장이었습니다"}, {"id": "i2", "text": "[주의] 로트 LOT-2609-041-1이 보류 중입니다"}]}
+    r = use(dropped, kept)
+    res = post("daily_report", items)
+    assert res.status_code == 200 and res.json()["tries"] == 2 and "꼬리표" in r.calls[1]["stdin"]
+    assert [l["text"][:4] for l in res.json()["lines"]] == ["[긴급]", "[주의]"]
+
+
+def test_format_error_from_the_model_is_retried_once_not_given_up():
+    short = out(GOOD["lines"][0]["text"], GOOD["lines"][1]["text"], ids=("s1", "s2"))        # 줄이 모자란 응답(스키마 위반)
+    r = use(short, GOOD)
+    res = post()
+    assert res.status_code == 200 and res.json()["tries"] == 2 and len(r.calls) == 2

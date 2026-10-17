@@ -52,6 +52,7 @@ KINDS: dict[str, Kind] = {
 
 _MARKDOWN = re.compile(r"[*#`]|^\s*[-•]\s|^\s*\d+[.)]\s", re.M)
 _SENT = re.compile(r"(?<=[.!?])\s+")
+_TAG = re.compile(r"^\[[^\]\s]{1,8}\]")
 
 
 def sentences(text: str) -> int:
@@ -98,6 +99,11 @@ def _line_problem(kind: str, src: str, text: str) -> str | None:
         return "너무 김"
     if sentences(text) != sentences(src):
         return f"문장 수 {sentences(src)}개를 {sentences(text)}개로 바꿈"
+    if src.rstrip()[-1:] in ".!?" and text.rstrip()[-1:] not in ".!?":      # 화면이 마침표 뒤 공백으로 문장을 쪼개 쓴다 — 끝 부호를 지키지 않으면 문장이 붙는다
+        return "문장 끝 부호(.) 빠짐"
+    tag = _TAG.match(src)
+    if tag and not text.startswith(tag.group(0)):                              # 앞머리 [긴급]·[생산] 같은 분류 꼬리표
+        return f"앞머리 꼬리표 {tag.group(0)} 빠짐"
     text2 = numbers.tidy(adapter.tidy(text, src), src)
     reason = adapter.check_text(text2, src, num_match="value")
     if reason:
