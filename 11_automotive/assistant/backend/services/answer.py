@@ -2991,6 +2991,8 @@ def pure_scope_v19(p: dict, s, question: str = "") -> str | None:
         only_equipment = bool(p.get("equipment")) and not (p.get("alarms") or p.get("intents") or p.get("start") or p.get("lot") or p.get("order"))
         if s.pure_safety and question and only_equipment and PURE.is_safety(question):   # "VF2-01 차단 지점"·"SAW-01 정비 전에 어디를 차단해?": 운영 조회가 아니라 안전 문서 질문
             return "신호가 설비 이름뿐인 안전 질문 — 문서 질문으로 보고 순수 길로 (PURE_SAFETY=1)"
+        if s.pure_rule and question and PURE.rule_question(question, p):   # "소모품 재고는 누가 관리해?"·"홀드 걸린 로트도 내보낼 수 있어?": 운영 낱말뿐인 규칙 질문은 문서 길로 (문서에 없으면 아래에서 되돌린다)
+            return PURE.RULE_WHY
         return None
     return "규칙이 알람 번호·설비·날짜·운영 낱말을 하나도 못 찾은 질문 (PURE_KEEP_SIGNALS=1)"
 
@@ -3236,7 +3238,15 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
     # 알람 카드·운영 조회·LLM 질문 분류를 거치지 않고 "낱말 검색 상위 조각 + 질문 → 외부 Claude 1번 → 답 그대로"로 답한다.
     pure_why = pure_scope_v19(p, s, question)
     if pure_why:
-        return _pure_answer_v19(question, p, base, s, memo, prev, pure_why)
+        memo_before = dict(memo)
+        out = _pure_answer_v19(question, p, base, s, memo, prev, pure_why)
+        if not (pure_why == PURE.RULE_WHY and out.get("status") == "문서에 없음"):
+            return out
+        # PURE_RULE: 규칙 질문으로 보고 문서 길로 보냈는데 문서에 답이 없다 → 진짜 운영 조회였을 수 있으니 원래 기존 길로 이어서 처리한다 (늘어나는 것은 Claude 호출 1회뿐)
+        memo.clear()
+        memo.update(memo_before)
+        if SL.on():
+            SL.step("1 규칙 판정", 결과="규칙 질문으로 문서 길에 보냈으나 문서에 없음 — 원래 기존 길로 되돌림 (PURE_RULE=1)")
 
     traces: list[dict] = []
     retrieval = None
