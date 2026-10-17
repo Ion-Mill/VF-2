@@ -16,7 +16,7 @@ export const diff = (before: Record<string, unknown>, after: Record<string, unkn
     .map((k) => ({ field: names[k], before: Array.isArray(before[k]) ? (before[k] as string[]).join(' / ') : String(before[k] ?? ''), after: Array.isArray(after[k]) ? (after[k] as string[]).join(' / ') : String(after[k] ?? '') }));
 
 export type WoState = 'draft' | 'editing' | 'approved' | 'inprogress' | 'done' | 'cancelled';
-export const WO_STEPS: [WoState, string][] = [['draft', '프로그램 초안'], ['editing', '수정 중'], ['approved', '승인'], ['inprogress', '진행 중'], ['done', '완료']];
+export const WO_STEPS: [WoState, string][] = [['draft', '초안'], ['editing', '수정 중'], ['approved', '승인'], ['inprogress', '진행 중'], ['done', '완료']];
 
 export interface WorkOrder {
   no: string; alertId: string; machine: MachineId; code: string; created: string; state: WoState; version: number;
