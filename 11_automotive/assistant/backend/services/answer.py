@@ -3023,7 +3023,7 @@ def _pure_answer_v19(question: str, p: dict, base: dict, s, memo: dict, prev: di
     layout = style and bool(s.pure_layout)   # 묶음 목록 형식 (PURE_LAYOUT=1, PURE_STYLE=1일 때만): 답을 sections로 받아 묶음마다 블록 하나씩. 끄면 PURE_STYLE=1의 지금 조립 그대로
     hits = PURE.context(question, k, s)         # PURE_EXPAND=1이면 상위 조각의 아래 절을 더한다 ("잠금 표지 순서" 결함 수정). 끄면 retrieve()와 같다
     chunks = [c for _, c in hits]
-    safety_guard = bool(s.pure_safety) and PURE.is_safety(question)   # 안전 질문: DOC-05를 통째로 받았고, 그래도 답이 없으면 "문서에 없다"고 하지 않는다 (PURE_SAFETY=1)
+    safety_guard = bool(s.pure_safety) and PURE.is_safety(question) and why != PURE.RULE_WHY   # 안전 질문(규칙 질문 라우팅으로 온 "안전 재고" 같은 말은 제외 — 그 질문은 "문서에 없음"이면 기존 길로 되돌려야 한다): DOC-05를 통째로 받았고, 그래도 답이 없으면 "문서에 없다"고 하지 않는다 (PURE_SAFETY=1)
     mode = f"{s.llm_label} · {PURE_MODE_V19}"
     traces: list[dict] = []
     retrieval = {"mode": "bm25", "dense_used": False, "reason": None, "pure": True, "top_k": k, "chunk_ids": [c.chunk_id for c in chunks]}
@@ -3045,7 +3045,7 @@ def _pure_answer_v19(question: str, p: dict, base: dict, s, memo: dict, prev: di
             SL.step("종료 사유", 결과="답 없음", 까닭="낱말 검색 결과가 없어 Claude를 부르지 않음")
         return {**base, "status": "문서에 없음", "mode": f"{mode} — 검색 결과가 없어 Claude를 부르지 않음", "retrieval": retrieval,
                 "llm_trace": traces, "conclusion": PURE_NO_DOC_CHAT_V19 if style else PURE_NO_DOC_V19}
-    got = PURE.ask(question, chunks, prev, s)
+    got = PURE.ask(question, chunks, prev, s, ops_note=(why == PURE.RULE_WHY))
     traces.append({"job": PURE.JOB, "used": True, "reason": None, "tries": 1, "ms": got["ms"]})
     cited, dropped = PURE.resolve_cites(got["cited_raw"], chunks)
     if SL.on():   # STEP_LOG: Claude가 낸 답·인용 번호·"문서에 없음" 판단, 그리고 번호 → 출처 변환 결과 (모델이 쓴 출처 글자는 쓰지 않고 버린다)
@@ -3239,8 +3239,18 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
     pure_why = pure_scope_v19(p, s, question)
     if pure_why:
         memo_before = dict(memo)
-        out = _pure_answer_v19(question, p, base, s, memo, prev, pure_why)
-        if not (pure_why == PURE.RULE_WHY and out.get("status") == "문서에 없음"):
+        rule_route = pure_why == PURE.RULE_WHY
+        ext = EXT.current()
+        failed_before = len(ext.failures) if ext is not None else 0
+        try:
+            out = _pure_answer_v19(question, p, base, s, memo, prev, pure_why)
+        except EXT.ExternalLlmFailure:
+            if not rule_route:
+                raise
+            out = None   # PURE_RULE: 규칙 질문일 수도 있다고 추측해 보낸 문서 길의 Claude 호출이 실패했다 — 원래 기존 길이 답하게 한다 (실패 기록도 이 호출 몫만 지운다)
+            if ext is not None:
+                del ext.failures[failed_before:]
+        if out is not None and not (rule_route and out.get("status") == "문서에 없음"):
             return out
         # PURE_RULE: 규칙 질문으로 보고 문서 길로 보냈는데 문서에 답이 없다 → 진짜 운영 조회였을 수 있으니 원래 기존 길로 이어서 처리한다 (늘어나는 것은 Claude 호출 1회뿐)
         memo.clear()

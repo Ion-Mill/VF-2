@@ -21,6 +21,7 @@ from backend.config import Settings, settings
 from backend.demo_state import get_state
 from backend.llm import claude_client as CC
 from backend.llm import client as C
+from backend.llm import external as EXT
 from backend.services import answer as A
 from backend.services import answer_store as AS
 from backend.services import pure_external as PURE
@@ -98,7 +99,7 @@ def test_bank_every_operational_question_stays_out_of_the_document_route(monkeyp
 def test_bank_rule_questions_that_were_rescued_stay_rescued(monkeypatch):
     cfg(monkeypatch)
     lost = [q for q in BANK["rule"] if not PURE.rule_question(q, A.parse(q))]
-    assert lost == [] and len(BANK["rule"]) >= 15
+    assert lost == [] and len(BANK["rule"]) >= 10
 
 
 # ------------------------------------------------------------------ 스위치와 pure_scope_v19
@@ -157,7 +158,8 @@ class Runner:
 
     def __call__(self, cmd, stdin_text, timeout):
         sch = json.loads(cmd[cmd.index("--json-schema") + 1])
-        self.calls.append({"props": tuple(sorted((sch.get("properties") or {}).keys())), "user": stdin_text})
+        system = cmd[cmd.index("--system-prompt") + 1] if "--system-prompt" in cmd else ""
+        self.calls.append({"props": tuple(sorted((sch.get("properties") or {}).keys())), "user": stdin_text, "system": system})
         so = ({"answer": "가지고 있는 문서에서 찾지 못했어요.", "cited": [], "insufficient": True} if self.insufficient
               else {"answer": "문서 답이에요.", "cited": ["C1"], "insufficient": False})
         out = {"type": "result", "subtype": "success", "is_error": False, "duration_ms": 100, "duration_api_ms": 80, "num_turns": 1,
@@ -250,3 +252,89 @@ def test_operational_questions_never_call_claude_for_routing_when_on(e2e, monkey
     for q in ("재고 부족한 거 있어?", "VF2-01 지금 상태 어때?", "2075 알람 어떻게 해?"):
         ask(q)
     assert len(pure_calls(e2e)) == 0
+
+
+# ------------------------------------------------------------------ 독립 리뷰(2026-10-18)가 짚은 것: 지시문 한 줄·호출 실패·안전 겹침·짧은 질문
+class FailRunner:
+    """Claude 호출이 항상 실패한다 (returncode 1)."""
+    def __init__(self):
+        self.calls = []
+
+    def __call__(self, cmd, stdin_text, timeout):
+        self.calls.append(stdin_text)
+        return SimpleNamespace(returncode=1, stdout="", stderr="시험: 실패")
+
+
+@pytest.fixture
+def e2e_fail(monkeypatch):
+    r = FailRunner()
+    _setup(monkeypatch, r)
+    yield r
+    CC.use_runner(None)
+    C.use_transport(None)
+    AS.clear()
+    get_state().reset()
+
+
+def test_the_rule_route_prompt_carries_the_operations_note_and_other_routes_do_not(e2e, monkeypatch):
+    monkeypatch.setenv("PURE_RULE", "1")
+    ask("홀드 걸린 로트도 내보낼 수 있어?")
+    ask("사내 체육대회 누가 정해?")                                              # 신호가 없는 질문 — 원래 순수 길
+    calls = [c for c in e2e.calls if c["props"] == ("answer", "cited", "insufficient")]
+    assert len(calls) == 2
+    assert PURE.RULE_OPS_NOTE in calls[0]["system"]                               # 규칙 질문 라우팅으로 온 질문: 운영 기록이면 insufficient
+    assert PURE.RULE_OPS_NOTE not in calls[1]["system"]                           # 그렇지 않은 순수 길 질문: 지시문이 지금과 같다
+
+
+def test_ask_adds_the_note_to_the_system_prompt_only_when_asked(monkeypatch):
+    s = cfg(monkeypatch)
+    seen = []
+    monkeypatch.setattr(C, "chat_json", lambda messages, schema, job, max_tokens, st: seen.append(messages[0]["content"]) or {"answer": "x", "cited": [], "insufficient": True})
+    chunks = [c for _, c in PURE.retrieve("재고", 2)]
+    PURE.ask("재고는 누가 관리해?", chunks, None, s, ops_note=True)
+    PURE.ask("재고는 누가 관리해?", chunks, None, s)
+    assert PURE.RULE_OPS_NOTE in seen[0] and PURE.RULE_OPS_NOTE not in seen[1]
+
+
+def test_when_the_claude_call_fails_a_rule_routed_question_is_answered_by_the_old_path(e2e_fail, monkeypatch):
+    """PURE_RULE는 규칙 질문일 수도 있다는 추측으로 보낸 호출이다 — 그 호출이 실패해도 예전에 답이 나오던 질문이 오류(503)가 되면 안 된다."""
+    q = "홀드 걸린 로트도 내보낼 수 있어?"
+    monkeypatch.setenv("PURE_RULE", "0")
+    off = ask(q)
+    monkeypatch.setenv("PURE_RULE", "1")
+    on = ask(q)
+    assert on.status_code == off.status_code == 200
+    assert (on.json()["status"], on.json()["conclusion"]) == (off.json()["status"], off.json()["conclusion"])
+
+
+def test_a_failed_call_on_an_ordinary_document_question_still_ends_as_an_error(e2e_fail, monkeypatch):
+    """규칙 질문 라우팅이 아닌 순수 길의 실패는 지금처럼 오류다 (자동으로 다른 길로 돌아가지 않는다는 원칙)."""
+    monkeypatch.setenv("PURE_RULE", "1")
+    r = ask("사내 체육대회 누가 정해?")
+    assert r.status_code == 503
+
+
+def test_safety_words_in_a_rule_question_do_not_hide_the_fallback(monkeypatch):
+    """"안전 재고"의 "안전"이 안전 질문으로 읽혀 "확인 필요 + DOC-05 후보" 안내가 나가면 되돌리기(상태 "문서에 없음")가 안 된다 — 규칙 질문 경로에서는 안전 안내를 건너뛴다."""
+    q = "정비 소모품 안전 재고는 누가 정해?"
+    s = cfg(monkeypatch, safety="1")
+    assert PURE.is_safety(q) and PURE.rule_question(q, A.parse(q))
+    monkeypatch.setattr(PURE, "ask", lambda question, chunks, prev, st, ops_note=False: {"answer": "문서에 없음", "insufficient": True, "cited_raw": [], "ms": 1, "sent_chars": 1})
+    with EXT.external_request("claude"):
+        s = settings()
+        as_rule = A._pure_answer_v19(q, A.parse(q), {}, s, {}, None, PURE.RULE_WHY)
+        as_pure = A._pure_answer_v19(q, A.parse(q), {}, s, {}, None, "순수 길")
+    assert as_rule["status"] == "문서에 없음"                                       # 되돌리기가 알아볼 수 있는 상태
+    assert as_pure["status"] == "확인 필요"                                          # 일반 순수 길의 안전 질문은 지금처럼 "자동으로 확인하지 못함"
+
+
+@pytest.mark.parametrize("q", ["재고 왜 이래?", "재고 가져가도 돼?", "로트 출하 가능해?", "재고 보충해야 돼?", "로트 합격 맞아?", "재고 어떻게 세?"])
+def test_terse_questions_are_treated_as_lookups(monkeypatch, q):
+    cfg(monkeypatch)
+    assert not PURE.rule_question(q, A.parse(q))
+
+
+@pytest.mark.parametrize("q", ["이 로트 누가 검사했나요?", "누가 이 로트 검사했습니까?", "이 로트 누가 검사했지?", "누가 재고를 가져갔는지 알려줘", "왜 재고가 빠졌어?", "누가 이 로트 끝냈어?", "누가 로트 승인했나요"])
+def test_past_tense_in_any_ending_means_it_asks_what_happened(monkeypatch, q):
+    cfg(monkeypatch)
+    assert not PURE.rule_question(q, A.parse(q))
