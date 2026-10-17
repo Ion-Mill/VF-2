@@ -67,6 +67,13 @@ def test_there_is_a_doc04_table():
     assert "DOC-04" in DR.available()
 
 
+def test_there_is_a_doc03_table_with_ninety_questions_over_thirty_chunks():
+    """고장 대응 매뉴얼(DOC-03) 점검표 (2026-10-18, 측정만): 조각 30개 × 3 = 90개. 보류 질문 16개는 저장소 밖에 봉인한다."""
+    assert "DOC-03" in DOC_TABLES and "DOC-03" in DR.available()
+    assert sum(1 for c in CORPUS if c.doc_id == "DOC-03") == 30
+    assert len(DR.load_items("DOC-03")) == 90
+
+
 @pytest.mark.parametrize("doc", DOC_TABLES)
 def test_table_items_are_complete_and_point_at_real_sections(doc):
     items = DR.load_items(doc)
