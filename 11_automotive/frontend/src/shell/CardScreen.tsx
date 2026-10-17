@@ -7,11 +7,13 @@ import { LAYOUT, MACHINES } from './data';
 import { md, minsSince } from './live';
 import { LEVEL_VIEW, alarmTitle, chainOf, hhmm, machineLabel, responsible, sevText, whoText } from './model';
 import { SafetyBlock } from './Safety';
+import { useGuideCardText } from './assistText';
 
 export default function CardScreen({ alertId }: { alertId: string }) {
   const { alerts, back, wos, srs, openWo, openSimple, user, history, go, twin, openSource } = useApp();
   const [src, setSrc] = useState(false);
   const alert = alerts.find((x) => x.id === alertId);
+  const guideText = useGuideCardText(alert?.code, alert?.alarm?.steps);     // 비서가 풀어 쓴 점검 순서 (없으면 null — 원문만 보인다). 훅이라 아래 early return보다 위에 둔다
   if (!alert) return <div className={PAGE}><div className={CARD}>알람 기록을 찾지 못했습니다 (시연을 처음으로 되돌렸을 수 있음) <button onClick={back} className={BTN}>닫기</button></div></div>;
   const a = alert.alarm, lv = LEVEL_VIEW[alert.level], eq = MACHINES[alert.machine].eq!;
   const op30 = MACHINES[alert.machine].op === 'OP-30';
@@ -40,6 +42,12 @@ export default function CardScreen({ alertId }: { alertId: string }) {
             {row('누가', <>{whoText(a)} <span className={`ml-2 rounded px-2 py-0.5 text-[12px] font-bold ${mine ? 'bg-[#ffe1e1] text-[#a01e23]' : 'bg-slate-100 text-slate-600'}`}>{mine ? '처리 책임: 나 (이 설비 담당)' : '처리 책임: 그 설비 OPR·MNT — 나는 [확인]만'}</span></>)}
             {(a.chain || chain.length > 1) && row('연쇄 알람', <>{chain.length > 1 ? <b>{chain.join(' → ')}</b> : null} {a.chain && <span className="text-slate-600">{chain.length > 1 ? ' · ' : ''}규칙: {a.chain}</span>}</>)}
             {row('먼저 할 일', a.steps.length ? <ol className="list-decimal pl-5">{a.steps.map((s) => <li key={s}>{s}</li>)}</ol> : <span className="text-slate-500">DOC-03 해당 절을 봅니다 ({a.doc03.join(' · ') || '없음'})</span>)}
+            {guideText && row('비서 풀이 (참고)', (
+              <div className="rounded-md border-2 border-dashed border-slate-400 p-2 text-[14px]">
+                <p className="mb-1 text-[12px] font-bold text-slate-600">참고용 — 위 “먼저 할 일” 원문(DOC-03)이 기준입니다. 비서(외부 LLM)가 쉬운 말로 풀어 쓴 것이라, 원문과 다르면 원문을 따릅니다.</p>
+                <ol className="list-decimal pl-5">{guideText.map((s, i) => <li key={i}>{s}</li>)}</ol>
+              </div>
+            ))}
             {row('안전', <SafetyBlock machine={alert.machine} alarm={a} />)}
             {row('생산 영향', <>현재 로트 {alert.lot ? <button onClick={() => go('lots', alert.lot)} className="font-semibold underline">{alert.lot}</button> : '—'} · {alert.cleared ? `정지 ${mins}분` : `${mins}분째`} · 약 {(mins / cyc).toFixed(1)}개 손실 (추정 = 시간 ÷ 기준 사이클 {cyc}분){op30 ? ` · OP-30 1대 → 라인 속도 절반` : ''}</>)}
             {alert.kind === 'alarm' && alert.lot && row('의심 로트 (비서 제안)', <div className="rounded-md border-2 border-dashed border-slate-400 p-2 text-[14px]">┄ 정지 등급 알람 {alert.code}가 뜬 동안 가공된 로트 <b>{alert.lot}</b>입니다. 제안만으로 상태가 바뀌지 않습니다 — 보류는 반장이 로트 추적에서. <button onClick={() => go('lots', alert.lot)} className="ml-1 underline">로트 추적</button> · 출처 <button onClick={() => openSource('DOC-06', '4')} className="underline">DOC-06 §4</button>{twin?.suspect_lot === alert.lot ? ' · (시뮬레이터 의심 로트와 같음)' : ''}</div>)}
