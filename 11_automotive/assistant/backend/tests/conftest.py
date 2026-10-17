@@ -93,5 +93,6 @@ def _llm_off(monkeypatch, tmp_path):
     monkeypatch.setenv("PURE_TOPK", "8")
     monkeypatch.setenv("PURE_STYLE", "0")        # 순수 길 말투 바꾸기 (2026-10-15): 시험 기본은 꺼짐(지금 말투) — 켜는 시험은 안에서 명시
     monkeypatch.setenv("PURE_LAYOUT", "0")       # 순수 길 묶음 목록 형식 (2026-10-16): 시험 기본은 꺼짐(PURE_STYLE=1의 지금 형식) — 켜는 시험은 안에서 명시
+    monkeypatch.setenv("PURE_EXPAND", "0")       # 순수 길 아래 절 확장 (2026-10-18): 시험 기본은 꺼짐 — 개발 PC의 .env가 다른 시험을 바꾸지 않게
     for _k in ("MOM_EXTERNAL_LLM_OK", "ANTHROPIC_API_KEY", "MOM_USAGE_LEDGER"):
         monkeypatch.delenv(_k, raising=False)

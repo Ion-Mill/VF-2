@@ -16,7 +16,7 @@ import time
 from backend.config import Settings
 from backend.llm import client as C
 from backend.llm import external as EXT
-from backend.rag.chunker import Chunk
+from backend.rag.chunker import Chunk, load_corpus
 from backend.rag.search import search
 
 JOB = "pure_answer"          # chat_json 작업 이름. llm/external.py MATERIAL_JOBS에 있어 실패하면 오류(EXTERNAL_LLM_UNAVAILABLE)로 끝난다
@@ -278,6 +278,78 @@ def retrieve(question: str, k: int) -> list[tuple[float, Chunk]]:
     """원래 질문 그대로 낱말 검색(BM25 + 용어집 동의어 확장 — rag/search.py)한 상위 k개 조각. 검색어 바꿔 쓰기·문턱·문지기·순위 바꾸기 없음.
     조각 글은 load_corpus()가 만든 것이라 이미 sanitize(원문 이름·번호 가림)를 거쳤다."""
     return search(question, k)
+
+
+EXPAND_MAX_CHUNKS = 4        # PURE_EXPAND=1: 확장으로 더하는 아래 절 조각 수 상한 (보장하는 부모 조각은 따로 센다)
+EXPAND_MAX_CHARS = 2500      # 더하는 아래 절 글자 수 상한
+
+# "잠금 표지 순서" 결함의 둘째 원인: 사용자는 "잠금 표지"뿐 아니라 "작업 전에 **잠그는** 순서", "뭐부터 **잠가**?"라고도 묻는다.
+# 그러면 부모 조각(DOC-05 §2 잠금·표지 절차)조차 상위 8개에 못 들어와서(15~112위) 아래 절 확장만으로는 못 고친다. 그래서 질문에 잠금 낱말이 있으면
+# 그 부모 조각을 보장한다 (낱말 목록·절 번호를 코드에 박았다 — 문서가 바뀌면 시험 `test_guarantee_anchor_*`가 알려 준다).
+LOCK_TERMS = ("잠금", "잠그", "잠가", "잠궈", "잠겨", "자물쇠", "표지", "loto", "lockout", "tagout", "락아웃")
+GUARANTEED = ((LOCK_TERMS, "DOC-05", "2"),)       # (질문에 이 낱말이 하나라도 있으면, 이 문서·절의 조각을 보장한다)
+
+
+def _children(parent: Chunk, corpus: list[Chunk]) -> list[Chunk]:
+    """직계 아래 절 (§2 → §2.1·§2.2 …). 손자 절(§2.1.1)은 아니다. 같은 문서 안에서만, 문서 순서 그대로."""
+    prefix = parent.section + "."
+    return [c for c in corpus if c.doc_id == parent.doc_id and c.section.startswith(prefix) and "." not in c.section[len(prefix):]]
+
+
+def guarantee(question: str, hits: list[tuple[float, Chunk]]) -> tuple[list[tuple[float, Chunk]], set[str]]:
+    """질문에 잠금 낱말(LOCK_TERMS)이 있는데 보장 대상 부모 조각이 상위 조각에 없으면 맨 앞에 더한다 (점수 0.0 = 검색 점수가 아니라는 표시).
+    돌려주는 것: (조각 목록, 우선 확장할 부모 조각 번호들). 이미 있으면 목록은 그대로이고 우선 확장 대상으로만 표시한다."""
+    q = question.lower()
+    corpus = load_corpus()
+    out, first = list(hits), set()
+    for terms, doc_id, section in GUARANTEED:
+        if not any(t in q for t in terms):
+            continue
+        anchor = next((c for c in corpus if c.doc_id == doc_id and c.section == section), None)
+        if anchor is None:
+            continue
+        first.add(anchor.chunk_id)
+        if anchor.chunk_id not in {c.chunk_id for _, c in out}:
+            out.insert(0, (0.0, anchor))
+    return out, first
+
+
+def expand(hits: list[tuple[float, Chunk]], max_chunks: int = EXPAND_MAX_CHUNKS, max_chars: int = EXPAND_MAX_CHARS,
+           first: set[str] | frozenset[str] = frozenset()) -> list[tuple[float, Chunk]]:
+    """"잠금 표지 순서" 결함의 수정 (PURE_EXPAND=1): 낱말 검색은 부모 조각(예: DOC-05 §2 잠금·표지 절차)은 찾아도, 낱말이 다른 아래 절(§2.1 작업 전 6단계)은 66위로 놓친다.
+    그래서 상위 조각에 직계 아래 절이 있으면 이미 있는 것을 뺀 아래 절을 짧은 것부터 더한다 — `first`에 든 부모를 먼저, 그다음 위에서부터 차례로, 전체 합쳐 max_chunks개·max_chars자까지.
+    원래 조각의 순서·점수는 그대로이고, 더해진 조각은 그 부모 바로 뒤에 문서 순서로 들어가며 점수는 0.0(검색 점수가 아니라는 표시)이다."""
+    corpus = load_corpus()
+    have = {c.chunk_id for _, c in hits}
+    picks: dict[str, list[Chunk]] = {}
+    n = chars = 0
+    for c in sorted((c for _, c in hits), key=lambda x: x.chunk_id not in first):      # 우선 부모 먼저, 나머지는 원래 순서 (안정 정렬)
+        if n >= max_chunks:
+            break
+        kids = [k for k in _children(c, corpus) if k.chunk_id not in have]
+        sel: set[str] = set()
+        for k in sorted(kids, key=lambda x: len(x.text)):                              # 짧은 것부터 (같은 길이면 문서 순서)
+            if len(sel) >= max_chunks - n or chars + len(k.text) > max_chars:
+                break
+            sel.add(k.chunk_id)
+            chars += len(k.text)
+        picks[c.chunk_id] = [k for k in kids if k.chunk_id in sel]                     # 더하는 것은 문서 순서로
+        have |= sel
+        n += len(sel)
+    out: list[tuple[float, Chunk]] = []
+    for score, c in hits:
+        out.append((score, c))
+        out += [(0.0, k) for k in picks.get(c.chunk_id, [])]
+    return out
+
+
+def context(question: str, k: int, s: Settings) -> list[tuple[float, Chunk]]:
+    """Claude에 줄 조각: 낱말 검색 상위 k개 (+ PURE_EXPAND=1이면 잠금 낱말 질문의 부모 조각 보장 + 아래 절). 끄면 retrieve()와 똑같다."""
+    hits = retrieve(question, k)
+    if not s.pure_expand:
+        return hits
+    hits, first = guarantee(question, hits)
+    return expand(hits, first=first)
 
 
 def build_messages(question: str, chunks: list[Chunk], prev: dict | None = None, system: str = SYSTEM) -> list[dict]:
