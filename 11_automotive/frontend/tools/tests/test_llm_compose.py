@@ -351,3 +351,38 @@ def test_work_order_text_rejects_bad_requests(monkeypatch, bad):
     with pytest.raises(SS.ApiError) as e:
         SS.work_order_text(bad)
     assert e.value.status == 400 and fake.calls == []
+
+
+# ------------------------------------------------------------------ 지침카드 '먼저 할 일' 입구
+CARD_STEPS = ["축을 움직이지 말고 알람 이력을 본다. 바로 앞에 108·994(과부하)가 있으면 충돌 신호",
+              "도어 밖에서 공구·고정구·공작물이 외함과 부딪혔는지 본다"]
+
+
+def test_guide_card_text_is_two_step_and_keyed_by_alarm_code(monkeypatch):
+    SS = _sim_server(monkeypatch)
+    fake = Fake()
+    SS.COMPOSER = Composer(run_id=lambda: 1, post=fake, enabled=True)
+    body = {"code": "992", "steps": CARD_STEPS}
+    assert SS.guide_card_text(body) == {"ready": False}
+    SS.COMPOSER.wait_idle()
+    assert SS.guide_card_text(body) == {"ready": True, "lines": ["다듬음: " + s for s in CARD_STEPS]}
+    assert SS.guide_card_text({"code": "992", "steps": CARD_STEPS})["ready"]                   # 같은 코드·같은 줄은 한 번만 만든다
+    assert len(fake.calls) == 1 and fake.calls[0][0] == "guide_card"
+
+
+def test_guide_card_text_off_means_not_ready(monkeypatch):
+    SS = _sim_server(monkeypatch)
+    SS.COMPOSER = Composer(run_id=lambda: 1, post=Fake(), enabled=False)
+    assert SS.guide_card_text({"code": "992", "steps": CARD_STEPS}) == {"ready": False}
+
+
+@pytest.mark.parametrize("bad", [{}, {"code": "", "steps": CARD_STEPS}, {"code": "99 2", "steps": CARD_STEPS}, {"code": "992", "steps": []},
+                                 {"code": "992", "steps": "문자열"}, {"code": "992", "steps": ["ok", ""]}, {"code": "992", "steps": ["x" * 601]},
+                                 {"code": "992", "steps": ["a"] * 13}, {"code": "992", "steps": [1, 2]}])
+def test_guide_card_text_rejects_bad_requests(monkeypatch, bad):
+    SS = _sim_server(monkeypatch)
+    fake = Fake()
+    SS.COMPOSER = Composer(run_id=lambda: 1, post=fake, enabled=True)
+    with pytest.raises(SS.ApiError) as e:
+        SS.guide_card_text(bad)
+    assert e.value.status == 400 and fake.calls == []

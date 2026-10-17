@@ -503,6 +503,8 @@ def _route(method, p, q, body, rt, live, P):
         return {"ok": True}
     if key == "assist/work-order-text" and method == "POST":      # 화면이 만든 작업지시서의 제목·증상을 비서가 다듬어 뒀는지 묻는다 (기다리지 않는다)
         return work_order_text(body)
+    if key == "assist/guide-card-text" and method == "POST":      # 알람 지침카드 '먼저 할 일'을 비서가 쉽게 풀어 써 뒀는지 묻는다 (원문은 그대로, 풀어 쓴 것은 카드 아래에 따로)
+        return guide_card_text(body)
     if key == "users":
         return {"users": list(P.users.values())}
     raise ApiError(404, "NOT_FOUND", f"없는 주소: {key}")
@@ -525,6 +527,17 @@ def work_order_text(body):
         raise ApiError(400, "VALIDATION", "작업지시서 번호(MW-…)·제목·증상이 필요해요")
     out = COMPOSER.polished("work_order", no, [title, symptom], ids=["title", "symptom"])
     return {"ready": True, "title": out[0], "symptom": out[1]} if out else {"ready": False}
+
+
+def guide_card_text(body):
+    """알람 지침카드의 '먼저 할 일'(DOC-03 ★ 줄)을 비서가 쉽게 풀어 쓴 줄. 준비 전·꺼짐·실패면 {"ready": False}.
+    원문 줄은 화면이 그대로 보이고, 이 줄은 카드 아래에 '참고용'으로 따로 붙는다. 알람 코드가 같으면 줄도 같아서 코드별로 한 번만 만든다."""
+    code, steps = str(body.get("code") or ""), body.get("steps")
+    if not re.fullmatch(r"[A-Za-z0-9._-]{1,12}", code) or not isinstance(steps, list) or not 1 <= len(steps) <= 12 \
+            or any(not isinstance(s, str) or not s.strip() or len(s) > 600 for s in steps):
+        raise ApiError(400, "VALIDATION", "알람 코드와 점검 순서 줄(1~12개)이 필요해요")
+    out = COMPOSER.polished("guide_card", code, [s.strip() for s in steps])
+    return {"ready": True, "lines": out} if out else {"ready": False}
 
 
 def live_daily(d, with_llm=True):

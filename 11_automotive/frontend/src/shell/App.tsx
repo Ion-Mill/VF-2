@@ -7,6 +7,7 @@ import type { MachineId } from '@/components/types';
 import { ID_OF, LAYOUT, LEGEND, MACHINES, type Role } from './data';
 import { Ctx, DEFAULT_SETTINGS, type AppCtx, type History, type Inv, type Screen, type Settings } from './ctx';
 import { api, md, simIso, tsOf, useFetch, useLive, useLocal, usePersist, type SimEvent } from './live';
+import { askGuideCard } from './assistText';
 import { ALARMS, SHIFT_NAME, USERS, homeScreen, levelOfSev, type AlertRec, type Notice, type UserRec } from './model';
 import { derive, fromEvents, fromPast, repeatOf, type RuleCtx } from './rules';
 import { LOCK } from './Safety';
@@ -128,6 +129,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
     fresh.forEach((a) => seenAlarm.current.add(a.eventId));
     const add: Notice[] = [];
     fresh.forEach((a) => {
+      if (a.alarm?.steps.length && (a.kind === 'alarm' || a.kind === 'warn')) askGuideCard(a.code, a.alarm.steps).catch(() => undefined); // 카드가 열리기 전에 비서가 풀어 쓸 시간을 번다 (2026-10-17, 꺼져 있으면 아무 일도 없음)
       if (a.kind === 'alarm' && MACHINES[a.machine].op === 'OP-30' && a.alarm && !wos.some((w) => w.alertId === a.id)
         && !wos.some((w) => w.machine === a.machine && w.state !== 'done' && w.state !== 'cancelled')) {
         createWo(a, 'STOP_ALARM');

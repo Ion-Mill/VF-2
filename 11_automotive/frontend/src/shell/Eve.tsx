@@ -238,7 +238,7 @@ function Chat({ focus }: { focus: string | null }) {
     <>
       <div ref={body} className="ma-body text-[14px]" role="tabpanel">
         <div className="ma-pad" aria-live="polite">
-          <p className="text-[11px] text-slate-500">{backendChatEnabled() ? '외부 LLM(Claude)이 사내 문서와 정해진 운영 조회 결과로 답합니다. 알람 카드·점검 순서 같은 안전 답은 AI에 보내지 않고 문서 그대로 보입니다. 질문과 문서 조각이 외부로 전송됩니다(지금은 가상 데이터).' : '규칙 답 — 로컬 LLM 연결 전이라 프로그램 숫자와 사내 문서 절을 그대로 보입니다.'} 지금 화면·고른 설비({selected ? MACHINES[selected].name : '없음'})가 질문 배경으로 갑니다.</p>
+          <p className="text-[11px] text-slate-500">{backendChatEnabled() ? '외부 LLM(Claude)이 사내 문서와 정해진 운영 조회 결과로 답합니다. 알람 카드·점검 순서 같은 안전 답은 채팅에서는 AI에 보내지 않고 문서 그대로 보입니다. 알람 카드 화면에서는 문서 원문이 기준이고, 비서가 쉽게 풀어 쓴 문장이 카드 아래에 참고용으로 따로 붙을 수 있으며 그때 점검 순서 문장이 외부로 전송됩니다. 질문과 문서 조각이 외부로 전송됩니다(지금은 가상 데이터).' : '규칙 답 — 로컬 LLM 연결 전이라 프로그램 숫자와 사내 문서 절을 그대로 보입니다.'} 지금 화면·고른 설비({selected ? MACHINES[selected].name : '없음'})가 질문 배경으로 갑니다.</p>
           {today.length === 0 && !busy && <p className="ma-empty">라인 상황, 알람, 사내 문서 등 무엇이든 물어보세요.</p>}
           {today.map((r, i) => <div key={i} data-at={r.at} className={r.at === focus ? 'rounded-lg ring-2 ring-[#C8F03C]' : ''}><Bubble r={r} openSource={openSource} /></div>)}
           {busy && <p className="ma-msg-bot ma-typing">답변을 만드는 중…</p>}
