@@ -155,6 +155,10 @@ class Settings:
     # pure_layout: 1이면(그리고 pure_style=1일 때만 뜻이 있다) 순수 길의 답 형식을 "묶음 목록(sections: title·text·items)"으로 바꿔, 서로 다른 말을 묶음으로 나눠 담게 하고
     # 서버가 묶음마다 화면 블록 하나씩(소제목 · 머리 + 번호 목록 · 한 문장)을 만든다. 코드 검사·재시도는 더하지 않는다. 기본 꺼짐 = PURE_STYLE=1의 지금 동작 그대로.
     pure_layout: bool = False
+    # pure_expand: 1이면 순수 길에서 Claude에 주는 조각에 "아래 절"을 더한다 — 검색 상위 조각에 직계 아래 절이 있으면 짧은 것부터 몇 개(최대 4개·2,500자) 같이 준다.
+    # "잠금 표지 순서" 결함의 수정: DOC-05 §2.1 "작업 전 6단계"가 검색 66위라 Claude에게 안 가서 "문서에 없다"고 틀리게 답했다 (부모 §2는 상위 8개에 있다).
+    # 기본 꺼짐 = 지금 동작 그대로 (순수 길 PURE_EXTERNAL=1일 때만 뜻이 있다).
+    pure_expand: bool = False
     llm_provider: str = "local"
     # 스위치 이름은 MOM_CLAUDE_* — 이 PC의 Claude Code 환경에 CLAUDE_EFFORT 같은 값이 이미 있어(2026-10-14 확인) 같은 이름을 쓰면 섞인다.
     claude_model: str = "claude-opus-5-5"
@@ -202,7 +206,7 @@ class Settings:
                 "write_shots": self.write_shots, "write_titles": self.write_titles, "write_rules_v17": self.write_rules_v17,
                 "answer_gate_v17": self.answer_gate_v17, "table_fill_v18": self.table_fill_v18, "oblige_check": self.oblige_check,
                 "pure_external": self.pure_external, "pure_keep_signals": self.pure_keep_signals, "pure_topk": self.pure_topk, "pure_style": self.pure_style,
-                "pure_layout": self.pure_layout,
+                "pure_layout": self.pure_layout, "pure_expand": self.pure_expand,
                 "llm_provider": self.llm_provider, "claude_via": self.claude_via, "claude_model": self.claude_model,
                 "claude_effort": self.claude_effort,
                 "external_app": self.external_app, "proc_limit": self.proc_limit, "claude_app": self.claude_app,
@@ -293,6 +297,7 @@ def settings() -> Settings:
         pure_topk=_int_clamped(get("PURE_TOPK", "8"), 8, 1, 20),
         pure_style=get("PURE_STYLE", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 말투)
         pure_layout=get("PURE_LAYOUT", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐 (PURE_STYLE=1일 때만 뜻이 있다)
+        pure_expand=get("PURE_EXPAND", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
         llm_provider=provider,
         claude_model="claude-sonnet-5-5" if claude_app else get("MOM_CLAUDE_MODEL", "claude-opus-5-5").strip(),   # 앱 스위치: Sonnet 5.5 medium, 구독 로그인(cli) 고정
         claude_effort="medium" if claude_app else choice("MOM_CLAUDE_EFFORT", "low"),

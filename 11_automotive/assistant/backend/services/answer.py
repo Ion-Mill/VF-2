@@ -3013,18 +3013,20 @@ def _pure_answer_v19(question: str, p: dict, base: dict, s, memo: dict, prev: di
     k = s.pure_topk
     style = bool(s.pure_style)   # 말투 바꾸기 (PURE_STYLE=1): 지시문·스키마·응답 조립만 다르다. 끄면 아래 모든 줄이 지금과 같다
     layout = style and bool(s.pure_layout)   # 묶음 목록 형식 (PURE_LAYOUT=1, PURE_STYLE=1일 때만): 답을 sections로 받아 묶음마다 블록 하나씩. 끄면 PURE_STYLE=1의 지금 조립 그대로
-    hits = PURE.retrieve(question, k)
+    hits = PURE.context(question, k, s)         # PURE_EXPAND=1이면 상위 조각의 아래 절을 더한다 ("잠금 표지 순서" 결함 수정). 끄면 retrieve()와 같다
     chunks = [c for _, c in hits]
     mode = f"{s.llm_label} · {PURE_MODE_V19}"
     traces: list[dict] = []
     retrieval = {"mode": "bm25", "dense_used": False, "reason": None, "pure": True, "top_k": k, "chunk_ids": [c.chunk_id for c in chunks]}
+    if s.pure_expand:
+        retrieval["expanded_ids"] = [c.chunk_id for sc, c in hits if sc == 0.0]       # 확장으로 더해진 조각 (끄면 이 칸이 없다 — 응답이 지금과 같다)
     base = {**base, "route": {"kind": "doc", "source": "순수 외부 LLM (분류 LLM 없음)"}}
     memo.update(ops_texts=[], procedure=is_procedure(question), future=False, doc_lines=[], doc_cites=[], doc_lead="", doc_written="")
     if SL.on():   # STEP_LOG: 순수 길로 간 까닭 · 분류 LLM 생략 · 찾은 조각 (읽기만 한다)
         SL.step("1 규칙 판정", 결과="순수 외부 LLM 길", 까닭=why, 앞답있음=prev is not None)
         SL.step("2 질문 분류", 사용=False, 까닭="순수 외부 LLM — 분류 LLM을 부르지 않음")
         SL.step("3 찾기", 길="순수 외부 LLM", 질문=question, 방식="낱말 검색(BM25) — 원래 질문 그대로, 문턱·문지기·순위 바꾸기 없음", 요청조각수=k,
-                조각수=len(chunks), 상위=[{**_sl_chunk(c), "점수": round(sc, 2), "글자수": len(c.text)} for sc, c in hits])
+                조각수=len(chunks), 상위=[{**_sl_chunk(c), "점수": round(sc, 2), "글자수": len(c.text), **({"확장으로 더해짐": True} if s.pure_expand and sc == 0.0 else {})} for sc, c in hits])
     if not chunks:   # 찾은 조각이 하나도 없으면 Claude를 부르지 않는다 — 호출 0번이라 화면이 "외부 LLM 호출 없음"이라고 사실대로 밝힌다
         if SL.on():
             SL.step("종료 사유", 결과="답 없음", 까닭="낱말 검색 결과가 없어 Claude를 부르지 않음")
