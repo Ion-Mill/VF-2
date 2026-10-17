@@ -253,3 +253,39 @@ def test_work_order_title_and_symptom_are_polished_and_the_title_stays_short():
     r = use(long_title, long_title)
     assert_503(post("work_order", WO))
     assert len(r.calls) == 2 and "제목이" in r.calls[1]["stdin"]
+
+
+# ------------------------------------------------------------------ 알람 지침카드 '먼저 할 일' (알람 992 — DOC-03 ★ 줄)
+CARD = [{"id": "g1", "text": "축을 움직이지 말고 알람 이력을 본다. 바로 앞에 108·994(과부하)가 있으면 충돌 신호"},
+        {"id": "g2", "text": "도어 밖에서 공구·고정구·공작물이 외함과 부딪혔는지 본다"},
+        {"id": "g3", "text": "외함·주축·공구·고정구에 손상이 있는지 본다 (손상 = 충돌 징후)"},
+        {"id": "g4", "text": "공구가 무뎌지거나 부러졌는지, 프로그램의 속도·이송을 확인하고 보전 담당자를 부른다"}]
+CARD_GOOD = ["축을 움직이지 말고 알람 이력부터 본다. 바로 앞에 108·994(과부하)가 있으면 충돌 신호다",
+             "도어 밖에서 공구, 고정구, 공작물이 외함과 부딪혔는지 확인한다",
+             "외함, 주축, 공구, 고정구에 손상이 있는지 확인한다 (손상 = 충돌 징후)",
+             "공구가 무뎌졌거나 부러졌는지, 프로그램의 속도·이송을 확인하고 보전 담당자를 부른다"]
+
+
+def card_out(*texts):
+    return {"lines": [{"id": f"g{i + 1}", "text": t} for i, t in enumerate(texts)]}
+
+
+def test_guide_card_lines_are_polished_when_the_meaning_is_unchanged():
+    use(card_out(*CARD_GOOD))
+    res = post("guide_card", CARD)
+    assert res.status_code == 200 and res.json()["tries"] == 1 and len(res.json()["lines"]) == 4
+    assert "말고" in res.json()["lines"][0]["text"] and "보전 담당자" in res.json()["lines"][3]["text"]
+
+
+@pytest.mark.parametrize("why,mut", [
+    ("'말고'(하지 말라)를 빼고 바꿔 씀", lambda g: [g[0].replace("움직이지 말고", "움직이지 마세요"), *g[1:]]),
+    ("원문에 없는 안전 용어(전원)를 더함", lambda g: [g[0], g[1] + ", 전원 상태도 본다", *g[2:]]),
+    ("108을 바꿈", lambda g: [g[0].replace("108", "180"), *g[1:]]),
+    ("원문과 너무 다르게 바꿔 씀", lambda g: [g[0], "외함이 충돌했는지 먼저 확인합니다", *g[2:]]),
+    ("줄 합침", lambda g: [g[0] + " " + g[1], *g[2:]]),
+])
+def test_guide_card_rewrites_that_change_the_meaning_are_rejected(why, mut):
+    bad = card_out(*mut(CARD_GOOD)) if "줄 합침" not in why else {"lines": [{"id": "g1", "text": mut(CARD_GOOD)[0]}]}
+    r = use(bad, bad)
+    assert_503(post("guide_card", CARD))
+    assert len(r.calls) == 2, why

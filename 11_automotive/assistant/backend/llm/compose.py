@@ -8,6 +8,7 @@
 """
 from __future__ import annotations
 
+import difflib
 import logging
 import re
 from dataclasses import dataclass
@@ -47,10 +48,14 @@ KINDS: dict[str, Kind] = {
                          forbid=(":", " / ")),
     "work_order": Kind("작업지시서의 제목과 증상", "title 줄은 한 줄짜리 제목(60자 안)이고, symptom 줄은 증상 설명이다. 원인을 새로 만들지 않는다.", max_chars=300),
     "guide_card": Kind("알람 지침카드의 '먼저 할 일' 점검 단계", "각 줄은 점검 순서의 한 단계다. 단계의 순서와 개수를 바꾸지 않고, 점검과 무관한 안내를 더하지 않는다. "
-                                                       "안전 절차(잠금·표지)는 프로그램이 따로 붙이므로 쓰지 않는다."),
+                                                       "안전 절차(잠금·표지)는 프로그램이 따로 붙이므로 쓰지 않는다. '말고'·'~하지 않는다'·'금지'·'반드시'처럼 하지 말라거나 꼭 하라는 표현은 원문 그대로 둔다. "
+                                                       "원문에 없는 안전 용어(잠금·표지·차단·전원·해제 등)를 새로 쓰지 않는다. 원문 낱말을 되도록 그대로 쓰고 어순과 어미만 다듬는다."),
     "briefing": Kind("교대 시작 브리핑의 보고 항목", "각 줄은 보고 순위 순서대로의 한 항목이다. 항목을 합치거나 순서를 바꾸지 않는다."),
 }
 
+_KEEP_MARKERS = re.compile(r"말고|말 것|하지 말|마라|지 않|금지|절대|반드시|꼭 ")        # 지침카드: 하지 말라/꼭 하라는 표현은 줄어들면 뜻이 바뀐다
+_SAFETY_WORDS = ("잠금", "표지", "차단", "전원", "해제", "LOTO")
+SIMILARITY_MIN = 0.5                                                                   # 지침카드: 원문과 글자가 이만큼은 겹쳐야 한다(뜻을 바꿔 쓰지 못하게)
 _MARKDOWN = re.compile(r"[*#`]|^\s*[-•]\s|^\s*\d+[.)]\s", re.M)
 _SENT = re.compile(r"(?<=[.!?])\s+")
 _TAG = re.compile(r"^\[[^\]\s]{1,8}\]")
@@ -87,6 +92,19 @@ def schema(ids: list[str], max_chars: int) -> dict:
                                                               "text": {"type": "string", "minLength": 1, "maxLength": max_chars}}}}}}
 
 
+def _guide_problem(src: str, text: str) -> str | None:
+    """알람 지침카드 '먼저 할 일' 줄 전용 — 점검 순서의 뜻이 바뀌지 않았는지 본다 (숫자·번호는 adapter.check_text가 따로 본다)."""
+    lost = [m for m in sorted(set(_KEEP_MARKERS.findall(src))) if text.count(m) < src.count(m)]
+    if lost:
+        return "하지 말라/꼭 하라는 표현이 빠짐: " + ", ".join(lost)
+    new = [w for w in _SAFETY_WORDS if w in text and w not in src]
+    if new:
+        return "원문에 없는 안전 용어: " + ", ".join(new)
+    if difflib.SequenceMatcher(None, src, text).ratio() < SIMILARITY_MIN:
+        return "원문과 너무 다르게 바꿔 씀"
+    return None
+
+
 def _line_problem(kind: str, src: str, text: str, line_id: str = "") -> str | None:
     k = KINDS[kind]
     if "\n" in text or "\r" in text:
@@ -108,6 +126,10 @@ def _line_problem(kind: str, src: str, text: str, line_id: str = "") -> str | No
     if tag and not text.startswith(tag.group(0)):                              # 앞머리 [긴급]·[생산] 같은 분류 꼬리표
         return f"앞머리 꼬리표 {tag.group(0)} 빠짐"
     text2 = numbers.tidy(adapter.tidy(text, src), src)
+    if kind == "guide_card":
+        g = _guide_problem(src, text2)
+        if g:
+            return g
     reason = adapter.check_text(text2, src, num_match="value")
     if reason:
         return reason
