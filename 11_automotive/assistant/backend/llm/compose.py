@@ -56,7 +56,7 @@ KINDS: dict[str, Kind] = {
 _KEEP_MARKERS = re.compile(r"말고|말 것|하지 말|마라|지 않|금지|절대|반드시|꼭 ")        # 지침카드: 하지 말라/꼭 하라는 표현은 줄어들면 뜻이 바뀐다
 _SAFETY_WORDS = ("잠금", "표지", "차단", "전원", "해제", "LOTO")
 SIMILARITY_MIN = 0.5                                                                   # 지침카드: 원문과 글자가 이만큼은 겹쳐야 한다(뜻을 바꿔 쓰지 못하게)
-_MARKDOWN = re.compile(r"[*#`]|^\s*[-•]\s|^\s*\d+[.)]\s", re.M)
+_MARKDOWN = re.compile(r"\*\*|`|^\s*#{1,6}\s|^\s*[-•*]\s|^\s*\d+[.)]\s", re.M)          # 굵게(**)·백틱·줄 머리의 제목/목록 기호. 설비 이름의 "#1"은 정상 글자다
 _SENT = re.compile(r"(?<=[.!?])\s+")
 _TAG = re.compile(r"^\[[^\]\s]{1,8}\]")
 
@@ -109,7 +109,7 @@ def _line_problem(kind: str, src: str, text: str, line_id: str = "") -> str | No
     k = KINDS[kind]
     if "\n" in text or "\r" in text:
         return "줄바꿈"
-    if _MARKDOWN.search(text):
+    if _MARKDOWN.search(text) and not _MARKDOWN.search(src):      # 원문에 이미 있던 모양은 문제 삼지 않는다
         return "마크다운·목록 기호"
     for bad in k.forbid:
         if bad in text:

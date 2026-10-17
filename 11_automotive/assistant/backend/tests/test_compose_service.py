@@ -289,3 +289,16 @@ def test_guide_card_rewrites_that_change_the_meaning_are_rejected(why, mut):
     r = use(bad, bad)
     assert_503(post("guide_card", CARD))
     assert len(r.calls) == 2, why
+
+
+# ------------------------------------------------------------------ 설비 이름의 '#1'은 마크다운이 아니다 (실행 안내 검증 중 발견)
+def test_hash_in_equipment_name_is_not_treated_as_markdown_but_real_markdown_still_is():
+    lines = [{"id": "title", "text": "VF-2 #1 알람 2075 (전류가 높은 증폭기) 점검"}, {"id": "symptom", "text": "서보 앰프가 큰 전류를 감지했다."}]
+    keep = {"lines": [{"id": "title", "text": "VF-2 #1 알람 2075 (전류가 높은 증폭기) 점검"}, {"id": "symptom", "text": "서보 앰프가 큰 전류를 감지했습니다."}]}
+    use(keep)
+    assert post("work_order", lines).status_code == 200                                    # '#1'을 그대로 둔 줄은 통과
+    bold = {"lines": [{"id": "title", "text": "**VF-2 #1 알람 2075 (전류가 높은 증폭기) 점검**"}, keep["lines"][1]]}
+    heading = {"lines": [{"id": "title", "text": "# VF-2 #1 알람 2075 (전류가 높은 증폭기) 점검"}, keep["lines"][1]]}
+    for bad in (bold, heading):
+        use(bad, bad)
+        assert_503(post("work_order", lines))
