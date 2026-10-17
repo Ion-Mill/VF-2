@@ -157,6 +157,28 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
       return [...w, wo];
     });
   };
+  // 비서가 다듬은 작업지시서 제목·증상 (2026-10-17). 시연 서버가 MOM_LLM_COMPOSE=1로 비서를 부를 때만 채워지고, 꺼져 있거나 실패하면 지금 기본 문장 그대로다.
+  // 사람이 손대기 전(처음 버전·이력 1개)의 초안만 바꾸고, 바꿔도 버전은 올리지 않는다. 5초마다 최대 40번만 묻는다 (안 되면 그냥 기본 문장).
+  const woAsked = useRef<Record<string, { at: number; n: number }>>({});
+  useEffect(() => { woAsked.current = {}; }, [runId]);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      wos.forEach((w) => {
+        if (w.state !== 'draft' || w.version !== 0 || w.revisions.length !== 1 || w.llm) return;
+        const t = woAsked.current[w.no] ?? { at: 0, n: 0 };
+        if (t.n >= 40 || Date.now() - t.at < 5000) return;
+        woAsked.current[w.no] = { at: Date.now(), n: t.n + 1 };
+        api<{ ready: boolean; title?: string; symptom?: string }>('assist/work-order-text', { no: w.no, title: w.title, symptom: w.symptom })
+          .then((r) => {
+            if (!r.ready || !r.title || !r.symptom) return;
+            setWos((list) => list.map((x) => (x.no === w.no && x.state === 'draft' && x.version === 0 && x.revisions.length === 1 && !x.llm && x.title === w.title && x.symptom === w.symptom
+              ? { ...x, title: r.title!, symptom: r.symptom!, llm: true, revisions: x.revisions.map((v, i) => (i === 0 ? { ...v, kind: 'AI비서 초안', by: '비서' } : v)) } : x)));
+          })
+          .catch(() => undefined);
+      });
+    }, 3000);
+    return () => clearInterval(timer);
+  }, [wos]); // eslint-disable-line react-hooks/exhaustive-deps
   // 예상 부품: 9월 같은 알람 작업기록서에 쓴 부품 (C-07, 제안 엔진 대신 기록)
   const expectedParts = (code: string): string[] => {
     const h = hist.data; if (!h) return [];

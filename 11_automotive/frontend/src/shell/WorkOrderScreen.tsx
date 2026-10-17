@@ -1,7 +1,7 @@
 'use client';
 // SCR-11 정비 작업지시서 — OP-30 정지 등급 알람 1건(또는 반복 알람 2단계) = 작업지시서 1건이 프로그램 초안으로 이미 있다.
 // 초안은 지침카드·DOC-03 점검 순서(보전 줄)·DOC-05에서 규칙으로 (로컬 LLM 연결 전이라 [AI] 대신 "프로그램 초안").
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { BTN, CARD, DARK, PAGE, useApp } from './ctx';
 import { MACHINES } from './data';
 import { md, minsSince, simIso } from './live';
@@ -16,6 +16,13 @@ export default function WorkOrderScreen({ no }: { no: string }) {
   const [title, setTitle] = useState(wo?.title ?? '');
   const [symptom, setSymptom] = useState(wo?.symptom ?? '');
   const [steps, setSteps] = useState((wo?.steps ?? []).join('\n'));
+  // 비서가 제목·증상을 다듬어 넣으면(wo가 바뀜) 사람이 아직 손대지 않은 칸만 따라 바꾼다 — 손댄 칸은 그대로 둔다
+  const synced = useRef({ title: wo?.title ?? '', symptom: wo?.symptom ?? '' });
+  useEffect(() => {
+    if (!wo) return;
+    if (wo.title !== synced.current.title) { setTitle((t) => (t === synced.current.title ? wo.title : t)); synced.current.title = wo.title; }
+    if (wo.symptom !== synced.current.symptom) { setSymptom((s) => (s === synced.current.symptom ? wo.symptom : s)); synced.current.symptom = wo.symptom; }
+  }, [wo?.title, wo?.symptom]); // eslint-disable-line react-hooks/exhaustive-deps
   const [confirm, setConfirm] = useState<'approve' | 'cancel' | 'revise' | null>(null);
   const [reason, setReason] = useState('');
   const [reviseOpen, setReviseOpen] = useState(false);

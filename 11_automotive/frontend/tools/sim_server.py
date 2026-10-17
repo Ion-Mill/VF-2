@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import io
 import json
+import re
 import sys
 import threading
 import time
@@ -500,6 +501,8 @@ def _route(method, p, q, body, rt, live, P):
             S.rule_values.update(body["rules"])
         S.settings_log.append({"at": fmt_dt(rt.now()), "by": body.get("user_id"), "what": {k: v for k, v in body.items() if k not in ("role", "user_id")}})
         return {"ok": True}
+    if key == "assist/work-order-text" and method == "POST":      # 화면이 만든 작업지시서의 제목·증상을 비서가 다듬어 뒀는지 묻는다 (기다리지 않는다)
+        return work_order_text(body)
     if key == "users":
         return {"users": list(P.users.values())}
     raise ApiError(404, "NOT_FOUND", f"없는 주소: {key}")
@@ -512,6 +515,16 @@ def shift_with_llm(d):
         return d
     out = COMPOSER.polished("shift_report", d["shift_id"], sentences(d.get("notable_text") or ""))
     return {**d, "notable_text": " ".join(out)} if out else d
+
+
+def work_order_text(body):
+    """작업지시서(화면이 브라우저에서 만든 것)의 제목·증상을 비서가 다듬은 문장으로. 준비 전·꺼짐·실패면 {"ready": False}.
+    화면은 몇 초마다 다시 물어 준비되면 받아 간다. 사람이 고친 작업지시서에는 화면이 묻지 않는다."""
+    no, title, symptom = str(body.get("no") or ""), str(body.get("title") or "").strip(), str(body.get("symptom") or "").strip()
+    if not re.fullmatch(r"MW-\d{3,5}", no) or not title or not symptom or len(title) > 300 or len(symptom) > 600:
+        raise ApiError(400, "VALIDATION", "작업지시서 번호(MW-…)·제목·증상이 필요해요")
+    out = COMPOSER.polished("work_order", no, [title, symptom], ids=["title", "symptom"])
+    return {"ready": True, "title": out[0], "symptom": out[1]} if out else {"ready": False}
 
 
 def live_daily(d, with_llm=True):

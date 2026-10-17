@@ -308,3 +308,46 @@ def test_sim_server_only_replaces_finished_unsaved_drafts(monkeypatch):
     for untouched in ({**base, "partial": True}, {**base, "status": "EDITING"}, {**base, "status": "CONFIRMED"}):
         assert SS.shift_with_llm(untouched) == untouched                  # 진행 중·사람이 고친·확정된 보고서는 안 건드린다
     assert SS.shift_with_llm(None) is None
+
+
+# ------------------------------------------------------------------ 작업지시서 제목·증상 입구
+def _sim_server(monkeypatch):
+    import io
+    monkeypatch.setattr(sys, "stdout", io.StringIO())
+    import sim_server as SS
+    return SS
+
+
+def test_work_order_text_is_two_step_and_sends_title_and_symptom_ids(monkeypatch):
+    SS = _sim_server(monkeypatch)
+    fake = Fake()
+    SS.COMPOSER = Composer(run_id=lambda: 1, post=fake, enabled=True)
+    body = {"no": "MW-950", "title": "VF2-01 알람 2075 점검", "symptom": "공기압이 낮다는 알람 2075가 떴다."}
+    assert SS.work_order_text(body) == {"ready": False}               # 첫 질문: 바로 돌아오고 백그라운드로 비서를 부른다
+    SS.COMPOSER.wait_idle()
+    res = SS.work_order_text(body)
+    assert res == {"ready": True, "title": "다듬음: " + body["title"], "symptom": "다듬음: " + body["symptom"]}
+    assert fake.calls[0][0] == "work_order" and [l["id"] for l in fake.calls[0][1]] == ["title", "symptom"]
+    assert len(fake.calls) == 1
+
+
+def test_work_order_text_off_or_changed_text_is_not_ready(monkeypatch):
+    SS = _sim_server(monkeypatch)
+    SS.COMPOSER = Composer(run_id=lambda: 1, post=Fake(), enabled=False)
+    body = {"no": "MW-951", "title": "제목", "symptom": "증상"}
+    assert SS.work_order_text(body) == {"ready": False}               # 꺼짐 — 화면은 기본 문장 그대로
+    SS.COMPOSER = Composer(run_id=lambda: 1, post=Fake(), enabled=True)
+    SS.work_order_text(body)
+    SS.COMPOSER.wait_idle()
+    assert SS.work_order_text({**body, "title": "사람이 고친 제목"})["ready"] is False      # 입력이 바뀌면 옛 문장을 안 준다
+
+
+@pytest.mark.parametrize("bad", [{}, {"no": "X-1", "title": "t", "symptom": "s"}, {"no": "MW-950", "title": "", "symptom": "s"},
+                                 {"no": "MW-950", "title": "t", "symptom": "x" * 601}, {"no": "MW-950", "title": "t" * 301, "symptom": "s"}])
+def test_work_order_text_rejects_bad_requests(monkeypatch, bad):
+    SS = _sim_server(monkeypatch)
+    fake = Fake()
+    SS.COMPOSER = Composer(run_id=lambda: 1, post=fake, enabled=True)
+    with pytest.raises(SS.ApiError) as e:
+        SS.work_order_text(bad)
+    assert e.value.status == 400 and fake.calls == []
