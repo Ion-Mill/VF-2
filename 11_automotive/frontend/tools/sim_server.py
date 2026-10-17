@@ -33,6 +33,7 @@ from gen.realtime import Realtime  # noqa: E402
 from server_assistant import answer  # noqa: E402
 from server_live import Live, iso  # noqa: E402
 from server_past import Past  # noqa: E402
+from llm_compose import Composer, sentences  # noqa: E402
 
 PORT = 8765
 TICK_SEC = 0.25
@@ -98,10 +99,12 @@ class State:
             self.revs.clear()
             self.ships.clear()
             self.pm_open.clear()
+            COMPOSER.clear()                         # 비서가 다듬어 둔 문장도 새 회차에 가져가지 않는다
             self._push(self.rt.events[n0:] if len(self.rt.events) > n0 else self.rt.events)
 
 
 S: State | None = None
+COMPOSER = Composer(run_id=lambda: S.run_id if S else 0)    # 비서 문장 다듬기 (llm_compose.py) — MOM_LLM_COMPOSE=1일 때만 움직인다, 기다리지 않는다
 
 
 def ticker():
@@ -158,7 +161,7 @@ def _route(method, p, q, body, rt, live, P):
     key = "/".join(p)
     # 시연 시계·사건 버튼 (API-SIM-01~03)
     if key == "health":
-        return {"ok": True, "run_id": S.run_id, "clock": rt.clock()}
+        return {"ok": True, "run_id": S.run_id, "clock": rt.clock(), "llm_compose": COMPOSER.stats()}
     if key == "sim/clock":
         if method == "POST":
             try:
@@ -261,13 +264,13 @@ def _route(method, p, q, body, rt, live, P):
         for r in P.shift_reports:
             rows.append({**r, **({} if r["shift_id"] not in S.reports else S.reports[r["shift_id"]])})
         for sid in live_ids:
-            d = S.reports.get(sid) or live.shift_draft(sid)
+            d = S.reports.get(sid) or shift_with_llm(live.shift_draft(sid))
             if d:
                 rows.append({k: v for k, v in d.items() if k not in ("stops",)})
         return {"reports": rows}
     if len(p) >= 3 and p[:2] == ["reports", "shift"]:
         sid = p[2]
-        cur = S.reports.get(sid) or next((dict(r) for r in P.shift_reports if r["shift_id"] == sid), None) or live.shift_draft(sid)
+        cur = S.reports.get(sid) or next((dict(r) for r in P.shift_reports if r["shift_id"] == sid), None) or shift_with_llm(live.shift_draft(sid))
         if cur is None:
             raise ApiError(404, "NOT_FOUND", "없는 교대")
         if method == "GET":
@@ -334,8 +337,11 @@ def _route(method, p, q, body, rt, live, P):
             raise ApiError(403, "FORBIDDEN", "일일 보고서 확정은 관리자만")
         upd = {"status": "CONFIRMED", "confirmed_by": body.get("user_id"), "confirmed_at": fmt_dt(rt.now()),
                "current_version": int(cur.get("current_version") or 0) + 1}
+        tmpl = live_daily(d, with_llm=False)                # 기본 문장으로 만든 것 (과거 날짜는 None)
         if body.get("memo"):
             upd["issues_summary"] = cur["issues_summary"] + " / 관리자 메모: " + body["memo"]
+        elif tmpl and cur.get("issues_summary") != tmpl.get("issues_summary"):
+            upd["issues_summary"] = cur["issues_summary"]      # 사람이 본 비서 문장을 확정 때 굳힌다 (확정 뒤 GET마다 다시 계산하지 않게)
         S.daily[d] = upd
         S.revs.append({"revision_id": f"L{len(S.revs) + 1}", "doc_type": "DAILY_REPORT", "doc_key": d, "version_no": upd["current_version"],
                        "author_kind": "USER", "author_user_id": body.get("user_id"), "created_at": upd["confirmed_at"], "reason": None,
@@ -499,7 +505,16 @@ def _route(method, p, q, body, rt, live, P):
     raise ApiError(404, "NOT_FOUND", f"없는 주소: {key}")
 
 
-def live_daily(d):
+def shift_with_llm(d):
+    """끝난 10/1 교대의 아직 안 고친 초안: 특이 사항(notable_text)을 비서가 다듬은 문장으로 바꿔 끼운다.
+    준비 전·꺼짐·실패면 d 그대로다 (기다리지 않는다 — llm_compose.py). 사람이 저장·확정한 보고서(S.reports)에는 부르지 않는다."""
+    if not d or d.get("partial") or d.get("status") != "AI_DRAFT":
+        return d
+    out = COMPOSER.polished("shift_report", d["shift_id"], sentences(d.get("notable_text") or ""))
+    return {**d, "notable_text": " ".join(out)} if out else d
+
+
+def live_daily(d, with_llm=True):
     """10/1 일일 보고서 AI비서 초안: 야간 교대 보고서가 확정되면 그 즉시, 아니면 다음 날 06:00 (UI설계서 4.3, FR-PRD-04-01)."""
     rt, live = S.rt, S.live
     cal = rt.sim.cal
@@ -524,7 +539,8 @@ def live_daily(d):
         items.append(f"[주의] 주의 등급 알람 {len(w)}건 ({', '.join(sorted({e['alarm_code'] for e in w}))})")
     items += [f"[주의] 보류 로트 {l.lot_no}" for l in rt.sim.lots if l.on_hold]
     cnt = {k: sum(1 for t in items if t.startswith(f"[{k}]")) for k in ("긴급", "생산", "주의", "참고")}
-    issues = (f"전체 {len(items)}건 (" + " · ".join(f"{k} {v}" for k, v in cnt.items()) + "): " + " / ".join(f"{i + 1}) {t}" for i, t in enumerate(items))) if items else "전체 0건"
+    shown = (COMPOSER.polished("daily_report", d, items) if with_llm and items else None) or items     # 비서가 다듬은 항목 (준비 전·꺼짐·실패면 기본 문장). 머리의 건수·항목 수·순서는 기본 문장 그대로
+    issues = (f"전체 {len(items)}건 (" + " · ".join(f"{k} {v}" for k, v in cnt.items()) + "): " + " / ".join(f"{i + 1}) {t}" for i, t in enumerate(shown))) if items else "전체 0건"
     k = live.kpi(a, b)["by"]["LINE"]
     return {"work_date": d, "status": "AI_DRAFT", "target_qty": 180, "actual_qty": (dr.get("actual_qty") or 0) + (nr.get("actual_qty") or 0),
             "defect_qty": (dr.get("defect_qty") or 0) + (nr.get("defect_qty") or 0), "oee_pct": k["oee_pct"], "failure_loss_qty": round(fl, 1),
