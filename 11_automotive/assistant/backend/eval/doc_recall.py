@@ -4,7 +4,7 @@
 (`safety_recall.py`). 다른 문서에도 같은 모양의 놓침이 있는지 같은 방법으로 먼저 재 본다. **측정만 한다** — 비서 동작·검색·문서를 바꾸지 않고,
 적중률로 통과·실패를 가르지도 않는다(문서가 바뀌면 값이 달라진다). 기획: 261003_창민/다른문서_놓침_측정_기획_20261018.md.
 
-점검표: `eval/doc_qa/<문서>.json` (`q`·`doc`·`sec`, 정답으로 같이 인정하는 절은 `also`). DOC-05는 옛 점검표 `eval/safety_qa.json`을 그대로 쓴다.
+점검표: `eval/doc_qa/<문서>.json` (`q`·`doc`·`sec`, 정답으로 같이 인정하는 절은 `also`). 정답 키는 절 번호("3.6") 또는, 3,500자 넘어 쪼개진 절은 조각 키("3.6:2"). DOC-05는 옛 점검표 `eval/safety_qa.json`을 그대로 쓴다.
 봉인한 보류 질문은 저장소 밖 파일을 `--table`로 줘서 처방을 확정한 뒤 한 번만 돌린다.
 
 쓰는 법 (assistant 폴더, PYTHONUTF8=1):
@@ -66,8 +66,18 @@ def load_items(doc: str) -> list[dict]:
 
 
 def accepted(item: dict) -> set[str]:
-    """정답으로 인정하는 절: 정답 절 + 같이 인정하는 절(also)."""
+    """정답으로 인정하는 키: 정답 키 + 같이 인정하는 키(also). 키는 절 번호("3.6" = 그 절의 모든 조각) 또는 조각 키("3.6:2" = 쪼개진 절의 그 조각만)."""
     return {item["sec"], *item.get("also", [])}
+
+
+def key_of(chunk) -> str:
+    """조각 키: 절 번호. 3,500자 넘어 쪼개진 절은 뒤에 순번("3.6:1"·"3.6:2") — chunk_id에서 문서 번호를 뺀 것."""
+    return chunk.chunk_id.split(":", 1)[1]
+
+
+def is_target(chunk, doc: str, keys: set[str]) -> bool:
+    """이 조각이 정답인가: 같은 문서이고, 절 키에 들거나(쪼개진 절이면 모든 조각) 조각 키에 든다."""
+    return chunk.doc_id == doc and (chunk.section in keys or key_of(chunk) in keys)
 
 
 # ------------------------------------------------------------------ 순위·길·원인
@@ -85,14 +95,14 @@ def _full_ranking(question: str):
 def rank_of(question: str, doc: str, secs: set[str]) -> int | None:
     """낱말 검색(BM25 + 용어집 동의어) 전체 순위에서 정답 절 중 가장 높은 조각의 순위 (1부터). 점수가 0이라 순위에 없으면 None."""
     for i, (_, c) in enumerate(_full_ranking(question), 1):
-        if c.doc_id == doc and c.section in secs:
+        if is_target(c, doc, secs):
             return i
     return None
 
 
 def reached(question: str, doc: str, secs: set[str], s) -> bool:
     """비서가 실제로 Claude에게 보내는 조각(상위 k + 확장 + 안전 문서)에 정답 절이 있나."""
-    return any(c.doc_id == doc and c.section in secs for _, c in PURE.context(question, s.pure_topk, s))
+    return any(is_target(c, doc, secs) for _, c in PURE.context(question, s.pure_topk, s))
 
 
 def _words(text: str) -> list[str]:
@@ -101,7 +111,7 @@ def _words(text: str) -> list[str]:
 
 def overlap(question: str, doc: str, secs: set[str]) -> tuple[list[str], bool]:
     """질문과 정답 조각의 겹침: (질문 낱말 중 정답 조각 낱말에 통째로 있는 것, 통째 낱말은 없고 두 글자 조각만 겹치는가). 동의어 확장 뒤의 질문으로 본다."""
-    cands = [c for c in RS.index().chunks if c.doc_id == doc and c.section in secs]
+    cands = [c for c in RS.index().chunks if is_target(c, doc, secs)]
     have: set[str] = set()
     for c in cands:
         have |= set(RS.tokens(f"{c.title} {c.title} {c.doc_name} {c.text}"))
@@ -128,7 +138,7 @@ def measure(doc: str, s=None, items: list[dict] | None = None) -> dict:
     for it in items:
         q, secs = it["q"], accepted(it)
         full = _full_ranking(q)
-        rank = next((i for i, (_, c) in enumerate(full, 1) if c.doc_id == doc and c.section in secs), None)
+        rank = next((i for i, (_, c) in enumerate(full, 1) if is_target(c, doc, secs)), None)
         hit = reached(q, doc, secs, s)
         shared, bigram = overlap(q, doc, secs)
         rows.append({"q": q, "sec": it["sec"], "also": sorted(secs - {it["sec"]}), "pure": SR.routes_pure(q, s), "reached": hit, "rank": rank, "band": band(rank),
