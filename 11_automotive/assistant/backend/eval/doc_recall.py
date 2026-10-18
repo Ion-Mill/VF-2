@@ -160,7 +160,7 @@ def _pct(a: int, b: int) -> str:
 
 
 def report(m: dict, s, label: str) -> None:
-    print(f"문서: {m['doc']} ({label})  설정: PURE_SAFETY={getattr(s, 'pure_safety', '(스위치 없음)')} PURE_PERIOD={getattr(s, 'pure_period', '(스위치 없음)')} PURE_RULE={getattr(s, 'pure_rule', '(스위치 없음)')} PURE_EXPAND={s.pure_expand} PURE_KEEP_SIGNALS={s.pure_keep_signals} TOPK={s.pure_topk}")
+    print(f"문서: {m['doc']} ({label})  설정: PURE_SAFETY={getattr(s, 'pure_safety', '(스위치 없음)')} PURE_PERIOD={getattr(s, 'pure_period', '(스위치 없음)')} PURE_RULE={getattr(s, 'pure_rule', '(스위치 없음)')} PURE_FAULT={getattr(s, 'pure_fault', '(스위치 없음)')} PURE_FAULTDOC={getattr(s, 'pure_faultdoc', '(스위치 없음)')} PURE_EXPAND={s.pure_expand} PURE_KEEP_SIGNALS={s.pure_keep_signals} TOPK={s.pure_topk}")
     print(f"[①] 정답 절이 Claude 조각에 있는 질문: 전체 {_pct(m['reached'], m['total'])} | 실제 순수 길로 가는 질문 {_pct(m['pure_reached'], m['pure_total'])}")
     order = {b: m["bands"].get(b, 0) for b in BANDS}
     print("[②] 낱말 검색 순위 띠 (안전 문서 통째 추가 전): " + " | ".join(f"{b} {n}" for b, n in order.items()))

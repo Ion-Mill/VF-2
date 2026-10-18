@@ -177,6 +177,9 @@ class Settings:
     # pure_fault: 1이면 순수 길(PURE_KEEP_SIGNALS=1)에서 신호가 운영 낱말(수명·재고·정지·로트 …)뿐이고 **행동을 묻는 표지**(어떻게 확인/해, 뭐부터, 해도 돼, 어떤 값으로 …)가 있고 데이터를 묻는 말(몇 개·목록·현황·이력·누가 했나 …)이 없는
     # 고장 대응 절차 질문을 운영 조회가 아니라 문서 길로 보낸다 (2026-10-18, "툴 수명 다 됐다고 뜨는데 예비 날이 없어. 어떻게 해?"가 엉뚱한 공구 수명 목록을 받던 결함). 문서에 없으면 원래 기존 길로 되돌린다. 기본 꺼짐 = 지금 동작 그대로
     pure_fault: bool = False
+    # pure_faultdoc: 1이면 순수 길에서 질문에 **고장 낱말**(알람·경고·떴어·멈췄어·정지·고장·에러·과열·누설 …)이 있을 때 고장 대응 매뉴얼(DOC-03)을 통째로(상한 30,000자) Claude에게 준다
+    # (2026-10-18, DOC-03을 현장 말로 물으면 정답 절이 검색 상위 8개 밖에 있어 놓치던 결함, 점검표 73/90). PURE_SAFETY가 DOC-05를 통째로 주는 것과 같은 방식. 기본 꺼짐 = 지금 동작 그대로
+    pure_faultdoc: bool = False
     llm_provider: str = "local"
     # 스위치 이름은 MOM_CLAUDE_* — 이 PC의 Claude Code 환경에 CLAUDE_EFFORT 같은 값이 이미 있어(2026-10-14 확인) 같은 이름을 쓰면 섞인다.
     claude_model: str = "claude-opus-5-5"
@@ -224,7 +227,7 @@ class Settings:
                 "write_shots": self.write_shots, "write_titles": self.write_titles, "write_rules_v17": self.write_rules_v17,
                 "answer_gate_v17": self.answer_gate_v17, "table_fill_v18": self.table_fill_v18, "oblige_check": self.oblige_check,
                 "pure_external": self.pure_external, "pure_keep_signals": self.pure_keep_signals, "pure_topk": self.pure_topk, "pure_style": self.pure_style,
-                "pure_layout": self.pure_layout, "pure_expand": self.pure_expand, "pure_safety": self.pure_safety, "pure_period": self.pure_period, "pure_rule": self.pure_rule, "pure_retry": self.pure_retry, "pure_retry_topk": self.pure_retry_topk, "pure_fault": self.pure_fault,
+                "pure_layout": self.pure_layout, "pure_expand": self.pure_expand, "pure_safety": self.pure_safety, "pure_period": self.pure_period, "pure_rule": self.pure_rule, "pure_retry": self.pure_retry, "pure_retry_topk": self.pure_retry_topk, "pure_fault": self.pure_fault, "pure_faultdoc": self.pure_faultdoc,
                 "llm_provider": self.llm_provider, "claude_via": self.claude_via, "claude_model": self.claude_model,
                 "claude_effort": self.claude_effort,
                 "external_app": self.external_app, "proc_limit": self.proc_limit, "claude_app": self.claude_app,
@@ -322,6 +325,7 @@ def settings() -> Settings:
         pure_retry=get("PURE_RETRY", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
         pure_retry_topk=_int_clamped(get("PURE_RETRY_TOPK", "30"), 30, 9, 60),
         pure_fault=get("PURE_FAULT", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
+        pure_faultdoc=get("PURE_FAULTDOC", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
         llm_provider=provider,
         claude_model="claude-sonnet-5-5" if claude_app else get("MOM_CLAUDE_MODEL", "claude-opus-5-5").strip(),   # 앱 스위치: Sonnet 5.5 medium, 구독 로그인(cli) 고정
         claude_effort="medium" if claude_app else choice("MOM_CLAUDE_EFFORT", "low"),

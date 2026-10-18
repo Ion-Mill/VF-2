@@ -3033,6 +3033,8 @@ def _pure_answer_v19(question: str, p: dict, base: dict, s, memo: dict, prev: di
         retrieval["expanded_ids"] = [c.chunk_id for sc, c in hits if sc == 0.0]       # 확장으로 더해진 조각 (끄면 이 칸이 없다 — 응답이 지금과 같다)
     if s.pure_safety:
         retrieval["safety_added_ids"] = [c.chunk_id for sc, c in hits if sc == PURE.SAFETY_SCORE]       # 안전 문서 통째로 더해진 조각 (끄면 이 칸이 없다)
+    if getattr(s, "pure_faultdoc", False):
+        retrieval["faultdoc_added_ids"] = [c.chunk_id for sc, c in hits if sc == PURE.FAULTDOC_SCORE]       # DOC-03 통째로 더해진 조각 (끄면 이 칸이 없다)
     base = {**base, "route": {"kind": "doc", "source": "순수 외부 LLM (분류 LLM 없음)"}}
     memo.update(ops_texts=[], procedure=is_procedure(question), future=False, doc_lines=[], doc_cites=[], doc_lead="", doc_written="")
     if SL.on():   # STEP_LOG: 순수 길로 간 까닭 · 분류 LLM 생략 · 찾은 조각 (읽기만 한다)
