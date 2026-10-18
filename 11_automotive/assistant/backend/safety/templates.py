@@ -1,6 +1,6 @@
 """고정 안전 서식 (UI설계서 6.5, DOC-05 §7). AI가 쓰거나 고치지 않는다 (ai-operations-assistant 규칙 2.5).
 
-- 블록 글자는 DOC-05 Rev.2 §7 블록을 그대로 옮긴 상수다. `{ }` 칸만 DOC-05 §3 설비별 차단 지점에서 채운다.
+- 블록 글자는 DOC-05 Rev.3 §7 블록을 그대로 옮긴 상수다. `{ }` 칸만 DOC-05 §3 설비별 차단 지점에서 채운다.
 - 규칙 2.5 "블록 글자에 Haas·KOSHA 원문 이름을 넣지 않는다"가 DOC-05 §7·UI설계서 6.5보다 엄격하므로,
   [작업 전]/[작업 후] 머리의 KOSHA 지침 이름과 근거 줄의 KOSHA 지침 이름만 뺀다 (단계 글자·순서는 그대로).
   이 차이는 불일치로 기록한다 (2026-10-07). 테스트가 DOC-05 §7 원본과 한 줄씩 대조한다.
@@ -12,7 +12,7 @@ import re
 
 from backend.rag.chunker import load_corpus
 
-# DOC-05 Rev.2 §7 블록 (KOSHA 원문 이름만 뺌). 체크칸 9개(6.1~7.3)는 작업기록서 잠금·표지 체크와 같다.
+# DOC-05 Rev.3 §7 블록 (KOSHA 원문 이름만 뺌). 체크칸 9개(6.1~7.3)는 작업기록서 잠금·표지 체크와 같다.
 BEFORE = [
     ("6.1", "기기 등의 운전정지 준비"),
     ("6.2", "기기 등의 운전정지"),
@@ -34,7 +34,7 @@ PPE = [
     "톱날·칩·공작물을 멈춘 상태에서 다룰 때 베임 방지 장갑",
 ]
 BASIS = "근거: 산업안전보건기준에 관한 규칙 제92조·제95조"
-SOURCE = "출처: DOC-05 안전 작업 기준서 Rev.2 §2·§4·§5"
+SOURCE = "출처: DOC-05 안전 작업 기준서 Rev.3 §2·§4·§5"
 TITLE = "안전 작업 (고정 서식 · AI 작성 아님)"
 OTHER_PROCESS_LINE = "§3 저장 에너지 확인"
 OP30 = {"VF2-01", "VF2-02"}
@@ -130,7 +130,7 @@ def short_task(code: str, equipment_id: str) -> dict | None:
             judge = _clean(cells[head.index("판단")])
             todo = cells[head.index("할 일")].replace("VF2-0x", equipment_id)
             return {"kind": "short", "line": f"{name} — {judge}", "detail": _clean(todo),
-                    "source": "출처: DOC-05 안전 작업 기준서 Rev.2 §2.4", "cite": _ref("2.4"), "fixed": True}
+                    "source": "출처: DOC-05 안전 작업 기준서 Rev.3 §2.4", "cite": _ref("2.4"), "fixed": True}
     return None
 
 
