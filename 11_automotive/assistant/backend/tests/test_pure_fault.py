@@ -147,6 +147,28 @@ def test_negatives_stay_on_the_old_path_with_the_switch_on(monkeypatch):
         assert A.pure_scope_v19(p, s, q) is None, q
 
 
+# ------------------------------------------------------------------ 회귀 사례 (기존 운영 질문 은행 + 튜닝 은행)
+def _cases(name):
+    return json.loads((HERE / name).read_text(encoding="utf-8"))
+
+
+def test_known_operations_questions_never_take_the_fault_route(monkeypatch):
+    """PURE_RULE 때 모은 운영 질문 256개와 튜닝 은행의 운영(O)·알람 번호(A) 질문 110개 중 하나도 고장 대응 경로(PURE_FAULT)로 가면 안 된다."""
+    s = cfg(monkeypatch)
+    qs = _cases("route_bank_cases.json")["ops"] + _cases("fault_bank_cases.json")["O"] + _cases("fault_bank_cases.json")["A"]
+    assert len(qs) >= 350
+    bad = [q for q in qs if A.pure_scope_v19(A.parse(q), s, q) == PURE.FAULT_WHY]
+    assert not bad, bad
+
+
+def test_the_fault_questions_the_rule_catches_stay_caught(monkeypatch):
+    s = cfg(monkeypatch)
+    qs = _cases("fault_bank_cases.json")["F_caught"]
+    assert len(qs) >= 15
+    lost = [q for q in qs if A.pure_scope_v19(A.parse(q), s, q) not in (PURE.FAULT_WHY, PURE.RULE_WHY)]       # 규칙 질문 경로(PURE_RULE)가 먼저 가져가는 것도 문서 길이다
+    assert not lost, lost
+
+
 # ------------------------------------------------------------------ 설정
 def test_default_is_off_and_env_is_read(monkeypatch):
     assert Settings.__dataclass_fields__["pure_fault"].default is False
@@ -254,17 +276,12 @@ def test_when_the_claude_call_fails_a_fault_routed_question_is_answered_by_the_o
     assert (on.json()["status"], on.json()["conclusion"]) == (off.json()["status"], off.json()["conclusion"])
 
 
-def test_retry_applies_to_the_fault_route_before_falling_back(run):
-    resp, r = run(first="insufficient", second="answer", PURE_RETRY="1")
-    assert len(pure_calls(r)) == 2 and pure_calls(r)[1]["wide"]                  # 넓게 다시 본 뒤에야 되돌린다
-    assert resp.json()["status"] == "답변"
-
-
-def test_retry_then_nothing_falls_back_to_the_old_path(run):
+def test_the_fault_route_never_retries_it_falls_back_at_once(run):
+    """진짜 Claude 측정(2026-10-18): 고장 대응 질문 30개에서 재시도가 걸린 적이 없고, 잘못 보낸 운영 질문에서는 재시도가 어정쩡한 문서 답을 만들어 되돌리기를 막았다 — 이 경로는 재시도 없이 바로 되돌린다."""
     off, _ = run(first="answer", PURE_FAULT="0", PURE_RETRY="0")
-    on, r = run(first="insufficient", second="insufficient", PURE_RETRY="1")
-    assert len(pure_calls(r)) == 2
-    assert (on.json()["status"], on.json()["conclusion"]) == (off.json()["status"], off.json()["conclusion"])
+    on, r = run(first="insufficient", second="answer", PURE_RETRY="1")
+    assert len(pure_calls(r)) == 1 and not any(c["wide"] for c in r.calls)
+    assert (on.json()["status"], on.json()["conclusion"]) == (off.json()["status"], off.json()["conclusion"])      # 곧바로 기존 길 답
 
 
 def test_the_rule_route_still_never_retries(run):
@@ -272,7 +289,12 @@ def test_the_rule_route_still_never_retries(run):
     assert len(pure_calls(r)) == 1 and not any(c["wide"] for c in r.calls)
 
 
-def test_a_safety_fault_question_is_not_sent_to_the_old_path_as_not_in_documents(run):
-    resp, r = run(first="insufficient", q="톱 정비 전에 어디를 차단해야 하는지 모르겠어. 어떻게 해?", PURE_SAFETY="1")
-    # 안전 질문은 "문서에 없음" 대신 "자동으로 확인하지 못함"(확인 필요)이다 — 어느 길이든 오류(503)가 아니다
-    assert resp.status_code == 200
+def test_a_safety_word_in_a_misrouted_operations_question_does_not_block_the_fallback(run):
+    """"안전 재고"·"톱"·"차단기" 같은 안전 낱말이 든 운영 질문이 잘못 이 경로로 와도 "자동으로 확인하지 못했어요" 안전 안내가 아니라 원래 기존 길 답을 받는다."""
+    q = "톱 레일 기름 모자라다고 떴어. 기름통이 어디 있어?"
+    off, _ = run(first="answer", q=q, PURE_FAULT="0", PURE_SAFETY="1")
+    on, r = run(first="insufficient", q=q, PURE_SAFETY="1")
+    assert len(pure_calls(r)) == 1
+    assert on.status_code == off.status_code == 200
+    assert "자동으로 확인하지 못했어요" not in (on.json().get("conclusion") or "")
+    assert (on.json()["status"], on.json()["conclusion"]) == (off.json()["status"], off.json()["conclusion"])

@@ -3025,7 +3025,7 @@ def _pure_answer_v19(question: str, p: dict, base: dict, s, memo: dict, prev: di
     layout = style and bool(s.pure_layout)   # 묶음 목록 형식 (PURE_LAYOUT=1, PURE_STYLE=1일 때만): 답을 sections로 받아 묶음마다 블록 하나씩. 끄면 PURE_STYLE=1의 지금 조립 그대로
     hits = PURE.context(question, k, s)         # PURE_EXPAND=1이면 상위 조각의 아래 절을 더한다 ("잠금 표지 순서" 결함 수정). 끄면 retrieve()와 같다
     chunks = [c for _, c in hits]
-    safety_guard = bool(s.pure_safety) and PURE.is_safety(question) and why != PURE.RULE_WHY   # 안전 질문(규칙 질문 라우팅으로 온 "안전 재고" 같은 말은 제외 — 그 질문은 "문서에 없음"이면 기존 길로 되돌려야 한다): DOC-05를 통째로 받았고, 그래도 답이 없으면 "문서에 없다"고 하지 않는다 (PURE_SAFETY=1)
+    safety_guard = bool(s.pure_safety) and PURE.is_safety(question) and why not in (PURE.RULE_WHY, PURE.FAULT_WHY)   # 안전 질문(규칙 질문 라우팅으로 온 "안전 재고" 같은 말은 제외 — 그 질문은 "문서에 없음"이면 기존 길로 되돌려야 한다): DOC-05를 통째로 받았고, 그래도 답이 없으면 "문서에 없다"고 하지 않는다 (PURE_SAFETY=1)
     mode = f"{s.llm_label} · {PURE_MODE_V19}"
     traces: list[dict] = []
     retrieval = {"mode": "bm25", "dense_used": False, "reason": None, "pure": True, "top_k": k, "chunk_ids": [c.chunk_id for c in chunks]}
@@ -3049,7 +3049,7 @@ def _pure_answer_v19(question: str, p: dict, base: dict, s, memo: dict, prev: di
                 "llm_trace": traces, "conclusion": PURE_NO_DOC_CHAT_V19 if style else PURE_NO_DOC_V19}
     got = PURE.ask(question, chunks, prev, s, ops_note=(why in (PURE.RULE_WHY, PURE.FAULT_WHY)))
     traces.append({"job": PURE.JOB, "used": True, "reason": None, "tries": 1, "ms": got["ms"]})
-    if got["insufficient"] and s.pure_retry and not safety_guard and why != PURE.RULE_WHY:   # PURE_RETRY=1: 첫 호출이 "조각에 답이 없다"고 했다 — 정답 조각이 상위 조각 밖(검색 9~50위)이라 못 본 것일 수 있어 더 넓게 한 번 다시 묻는다. 안전 질문·규칙 질문 경로는 제외
+    if got["insufficient"] and s.pure_retry and not safety_guard and why not in (PURE.RULE_WHY, PURE.FAULT_WHY):   # PURE_RETRY=1: 첫 호출이 "조각에 답이 없다"고 했다 — 정답 조각이 상위 조각 밖(검색 9~50위)이라 못 본 것일 수 있어 더 넓게 한 번 다시 묻는다. 안전 질문·규칙 질문 경로는 제외
         wide_hits = PURE.context(question, s.pure_retry_topk, s)
         wide_chunks = [c for _, c in wide_hits]
         have = {c.chunk_id for c in chunks}
