@@ -22,30 +22,41 @@ const aText = (a: AlertRec) => `${LEVEL_VIEW[a.level].icon} ${MACHINES[a.machine
 export const rankOfAlert = (a: AlertRec) => (a.level === '긴급' ? '1' : a.level === '주의' ? (SIM.now() - a.ts > 864e5 ? '0-1' : '3') : '4');
 export const rankOfNotice = (n: Notice) => (n.level === '주의' && SIM.now() - n.ts > 864e5 ? '0-1' : n.rank);
 
-// 시안 B (사용자 선택 2026-10-18): 이브 한 줄 결론 → 상태 칩 → 급한 순서 목록 → 목표 카드 → 근거·확인
-const Say = ({ children }: { children: React.ReactNode }) => { const snap = useContext(EveSnap); return (
-  <div className="flex items-start gap-2.5 rounded-2xl border border-[#e1e4e8] bg-white p-3"><Robot size={30} disc snap={snap} /><p className="m-0 text-[15px] font-semibold leading-snug">{children}</p></div>); };
-const Chips = ({ items }: { items: [string, string, boolean][] }) => (
-  <div className="grid grid-cols-4 gap-1.5">{items.map(([k, v, on]) => <div key={k} className="rounded-xl border border-[#e1e4e8] bg-white px-2 py-1.5 text-[11px] leading-tight text-slate-500">{k}<b className={`mt-0.5 block text-[14px] ${on ? 'text-[#26303a]' : 'font-semibold text-slate-400'}`}>{v}</b></div>)}</div>);
-const Sec = ({ t, n }: { t: string; n?: React.ReactNode }) => <div className="flex justify-between text-[12px] font-extrabold tracking-wide text-slate-500"><span>{t}</span><span>{n}</span></div>;
-const Goal = ({ p }: { p: Twin['production'] }) => (
-  <div className="grid grid-cols-3 gap-1.5">{([['생산 목표', p.target_qty], ['이월', p.carry_over_qty], ['총', p.total_target_qty]] as [string, number][]).map(([k, v]) => <div key={k} className="rounded-xl border border-[#e1e4e8] bg-white px-2.5 py-1.5 text-[11px] text-slate-500">{k}<b className="block font-mono text-[19px] text-[#26303a]">{v}</b></div>)}</div>);
-function PmList({ tasks, go }: { tasks: Record<string, any>[]; go: (s: 'pm', k?: string) => void }) {
+// 시안 D (사용자 선택 2026-10-18): 흰 종이 한 장 — 진한 결론 띠 → 이상 없음 한 줄 → 오늘 할 일 번호 목록 → 목표 → 근거·확인
+type Tone = 'red' | 'amber' | 'soon';
+type Todo = { key: string; text: string; sub: string; tag: string; tone: Tone; go: () => void };
+const TONE: Record<Tone, { row: string; num: string; tag: string }> = {
+  red: { row: 'bg-[#fdeeee] shadow-[inset_4px_0_0_#d23a35]', num: 'border-[#d23a35] text-[#b4282d]', tag: 'bg-[#d23a35] text-white' },
+  amber: { row: 'bg-[#fff8e6] shadow-[inset_4px_0_0_#f0b429]', num: 'border-[#f0b429] text-[#8a5a00]', tag: 'bg-[#f0b429] text-[#3d2a00]' },
+  soon: { row: '', num: 'border-[#c3c9cf] text-[#5b6570]', tag: 'border border-[#d3d7dc] text-[#4b5560]' },
+};
+const Sheet = ({ children }: { children: React.ReactNode }) => <div className="flex flex-col overflow-hidden rounded-2xl border border-[#dde1e5] bg-white text-[15px] text-[#1f262e]">{children}</div>;
+const Head = ({ meta, children }: { meta: string; children: React.ReactNode }) => { const snap = useContext(EveSnap); return (
+  <div className="bg-[#1f262e] px-4 pb-4 pt-3 text-white"><div className="text-[13px] text-[#aab3bd]">{meta}</div>
+    <div className="mt-2 flex items-start gap-2.5"><Robot size={30} disc snap={snap} /><p className="m-0 text-[17px] font-extrabold leading-snug text-white [&_b]:text-[#ffc65c]">{children}</p></div></div>); };
+const OkLine = ({ ok, right }: { ok: string[]; right?: string }) => (ok.length ? (
+  <div className="flex items-center gap-2 border-b border-[#e3e6ea] bg-[#effaf3] px-4 py-2.5 text-[14px] font-bold text-[#1f7a45]">✓ {ok.join('·')} 이상 없음{right && <small className="ml-auto text-[12.5px] font-medium text-[#2f6b4a]">{right}</small>}</div>) : null);
+const H = ({ t, n }: { t: string; n?: React.ReactNode }) => <div className="flex items-baseline justify-between px-4 pb-1.5 pt-3.5 text-[13px] font-extrabold text-[#4b5560]"><span>{t}</span><span>{n}</span></div>;
+function TodoList({ items }: { items: Todo[] }) {
   const [all, setAll] = useState(false);
-  if (!tasks.length) return <p className="m-0 text-slate-500">기한 넘김·임박 없음</p>;
-  const over = tasks.filter((t) => t.state === 'OVERDUE'), soon = tasks.filter((t) => t.state !== 'OVERDUE');
-  const shown = [...over, ...(all ? soon : soon.slice(0, 2))], rest = soon.length - Math.min(2, soon.length);
-  return (
-    <div className="overflow-hidden rounded-2xl border border-[#e1e4e8] bg-white">
-      {shown.map((t, i) => <button key={i} onClick={() => go('pm', t.equipment_id)} className={`grid w-full grid-cols-[58px_1fr_auto] items-center gap-2 px-3 py-2 text-left text-[13px] leading-snug ${i ? 'border-t border-[#eceef1]' : ''} ${t.state === 'OVERDUE' ? 'bg-[#fff7e3]' : ''}`}>
-        <span className="font-mono text-[11px] font-bold text-slate-500">{t.equipment_id}</span><span>{t.item_name}</span>
-        <span className={`whitespace-nowrap rounded-md px-1.5 py-0.5 text-[11px] font-extrabold ${t.state === 'OVERDUE' ? 'bg-[#f0b429] text-[#3d2a00]' : 'bg-[#eef0f3] text-slate-500'}`}>{t.state === 'OVERDUE' ? '▲ 넘김' : '임박'}</span></button>)}
-      {rest > 0 && <button onClick={() => setAll((a) => !a)} className="w-full border-t border-[#eceef1] px-3 py-2 text-left text-[13px] font-bold text-[#1f5fc4]">{all ? '접기 ▴' : `임박 ${rest}건 더 보기 ▸`}</button>}
-    </div>);
+  if (!items.length) return <p className="m-0 px-4 pb-2 text-[14px] text-[#4b5560]">오늘 챙길 일이 없어요.</p>;
+  const urgent = items.filter((t) => t.tone !== 'soon'), soon = items.filter((t) => t.tone === 'soon');
+  const shown = [...urgent, ...(all ? soon : soon.slice(0, 2))], rest = soon.length - Math.min(2, soon.length);
+  return (<>
+    <ol className="m-0 list-none p-0">{shown.map((t, i) => (
+      <li key={t.key}><button onClick={t.go} className={`grid w-full grid-cols-[26px_1fr_auto] items-center gap-2.5 px-4 py-2.5 text-left ${i ? 'border-t border-[#eef0f2]' : ''} ${TONE[t.tone].row}`}>
+        <span className={`flex h-6 w-6 items-center justify-center rounded-full border-2 text-[12px] font-extrabold ${TONE[t.tone].num}`}>{i + 1}</span>
+        <span className="leading-snug">{t.text}<span className="mt-0.5 block text-[12.5px] font-semibold text-[#5b6570]">{t.sub}</span></span>
+        <span className={`whitespace-nowrap rounded-md px-2 py-0.5 text-[12px] font-extrabold ${TONE[t.tone].tag}`}>{t.tag}</span></button></li>))}</ol>
+    {rest > 0 && <button onClick={() => setAll((x) => !x)} className="border-t border-[#eef0f2] px-4 py-2.5 text-left text-[14px] font-bold text-[#1f5fc4]">{all ? '접기 ▴' : `임박 ${rest}건 더 보기 ▸`}</button>}
+  </>);
 }
+const Goal = ({ p }: { p: Twin['production'] }) => (
+  <div className="flex items-baseline gap-1.5 px-4 pb-3.5 pt-1 text-[15px] text-[#4b5560]"><b className="font-mono text-[26px] text-[#1f262e]">{p.total_target_qty}</b>개 <span className="text-[13px]">(목표 {p.target_qty} + 이월 {p.carry_over_qty})</span></div>);
 const Foot = ({ src, onDone }: { src: string; onDone?: () => void }) => (
-  <div className="flex flex-col gap-2 border-t border-[#dfe2e6] pt-3"><span className="text-[11px] text-slate-500">근거 · {src}</span>
-    {onDone && <button onClick={onDone} className="h-11 w-full rounded-full bg-[#1c232b] text-[15px] font-extrabold text-white">확인했어요</button>}</div>);
+  <div className="flex flex-col gap-2.5 border-t border-[#eef0f2] px-4 pb-4 pt-3"><span className="text-[13px] text-[#5b6570]">근거 · {src}</span>
+    {onDone && <button onClick={onDone} className="h-12 w-full rounded-full bg-[#1c232b] text-[16px] font-extrabold text-white">확인했어요</button>}</div>);
+const doIt = (t: string) => (/[기다]$/.test(t) ? t : `${t}하기`); // 할 일은 동사로 끝나게
 
 export default function Briefing({ onDone }: { onDone?: () => void }) {
   const { user, twin, alerts, myNotices, openCard, go, shiftReports, pm, wos } = useApp();
@@ -60,28 +71,30 @@ export default function Briefing({ onDone }: { onDone?: () => void }) {
   const pmToday = (pm?.tasks ?? []).filter((t) => t.state === 'OVERDUE' || t.state === 'DUE_SOON').filter((t) => t.cycle_code !== 'DAILY');
   const pmSorted = [...pmToday].sort((a, b) => (a.state === b.state ? 0 : a.state === 'OVERDUE' ? -1 : 1));
   const pmOver = pmToday.filter((t) => t.state === 'OVERDUE').length;
-  const pmLine = pmToday.length ? pmToday.map((t) => `${t.equipment_id} ${t.item_name}(${t.state === 'OVERDUE' ? '▲ 기한 넘김' : '기한 임박'})`).join(' · ') : '없음';
-  const btn = 'h-9 shrink-0 rounded-md border border-slate-300 px-3 text-[12px] font-semibold';
+  const pmTodos: Todo[] = pmSorted.map((t, i) => ({ key: `pm${i}`, text: doIt(t.item_name), sub: `${t.equipment_id} · 예방 정비`, tag: t.state === 'OVERDUE' ? '▲ 기한 넘김' : '임박', tone: t.state === 'OVERDUE' ? 'amber' : 'soon', go: () => go('pm', t.equipment_id) }));
+  const meta = `${md(twin.shift.start_at)} ${twin.shift.shift_type === 'DAY' ? '주간' : '야간'} ${twin.shift.start_at.slice(11, 16)}~${twin.shift.end_at.slice(11, 16)}`;
+  const good = last ? Number(last.actual_qty) - Number(last.defect_qty) : null;
 
   if (user.role === 'OPR') {
     const mine = open.filter((a) => user.procs.includes(MACHINES[a.machine].op)).sort((a, b) => rankOfAlert(a).localeCompare(rankOfAlert(b)) || a.ts - b.ts);
     const tools = Object.values(twin.equipment).filter((e) => user.procs.includes(e.process_code)).flatMap((e) => e.tools).filter((t) => t.warn);
-    const good = last ? Number(last.actual_qty) - Number(last.defect_qty) : null;
-    const toolV = !user.procs.includes('OP-30') ? '해당 없음' : tools.length ? tools.map((t) => `${t.tool_id} ${t.usage_pct}%`).join(' · ') : '없음';
+    const todos: Todo[] = [
+      ...mine.map((a): Todo => ({ key: a.id, text: `${a.alarm?.nameKo.replace(/\s*\([A-Z0-9 ._/-]+\)/, '') ?? a.code} 대응하기`, sub: `${MACHINES[a.machine].name} · 알람 ${a.code} · ${hhmm(a.time)}부터`, tag: a.level, tone: a.level === '긴급' ? 'red' : 'amber', go: () => openCard(a.id) })),
+      ...tools.map((t, i): Todo => ({ key: `tool${i}`, text: `${t.tool_id} 공구 교체 준비하기`, sub: `수명 ${t.usage_pct}%`, tag: '공구', tone: 'amber', go: () => go('tools') })),
+      ...pmTodos,
+    ];
+    const ok = [lockout.length ? '' : '잠금', mine.length ? '' : '알람', tools.length ? '' : '공구'].filter(Boolean);
     return (
-      <div className="flex flex-col gap-3 text-[14px]">
-        <span className="font-mono text-[12px] text-slate-500">{md(twin.shift.start_at)} {twin.shift.shift_type === 'DAY' ? '주간' : '야간'} {twin.shift.start_at.slice(11, 16)}~{twin.shift.end_at.slice(11, 16)} · 내 공정 {user.procs.join('·')}</span>
-        <Say>{mine.length ? <>내 공정 알람 <b>{mine.length}건</b>부터 처리해 주세요. </> : pmOver ? <>오늘은 <b>기한 넘긴 정비 {pmOver}건</b>부터 챙겨 주세요. 내 공정 알람은 없고, </> : <>먼저 챙길 급한 일은 없어요. </>}목표는 <b>{p.total_target_qty}개</b>예요.</Say>
-        {lockout.length > 0 && <p className="m-0 rounded-xl bg-[#fdecec] px-3 py-2 font-bold text-[#b4282d]">🔒 {lockout.join(' · ')} 잠금 중 — 전원을 넣지 마세요</p>}
-        <Chips items={[['🔒 잠금·표지', lockout.length ? `${lockout.length}대` : '없음', lockout.length > 0], ['내 공정 알람', `${mine.length}건`, mine.length > 0], ['공구 교체', toolV, tools.length > 0], ['지난 교대 양품', good == null ? '—' : `${good}개`, good != null]]} />
-        {mine.length > 0 && (<><Sec t="내 공정 알람 · 처리 안 됨" n={`${mine.length}건`} />
-          <div className="overflow-hidden rounded-2xl border border-[#e1e4e8] bg-white">{mine.map((a, i) => <div key={a.id} className={`flex items-center gap-2 px-3 py-2 text-[13px] ${i ? 'border-t border-[#eceef1]' : ''}`}><span className="flex-1">{aText(a)}</span><button onClick={() => openCard(a.id)} className="h-8 shrink-0 rounded-full bg-[#1c232b] px-3 text-[12px] font-bold text-white">지침카드</button></div>)}</div></>)}
-        <Sec t="예방 정비 · 급한 순서" n={`${pmToday.length}건`} />
-        <PmList tasks={pmSorted} go={go} />
-        <Sec t="이번 교대 목표" />
+      <Sheet>
+        <Head meta={`${meta} · 내 공정 ${user.procs.join('·')}`}>{mine.length ? <>내 공정 알람 <b>{mine.length}건</b>부터 처리해 주세요. </> : pmOver ? <>오늘은 <b>기한 넘긴 정비 {pmOver}건</b>부터 챙겨 주세요. </> : <>먼저 챙길 급한 일은 없어요. </>}목표는 {p.total_target_qty}개예요.</Head>
+        {lockout.length > 0 && <div className="bg-[#fdecec] px-4 py-2.5 text-[15px] font-extrabold text-[#b4282d]">🔒 {lockout.join(' · ')} 잠금 중 — 전원을 넣지 마세요</div>}
+        <OkLine ok={ok} right={good == null ? undefined : `지난 교대 양품 ${good}개`} />
+        <H t="오늘 할 일 · 위에서부터" n={`${todos.length}건`} />
+        <TodoList items={todos} />
+        <H t="이번 교대 목표" />
         <Goal p={p} />
         <Foot src={`교대 보고서 ${last?.shift_id ?? '없음'} · 예방 정비 일정 · 알람 기록`} onDone={onDone} />
-      </div>
+      </Sheet>
     );
   }
 
@@ -101,51 +114,52 @@ export default function Briefing({ onDone }: { onDone?: () => void }) {
   const sentences = notable.split(/(?<=\.)\s+/);
 
   return (
-    <div className="flex flex-col gap-3 text-[14px]">
-      <span className="font-mono text-[12px] text-slate-500">{head}</span>
-      <Say>{by(['0', '1']) ? <>안전·긴급 <b>{by(['0', '1'])}건</b>부터 챙겨 주세요. </> : pmOver ? <>기한 넘긴 정비 <b>{pmOver}건</b>이 있어요. </> : <>안전·긴급 일은 없어요. </>}먼저 챙길 일은 모두 <b>{total}건</b>, 목표는 <b>{p.total_target_qty}개</b>예요.</Say>
-      <Chips items={[['🔒 잠금·표지', lockout.length ? `${lockout.length}대` : '없음', lockout.length > 0], ['긴급 알람', `${by(['1'])}건`, by(['1']) > 0], ['먼저 챙길 일', `${total}건`, total > 0], ['지난 교대 양품', last ? `${Number(last.actual_qty) - Number(last.defect_qty)}개` : '—', !!last]]} />
+    <Sheet>
+      <Head meta={head}>{by(['0', '1']) ? <>안전·긴급 <b>{by(['0', '1'])}건</b>부터 챙겨 주세요. </> : pmOver ? <>기한 넘긴 정비 <b>{pmOver}건</b>이 있어요. </> : <>안전·긴급 일은 없어요. </>}먼저 챙길 일은 모두 {total}건, 목표는 {p.total_target_qty}개예요.</Head>
+      <OkLine ok={[lockout.length ? '' : '잠금', by(['1']) ? '' : '긴급 알람'].filter(Boolean)} right={good == null ? undefined : `지난 교대 양품 ${good}개`} />
+      <div className="flex flex-col gap-3 px-4 py-3 text-[14px]">
       <section>
-        <h4 className="font-bold">먼저 챙길 일 — 전체 {total}건 <span className="font-normal text-slate-500">(안전 {by(['0'])} · 긴급 {by(['1'])} · 생산 {by(['2'])} · 주의 {by(['0-1', '3'])} · 참고 {by(['4'])})</span></h4>
-        <p className="text-[11px] text-slate-500">순서는 프로그램 규칙(2.5 보고 순위). 인계 사항 출처: 교대 보고서 {last?.shift_id ?? '없음'}. 보고 항목은 프로그램 목록 (지난 교대 요약은 비서가 켜져 있으면 비서가 다듬은 문장)</p>
-        <ul className="mt-1 flex flex-col gap-1">
+        <h4 className="m-0 text-[15px] font-extrabold">먼저 챙길 일 — 전체 {total}건 <span className="font-normal text-[#4b5560]">(안전 {by(['0'])} · 긴급 {by(['1'])} · 생산 {by(['2'])} · 주의 {by(['0-1', '3'])} · 참고 {by(['4'])})</span></h4>
+        <p className="m-0 mt-1 text-[12.5px] text-[#5b6570]">순서는 프로그램 규칙(2.5 보고 순위). 인계 사항 출처: 교대 보고서 {last?.shift_id ?? '없음'}.</p>
+        <ul className="mt-1 flex flex-col gap-1 pl-0">
           {groups.map((g) => (
-            <li key={g.rank}><b>{g.rank} {RANK_NAME[g.rank]}</b>{' '}
+            <li key={g.rank} className="list-none"><b>{g.rank} {RANK_NAME[g.rank]}</b>{' '}
               {cnt(g) === 0 ? (g.rank === '0' ? '🔒 잠금·표지 중인 설비 없음' : '-') : (
                 <ul className="ml-3 list-disc">
                   {g.safety.map((t) => <li key={t}>{t}</li>)}
-                  {g.a.map((a) => <li key={a.id}>{aText(a)} <button onClick={() => openCard(a.id)} className="ml-1 rounded border border-slate-300 px-2 text-[11px] font-semibold">열기</button></li>)}
+                  {g.a.map((a) => <li key={a.id}>{aText(a)} <button onClick={() => openCard(a.id)} className="ml-1 rounded-full bg-[#1c232b] px-2.5 text-[12px] font-bold text-white">열기</button></li>)}
                   {g.n.map((n) => <li key={n.id}>[{n.ruleName}] {n.text}{n.past ? ` · ${md(n.at)}` : ''}</li>)}
-                  {g.base.map((t) => <li key={t}>{t} <span className="text-[11px] text-slate-500">(인계)</span></li>)}
+                  {g.base.map((t) => <li key={t}>{t} <span className="text-[12px] text-[#5b6570]">(인계)</span></li>)}
                 </ul>
               )}
             </li>
           ))}
         </ul>
       </section>
-      <section className="border-t border-slate-200 pt-2">
-        <h4 className="font-bold">지난 교대 {last ? `(${last.shift_id})` : ''} {last && <button onClick={() => go('shift', last.shift_id)} className="ml-1 text-[12px] font-normal underline">교대 보고서 열기</button>}</h4>
-        {!last ? <p className="text-slate-500">없음</p> : (
+      <section className="border-t border-[#eef0f2] pt-2">
+        <h4 className="m-0 text-[15px] font-extrabold">지난 교대 {last ? `(${last.shift_id})` : ''} {last && <button onClick={() => go('shift', last.shift_id)} className="ml-1 text-[13px] font-normal underline">교대 보고서 열기</button>}</h4>
+        {!last ? <p className="m-0 text-[#4b5560]">없음</p> : (
           <ul className="list-disc pl-4">
-            <li>양품 {Number(last.actual_qty) - Number(last.defect_qty)}개 · 불량 {last.defect_qty}개 · 총 목표 {last.target_qty}개 {last.status !== 'CONFIRMED' && <b className="text-[#9a6200]">ⓘ 잠정 (확정 전)</b>}</li>
+            <li>양품 {good}개 · 불량 {last.defect_qty}개 · 총 목표 {last.target_qty}개 {last.status !== 'CONFIRMED' && <b className="text-[#9a6200]">ⓘ 잠정 (확정 전)</b>}</li>
             <li>{sentences.slice(1, 3).join(' ')}</li>
             <li>{sentences.slice(3).join(' ')}</li>
           </ul>
         )}
       </section>
-      <section className="border-t border-slate-200 pt-2">
-        <h4 className="font-bold">이번 교대</h4>
+      <section className="border-t border-[#eef0f2] pt-2">
+        <h4 className="m-0 text-[15px] font-extrabold">이번 교대 작업지시</h4>
         <ul className="list-disc pl-4">
-          <li>총 {p.total_target_qty}개 (목표 {p.target_qty} + 이월 {p.carry_over_qty})</li>
-          <li>작업지시 {twin.orders.filter((o) => o.status !== 'COMPLETED').map((o) => `${o.order_no}(${o.status === 'IN_PROGRESS' ? '진행 중' : '대기'}${o.delay ? ' ' + o.delay : ''})`).join(' · ') || '없음'}</li>
+          <li>{twin.orders.filter((o) => o.status !== 'COMPLETED').map((o) => `${o.order_no}(${o.status === 'IN_PROGRESS' ? '진행 중' : '대기'}${o.delay ? ' ' + o.delay : ''})`).join(' · ') || '없음'}</li>
           {wos.filter((w) => w.state !== 'done' && w.state !== 'cancelled').length > 0 && <li>진행 중 작업지시서 {wos.filter((w) => w.state !== 'done' && w.state !== 'cancelled').map((w) => w.no).join(' · ')}</li>}
         </ul>
+        <button onClick={() => go('stops')} className="mt-2 h-10 rounded-full border border-[#d3d7dc] bg-white px-4 text-[13px] font-semibold">정지 사유 입력 화면</button>
       </section>
-      <Sec t="예방 정비 · 급한 순서" n={`${pmToday.length}건`} />
-      <PmList tasks={pmSorted} go={go} />
+      </div>
+      <H t="예방 정비 · 급한 순서" n={`${pmToday.length}건`} />
+      <TodoList items={pmTodos} />
+      <H t="이번 교대 목표" />
       <Goal p={p} />
-      <button onClick={() => go('stops')} className="h-10 self-start rounded-full border border-slate-300 bg-white px-4 text-[13px] font-semibold">정지 사유 입력 화면</button>
       <Foot src={`교대 보고서 ${last?.shift_id ?? '없음'} · 알람·알림 기록 · 예방 정비 일정`} onDone={onDone} />
-    </div>
+    </Sheet>
   );
 }
