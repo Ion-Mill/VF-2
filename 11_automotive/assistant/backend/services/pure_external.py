@@ -16,7 +16,7 @@ import time
 from backend.config import Settings
 from backend.llm import client as C
 from backend.llm import external as EXT
-from backend.rag.chunker import Chunk
+from backend.rag.chunker import Chunk, load_corpus
 from backend.rag.search import search
 
 JOB = "pure_answer"          # chat_json 작업 이름. llm/external.py MATERIAL_JOBS에 있어 실패하면 오류(EXTERNAL_LLM_UNAVAILABLE)로 끝난다
@@ -280,6 +280,235 @@ def retrieve(question: str, k: int) -> list[tuple[float, Chunk]]:
     return search(question, k)
 
 
+EXPAND_MAX_CHUNKS = 4        # PURE_EXPAND=1: 확장으로 더하는 아래 절 조각 수 상한 (보장하는 부모 조각은 따로 센다)
+EXPAND_MAX_CHARS = 2500      # 더하는 아래 절 글자 수 상한
+
+# "잠금 표지 순서" 결함의 둘째 원인: 사용자는 "잠금 표지"뿐 아니라 "작업 전에 **잠그는** 순서", "뭐부터 **잠가**?"라고도 묻는다.
+# 그러면 부모 조각(DOC-05 §2 잠금·표지 절차)조차 상위 8개에 못 들어와서(15~112위) 아래 절 확장만으로는 못 고친다. 그래서 질문에 잠금 낱말이 있으면
+# 그 부모 조각을 보장한다 (낱말 목록·절 번호를 코드에 박았다 — 문서가 바뀌면 시험 `test_guarantee_anchor_*`가 알려 준다).
+LOCK_TERMS = ("잠금", "잠그", "잠가", "잠궈", "잠겨", "자물쇠", "표지", "loto", "lockout", "tagout", "락아웃")
+GUARANTEED = ((LOCK_TERMS, "DOC-05", "2"),)       # (질문에 이 낱말이 하나라도 있으면, 이 문서·절의 조각을 보장한다)
+
+
+def _children(parent: Chunk, corpus: list[Chunk]) -> list[Chunk]:
+    """직계 아래 절 (§2 → §2.1·§2.2 …). 손자 절(§2.1.1)은 아니다. 같은 문서 안에서만, 문서 순서 그대로."""
+    prefix = parent.section + "."
+    return [c for c in corpus if c.doc_id == parent.doc_id and c.section.startswith(prefix) and "." not in c.section[len(prefix):]]
+
+
+def guarantee(question: str, hits: list[tuple[float, Chunk]]) -> tuple[list[tuple[float, Chunk]], set[str]]:
+    """질문에 잠금 낱말(LOCK_TERMS)이 있는데 보장 대상 부모 조각이 상위 조각에 없으면 맨 앞에 더한다 (점수 0.0 = 검색 점수가 아니라는 표시).
+    돌려주는 것: (조각 목록, 우선 확장할 부모 조각 번호들). 이미 있으면 목록은 그대로이고 우선 확장 대상으로만 표시한다."""
+    q = question.lower()
+    corpus = load_corpus()
+    out, first = list(hits), set()
+    for terms, doc_id, section in GUARANTEED:
+        if not any(t in q for t in terms):
+            continue
+        anchor = next((c for c in corpus if c.doc_id == doc_id and c.section == section), None)
+        if anchor is None:
+            continue
+        first.add(anchor.chunk_id)
+        if anchor.chunk_id not in {c.chunk_id for _, c in out}:
+            out.insert(0, (0.0, anchor))
+    return out, first
+
+
+def expand(hits: list[tuple[float, Chunk]], max_chunks: int = EXPAND_MAX_CHUNKS, max_chars: int = EXPAND_MAX_CHARS,
+           first: set[str] | frozenset[str] = frozenset()) -> list[tuple[float, Chunk]]:
+    """"잠금 표지 순서" 결함의 수정 (PURE_EXPAND=1): 낱말 검색은 부모 조각(예: DOC-05 §2 잠금·표지 절차)은 찾아도, 낱말이 다른 아래 절(§2.1 작업 전 6단계)은 66위로 놓친다.
+    그래서 상위 조각에 직계 아래 절이 있으면 이미 있는 것을 뺀 아래 절을 짧은 것부터 더한다 — `first`에 든 부모를 먼저, 그다음 위에서부터 차례로, 전체 합쳐 max_chunks개·max_chars자까지.
+    원래 조각의 순서·점수는 그대로이고, 더해진 조각은 그 부모 바로 뒤에 문서 순서로 들어가며 점수는 0.0(검색 점수가 아니라는 표시)이다."""
+    corpus = load_corpus()
+    have = {c.chunk_id for _, c in hits}
+    picks: dict[str, list[Chunk]] = {}
+    n = chars = 0
+    for c in sorted((c for _, c in hits), key=lambda x: x.chunk_id not in first):      # 우선 부모 먼저, 나머지는 원래 순서 (안정 정렬)
+        if n >= max_chunks:
+            break
+        kids = [k for k in _children(c, corpus) if k.chunk_id not in have]
+        sel: set[str] = set()
+        for k in sorted(kids, key=lambda x: len(x.text)):                              # 짧은 것부터 (같은 길이면 문서 순서)
+            if len(sel) >= max_chunks - n or chars + len(k.text) > max_chars:
+                break
+            sel.add(k.chunk_id)
+            chars += len(k.text)
+        picks[c.chunk_id] = [k for k in kids if k.chunk_id in sel]                     # 더하는 것은 문서 순서로
+        have |= sel
+        n += len(sel)
+    out: list[tuple[float, Chunk]] = []
+    for score, c in hits:
+        out.append((score, c))
+        out += [(0.0, k) for k in picks.get(c.chunk_id, [])]
+    return out
+
+
+# ---------------------------------------------------------------- PURE_PERIOD (2026-10-18) — 기간 말로 묻는 정비 질문의 거짓 "문서에 없다"를 막는다
+# "한 달에 한 번 하는 정비 뭐야?"에서 DOC-04 §2.3 "매월"이 낱말 검색 74~88위로 밀려 Claude에게 가지 않았고 "문서에 없다"는 거짓 답이 나왔다 (측정: 261003_창민/
+# 다른문서_놓침_측정_성과_20261018.md). DOC-04의 기간 표는 제목이 "매월·6개월·1년"처럼 한두 낱말뿐이라 현장 말("한 달에 한 번·반기·매년")이 맞을 곳이 없다.
+# 제목에 현장 말을 병기해도 그 낱말과 똑같을 때만 듣는다(탐침 16개 중 4개). 그래서 질문에 **기간 낱말**과 **정비 낱말**이 함께 있으면 그 기간의 절 조각을 보장한다
+# (PURE_EXPAND=1 안에서, 스위치 PURE_PERIOD). 정규식은 공백을 선택으로 둔다 — 공백을 모두 지우면 "5분 기준"이 "분기"가 된다. 숫자 기간은 앞에 숫자가 없을 때만
+# ("2021년"·"16개월"을 "1년"·"6개월"로 읽지 않는다). "2년마다"·"두 달마다"처럼 이 절들이 아닌 기간은 일부러 넣지 않았다.
+PERIOD_DOC = "DOC-04"                                   # 예방 정비 기준서
+PERIOD_TERMS = {                                        # 절 번호 → 기간 낱말 (정규식, 절 번호 순서가 보장 순서)
+    "2.1": r"매일|하루에|하루\s?마다|하루\s?한\s?번|일일\s?점검|교대마다|매\s?교대",
+    "2.2": r"매주|주\s?1\s?회|일주일|한\s?주에|주마다|주간\s?점검",
+    "2.3": r"매월|매\s?달|월\s?1\s?회|월간|한\s?달(?:에|마다|\s?단위)|(?<!\d)1\s?개월|다달이|(?<!개)월마다|월\s?단위|월별",
+    "2.4": r"(?<!\d)3\s?개월|분기|석\s?달|세\s?달|(?<!\d)3\s?달|삼\s?개월",
+    "2.5": r"(?<!\d)6\s?개월|반\s?년|반기|여섯\s?달|(?<!\d)6\s?달|육\s?개월",
+    "2.6": r"(?<!\d)1\s?년|매\s?년|연간|연\s?1\s?회|일\s?년|한\s?해|해마다|(?<!\d)12\s?개월|열두\s?달|연례|연\s?단위",
+    "2.7": r"필요할\s?때|필요하면|필요\s?시|수시|그때그때",
+}
+PERIOD_RE = {sec: re.compile(pat) for sec, pat in PERIOD_TERMS.items()}
+PERIOD_CONTEXT_RE = re.compile(r"정비|점검|교체|청소|보충|윤활|소모품|주기|항목|그리스|필터")      # 함께 있어야 발동 ("매일 몇 시에 퇴근?"에는 발동하지 않는다)
+
+
+def period_sections(question: str) -> list[str]:
+    """질문의 기간 낱말이 가리키는 DOC-04 절 번호들 (절 번호 순서). 정비 낱말이 없으면 빈 목록."""
+    q = question.lower()
+    if not PERIOD_CONTEXT_RE.search(q):
+        return []
+    return [sec for sec, rx in PERIOD_RE.items() if rx.search(q)]
+
+
+def guarantee_period(question: str, hits: list[tuple[float, Chunk]]) -> list[tuple[float, Chunk]]:
+    """질문의 기간에 해당하는 DOC-04 절 조각이 상위 조각에 없으면 맨 앞에 더한다 (점수 0.0 = 검색 점수가 아니라는 표시). 이미 있거나 기간이 없으면 목록을 그대로 돌려준다."""
+    secs = period_sections(question)
+    if not secs:
+        return hits
+    corpus = load_corpus()
+    have = {c.chunk_id for _, c in hits}
+    add = []
+    for sec in secs:
+        anchor = next((c for c in corpus if c.doc_id == PERIOD_DOC and c.section == sec), None)
+        if anchor is not None and anchor.chunk_id not in have:
+            add.append((0.0, anchor))
+    return add + list(hits) if add else hits
+
+
+# ---------------------------------------------------------------- PURE_RULE (2026-10-18) — 운영 낱말이 든 규칙 질문을 문서 길로
+# "소모품 재고는 누가 관리해?"·"홀드 걸린 로트도 내보낼 수 있어?"는 로트·재고 낱말 때문에 규칙 해석이 운영 조회(intents)로 읽어 기존 길로 간다. 그러면 규칙을 묻는 질문이
+# 재고 부족 목록이나 "로트 번호를 알려 주세요"를 받는다 (측정 261003_창민/DOC06_놓침_측정_성과_20261018.md: DOC-06 기존 길 10개 중 문서 답 2개, DOC-04 11개 중 5개).
+# 신호가 **운영 낱말(intents)뿐**이고, **지금 상태를 묻는 말이 없고**, **규칙·정책 낱말이 있을 때만** 문서 길로 보낸다. 정밀도가 우선이라 낱말을 보수적으로 둔다:
+# 번호(로트·작업지시)·설비 이름·날짜·알람이 있으면 진짜 조회일 가능성이 높아 항상 기존 길이고, 문서 길이 "문서에 없음"이면 answer()가 원래 기존 길로 되돌린다.
+RULE_WHY = "신호가 운영 낱말뿐인 규칙·정책 질문 — 문서 질문으로 보고 순수 길로 (PURE_RULE=1, 문서에 없으면 기존 길로 되돌림)"
+RULE_MIN_LEN = 10                        # 공백·부호를 뺀 글자 수가 이보다 짧은 질문("재고 왜 이래?")은 조회로 본다
+RULE_PAST = (r"(?:았|었|였|했|됐|왔|갔|봤|썼|췄|떴|겼|렸|났|랐|찼|쳤|졌|혔|냈|줬)"
+             r"(?:어|어요|죠|지|나요|나\?|습니까|음|대|냐|는지|다|네|\b)")      # 과거형 — 끝맺음이 바뀌어도("했나요·했는지·했대") 지나간 일을 묻는 말
+RULE_LIVE_RE = re.compile(                                              # 지금·지난 실제 데이터를 묻는 말 (하나라도 있으면 규칙 질문이 아니다)
+    r"지금|현재|오늘|어제|그제|엊그제|내일|이번\s?(?:주|달|교대|분기|월)|저번|지난\s?(?:주|달|교대|밤|번|분기)|최근|방금|아까|요즘|금주|금월|올해|작년|"
+    r"\d+\s?(?:일|주|개월|달)\s?(?:전|동안|간)|현황|이력|내역|목록|리스트|통계|추이|추세|"
+    r"몇\s?(?:건|대|명)|남았|남은|남아|부족한|부족해|넘긴|넘은|밀린|늦은|지연|"
+    r"진행\s?중|하는\s?중|대기\s?중|기다리는|것\s?같|걸려\s?있|떠\s?있|와\s?있|" + RULE_PAST + r"|"
+    r"(?:^|\s)(?:이|그|저)\s?(?:로트|재고|소모품|부품|설비|공구|작업지시|정비|건|알람)|"                                     # 지시어: 특정 대상을 가리키면 조회
+    r"보여\s?줘|보여\s?주세요|찾아\s?줘|찾아\s?주세요|조회|확인해\s?줘|확인해\s?주세요|확인할\s?수\s?있|"                      # 조회 동사
+    r"(?:한|된|인|안\s?한|안\s?된|못\s?한)\s?(?:로트|재고|품목|항목|정비|부품|공구|소모품|거|것)\b")                            # 관계절로 대상을 거르는 말 ("합격한 로트")
+RULE_MARK_RE = re.compile(                                              # 규칙·정책을 묻는 말 (하나는 있어야 한다). 약한 낱말(어느 로트·종류·차이·승인 필요·결정형 "~도 돼?")은 일부러 뺐다
+    r"누가|누구\s?(?:권한|승인|책임|몫)|누구(?:한테|에게)|"
+    r"(?:기준|규칙|규정|원칙|방식|방법|절차|순서|조건|정책)(?:이|은|는|을|를)?\s?(?:뭐|뭔|무엇|어떻게|어떤|어때|있|알려|정해|따라)|"
+    r"(?:방식|방법|절차|순서|기준)(?:으로|대로|에\s?따라)|"
+    r"목표(?:가|는)?\s?(?:얼마|몇)|권한이\s?(?:있|필요)|"
+    r"왜\s.*(?:아니|않|못|안\s|필요|해야|하는\s?거|하는지)|"
+    r"어떻게\s?(?:해야|하면|처리|계산|판정|구해|정해|바꿔|관리|기록|입력|넣어|빼|써|세|재)|(?:뭘로|무엇으로)\s?(?:세|재|계산|구)|정확히\s?(?:어떤|어떻게|뭘)|"
+    r"수\s?있(?:어|나|는지)|되나|안\s?돼|해야\s?(?:해|하나)|하면\s?(?:돼|되)|거\s?맞|맞는\s?거|"
+    r"몇\s?(?:%|퍼센트|개마다|번마다|분마다|시간마다|로트까지|순위)|얼마마다|언제까지|언제부터|몇\s?(?:달|주|일|개월|시간)에\s?한\s?번|보통\s?(?:몇|얼마|어떻게)|"
+    r"수\s?있는[^?？]{0,15}(?:뭐뭐|종류|상태)|무슨\s?(?:종류|뜻|의미)|뜻이|의미가|형식이|양식이|어떤\s?(?:모양|형식|식|방식|수량)|"
+    r"알림이\s?(?:가\s?[?？]|가나|가요|가는|간다)|기능이\s?있|들어가|포함(?:돼|되|해)|차감(?:돼|되나|되는|이)|자동으로\s?(?:차감|빠)|"
+    r"어느\s?(?:것|쪽)부터|어느\s?(?:공정|시점|단계|시간대|때)|안전\s?재고(?:는|가)?\s?(?:몇|얼마)|(?:로|으로)\s?관리해|관리\s?(?:하나|해야)|지나면|"
+    r"(?:이면|하면|할\s?때|일\s?때|라면)[^?？]{0,25}?어떻게\s?(?:되|돼|처리|해)|정해\s?(?:뒀|놨|져|둔|두었)|정의|차이가\s?뭐|뭐가\s?달라")
+# 문서 길 지시문에만 더하는 한 줄: 운영 기록을 묻는 질문이 문서의 느슨한 조각으로 그럴듯하게 답되지 않고 "문서에 없음"(→ 기존 길로 되돌림)이 되게 한다
+RULE_OPS_NOTE = ("[추가 규칙] 이 질문이 지금·과거의 실제 운영 기록(재고 수량, 로트 상태, 알림 내역, 정지 횟수, 누가 했는지 등 일어난 일)을 묻는 것이면 "
+                 "사내 문서로는 답할 수 없다. 규칙·기준·절차를 묻는 것이 아니면 insufficient를 true로 하고 answer에는 \"문서에 없음\"이라고만 쓴다.")
+
+# PURE_RETRY=1 (2026-10-18, 기획 못찾음_넓게다시보기): 정답 조각이 검색 9~50위라 상위 조각에 못 들면 Claude가 \"조각에 답이 없다\"(insufficient)고 하고, 비서는 그것을 \"문서에 없음\"으로 내보냈다
+# (못 찾음을 없음으로 말함). ① 첫 호출이 insufficient이면 상위 PURE_RETRY_TOPK개 조각으로 한 번 더 묻는다 — 그 두 번째 호출의 지시문에만 RETRY_NOTE를 더한다.
+# ② 첫 호출 지시문에는 PARTIAL_NOTE를 더한다 — 일부만 조각에 있을 때 없는 부분을 \"문서에 없다\"고 단정하지 않고 \"받은 조각에서는 찾지 못했다\"고 말하게 한다. 둘 다 지시문 한 줄이고 답 내용을 검사하지 않는다.
+RETRY_NOTE = ("[넓게 다시 본 조각] 처음 받은 조각에서 답을 찾지 못해, 질문과 관련 있을 수 있는 조각을 더 넓게 가져왔다. 이 중에 답이 있으면 그 조각만 근거로 답하고 인용한다. "
+              "이 조각들에서도 답이 없으면 insufficient를 true로 한다. 조각에 없는 내용은 지어내지 않는다.")
+PARTIAL_NOTE = ("[추가 규칙] 받은 조각에서 찾지 못한 부분을 밝힐 때는 \"문서에 없다\"고 단정하지 말고 \"받은 조각에서는 찾지 못했다\"고 쓴다.")
+
+
+def rule_question(question: str, p: dict) -> bool:
+    """신호가 운영 낱말(intents)뿐인 규칙·정책 질문인가 (PURE_RULE). 번호·설비·날짜·알람이 있거나 신호가 아예 없으면 False(앞은 진짜 조회, 뒤는 이미 순수 길)."""
+    if not p.get("intents"):
+        return False
+    if p.get("alarms") or p.get("equipment") or p.get("start") or p.get("end") or p.get("lot") or p.get("order"):
+        return False
+    q = question.strip()
+    if len(re.sub(r"[\s?？!.~,]", "", q)) < RULE_MIN_LEN:
+        return False
+    return bool(RULE_MARK_RE.search(q)) and not RULE_LIVE_RE.search(q)
+
+
+# ---------------------------------------------------------------- PURE_SAFETY (2026-10-18) — 안전 질문의 거짓 "문서에 없다"를 원천 차단
+# "톱 정비 전에 어디를 차단해야 해?"가 DOC-05 §3.1(톱 차단 지점)을 검색 68위로 놓쳐 "문서에서 찾지 못했어요"(NOT_IN_DOCS)가 나왔다. 현장 말("톱")과 문서 말("SAW-01·콜드쏘")이
+# 다르면 낱말 검색은 정답 절을 못 올린다. 그리고 "못 찾음"을 "문서에 없음"으로 말하는 것이 진짜 위험이다. 그래서 ① 안전 질문에는 안전 작업 기준서(DOC-05)를 통째로 주고
+# ② 그래도 답이 없으면 "문서에 없다"가 아니라 "자동으로 확인하지 못함"이라고 말한다 (answer.py `_pure_unsure_v19`). 발동은 낱말로만 한다 — 검색 순위로 발동하면
+# "체육대회·병원" 같은 상관없는 질문에서도 DOC-05가 상위에 올라 발동했다 (2026-10-18 실험).
+SAFETY_DOC = "DOC-05"            # 안전 작업 기준서
+SAFETY_SCORE = -1.0              # 통째로 더한 조각의 표시: 검색 점수가 아니다 (0.0은 PURE_EXPAND가 쓴다)
+SAFETY_MAX_CHARS = 20000         # 통째로 더하는 글자 수 상한 (지금 DOC-05는 16,621자 — 문서가 커져도 프롬프트가 폭증하지 않게)
+# answer.SAFETY_WORDS(답 끝 안전 문구를 붙이는 낱말)를 모두 포함해야 한다 (시험이 지킨다). 그 뒤는 현장에서 쓰는 낱말과 일반 안전 낱말.
+SAFETY_TERMS = ("잠금", "표지", "고전압", "전기", "저항", "차단", "LOTO", "케이블", "앰프",
+                "보호구", "감전", "안전", "위험", "자물쇠", "잠그", "잠가", "잠궈", "차단기", "공압", "압축 공기", "절삭유", "알루미늄 칩", "칩 치",
+                "톱", "절단", "콜드쏘", "밀링", "머시닝", "세척", "측정기", "프로브", "바렐", "주축", "제어반", "트립", "에너지",
+                "정비 전", "정비할", "정비 시작", "수리 전", "전원", "전압", "도어", "협력업체")
+EQUIPMENT_RE = re.compile(r"(?<![A-Za-z0-9])(?:(?:SAW|MIL|VF2|WSH|CMM)-\d{2}|VF-2|CMM)(?![A-Za-z0-9])", re.I)     # 설비 이름 (한글이 바로 붙어도 잡는다)
+UNSURE_DEFAULT_SECTIONS = ("2", "3", "5")      # 가까운 절을 못 고를 때: 잠금·표지 절차 / 설비별 차단 지점 / 보호구
+
+
+def is_safety(question: str) -> bool:
+    """안전 질문인가 — 낱말만 본다 (대소문자 무시). 이 판정이 켜져야 DOC-05를 통째로 주고 "자동으로 확인하지 못함" 문구를 쓴다."""
+    q = question.upper()
+    return any(w.upper() in q for w in SAFETY_TERMS) or bool(EQUIPMENT_RE.search(question))
+
+
+def add_safety_doc(hits: list[tuple[float, Chunk]]) -> list[tuple[float, Chunk]]:
+    """검색 결과 뒤에 DOC-05 조각 중 아직 없는 것을 문서 순서로 더한다 (점수 SAFETY_SCORE, 상한 SAFETY_MAX_CHARS). 원래 조각의 순서·점수는 그대로."""
+    have = {c.chunk_id for _, c in hits}
+    out = list(hits)
+    chars = 0
+    for c in load_corpus():
+        if c.doc_id != SAFETY_DOC or c.chunk_id in have:
+            continue
+        if chars + len(c.text) > SAFETY_MAX_CHARS:
+            break
+        out.append((SAFETY_SCORE, c))
+        have.add(c.chunk_id)
+        chars += len(c.text)
+    return out
+
+
+def unsure_candidates(question: str, hits: list[tuple[float, Chunk]], n: int = 3) -> list[Chunk]:
+    """"자동으로 확인하지 못함" 때 보여 줄 가까운 안전 문서 절 (최대 n개, 중복 없음): 검색 점수가 있는 DOC-05 조각 → 전체 검색 순위의 DOC-05 조각 → 기본 절(§2·§3·§5)."""
+    out: list[Chunk] = []
+
+    def take(chunks):
+        for c in chunks:
+            if c.doc_id == SAFETY_DOC and all(c.chunk_id != x.chunk_id for x in out) and len(out) < n:
+                out.append(c)
+    take(c for sc, c in hits if sc > 0)
+    if len(out) < n:
+        take(c for _, c in search(question, 300))
+    if len(out) < n:
+        take(c for c in load_corpus() if c.doc_id == SAFETY_DOC and c.section in UNSURE_DEFAULT_SECTIONS)
+    return out
+
+
+def context(question: str, k: int, s: Settings) -> list[tuple[float, Chunk]]:
+    """Claude에 줄 조각: 낱말 검색 상위 k개 (+ PURE_EXPAND=1이면 잠금 낱말 질문의 부모 조각 보장 + 아래 절) (+ PURE_PERIOD=1이면 기간·정비 낱말 질문에 DOC-04 해당 기간 절) (+ PURE_SAFETY=1이면 안전 질문에 DOC-05 통째로).
+    둘 다 끄면 retrieve()와 똑같다."""
+    hits = retrieve(question, k)
+    if s.pure_expand:
+        hits, first = guarantee(question, hits)
+        hits = expand(hits, first=first)
+        if s.pure_period:
+            hits = guarantee_period(question, hits)
+    if s.pure_safety and is_safety(question):
+        hits = add_safety_doc(hits)
+    return hits
+
+
 def build_messages(question: str, chunks: list[Chunk], prev: dict | None = None, system: str = SYSTEM) -> list[dict]:
     """요청 글: ① 시스템 지시 ② (있으면) 바로 앞 질문·답 1번 ③ 번호 붙인 조각들 ④ 질문. 사용자 메시지 하나.
     system을 안 주면 지금 SYSTEM (PURE_STYLE 끔 = 요청 글이 지금과 한 글자도 다르지 않다)."""
@@ -293,7 +522,7 @@ def build_messages(question: str, chunks: list[Chunk], prev: dict | None = None,
     return [{"role": "system", "content": system}, {"role": "user", "content": "\n\n".join(parts)}]
 
 
-def ask(question: str, chunks: list[Chunk], prev: dict | None, s: Settings) -> dict:
+def ask(question: str, chunks: list[Chunk], prev: dict | None, s: Settings, ops_note: bool = False, retry_note: bool = False) -> dict:
     """외부 Claude 1번 호출. 돌려주는 값: {"answer", "insufficient", "cited_raw"(받은 그대로), "raw"(받은 JSON), "ms", "sent_chars"}.
     연결·시간 초과·형식 오류·빈 답은 ExternalLlmFailure로 올린다 — 자동으로 로컬·다른 길로 돌아가지 않는다(앱 입구가 EXTERNAL_LLM_UNAVAILABLE로 끝냄).
     PURE_STYLE=1이면 새 지시문·스키마·max_tokens로 부르고 "answer"는 `opening 1) … 2) … closing`을 이은 글이며, "style": True와 "opening"·"points"·"closing" 부품이 더해진다
@@ -302,7 +531,8 @@ def ask(question: str, chunks: list[Chunk], prev: dict | None, s: Settings) -> d
     (opening·points·closing 키는 만들지 않는다. insufficient면 sections는 모든 묶음 text를 이은 한 묶음 — 글이 없으면 짧은 고정 문구)."""
     style = bool(s.pure_style)
     layout = style and bool(s.pure_layout)
-    messages = build_messages(question, chunks, prev, system_for(s))
+    messages = build_messages(question, chunks, prev, system_for(s) + ("\n\n" + RULE_OPS_NOTE if ops_note else "")   # ops_note: PURE_RULE로 문서 길에 온 질문에만
+                              + ("\n\n" + PARTIAL_NOTE if s.pure_retry else "") + ("\n\n" + RETRY_NOTE if retry_note else ""))   # PURE_RETRY=1: 첫 호출에 한 줄, 넓게 다시 본 호출에 한 줄 더
     sent = sum(len(m["content"]) for m in messages)
     t0 = time.perf_counter()
     try:

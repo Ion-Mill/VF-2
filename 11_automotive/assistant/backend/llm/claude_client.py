@@ -28,6 +28,7 @@ from backend.llm import claude_cli as CLI
 from backend.llm import deadline as DL
 from backend.llm import external as EXT
 from backend.llm.client import LlmBadOutput, LlmUnavailable
+from backend.privacy import outbound_guard as OG
 
 # 1M 토큰당 달러 (입력, 출력). 출처: claude-api skill 표(2026-10-06 캐시) — api는 실제 청구를 Anthropic Console에서 확인한다.
 # cli는 결과 JSON의 total_cost_usd(CLI가 같은 가격표로 환산)를 쓰고, 없으면 이 표로 계산한다.
@@ -351,6 +352,7 @@ def _chat_json_claude(messages: list[dict], schema: dict, name: str, max_tokens:
         if t is None:
             raise LlmUnavailable("시간 예산 부족")
         read = t
+    messages, _ = OG.scrub_messages(messages)   # NFR-SEC-08: 사람 이름·사용자 ID·사원 번호·계정 정보는 밖으로 나가기 직전에 가린다 (외부 호출은 모두 여기를 지난다)
     system = "\n\n".join(m["content"] for m in messages if m["role"] == "system")
     out = (_call_cli if s.claude_via == "cli" else _call_api)(s, messages, system, schema, name, max_tokens, read)
     if not isinstance(out, dict):

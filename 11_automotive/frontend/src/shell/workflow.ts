@@ -16,13 +16,13 @@ export const diff = (before: Record<string, unknown>, after: Record<string, unkn
     .map((k) => ({ field: names[k], before: Array.isArray(before[k]) ? (before[k] as string[]).join(' / ') : String(before[k] ?? ''), after: Array.isArray(after[k]) ? (after[k] as string[]).join(' / ') : String(after[k] ?? '') }));
 
 export type WoState = 'draft' | 'editing' | 'approved' | 'inprogress' | 'done' | 'cancelled';
-export const WO_STEPS: [WoState, string][] = [['draft', '프로그램 초안'], ['editing', '수정 중'], ['approved', '승인'], ['inprogress', '진행 중'], ['done', '완료']];
+export const WO_STEPS: [WoState, string][] = [['draft', '초안'], ['editing', '수정 중'], ['approved', '승인'], ['inprogress', '진행 중'], ['done', '완료']];
 
 export interface WorkOrder {
   no: string; alertId: string; machine: MachineId; code: string; created: string; state: WoState; version: number;
   trigger: 'STOP_ALARM' | 'REPEAT_2'; lot: string | null;
   title: string; symptom: string; steps: string[]; parts: string[]; assignee: string | null;
-  edited: string[]; approvedBy?: string; approvedAt?: string; recordNo?: string; revisions: Revision[];
+  edited: string[]; approvedBy?: string; approvedAt?: string; recordNo?: string; revisions: Revision[]; llm?: boolean; // 제목·증상을 비서(외부 LLM)가 다듬어 넣었다 (2026-10-17, 시연 서버 MOM_LLM_COMPOSE=1일 때만)
 }
 export type WrState = 'draft' | 'editing' | 'confirmed' | 'checked';
 export interface WorkRecord {

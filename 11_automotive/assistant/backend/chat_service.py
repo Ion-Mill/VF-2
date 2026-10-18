@@ -20,6 +20,7 @@ from fastapi import Depends, FastAPI, Header
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
+from backend import compose_service as CMPS
 from backend import config as C
 from backend.chat_mapping import UnknownStatus, role_gate, to_backend
 from backend.llm import external as EXT
@@ -84,6 +85,12 @@ def _unavailable(_, exc: Unavailable):
     return JSONResponse(status_code=503, content={"code": "ASSISTANT_UNAVAILABLE", "message": UNAVAILABLE_MESSAGE, "detail": {"retryable": True}})
 
 
+@app.exception_handler(CMPS.ComposeUnavailable)
+def _compose_unavailable(_, exc: CMPS.ComposeUnavailable):
+    log.warning("문장 입구 실패: %s", exc.why)
+    return JSONResponse(status_code=503, content={"code": "ASSISTANT_UNAVAILABLE", "message": UNAVAILABLE_MESSAGE, "detail": {"retryable": True}})
+
+
 def _context(raw: dict[str, Any]) -> dict[str, str]:
     return {k: str(raw[k]) for k in CONTEXT_KEYS if raw.get(k) not in (None, "")}
 
@@ -123,6 +130,9 @@ def chat(req: ChatRequest) -> dict:
         raise Unavailable(str(e)) from e
     except Exception as e:      # 답을 만들다 멈춤 (조회 도구 실패 포함) — 안쪽 사정은 로그에만
         raise Unavailable(f"{type(e).__name__}") from e
+
+
+app.include_router(CMPS.router, dependencies=[Depends(service_key)])     # POST /compose/{kind} — 기본 문장 줄 다듬기 (같은 서비스 키)
 
 
 @app.get("/health", dependencies=[Depends(service_key)])
