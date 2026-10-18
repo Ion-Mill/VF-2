@@ -13,7 +13,7 @@ const lbl = 'text-[14px] text-slate-500';
 const num = 'font-mono font-bold tabular-nums';
 
 function Bar({ pct, color = '#4b5a69' }: { pct: number; color?: string }) {
-  return <div className="h-1.5 w-full rounded bg-slate-200"><div className="h-1.5 rounded" style={{ width: `${Math.max(0, Math.min(100, pct))}%`, background: color }} /></div>;
+  return <div className="h-2 w-full rounded-full bg-slate-200"><div className="h-2 rounded-full" style={{ width: `${Math.max(0, Math.min(100, pct))}%`, background: `linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,0) 55%,rgba(0,0,0,.12)), ${color}`, boxShadow: `0 0 6px ${color}66` }} /></div>;
 }
 
 export default function Panels({ field = false }: { field?: boolean }) {
@@ -90,14 +90,14 @@ export default function Panels({ field = false }: { field?: boolean }) {
   const openFaults = [...alerts].filter((a) => !a.handled && a.kind !== 'guide').reverse();
   const pmSoon = (pm?.tasks ?? []).filter((t) => t.state === 'OVERDUE' || t.state === 'DUE_SOON');
   const stopMax = Math.max(1, ...Object.values(twin.equipment).map((e) => e.stop_min));
-  const sec = 'flex min-h-0 flex-col rounded-xl border border-slate-200 bg-white p-4';
+  const sec = 'flex min-h-0 flex-col rounded-3xl border border-slate-200 bg-white p-4 shadow-xl';
 
   return (
-    <div className="grid h-full grid-cols-2 gap-3 bg-[#eef1f4] p-3 text-[#26303a]">
+    <div className="grid h-full grid-cols-2 gap-4 text-[#26303a]">
       {/* 왼쪽: 생산현황 전부 */}
       <section className={sec}>
         <div className="mb-2 flex items-baseline justify-between"><b className="text-[17px]">생산현황</b>
-          <span className="text-[12px] text-slate-500">{p.shift_type === 'DAY' ? '주간' : '야간'} {hm(p.start_at)}~{hm(p.end_at)} · <span className="text-[#0f9fbd]">━</span> 실적 <b>┅</b> 예측 <span className="text-slate-400">┈</span> 총 목표</span></div>
+          <span className="text-[12px] text-slate-500">{p.shift_type === 'DAY' ? '주간' : '야간'} {hm(p.start_at)}~{hm(p.end_at)} · <span className="text-[#3d4a5c]">━</span> 실적 <b>┅</b> 예측 <span className="text-slate-400">┈</span> 총 목표</span></div>
         <div className="grid min-h-0 flex-1 grid-cols-[1.7fr_1fr] gap-4">
           <div className="min-h-0 rounded-lg border border-slate-200 p-2"><Graph p={p} /></div>
           <div className="flex min-w-0 flex-col justify-around gap-2">
@@ -105,7 +105,7 @@ export default function Panels({ field = false }: { field?: boolean }) {
               <div className="flex items-baseline justify-between"><span className={lbl}>생산</span>
                 <b className="text-[13px]" style={{ color: done ? '#13994f' : p.risk ? AMBER : '#64748b' }}>{done ? '달성' : p.risk ? '▲ 미달 위험' : '진행 중'}</b></div>
               <div><span className={`${num} text-[34px]`}>{p.actual_qty}</span><span className="font-mono text-[22px] text-slate-500"> / {p.total_target_qty}</span><span className="text-[16px] text-slate-500"> 개</span></div>
-              <div className="relative"><Bar pct={(p.actual_qty / scale) * 100} color="#0f9fbd" /><div className="absolute -top-1 h-3.5 w-0.5 bg-slate-800" style={{ left: `${(p.total_target_qty / scale) * 100}%` }} /></div>
+              <div className="relative"><Bar pct={(p.actual_qty / scale) * 100} color="#3d4a5c" /><div className="absolute -top-1 h-3.5 w-0.5 bg-slate-800" style={{ left: `${(p.total_target_qty / scale) * 100}%` }} /></div>
             </button>
             {/* OEE 한 줄 + 세 지표는 작은 칸 셋을 한 줄로 */}
             <button onClick={() => toggle('k')} className="flex flex-col gap-1.5 text-left">
@@ -203,7 +203,7 @@ const isDone = (o: OrderRow) => o.status === 'COMPLETED' || o.status === 'DONE';
 function OrderTr({ o, onClick }: { o: OrderRow; onClick: () => void }) {
   const doneAll = isDone(o);
   const [txt, cls] = o.delay ? [o.delay, 'bg-[#fff3d6] text-[#7a4e00]'] : doneAll ? ['완료', 'bg-[#e6f6ec] text-[#13994f]'] : o.status === 'IN_PROGRESS' ? ['생산 중', 'bg-[#e6f6fa] text-[#0f6f86]'] : o.status === 'WAITING' ? ['대기', 'bg-slate-100 text-slate-600'] : [o.status, 'bg-slate-100 text-slate-600'];
-  const color = doneAll ? '#22a35a' : o.delay ? '#e0a040' : '#0f9fbd';
+  const color = doneAll ? '#22a35a' : o.delay ? '#e0a040' : '#3d4a5c';
   return (
     <tr onClick={onClick} className="cursor-pointer border-b border-slate-100 hover:bg-slate-50">
       <td className="px-2 py-1.5"><div className="font-mono font-semibold">{o.order_no}</div><div className="text-[12px] text-slate-500">로트 {o.lots.map((l) => l.slice(-2)).join(',') || '—'} · 불량 {o.defect_qty}</div></td>
@@ -229,8 +229,8 @@ function Graph({ p }: { p: Production }) {
       {[0.25, 0.5, 0.75].map((f) => <line key={f} x1={L} x2={W - L} y1={(H - B) * f} y2={(H - B) * f} stroke="#eef1f4" />)}
       <line x1={L} x2={W - L} y1={y(p.total_target_qty)} y2={y(p.total_target_qty)} stroke="#56616c" strokeDasharray="2 3" />
       <text x={L + 2} y={y(p.total_target_qty) - 5} fontSize="13" fill="#56616c">총 목표 {p.total_target_qty}</text>
-      {pts.length > 1 && <polygon points={`${pts[0].split(',')[0]},${H - B} ${pts.join(' ')} ${pts[pts.length - 1].split(',')[0]},${H - B}`} fill="#0f9fbd" opacity="0.08" />}
-      <polyline points={pts.join(' ')} fill="none" stroke="#0f9fbd" strokeWidth="2.5" />
+      {pts.length > 1 && <polygon points={`${pts[0].split(',')[0]},${H - B} ${pts.join(' ')} ${pts[pts.length - 1].split(',')[0]},${H - B}`} fill="#3d4a5c" opacity="0.08" />}
+      <polyline points={pts.join(' ')} fill="none" stroke="#3d4a5c" strokeWidth="2.5" />
       {last && <line x1={x(Date.parse(last.at))} y1={y(last.cum)} x2={W - L} y2={y(p.forecast_qty)} stroke="#4b5a69" strokeDasharray="5 4" strokeWidth="2" />}
       {last && <text x={x(Date.parse(last.at))} y={y(last.cum) - 8} fontSize="14" fontWeight="700" textAnchor="middle" fill="#0f6f86">{last.cum}</text>}
       {last && <text x={W - L} y={y(p.forecast_qty) - 8} fontSize="13" fontWeight="600" textAnchor="end" fill="#4b5a69" stroke="#fff" strokeWidth="3" paintOrder="stroke">예측 {p.forecast_qty}</text>}

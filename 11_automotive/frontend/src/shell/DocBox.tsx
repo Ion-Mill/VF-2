@@ -8,6 +8,12 @@ import { LOCK } from './Safety';
 import { WO_STEPS, minutesSince } from './workflow';
 
 type Tab = '작업지시서' | '작업기록서' | '간이 작업기록' | '교대 보고서' | '일일 보고서';
+// 9월 기록의 영어 상태 → 한글
+const EN_ST: Record<string, string> = { DONE: '완료', COMPLETED: '완료', IN_PROGRESS: '진행 중', OPEN: '대기', CANCELLED: '취소됨', CONFIRMED: '확정', CHECKED: '확인됨' };
+const stTone = (st: string) => (/초안/.test(st) ? 'bg-[#f3e8ff] text-[#7e22ce]' : /완료|확정|확인됨/.test(st) ? 'bg-[#e6f6ec] text-[#13994f]' : /진행|수정|작성|승인/.test(st) ? 'bg-[#e6ebff] text-[#3a4ec4]' : /취소/.test(st) ? 'bg-slate-100 text-slate-400' : 'bg-slate-100 text-slate-600');
+function Sum({ a, b }: { a: string; b?: string }) {
+  return <div className="min-w-0"><div className="truncate font-semibold text-[#26303a]">{a}</div>{b && <div className="truncate text-[13px] text-slate-500">{b}</div>}</div>;
+}
 const WR_LABEL = { draft: '초안', editing: '수정 중', confirmed: '확정', checked: '확인됨' } as const;
 
 export default function DocBox() {
@@ -44,10 +50,10 @@ export default function DocBox() {
   let rows: Row[] = [];
   if (tab === '작업지시서') {
     rows = [
-      ...wos.map((w) => ({ key: w.no, date: w.created, warn: (w.state === 'draft' || w.state === 'editing') && minutesSince(w.created) >= 120, go: () => openWo(w.no), st: WO_STEPS.find(([k]) => k === w.state)?.[1] ?? '취소됨', m: MACHINES[w.machine].name, c: w.code, s: `${w.title} ${w.symptom}` })),
-      ...(history?.work_orders ?? []).map((w) => ({ key: w.wo_no, date: w.created_at, st: w.status === 'COMPLETED' ? '완료' : w.status, m: w.equipment_id, c: pastAl(w.alarm_event_id)?.alarm_code ?? '—', s: `${w.title} ${w.symptom}`, go: undefined, warn: false })),
+      ...wos.map((w) => ({ key: w.no, date: w.created, warn: (w.state === 'draft' || w.state === 'editing') && minutesSince(w.created) >= 120, go: () => openWo(w.no), st: WO_STEPS.find(([k]) => k === w.state)?.[1] ?? '취소됨', m: MACHINES[w.machine].name, c: w.code, s: `${w.title} ${w.symptom}`, t1: w.title, t2: w.symptom })),
+      ...(history?.work_orders ?? []).map((w) => ({ key: w.wo_no, date: w.created_at, st: EN_ST[w.status] ?? w.status, m: w.equipment_id, c: pastAl(w.alarm_event_id)?.alarm_code ?? '—', s: `${w.title} ${w.symptom}`, t1: w.title, t2: w.symptom, go: undefined, warn: false })),
     ].filter((r) => (!machine || r.m === machine) && (!code || r.c.includes(code)) && (!state || r.st === state) && has(r.s))
-      .map((r) => ({ key: r.key, date: r.date, go: r.go, warn: r.warn, cells: [r.key, r.m, r.c, md(r.date), r.st, r.s.slice(0, 50)] }));
+      .map((r) => ({ key: r.key, date: r.date, go: r.go, warn: r.warn, cells: [r.key, r.m, r.c, md(r.date), r.st, <Sum key="s" a={r.t1} b={r.t2} />] }));
   } else if (tab === '작업기록서') {
     rows = [
       ...wrs.map((r) => { const w = wos.find((x) => x.no === r.woNo); return { key: r.no, date: w?.created ?? '', go: () => openRecord(r.woNo), st: WR_LABEL[r.state], m: w ? MACHINES[w.machine].name : '—', c: w?.code ?? '—', s: `${r.cause} ${r.action} ${r.memo}` }; }),
@@ -67,35 +73,55 @@ export default function DocBox() {
       cells: [r.work_date, '라인', '—', md(r.work_date), r.status === 'CONFIRMED' ? '확정' : 'AI비서 초안 (확정 대기)', `실적 ${r.actual_qty} / 180 · OEE ${r.oee_pct}%`] }));
   }
   const stateOpts = tab === '작업지시서' ? [...WO_STEPS.map(([, l]) => l), '취소됨'] : tab === '작업기록서' ? Object.values(WR_LABEL) : [];
-  const sel = 'h-11 rounded-md border border-slate-300 px-2 text-[14px]';
+
+  const today = rows.filter((r) => r.go), past = rows.filter((r) => !r.go);
+  const pill = 'h-9 rounded-full border border-slate-300 bg-white px-3 text-[13px] text-[#26303a]';
+  const table = (list: Row[]) => (
+    <table className="mt-2 w-full table-fixed text-left text-[14px]">
+      <colgroup><col className="w-[120px]" /><col className="w-[90px]" /><col className="w-[64px]" /><col className="w-[64px]" /><col className="w-[110px]" /><col /></colgroup>
+      <thead className="text-[12px] text-slate-500"><tr>{['번호', '설비', '알람', '날짜', '상태', '요약'].map((h) => <th key={h} className="px-3 py-2 font-semibold">{h}</th>)}</tr></thead>
+      <tbody>{list.slice(0, 120).map((r, n) => (
+        <tr key={r.key} onClick={r.go} className={`${n % 2 ? 'bg-[#f8f9fd]' : ''} ${r.go ? 'cursor-pointer hover:bg-[#eef1ff]' : ''}`}>
+          {r.cells.map((c, i) => (
+            <td key={i} className={`px-3 py-2.5 align-top ${i === 0 || i === 2 || i === 3 ? 'font-mono tabular-nums' : ''} ${i === 0 ? 'font-semibold' : ''} ${i === 5 ? 'min-w-0' : 'whitespace-nowrap'}`}>
+              {i === 4 ? <span className={`inline-block rounded-full px-2.5 py-0.5 text-[12px] font-bold ${r.warn ? 'bg-[#fff1cc] text-[#9a6200]' : stTone(String(c))}`}>{r.warn ? '▲ ' : ''}{c}</span>
+                : i === 5 && typeof c === 'string' ? <Sum a={c} /> : c}
+            </td>))}
+        </tr>))}</tbody>
+    </table>
+  );
 
   return (
     <div className={PAGE}>
-      <div className={CARD}>
-        <h2 className="text-[19px] font-bold">{tab}</h2>
-        <section className="mt-3 border-t border-slate-200 pt-3">
-          <h3 className="mb-1 text-[14px] font-bold text-slate-500">내 할 일</h3>
-          {todo.length === 0 ? <p className="text-[14px] text-slate-500">없음</p> : (
-            <ul className="flex flex-col gap-1">{todo.map((t) => (
-              <li key={t.text} className={`flex items-center justify-between gap-2 text-[14px] ${t.warn ? 'font-semibold text-[#9a6200]' : ''}`}><span>{t.text}</span>{t.go && <button onClick={t.go} className="h-10 shrink-0 rounded-md border border-slate-300 px-3 text-[13px] font-semibold hover:bg-slate-50">열기</button>}</li>))}</ul>
+      <div className="mx-auto flex max-w-[1100px] flex-col gap-3">
+        {/* [1] 내 할 일 — 따로 작은 카드 */}
+        <section className="rounded-2xl border border-slate-300 bg-white px-4 py-3">
+          <h3 className="text-[13px] font-bold text-slate-500">내 할 일</h3>
+          {todo.length === 0 ? <p className="mt-1 text-[14px] text-slate-500">오늘 할 일 없음</p> : (
+            <ul className="mt-2 flex flex-col gap-1.5">{todo.map((t) => (
+              <li key={t.text} className={`flex items-center gap-3 rounded-xl px-3 py-2 text-[14px] ${t.warn ? 'bg-[#fff6e0] font-semibold text-[#9a6200]' : 'bg-slate-50'}`}>
+                <span className="min-w-0 flex-1">{t.text}</span>
+                {t.go && <button onClick={t.go} className="h-8 shrink-0 rounded-full border border-slate-300 bg-white px-4 text-[13px] font-semibold">열기</button>}
+              </li>))}</ul>
           )}
         </section>
-        <div className="mt-2 flex flex-wrap items-center gap-2 text-[14px]">
-          {stateOpts.length > 0 && <>상태 <select value={state} onChange={(e) => setState(e.target.value)} className={sel}><option value="">전체</option>{stateOpts.map((s) => <option key={s}>{s}</option>)}</select></>}
-          설비 <select value={machine} onChange={(e) => setMachine(e.target.value)} className={sel}><option value="">전체</option>{['SAW-01', 'MIL-01', 'VF2-01', 'VF2-02', 'WSH-01', 'CMM-01'].map((m) => <option key={m}>{m}</option>)}</select>
-          알람 번호 <input value={code} onChange={(e) => setCode(e.target.value)} placeholder="992" className={`${sel} w-[110px]`} />
-          비슷한 문장 찾기 <input value={text} onChange={(e) => setText(e.target.value)} placeholder="케이블" className={`${sel} w-[160px]`} />
+
+        <div className={CARD.replace('mx-auto max-w-[1100px] ', '')}>
+          <h2 className="text-[19px] font-bold">{tab}</h2>
+          {/* [2] 필터 — 한 줄 도구 막대 */}
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            {stateOpts.length > 0 && <select aria-label="상태" value={state} onChange={(e) => setState(e.target.value)} className={pill}><option value="">상태: 전체</option>{stateOpts.map((x) => <option key={x}>{x}</option>)}</select>}
+            <select aria-label="설비" value={machine} onChange={(e) => setMachine(e.target.value)} className={pill}><option value="">설비: 전체</option>{['SAW-01', 'MIL-01', 'VF2-01', 'VF2-02', 'WSH-01', 'CMM-01'].map((m) => <option key={m}>{m}</option>)}</select>
+            <input aria-label="알람 번호" value={code} onChange={(e) => setCode(e.target.value)} placeholder="알람 번호 (예: 992)" className={`${pill} w-[150px]`} />
+            <input aria-label="비슷한 문장 찾기" value={text} onChange={(e) => setText(e.target.value)} placeholder="비슷한 문장 찾기 (예: 케이블)" className={`${pill} w-[220px]`} />
+            <span className="ml-auto text-[13px] font-semibold text-slate-500">{rows.length}건</span>
+          </div>
+          {/* [3] 표 — 오늘 만든 문서 / 지난 기록 */}
+          {rows.length === 0 ? <p className="mt-4 text-[14px] text-slate-500">조건에 맞는 문서가 없습니다</p> : (<>
+            {today.length > 0 && <>{past.length > 0 && <h3 className="mt-4 text-[13px] font-bold text-slate-500">오늘 만든 문서 · 눌러서 열기</h3>}{table(today)}</>}
+            {past.length > 0 && <><h3 className="mt-4 text-[13px] font-bold text-slate-500">지난 기록 (9월 · 보기만)</h3>{table(past)}</>}
+          </>)}
         </div>
-        {rows.length === 0 ? <p className="mt-3 text-[14px] text-slate-500">조건에 맞는 문서가 없습니다</p> : (
-          <table className="mt-3 w-full text-left text-[14px]">
-            <thead className="text-slate-500"><tr>{['번호', '설비', '알람', '날짜', '상태', '요약'].map((h) => <th key={h} className="pr-3 font-semibold">{h}</th>)}</tr></thead>
-            <tbody>{rows.slice(0, 120).map((r) => (
-              <tr key={r.key} onClick={r.go} className={`border-t border-slate-100 ${r.go ? 'cursor-pointer hover:bg-slate-50' : 'text-slate-600'} ${r.warn ? 'font-semibold text-[#9a6200]' : ''}`}>
-                {r.cells.map((c, i) => <td key={i} className="py-2 pr-3">{i === 4 && r.warn ? <>▲ {c}</> : c}</td>)}
-              </tr>))}</tbody>
-          </table>
-        )}
-        <p className="mt-2 text-[12px] text-slate-500">회색 줄 = 9월 기록(생성기, 보기만). 오늘 만든 문서는 눌러서 엽니다.</p>
       </div>
     </div>
   );

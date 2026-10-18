@@ -33,7 +33,7 @@ import { LotScreen } from './LotScreen';
 import { QualityScreen } from './QualityScreen';
 import { InventoryScreen } from './InventoryScreen';
 import { ToolsScreen } from './ToolsScreen';
-import { PmScreen } from './PmScreen';
+import { EQS, PM_ALL, PmAll, PmScreen } from './PmScreen';
 import { DocsScreen, SourcePopup } from './DocsScreen';
 import { SettingsScreen } from './SettingsScreen';
 
@@ -49,16 +49,29 @@ const TITLE: Record<Screen, string> = {
 };
 // 메뉴 (페이지구조 v3 5.1). 권한 없는 페이지는 흐리게 (N3) — 열 수 있는 역할 목록, 없으면 전원
 const MENU_V3: [string, Screen | 'home', Role[]?][] = [
-  ['홈', 'home'], ['지침카드', 'cards'], ['문서함', 'docs'], ['로트 추적', 'lots'], ['재고', 'inventory'], ['공구 수명', 'tools'],
+  ['홈', 'home'], ['지침카드', 'cards'], ['문서함', 'docs'], ['로트 추적', 'lots'], ['품질', 'quality', ['OPR', 'SUP', 'MGR']], ['재고', 'inventory'], ['공구 수명', 'tools'],
   ['예방 정비', 'pm', ['MNT', 'SUP', 'MGR']], ['정지 사유', 'stops'], ['다시 보기', 'replay'], ['현장 모니터', 'field'], ['설정', 'settings', ['MGR']],
 ];
 // 문서함 카테고리 (v3 문서함 8개) — 고르면 오른쪽에 그 화면. 문서 하나를 열어도 문서함 안에 보임
 const DOC_CATS: [string, Screen, string | null, Role[]?][] = [
   ['작업지시서', 'docs', '작업지시서'], ['작업기록서', 'docs', '작업기록서', ['MNT', 'SUP', 'MGR']], ['간이 작업기록', 'docs', '간이 작업기록'],
   ['교대 보고서', 'docs', '교대 보고서'], ['일일 보고서', 'docs', '일일 보고서', ['MNT', 'SUP', 'MGR']],
-  ['검사 기록', 'quality', null, ['OPR', 'SUP', 'MGR']], ['수정 이력', 'revs', null], ['사내 문서', 'idocs', null],
+  ['수정 이력', 'revs', null], ['사내 문서', 'idocs', null],
 ];
-const DOC_OF: Partial<Record<Screen, string>> = { wo: '작업지시서', wr: '작업기록서', sr: '간이 작업기록', shift: '교대 보고서', daily: '일일 보고서', quality: '검사 기록', revs: '수정 이력', idocs: '사내 문서' };
+const DOC_OF: Partial<Record<Screen, string>> = { wo: '작업지시서', wr: '작업기록서', sr: '간이 작업기록', shift: '교대 보고서', daily: '일일 보고서', revs: '수정 이력', idocs: '사내 문서' };
+// 품질 카테고리 — 문서함과 같은 모양(왼쪽 목록 + 오른쪽 화면). 품질 화면이 늘면 여기에 한 줄씩 더한다
+const QUAL_CATS: [string, Screen, string | null][] = [['검사 기록', 'quality', null]];
+const QUAL_OF: Partial<Record<Screen, string>> = { quality: '검사 기록' };
+const SCREENS: Screen[] = ['line', 'layout2d', 'field', 'cards', 'card', 'wo', 'wr', 'sr', 'stops', 'docs', 'replay', 'shift', 'daily', 'revs', 'lots', 'quality', 'inventory', 'tools', 'pm', 'idocs', 'settings'];
+const urlOf = (s: Screen, k: string | null) => (s === 'line' ? '/' : `/${s}`) + (k ? `?k=${encodeURIComponent(k)}` : '');
+function screenFromUrl(role: Role): [Screen, string | null] {
+  if (typeof window === 'undefined') return [homeScreen(role), null];
+  const p = location.pathname.replace(/^\/+|\/+$/g, '') as Screen;
+  const lock = MENU_V3.find(([, s2]) => s2 === p)?.[2]; // 권한 없는 화면 주소로 들어오면 홈
+  if (!SCREENS.includes(p) || (lock && !lock.includes(role))) return [homeScreen(role), null];
+  return [p, new URLSearchParams(location.search).get('k')];
+}
+const RAIL_LABEL: Record<string, string> = { '지침카드': '카드', '문서함': '문서', '로트 추적': '로트', '공구 수명': '공구', '예방 정비': '정비', '정지 사유': '정지', '다시 보기': '재생', '현장 모니터': '현장' };
 const btn = 'h-11 rounded-md border border-slate-300 bg-white px-3 text-[14px] font-semibold hover:bg-slate-50';
 
 export default function App() {
@@ -228,12 +241,19 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
   }, [twin]);
 
   // ---------- 화면 이동 ----------
-  const [screen, setScreen] = useState<Screen>(homeScreen(role));
-  const [key, setKey] = useState<string | null>(null);
+  const [screen, setScreen] = useState<Screen>(() => screenFromUrl(role)[0]);
+  const [key, setKey] = useState<string | null>(() => screenFromUrl(role)[1]);
   const hist2 = useRef<[Screen, string | null][]>([]);
   const go = useCallback((s: Screen, k: string | null = null) => { hist2.current.push([screen, key]); setScreen(s); setKey(k); setMenu(false); setDemo(false); }, [screen, key]);
   const back = () => { const p = hist2.current.pop(); if (p) { setScreen(p[0]); setKey(p[1]); } else setScreen(homeScreen(role)); };
-  useEffect(() => { setScreen(homeScreen(role)); setSide(null); setMenu(false); hist2.current = []; }, [user.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  const firstUser = useRef(true);
+  useEffect(() => { if (firstUser.current) { firstUser.current = false; return; } setScreen(homeScreen(role)); setKey(null); setSide(null); setMenu(false); hist2.current = []; }, [user.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  // 화면마다 주소: / · /inventory · /lots ... (?k= 문서 번호). 3D는 그대로 살아 있음
+  useEffect(() => { const u = urlOf(screen, key); if (u !== location.pathname + location.search) history.pushState(null, '', u); }, [screen, key]);
+  useEffect(() => {
+    const onPop = () => { const [s2, k2] = screenFromUrl(role); setScreen(s2); setKey(k2); };
+    window.addEventListener('popstate', onPop); return () => window.removeEventListener('popstate', onPop);
+  }, [role]);
 
   const [menu, setMenu] = useState(false);
   const [demo, setDemo] = useState(false);
@@ -314,19 +334,20 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
   const bigPx = Math.round((settings.distanceM * 1000 * 0.0058) / pxMM);
   const bodyPx = Math.round((settings.distanceM * 1000 * 0.00465) / pxMM);
   // 하단: 생산현황 · 작업지시 (v3 3장). 현장 모니터 = 설비 하나만 낮게 (3D를 크게)
-  const style: Record<string, string> = { '--panelH': screen === 'field' ? '260px' : 'clamp(300px,38vh,440px)' };
+  const style: Record<string, string> = { '--panelH': screen === 'field' ? '260px' : 'clamp(270px,34vh,350px)' };
   if (settings.fontScale) { style['--fs-big'] = `${bigPx}px`; style['--fs-body'] = `${bodyPx}px`; }
-  const show3D = screen === 'line' || screen === 'field' || screen === 'replay';
+  const show3D = screen === 'line' || screen === 'field'; // 다시 보기는 3D 대신 카드 라인 (2026-10-17)
   const fieldSel = screen === 'field' && !!snapSel;
-  const stagePos = screen === 'field' ? { left: 0, top: 0, right: 360, bottom: fieldSel ? 'var(--panelH)' : 0 } : screen === 'replay' ? { left: 0, top: 44, right: 0, bottom: 'var(--panelH)' } : { left: 0, top: 0, right: 0, bottom: 'var(--panelH)' };
+  const stagePos = screen === 'field' ? { left: 0, top: 0, right: 360, bottom: fieldSel ? 'var(--panelH)' : 0 } : { left: 88, top: 76, right: 12, bottom: 'calc(var(--panelH) + 24px)' };
 
 
   return (
     <Ctx.Provider value={ctx}>
-      <div className={`flex h-screen flex-col bg-[#e9ecef] text-[#26303a] ${settings.fontScale ? 'fs-scaled' : ''}`} style={style as React.CSSProperties}>
+      <div className={`relative flex h-screen flex-col overflow-hidden bg-[#e9ecef] text-[#26303a] ${settings.fontScale ? 'fs-scaled' : ''}`} style={style as React.CSSProperties}>
         {/* 상단 바 (페이지구조 v3 3장): 왼쪽 [≡][주간][날짜][시각] · 오른쪽 계정 [이름 ▾] [시연] [⚙ 화면 설정] */}
-        <header className="relative z-20 flex h-[56px] shrink-0 items-center gap-3 border-b border-slate-300 bg-white px-3">
-          <button onClick={() => setMenu((m) => !m)} className={btn} aria-label="메뉴">≡</button>
+        <header className="absolute left-3 right-3 top-3 z-20 flex h-[56px] items-center gap-3 rounded-2xl border border-slate-300 bg-white px-3 shadow-lg">
+          <span className="h-9 w-9 shrink-0 rounded-xl [background:linear-gradient(145deg,#c9ccd2,#9aa0a9_55%,#7d838c)] [box-shadow:0_1px_0_rgba(255,255,255,.8)_inset,0_-2px_4px_rgba(0,0,0,.18)_inset,0_2px_5px_rgba(40,40,50,.25)]" aria-hidden="true" />
+          <b className="whitespace-nowrap text-[17px]">제조운영관리</b>
           <span className={`flex items-baseline gap-2 whitespace-nowrap ${connected ? 'text-[#1f2933]' : 'text-slate-400'}`}>
             {twin ? (<>
               <span className="rounded-md bg-slate-100 px-2 py-0.5 text-[14px] font-semibold text-slate-600">{twin.clock.sim_at >= twin.shift.end_at ? '휴무' : SHIFT_NAME[twin.shift.shift_type]}</span>
@@ -334,8 +355,9 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
               <b className="font-mono text-[26px] tabular-nums">{twin.clock.sim_at.slice(11, 16)}</b>
             </>) : <b className="font-mono text-[22px]">--:--</b>}
           </span>
-          <div className="relative ml-auto">
-            <button onClick={() => { setAcct((o) => !o); setDemo(false); setSetOpen(false); }} className={`${btn} flex items-center gap-1`}>
+          <div className="ml-auto flex items-center gap-1 rounded-full border border-slate-300 bg-white p-1">{/* 계정·시연·설정 묶음 (시안 3a) */}
+          <div className="relative">
+            <button onClick={() => { setAcct((o) => !o); setDemo(false); setSetOpen(false); }} className="flex h-9 items-center gap-1 rounded-full bg-[#ffffff] px-4 text-[14px] font-semibold shadow-sm">
               <span className="font-normal text-slate-500">계정 :</span> {user.name} <span className="text-slate-400">▾</span>
             </button>
             {acct && (
@@ -346,31 +368,34 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
             )}
           </div>
           <div className="relative">
-            <button onClick={() => { setDemo((d) => !d); setSetOpen(false); setAcct(false); }} className={btn}>시연</button>
+            <button onClick={() => { setDemo((d) => !d); setSetOpen(false); setAcct(false); }} className="h-9 rounded-full px-4 text-[14px] font-semibold hover:bg-white/70">시연</button>
             {demo && <SimPanel twin={twin} refresh={live.refresh} toast={toast} api3d={api3d} onClose={() => setDemo(false)} />}
           </div>
           <div className="relative">
-            <button onClick={() => { setSetOpen((o) => !o); setDemo(false); setAcct(false); }} className={`${btn} px-3`} aria-label="화면 설정" title="화면 설정">
+            <button onClick={() => { setSetOpen((o) => !o); setDemo(false); setAcct(false); }} className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-white/70" aria-label="화면 설정" title="화면 설정">
               <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" /></svg>
             </button>
             {setOpen && <SettingsPopover settings={settings} setSettings={setSettings} api3d={api3d} bigPx={bigPx} bodyPx={bodyPx} />}
           </div>
+          </div>
         </header>
 
-        {menu && (
-          <nav className="absolute left-2 top-[60px] z-30 w-[240px] rounded-xl border border-slate-300 bg-white py-2 shadow-lg">
-            {MENU_V3.map(([name, s2, roles]) => {
-              const ok = !roles || roles.includes(role);
-              const target: Screen = s2 === 'home' ? homeScreen(role) : s2;
-              return (
-                <button key={name} disabled={!ok} onClick={() => { go(target); setMenu(false); }} title={ok ? undefined : '이 계정은 볼 수 없습니다'}
-                  className="flex h-11 w-full items-center px-4 text-left text-[15px] font-semibold hover:bg-slate-100 disabled:cursor-not-allowed disabled:text-slate-300 disabled:hover:bg-transparent">{name}</button>
-              );
-            })}
-          </nav>
-        )}
+        {/* 왼쪽 세로 메뉴 — 항상 보임 (구조 시안) */}
+        <nav className="absolute left-3 top-[76px] z-20 flex w-[64px] flex-col items-center gap-1 overflow-y-auto rounded-3xl border border-slate-300 bg-white py-2 shadow-lg" style={{ maxHeight: 'calc(100vh - 132px)' }}>
+          {MENU_V3.map(([name, s2, roles]) => {
+            const ok = !roles || roles.includes(role);
+            const target: Screen = s2 === 'home' ? homeScreen(role) : s2;
+            const on = target === screen;
+            return (
+              <button key={name} disabled={!ok} onClick={() => go(target)} title={ok ? name : '이 계정은 볼 수 없습니다'}
+                className={`relative flex h-12 w-[52px] shrink-0 items-center justify-center rounded-2xl text-[12px] font-bold ${on ? 'bg-[#1c2530] pt-2 text-white' : 'text-slate-600 hover:bg-[#f1f2fb]'} disabled:cursor-not-allowed disabled:text-slate-300 disabled:hover:bg-transparent`}>{on && <span className="absolute top-1.5 h-1.5 w-1.5 rounded-full bg-[#5fe0e6]" />}{RAIL_LABEL[name] ?? name}</button>
+            );
+          })}
+        </nav>
 
-        {/* 연결 끊김 띠 (2.8) · 3D 실패 띠 · 긴급 알림 띠 [9] */}
+
+        {/* 연결 끊김 띠 (2.8) · 3D 실패 띠 · 긴급 알림 띠 [9] — 상단 바 아래에 뜸 */}
+        <div className="absolute left-3 right-3 top-[72px] z-10 flex flex-col gap-1 overflow-hidden rounded-xl">
         {!connected && (
           <div className="flex h-10 shrink-0 items-center gap-2 bg-[#4b5a69] px-4 text-[14px] font-semibold text-white">
             ⚠ 연결 끊김 — 마지막 갱신 {live.lastOk ? live.lastOk.slice(11, 16) : '없음'} · 시연 데이터 서버(tools/sim_server.py)를 켜 주세요. 숫자는 회색, 3D 설비는 "기록 없음"
@@ -382,49 +407,54 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
             <span>⚠ 긴급</span><span>{MACHINES[band.machine].name}</span><span className="font-normal">{band.alarm ? `${band.code} ${band.alarm.nameKo}` : `${band.code} (알람 코드집에 없음)`} · {band.time.slice(11, 16)} →</span>
           </button>
         )}
+        </div>
 
-        {screen !== 'line' && screen !== 'layout2d' && screen !== 'docs' && !DOC_OF[screen] && <div className="flex h-11 shrink-0 items-center border-b border-slate-200 bg-white px-4 text-[17px] font-bold">{TITLE[screen]}</div>}
+        <div className="flex min-h-0 flex-1 flex-col" style={{ paddingLeft: screen === 'line' || screen === 'replay' ? 0 : 84, paddingTop: screen === 'line' || screen === 'replay' ? 0 : 72 }}>
+        {screen !== 'line' && screen !== 'layout2d' && screen !== 'docs' && screen !== 'pm' && !DOC_OF[screen] && !QUAL_OF[screen] && <div className="flex h-11 shrink-0 items-center border-b border-slate-200 bg-white px-4 text-[17px] font-bold">{TITLE[screen]}</div>}
         <div className={`relative min-h-0 flex-1 overflow-hidden ${connected ? '' : 'grayscale-[0.6]'}`}>
-          <div className="absolute" style={{ ...stagePos, visibility: show3D ? 'visible' : 'hidden', pointerEvents: show3D ? 'auto' : 'none' }}>
+          <div className={screen === 'line' || screen === 'replay' ? 'stage-card absolute overflow-hidden rounded-3xl border border-[#e3e6f3]' : 'absolute'} style={{ ...stagePos, visibility: show3D ? 'visible' : 'hidden', opacity: show3D ? 1 : 0, pointerEvents: show3D ? 'auto' : 'none' }}>
             <FactoryDashboard embedded dataMode layout={LAYOUT} quality="자동" introOnLoad={false} showCards={settings.cards} alarmText={alarmText} cardText={cardText}
               cmmCard={cmmCard} bigTags={screen === 'field'} scenario="정상 가동" onReady={onReady}
               onSnapshot={(s: { sel: MachineId | null }) => setSnapSel(s.sel)} onSelect={(id: MachineId) => setSnapSel(id)}
-              onFail={(why: string) => { setFail3d(why); setScreen('layout2d'); }} />
-            {show3D && screen !== 'replay' && (
+              onFail={(why: string) => { setFail3d(why); setScreen((s0) => (s0 === 'line' ? 'layout2d' : s0)); }} />
+            {show3D && (
               <>
-                <div className="pointer-events-none absolute left-3 top-3 flex items-center gap-2">
-                  <button onClick={() => go('layout2d')} className={`${btn} pointer-events-auto`}>2D 배치도로</button>
-                  <div className="pointer-events-auto flex gap-1 rounded-md bg-white/80 p-1">
-                    <button onClick={() => { api3d()?.setView('front'); setSnapSel(null); }} className={btn}>전체</button>
-                    {screen === 'line' && <button onClick={() => api3d()?.setView('op30')} className={btn}>OP-30</button>}
-                    {screen === 'line' && <button onClick={() => api3d()?.setView('top')} className={btn}>위</button>}
-                    <button onClick={() => api3d()?.nav('zoom', 0.85)} className={btn} aria-label="확대">+</button>
-                    <button onClick={() => api3d()?.nav('zoom', 1.18)} className={btn} aria-label="축소">−</button>
-                  </div>
+                <div className="pointer-events-auto absolute bottom-3 right-3 flex gap-1 rounded-full border border-[#e3e6f3] bg-white/90 p-1 shadow-md">
+                  {(() => { const sb = 'h-8 min-w-9 rounded-full px-3 text-[13px] font-semibold hover:bg-[#eef0fb]'; return (<>
+                    <button onClick={() => go('layout2d')} className={sb}>2D</button>
+                    <button onClick={() => { api3d()?.setView('front'); setSnapSel(null); }} className={sb}>전체</button>
+                    {screen === 'line' && <button onClick={() => api3d()?.setView('top')} className={sb}>위</button>}
+                    <button onClick={() => api3d()?.nav('zoom', 0.85)} className={sb} aria-label="확대">+</button>
+                    <button onClick={() => api3d()?.nav('zoom', 1.18)} className={sb} aria-label="축소">−</button>
+                  </>); })()}
                 </div>
-                <div className="pointer-events-none absolute bottom-2 left-3 text-[12px] text-slate-700">설비 클릭(탭) = 확대 · 스크롤(두 손가락) = 확대/축소 · 끌기 = 각도 · 호버 = 반응 없음</div>
+                <div className="pointer-events-none absolute bottom-3 left-3 rounded-full border border-[#e3e6f3] bg-white/85 px-3 py-1.5 text-[12px] text-slate-600">설비 클릭(탭) = 확대 · 스크롤(두 손가락) = 확대/축소 · 끌기 = 각도 · 호버 = 반응 없음</div>
               </>
             )}
           </div>
 
           {screen === 'layout2d' && <Layout2D />}
           {(screen === 'line' || screen === 'layout2d' || fieldSel) && (
-            <div className={`absolute bottom-0 left-0 ${screen === 'field' ? 'right-[360px]' : 'right-0'} h-[var(--panelH)] border-t border-slate-300`}><Panels field={screen === 'field'} /></div>
+            <div className={screen === 'line' ? 'absolute bottom-3 left-[88px] right-3 h-[var(--panelH)]' : `absolute bottom-0 left-0 ${screen === 'field' ? 'right-[360px]' : 'right-0'} h-[var(--panelH)] border-t border-slate-300 bg-[#eef1f4]`}><Panels field={screen === 'field'} /></div>
           )}
           {screen === 'field' && <div className="absolute bottom-0 right-0 top-0 w-[360px]"><FieldStrip onBriefing={() => { setSeenBrief((s) => ({ ...s, [user.id]: twin?.shift.shift_id ?? '' })); setSide('브리핑'); }} /></div>}
           {screen === 'replay' && <ReplayScreen />}
           {screen === 'cards' && <CardList />}
           {screen === 'card' && key && <CardScreen alertId={key} />}
-          {(screen === 'docs' || DOC_OF[screen]) && (() => {
-            const cur = screen === 'docs' ? (key ?? '작업지시서') : DOC_OF[screen];
+          {(screen === 'docs' || screen === 'pm' || DOC_OF[screen] || QUAL_OF[screen]) && (() => {
+            const isQ = !!QUAL_OF[screen], isPm = screen === 'pm';
+            // 예방 정비: 설비 고르기를 문서함 같은 왼쪽 목록으로 (사용자 요청 2026-10-16)
+            const cats: [string, Screen, string | null, Role[]?][] = isPm ? [PM_ALL, ...EQS].map((e) => [e, 'pm', e]) : isQ ? QUAL_CATS : DOC_CATS;
+            const cur = isPm ? (key && (key === PM_ALL || EQS.includes(key)) ? key : 'VF2-02') : isQ ? QUAL_OF[screen] : screen === 'docs' ? (key ?? '작업지시서') : DOC_OF[screen];
+            const pmBadge = (e: string) => { const ts = pmF.data?.tasks.filter((t) => e === PM_ALL || t.equipment_id === e) ?? [], over = ts.filter((t) => t.state === 'OVERDUE').length, soon = ts.filter((t) => t.state === 'DUE_SOON').length; return over || soon ? <span className="float-right text-[13px] font-normal">{over ? <span className="text-[#9a6200]">▲{over}</span> : null}{soon ? <span className="ml-1 text-slate-500">ⓘ{soon}</span> : null}</span> : null; };
             return (
               <div className="absolute inset-0 flex bg-[#e9ecef]">
                 <aside className="flex w-[200px] shrink-0 flex-col gap-1 overflow-y-auto border-r border-slate-300 bg-white p-2">
-                  <b className="px-2 py-2 text-[17px]">문서함</b>
-                  {DOC_CATS.map(([name, s2, k2, roles]) => {
+                  <b className="px-2 py-2 text-[17px]">{isPm ? '예방 정비' : isQ ? '품질' : '문서함'}</b>
+                  {cats.map(([name, s2, k2, roles]) => {
                     const ok = !roles || roles.includes(role);
                     return <button key={name} disabled={!ok} onClick={() => go(s2, k2)} title={ok ? undefined : '이 계정은 볼 수 없습니다'}
-                      className={`h-11 rounded-lg px-3 text-left text-[15px] font-semibold disabled:cursor-not-allowed disabled:text-slate-300 ${cur === name ? 'bg-[#e8f6fa] text-[#0f6f86]' : 'hover:bg-slate-100'}`}>{name}</button>;
+                      className={`h-11 rounded-lg px-3 text-left text-[15px] font-semibold disabled:cursor-not-allowed disabled:text-slate-300 ${cur === name ? 'bg-[#e8f6fa] text-[#0f6f86]' : 'hover:bg-slate-100'}`}>{name}{isPm && pmBadge(name)}</button>;
                   })}
                 </aside>
                 <div className="relative min-w-0 flex-1">
@@ -437,6 +467,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
                   {screen === 'quality' && <QualityScreen />}
                   {screen === 'revs' && <RevisionsScreen />}
                   {screen === 'idocs' && <DocsScreen />}
+                  {isPm && (key === PM_ALL ? <PmAll /> : <PmScreen />)}
                 </div>
               </div>
             );
@@ -445,12 +476,12 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
           {screen === 'lots' && <LotScreen />}
           {screen === 'inventory' && <InventoryScreen />}
           {screen === 'tools' && <ToolsScreen />}
-          {screen === 'pm' && <PmScreen />}
           {screen === 'settings' && <SettingsScreen />}
         </div>
 
         {/* 범례 [12] — 항상 보이고 접을 수 없다 */}
-        <footer className="flex h-[38px] shrink-0 items-center gap-4 overflow-x-auto border-t border-slate-300 bg-white px-3 text-[13px]">
+        </div>
+        <footer className="mx-3 mb-3 flex h-[40px] shrink-0 items-center gap-4 overflow-x-auto rounded-2xl border border-slate-300 bg-white px-4 text-[13px]">
           <b>범례</b>
           {LEGEND.map((l) => <span key={l.text} className="whitespace-nowrap"><span style={{ color: l.color }}>{l.icon}</span> {l.text}</span>)}
           <span className="ml-auto whitespace-nowrap text-slate-600">알림: <b className="text-[#c62a2f]">⚠ 긴급</b> │ <b className="text-[#9a6200]">▲ 주의</b> │ ⓘ 참고</span>
