@@ -420,6 +420,13 @@ RULE_MARK_RE = re.compile(                                              # 규칙
 RULE_OPS_NOTE = ("[추가 규칙] 이 질문이 지금·과거의 실제 운영 기록(재고 수량, 로트 상태, 알림 내역, 정지 횟수, 누가 했는지 등 일어난 일)을 묻는 것이면 "
                  "사내 문서로는 답할 수 없다. 규칙·기준·절차를 묻는 것이 아니면 insufficient를 true로 하고 answer에는 \"문서에 없음\"이라고만 쓴다.")
 
+# PURE_RETRY=1 (2026-10-18, 기획 못찾음_넓게다시보기): 정답 조각이 검색 9~50위라 상위 조각에 못 들면 Claude가 \"조각에 답이 없다\"(insufficient)고 하고, 비서는 그것을 \"문서에 없음\"으로 내보냈다
+# (못 찾음을 없음으로 말함). ① 첫 호출이 insufficient이면 상위 PURE_RETRY_TOPK개 조각으로 한 번 더 묻는다 — 그 두 번째 호출의 지시문에만 RETRY_NOTE를 더한다.
+# ② 첫 호출 지시문에는 PARTIAL_NOTE를 더한다 — 일부만 조각에 있을 때 없는 부분을 \"문서에 없다\"고 단정하지 않고 \"받은 조각에서는 찾지 못했다\"고 말하게 한다. 둘 다 지시문 한 줄이고 답 내용을 검사하지 않는다.
+RETRY_NOTE = ("[넓게 다시 본 조각] 처음 받은 조각에서 답을 찾지 못해, 질문과 관련 있을 수 있는 조각을 더 넓게 가져왔다. 이 중에 답이 있으면 그 조각만 근거로 답하고 인용한다. "
+              "이 조각들에서도 답이 없으면 insufficient를 true로 한다. 조각에 없는 내용은 지어내지 않는다.")
+PARTIAL_NOTE = ("[추가 규칙] 받은 조각에서 찾지 못한 부분을 밝힐 때는 \"문서에 없다\"고 단정하지 말고 \"받은 조각에서는 찾지 못했다\"고 쓴다.")
+
 
 def rule_question(question: str, p: dict) -> bool:
     """신호가 운영 낱말(intents)뿐인 규칙·정책 질문인가 (PURE_RULE). 번호·설비·날짜·알람이 있거나 신호가 아예 없으면 False(앞은 진짜 조회, 뒤는 이미 순수 길)."""
@@ -515,7 +522,7 @@ def build_messages(question: str, chunks: list[Chunk], prev: dict | None = None,
     return [{"role": "system", "content": system}, {"role": "user", "content": "\n\n".join(parts)}]
 
 
-def ask(question: str, chunks: list[Chunk], prev: dict | None, s: Settings, ops_note: bool = False) -> dict:
+def ask(question: str, chunks: list[Chunk], prev: dict | None, s: Settings, ops_note: bool = False, retry_note: bool = False) -> dict:
     """외부 Claude 1번 호출. 돌려주는 값: {"answer", "insufficient", "cited_raw"(받은 그대로), "raw"(받은 JSON), "ms", "sent_chars"}.
     연결·시간 초과·형식 오류·빈 답은 ExternalLlmFailure로 올린다 — 자동으로 로컬·다른 길로 돌아가지 않는다(앱 입구가 EXTERNAL_LLM_UNAVAILABLE로 끝냄).
     PURE_STYLE=1이면 새 지시문·스키마·max_tokens로 부르고 "answer"는 `opening 1) … 2) … closing`을 이은 글이며, "style": True와 "opening"·"points"·"closing" 부품이 더해진다
@@ -524,7 +531,8 @@ def ask(question: str, chunks: list[Chunk], prev: dict | None, s: Settings, ops_
     (opening·points·closing 키는 만들지 않는다. insufficient면 sections는 모든 묶음 text를 이은 한 묶음 — 글이 없으면 짧은 고정 문구)."""
     style = bool(s.pure_style)
     layout = style and bool(s.pure_layout)
-    messages = build_messages(question, chunks, prev, system_for(s) + ("\n\n" + RULE_OPS_NOTE if ops_note else ""))   # ops_note: PURE_RULE로 문서 길에 온 질문에만
+    messages = build_messages(question, chunks, prev, system_for(s) + ("\n\n" + RULE_OPS_NOTE if ops_note else "")   # ops_note: PURE_RULE로 문서 길에 온 질문에만
+                              + ("\n\n" + PARTIAL_NOTE if s.pure_retry else "") + ("\n\n" + RETRY_NOTE if retry_note else ""))   # PURE_RETRY=1: 첫 호출에 한 줄, 넓게 다시 본 호출에 한 줄 더
     sent = sum(len(m["content"]) for m in messages)
     t0 = time.perf_counter()
     try:
