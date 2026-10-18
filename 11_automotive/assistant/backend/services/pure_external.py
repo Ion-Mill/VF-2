@@ -527,6 +527,35 @@ def add_safety_doc(hits: list[tuple[float, Chunk]]) -> list[tuple[float, Chunk]]
         chars += len(c.text)
     return out
 
+# PURE_FAULTDOC=1 (2026-10-18, 기획 고장낱말_DOC03_통째붙이기): DOC-03(고장 대응 매뉴얼)을 현장 말로 물으면 정답 절이 낱말 검색 상위 8개 밖(대개 21위 밖)에 있어 Claude가 보지 못한다(점검표 73/90).
+# 질문에 고장 낱말(알람·경고·떴어·멈췄어·정지·고장·에러·과열·누설 …)이 있으면 DOC-03 조각을 통째로(문서 순서, 상한 FAULTDOC_MAX_CHARS) 더한다 — PURE_SAFETY가 DOC-05를 통째로 붙이는 것과 같은 방식.
+# 발동은 낱말로만 한다(검색 순위로 발동하면 상관없는 질문에도 번진다 — PURE_SAFETY 실험). 다른 문서 질문에는 거의 안 번진다(점검표 1~4%).
+FAULTDOC = "DOC-03"              # 고장 대응 매뉴얼
+FAULTDOC_SCORE = -2.0            # 통째로 더한 조각의 표시: 검색 점수가 아니다 (0.0은 PURE_EXPAND, -1.0은 PURE_SAFETY)
+FAULTDOC_MAX_CHARS = 30000       # 통째로 더하는 글자 수 상한 (지금 DOC-03은 27,897자 — 문서가 커져도 프롬프트가 폭증하지 않게)
+FAULTDOC_TERMS = re.compile(r"알람|경고|떴|뜨는|뜨고|떠서|멈췄|멈춰|멈추|정지|고장|에러|오류|안 켜|꺼졌|과열|누설|모자라|걸렸|안 읽|안 잡|안 풀|다시 돌려|리셋")
+
+
+def is_fault_text(question: str) -> bool:
+    """고장·알람·이상 낱말이 든 질문인가 — 낱말만 본다. 이 판정이 켜져야 DOC-03을 통째로 준다 (PURE_FAULTDOC)."""
+    return bool(FAULTDOC_TERMS.search(question))
+
+
+def add_fault_doc(hits: list[tuple[float, Chunk]]) -> list[tuple[float, Chunk]]:
+    """검색 결과 뒤에 DOC-03 조각 중 아직 없는 것을 문서 순서로 더한다 (점수 FAULTDOC_SCORE, 상한 FAULTDOC_MAX_CHARS). 원래 조각의 순서·점수는 그대로."""
+    have = {c.chunk_id for _, c in hits}
+    out = list(hits)
+    chars = 0
+    for c in load_corpus():
+        if c.doc_id != FAULTDOC or c.chunk_id in have:
+            continue
+        if chars + len(c.text) > FAULTDOC_MAX_CHARS:
+            break
+        out.append((FAULTDOC_SCORE, c))
+        have.add(c.chunk_id)
+        chars += len(c.text)
+    return out
+
 
 def unsure_candidates(question: str, hits: list[tuple[float, Chunk]], n: int = 3) -> list[Chunk]:
     """"자동으로 확인하지 못함" 때 보여 줄 가까운 안전 문서 절 (최대 n개, 중복 없음): 검색 점수가 있는 DOC-05 조각 → 전체 검색 순위의 DOC-05 조각 → 기본 절(§2·§3·§5)."""
@@ -555,6 +584,8 @@ def context(question: str, k: int, s: Settings) -> list[tuple[float, Chunk]]:
             hits = guarantee_period(question, hits)
     if s.pure_safety and is_safety(question):
         hits = add_safety_doc(hits)
+    if getattr(s, "pure_faultdoc", False) and is_fault_text(question):   # PURE_FAULTDOC=1: 고장 낱말이 있으면 DOC-03을 통째로
+        hits = add_fault_doc(hits)
     return hits
 
 
