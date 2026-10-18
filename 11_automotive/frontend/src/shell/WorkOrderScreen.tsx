@@ -1,7 +1,7 @@
 'use client';
 // SCR-11 정비 작업지시서 — OP-30 정지 등급 알람 1건(또는 반복 알람 2단계) = 작업지시서 1건이 프로그램 초안으로 이미 있다.
-// 초안은 지침카드·DOC-03 점검 순서(보전 줄)·DOC-05에서 규칙으로 (로컬 LLM 연결 전이라 [AI] 대신 "프로그램 초안").
-import { useState } from 'react';
+// 초안은 지침카드·DOC-03 점검 순서(보전 줄)·DOC-05에서 규칙으로 만든다 ("프로그램 초안"). 비서가 켜져 있으면 제목·증상을 비서가 다듬고 "AI비서 초안"으로 바뀐다.
+import { useEffect, useRef, useState } from 'react';
 import { BTN, CARD, DARK, PAGE, useApp } from './ctx';
 import { MACHINES } from './data';
 import { md, minsSince, simIso } from './live';
@@ -16,6 +16,13 @@ export default function WorkOrderScreen({ no }: { no: string }) {
   const [title, setTitle] = useState(wo?.title ?? '');
   const [symptom, setSymptom] = useState(wo?.symptom ?? '');
   const [steps, setSteps] = useState((wo?.steps ?? []).join('\n'));
+  // 비서가 제목·증상을 다듬어 넣으면(wo가 바뀜) 사람이 아직 손대지 않은 칸만 따라 바꾼다 — 손댄 칸은 그대로 둔다
+  const synced = useRef({ title: wo?.title ?? '', symptom: wo?.symptom ?? '' });
+  useEffect(() => {
+    if (!wo) return;
+    if (wo.title !== synced.current.title) { setTitle((t) => (t === synced.current.title ? wo.title : t)); synced.current.title = wo.title; }
+    if (wo.symptom !== synced.current.symptom) { setSymptom((s) => (s === synced.current.symptom ? wo.symptom : s)); synced.current.symptom = wo.symptom; }
+  }, [wo?.title, wo?.symptom]); // eslint-disable-line react-hooks/exhaustive-deps
   const [confirm, setConfirm] = useState<'approve' | 'cancel' | 'revise' | null>(null);
   const [reason, setReason] = useState('');
   const [reviseOpen, setReviseOpen] = useState(false);
@@ -65,7 +72,7 @@ export default function WorkOrderScreen({ no }: { no: string }) {
             계기 <b className="text-[#c62a2f]">{wo.trigger === 'REPEAT_2' ? '▲ 반복 알람 2단계 (원인 점검)' : '⚠ 정지 등급 알람'}</b>
           </div>
         ))}
-        {sec('제목 · 증상 (프로그램 초안)', (
+        {sec(`제목 · 증상 (${wo.llm ? 'AI비서 초안' : '프로그램 초안'})`, (
           <div className="flex flex-col gap-2">
             <label className="text-[14px] font-semibold">제목{tag('제목')}<input disabled={!editable} value={title} onChange={(e) => setTitle(e.target.value)} className={`mt-1 h-11 w-full rounded-md border border-slate-300 px-3 text-[15px] font-normal disabled:bg-slate-50 ${hl('제목')}`} /></label>
             <label className="text-[14px] font-semibold">증상{tag('증상')}<textarea disabled={!editable} value={symptom} onChange={(e) => setSymptom(e.target.value)} rows={2} className={`mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-[15px] font-normal disabled:bg-slate-50 ${hl('증상')}`} /></label>

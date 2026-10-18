@@ -1,5 +1,5 @@
 'use client';
-// SCR-15 교대 보고서 / SCR-16 일일 보고서 — 숫자는 프로그램(서버가 시뮬레이터 상태 기록으로 계산), 문장은 비서 자리(지금은 생성기·서버의 틀 문장 = 프로그램 초안).
+// SCR-15 교대 보고서 / SCR-16 일일 보고서 — 숫자는 프로그램(서버가 시뮬레이터 상태 기록으로 계산), 문장은 비서 자리(기본은 생성기·서버의 틀 문장 = 프로그램 초안. 시연 서버가 MOM_LLM_COMPOSE=1이면 끝난 교대의 문장을 비서가 다듬은 것으로 바꿔 보낸다).
 // 저장·확정·확정 후 수정 = API-RPT-02~05 (해당 교대 SUP / MGR). 확정 후 수정은 사유 필수 → 관리자에게 수정 알림.
 import { useState } from 'react';
 import { BTN, CARD, DARK, PAGE, useApp } from './ctx';
@@ -68,7 +68,7 @@ export function ShiftReportScreen() {
           {pastRecs.map((x) => <li key={x.record_no}>{x.record_no} ({x.record_type === 'QUICK' ? '간이' : '정식'}) {x.equipment_id} · {x.action}</li>)}
           {myWos.length + pastWos.length + pastRecs.length === 0 && <li>없음</li>}
         </ul>)}
-        {sec('[7] 특이 사항 (프로그램 초안 — 비서 문장 자리)', edit ? <textarea value={edit.n} onChange={(e) => setEdit({ ...edit, n: e.target.value })} rows={5} className="w-full rounded-md border border-slate-300 p-2 text-[15px]" /> : <p className="text-[15px]">{r.notable_text}</p>)}
+        {sec('[7] 특이 사항 (프로그램이 쓴 초안 — 비서가 켜져 있으면 비서가 다듬은 문장)', edit ? <textarea value={edit.n} onChange={(e) => setEdit({ ...edit, n: e.target.value })} rows={5} className="w-full rounded-md border border-slate-300 p-2 text-[15px]" /> : <p className="text-[15px]">{r.notable_text}</p>)}
         {sec(`[8] 인계 사항 — 전체 ${hand.reduce((s, g) => s + g.items.length, 0)}건 (2.5 보고 순위 순, 잠금·표지 맨 위)`, edit ? <textarea value={edit.h} onChange={(e) => setEdit({ ...edit, h: e.target.value })} rows={4} className="w-full rounded-md border border-slate-300 p-2 text-[14px]" /> : (
           <ul className="text-[14px]">{RANK_ORDER.map((k) => { const g = hand.find((x) => x.rank === k); return <li key={k}><b>{k} {RANK_NAME[k]}</b> {g && g.items.length ? g.items.join('; ') : k === '0' ? (g?.name ?? '잠금·표지 중인 설비 없음') : '-'}</li>; })}</ul>
         ))}

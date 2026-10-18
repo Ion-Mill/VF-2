@@ -1,7 +1,7 @@
 'use client';
 // SCR-02 교대 시작 브리핑(전체형: SUP·MNT·MGR) / SCR-03 요약형(OPR) — 이브 사이드바 브리핑 탭 (API-AST-01 모양).
 // 지난 교대·인계 사항 = 지난 교대 보고서(생성기·서버), 먼저 챙길 일 = 인계 사항 + 지금 처리 안 된 알람·알림 (2.5 보고 순위).
-// 비서 문장 대신 프로그램 목록 ("비서 응답 없음" 때의 모양) — 로컬 LLM 연결 전.
+// 보고 항목은 프로그램 목록이다 (순서·건수는 프로그램 몫). 지난 교대 요약은 교대 보고서 문장을 그대로 쓰므로, 비서가 켜져 있으면 비서가 다듬은 문장이 보인다.
 import { useApp } from './ctx';
 import { MACHINES } from './data';
 import { SIM, md, type Twin } from './live';
@@ -74,7 +74,7 @@ export default function Briefing() {
       <h3 className="text-[16px] font-bold">{head}</h3>
       <section>
         <h4 className="font-bold">먼저 챙길 일 — 전체 {total}건 <span className="font-normal text-slate-500">(안전 {by(['0'])} · 긴급 {by(['1'])} · 생산 {by(['2'])} · 주의 {by(['0-1', '3'])} · 참고 {by(['4'])})</span></h4>
-        <p className="text-[11px] text-slate-500">순서는 프로그램 규칙(2.5 보고 순위). 인계 사항 출처: 교대 보고서 {last?.shift_id ?? '없음'}. 비서 문장 대신 목록 (로컬 LLM 연결 전)</p>
+        <p className="text-[11px] text-slate-500">순서는 프로그램 규칙(2.5 보고 순위). 인계 사항 출처: 교대 보고서 {last?.shift_id ?? '없음'}. 보고 항목은 프로그램 목록 (지난 교대 요약은 비서가 켜져 있으면 비서가 다듬은 문장)</p>
         <ul className="mt-1 flex flex-col gap-1">
           {groups.map((g) => (
             <li key={g.rank}><b>{g.rank} {RANK_NAME[g.rank]}</b>{' '}
