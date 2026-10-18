@@ -1,9 +1,9 @@
 {
   "stage": "5단계 ③: 과거 30일 + 측정값 판정 + 보고서·수정 이력·알림",
-  "created_at": "2026-10-14T15:14:01+09:00",
+  "created_at": "2026-10-15T17:14:00+09:00",
   "seed": 20260901,
-  "config_sha256": "49d2490c4db3f15eb1fad67e1971a241897bd5cefc9739cdcbabc29ade2d5ca5",
-  "masters_sha256": "b9c745cfdf7cd36c709703efdd97665cb12d8526ee889173f19151ecfa0e5885",
+  "config_sha256": "1b817f7706bd4e37ea36c204c0734bf87cc5dcd7b8cf47f8a682cf9df95da8ed",
+  "masters_sha256": "804aadfc5fdae186246c745e78633b0b3bd5a570e37f7990d1548777ec9f4b83",
   "python": "3.12.10",
   "numpy": "2.4.3",
   "pandas": "3.0.1",

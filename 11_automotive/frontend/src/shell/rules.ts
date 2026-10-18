@@ -23,6 +23,8 @@ const RANK_OF: Record<string, string> = {
   ALARM_GUIDE: '4', PM_DUE_SOON: '4', APPROVAL_WAIT_30M: '4', WO_ASSIGNED: '4', WO_DRAFT_READY: '4', DAILY_REPORT_PENDING: '4', SHIFT_REPORT_PENDING: '4', DOC_REVISED: '4',
 };
 const LEVEL_OF: Record<string, Level> = { URGENT: '긴급', CAUTION: '주의', INFO: '참고' };
+// 예방 정비 기한 알림은 주 1회 이상 주기 항목만 (매일·교대마다 하는 점검은 교대 점검표로 봄, 생성기 config notifications.pm_alert_cycles)
+const PM_ALERT_CYCLES = ['WEEKLY', 'MONTHLY', 'HALF_YEAR', 'YEARLY'];
 const levelRule = (r: string): Level => (RANK_OF[r] === '4' ? '참고' : '주의');
 
 const mk = (rule: string, key: string, text: string, roles: Role[], extra: Partial<Notice> = {}): Notice => ({
@@ -30,6 +32,12 @@ const mk = (rule: string, key: string, text: string, roles: Role[], extra: Parti
   text, roles, delivery: ['WO_ASSIGNED', 'WO_DRAFT_READY', 'APPROVAL_WAIT_30M', 'APPROVAL_WAIT_2H', 'SHIFT_REPORT_PENDING', 'DAILY_REPORT_PENDING', 'DOC_REVISED'].includes(rule) ? 'BUBBLE' : 'LIST',
   handled: false, ...extra,
 });
+
+// 일일 보고서 초안은 다음 날 새벽에 나와서 raised_at 날짜가 하루 뒤 → 메시지의 "09/30"으로 날짜를 정한다
+const dailyKey = (n: Record<string, string>) => {
+  const m = n.message.match(/(\d{2})\/(\d{2})/);
+  return m ? `${n.raised_at.slice(0, 4)}-${m[1]}-${m[2]}` : (n.shift_id || n.raised_at).slice(0, 10);
+};
 
 // 9월 과거 알림 중 10/1 08:00에 처리 안 된 것 (생성기 notification.csv)
 export const fromPast = (n: Record<string, string> & { to: string[] }): Notice => {
@@ -41,7 +49,7 @@ export const fromPast = (n: Record<string, string> & { to: string[] }): Notice =
     at: n.raised_at, ts: tsOf(n.raised_at), text: n.message.replace(/^\[[^\]]+\]\s*/, ''), related: n.related_info || undefined,
     machine: eq ? ID_OF[eq] : undefined, roles: roles.length ? roles : ['SUP', 'MGR'], userIds: n.to, delivery: n.rule_code.match(/^(WO_|APPROVAL|DAILY|SHIFT|DOC_)/) ? 'BUBBLE' : 'LIST',
     handled: false, past: true, count: Number(n.repeat_count) || undefined,
-    open: rule === 'DAILY_REPORT_PENDING' ? { screen: 'daily', key: (n.shift_id || n.raised_at).slice(0, 10) } : rule.startsWith('PM_') ? { screen: 'pm' } : rule === 'STOCK_LOW' ? { screen: 'inventory' } : rule === 'TOOL_LIFE_90' ? { screen: 'tools' } : undefined,
+    open: rule === 'DAILY_REPORT_PENDING' ? { screen: 'daily', key: dailyKey(n) } : rule.startsWith('PM_') ? { screen: 'pm' } : rule === 'STOCK_LOW' ? { screen: 'inventory' } : rule === 'TOOL_LIFE_90' ? { screen: 'tools' } : undefined,
   };
 };
 
@@ -61,11 +69,11 @@ export const fromEvents = (evs: SimEvent[]): Notice[] => {
 };
 
 export interface RuleCtx {
-  twin: Twin | null; inv: { items: { item_no: string; item_name: string; stock_qty: number; safety_stock: number; unit: string; owner_role: string; low: boolean }[] } | null;
-  pm: { tasks: { pm_task_id: string; equipment_id: string; item_name: string; next_due: string | null; state: string | null }[] } | null;
+  twin: Twin | null; inv: { items: { item_no: string; item_name: string; stock_qty: number; safety_stock: number; unit: string; owner_role: string; low: boolean; low_at_start?: boolean }[] } | null;
+  pm: { tasks: { pm_task_id: string; equipment_id: string; item_name: string; cycle_code: string; next_due: string | null; state: string | null }[] } | null;
   wos: WorkOrder[]; shiftReports: { shift_id: string; status: string }[] | null; dailyReports: { work_date: string; status: string }[] | null;
   cmm: { imports: { cmm_import_id: number; status: string; error_text: string | null; file_name: string; received_at: string; lot_no: string }[] } | null;
-  quality: { items: { item_seq: string; item_name: string; out?: number[]; n: number }[] } | null;
+  quality: { items: { item_seq: string; item_name: string; out?: number[]; n: number; values?: { at: string; v: number }[] }[]; live_from?: string } | null;
   alerts: AlertRec[]; pastAlarms: { equipment_id: string; alarm_code: string; occurred_at: string }[]; notices: Notice[];
   rules: { repeat_days: number; repeat_count: number; target_risk_pct: number; repeat2_days: number };
 }
@@ -73,7 +81,6 @@ export interface RuleCtx {
 // 상태로 판단하는 알림 (켜질 조건, 풀릴 조건)
 export function derive(c: RuleCtx): { add: Notice[]; resolve: string[] } {
   const add: Notice[] = [], resolve: string[] = [], t = c.twin, now = SIM.now();
-  const pastKey = new Set(c.notices.filter((n) => n.past && !n.handled).map((n) => `${n.rule}|${n.related ?? ''}|${n.text}`));
   if (t) {
     const sid = t.shift.shift_id;
     // 재공 경고 — 재공 위치마다 교대에 처음 1번 (WIP-20-30은 한도 30 도달, WIP-30-40 제외, DOC-07 §10.1)
@@ -94,15 +101,23 @@ export function derive(c: RuleCtx): { add: Notice[]; resolve: string[] } {
     });
   }
   // 재고 부족 (재고 ≤ 안전 재고, 받는 사람 = 관리 역할 + MGR). 보충되면 자동 처리
+  // 10/1 08:00에 이미 부족한 품목은 9월에 알렸으므로(미처리분은 fromPast) 다시 내지 않는다 — 새로 부족해질 때만 (gen/notify.py와 같음)
   c.inv?.items.forEach((i) => {
     const id = `STOCK_LOW:${i.item_no}`;
-    if (i.low && i.safety_stock > 0) { if (!pastKey.has(`STOCK_LOW||${i.item_name}`)) add.push(mk('STOCK_LOW', i.item_no, `${i.item_name} 재고 ${i.stock_qty}${i.unit} — 안전 재고 ${i.safety_stock}${i.unit} 이하`, [i.owner_role as Role, 'MGR'], { open: { screen: 'inventory' } })); }
+    if (i.low && i.safety_stock > 0) { if (!i.low_at_start) add.push(mk('STOCK_LOW', i.item_no, `${i.item_name} 재고 ${i.stock_qty}${i.unit} — 안전 재고 ${i.safety_stock}${i.unit} 이하`, [i.owner_role as Role, 'MGR'], { open: { screen: 'inventory' } })); }
     else { resolve.push(id); c.notices.filter((n) => n.past && n.rule === 'STOCK_LOW' && !n.handled && n.text.includes(i.item_name)).forEach((n) => resolve.push(n.id)); }
   });
-  // 예방 정비 기한 하루 전 / 넘김
-  c.pm?.tasks.forEach((x) => {
-    if (x.state === 'OVERDUE') add.push(mk('PM_OVERDUE', x.pm_task_id, `${x.equipment_id} ${x.item_name} — 기한 ${md(x.next_due)} 넘김`, ['MNT', 'SUP'], { machine: ID_OF[x.equipment_id as Eq], open: { screen: 'pm' } }));
-    else if (x.state === 'DUE_SOON') add.push(mk('PM_DUE_SOON', `${x.pm_task_id}:${x.next_due}`, `${x.equipment_id} ${x.item_name} — 기한 ${md(x.next_due)}`, ['MNT'], { machine: ID_OF[x.equipment_id as Eq], open: { screen: 'pm' } }));
+  // 예방 정비 기한 하루 전 / 넘김 (주 1회 이상 주기 항목만). 9월에 같은 항목으로 이미 알렸으면 다시 내지 않는다
+  const today = simIso().slice(0, 10);
+  const samePm = (n: Notice, x: { equipment_id: string; item_name: string }) => n.machine === ID_OF[x.equipment_id as Eq] && n.text.includes(x.item_name);
+  c.pm?.tasks.filter((x) => PM_ALERT_CYCLES.includes(x.cycle_code)).forEach((x) => {
+    if (x.state === 'OVERDUE') {
+      if (!c.notices.some((n) => n.past && n.rule === 'PM_OVERDUE' && samePm(n, x)))
+        add.push(mk('PM_OVERDUE', x.pm_task_id, `${x.equipment_id} ${x.item_name} — 기한 ${md(x.next_due)} 넘김`, ['MNT', 'SUP'], { machine: ID_OF[x.equipment_id as Eq], open: { screen: 'pm' } }));
+      c.notices.filter((n) => n.rule === 'PM_DUE_SOON' && !n.handled && samePm(n, x)).forEach((n) => resolve.push(n.id)); // 기한을 넘기면 "하루 전"은 풀림
+    }
+    // 하루 전에만 (기한 당일 항목은 전날 08:00에 이미 알림)
+    else if (x.state === 'DUE_SOON' && (x.next_due ?? '').slice(0, 10) > today && !c.notices.some((n) => n.past && n.rule === 'PM_DUE_SOON' && samePm(n, x))) add.push(mk('PM_DUE_SOON', `${x.pm_task_id}:${x.next_due}`, `${x.equipment_id} ${x.item_name} — 기한 ${md(x.next_due)}`, ['MNT'], { machine: ID_OF[x.equipment_id as Eq], open: { screen: 'pm' } }));
     if (x.state === 'OK') {
       resolve.push(`PM_OVERDUE:${x.pm_task_id}`);
       c.notices.filter((n) => n.past && n.rule.startsWith('PM_') && !n.handled && n.text.includes(x.item_name) && n.machine === ID_OF[x.equipment_id as Eq]).forEach((n) => resolve.push(n.id));
@@ -132,7 +147,12 @@ export function derive(c: RuleCtx): { add: Notice[]; resolve: string[] } {
     if (x.status === 'CHECK') add.push(mk('CMM_JUDGE_MISMATCH', String(x.cmm_import_id), `결과 파일 ${x.file_name} 확인 필요 — ${x.error_text ?? ''}`, ['SUP'], { open: { screen: 'quality' } }));
   });
   // 관리도 이상 (I-MR ±3σ 밖)
-  c.quality?.items.forEach((it) => { if (it.out && it.out.length) add.push(mk('SPC_OUT', `${it.item_seq}:${it.n}:${it.out[it.out.length - 1]}`, `${it.item_name} 관리도 ±3σ 밖 점 ${it.out.length}개 — 다음 부품 바로 측정`, ['SUP'], { open: { screen: 'quality' } })); });
+  // 10/1 측정점만 (9월 점은 생성기 9월 알림이 이미 판단). 키 = 마지막 이상 점의 측정 시각 (최근 50개 창이 밀려도 같은 점은 1건)
+  const from = c.quality?.live_from ?? '';
+  c.quality?.items.forEach((it) => {
+    const out = (it.out ?? []).filter((i) => !it.values || it.values[i].at >= from);
+    if (out.length) add.push(mk('SPC_OUT', `${it.item_seq}:${it.values?.[out[out.length - 1]].at ?? `${it.n}:${out[out.length - 1]}`}`, `${it.item_name} 관리도 ±3σ 밖 점 ${out.length}개 — 다음 부품 바로 측정`, ['SUP'], { open: { screen: 'quality' } }));
+  });
   return { add, resolve };
 }
 

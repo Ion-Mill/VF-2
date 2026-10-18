@@ -57,7 +57,7 @@ class State:
         data = HERE / "data.json"
         self.alarms = json.loads(data.read_text(encoding="utf-8"))["alarms"] if data.exists() else {}
         print("실시간 모드 준비 중 (10/1 08:00, 약 2초) …")
-        self.rt = Realtime(self.cfg, self.M)
+        self.rt = Realtime(self.cfg, self.M, drop_dir=GEN / "out_live" / self.cfg["realtime"]["cmm_drop_dir"])   # git 제외 폴더
         self.live = Live(self.rt, self.P)
         self.run_id = 1
         self.seq = 0
@@ -608,7 +608,7 @@ def quality_summary(P, rt):
                         "out": [i for i, x in enumerate(xs) if x > mu + 3 * sig or x < mu - 3 * sig]})
         items.append(row)
     return {"defects": [{"defect_code": k, "qty": v} for k, v in cnt.most_common()], "defect_codes": P.defect_codes,
-            "items": items, "today_defects": [{k: (fmt_dt(v) if hasattr(v, "isoformat") else v) for k, v in d.items()} for d in live_def]}
+            "items": items, "live_from": fmt_dt(rt.sim.cal.to_dt(rt.N)), "today_defects": [{k: (fmt_dt(v) if hasattr(v, "isoformat") else v) for k, v in d.items()} for d in live_def]}
 
 
 class Handler(BaseHTTPRequestHandler):

@@ -11,6 +11,8 @@
 
 서버 두 개를 켠다. 생성기 가상환경(`11_automotive/생성기/.venv`, Python 3.12)이 먼저 설치돼 있어야 한다 (`생성기/실행_안내.md`).
 
+한 번에: `11_automotive/`에서 `npm run dev` (시연 데이터 서버 + 화면을 같이 켬, 백엔드까지는 `npm run dev:full`). 따로 켤 때는 아래처럼.
+
 ```
 # 1) 시연 데이터 서버 (포트 8765) — 이 폴더에서
 ..\생성기\.venv\Scripts\python.exe tools\sim_server.py

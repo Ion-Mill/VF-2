@@ -652,8 +652,14 @@ def run_realtime(cfg: dict, rt_dir: Path, past_dir: Path, masters: dict) -> dict
         files == sorted(ci.file_name) and bool(nrow_ok) and not list(drop.glob("*.tmp")), f"파일 {len(files)}개")
     pm = T["pm_record"]
     mt = sl[sl.state_code == "MAINT"]
-    add("S6 정비 기록: 초안(DRAFT), MAINT 구간에 첫 기록 연결", bool((pm.status == "DRAFT").all())
-        and (len(pm) == 0 or bool((mt.pm_record_id != "").all())), f"정비 기록 {len(pm)}건")
+    s6 = pm[pm.memo.fillna("").str.startswith("10/1 시연 S6")]
+    add("S6 정비 기록: 초안(DRAFT), MAINT 구간에 첫 기록 연결", bool((s6.status == "DRAFT").all())
+        and (len(s6) == 0 or bool((mt.pm_record_id != "").all())), f"정비 기록 {len(s6)}건")
+    routine = pm[pm.memo.fillna("") == ""]
+    task = {t["pm_task_id"]: t for t in masters["pm_task"]}
+    add("10/1 기한 매일·매주 점검: 그날 주간에 실시, 확정(CONFIRMED)", bool((routine.status == "CONFIRMED").all())
+        and bool(routine.pm_task_id.map(lambda x: task[x]["cycle_code"] in ("DAILY", "WEEKLY")).all())
+        and bool(routine.done_at.str.startswith("2026-10-01").all()), f"일상 점검 {len(routine)}건")
     failed = [o for o in ops if o["op"] == "failed"]
     add("대본 조작이 모두 됨 (안 된 조작 0)", not failed, "; ".join(f"{o['step']}: {o['why']}" for o in failed))
     times = [o["sim_at"] for o in ops if o["op"] != "reset"]
