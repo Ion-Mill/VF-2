@@ -282,7 +282,9 @@ def test_end_to_end_verb_phrasing_reaches_claude_with_the_pre_work_steps(e2e):
 
 def test_end_to_end_verb_phrasing_off_is_the_old_defective_context(e2e, monkeypatch):
     monkeypatch.setenv("PURE_EXPAND", "0")
-    ask("작업 전에 잠그는 순서 알려줘")
+    # 2026-10-18 DOC-05 Rev.3: §2.1 "우리 라인" 칸이 길어져(원문 뜻 핵심 보강) "작업 전에 잠그는 순서 알려줘"는 확장 없이도 §2.1이 상위 8개에 든다(좋아진 것).
+    # 옛 결함을 보여 주는 대조군은 아직 §2.1이 상위 8개 밖인 "잠그는 순서"로 바꿨다
+    ask("잠그는 순서")
     heads = sent_chunk_heads(e2e)
     assert len(heads) == 8 and not any("DOC-05" in h and "§2.1" in h for h in heads)
 
