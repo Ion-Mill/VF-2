@@ -263,14 +263,14 @@ __all__ = ["PhraseAdapter", "select_lines", "route", "route_v2", "verify", "vali
 # ---------------------------------------------------------------- 이어 묻기 (2026-10-12, FOLLOWUP=1)
 # 앞 답의 글(안전·절차가 아닌 문서 줄, 운영 초안 글)을 쉽게·짧게 다시 쓴다. 프로그램 검사를 모두 통과하고 따로 뜻 검사(faith)도
 # 통과해야 쓴다. 하나라도 실패하면 부른 쪽이 원문 그대로 보인다(fail closed — 따로 검증 verify와 달리 LLM 오류도 거부로 친다).
-STRICT_WORDS = ("이상", "이하", "초과", "미만", "금지", "않", "못", "불가", "반드시", "필수", "먼저", "전에", "뒤에")
+STRICT_WORDS = ("이상", "이하", "초과", "미만", "금지", "않", "못", "불가", "반드시", "필수", "먼저", "전에", "뒤에", "말고", "말 것", "마세요")   # "말고·말 것·마세요" = 금지 지시 (A2: "~하지 말고"가 "~하지 않고"로 약해진 것을 잡는다)
 LATIN = re.compile(r"[A-Za-z][A-Za-z0-9\-]*")
 
 
 def check_rewrite(new: str, src: str) -> tuple[str, str | None]:
     """바꿔 쓴 글 한 조각 검사. (다듬은 글, 거부 사유 또는 None)."""
     new = numbers.tidy(tidy(new, src), src)
-    if "DOC-" in new or "§" in new:
+    if new.count("DOC-") > src.count("DOC-") or new.count("§") > src.count("§"):   # 원문에 없는 출처 표기를 새로 쓰면 거부 — 원문 줄에 이미 있는 절 참조("§2.1 점검 2~5")를 그대로 옮긴 것은 괜찮다 (2026-10-18, 알람 카드 다시 쓰기)
         return new, "출처 표기"
     reason = check_text(new, src, num_match="value")   # 원문 출처·한글 수사·허락/지시·꼬리표·숫자 양방향
     if reason:

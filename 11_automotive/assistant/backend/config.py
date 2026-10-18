@@ -183,6 +183,12 @@ class Settings:
     # pure_faultdoc: 1이면 순수 길에서 질문에 **고장 낱말**(알람·경고·떴어·멈췄어·정지·고장·에러·과열·누설 …)이 있을 때 고장 대응 매뉴얼(DOC-03)을 통째로(상한 30,000자) Claude에게 준다
     # (2026-10-18, DOC-03을 현장 말로 물으면 정답 절이 검색 상위 8개 밖에 있어 놓치던 결함, 점검표 73/90). PURE_SAFETY가 DOC-05를 통째로 주는 것과 같은 방식. 기본 꺼짐 = 지금 동작 그대로
     pure_faultdoc: bool = False
+    # card_rewrite: 1이면 **채팅(외부 Claude 요청)** 에서 알람 카드의 설명 문장과 점검 순서(★ 줄)를 Claude가 해요체로 다시 쓴다(A2, 2026-10-18). 숫자·영문 이름·[가상] 꼬리표·조건 말(않·금지·반드시·먼저 …)
+    # 검사(jobs.check_rewrite)와 뜻 같은지 따로 판정(jobs.faith)을 모두 지나야 쓰고, 하나라도 걸리면 원문 카드 그대로 보인다(fail closed). 알람 카드 화면(지침카드)은 영향이 없다. 기본 꺼짐 = 지금 동작 그대로
+    card_rewrite: bool = False
+    # fixed_block: 1이면 **채팅 순수 길**에서 안전 질문에 맞는 고정 서식(잠금·표지 6+3단계, 고전압 대기, 보호구)을 프로그램이 답 아래에 그대로 붙이고(safety/fixed_block.py, 글자는 templates.py 상수),
+    # Claude에게는 공식 단계 번호·이름을 알려 준다. 순서 전체를 물었는데 풀이가 단계를 빠뜨리거나 없는 번호를 쓰면 풀이를 버리고 고정 서식만 보인다(2026-10-18, FR-AST-COM-13 채팅 병기). 기본 꺼짐 = 지금 동작 그대로
+    fixed_block: bool = False
     # ctx_narrow: 1이면 화면 알람(alarm_key)이 있을 때 "원인·점검·먼저·안전" 낱말만으로 직전 알람에 묶지 않고, **자기 대상이 없는 질문**(알람 일반 낱말뿐 — "원인은?"·"심각도는?")만 묶는다.
     # "안전하게 자물쇠 제거 어떻게 해?"가 직전 2075 카드로 답하던 위험을 막는다(2026-10-18). 묶으면 답 맨 앞에 "N 알람 기준으로 답해요."를 밝힌다. 기본 꺼짐 = 지금 동작 그대로
     ctx_narrow: bool = False
@@ -335,6 +341,8 @@ def settings() -> Settings:
         pure_fault=get("PURE_FAULT", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
         pure_rule_wide=get("PURE_RULE_WIDE", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
         pure_faultdoc=get("PURE_FAULTDOC", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
+        card_rewrite=get("CARD_REWRITE", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
+        fixed_block=get("FIXED_BLOCK", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
         ctx_narrow=get("CTX_NARROW", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
         pure_follow_rewrite=get("PURE_FOLLOW_REWRITE", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
         llm_provider=provider,
