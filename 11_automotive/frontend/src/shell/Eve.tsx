@@ -3,6 +3,7 @@
 // 채팅 = API-AST-02. 외부 LLM(Claude) 연결을 켜지 않았으면 서버의 "규칙 답"(조회 도구 + 사내 문서 검색)을 쓰고, 답마다 "규칙 답" 표시.
 // 겉모양 = mom-assistant-widget (로봇 버튼 · 아이콘 메뉴 · 우측 어두운 창 · 알림 토스트). 위젯 JS는 innerHTML로 그려 React 탭을 못 담아서 CSS만 쓰고 틀을 여기로 옮김.
 import { Fragment, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useApp } from './ctx';
 import { MACHINES } from './data';
 import { SIM, api, md, simIso, useLocal } from './live';
@@ -10,6 +11,7 @@ import { askAssistant, backendChatEnabled } from './assistantApi';
 import { LEVEL_VIEW, alarmTitle, hhmm, sevText, type AlertRec, type Level, type Notice } from './model';
 import { rankOfAlert, rankOfNotice } from './Briefing';
 import RobotIcon from './RobotIcon';
+import { canStartNewChat, currentChat, makeNewChatMark, realRows, withNewChat } from './chatLog';
 
 export type EveTab = '브리핑' | '알림' | '채팅' | '채팅 기록';
 export const EVE_TABS: EveTab[] = ['브리핑', '알림', '채팅', '채팅 기록'];
@@ -60,6 +62,7 @@ export function Eve({ tab, onPick, onClose, badges, bubble, onBubble, brief, onN
   const [later, setLater] = useState<string | null>(null); // [나중에] 누른 말풍선 — 글이 바뀌면 다시 뜸
   const [gl, setGl] = useState(true), [snap, setSnap] = useState<string | null>(null);
   const [focus, setFocus] = useState<string | null>(null);
+  const [slot, setSlot] = useState<HTMLElement | null>(null);   // 머리줄의 [새 채팅] 자리 — 상태를 가진 Chat이 여기에 버튼을 그린다 (createPortal)
   const closed = !tab && !menu;
   const toast = closed && bubble && bubble !== later ? bubble : null;
   const total = badges['알림'] ?? 0;
@@ -100,12 +103,13 @@ export function Eve({ tab, onPick, onClose, badges, bubble, onBubble, brief, onN
           <header className="ma-panel-head">
             <Robot size={30} disc snap={snap} />
             <strong className="ma-panel-title">이브 · {tab}</strong>
+            {tab === '채팅' && <span ref={setSlot} className="flex shrink-0 items-center" />}
             <button type="button" className="ma-icon-btn" onClick={onClose} aria-label="창 닫기"><Icon d={['M6 6l12 12M18 6L6 18']} /></button>
           </header>
           <div className="ma-tabs" role="tablist" aria-label="이브 메뉴">
             {EVE_TABS.map((t) => <button key={t} type="button" role="tab" className="ma-tab" aria-selected={tab === t} onClick={() => { setFocus(null); onPick(t); }}>{t}{badge(t, 'ma-tab-badge')}</button>)}
           </div>
-          {tab === '채팅' ? <Chat focus={focus} /> : (
+          {tab === '채팅' ? <Chat focus={focus} headerSlot={slot} onNewChat={() => setFocus(null)} /> : (
             <div className="ma-body text-[14px] leading-relaxed" role="tabpanel">
               {tab === '채팅 기록' ? <ChatLog onOpen={(at) => { setFocus(at); onPick('채팅'); }} /> : <div className="ma-pad">{tab === '브리핑' ? brief : <AlertsTab onNotice={onNotice} />}</div>}
             </div>
@@ -206,12 +210,13 @@ function AlertsTab({ onNotice }: { onNotice: (n: Notice) => void }) {
 }
 
 // ---------- SCR-10 채팅 ----------
-interface ChatRow { at: string; q: string; a: string; status: string; sources: { doc_no: string; doc_name: string; rev: string; section: string }[]; series?: Record<string, Record<string, number[]>> }
-function Chat({ focus }: { focus: string | null }) {
+interface ChatRow { at: string; q: string; a: string; status: string; sources: { doc_no: string; doc_name: string; rev: string; section: string }[]; series?: Record<string, Record<string, number[]>>; newChat?: boolean }   // newChat = "여기서부터 새 대화" 표지 줄 (질문·답 없음, chatLog.ts)
+function Chat({ focus, headerSlot, onNewChat }: { focus: string | null; headerSlot: HTMLElement | null; onNewChat: () => void }) {
   const { user, role, screen, selected, openSource } = useApp();
   const [log, setLog] = useLocal<ChatRow[]>(`chat:${user.id}`, []);
   const [q, setQ] = useState('');
   const [busy, setBusy] = useState(false);
+  const input = useRef<HTMLInputElement>(null);
   const send = async (text = q) => {
     if (!text.trim()) return;
     setBusy(true); setQ('');
@@ -226,8 +231,11 @@ function Chat({ focus }: { focus: string | null }) {
     setLog((l) => [...l.filter((x) => Date.parse(x.at) > SIM.now() - 30 * 864e5), row]);
     setBusy(false);
   };
-  // 채팅 기록에서 열면 그 대화가 있는 날 대화 전부, 아니면 최근 12개
-  const today = focus ? log.filter((x) => md(x.at) === md(focus)) : log.slice(-12);
+  // [새 채팅]: 기록은 한 줄도 지우지 않고 "여기서부터 새 대화" 표지 줄만 더한다 → 채팅 탭은 표지 뒤 줄만 보이고, 이전 대화는 채팅 기록 탭에 그대로 있다 (chatLog.ts)
+  const canNew = !busy && canStartNewChat(log, !!focus);   // 답을 기다리는 중에는 끈다 (늦게 온 답이 새 대화에 끼지 않게)
+  const startNew = () => { if (!canNew) return; const m = makeNewChatMark(simIso()); setLog((l) => withNewChat(l, m, !!focus)); setQ(''); onNewChat(); input.current?.focus(); };
+  // 채팅 기록에서 열면 그 대화가 있는 날 대화 전부, 아니면 지금 대화의 최근 12개
+  const today = focus ? realRows(log).filter((x) => md(x.at) === md(focus)) : currentChat(log).slice(-12);
   const ex = role === 'MNT' || role === 'MGR' ? ['VF2-01 MTTR 알려줘', 'VF2-01 센서 추세', '2075 알람 뭐야', '이 화면 설명해 줘'] : ['2075 알람 뭐야', '잠금 표지 순서', '이 화면 설명해 줘', '병목 원인'];
   const body = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -236,6 +244,11 @@ function Chat({ focus }: { focus: string | null }) {
   }, [log.length, busy, focus]);
   return (
     <>
+      {headerSlot && createPortal(
+        <button type="button" onClick={startNew} disabled={!canNew} aria-label="새 채팅 시작" title="지금 대화를 비우고 새로 시작합니다. 이전 대화는 채팅 기록에 남습니다."
+          className="inline-flex h-9 items-center gap-1 rounded-full border border-white/25 px-3 text-[12px] font-bold text-[color:var(--ma-panel-fg)] hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color:var(--ma-lime)] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent">
+          <Icon d={['M12 5v14M5 12h14']} size={15} w={2.4} />새 채팅
+        </button>, headerSlot)}
       <div ref={body} className="ma-body text-[14px]" role="tabpanel">
         <div className="ma-pad" aria-live="polite">
           <p className="text-[11px] text-slate-500">{backendChatEnabled() ? '외부 LLM(Claude)이 사내 문서와 정해진 운영 조회 결과로 답합니다. 알람 카드·점검 순서 같은 안전 답은 채팅에서는 AI에 보내지 않고 문서 그대로 보입니다. 알람 카드 화면에서는 문서 원문이 기준이고, 비서가 쉽게 풀어 쓴 문장이 카드 아래에 참고용으로 따로 붙을 수 있으며 그때 점검 순서 문장이 외부로 전송됩니다. 질문과 문서 조각이 외부로 전송됩니다(지금은 가상 데이터).' : '규칙 답 — 외부 LLM(비서) 연결을 켜지 않아 프로그램 숫자와 사내 문서 절을 그대로 보입니다.'} 지금 화면·고른 설비({selected ? MACHINES[selected].name : '없음'})가 질문 배경으로 갑니다.</p>
@@ -248,7 +261,7 @@ function Chat({ focus }: { focus: string | null }) {
         <div className="mb-2 flex flex-wrap gap-1">{ex.map((x) => <button key={x} type="button" disabled={busy} onClick={() => send(x)} className="h-9 rounded-full border border-slate-300 px-3 text-[12px]">{x}</button>)}</div>
         <div className="ma-compose-box">
           <label className="ma-sr" htmlFor="ma-input">이브에게 질문</label>
-          <input id="ma-input" className="ma-input" autoFocus autoComplete="off" value={q} onChange={(e) => setQ(e.target.value)} placeholder="질문 (예: 992 알람 점검 순서)" />
+          <input id="ma-input" ref={input} className="ma-input" autoFocus autoComplete="off" value={q} onChange={(e) => setQ(e.target.value)} placeholder="질문 (예: 992 알람 점검 순서)" />
           <button type="submit" className="ma-send" disabled={busy} aria-label="보내기"><Icon d={['M12 19V5M5 12l7-7 7 7']} w={2.4} /></button>
         </div>
       </form>
@@ -274,7 +287,7 @@ export function Spark({ v, w = 80, h = 18 }: { v: number[]; w?: number; h?: numb
 function ChatLog({ onOpen }: { onOpen: (at: string) => void }) {
   const { user } = useApp();
   const [log] = useLocal<ChatRow[]>(`chat:${user.id}`, []);
-  const keep = log.filter((x) => Date.parse(x.at) > SIM.now() - 30 * 864e5).reverse();
+  const keep = realRows(log).filter((x) => Date.parse(x.at) > SIM.now() - 30 * 864e5).reverse();
   return (
     <div className="ma-history">
       <p className="ma-history-group">내 채팅 기록 — 30일 보관 · 누르면 채팅에서 다시 엶</p>
