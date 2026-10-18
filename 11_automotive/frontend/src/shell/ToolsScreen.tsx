@@ -1,58 +1,137 @@
 'use client';
 // SCR-22 공구 수명 — OP-30 VF-2 공구 T01~T05. 사용률 = 누적 ÷ 한도, 90% 이상 ▲. 남은 수명 = 100 − 사용률, 남은 부품 수 = (한도 − 누적) ÷ 부품당 사용량.
-// [공구 교체 기록] = API-TOOL-02 → 시뮬레이터 record_tool_change (사용량 0, 준비 3~8분, 재고 차감).
+// [공구 교체] = API-TOOL-02 → 시뮬레이터 record_tool_change (사용량 0, 준비 3~8분, 재고 차감).
+// 화면 구조 (사용자 시안 2026-10-16): 왼쪽 공구 목록(전체/VF2-01/VF2-02) · 오른쪽 고른 공구 상세(원 그래프·누적/한도·교체 이력). 전체 = 두 설비 교체 이력만.
 import { useState } from 'react';
-import { BTN, CARD, PAGE, useApp } from './ctx';
-import { MASTERS } from './data';
+import { PAGE, useApp } from './ctx';
+import { MASTERS, STATE_VIEW, stateOf } from './data';
 import { api, hm, md, useFetch } from './live';
 import { userName } from './model';
 import { ConfirmBox } from './Safety';
 
 type R = Record<string, any>;
+const LIMIT_PCT = 90; // 공구 수명 한도 (교체 준비 기준)
+const EQS = ['VF2-01', 'VF2-02'] as const;
+// 교체 사유 코드 → 한글
+const reasonKo = (r: string) => (r === 'LIFE_90' ? '수명 90% 도달' : r.startsWith('ALARM_') ? `알람 ${r.slice(6)}` : r === 'OTHER' ? '기타' : r || '—');
+const box = 'rounded-2xl border border-slate-300 bg-white p-5';
 
 export function ToolsScreen() {
-  const { key, twin, role, user, back, toast, alerts, reloadInv } = useApp();
-  const [eq, setEq] = useState<string>(key === 'VF2-02' ? 'VF2-02' : 'VF2-01');
+  const { key, twin, role, user, toast, alerts, reloadInv } = useApp();
+  const [eq, setEq] = useState<string>(key === 'VF2-01' || key === 'VF2-02' ? key : '전체');
+  const [selId, setSelId] = useState<string | null>(null);
   const f = useFetch<{ tools: R[]; changes_today: R[]; past_changes: R[] }>('tools', 8000);
   const [confirm, setConfirm] = useState<string | null>(null);
   const types = MASTERS.tool_types as R[], items = MASTERS.items as R[];
-  const tools = (twin?.equipment[eq as 'VF2-01'].tools ?? f.data?.tools.filter((t) => t.equipment_id === eq) ?? []) as R[];
-  const al = alerts.filter((a) => a.machine === (eq === 'VF2-01' ? 'vf1' : 'vf2') && (a.code === '362' || a.code === '174') && !a.cleared);
-  const changes = [...(f.data?.changes_today ?? []), ...[...(f.data?.past_changes ?? [])].reverse()].filter((c) => c.tool_id.startsWith(eq)).slice(0, 15);
+  const toolsOf = (e: string) => (twin?.equipment[e as 'VF2-01'].tools ?? f.data?.tools.filter((t) => t.equipment_id === e) ?? []) as R[];
+  const all = EQS.flatMap(toolsOf);
+  const list = (eq === '전체' ? all : toolsOf(eq)).slice().sort((a, b) => b.usage_pct - a.usage_pct);
+  const sel = eq === '전체' ? null : list.find((t) => t.tool_id === selId) ?? list[0] ?? null;
+  const nameOf = (t: R) => items.find((x) => x.item_no === t.item_no)?.item_name ?? '';
+  // 최신이 위로. 시연 기준일(10/1)까지만 보여 줌 — 10/2 이후는 시연이 밤새 흘러 생긴 기록 (사용자 요청 2026-10-16)
+  const changesAll = [...(f.data?.changes_today ?? []), ...(f.data?.past_changes ?? [])]
+    .filter((c) => String(c.changed_at) < '2026-10-02').sort((a, b) => String(b.changed_at).localeCompare(String(a.changed_at)));
+  const changes = (sel ? changesAll.filter((c) => c.tool_id === sel.tool_id) : changesAll).slice(0, 30);
   const canChange = role === 'OPR' || role === 'MNT';
 
-  return (
-    <div className={PAGE}>
-      <div className={CARD}>
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-[19px] font-bold">공구 수명</h2>
-          <div className="flex gap-1">{['VF2-01', 'VF2-02'].map((e) => <button key={e} onClick={() => setEq(e)} className={`${BTN} ${eq === e ? '!border-[#0f9fbd] !bg-[#e8f6fa]' : ''}`}>{e}</button>)}<button onClick={back} className={BTN}>닫기</button></div>
-        </div>
-        <table className="mt-3 w-full text-left text-[14px]">
-          <thead className="text-slate-500"><tr>{['공구', '단위', '누적 / 한도', '사용률', '알람', '남은 수명', ''].map((h) => <th key={h} className="pr-2 font-semibold">{h}</th>)}</tr></thead>
-          <tbody>{tools.map((t) => {
-            const ty = types.find((x) => x.item_no === t.item_no), it = items.find((x) => x.item_no === t.item_no);
-            const unit = ty?.usage_unit === 'HOLES' ? '구멍 수' : '이송 시간 분', tag = ty?.limit_basis?.startsWith('[참고]') ? '[참고]' : '[가상]';
-            const a = al.find((x) => (x.code === '362' || x.code === '174'));
+  const pickEq = (e: string) => { setEq(e); setSelId(null); };
+  const st = sel ? STATE_VIEW[stateOf(twin?.equipment[sel.equipment_id as 'VF2-01'])] : null;
+  const al = sel && sel.tool_no === 'T05' ? alerts.find((a) => a.machine === (sel.equipment_id === 'VF2-01' ? 'vf1' : 'vf2') && (a.code === '362' || a.code === '174') && !a.cleared) : undefined;
+  const unitOf = (t: R) => (types.find((x) => x.item_no === t.item_no)?.usage_unit === 'HOLES' ? '구멍' : '분');
+  const unit = sel ? unitOf(sel) : '분';
+
+  const history = (
+    <section className={box}>
+      <h3 className="flex items-center gap-2 text-[17px] font-bold"><span className="h-2.5 w-2.5 rounded-full bg-[#1f5fc4]" />교체 이력 — {sel ? `${sel.equipment_id}  ${sel.tool_no}` : EQS.join(' · ')}</h3>
+      {changes.length === 0 ? <p className="mt-3 text-[14px] text-slate-500">교체 기록 없음</p> : (
+        <table className="mt-3 w-full text-left text-[15px]">
+          <thead className="border-y border-slate-200 text-[13px] text-slate-500"><tr>{['교체 시각', ...(sel ? [] : ['공구']), '교체 시 사용량 / 한도', '교체 사유', '교체자'].map((h) => <th key={h} className="py-2 pr-6 font-semibold">{h}</th>)}</tr></thead>
+          <tbody className="divide-y divide-slate-100">{changes.map((c, i) => {
+            const t = all.find((x) => x.tool_id === c.tool_id), lim = t?.limit, used = Math.round(Number(c.cum_before));
+            const u = t ? unitOf(t) : '분';
             return (
-              <tr key={t.tool_id} className="border-t border-slate-100">
-                <td className="pr-2 font-semibold">{t.tool_no} {it?.item_name}</td><td className="pr-2">{unit}</td><td className="pr-2">{Math.round(t.cum)} / {t.limit} {tag}</td>
-                <td className="pr-2"><div className="flex items-center gap-2"><div className="h-3 w-[120px] overflow-hidden rounded bg-slate-200"><div className="h-full" style={{ width: `${Math.min(100, t.usage_pct)}%`, background: t.warn ? '#f0a500' : '#8a97a4' }} /></div><span className={t.warn ? 'font-bold text-[#9a6200]' : ''}>{t.usage_pct}%{t.warn ? ' ▲ 교체 준비' : ''}</span></div></td>
-                <td className="pr-2">{a && t.tool_no === 'T05' ? `${a.code === '362' ? '⚠' : '▲'} ${a.code}` : '—'}</td>
-                <td className="pr-2">{Math.max(0, Math.round((100 - t.usage_pct) * 10) / 10)}% (부품 {t.left_parts ?? '—'}개)</td>
-                <td>{canChange && <button onClick={() => setConfirm(t.tool_id)} className="h-10 rounded border border-slate-300 px-2 text-[13px] font-semibold">공구 교체 기록</button>}</td>
+              <tr key={i}>
+                <td className="py-2.5 pr-6 font-mono">{md(c.changed_at)} {hm(c.changed_at)}</td>
+                {!sel && <td className="py-2.5 pr-6 font-mono font-semibold">{c.tool_id}</td>}
+                <td className="py-2.5 pr-6"><b className="font-mono">{used} / {lim ?? '—'}</b> {u}{lim ? <span className="text-slate-500"> ({Math.round((used / lim) * 100)}%)</span> : null}</td>
+                <td className="py-2.5 pr-6">{reasonKo(String(c.change_reason ?? ''))}</td>
+                <td className="py-2.5 text-slate-600">{userName(c.changed_by)}</td>
               </tr>);
           })}</tbody>
         </table>
-        <p className="mt-1 text-[12px] text-slate-500">"공구 수명 N%" = 사용률. 남은 수명은 계산식 값 (예측 모델 아님, 2026-10-14). OPR은 현장 태블릿으로 교체 기록.</p>
-        <section className="mt-3 border-t border-slate-200 pt-3 text-[13px]">
-          <h3 className="mb-1 text-[14px] font-bold text-slate-500">교체 이력 (오늘 + 9월)</h3>
-          <ul>{changes.map((c, i) => <li key={i}>{md(c.changed_at)} {hm(c.changed_at)} · {c.tool_id} · 교체 전 {Math.round(Number(c.cum_before))} · {c.change_reason} · {userName(c.changed_by)}</li>)}</ul>
+      )}
+    </section>
+  );
+
+  return (
+    <div className={PAGE}>
+      <div className="mx-auto grid max-w-[1400px] grid-cols-[minmax(320px,0.9fr)_1.6fr] items-start gap-4">
+        {/* 왼쪽: 공구 목록 */}
+        <section className={box}>
+          <h2 className="flex items-center gap-2 text-[19px] font-bold"><span className="h-2.5 w-2.5 rounded-sm bg-[#1f5fc4]" />공구 — OP-30 {EQS.join(' · ')}</h2>
+          <div className="mt-4 grid grid-cols-3 gap-2">{['전체', ...EQS].map((e) => (
+            <button key={e} onClick={() => pickEq(e)} className={`h-12 rounded-lg border text-[15px] font-bold ${eq === e ? 'border-[#1f5fc4] bg-[#1f5fc4] text-white shadow' : 'border-slate-300 bg-white text-[#1f5fc4]'}`}>{e}{e === '전체' ? ` ${all.length}` : ''}</button>))}
+          </div>
+          <p className="mt-3 text-right text-[13px] text-slate-500"><span className="mr-1 inline-block h-3 w-[2px] translate-y-0.5 bg-[#26303a]" />교체 준비 기준 = 한도의 {LIMIT_PCT}%</p>
+          <ul className="mt-2 flex flex-col gap-2">{list.map((t) => {
+            const on = sel?.tool_id === t.tool_id;
+            return (
+              <li key={t.tool_id}>
+                <button onClick={() => { if (eq === '전체') setEq(t.equipment_id); setSelId(t.tool_id); }} className={`w-full rounded-lg border px-4 py-3 text-left ${on ? 'border-2 border-[#1f5fc4] bg-[#f3f6ff]' : 'border-slate-200 bg-white'}`}>
+                  <div className="flex items-center gap-3 text-[15px]">
+                    {t.warn && <span className="text-[#d39a00]">▲</span>}<b>{t.equipment_id}</b><span className="min-w-0 flex-1 truncate">{t.tool_no} {nameOf(t)}</span>
+                    {t.limit != null && <span className="shrink-0 whitespace-nowrap font-mono text-[13px] text-slate-500">{Math.round(t.cum)} / {t.limit}{unitOf(t)}</span>}<b className="font-mono">{t.usage_pct}%</b>
+                  </div>
+                  <div className="relative mt-2 h-2.5 rounded-full bg-slate-200">
+                    <div className="h-full rounded-full" style={{ width: `${Math.min(100, t.usage_pct)}%`, background: t.warn ? '#e0b000' : '#4b5a69' }} />
+                    <span className="absolute -top-1 flex h-[18px] w-[10px] -translate-x-1/2 cursor-help justify-center" style={{ left: `${LIMIT_PCT}%` }} title={t.limit != null ? `교체 준비 ${Math.round((t.limit * LIMIT_PCT) / 100)}${unitOf(t)} (한도의 ${LIMIT_PCT}%)` : undefined}><span className="h-full w-[2px] bg-[#26303a]" /></span>
+                  </div>
+                </button>
+              </li>);
+          })}</ul>
+          {!canChange && <p className="mt-3 text-[13px] text-slate-500">보기 전용 (공구 교체는 작업자·보전 담당자)</p>}
         </section>
-        {!canChange && <p className="mt-2 text-[14px] text-slate-500">보기 전용 (교체 기록은 작업자·보전 담당자)</p>}
+
+        {/* 오른쪽: 고른 공구 상세 — 전체일 때는 교체 이력만 */}
+        <div className="flex flex-col gap-4">
+          {sel && (<>
+            <section className={`${box} flex flex-wrap items-center gap-4`}>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 text-[15px] font-bold">{sel.equipment_id}{st && <span style={{ color: st.color }}>{st.icon} {st.text}</span>}{al && <span className="text-[#c62a2f]">{al.code === '362' ? '⚠' : '▲'} 알람 {al.code}</span>}</div>
+                <div className="text-[30px] font-bold leading-tight">{sel.tool_no} {nameOf(sel)}</div>
+              </div>
+              {sel.warn && <span className="rounded-full border border-[#e0b000] bg-[#fff6d6] px-4 py-1.5 text-[16px] font-bold text-[#7a5600]">▲ 교체 준비</span>}
+              {canChange && <button onClick={() => setConfirm(sel.tool_id)} className="ml-auto h-14 rounded-lg bg-[#1f5fc4] px-8 text-[18px] font-bold text-white shadow">공구 교체</button>}
+            </section>
+            <div className="grid grid-cols-[1fr_1.3fr] gap-4">
+              <section className={`${box} flex items-center justify-center`}><Ring pct={sel.usage_pct} warn={sel.warn} /></section>
+              <section className={`${box} flex flex-col justify-center`}>
+                <div className="text-[15px] text-slate-500">누적 / 한도</div>
+                <div className="mt-1 font-mono text-[44px] font-semibold">{Math.round(sel.cum)} <span className="mx-2">/</span> {sel.limit} <span className="font-sans text-[18px]">{unit}</span></div>
+                <div className="mt-2 text-[14px] text-slate-500">남은 수명 {Math.max(0, Math.round((100 - sel.usage_pct) * 10) / 10)}% · 부품 {sel.left_parts ?? '—'}개</div>
+              </section>
+            </div>
+          </>)}
+          {history}
+        </div>
       </div>
-      {confirm && <ConfirmBox title={`${confirm} 공구 교체를 기록할까요?`} okLabel="교체 기록" body="사용률이 0%가 되고 공구 재고가 차감됩니다 (페이스밀 인서트는 5개). 설비는 3~8분 준비(SETUP)입니다."
-        onOk={async () => { const t = confirm; setConfirm(null); try { await api(`tools/${t}/change`, { role, user_id: user.id }); toast(`${t} 교체 기록 — 사용률 0%`); f.reload(); reloadInv(); } catch (e) { toast((e as Error).message); } }} onCancel={() => setConfirm(null)} />}
+      {confirm && <ConfirmBox title={`${confirm} 공구 교체를 기록할까요?`} okLabel="공구 교체" body="사용률이 0%가 되고 공구 재고가 차감됩니다 (페이스밀 인서트는 5개). 설비는 3~8분 준비(SETUP)입니다."
+        onOk={async () => { const t = confirm; setConfirm(null); try { await api(`tools/${t}/change`, { role, user_id: user.id }); toast(`${t} 공구 교체 — 사용률 0%`); f.reload(); reloadInv(); } catch (e) { toast((e as Error).message); } }} onCancel={() => setConfirm(null)} />}
     </div>
+  );
+}
+
+// 공구 수명 원 그래프 — 한도(90%) 눈금 표시
+function Ring({ pct, warn }: { pct: number; warn: boolean }) {
+  const r = 88, c = 2 * Math.PI * r, p = Math.min(100, Math.max(0, pct)) / 100;
+  const a = (LIMIT_PCT / 100) * 2 * Math.PI - Math.PI / 2, x1 = 110 + Math.cos(a) * 70, y1 = 110 + Math.sin(a) * 70, x2 = 110 + Math.cos(a) * 106, y2 = 110 + Math.sin(a) * 106;
+  return (
+    <svg viewBox="0 0 220 220" className="h-[220px] w-[220px]" role="img" aria-label={`공구 수명 ${pct}%`}>
+      <circle cx="110" cy="110" r={r} fill="none" stroke="#e5e8ee" strokeWidth="20" />
+      <circle cx="110" cy="110" r={r} fill="none" stroke={warn ? '#e0b000' : '#4b5a69'} strokeWidth="20" strokeDasharray={`${p * c} ${c}`} transform="rotate(-90 110 110)" />
+      <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#1c2530" strokeWidth="3" />
+      <text x="110" y="118" textAnchor="middle" fontSize="44" fontWeight="800" fill="#1c2530">{pct}%</text>
+      <text x="110" y="146" textAnchor="middle" fontSize="15" fill="#5d6b79">공구 수명</text>
+    </svg>
   );
 }

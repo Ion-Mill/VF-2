@@ -18,6 +18,7 @@ export default function StopsScreen() {
   const [draft, setDraft] = useState<Record<string, string>>({});
   const [pick, setPick] = useState<Set<string>>(new Set());
   const [confirm, setConfirm] = useState(false);
+  const [open, setOpen] = useState<Set<string>>(new Set());
   const f = useFetch<{ downtimes: Dt[] }>(connected ? 'downtimes' : null, 5000);
   const canEdit = role === 'OPR' || role === 'MNT';
   const rows = (f.data?.downtimes ?? []).map((d) => {
@@ -28,6 +29,10 @@ export default function StopsScreen() {
   }).filter((r) => (!onlyOpen || !r.confirmed) && (!machine || r.equipment_id === machine)).sort((a, b) => (a.start_at < b.start_at ? 1 : -1));
   const empty = rows.filter((r) => !r.reason && !draft[r.k]).length;
   const groups = Array.from(new Set(REASONS.map((r) => r.group)));
+  // 같은 추천 사유끼리 한 묶음 (사용자 요청 2026-10-16) — 순서는 가장 최근 줄이 있는 묶음부터
+  const bundles = new Map<string, typeof rows>();
+  rows.forEach((r) => bundles.set(r.sug || '', [...(bundles.get(r.sug || '') ?? []), r]));
+  const toggle = (k: string) => setOpen((o) => { const n = new Set(o); if (n.has(k)) n.delete(k); else n.add(k); return n; });
 
   return (
     <div className={PAGE}>
@@ -43,13 +48,33 @@ export default function StopsScreen() {
         </div>
         {!f.data ? <p className="mt-4 text-slate-500">불러오는 중…</p> : rows.length === 0 ? <p className="mt-4 text-slate-500">미확정 정지 구간이 없습니다</p> : (
           <table className="mt-3 w-full text-left text-[14px]">
-            <thead className="text-slate-500"><tr>{['', '설비', '구간', '길이', '상태', '사유 (입력)', '추천 (시뮬레이터·규칙)', '입력자', ''].map((h, i) => <th key={i} className="pr-2 font-semibold">{h}</th>)}</tr></thead>
-            <tbody>
-              {rows.map((r) => {
+            {[...bundles].map(([sg, rs]) => {
+              const nm = REASONS.find((x) => x.code === sg)?.name ?? '';
+              const t0 = rs[rs.length - 1].start_at, same = rs.every((r) => hm(r.start_at) === hm(t0) && md(r.start_at) === md(t0));
+              const machines = new Set(rs.map((r) => r.equipment_id)).size;
+              const todo = rs.filter((r) => !r.confirmed && (draft[r.k] ?? r.reason) !== sg);
+              const pickable = rs.filter((r) => !r.confirmed && r.reason);
+              const isOpen = open.has(sg) || rs.length === 1;
+              return (
+            <tbody key={sg || 'none'} className="border-t-2 border-slate-200">
+              {rs.length > 1 && (
+                <tr className="cursor-pointer bg-slate-50" onClick={() => toggle(sg)}>
+                  <td className="py-2 pl-1 text-[16px] text-slate-500">{isOpen ? '▾' : '▸'}</td>
+                  <td colSpan={6} className="py-2 pr-2 text-[15px]">
+                    <b>{same ? `${hm(t0)} ` : ''}{sg ? `${sg} ${nm}` : '추천 없음'}</b>
+                    <span className="ml-2 text-slate-600">· {same ? `${machines}대 동시 정지` : `${rs.length}건 · 설비 ${machines}대 · ${md(t0)} ${hm(t0)}~${hm(rs[0].start_at)}`}</span>                  </td>
+                  <td colSpan={2} className="py-2 pr-2 text-right" onClick={(e) => e.stopPropagation()}>
+                    {canEdit && sg && todo.length > 0 && <button onClick={() => setDraft((d) => ({ ...d, ...Object.fromEntries(todo.map((r) => [r.k, sg])) }))} className={`${BTN} !h-10`}>한 번에 받아들이기 ({todo.length})</button>}
+                    {role === 'SUP' && pickable.length > 0 && <button onClick={() => setPick((p) => { const n = new Set(p), all = pickable.every((r) => n.has(r.k)); pickable.forEach((r) => (all ? n.delete(r.k) : n.add(r.k))); return n; })} className={`${BTN} !h-10`}>묶음 모두 고르기 ({pickable.length})</button>}
+                  </td>
+                </tr>)}
+              {isOpen && (
+                <tr className="text-[12px] text-slate-500">{['', '설비', '구간', '길이', '상태', '사유 (입력)', '추천 (시뮬레이터·규칙)', '입력자', ''].map((h, i) => <th key={i} className={`pr-2 pt-2 pb-1 font-semibold ${i === 0 ? 'border-l-2 border-slate-300' : ''}`}>{h}</th>)}</tr>)}
+              {isOpen && rs.map((r) => {
                 const v = STATE_VIEW[stateOf({ state_code: r.state_code, warn_marker: false })], cur = draft[r.k] ?? r.reason;
                 return (
                   <tr key={r.k} className="border-t border-slate-100 align-middle">
-                    <td className="py-1"><input type="checkbox" className="h-5 w-5" aria-label="확정할 줄 고르기" disabled={role !== 'SUP' || r.confirmed || !r.reason} checked={pick.has(r.k)} onChange={() => setPick((p) => { const n = new Set(p); if (n.has(r.k)) n.delete(r.k); else n.add(r.k); return n; })} /></td>
+                    <td className="border-l-2 border-slate-300 py-1 pl-3"><input type="checkbox" className="h-5 w-5" aria-label="확정할 줄 고르기" disabled={role !== 'SUP' || r.confirmed || !r.reason} checked={pick.has(r.k)} onChange={() => setPick((p) => { const n = new Set(p); if (n.has(r.k)) n.delete(r.k); else n.add(r.k); return n; })} /></td>
                     <td className="pr-2 font-semibold">{r.equipment_id}</td>
                     <td className="pr-2">{md(r.start_at)} {hm(r.start_at)}~{r.end_at ? hm(r.end_at) : '진행 중'}</td>
                     <td className="pr-2">{r.minutes < 1 ? '1분 미만' : `${r.minutes}분`}{r.state_code === 'IDLE' && r.minutes < 5 ? ' (순간 정지)' : ''}</td>
@@ -67,7 +92,7 @@ export default function StopsScreen() {
                   </tr>
                 );
               })}
-            </tbody>
+            </tbody>); })}
           </table>
         )}
         <p className="mt-3 text-[12px] text-slate-500">사유 코드: {groups.map((g) => `${g} ${REASONS.filter((x) => x.group === g).map((x) => x.code).join('·')}`).join(' / ')} (DOC-07 §5.1). 확정한 사유는 교대 보고서 필수 정지 칸에 쓰입니다.</p>

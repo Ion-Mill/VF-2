@@ -67,3 +67,33 @@ body{font-family:'Pretendard Variable',Pretendard,system-ui,sans-serif;}
 /* 스크롤바 색은 테마에 맞춤 (페이지구조 v3 공통 규칙) */
 * { scrollbar-width: thin; scrollbar-color: #c3cad3 transparent; }
 .ma-panel * { scrollbar-color: rgba(255, 255, 255, 0.25) transparent; }
+
+/* ===== 실버 필 테마 (2026-10-16 사용자 시안 3a) — 밝은 회색 바탕 · 실버 그라데이션 컨테이너 · 흰색 알약 선택. 3D 장면·이브(챗봇)는 그대로 ===== */
+html,body{background:#f2f3f5;}
+.bg-\[\#e9ecef\],.bg-\[\#eef1f4\]{background:transparent!important;}
+/* 컨테이너 = 실버 그라데이션 */
+.bg-white{background-color:#eeeff1!important;background-image:linear-gradient(180deg,#f8f8f9 0%,#ececee 55%,#e3e4e7 100%)!important;border-color:#dcdde1!important;}
+header.bg-white,nav.bg-white,footer.bg-white,.stage-card{box-shadow:0 1px 0 #fff inset,0 -1px 0 rgba(0,0,0,.04) inset,0 2px 8px rgba(60,60,70,.06)!important;}
+/* 내용 카드도 실버 그라데이션, 팝업은 흰색 */
+section.bg-white{background-image:linear-gradient(180deg,#fdfdfd 0%,#f1f2f4 100%)!important;box-shadow:0 1px 0 #fff inset,0 2px 8px rgba(60,60,70,.06)!important;}
+.rounded-xl.border.bg-white:not(section),.rounded-lg.border.bg-white:not(section){background-image:none!important;background-color:#ffffff!important;box-shadow:0 8px 24px rgba(60,60,70,.14)!important;}
+/* 버튼 = 실버 알약 */
+button.bg-white{background-image:linear-gradient(180deg,#fafafa,#e8e9ec)!important;border-color:#d8d9de!important;box-shadow:0 1px 0 #fff inset,0 1px 2px rgba(60,60,70,.1);}
+header button.bg-white{border-radius:9999px!important;}
+button.bg-white:hover{background-image:linear-gradient(180deg,#ffffff,#f1f2f4)!important;}
+/* 선택 = 흰색 알약 (왼쪽 메뉴) */
+nav .bg-\[\#1c2530\]{background:#ffffff!important;color:#1c2530!important;border-radius:9999px!important;box-shadow:0 2px 6px rgba(40,40,50,.14),0 1px 0 #fff inset!important;}
+nav .bg-\[\#1c2530\] span{display:none;}
+/* 그 밖의 진한 키 = 진회색 */
+.bg-\[\#1c2530\]{background:linear-gradient(180deg,#4a5260,#2b313b)!important;}
+/* 연한 선택색·알약 */
+.bg-\[\#e8f6fa\]{background:#ffffff!important;color:#1c2530!important;box-shadow:0 1px 4px rgba(40,40,50,.12);}
+.bg-\[\#e6f6fa\]{background:#e8eefb!important;color:#3b5bb8!important;}
+/* 수치 타일·입력 */
+.bg-slate-50,.bg-slate-100,.bg-\[\#f4f6f8\]{background:#f4f4f6!important;box-shadow:0 0 0 1px #e6e7ea inset;}
+.bg-slate-200{background:#e2e3e7!important;}
+.border-slate-300:not(.ma-panel *),.border-slate-200:not(.ma-panel *){border-color:#dcdde1!important;}
+
+/* 다시 보기 카드: 가공 = 흐르는 빛 (2026-10-17) */
+@keyframes rpSheen{0%{transform:translateX(-150%) rotate(20deg)}100%{transform:translateX(450%) rotate(20deg)}}
+.rp-sheen{animation:rpSheen 3.2s ease-in-out infinite}
