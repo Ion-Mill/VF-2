@@ -45,7 +45,15 @@ def cfg(monkeypatch, safety="1", keep="1", expand="1") -> Settings:
 
 
 CORPUS = load_corpus()
-SECTIONS = {(c.doc_id, c.section): c for c in CORPUS}
+def key_of(c) -> str:
+    """조각 키: 절 번호, 3,500자 넘어 쪼개진 절은 "3.6:2"처럼 뒤에 순번 (chunk_id에서 문서 번호를 뺀 것)."""
+    return c.chunk_id.split(":", 1)[1]
+
+
+# 점검표의 정답 키는 절 번호("3.6" = 그 절의 모든 조각) 또는 조각 키("3.6:2" = 그 조각만)
+SECTIONS = {(c.doc_id, c.section): c for c in CORPUS}                   # 절 키 -> (쪼개졌으면 첫 조각)
+KEYS = {(c.doc_id, key_of(c)): c for c in CORPUS}                      # 조각 키 -> 조각
+VALID = {**SECTIONS, **KEYS}
 DOC_TABLES = sorted(p.stem for p in QA_DIR.glob("DOC-*.json"))
 
 
@@ -65,9 +73,9 @@ def test_table_items_are_complete_and_point_at_real_sections(doc):
     assert items
     for it in items:
         assert it["q"].strip() and it["doc"] == doc and it["sec"].strip()
-        assert (doc, it["sec"]) in SECTIONS, f"{doc} §{it['sec']} 조각이 문서에 없다 (문서가 바뀌었나?): {it['q']}"
+        assert (doc, it["sec"]) in VALID, f"{doc} §{it['sec']} 조각이 문서에 없다 (문서가 바뀌었나?): {it['q']}"
         for a in it.get("also", []):
-            assert (doc, a) in SECTIONS, f"{doc} also §{a} 조각이 문서에 없다: {it['q']}"
+            assert (doc, a) in VALID, f"{doc} also §{a} 조각이 문서에 없다: {it['q']}"
             assert a != it["sec"]
 
 
@@ -80,7 +88,7 @@ def test_no_duplicate_questions(doc):
 @pytest.mark.parametrize("doc", DOC_TABLES)
 def test_every_chunk_of_the_document_has_exactly_three_questions(doc):
     """기획 4장 2단계: 조각마다 질문 3개. 문서에 절이 늘면 이 시험이 점검표를 더하라고 알려 준다."""
-    want = sorted(c.section for c in CORPUS if c.doc_id == doc)
+    want = sorted(key_of(c) for c in CORPUS if c.doc_id == doc)            # 쪼개진 절은 조각마다 3개
     got = [it["sec"] for it in DR.load_items(doc)]
     assert sorted(set(got)) == want
     assert all(got.count(s) == 3 for s in want)
@@ -90,7 +98,7 @@ def test_every_chunk_of_the_document_has_exactly_three_questions(doc):
 def test_questions_do_not_copy_the_section_title(doc):
     """제목을 그대로 베끼면 현장 말을 잰 게 아니다 (4글자 이상 제목만 본다 — "매일"·"필터" 같은 짧은 제목은 현장 말과 같다)."""
     for it in DR.load_items(doc):
-        t = _norm(SECTIONS[(doc, it["sec"])].title)
+        t = _norm(VALID[(doc, it["sec"])].title)
         if len(t) >= 4:
             assert t not in _norm(it["q"]), f"제목을 베꼈다: {it['q']} / {t}"
 
@@ -109,6 +117,44 @@ def test_the_repo_has_no_sealed_holdout_file_and_notes_say_so():
     for doc in DOC_TABLES:
         note = json.loads((QA_DIR / f"{doc}.json").read_text(encoding="utf-8")).get("note", "")
         assert "봉인" in note
+
+
+# ------------------------------------------------------------------ 조각 키 (쪼개진 절)
+SPLIT = [c for c in CORPUS if c.doc_id == "DOC-06" and c.chunk_id.count(":") == 2]
+
+
+def test_split_sections_have_part_keys_and_unsplit_sections_keep_the_section_number():
+    keys = {key_of(c) for c in CORPUS if c.doc_id == "DOC-06"}
+    assert {"3.6:1", "3.6:2", "6.1:1", "6.1:2", "9.1:1", "9.1:2"} <= keys and "3.6" not in keys and "4.2" in keys
+    assert {key_of(c) for c in CORPUS if c.doc_id == "DOC-04"} == {c.section for c in CORPUS if c.doc_id == "DOC-04"}   # DOC-04는 쪼개진 절이 없다 — 키가 절 번호 그대로
+
+
+def test_is_target_section_key_covers_every_part_and_part_key_only_that_part():
+    parts = [c for c in SPLIT if c.section == "3.6"]
+    assert len(parts) == 2
+    assert all(DR.is_target(c, "DOC-06", {"3.6"}) for c in parts)                  # 절 키 = 모든 조각
+    assert [DR.is_target(c, "DOC-06", {"3.6:2"}) for c in parts] == [False, True]  # 조각 키 = 그 조각만
+    assert not DR.is_target(parts[0], "DOC-05", {"3.6"})                           # 문서가 다르면 아니다
+    assert not DR.is_target(parts[0], "DOC-06", {"3.7"})
+
+
+def test_rank_of_a_part_key_is_the_rank_of_that_part_not_of_the_section():
+    q = "측정기 판정이랑 플랫폼 판정이 다르면 어느 걸 써?"
+    ids = [c.chunk_id for _, c in RS.search(q, len(CORPUS))]
+    r1, r2 = DR.rank_of(q, "DOC-06", {"3.6:1"}), DR.rank_of(q, "DOC-06", {"3.6:2"})
+    assert r1 == (ids.index("DOC-06:3.6:1") + 1 if "DOC-06:3.6:1" in ids else None)
+    assert r2 == (ids.index("DOC-06:3.6:2") + 1 if "DOC-06:3.6:2" in ids else None)
+    sec = DR.rank_of(q, "DOC-06", {"3.6"})
+    assert sec == min(x for x in (r1, r2) if x is not None)                        # 절 키는 두 조각 중 높은 쪽
+
+
+def test_reached_by_part_key_does_not_count_the_other_part(monkeypatch):
+    s = cfg(monkeypatch, safety="0", expand="0")                                    # 순위 8위 안만으로 따진다
+    q = "측정기 판정이랑 플랫폼 판정이 다르면 어느 걸 써?"
+    hits = [c.chunk_id for _, c in PURE.context(q, s.pure_topk, s)]
+    for part in ("3.6:1", "3.6:2"):
+        assert DR.reached(q, "DOC-06", {part}, s) == (f"DOC-06:{part}" in hits)
+    assert DR.reached(q, "DOC-06", {"3.6"}, s) == any(h.startswith("DOC-06:3.6") for h in hits)
 
 
 # ------------------------------------------------------------------ ② 도구가 결정적이고 부작용이 없다
