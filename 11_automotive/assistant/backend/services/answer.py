@@ -2993,6 +2993,8 @@ def pure_scope_v19(p: dict, s, question: str = "") -> str | None:
             return "신호가 설비 이름뿐인 안전 질문 — 문서 질문으로 보고 순수 길로 (PURE_SAFETY=1)"
         if s.pure_rule and question and PURE.rule_question(question, p):   # "소모품 재고는 누가 관리해?"·"홀드 걸린 로트도 내보낼 수 있어?": 운영 낱말뿐인 규칙 질문은 문서 길로 (문서에 없으면 아래에서 되돌린다)
             return PURE.RULE_WHY
+        if s.pure_fault and question and PURE.fault_question(question, p):   # "툴 수명 다 됐다고 뜨는데 예비 날이 없어. 어떻게 해?"·"멈췄어. 내가 다시 돌려도 돼?": 운영 낱말뿐인 고장 대응 절차 질문은 문서 길로 (문서에 없으면 원래 기존 길로 되돌린다)
+            return PURE.FAULT_WHY
         return None
     return "규칙이 알람 번호·설비·날짜·운영 낱말을 하나도 못 찾은 질문 (PURE_KEEP_SIGNALS=1)"
 
@@ -3045,7 +3047,7 @@ def _pure_answer_v19(question: str, p: dict, base: dict, s, memo: dict, prev: di
             SL.step("종료 사유", 결과="답 없음", 까닭="낱말 검색 결과가 없어 Claude를 부르지 않음")
         return {**base, "status": "문서에 없음", "mode": f"{mode} — 검색 결과가 없어 Claude를 부르지 않음", "retrieval": retrieval,
                 "llm_trace": traces, "conclusion": PURE_NO_DOC_CHAT_V19 if style else PURE_NO_DOC_V19}
-    got = PURE.ask(question, chunks, prev, s, ops_note=(why == PURE.RULE_WHY))
+    got = PURE.ask(question, chunks, prev, s, ops_note=(why in (PURE.RULE_WHY, PURE.FAULT_WHY)))
     traces.append({"job": PURE.JOB, "used": True, "reason": None, "tries": 1, "ms": got["ms"]})
     if got["insufficient"] and s.pure_retry and not safety_guard and why != PURE.RULE_WHY:   # PURE_RETRY=1: 첫 호출이 "조각에 답이 없다"고 했다 — 정답 조각이 상위 조각 밖(검색 9~50위)이라 못 본 것일 수 있어 더 넓게 한 번 다시 묻는다. 안전 질문·규칙 질문 경로는 제외
         wide_hits = PURE.context(question, s.pure_retry_topk, s)
@@ -3259,7 +3261,7 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
     pure_why = pure_scope_v19(p, s, question)
     if pure_why:
         memo_before = dict(memo)
-        rule_route = pure_why == PURE.RULE_WHY
+        rule_route = pure_why in (PURE.RULE_WHY, PURE.FAULT_WHY)   # 규칙 질문·고장 대응 질문: 문서에 없음/호출 실패면 원래 기존 길로 되돌린다
         ext = EXT.current()
         failed_before = len(ext.failures) if ext is not None else 0
         try:
