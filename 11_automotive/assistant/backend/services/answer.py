@@ -2993,6 +2993,8 @@ def pure_scope_v19(p: dict, s, question: str = "") -> str | None:
             return "신호가 설비 이름뿐인 안전 질문 — 문서 질문으로 보고 순수 길로 (PURE_SAFETY=1)"
         if s.pure_rule and question and PURE.rule_question(question, p):   # "소모품 재고는 누가 관리해?"·"홀드 걸린 로트도 내보낼 수 있어?": 운영 낱말뿐인 규칙 질문은 문서 길로 (문서에 없으면 아래에서 되돌린다)
             return PURE.RULE_WHY
+        if getattr(s, "pure_rule_wide", False) and question and PURE.rule_question_wide(question, p):   # PURE_RULE_WIDE=1: 규칙 낱말이 없는 규칙 질문("출하 로트 확정은 반장이 해?")도 문서 길로 — 조회 말투는 거른다 (문서에 없으면 아래에서 되돌린다)
+            return PURE.RULE_WHY
         if s.pure_fault and question and PURE.fault_question(question, p):   # "툴 수명 다 됐다고 뜨는데 예비 날이 없어. 어떻게 해?"·"멈췄어. 내가 다시 돌려도 돼?": 운영 낱말뿐인 고장 대응 절차 질문은 문서 길로 (문서에 없으면 원래 기존 길로 되돌린다)
             return PURE.FAULT_WHY
         return None
