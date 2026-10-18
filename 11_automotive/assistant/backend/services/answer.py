@@ -752,7 +752,7 @@ FU_FILL_V8 = frozenset((
     "자세히 자세하게 구체적으로 알아듣게 이해하기 단계별로 단계별 차근차근 하나씩 방금 아까 위 위에 위의 앞 앞에 앞의 이전 "
     "그 그거 그것 그걸 그거를 이거 이것 내용 답 거 것 걸 부분 얘기 글 말한 말했던 했던 나온 쓴 얘기한 좀 조금 제발 그냥 한번 요 혹시 저기").split())
 FU_GLUED_V8 = ("설명해줘", "설명해", "설명", "요약해", "정리해", "말해줘", "말해", "알려줘")   # 붙여 쓴 꼴 ("단계별로설명해")
-FU_CTRL_OK_V8 = re.compile(r"(?:방금|아까|위|앞|이전|그)\s*(?:의\s*)?(?:내용|답|말|글|설명|거|것)\S{0,2}\s*(?:좀\s*)?줄여")
+FU_CTRL_OK_V8 = re.compile(r"(?:방금|아까|위|앞|이전|그)\s*(?:의\s*)?(?:내용|답|말|글|설명|거|것)\S{0,2}\s*(?:좀\s*)?(?:(?:짧게|간단히|간단하게|간략히|간략하게)\s*)?줄여")   # "방금 내용 짧게 줄여줘"도 이어 묻기 (2026-10-18: 조작 요청으로 거절되던 말)
 
 
 def _fu_rest_v8(question: str, fill: frozenset = FU_FILL_V8, glued: tuple = FU_GLUED_V8) -> list[str]:
@@ -852,6 +852,107 @@ def _alarm_short_v10(prev: dict, base: dict, s, same: dict, fu: dict) -> dict:
     return out
 
 
+def _pure_followup_rewrite(kind: str, prev: dict, base: dict, s, same: dict, fu: dict) -> dict | None:
+    """PURE_FOLLOW_REWRITE=1: 순수 길(Claude가 쓴) 답의 "쉽게/짧게"를 **그 답의 글**에 해서 보인다 (2026-10-18).
+    옛 방식은 근거 원문 줄을 바꿔 써서 답과 무관한 글이 나왔다 → 답의 블록(첫 문장·본문·번호 목록의 머리와 항목)을 조각으로 삼아 7차 이어 묻기의 도구를 그대로 쓴다.
+    쉽게 = `FU2.rewrite_units`(숫자·영문 이름을 자리표로 가려 새로 못 만들게 + 조각별 검사) 뒤 `jobs.faith`(뜻 판정), 짧게 = `FU2.pick_short`(남길 조각을 LLM이 고르고 나머지는 뺌, 첫 문장은 항상 남김).
+    안전 낱말이 든 조각은 보내지 않고 원문 그대로, 소제목·원문 줄 블록도 그대로. 외부 Claude 요청이 아니거나, 바꿀 조각이 없거나, 검사·판정·호출 어느 하나라도 걸리면
+    None → 부른 쪽이 앞 답을 그대로 보인다 (fail closed)."""
+    if EXT.current() is None or not s.job("write") or prev.get("status") != "답변":
+        return None
+    blocks = [b for b in (prev.get("blocks") or []) if isinstance(b, dict)]
+    if not blocks:
+        return None
+    units: list[dict] = []   # 조각: 블록 번호 i, 칸 field, 목록 번호 j, 글, 그대로 둘 조각인가
+    lead_seen = False
+    for i, b in enumerate(blocks):
+        cand: list[tuple[str, int | None, str]] = []
+        if b.get("kind") in ("lead", "text") and isinstance(b.get("text"), str):
+            cand = [("text", None, b["text"])]
+        elif b.get("kind") == "ops":
+            if isinstance(b.get("head"), str):
+                cand.append(("head", None, b["head"]))
+            cand += [("items", j, x) for j, x in enumerate(b.get("items") or []) if isinstance(x, str)]
+        for field, j, txt in cand:
+            if not txt.strip():
+                continue
+            fixed = any(w in txt for w in SAFETY_WORDS)
+            if b.get("kind") == "lead" and not lead_seen:
+                lead_seen = True
+                fixed = fixed or kind == "short"   # "짧게"는 핵심 답인 첫 문장을 항상 남긴다
+            units.append({"key": (i, field, j), "text": txt, "fixed": fixed})
+    free = [u for u in units if not u["fixed"]]
+    if not free or len(" ".join(u["text"] for u in free)) > FU_MAX_CHARS:
+        return None
+    traces: list[dict] = []
+    if kind == "short":
+        if len(free) < 2:
+            return None
+        keep, tr = FU2.pick_short([u["text"] for u in free])
+        traces.append(tr)
+        if keep is None:
+            return None
+        drop = {free[k]["key"] for k in range(len(free)) if k not in keep}
+        nb: list[dict] = []
+        for i, b in enumerate(blocks):
+            if b.get("kind") == "ops":
+                items = [x for j, x in enumerate(b.get("items") or []) if (i, "items", j) not in drop]
+                head = "" if (i, "head", None) in drop else b.get("head")
+                if not items and not head:
+                    continue
+                nb.append({**b, "head": head, "items": items})
+            elif (i, "text", None) in drop:
+                continue
+            else:
+                nb.append(dict(b))
+        def _empty_section(k: int) -> bool:   # 소제목 뒤에 화면에 보이는 블록(첫 문장·본문·목록)이 없이 다음 소제목이나 끝이 오면 내용이 다 빠진 소제목 (원문 줄 블록은 글로 안 보인다)
+            nxt = next((x.get("kind") for x in nb[k + 1:] if x.get("kind") in ("section", "lead", "text", "ops")), None)
+            return nb[k].get("kind") == "section" and nxt in (None, "section")
+        nb = [b for k, b in enumerate(nb) if not _empty_section(k)]
+        nb.append({"kind": "text", "text": "(줄임: 일부를 뺐습니다 — 전체는 바로 앞 답에 있습니다)"})
+        lead_txt = FU_LEAD_V2["short"]
+    else:
+        srcs = [u["text"] for u in free]
+        new, _, tr = FU2.rewrite_units(srcs, [])
+        traces.append(tr)
+        if new is None:
+            return None
+        changed = [k for k in range(len(srcs)) if new[k] != srcs[k]]
+        if not changed:
+            return None
+        ok, ftr = jobs.faith([srcs[k] for k in changed], [new[k] for k in changed])
+        traces.append(ftr)
+        if not ok:
+            return None
+        nb = [({**b, "items": list(b.get("items") or [])} if b.get("kind") == "ops" else dict(b)) for b in blocks]
+        for u, txt in zip(free, new):
+            i, field, j = u["key"]
+            if field == "items":
+                nb[i]["items"][j] = txt
+            else:
+                nb[i][field] = txt
+        lead_txt = FU_LEAD_V2["simple"].format(extra="")
+    parts: list[str] = []
+    for b in nb:   # 화면 글이 아닌 conclusion(이어 묻기 기억·로그용): join_layout과 같은 모양으로 다시 이은 글
+        if b.get("kind") == "section" and b.get("text"):
+            parts.append(str(b["text"]) + ":")
+        elif b.get("kind") in ("lead", "text") and b.get("text"):
+            parts.append(str(b["text"]))
+        elif b.get("kind") == "ops":
+            if b.get("head"):
+                parts.append(str(b["head"]))
+            if b.get("items"):
+                parts.append(" ".join(f"{n}) {x}" for n, x in enumerate(b["items"], 1)))
+    used = [JOB_KO.get(t["job"], t["job"]) for t in traces if t["used"]]
+    out = {**base, **same, "status": "답변", "conclusion": lead_txt + " " + " ".join(parts),
+           "blocks": [{"kind": "lead", "text": lead_txt}] + nb, "llm_trace": traces,
+           "mode": f"{s.llm_label} {s.llm_model_name} ({', '.join(dict.fromkeys(used))}) + 프로그램 검사",
+           "followup": {**fu, "rewritten": True, "reason": "순수 길 답을 다시 씀" if kind != "short" else "순수 길 답을 줄임", "parts": len(free)}}
+    if FORBIDDEN.search(" ".join(str(v) for v in (out["conclusion"], out["blocks"]))):   # 원문 출처가 새면 내보내지 않는다 (D-03)
+        return None
+    return out
+
+
 def _followup_answer(kind: str, role: str, prev: dict | None, base: dict, s, memo: dict) -> dict:
     """이어 묻기 답. prev = 서버가 기억한 바로 앞 답(처음 답)의 기록. 쉽게·짧게는 바꿔 쓸 수 있는 글만 LLM이 한 번 바꿔 쓰고 한 번 검사한다.
     하나라도 실패하면(LLM 오류·시간 부족 포함) 앞 답 원문 그대로 보인다(fail closed)."""
@@ -898,8 +999,11 @@ def _followup_answer(kind: str, role: str, prev: dict | None, base: dict, s, mem
         if blocks:
             out["blocks"] = blocks
         return out
-    if prev.get("pure") and kind in ("simple", "short"):   # 순수 길 답: 옛 방식은 원문 줄을 바꿔 써서 답과 무관한 글이 나온다 → 앞 답을 그대로 (fail closed)
-        note = "이 답은 바로 앞에서 AI가 쉬운 말로 쓴 글이라 다시 바꿔 쓰지 않고 그대로 보입니다."
+    if prev.get("pure") and kind in ("simple", "short"):   # 순수 길 답: 옛 방식은 원문 줄을 바꿔 써서 답과 무관한 글이 나온다 → 그 답의 글을 다시 쓰거나(PURE_FOLLOW_REWRITE=1), 못 하면 앞 답을 그대로 (fail closed)
+        rewritten = _pure_followup_rewrite(kind, prev, base, s, same, fu) if getattr(s, "pure_follow_rewrite", False) else None
+        if rewritten is not None:
+            return rewritten
+        note ="이 답은 바로 앞에서 AI가 쉬운 말로 쓴 글이라 다시 바꿔 쓰지 않고 그대로 보입니다."
         out = {**base, **same, "status": "답변", "conclusion": note + " " + prev["conclusion"],
                "mode": "규칙 (이어 묻기 — 앞 답 그대로)", "followup": {**fu, "reason": "순수 길 답은 그대로"}}
         blocks = _same_blocks_v10(prev, s, lead=note)

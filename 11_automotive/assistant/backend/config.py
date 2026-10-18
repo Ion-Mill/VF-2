@@ -186,6 +186,8 @@ class Settings:
     # ctx_narrow: 1이면 화면 알람(alarm_key)이 있을 때 "원인·점검·먼저·안전" 낱말만으로 직전 알람에 묶지 않고, **자기 대상이 없는 질문**(알람 일반 낱말뿐 — "원인은?"·"심각도는?")만 묶는다.
     # "안전하게 자물쇠 제거 어떻게 해?"가 직전 2075 카드로 답하던 위험을 막는다(2026-10-18). 묶으면 답 맨 앞에 "N 알람 기준으로 답해요."를 밝힌다. 기본 꺼짐 = 지금 동작 그대로
     ctx_narrow: bool = False
+    # pure_follow_rewrite: 1이면 이어 묻기 "쉽게/짧게"가 순수 길(Claude가 쓴) 답의 글을 실제로 다시 쓴다(숫자·영문 이름·조건 말·길이 검사 + 뜻 판정, 안전 낱말 줄은 원문 그대로). 꺼짐·검사 실패·외부 요청 아님이면 앞 답을 그대로 보인다(지금 동작).
+    pure_follow_rewrite: bool = False
     llm_provider: str = "local"
     # 스위치 이름은 MOM_CLAUDE_* — 이 PC의 Claude Code 환경에 CLAUDE_EFFORT 같은 값이 이미 있어(2026-10-14 확인) 같은 이름을 쓰면 섞인다.
     claude_model: str = "claude-opus-5-5"
@@ -334,6 +336,7 @@ def settings() -> Settings:
         pure_rule_wide=get("PURE_RULE_WIDE", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
         pure_faultdoc=get("PURE_FAULTDOC", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
         ctx_narrow=get("CTX_NARROW", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
+        pure_follow_rewrite=get("PURE_FOLLOW_REWRITE", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
         llm_provider=provider,
         claude_model="claude-sonnet-5-5" if claude_app else get("MOM_CLAUDE_MODEL", "claude-opus-5-5").strip(),   # 앱 스위치: Sonnet 5.5 medium, 구독 로그인(cli) 고정
         claude_effort="medium" if claude_app else choice("MOM_CLAUDE_EFFORT", "low"),

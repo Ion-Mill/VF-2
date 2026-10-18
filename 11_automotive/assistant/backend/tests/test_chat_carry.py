@@ -201,3 +201,127 @@ def test_pure_route_answer_follow_up_returns_the_answer_not_rewritten_source_lin
         assert len(runner.calls) == calls                           # 이어 묻기에서 Claude를 더 부르지 않았다
     finally:
         CC.use_runner(None)
+
+
+# ---------------------------------------------------------------- ⑦ 순수 길 답의 "쉽게/짧게"를 실제로 다시 쓴다 (PURE_FOLLOW_REWRITE=1)
+import json
+import re
+from types import SimpleNamespace
+
+SONNET = "claude-sonnet-5-5"
+SAFE_LINE = "잠금·표지를 건 뒤에 작업해요."
+ITEM_A, ITEM_B, ITEM_C = "교체 주기는 3개월이에요.", "농도는 3%로 맞춰요.", "수위는 매 교대 확인해요."
+ITEM_D = "지난달에는 두 번 바꿨어요."
+FIRST_ANSWER = {"sections": [{"title": "", "text": "쿨런트는 절삭유예요.", "items": []},
+                             {"title": "보충 규칙", "text": "", "items": [ITEM_A, ITEM_B, ITEM_C, SAFE_LINE]},
+                             {"title": "알아둘 점", "text": "", "items": [ITEM_D]}],
+                "cited": ["C1"], "insufficient": False}
+
+
+class RewriteRunner:
+    """처음 질문 → 순수 길 답(구조 있는 답). 이어 묻기 → 조각 다시 쓰기("texts"+"terms"), 남길 조각 고르기("keep"), 뜻 판정(same_meaning)"""
+
+    def __init__(self, mode="good"):
+        self.mode, self.calls = mode, []
+
+    def __call__(self, cmd, stdin_text, timeout):
+        sch = json.loads(cmd[cmd.index("--json-schema") + 1])
+        props = tuple(sorted((sch.get("properties") or {}).keys()))
+        self.calls.append((props, stdin_text))
+        if "sections" in props:
+            so = FIRST_ANSWER
+        elif props == ("terms", "texts"):
+            segs = re.findall(r"^\d+\. (.*)$", stdin_text, re.M)
+            out = ["쉽게 말해, " + s for s in segs]
+            if self.mode == "bad_number":   # 자리표를 바꿔 버린다 = 숫자를 새로 만든 것 → 그 조각은 원문 그대로여야 한다
+                out = [re.sub(r"\{\{\d+\}\}", "{{9}}", s) for s in out]
+            so = {"texts": out, "terms": []}
+        elif props == ("keep",):
+            so = {"keep": ["U1"]}
+        else:
+            so = {"same_meaning": self.mode != "faith_no", "problem": "" if self.mode != "faith_no" else "시험: 뜻이 다름"}
+        res = {"type": "result", "subtype": "success", "is_error": False, "duration_ms": 100, "duration_api_ms": 80, "num_turns": 1,
+               "total_cost_usd": 0.01, "usage": {"input_tokens": 10, "output_tokens": 5, "cache_read_input_tokens": 0, "cache_creation_input_tokens": 0},
+               "modelUsage": {SONNET: {"inputTokens": 10}}, "structured_output": so}
+        return SimpleNamespace(returncode=0, stdout=json.dumps(res, ensure_ascii=False), stderr="")
+
+
+@pytest.fixture
+def pure_follow(svc, monkeypatch):
+    from backend.llm import claude_client as CC
+    from backend.tests.test_pure_expand import APP_FLAGS
+    for k, v in APP_FLAGS.items():
+        monkeypatch.setenv(k, v)
+    monkeypatch.setenv("ASSISTANT_PROVIDER", "claude")
+    monkeypatch.setenv("PURE_STYLE", "1")
+    monkeypatch.setenv("PURE_LAYOUT", "1")
+    monkeypatch.setenv("PURE_FOLLOW_REWRITE", "1")
+    yield
+    CC.use_runner(None)
+
+
+def first_then(runner, followup):
+    from backend.llm import claude_client as CC
+    CC.use_runner(runner)
+    j1 = client.post("/chat", json=body("쿨런트가 뭐야?"), headers=H).json()
+    assert "절삭유예요" in j1["answer"] and "3개월" in j1["answer"], j1          # 순수 길 구조 답
+    assert CS._prev["U01"][1].get("pure") is True and CS._prev["U01"][1].get("blocks"), "보관 기록에 순수 길 표시와 블록이 있어야 한다"
+    calls = len(runner.calls)
+    return j1, client.post("/chat", json=body(followup), headers=H).json(), calls
+
+
+@pytest.mark.own_backend
+def test_easy_follow_up_really_rewrites_and_the_safety_line_stays_verbatim(pure_follow):
+    r = RewriteRunner("good")
+    j1, j2, calls = first_then(r, "방금 내용 쉽게 설명해줘")
+    a = j2["answer"]
+    assert "쉬운 말로 다시 쓴 글입니다" in a, a
+    assert "쉽게 말해, 쿨런트는 절삭유예요." in a, a                                                      # 첫 문장도 쉬운 조각에 든다(첫 문장을 고정하는 것은 "짧게"일 때만)
+    assert "쉽게 말해, " + ITEM_A in a and "쉽게 말해, " + ITEM_B in a, a                                   # 글이 실제로 다시 쓰였고 숫자(3개월·3%)는 그대로
+    assert SAFE_LINE in a and "쉽게 말해, " + SAFE_LINE not in a, a                                       # 안전 낱말(잠금·표지)이 든 줄은 원문 그대로
+    assert all(SAFE_LINE not in c[1] for c in r.calls[calls:]), "안전 줄이 다시 쓰기 요청에 실려 나갔다"
+    assert "보충 규칙" in a and "다시 바꿔 쓰지 않고 그대로" not in a                                     # 소제목은 그대로, 옛 "그대로" 안내는 없다
+    assert [c[0] for c in r.calls[calls:]] == [("terms", "texts"), ("problem", "same_meaning")]            # 다시 쓰기 1번 + 뜻 판정 1번
+
+
+@pytest.mark.own_backend
+def test_short_follow_up_keeps_the_first_sentence_and_safety_line_and_drops_the_rest(pure_follow):
+    r = RewriteRunner("good")
+    j1, j2, calls = first_then(r, "방금 내용 짧게 줄여줘")
+    a = j2["answer"]
+    assert "짧게 줄인 글입니다" in a, a
+    assert "쿨런트는 절삭유예요." in a and ITEM_A in a and SAFE_LINE in a, a                              # 첫 문장·고른 조각·안전 줄은 남고
+    assert ITEM_B not in a and ITEM_C not in a and ITEM_D not in a, a                                      # 나머지는 빠졌다
+    assert "일부를 뺐습니다" in a and "보충 규칙" in a
+    assert "알아둘 점" not in a, a                                                                         # 내용이 다 빠진 소제목은 남기지 않는다
+    assert [c[0] for c in r.calls[calls:]] == [("keep",)]                                                   # 고르기 1번 (글은 새로 쓰지 않는다)
+
+
+@pytest.mark.own_backend
+def test_a_unit_whose_number_changed_stays_as_the_original(pure_follow):
+    j1, j2, calls = first_then(RewriteRunner("bad_number"), "방금 내용 쉽게 설명해줘")
+    a = j2["answer"]
+    assert ITEM_A in a and "쉽게 말해, " + ITEM_A not in a, a                                              # 숫자가 든 조각은 원문 그대로
+    assert "쉽게 말해, 수위는 매 교대 확인해요." in a, a                                                    # 숫자 없는 조각은 다시 쓰였다
+
+
+@pytest.mark.own_backend
+def test_meaning_check_failure_keeps_the_previous_answer_as_is(pure_follow):
+    j1, j2, calls = first_then(RewriteRunner("faith_no"), "방금 내용 쉽게 설명해줘")
+    assert "다시 바꿔 쓰지 않고 그대로" in j2["answer"] and "쉽게 말해, " not in j2["answer"], j2["answer"]
+
+
+@pytest.mark.own_backend
+def test_switch_off_keeps_the_previous_answer_and_calls_claude_no_more(pure_follow, monkeypatch):
+    monkeypatch.setenv("PURE_FOLLOW_REWRITE", "0")
+    r = RewriteRunner("good")
+    j1, j2, calls = first_then(r, "방금 내용 쉽게 설명해줘")
+    assert "다시 바꿔 쓰지 않고 그대로" in j2["answer"] and len(r.calls) == calls
+
+
+@pytest.mark.own_backend
+@pytest.mark.parametrize("q,kind", [("방금 내용 짧게 줄여줘", "short"), ("방금 내용 줄여줘", "short"), ("위 내용 간단히 줄여 줘", "short"),
+                                    ("스핀들 속도 짧게 줄여줘", None), ("이송 속도 줄여줘", None), ("그 알람 리셋해도 돼?", None)])
+def test_short_follow_up_phrase_is_not_taken_for_an_equipment_command(pure_follow, q, kind):
+    """"방금 내용 짧게 줄여줘"가 "비서는 기록·상태·설비를 바꾸지 않습니다"로 거절되던 것(조작 요청으로 오해)을 푼다. 가리키는 말이 없는 조작 말은 그대로 조작 요청이다."""
+    assert A.followup_kind_v8(q, "쿨런트는 절삭유예요.") == kind, q
