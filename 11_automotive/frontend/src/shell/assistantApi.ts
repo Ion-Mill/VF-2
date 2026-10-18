@@ -10,6 +10,10 @@
 //   토큰은 **메모리에만** 둔다 (새로고침하면 다음 질문에서 조용히 다시 받는다). 시연 비밀번호는 Login.tsx의 DEMO_PW.
 // - 실패는 명세대로 "응답 없음" — 옛 규칙 답으로 몰래 바꿔 주지 않는다 (숫자가 엇갈리지 않게).
 import { DEMO_PW } from './Login';
+import { buildAskContext } from './carry';
+import { STATUS_KO } from './assistantStatus';
+
+export { STATUS_KO };   // 상태 이름 표는 assistantStatus.ts 로 옮겼다 (carry.ts 가 읽는다). 가져다 쓰는 곳은 그대로 여기서 가져온다
 
 export interface AssistantSource { doc_no: string; doc_name: string; rev: string; section: string }
 export interface AssistantResult { answer: string; status: string; sources: AssistantSource[]; series?: undefined }   // series = 옛 규칙 답의 센서 그래프. 새 길에는 없다
@@ -20,9 +24,6 @@ export const backendChatEnabled = () => BASE !== '';
 // 한 질문을 기다리는 최대 시간: 백엔드가 비서를 기다리는 130초 + 여유 10초
 export const ASK_TIMEOUT_MS = 140_000;
 export const NO_RESPONSE_TEXT = '비서가 지금 답하지 못합니다. 잠시 후 다시 시도해 주세요';
-
-// 백엔드 상태 코드 → 화면에 보이는 말 (API명세서 AST-02: ok / 문서에 없음 / 거부 / 권한 밖 / 응답 없음). 표에 없는 값은 "응답 없음"으로 — 원문을 내보내지 않는다.
-export const STATUS_KO: Record<string, string> = { OK: '답변', NOT_IN_DOCS: '문서에 없음', OUT_OF_ROLE: '권한 밖', REFUSED: '거부', NO_RESPONSE: '응답 없음' };
 
 // 화면 이름 → UI설계서 화면 번호 (비서가 "이 화면 설명해 줘"에 쓴다). 모르는 화면은 보내지 않는다.
 export const SCREEN_CODE: Record<string, string> = {
@@ -62,12 +63,12 @@ export const forgetTokens = () => tokens.clear();
 
 const none = (): AssistantResult => ({ answer: NO_RESPONSE_TEXT, status: STATUS_KO.NO_RESPONSE, sources: [] });
 
-/** 백엔드의 비서에게 묻는다. 던지지 않는다 — 어떤 실패든 "응답 없음" 결과로 돌려준다. */
-export async function askAssistant(question: string, userId: string, screen: string | null | undefined, equipmentId?: string | null): Promise<AssistantResult> {
-  const context: Record<string, string> = {};
-  const code = screen ? SCREEN_CODE[screen] : undefined;
-  if (code) context.screen = code;
-  if (equipmentId) context.equipment_id = equipmentId;
+/**
+ * 백엔드의 비서에게 묻는다. 던지지 않는다 — 어떤 실패든 "응답 없음" 결과로 돌려준다.
+ * opts: 직전 알람 이어받기 신호(carry.ts) — alarmKey = 직전 알람 번호, newChat = 새 대화의 첫 질문. 이어받을지는 서버가 정한다.
+ */
+export async function askAssistant(question: string, userId: string, screen: string | null | undefined, equipmentId?: string | null, opts?: { alarmKey?: string | null; newChat?: boolean }): Promise<AssistantResult> {
+  const context = buildAskContext({ screenCode: screen ? SCREEN_CODE[screen] : undefined, equipmentId, alarmKey: opts?.alarmKey, newChat: opts?.newChat });
   const body = { question, context };
   try {
     let j: any;

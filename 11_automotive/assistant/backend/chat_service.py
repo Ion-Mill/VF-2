@@ -14,6 +14,8 @@ from __future__ import annotations
 import hmac
 import logging
 import os
+import threading
+import time
 from typing import Any, Literal
 
 from fastapi import Depends, FastAPI, Header
@@ -33,7 +35,7 @@ log = logging.getLogger("assistant")
 
 UNAVAILABLE_MESSAGE = "비서가 지금 답하지 못합니다. 잠시 후 다시 시도해 주세요"
 DENIED_ANSWER = "이 정보는 지금 역할로는 볼 수 없어요. 값은 알려 드리지 않습니다. 권한이 있는 담당자에게 물어봐 주세요."
-CONTEXT_KEYS = ("screen", "equipment_id", "alarm_key", "alarm_event_id")     # answer()가 보는 화면 문맥 칸 (그 밖의 칸은 버린다)
+CONTEXT_KEYS = ("screen", "equipment_id", "alarm_key", "alarm_event_id", "new_chat")     # answer()가 보는 화면 문맥 칸 (그 밖의 칸은 버린다)
 
 
 class Unavailable(Exception):
@@ -91,6 +93,40 @@ def _compose_unavailable(_, exc: CMPS.ComposeUnavailable):
     return JSONResponse(status_code=503, content={"code": "ASSISTANT_UNAVAILABLE", "message": UNAVAILABLE_MESSAGE, "detail": {"retryable": True}})
 
 
+# ---------------------------------------------------------------- 앞 답 보관 (이어 묻기, FOLLOWUP=1, 2026-10-18)
+# answer()는 FOLLOWUP=1일 때 답에 내부 칸 `_followup`(이 답의 기록)을 붙이고, 다음 질문에서 prev로 받아 "방금 내용 쉽게"·"짧게"·"다시"에 쓴다.
+# 비서 서비스가 사용자별로 바로 앞 답 하나만 PREV_TTL_S 동안 메모리에 두고 다시 넘긴다 (재시작하면 사라진다 — DB에 안 쓴다). 화면에는 보내지 않는다.
+# 화면이 새 대화의 첫 질문에 context.new_chat="1"을 실으면 보관한 것을 지운다.
+PREV_TTL_S = 1800
+PREV_MAX_USERS = 500
+_now = time.monotonic
+_prev_lock = threading.Lock()
+_prev: dict[str, tuple[float, dict]] = {}
+
+
+def _prev_take(user_id: str, new_chat: bool) -> dict | None:
+    with _prev_lock:
+        if new_chat:
+            _prev.pop(user_id, None)
+            return None
+        hit = _prev.get(user_id)
+        if hit is None:
+            return None
+        if _now() - hit[0] > PREV_TTL_S:
+            _prev.pop(user_id, None)
+            return None
+        return hit[1]
+
+
+def _prev_keep(user_id: str, rec: dict | None) -> None:
+    if rec is None:
+        return
+    with _prev_lock:
+        _prev[user_id] = (_now(), rec)
+        if len(_prev) > PREV_MAX_USERS:
+            _prev.pop(min(_prev, key=lambda k: _prev[k][0]), None)
+
+
 def _context(raw: dict[str, Any]) -> dict[str, str]:
     return {k: str(raw[k]) for k in CONTEXT_KEYS if raw.get(k) not in (None, "")}
 
@@ -111,7 +147,13 @@ def chat(req: ChatRequest) -> dict:
     try:
         # 누구를 대신해 묻는지·허용 도구는 이 요청 안에서만 (contextvars) — 허용 목록에 없는 조회 도구는 백엔드를 부르기 전에 막는다
         with BT.acting_as(req.user.user_id, req.allowed_tools), EXT.external_request(provider) as ext:   # provider가 None이면 아무것도 안 바뀐다. 끝나면 되돌린다
-            a = answer(req.question, req.user.role_code, _context(req.context))
+            ctx = _context(req.context)
+            keep_prev = C.settings().followup
+            prev = _prev_take(req.user.user_id, ctx.get("new_chat") == "1") if keep_prev else None
+            a = answer(req.question, req.user.role_code, ctx, prev=prev)
+            rec = a.pop("_followup", None)      # 화면·백엔드로 나가지 않는다
+            if keep_prev:
+                _prev_keep(req.user.user_id, rec)
             if ext is not None:
                 miss = ext.material_failure()                        # 재료를 정하는 단계의 외부 호출 실패 → 오류 (다른 LLM으로 몰래 바꾸지 않는다)
                 if miss:
