@@ -509,7 +509,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
           <span className="ml-auto whitespace-nowrap text-slate-600">알림: <b className="text-[#c62a2f]">⚠ 긴급</b> │ <b className="text-[#9a6200]">▲ 주의</b> │ ⓘ 참고</span>
         </footer>
 
-        <Eve tab={side} onClose={closeSide} brief={<Briefing />} onNotice={openNotice} bubble={bubbleText} onBubble={onBubble}
+        <Eve tab={side} onClose={closeSide} brief={<Briefing onDone={() => { setSeenBrief((s0) => ({ ...s0, [user.id]: twin?.shift.shift_id ?? '' })); closeSide(); }} />} onNotice={openNotice} bubble={bubbleText} onBubble={onBubble}
           badges={{ 알림: open.length + myNotices.filter((n) => !n.handled).length, 브리핑: briefBubble ? 1 : 0 }}
           onPick={(t) => { if (t === '브리핑') setSeenBrief((s) => ({ ...s, [user.id]: twin?.shift.shift_id ?? '' })); setSide(t); }} />
 
