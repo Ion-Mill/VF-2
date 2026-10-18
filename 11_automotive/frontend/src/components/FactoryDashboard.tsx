@@ -951,7 +951,8 @@ export default class FactoryDashboard extends React.Component<any, any> {
       pallet('w3', WPX.w3, 2400, mat.part, 0xf2a052); pallet('w4', WPX.w4, 2400, mat.part, 0xf2a052);
       pallet('fg', WPX.fg, 2400, M(0xd5e3ee, { metalness: 0.75, roughness: 0.2 }), 0x8fd3a8);
       // SOAK-01 온도 맞춤 선반 (데이터 1,219 × 457 × 1,385, CMM 앞 재공 띠) — 원본의 보라색 받침 모양으로 선반 4단
-      if (this.LY) { const S0 = this.LY.soak, sx0 = S0.x[0], sx1 = S0.x[1], sy0 = S0.y[0], sy1 = S0.y[1], sh0 = (S0.h || 1385) / 1000;
+      if (this.LY) { const S0 = this.LY.soak, sx0 = S0.x[0], sx1 = S0.x[1], sh0 = (S0.h || 1385) / 1000; let sy0 = S0.y[0], sy1 = S0.y[1];
+        if (sy1 > 1770 && sy0 < 2930) { const d = sy1 - sy0; sy1 = 1650; sy0 = 1650 - d; } // 상자 컨베이어(가운데 Y 2,350) 위에 서 있지 않게 앞쪽으로 비킴
         [[sx0, sy0], [sx1 - 40, sy0], [sx0, sy1 - 40], [sx1 - 40, sy1 - 40]].forEach(([X, Y]) => box(X, X + 40, Y, Y + 40, 0, sh0, M(0x8a84b8)));
         [0.15, 0.55, 0.95, sh0 - 0.03].forEach(h => box(sx0, sx1, sy0, sy1, h, h + 0.03, mat.lav)); }
       else { box(24500, 25200, 300, 900, 0, 0.5, mat.lav); box(24550, 25150, 350, 850, 0.5, 0.53, M(0x8a84b8)); }
@@ -1124,21 +1125,15 @@ export default class FactoryDashboard extends React.Component<any, any> {
       const isFull = (b) => b && cnt(b) >= BCAP && b.res.size === 0;
       const placeBox = (b, sp) => { b.g.position.set(sp.x, BOXY, sp.z); b.g.rotation.set(0, 0, 0); sp.box = b; sp.res = false; b.at = sp; };
       const slotW = (sp, n) => { const l = slotL(n); return V(sp.x + l.x, BY, sp.z + l.z); };
-      Object.values(SB).forEach(sp => {
-        if (sp.name === 'WH' || sp.name === 'ER') return; // 사용자 요청 2026-10-16: 창고 없앰
-        const X = Math.round(sp.x * 1000), Y = Math.round(-sp.z * 1000);
-        [-1, 1].forEach(s0 => { box(X + s0 * 490 - 60, X + s0 * 490 + 60, Y - 530, Y + 530, 0.33, 0.372, BM.stand, convG); [-480, 480].forEach(dy => box(X + s0 * 550 - 30, X + s0 * 550 + 30, Y + dy - 30, Y + dy + 30, 0, 0.33, CM.leg, convG)); });
-        box(X - 610, X + 610, Y + 490, Y + 530, 0.3, 0.372, BM.stand, convG);
-        if (sp.name === 'SH') { const sm0 = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 1.4), new THREE.MeshBasicMaterial({ color: 0x8fd3a8, transparent: true, opacity: 0.35 })); sm0.rotation.x = -Math.PI / 2; sm0.position.set(sp.x, 0.008, sp.z); convG.add(sm0); }
-      });
+      // 2026-10-18: 상자 자리 받침대(빈 레일·다리)를 없앰 — 상자는 컨베이어 벨트 위에 바로 놓임 (빈 레일이 벨트 위에 걸쳐 보였음)
       seg(Math.round(SEX * 1000) - 150, Math.round(SEX * 1000) + 150, 2880, 2950, false);
       seg(Math.round(FEX * 1000) - 150, Math.round(FEX * 1000) + 150, 2880, 2950, false);
       // 사용자 요청 2026-10-16: 지게차를 빼고 상자 받침대 사이를 컨베이어로 이음 (덮개·유리 없는 열린 벨트)
       { const BELT = M(0x2a3035, { roughness: 0.85 }), RAIL = M(0xdfe4e8, { metalness: 0.7, roughness: 0.3 });
         const xs = [SB.S, SB.E1, SB.E2, SB.FG, SB.WI, SB.WO].map(sp => sp.x), xa = Math.round((Math.min(...xs) - 0.6) * 1000), xb = Math.round((Math.max(...xs) + 0.6) * 1000), YL = Math.round(-SB.S.z * 1000);
-        box(xa, xb, YL - 520, YL + 520, 0.29, 0.33, BELT, convG); [-560, 560].forEach(d => box(xa, xb, YL + d - 25, YL + d + 25, 0.29, 0.38, RAIL, convG));
-        [SB.WI, SB.WO].forEach(sp => { const X = Math.round(sp.x * 1000), Y = Math.round(-sp.z * 1000); box(X - 520, X + 520, YL + 520, Y, 0.29, 0.33, BELT, convG); });
-        for (let x = xa; x < xb; x += 1500) [-560, 560].forEach(d => box(x - 30, x + 30, YL + d - 30, YL + d + 30, 0, 0.29, CM.leg, convG)); }
+        box(xa, xb, YL - 585, YL + 585, 0.33, 0.372, BELT, convG); [-610, 610].forEach(d => box(xa, xb, YL + d - 25, YL + d + 25, 0.372, 0.42, RAIL, convG)); // 상자(깊이 1,140) 밖으로
+        [SB.WI, SB.WO].forEach(sp => { const X = Math.round(sp.x * 1000), Y = Math.round(-sp.z * 1000); box(X - 680, X + 680, YL + 585, Y + 570, 0.33, 0.372, BELT, convG); [-720, 720].forEach(d => { box(X + d - 25, X + d + 25, YL + 635, Y + 570, 0.372, 0.42, RAIL, convG); box(X + d - 30, X + d + 30, Y + 420, Y + 480, 0, 0.33, CM.leg, convG); }); });
+        for (let x = xa; x < xb; x += 1500) [-560, 560].forEach(d => box(x - 30, x + 30, YL + d - 30, YL + d + 30, 0, 0.33, CM.leg, convG)); }
       // washer batch doors
       const DY = D3 ? D3.dyw : 0; // 세척기 앞면 Y (데이터 3,800, 원본 3,700)
       const wDoors = [SB.WI.x, SB.WO.x].map(x => {
@@ -1383,6 +1378,9 @@ export default class FactoryDashboard extends React.Component<any, any> {
       WG.visible = false; // 사용자 요청 2026-10-16: 오른쪽 창고 없앰 — 공정 라인만
       }
       const PM = { hood: M(0x9aa5af, { metalness: 0.55, roughness: 0.35 }), hole: new THREE.MeshBasicMaterial({ color: 0x0e1216 }), shut: M(0x3b4651, { metalness: 0.4, roughness: 0.4 }), lip: M(0xf2c230, { roughness: 0.5 }), lamp: new THREE.MeshBasicMaterial({ color: 0x22d36b }) };
+      // 사용자 요청 2026-10-18: 컨베이어가 설비로 들어가는 통(터널·투입구 덮개)이 시야를 가려 투명 유리로
+      const GL = (op) => new THREE.MeshStandardMaterial({ color: 0xdfe8ee, metalness: 0.1, roughness: 0.05, transparent: true, opacity: op, depthWrite: false, userData: { glass: 1 } });
+      PM.hood = GL(0.18); PM.shut = GL(0.28); PM.hole = GL(0.06);
       const ports = [];
       const ZS = 3.36;
       const inc = (c, isIn) => { const L = isIn ? c.load : (c.unload || c.load), x = isIn ? c.xi : c.xo, ze = Math.abs(L.z) - 0.07; return { x, L, ze, rise: L.y - BY, run: ze - ZS }; };
@@ -1391,9 +1389,8 @@ export default class FactoryDashboard extends React.Component<any, any> {
       const inclines = [], CSP = 0.13;
       const mkIncline = (c, isIn) => {
         const I = inc(c, isIn), len = Math.hypot(I.rise, I.run), ang = Math.atan2(I.rise, I.run);
-        const tw = Math.max(0.2, Math.min(1, (c.fr - 0.02 - ZS) / I.run));
         const along = (t0, t1) => { const tm = (t0 + t1) / 2, g = new THREE.Group(); g.position.set(I.x, BY - 0.075 - 0.012 + I.rise * tm, -(ZS + I.run * tm)); g.rotation.x = ang; convG.add(g); return { g, l: len * (t1 - t0) }; };
-        const E0 = along(0, tw), g0 = E0.g, le = E0.l;
+        const E0 = along(0, 1), g0 = E0.g, le = E0.l; // 벨트는 끝까지 (유리 터널 안에서도 보이게, 2026-10-18)
         mesh(new THREE.BoxGeometry(0.34, 0.016, le + 0.04), IB.belt, g0, 0, 0, 0);
         mesh(new THREE.BoxGeometry(0.4, 0.1, le + 0.04), IB.frame, g0, 0, -0.06, 0);
         [-0.195, 0.195].forEach(dx => mesh(new THREE.BoxGeometry(0.03, 0.12, le + 0.06), IB.side, g0, dx, 0.02, 0));
@@ -1402,7 +1399,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
         const cg = new THREE.Group(); g0.add(cg);
         for (let s = -le / 2; s <= le / 2 - 0.02; s += CSP) mesh(new THREE.BoxGeometry(0.32, 0.03, 0.012), IB.cleat, cg, 0, 0.022, s);
         cg.userData = { len: le, dir: isIn ? -1 : 1 };
-        if (tw < 1) { const E1 = along(tw, 1); mesh(new THREE.BoxGeometry(0.44, 0.3, E1.l + 0.02), IB.skirt, E1.g, 0, 0.07, 0); mesh(new THREE.BoxGeometry(0.46, 0.02, E1.l + 0.02), IB.cover, E1.g, 0, 0.225, 0); }
+        // 설비 안쪽 터널 상자는 없앰: 설비 벽·테이블을 뚫고 지나가 보였음 (2026-10-18). 안쪽은 설비 창으로 보임
         const mk = new THREE.Group(); mk.position.set(I.x + 0.24, BY - 0.13, -(ZS + 0.12)); convG.add(mk); mesh(new THREE.BoxGeometry(0.1, 0.12, 0.16), IB.motor, mk, 0, 0, 0);
         [0, 0.35].forEach(t => {
           const zA = t === 0 ? ZS + 0.05 : ZS + I.run * t; if (t > 0 && zA > c.fr - 0.3) return;
@@ -1437,6 +1434,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
         ports.push({ x, z: -(F - D) / 1000, zIn: -F / 1000, sh, y0: sh.position.y, o: 0, lampM, yTop: T + H + 0.25, lift: H + 0.01 });
       };
       Object.keys(MC).forEach(id => { if (id === 'wsh') return; const c = MC[id]; if (c.xi != null) port(c.xi, c.fr, mkIncline(c, true)); port(c.xo, c.fr, mkIncline(c, false)); });
+      convG.traverse(o => { if (o.material?.userData?.glass) o.castShadow = false; }); // 유리는 그림자 없음
       const lane = (x) => V(x, BY, LZ);
       const bufIn = (k) => [lane(xI(k)), V(xI(k), BY, BZE)];
       const bufOut = (k) => [pw(k, aO), V(xO(k), BY, BZE), lane(xO(k))];

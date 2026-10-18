@@ -6,7 +6,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { MachineId } from '@/components/types';
 import { ID_OF, LAYOUT, LEGEND, MACHINES, type Role } from './data';
 import { Ctx, DEFAULT_SETTINGS, type AppCtx, type History, type Inv, type Screen, type Settings } from './ctx';
-import { api, md, simIso, tsOf, useFetch, useLive, useLocal, usePersist, type SimEvent } from './live';
+import { api, md, SIM, simIso, tsOf, useFetch, useLive, useLocal, usePersist, type SimEvent } from './live';
 import { askGuideCard } from './assistText';
 import { ALARMS, SHIFT_NAME, USERS, homeScreen, levelOfSev, type AlertRec, type Notice, type UserRec } from './model';
 import { derive, fromEvents, fromPast, repeatOf, type RuleCtx } from './rules';
@@ -19,6 +19,7 @@ import DocBox from './DocBox';
 import FieldStrip from './FieldStrip';
 import Layout2D from './Layout2D';
 import Login from './Login';
+import Logo from './Logo';
 import Panels from './Panels';
 import Popup from './Popup';
 import SimPanel from './SimPanel';
@@ -260,6 +261,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
   const [setOpen, setSetOpen] = useState(false);
   const [acct, setAcct] = useState(false);
   const [side, setSide] = useState<EveTab | null>(null);
+  const [eveI, setEveI] = useState(0); // 3D 카드 이브 띠에서 보고 있는 소식 번호
   const closeSide = useCallback(() => setSide(null), []);
   const [source, setSource] = useState<[string, string] | null>(null);
   const [toastMsg, setToast] = useState('');
@@ -315,6 +317,10 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
   const myAck = new Set(acked[user.id] ?? []);
   const emergencies = open.filter((a) => a.level === '긴급' && !myAck.has(a.id));
   const band = open.find((a) => a.level === '긴급');
+  // 3D 카드 안 이브 띠 (사용자 요청 2026-10-18): 처리 안 된 긴급·주의를 긴급부터 — 문장은 알람 코드집(DOC-02·03)으로 만든 규칙 문장
+  const eveList = open.filter((a) => a.level !== '참고').sort((a, b) => (a.level === b.level ? b.ts - a.ts : a.level === '긴급' ? -1 : 1));
+  const eveCur = eveList.length ? eveList[eveI % eveList.length] : null;
+  const eveRgb = !eveCur ? null : eveCur.level === '긴급' ? '229,72,77' : '240,180,41';
   const docBubbles = myNotices.filter((n) => n.delivery === 'BUBBLE' && !n.handled);
   const briefBubble = !!twin && seenBrief[user.id] !== twin.shift.shift_id; // 교대 시작 뒤 첫 로그인 때 (9.9)
   const bubbleText = side ? null : docBubbles.length > 1 ? `확정·검토할 문서 ${docBubbles.length}건` : docBubbles[0]?.text ?? (briefBubble ? '이번 교대 브리핑이 준비됐어요' : null);
@@ -346,8 +352,8 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
       <div className={`relative flex h-screen flex-col overflow-hidden bg-[#e9ecef] text-[#26303a] ${settings.fontScale ? 'fs-scaled' : ''}`} style={style as React.CSSProperties}>
         {/* 상단 바 (페이지구조 v3 3장): 왼쪽 [≡][주간][날짜][시각] · 오른쪽 계정 [이름 ▾] [시연] [⚙ 화면 설정] */}
         <header className="absolute left-3 right-3 top-3 z-20 flex h-[56px] items-center gap-3 rounded-2xl border border-slate-300 bg-white px-3 shadow-lg">
-          <span className="h-9 w-9 shrink-0 rounded-xl [background:linear-gradient(145deg,#c9ccd2,#9aa0a9_55%,#7d838c)] [box-shadow:0_1px_0_rgba(255,255,255,.8)_inset,0_-2px_4px_rgba(0,0,0,.18)_inset,0_2px_5px_rgba(40,40,50,.25)]" aria-hidden="true" />
-          <b className="whitespace-nowrap text-[17px]">제조운영관리</b>
+          <Logo height={24} />
+          <span className="whitespace-nowrap text-[15px] text-slate-500">제조운영관리</span>
           <span className={`flex items-baseline gap-2 whitespace-nowrap ${connected ? 'text-[#1f2933]' : 'text-slate-400'}`}>
             {twin ? (<>
               <span className="rounded-md bg-slate-100 px-2 py-0.5 text-[14px] font-semibold text-slate-600">{twin.clock.sim_at >= twin.shift.end_at ? '휴무' : SHIFT_NAME[twin.shift.shift_type]}</span>
@@ -402,7 +408,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
           </div>
         )}
         {fail3d && <div className="flex h-10 shrink-0 items-center gap-2 bg-[#fff1cc] px-4 text-[14px] font-semibold text-[#7a4b00]">▲ {fail3d} — 2D 배치도로 바꿨습니다 <button onClick={() => { setFail3d(null); go('line'); }} className="ml-2 underline">3D 다시 보기</button></div>}
-        {band && (
+        {band && screen !== 'line' && (
           <button onClick={() => openCard(band.id)} className="flex h-10 shrink-0 items-center gap-2 bg-[#ffe1e1] px-4 text-left text-[14px] font-semibold text-[#a01e23]">
             <span>⚠ 긴급</span><span>{MACHINES[band.machine].name}</span><span className="font-normal">{band.alarm ? `${band.code} ${band.alarm.nameKo}` : `${band.code} (알람 코드집에 없음)`} · {band.time.slice(11, 16)} →</span>
           </button>
@@ -417,6 +423,22 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
               cmmCard={cmmCard} bigTags={screen === 'field'} scenario="정상 가동" onReady={onReady}
               onSnapshot={(s: { sel: MachineId | null }) => setSnapSel(s.sel)} onSelect={(id: MachineId) => setSnapSel(id)}
               onFail={(why: string) => { setFail3d(why); setScreen((s0) => (s0 === 'line' ? 'layout2d' : s0)); }} />
+            {screen === 'line' && (<>
+              {eveRgb && <div className="eve-glow pointer-events-none absolute inset-0 z-[5] rounded-3xl" style={{ boxShadow: `inset 0 0 0 2px rgba(${eveRgb},.55), inset 0 60px 80px -40px rgba(${eveRgb},.35)` }} />}
+              {eveCur && <style>{`[data-tier="tag"][data-mid="${eveCur.machine}"]::after{content:'';position:absolute;top:-7px;right:-7px;width:14px;height:14px;border-radius:50%;background:radial-gradient(circle,rgb(${eveRgb}) 0 3.5px,#1c232b 4px);box-shadow:0 0 0 3px rgba(${eveRgb},.45)}`}</style>}
+              <div className="eve-band absolute left-3 right-3 top-3 z-10 flex h-11 items-center gap-3 rounded-full border-[1.5px] pl-2 pr-1.5 backdrop-blur-sm"
+                style={eveRgb ? { borderColor: `rgba(${eveRgb},.7)`, background: `linear-gradient(90deg,rgba(${eveRgb},.30) 0%,rgba(${eveRgb},.12) 35%,rgba(255,255,255,.92) 70%)`, boxShadow: `0 0 0 4px rgba(${eveRgb},.18),0 0 26px rgba(${eveRgb},.45)` } : { borderColor: '#d6dade', background: 'rgba(255,255,255,.88)', boxShadow: '0 4px 14px rgba(40,40,50,.12)' }}>
+                <span className="flex h-[30px] w-[30px] shrink-0 items-center justify-center gap-1 rounded-full [background:radial-gradient(circle_at_35%_30%,#4b5764,#151b21)]" aria-label="이브"><i className="h-1.5 w-1.5 rounded-full bg-[#3fd68a] shadow-[0_0_6px_#3fd68a]" /><i className="h-1.5 w-1.5 rounded-full bg-[#3fd68a] shadow-[0_0_6px_#3fd68a]" /></span>
+                {eveCur ? (<>
+                  <span className="shrink-0 rounded-full px-2.5 py-0.5 text-[12px] font-extrabold text-white" style={{ background: eveCur.level === '긴급' ? '#d23a35' : '#e0a100' }}>{eveCur.level}</span>
+                  <span className="min-w-0 flex-1 truncate text-[15px]"><b>{MACHINES[eveCur.machine].name} {(eveCur.alarm?.nameKo ?? '알람').replace(/\s*\([A-Z0-9 ._/-]+\)/, '')}({eveCur.code})</b> {Math.max(1, Math.round((SIM.now() - eveCur.ts) / 60000))}분째예요. {eveCur.alarm?.steps[0] ? `먼저: ${eveCur.alarm.steps[0]}` : eveCur.alarm?.easy ?? '지침카드를 확인해 주세요.'}</span>
+                  <span className="shrink-0 whitespace-nowrap rounded-full border border-slate-300 bg-white px-2.5 py-0.5 text-[12px] text-slate-600" title="알람 코드집으로 만든 문장">근거 · {eveCur.alarm?.doc03[0] ?? 'DOC-02 알람 코드집'}</span>
+                  {eveList.length > 1 && <button onClick={() => setEveI((i) => i + 1)} className="shrink-0 font-mono text-[12px] text-slate-500 hover:text-slate-800" aria-label="다음 소식">{(eveI % eveList.length) + 1} / {eveList.length} ›</button>}
+                  <button onClick={() => openCard(eveCur.id)} className="h-8 shrink-0 rounded-full bg-[#1c232b] px-3.5 text-[13px] font-bold text-white">지침카드</button>
+                </>) : <span className="min-w-0 flex-1 truncate text-[15px] text-slate-600">지금 처리할 긴급·주의 알람이 없어요.</span>}
+                <button onClick={() => setSide('채팅')} className="h-8 shrink-0 rounded-full border border-slate-300 bg-white px-3.5 text-[13px] font-bold">이브에게 묻기</button>
+              </div>
+            </>)}
             {show3D && (
               <>
                 <div className="pointer-events-auto absolute bottom-3 right-3 flex gap-1 rounded-full border border-[#e3e6f3] bg-white/90 p-1 shadow-md">

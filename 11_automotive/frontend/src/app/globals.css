@@ -97,3 +97,8 @@ nav .bg-\[\#1c2530\] span{display:none;}
 /* 다시 보기 카드: 가공 = 흐르는 빛 (2026-10-17) */
 @keyframes rpSheen{0%{transform:translateX(-150%) rotate(20deg)}100%{transform:translateX(450%) rotate(20deg)}}
 .rp-sheen{animation:rpSheen 3.2s ease-in-out infinite}
+
+/* 3D 카드 이브 띠 상태색 빛: 숨 쉬듯 (2026-10-18) */
+@keyframes eveGlow{0%,100%{opacity:.55}50%{opacity:1}}
+.eve-glow{animation:eveGlow 2.4s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.eve-glow{animation:none}}
