@@ -12,6 +12,7 @@ from functools import lru_cache
 from backend.auth.permissions import PermissionDenied, require
 from backend.config import DATA_LABEL, REFERENCE_AT, settings
 from backend.llm import external as EXT
+from backend.safety import fixed_block as FB
 from backend.llm import jobs
 from backend.llm import think as THINK
 from backend.llm.adapter import FallbackAdapter, write_answer
@@ -3051,7 +3052,8 @@ def _pure_answer_v19(question: str, p: dict, base: dict, s, memo: dict, prev: di
             SL.step("종료 사유", 결과="답 없음", 까닭="낱말 검색 결과가 없어 Claude를 부르지 않음")
         return {**base, "status": "문서에 없음", "mode": f"{mode} — 검색 결과가 없어 Claude를 부르지 않음", "retrieval": retrieval,
                 "llm_trace": traces, "conclusion": PURE_NO_DOC_CHAT_V19 if style else PURE_NO_DOC_V19}
-    got = PURE.ask(question, chunks, prev, s, ops_note=(why in (PURE.RULE_WHY, PURE.FAULT_WHY)))
+    fixed_keys = FB.select(question) if getattr(s, "fixed_block", False) else []   # FIXED_BLOCK: 이 질문에 맞는 고정 서식 (0~2개)
+    got = PURE.ask(question, chunks, prev, s, ops_note=(why in (PURE.RULE_WHY, PURE.FAULT_WHY)), **({"fixed_note": FB.reference_note(fixed_keys)} if fixed_keys else {}))
     traces.append({"job": PURE.JOB, "used": True, "reason": None, "tries": 1, "ms": got["ms"]})
     if got["insufficient"] and s.pure_retry and not safety_guard and why not in (PURE.RULE_WHY, PURE.FAULT_WHY):   # PURE_RETRY=1: 첫 호출이 "조각에 답이 없다"고 했다 — 정답 조각이 상위 조각 밖(검색 9~50위)이라 못 본 것일 수 있어 더 넓게 한 번 다시 묻는다. 안전 질문·규칙 질문 경로는 제외
         wide_hits = PURE.context(question, s.pure_retry_topk, s)
@@ -3061,7 +3063,7 @@ def _pure_answer_v19(question: str, p: dict, base: dict, s, memo: dict, prev: di
             ext = EXT.current()
             failed_before = len(ext.failures) if ext is not None else 0
             try:
-                got2 = PURE.ask(question, wide_chunks, prev, s, retry_note=True)
+                got2 = PURE.ask(question, wide_chunks, prev, s, retry_note=True, **({"fixed_note": FB.reference_note(fixed_keys)} if fixed_keys else {}))
             except EXT.ExternalLlmFailure:   # 재시도는 오류를 새로 만들지 않는다 — 첫 결과("문서에 없음")를 그대로 낸다 (실패 기록도 이 호출 몫만 지운다)
                 got2 = None
                 if ext is not None:
@@ -3118,6 +3120,13 @@ def _pure_answer_v19(question: str, p: dict, base: dict, s, memo: dict, prev: di
            "mode": mode if cited else f"{mode} · 근거 조각 번호 없음", "llm_trace": traces, "retrieval": retrieval, "blocks": blocks}
     if cited:
         out["written"] = True   # 화면 꼬리표 "AI가 문서를 보고 쓴 답 · 원문 아래" + 원문 줄 접기
+    if fixed_keys:   # FIXED_BLOCK: 고정 서식을 프로그램이 그대로 붙인다. 풀이가 순서 전체를 묻는 질문에서 단계를 빠뜨리거나 없는 번호를 쓰면 풀이를 버리고 서식만 보인다
+        bad = FB.check_answer(got["answer"], fixed_keys, FB.wants_full(question, fixed_keys))
+        keep = [b for b in out["blocks"] if isinstance(b, dict) and b.get("orig")]   # 원문 줄(접어 두는 칸)은 그대로
+        out["blocks"] = ([{"kind": "lead", "text": FB.FALLBACK_LEAD}] if bad else [b for b in out["blocks"] if not (isinstance(b, dict) and b.get("orig"))]) + FB.blocks(fixed_keys) + keep
+        if bad:
+            out["conclusion"] = FB.FALLBACK_LEAD
+        out["fixed_block"] = {"keys": fixed_keys, "fallback": bad}
     blob = " ".join(str(v) for v in (out["conclusion"], out["steps"], out["evidence"], out["related"], out["caution"]))
     if FORBIDDEN.search(blob):   # 원문 출처가 새어 나가면 내보내지 않는다 (D-03) — 답 내용 검사가 아니라 저작권 차단
         return {**base, "status": "확인 필요", "mode": mode, "retrieval": retrieval, "llm_trace": traces,
@@ -3159,6 +3168,43 @@ def _final_step_log(a: dict, memo: dict) -> dict:
             "생각호출": None if think is None else {"호출수": think.calls, "실패": think.failures}}
 
 
+# ---------------------------------------------------------------- 채팅 알람 카드 해요체 다시 쓰기 (CARD_REWRITE=1, A2, 2026-10-18)
+# 알람 번호가 있는 질문은 프로그램이 카드(설명 문장 + ★ 점검 순서)를 문서 그대로 조립해 Claude를 거치지 않아 말투가 다른 답과 달랐다. 채팅에서만 Claude가 해요체로 다시 쓴다.
+# 안전 때문에 문장 단위로 검사한다: jobs.simplify(plain)가 숫자(값 기준)·영문 이름·[가상] 꼬리표·조건 말 개수·허락/지시 문구·길이를 보고, jobs.faith가 뜻이 같은지 따로 판정한다.
+# 하나라도 걸리거나 시간이 부족하면 원문 카드 그대로(fail closed). 운영 데이터 줄·주의 문구·출처는 프로그램이 붙이는 칸이라 건드리지 않는다.
+CARD_STEP_HEAD = re.compile(r"^(★?\d+ \([^)]*\) )")     # "★1 (작업자) " — 번호·역할 표시는 구조라 다시 쓰지 않는다
+CARD_REWRITE_MAX_CHARS = 3000
+
+
+def _rewrite_alarm_card(a: dict, memo: dict) -> dict:
+    card = (memo.get("alarm_card") or "").strip()
+    steps = a.get("steps") or []
+    if a.get("status") != "답변" or not card or not steps or not all(isinstance(x, str) for x in steps) or card not in (a.get("conclusion") or ""):
+        return a
+    heads, bodies = [], []
+    for st in steps:
+        m = CARD_STEP_HEAD.match(st)
+        heads.append(m.group(1) if m else "")
+        bodies.append(st[len(m.group(1)):] if m else st)
+    segs = [card] + bodies
+    if len(" ".join(segs)) > CARD_REWRITE_MAX_CHARS:
+        return {**a, "card_rewrite": {"applied": False, "reason": "카드가 너무 김"}}
+    new, tr = jobs.simplify(segs, "plain")
+    reason = tr.get("reason") if new is None else None
+    if new is not None:
+        ok, ftr = jobs.faith(segs, new)
+        if not ok:
+            new, reason = None, "뜻 판정: " + str(ftr.get("reason"))
+    if new is None:
+        return {**a, "card_rewrite": {"applied": False, "reason": reason or "다시 쓰지 못함"}}
+    out = {**a, "steps": [h + n for h, n in zip(heads, new[1:])], "conclusion": a["conclusion"].replace(card, new[0], 1),
+           "card_rewrite": {"applied": True, "reason": None}}
+    if isinstance(a.get("blocks"), list):
+        out["blocks"] = [({**b, "text": b["text"].replace(card, new[0])} if isinstance(b, dict) and isinstance(b.get("text"), str) and card in b["text"] else b) for b in a["blocks"]]
+    memo["alarm_card"] = new[0]   # 이어 묻기 "짧게"가 같은 카드 문장을 보이게 (answer()가 이 기록으로 앞 답 기록을 만든다)
+    return out
+
+
 def answer(question: str, role: str, context: dict | None = None, prev: dict | None = None) -> dict:
     """질문 하나에 답한다. 한 답 전체의 LLM 시간 예산을 하나로 센다 (2026-10-10 계획 3단계 B).
     FOLLOWUP=1이면 prev(서버가 기억한 바로 앞 답의 기록)를 받아 이어 묻기에 쓰고, 답에 내부 칸 `_followup`(이 답의 기록)을 붙인다 —
@@ -3171,6 +3217,8 @@ def answer(question: str, role: str, context: dict | None = None, prev: dict | N
     try:
         with answer_deadline(s0.budget_s):
             a = _answer(question, role, context, prev=prev, memo=memo)
+            if memo.get("alarm") and s0.card_rewrite and s0.job("write") and EXT.current() is not None:   # CARD_REWRITE: 채팅(외부 Claude 요청)의 알람 카드만
+                a = _rewrite_alarm_card(a, memo)
         if settings().followup:
             a["_followup"] = followup_record(question, role, context, a, memo)
     except BaseException as e:
