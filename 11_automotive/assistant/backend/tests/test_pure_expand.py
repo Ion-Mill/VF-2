@@ -6,7 +6,7 @@
 
 진짜 `claude`도 로컬 AI 서버도 부르지 않는다. 지키는 것:
 ① 기본 꺼짐·값 읽기 ② 켜면 잠금·표지 질문 변형 10개 모두 §2.1(작업 전 6단계)이 Claude에게 가는 조각에 든다 ③ 끄면 지금과 한 글자도 같다(개발용 질문 83개)
-④ 켜도 원래 조각의 순서·점수는 그대로이고 더해진 것만 점수 0 ⑤ 어떤 조각이 부모여도 4개·2,500자를 넘지 않고, 직계 아래 절만 더하며 중복이 없다
+④ 켜도 원래 조각의 순서·점수는 그대로이고 더해진 것만 점수 0 ⑤ 어떤 조각이 부모여도 4개·3,000자(2026-10-18 DOC-05 Rev.3에서 2,500자 → 3,000자)를 넘지 않고, 직계 아래 절만 더하며 중복이 없다
 ⑥ 끝에서 끝: 켜면 Claude에게 보내는 글에 DOC-05 §2.1이 있고, 끄면 지금처럼 없다.
 """
 import importlib.util
@@ -282,7 +282,9 @@ def test_end_to_end_verb_phrasing_reaches_claude_with_the_pre_work_steps(e2e):
 
 def test_end_to_end_verb_phrasing_off_is_the_old_defective_context(e2e, monkeypatch):
     monkeypatch.setenv("PURE_EXPAND", "0")
-    ask("작업 전에 잠그는 순서 알려줘")
+    # 2026-10-18 DOC-05 Rev.3: §2.1 "우리 라인" 칸이 길어져(원문 뜻 핵심 보강) "작업 전에 잠그는 순서 알려줘"는 확장 없이도 §2.1이 상위 8개에 든다(좋아진 것).
+    # 옛 결함을 보여 주는 대조군은 아직 §2.1이 상위 8개 밖인 "잠그는 순서"로 바꿨다
+    ask("잠그는 순서")
     heads = sent_chunk_heads(e2e)
     assert len(heads) == 8 and not any("DOC-05" in h and "§2.1" in h for h in heads)
 
