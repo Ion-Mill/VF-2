@@ -145,7 +145,7 @@ class Settings:
     # 위험한 부탁·권한·화면 설명·불량 원인·이어 묻기로 걸러지지 않은 질문을 "낱말 검색 상위 조각 + 질문 → 외부 Claude 1번 → 답을 그대로" 길로 보낸다
     # (줄 고르기·따로 검증·새 글 검사·분류 LLM 없음). 기본 꺼짐 = 지금 동작. 로컬 요청이면 이 스위치와 상관없이 지금 동작 그대로.
     # pure_keep_signals: 0(기본) = 알람 번호·날짜·설비·운영 낱말 길도 끄고 전부 순수 길 / 1 = 그 신호가 있는 질문은 기존 길 그대로(신호 없는 질문만 순수 길)
-    # pure_topk: 순수 길에서 Claude에 주는 조각 수 (1~20, 기본 8)
+    # pure_topk: 순수 길에서 Claude에 주는 조각 수 (1~60, 기본 8 — 예시 파일은 30: DOC-01·02·07 점검표 72·75·79% → 94·93·94%, 2026-10-18)
     pure_external: bool = False
     pure_keep_signals: bool = False
     pure_topk: int = 8
@@ -189,6 +189,11 @@ class Settings:
     # fixed_block: 1이면 **채팅 순수 길**에서 안전 질문에 맞는 고정 서식(잠금·표지 6+3단계, 고전압 대기, 보호구)을 프로그램이 답 아래에 그대로 붙이고(safety/fixed_block.py, 글자는 templates.py 상수),
     # Claude에게는 공식 단계 번호·이름을 알려 준다. 순서 전체를 물었는데 풀이가 단계를 빠뜨리거나 없는 번호를 쓰면 풀이를 버리고 고정 서식만 보인다(2026-10-18, FR-AST-COM-13 채팅 병기). 기본 꺼짐 = 지금 동작 그대로
     fixed_block: bool = False
+    # ctx_narrow: 1이면 화면 알람(alarm_key)이 있을 때 "원인·점검·먼저·안전" 낱말만으로 직전 알람에 묶지 않고, **자기 대상이 없는 질문**(알람 일반 낱말뿐 — "원인은?"·"심각도는?")만 묶는다.
+    # "안전하게 자물쇠 제거 어떻게 해?"가 직전 2075 카드로 답하던 위험을 막는다(2026-10-18). 묶으면 답 맨 앞에 "N 알람 기준으로 답해요."를 밝힌다. 기본 꺼짐 = 지금 동작 그대로
+    ctx_narrow: bool = False
+    # pure_follow_rewrite: 1이면 이어 묻기 "쉽게/짧게"가 순수 길(Claude가 쓴) 답의 글을 실제로 다시 쓴다(숫자·영문 이름·조건 말·길이 검사 + 뜻 판정, 안전 낱말 줄은 원문 그대로). 꺼짐·검사 실패·외부 요청 아님이면 앞 답을 그대로 보인다(지금 동작).
+    pure_follow_rewrite: bool = False
     llm_provider: str = "local"
     # 스위치 이름은 MOM_CLAUDE_* — 이 PC의 Claude Code 환경에 CLAUDE_EFFORT 같은 값이 이미 있어(2026-10-14 확인) 같은 이름을 쓰면 섞인다.
     claude_model: str = "claude-opus-5-5"
@@ -324,7 +329,7 @@ def settings() -> Settings:
         oblige_check=get("OBLIGE_CHECK", "1").strip().lower() not in ("0", "false", "no"),   # 기본 켜짐 — 모르는 값도 켜짐(지금 동작)
         pure_external=get("PURE_EXTERNAL", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
         pure_keep_signals=get("PURE_KEEP_SIGNALS", "0").strip().lower() in ("1", "true", "yes"),
-        pure_topk=_int_clamped(get("PURE_TOPK", "8"), 8, 1, 20),
+        pure_topk=_int_clamped(get("PURE_TOPK", "8"), 8, 1, 60),
         pure_style=get("PURE_STYLE", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 말투)
         pure_layout=get("PURE_LAYOUT", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐 (PURE_STYLE=1일 때만 뜻이 있다)
         pure_expand=get("PURE_EXPAND", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
@@ -338,6 +343,8 @@ def settings() -> Settings:
         pure_faultdoc=get("PURE_FAULTDOC", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
         card_rewrite=get("CARD_REWRITE", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
         fixed_block=get("FIXED_BLOCK", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
+        ctx_narrow=get("CTX_NARROW", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
+        pure_follow_rewrite=get("PURE_FOLLOW_REWRITE", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
         llm_provider=provider,
         claude_model="claude-sonnet-5-5" if claude_app else get("MOM_CLAUDE_MODEL", "claude-opus-5-5").strip(),   # 앱 스위치: Sonnet 5.5 medium, 구독 로그인(cli) 고정
         claude_effort="medium" if claude_app else choice("MOM_CLAUDE_EFFORT", "low"),

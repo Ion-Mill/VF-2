@@ -12,6 +12,7 @@ import { LEVEL_VIEW, alarmTitle, hhmm, sevText, type AlertRec, type Level, type 
 import { rankOfAlert, rankOfNotice } from './Briefing';
 import RobotIcon from './RobotIcon';
 import { canStartNewChat, currentChat, makeNewChatMark, realRows, withNewChat } from './chatLog';
+import { carryAlarm } from './carry';
 
 export type EveTab = '브리핑' | '알림' | '채팅' | '채팅 기록';
 export const EVE_TABS: EveTab[] = ['브리핑', '알림', '채팅', '채팅 기록'];
@@ -219,11 +220,16 @@ function Chat({ focus, headerSlot, onNewChat }: { focus: string | null; headerSl
   const input = useRef<HTMLInputElement>(null);
   const send = async (text = q) => {
     if (!text.trim()) return;
+    // 직전 알람 이어받기 신호 (carry.ts): 이 질문의 줄을 로그에 더하기 전의 지금 대화로 계산한다. 이어받을지는 서버가 정한다.
+    // 채팅 기록에서 열어 본 과거 대화를 보는 중이면 이어받지 않고 새 대화로 보낸다.
+    const cur = currentChat(log);
+    const alarmKey = focus ? null : carryAlarm(cur);
+    const newChat = focus ? true : cur.length === 0;
     setBusy(true); setQ('');
     let row: ChatRow;
     try {
       const r = backendChatEnabled()   // NEXT_PUBLIC_MOM_API가 있으면 백엔드의 비서(외부 LLM)로 — assistantApi.ts. 없으면 옛 길(시연 서버의 규칙 답)
-        ? await askAssistant(text, user.id, screen, selected ? MACHINES[selected].eq : null)
+        ? await askAssistant(text, user.id, screen, selected ? MACHINES[selected].eq : null, { alarmKey, newChat })
         : await api<{ answer: string; status: string; sources: ChatRow['sources']; series?: ChatRow['series'] }>('assistant/chat', { question: text, role, user_id: user.id, context: { screen, equipment_id: selected ? MACHINES[selected].eq : null } });
       row = { at: simIso(), q: text, a: r.answer, status: r.status, sources: r.sources ?? [], series: r.series };
     } catch (e) { row = { at: simIso(), q: text, a: '비서 응답 없음 — ' + (e as Error).message, status: '응답 없음', sources: [] }; }

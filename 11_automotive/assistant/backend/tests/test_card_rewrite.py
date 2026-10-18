@@ -29,11 +29,13 @@ class CardRunner:
     def __init__(self, mode="good"):
         self.mode = mode
         self.calls = []
+        self.texts = []      # 요청 글(사용자 쪽) — 보낸 글 검사용
 
     def __call__(self, cmd, stdin_text, timeout):
         sch = json.loads(cmd[cmd.index("--json-schema") + 1])
         props = tuple(sorted((sch.get("properties") or {}).keys()))
         self.calls.append(props)
+        self.texts.append(stdin_text)
         if self.mode == "error":
             return SimpleNamespace(returncode=1, stdout="", stderr="시험: 실행기 오류")
         if props == ("texts",):
@@ -150,3 +152,16 @@ def test_a_prohibition_that_gets_weaker_is_rejected():
     assert jobs.check_rewrite("축을 움직이지 않고 알람 이력을 봐요", src)[1] == "빠진 조건 말: 말고"
     assert jobs.check_rewrite("축을 움직이지 말고 알람 이력을 봐요", src)[1] is None
     assert jobs.check_rewrite("공구를 빼지 마세요", "공구를 빼지 말 것")[1] == "빠진 조건 말: 말 것"
+
+
+def test_carried_alarm_note_and_rewritten_card_work_together(card, monkeypatch):
+    """직전 알람 이어받기(CTX_NARROW)와 카드 다시 쓰기(CARD_REWRITE)가 함께 켜진 경우: 대상 없는 질문 "원인은?"이 2075 카드로 이어받아지면
+    카드는 해요체로 다시 쓰이고, 어느 알람 기준인지 밝히는 한 줄은 프로그램이 쓴 그대로 맨 앞에 붙는다(Claude에 보내지 않는다)."""
+    monkeypatch.setenv("CTX_NARROW", "1")
+    r = CardRunner("good")
+    CC.use_runner(r)
+    with EXT.external_request("claude"):
+        a = A.answer("원인은?", "OPR", {"alarm_key": "2075"})
+    assert a["conclusion"].startswith("2075 알람 기준으로 답해요."), a["conclusion"][:60]
+    assert a.get("card_rewrite") == {"applied": True, "reason": None} and "어요" in a["conclusion"]
+    assert r.texts and all("알람 기준으로 답해요" not in x for x in r.texts)                      # 안내 문구는 Claude 요청에 실리지 않는다
