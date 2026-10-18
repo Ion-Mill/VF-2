@@ -120,9 +120,9 @@ def test_defaults_flags_and_parse(monkeypatch):
         monkeypatch.setenv("PURE_EXTERNAL", v)
         monkeypatch.setenv("PURE_KEEP_SIGNALS", v)
         assert settings().pure_external is want and settings().pure_keep_signals is want   # 모르는 값·빈 값은 꺼짐(지금 동작)
-    for v, want in [("8", 8), ("3", 3), ("0", 1), ("-4", 1), ("99", 20), ("20", 20), ("1", 1), ("많이", 8), ("", 8), (" 5 ", 5)]:
+    for v, want in [("8", 8), ("3", 3), ("0", 1), ("-4", 1), ("99", 60), ("61", 60), ("60", 60), ("30", 30), ("20", 20), ("1", 1), ("많이", 8), ("", 8), (" 5 ", 5)]:
         monkeypatch.setenv("PURE_TOPK", v)
-        assert settings().pure_topk == want   # 1~20으로 제한, 정수가 아니면 8
+        assert settings().pure_topk == want   # 1~60으로 제한, 정수가 아니면 8
 
 
 def test_defaults_are_pinned_in_the_five_places():
@@ -207,12 +207,12 @@ def test_system_prompt_has_the_required_instructions():
     assert "$ref" not in json.dumps(PURE.SCHEMA) and "$defs" not in json.dumps(PURE.SCHEMA)
 
 
-@pytest.mark.parametrize("k, want", [("3", 3), ("1", 1), ("20", 20)])
+@pytest.mark.parametrize("k, want", [("3", 3), ("1", 1), ("20", 20), ("30", 30)])
 def test_topk_setting_changes_the_chunk_count(monkeypatch, k, want):
     monkeypatch.setenv("PURE_TOPK", k)
     rn = runner()
     assert post(Q_DOC, llm="claude").status_code == 200
-    assert len(user_chunks(rn.calls[0]["user"])) == min(want, len(search(Q_DOC, 20)))
+    assert len(user_chunks(rn.calls[0]["user"])) == min(want, len(search(Q_DOC, 60)))
 
 
 def test_response_shape_matches_the_written_answer_the_screen_already_draws():
