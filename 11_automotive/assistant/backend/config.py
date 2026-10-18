@@ -183,6 +183,9 @@ class Settings:
     # pure_faultdoc: 1이면 순수 길에서 질문에 **고장 낱말**(알람·경고·떴어·멈췄어·정지·고장·에러·과열·누설 …)이 있을 때 고장 대응 매뉴얼(DOC-03)을 통째로(상한 30,000자) Claude에게 준다
     # (2026-10-18, DOC-03을 현장 말로 물으면 정답 절이 검색 상위 8개 밖에 있어 놓치던 결함, 점검표 73/90). PURE_SAFETY가 DOC-05를 통째로 주는 것과 같은 방식. 기본 꺼짐 = 지금 동작 그대로
     pure_faultdoc: bool = False
+    # ctx_narrow: 1이면 화면 알람(alarm_key)이 있을 때 "원인·점검·먼저·안전" 낱말만으로 직전 알람에 묶지 않고, **자기 대상이 없는 질문**(알람 일반 낱말뿐 — "원인은?"·"심각도는?")만 묶는다.
+    # "안전하게 자물쇠 제거 어떻게 해?"가 직전 2075 카드로 답하던 위험을 막는다(2026-10-18). 묶으면 답 맨 앞에 "N 알람 기준으로 답해요."를 밝힌다. 기본 꺼짐 = 지금 동작 그대로
+    ctx_narrow: bool = False
     llm_provider: str = "local"
     # 스위치 이름은 MOM_CLAUDE_* — 이 PC의 Claude Code 환경에 CLAUDE_EFFORT 같은 값이 이미 있어(2026-10-14 확인) 같은 이름을 쓰면 섞인다.
     claude_model: str = "claude-opus-5-5"
@@ -330,6 +333,7 @@ def settings() -> Settings:
         pure_fault=get("PURE_FAULT", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
         pure_rule_wide=get("PURE_RULE_WIDE", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
         pure_faultdoc=get("PURE_FAULTDOC", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
+        ctx_narrow=get("CTX_NARROW", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
         llm_provider=provider,
         claude_model="claude-sonnet-5-5" if claude_app else get("MOM_CLAUDE_MODEL", "claude-opus-5-5").strip(),   # 앱 스위치: Sonnet 5.5 medium, 구독 로그인(cli) 고정
         claude_effort="medium" if claude_app else choice("MOM_CLAUDE_EFFORT", "low"),

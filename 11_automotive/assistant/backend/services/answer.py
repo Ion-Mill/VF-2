@@ -898,6 +898,14 @@ def _followup_answer(kind: str, role: str, prev: dict | None, base: dict, s, mem
         if blocks:
             out["blocks"] = blocks
         return out
+    if prev.get("pure") and kind in ("simple", "short"):   # 순수 길 답: 옛 방식은 원문 줄을 바꿔 써서 답과 무관한 글이 나온다 → 앞 답을 그대로 (fail closed)
+        note = "이 답은 바로 앞에서 AI가 쉬운 말로 쓴 글이라 다시 바꿔 쓰지 않고 그대로 보입니다."
+        out = {**base, **same, "status": "답변", "conclusion": note + " " + prev["conclusion"],
+               "mode": "규칙 (이어 묻기 — 앞 답 그대로)", "followup": {**fu, "reason": "순수 길 답은 그대로"}}
+        blocks = _same_blocks_v10(prev, s, lead=note)
+        if blocks:
+            out["blocks"] = blocks
+        return out
     if kind == "short" and flow10_on(s) and prev.get("alarm") and prev.get("alarm_card"):
         return _alarm_short_v10(prev, base, s, same, fu)   # 9차 B
     traces: list[dict] = []
@@ -1074,6 +1082,7 @@ def followup_record(question: str, role: str, context: dict | None, a: dict, mem
             "doc_lines": list(memo.get("doc_lines") or []), "ops_texts": list(memo.get("ops_texts") or []),
             "alarm": bool(memo.get("alarm")), "procedure": bool(memo.get("procedure")), "future": bool(memo.get("future")),
             "doc_lead": memo.get("doc_lead") or ""}   # 7차 B3
+    rec["pure"] = bool(memo.get("pure_answer"))
     if v9_on():   # 8차: 모양 이어 묻기(layout)가 줄 목록대로 다시 보인다
         rec["blocks"] = list(a.get("blocks") or [])
     if flow10_on():   # 9차 B: 알람 답 "짧게"가 카드 문장만 다시 보인다
@@ -3039,6 +3048,7 @@ def _pure_answer_v19(question: str, p: dict, base: dict, s, memo: dict, prev: di
         retrieval["faultdoc_added_ids"] = [c.chunk_id for sc, c in hits if sc == PURE.FAULTDOC_SCORE]       # DOC-03 통째로 더해진 조각 (끄면 이 칸이 없다)
     base = {**base, "route": {"kind": "doc", "source": "순수 외부 LLM (분류 LLM 없음)"}}
     memo.update(ops_texts=[], procedure=is_procedure(question), future=False, doc_lines=[], doc_cites=[], doc_lead="", doc_written="")
+    memo["pure_answer"] = True   # 이어 묻기 기록 표시: 이 답의 글은 Claude가 쓴 것이다 — 검색된 원문 줄(doc_lines)을 바꿔 쓰는 옛 이어 묻기는 답과 무관한 글이 된다 (2026-10-18)
     if SL.on():   # STEP_LOG: 순수 길로 간 까닭 · 분류 LLM 생략 · 찾은 조각 (읽기만 한다)
         SL.step("1 규칙 판정", 결과="순수 외부 LLM 길", 까닭=why, 앞답있음=prev is not None)
         SL.step("2 질문 분류", 사용=False, 까닭="순수 외부 LLM — 분류 LLM을 부르지 않음")
@@ -3159,6 +3169,89 @@ def _final_step_log(a: dict, memo: dict) -> dict:
             "생각호출": None if think is None else {"호출수": think.calls, "실패": think.failures}}
 
 
+# ---------------------------------------------------------------- 화면 알람 이어받기 (CTX_NARROW=1, 2026-10-18)
+# 화면이 직전 답의 알람 번호를 alarm_key로 보내 주면, "원인은?"처럼 **자기 대상이 없는** 질문만 그 알람으로 푼다. 예전 규칙은 "원인·점검·먼저·안전·뭐부터" 낱말만 보고 묶어서
+# "안전하게 자물쇠 제거 어떻게 해?"까지 직전 알람 카드로 답할 수 있었다. 여기서는 질문의 한글 낱말이 **모두** 알람 일반 낱말(CTX_GENERIC)과 조사·어미 조각(CTX_PIECES)으로 쪼개질 때만
+# 대상이 없는 질문으로 본다 — 쪼개지지 않는 내용 낱말(자물쇠·제거·워밍업 …)이 하나라도 있으면 자기 대상이 있는 질문이다 (그래서 틀리게 이어받는 쪽보다 놓치는 쪽으로 틀린다).
+# 낱말 사이를 띄우지 않은 질문("원인이뭐야")도 쪼개 본다. "아까·전에·어제" 같은 과거 지시어는 어느 알람인지 불확실하므로 이어받지 않는다.
+CTX_GENERIC = frozenset("""
+알람 경보 알림 원인 이유 왜 점검 순서 먼저 우선 일단 바로 당장 그냥 뭐부터 어디부터 뭐 뭘 무엇 무슨 어디 누가 누구 누구한테 누구에게 언제 얼마나 얼마 어떻게 어떡해 어떻해 어쩌지 어째 어찌 어떤 어느 정도
+조치 해결 해결책 대책 처리 대처 대응 방법 복구 재발 방지 재가동 가동 재시작 시작 리셋 심각도 심각 심각한 등급 위험 위험도 급해 급한 급함 안급함 급하 의미 뜻 설명 자세히 정확히
+또 다시 계속 자꾸 반복 반복돼 반복되면 뜨면 뜨는 뜨나 뜨는지 뜨네 뜬 떴어 떴는데 나면 나는 났어 났는데 나오면 나요 그다음 다음 그럼 그러면 그래서 이 상태 이대로 그대로 두면 두고 둬 둬도 놔도 놔둬 놔둬도
+괜찮 괜찮아 괜찮나 괜찮은 괜찮을까 안전 안전해 안전한가 안전하나 라인 멈춰 멈춰도 멈추나 세워 세우 세워야 돌려 돌려도 쓰면 써 써도 가도 누르면 눌러 꺼도 꺼야 켜도
+하나 하면 하지 하는 해야 봐야 봐 보면 확인 알려 알려줘 알려줘요 말해 말해줘 담당 담당자 작업자 반장 보전 보고 연락 부르면 불러 부르나 해줘 할까 할까요 하죠 걸려 걸리 걸리나 걸림 시간 오래 금방 곧
+며칠 몇 번 몇번 빈도 자주 가끔 처음 이번 지금 방금 그거 그게 그건 그 이거 이게 이건 이것 저거 요거 풀려 풀리나 사라져 없어져 곳 일 이미 벌써 아직 시도 대로 정도 상관 문제 상황 경우 때 후 뒤 호출 부르 불러야 불러야돼 신고 요청 부탁 맡기 맡겨 손대 손봐 손보 고치 고쳐 고쳐야 고쳐야돼 수리 직접 스스로 혼자 같이 함께 눌러도 꺼 켜 복귀 복원 해제 풀어 풀고 무시 넘어가 넘기 놔두 방치 미루 기다려 기다리 지켜 지켜봐 이렇게 저렇게 그렇게 이런 저런 그런 이래 저래 그래 뭔데 뭔지 뭔가 뭐길래 왜이래 왜이렇게 혹시 아니면 아님 긴급 큰일 별일 문제없 내가 제가 우리 저희 나 저 너 사람 팀 보전팀 현장 관리자 어디서 어디로 어떻게든 하려면 하려고 할수 있어 있나 있는 있는지 없나 없는지 맞아 맞나 맞는지 아닌가 어려워 쉬워 간단 복잡 가능 불가능 필요 괜히 일부러 꼭 반드시 굳이 대충 모두 전부 전체 일부
+""".split())
+CTX_PIECES = frozenset("""
+이 가 은 는 을 를 에 의 도 만 요 로 으로 야 이야 예요 에요 이에요 인 인가 인가요 인지 인데 인걸 이래 래 나 나요 까 까요 할 할까 할까요 될까 될까요 하나요 하죠 이죠 죠 네 네요 니 냐 어 아 지 게 라
+해 해요 해도 해야 해야돼 해야되 돼 돼요 되 되요 되나 되나요 됩니까 합니까 하면 으면 면 려면 는데 한 하 하세요 세요 줘 줘요 주세요 좀 거 건 걸 거야 거예요 것 은데 던 었 았 했 한가 한가요 한지 부터 까지 임 거임 인거 인거야 건가 건가요 건데 인데요 잖아 잖아요 는지 은지 할지 될지 한데 던데 거든 거든요 이라고 라고 라는 라서 라서요 이라서 니까 니까요 으니까 어서 아서 해서 하고 하는데 하는지 해보 해봐 해봐도 봐도 돼도 되도 되죠 고 며 면서 다가 다고 다는 다면 라면 이라면 이면 거면 니다 습니다 습니까 입니다 입니까 합니다 됩니다 부터 까지 에서 한테 에게 처럼 보다 랑 이랑 와 과 이나 나 라도 이라도 마다
+""".split())
+CTX_PAST_REF = re.compile(r"아까|전에|어제|엊그제|저번|지난|예전|그때|이전")
+
+
+CTX_WORDS = CTX_GENERIC | frozenset(w for w in FU_FILL_V9 if len(w) >= 2)   # 일반 낱말 조각 (한 글자짜리 이어 묻기 군더더기는 뺀다)
+
+
+def _ctx_generic_token(tok: str, vocab) -> bool:
+    """한글 낱말 하나가 vocab 조각으로 완전히 쪼개지고, 그 조각 가운데 일반 낱말(CTX_WORDS)이 하나 이상 있나 ("원인이뭐야" = 원인+이+뭐+야).
+    조사·어미 한 글자 조각만으로 쪼개지는 내용 낱말("에어건" = 에+어+건)은 일반 낱말이 아니다. 조각 하나짜리 어미("거야"·"인가요")는 일반이다."""
+    if tok in CTX_PIECES:
+        return True
+    n = len(tok)
+    plain = [True] + [False] * n     # 조각만으로 도달
+    word = [False] * (n + 1)         # 일반 낱말 조각을 하나 이상 쓰고 도달
+    for i in range(n):
+        if not (plain[i] or word[i]):
+            continue
+        for j in range(i + 1, min(n, i + 8) + 1):
+            piece = tok[i:j]
+            if piece in CTX_WORDS:
+                word[j] = True
+            elif piece in vocab:
+                word[j] = word[j] or word[i]
+                plain[j] = plain[j] or plain[i]
+    return word[n]
+
+
+def ctx_subjectless(question: str, p: dict) -> bool:
+    """질문에 자기 대상이 없나 — 알람·설비·날짜·로트·운영 낱말 신호가 없고, 과거 지시어가 없고, 한글 낱말이 모두 알람 일반 낱말·조사·어미로 쪼개진다."""
+    if PURE.has_signals(p) or CTX_PAST_REF.search(question):
+        return False
+    vocab = FU_FILL_V9 | CTX_GENERIC | CTX_PIECES
+    for tok in re.findall(r"[가-힣]+|[0-9A-Za-z][0-9A-Za-z.\-]*", question.lower()):
+        if tok[0].isascii():
+            if not tok.isdigit():
+                return False          # 영문·번호가 섞인 말(OEE, CB3, 5303.00 …)은 자기 대상이 있는 질문으로 본다
+            continue
+        if not _ctx_generic_token(tok, vocab):
+            return False
+    return True
+
+
+def _ctx_use_v2(question: str, p: dict, s, memo: dict):
+    """화면 알람(alarm_key)이 있고 질문에 알람 번호가 없을 때(parse_v2 판), 질문을 그 알람으로 풀지. CTX_NARROW=0이면 예전 규칙 그대로."""
+    explicit = re.search(r"이 알람|이 경보|이거|이것", question)   # "이 알람·이거"는 화면 알람을 가리킨다 (예전부터)
+    if not getattr(s, "ctx_narrow", False):
+        return explicit or (not p["intents"] and re.search(r"뭐부터|먼저|점검|원인|안전", question))
+    if explicit:
+        return explicit
+    if ctx_subjectless(question, p) and not followup_kind_v9(question, ""):   # "쉽게 설명해"·"요약해 줘" 같은 이어 묻기는 알람 이어받기가 아니다 (이어 묻기 길이 처리한다)
+        memo["ctx_alarm_pending"] = True   # 실제로 알람이 정해졌을 때만 "N 알람 기준"을 밝힌다 (parse가 못 읽은 번호면 안 밝힘)
+        return True
+    return None
+
+
+def _with_ctx_note(a: dict, code: str) -> dict:
+    """질문에 대상이 없어 직전 알람으로 이어받았으면, 어느 알람 기준인지 답 맨 앞에 밝힌다 (정상 답일 때만)."""
+    if not isinstance(a, dict) or a.get("status") != "답변":
+        return a
+    note = f"{code} 알람 기준으로 답해요."
+    a["conclusion"] = f"{note} {a.get('conclusion') or ''}".strip()
+    if isinstance(a.get("blocks"), list) and a["blocks"]:
+        a["blocks"] = [{"kind": "lead", "text": note}] + list(a["blocks"])
+    return a
+
+
 def answer(question: str, role: str, context: dict | None = None, prev: dict | None = None) -> dict:
     """질문 하나에 답한다. 한 답 전체의 LLM 시간 예산을 하나로 센다 (2026-10-10 계획 3단계 B).
     FOLLOWUP=1이면 prev(서버가 기억한 바로 앞 답의 기록)를 받아 이어 묻기에 쓰고, 답에 내부 칸 `_followup`(이 답의 기록)을 붙인다 —
@@ -3171,6 +3264,8 @@ def answer(question: str, role: str, context: dict | None = None, prev: dict | N
     try:
         with answer_deadline(s0.budget_s):
             a = _answer(question, role, context, prev=prev, memo=memo)
+            if memo.get("ctx_alarm_note"):   # CTX_NARROW: 대상 없는 질문을 직전 알람으로 이어받았으면 어느 알람 기준인지 밝힌다
+                a = _with_ctx_note(a, memo["ctx_alarm_note"])
         if settings().followup:
             a["_followup"] = followup_record(question, role, context, a, memo)
     except BaseException as e:
@@ -3206,11 +3301,13 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
         pass
     elif not p["alarms"] and ctx_alarm:
         if s.parse_v2:  # "이 알람·이거"는 운영 낱말이 있어도 화면 알람으로 먼저 푼다 (2026-10-10: "이 알람 몇 번 났어?" → 문서에 없음이던 버그)
-            use_ctx = re.search(r"이 알람|이 경보|이거|이것", question) or (not p["intents"] and re.search(r"뭐부터|먼저|점검|원인|안전", question))
+            use_ctx = _ctx_use_v2(question, p, s, memo)
         else:
             use_ctx = not p["intents"] and re.search(r"이 알람|이거|뭐부터|먼저|점검|원인|안전", question)
         if use_ctx:
             p["alarms"] = parse(ctx_alarm)["alarms"][:1]
+            if memo.pop("ctx_alarm_pending", False) and p["alarms"]:
+                memo["ctx_alarm_note"] = p["alarms"][0]["code"]
     elif ctx_alarm and s.parse_v2 and s.parse_v3 and re.search(r"이 알람|이 경보|이거|이것", question):
         # "이거 뒤에 994, 992가 뜨면 …": 질문 속 다른 알람 번호가 있어도 주제는 화면 알람 (2026-10-10 2차, E004)
         ctx = parse(ctx_alarm)["alarms"][:1]
