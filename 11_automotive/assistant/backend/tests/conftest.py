@@ -96,5 +96,7 @@ def _llm_off(monkeypatch, tmp_path):
     monkeypatch.setenv("PURE_EXPAND", "0")       # 순수 길 아래 절 확장 (2026-10-18): 시험 기본은 꺼짐 — 개발 PC의 .env가 다른 시험을 바꾸지 않게
     monkeypatch.setenv("PURE_SAFETY", "0")       # 순수 길 안전 질문 안전망 (2026-10-18): 시험 기본은 꺼짐 — 개발 PC의 .env가 다른 시험을 바꾸지 않게
     monkeypatch.setenv("PURE_PERIOD", "0")       # 순수 길 기간 낱말 보장 (2026-10-18): 시험 기본은 꺼짐 — 개발 PC의 .env가 다른 시험을 바꾸지 않게
+    monkeypatch.setenv("PURE_RULE", "0")         # 순수 길 규칙 질문 라우팅 (2026-10-18): 시험 기본은 꺼짐 — 개발 PC의 .env가 다른 시험을 바꾸지 않게
+    monkeypatch.setenv("PURE_RETRY", "0")        # 순수 길 넓게 다시 보기 (2026-10-18): 시험 기본은 꺼짐 — 개발 PC의 .env가 다른 시험을 바꾸지 않게
     for _k in ("MOM_EXTERNAL_LLM_OK", "ANTHROPIC_API_KEY", "MOM_USAGE_LEDGER"):
         monkeypatch.delenv(_k, raising=False)

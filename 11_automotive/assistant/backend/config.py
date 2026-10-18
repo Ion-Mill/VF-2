@@ -166,6 +166,14 @@ class Settings:
     # pure_period: 1이면 순수 길에서 질문에 **기간 낱말**(한 달에 한 번·반기·매년 …)과 **정비 낱말**이 함께 있을 때 그 기간의 예방 정비 기준서(DOC-04 §2.1~2.7) 절 조각을 빠뜨리지 않는다
     # (2026-10-18, "한 달에 한 번 하는 정비"가 §2.3을 검색 74~88위로 놓쳐 "문서에 없다"고 답하던 결함). PURE_EXPAND=1일 때만 뜻이 있다. 기본 꺼짐 = 지금 동작 그대로.
     pure_period: bool = False
+    # pure_rule: 1이면 순수 길(PURE_KEEP_SIGNALS=1)에서 신호가 운영 낱말(로트·재고·정비 기한·알림)뿐이고 지금 상태를 묻는 말이 없고 규칙·정책 낱말(누가·기준·방식·어떻게 해야 …)이 있는 질문을
+    # 운영 조회가 아니라 문서 길로 보낸다 (2026-10-18, "소모품 재고는 누가 관리해?"가 문서 답을 못 받던 결함). 문서 길이 "문서에 없음"이면 원래 기존 길로 되돌린다. 기본 꺼짐 = 지금 동작 그대로.
+    pure_rule: bool = False
+    # pure_retry: 1이면 순수 길에서 Claude가 "조각에 답이 없다"(insufficient)고 한 질문을 상위 pure_retry_topk개 조각으로 **한 번 더** 묻고, 그래도 없을 때만 "문서에 없음"으로 끝낸다
+    # (2026-10-18, 정답 조각이 9~50위라 못 보낸 것을 없는 것으로 말하던 결함: DOC-03 순수 길 놓침 13개 중 거짓 "없다" 10개). 첫 호출 지시문에는 "조각에 없는 부분을 문서에 없다고 단정하지 않는다" 한 줄이 더해진다.
+    # PURE_RULE 경로·안전 질문·검색이 빈 경우에는 재시도하지 않는다. 기본 꺼짐 = 지금 동작 그대로 (요청 글도 한 글자 안 다르다).
+    pure_retry: bool = False
+    pure_retry_topk: int = 30      # 넓게 다시 볼 때 모으는 조각 수 (9~60, 기본 30). 첫 호출(pure_topk, 기본 8)보다 넓어야 뜻이 있다
     llm_provider: str = "local"
     # 스위치 이름은 MOM_CLAUDE_* — 이 PC의 Claude Code 환경에 CLAUDE_EFFORT 같은 값이 이미 있어(2026-10-14 확인) 같은 이름을 쓰면 섞인다.
     claude_model: str = "claude-opus-5-5"
@@ -213,7 +221,7 @@ class Settings:
                 "write_shots": self.write_shots, "write_titles": self.write_titles, "write_rules_v17": self.write_rules_v17,
                 "answer_gate_v17": self.answer_gate_v17, "table_fill_v18": self.table_fill_v18, "oblige_check": self.oblige_check,
                 "pure_external": self.pure_external, "pure_keep_signals": self.pure_keep_signals, "pure_topk": self.pure_topk, "pure_style": self.pure_style,
-                "pure_layout": self.pure_layout, "pure_expand": self.pure_expand, "pure_safety": self.pure_safety, "pure_period": self.pure_period,
+                "pure_layout": self.pure_layout, "pure_expand": self.pure_expand, "pure_safety": self.pure_safety, "pure_period": self.pure_period, "pure_rule": self.pure_rule, "pure_retry": self.pure_retry, "pure_retry_topk": self.pure_retry_topk,
                 "llm_provider": self.llm_provider, "claude_via": self.claude_via, "claude_model": self.claude_model,
                 "claude_effort": self.claude_effort,
                 "external_app": self.external_app, "proc_limit": self.proc_limit, "claude_app": self.claude_app,
@@ -307,6 +315,9 @@ def settings() -> Settings:
         pure_expand=get("PURE_EXPAND", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
         pure_safety=get("PURE_SAFETY", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
         pure_period=get("PURE_PERIOD", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
+        pure_rule=get("PURE_RULE", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
+        pure_retry=get("PURE_RETRY", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
+        pure_retry_topk=_int_clamped(get("PURE_RETRY_TOPK", "30"), 30, 9, 60),
         llm_provider=provider,
         claude_model="claude-sonnet-5-5" if claude_app else get("MOM_CLAUDE_MODEL", "claude-opus-5-5").strip(),   # 앱 스위치: Sonnet 5.5 medium, 구독 로그인(cli) 고정
         claude_effort="medium" if claude_app else choice("MOM_CLAUDE_EFFORT", "low"),
