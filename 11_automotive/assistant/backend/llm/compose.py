@@ -5,6 +5,9 @@
   · 출력도 같은 id·같은 순서·같은 개수의 줄이다. 줄마다 `adapter.check_text`(숫자·번호·꼬리표 양방향 대조, 한글 수사·허락/지시 문구·원문 출처 거부)와
     줄 모양 검사(문장 수 유지, 줄바꿈·마크다운 없음, 길이, 종류별 금지 글자)를 통과해야 한다. 하나라도 틀리면 사유를 붙여 한 번 다시 요청한다.
   · 끝내 실패하면 ComposeFailed — 부른 쪽은 지금의 기본 문장을 그대로 쓴다(자동으로 다른 길로 가지 않는다).
+  · 브리핑 항목(`briefing`, 2026-10-19)은 줄 하나가 [분류] 꼬리표 + 본문 + 끝 덧붙임(` · 9/29`·`(기한 09/28)`·`(인계)`)이다. 꼬리표·덧붙임은 프로그램이 정한 것이라
+    **코드가 떼어 두고 본문만** 보내 다듬은 본문에 다시 붙인다(지침만으로는 못 지켰다: 2026-10-19 측정). 끝내 검사를 못 통과한 줄은 그 줄만 원문으로 두고
+    나머지는 돌려준다(다른 종류는 지금처럼 하나라도 틀리면 전부 실패).
 """
 from __future__ import annotations
 
@@ -50,8 +53,14 @@ KINDS: dict[str, Kind] = {
     "guide_card": Kind("알람 지침카드의 '먼저 할 일' 점검 단계", "각 줄은 점검 순서의 한 단계다. 단계의 순서와 개수를 바꾸지 않고, 점검과 무관한 안내를 더하지 않는다. "
                                                        "안전 절차(잠금·표지)는 프로그램이 따로 붙이므로 쓰지 않는다. '말고'·'~하지 않는다'·'금지'·'반드시'처럼 하지 말라거나 꼭 하라는 표현은 원문 그대로 둔다. "
                                                        "원문에 없는 안전 용어(잠금·표지·차단·전원·해제 등)를 새로 쓰지 않는다. 원문 낱말을 되도록 그대로 쓰고 어순과 어미만 다듬는다."),
-    "briefing": Kind("교대 시작 브리핑의 보고 항목", "각 줄은 보고 순위 순서대로의 한 항목이다. 항목을 합치거나 순서를 바꾸지 않는다."),
+    "briefing": Kind("교대 시작 브리핑 '먼저 챙길 일'의 보고 항목 본문", "각 줄은 보고 순위 순서대로의 한 항목이다. 항목을 합치거나 순서를 바꾸지 않는다. "
+                                                          "줄 앞의 [분류]·기호와 줄 끝의 날짜·괄호 덧붙임은 프로그램이 따로 붙이므로 쓰지 않는다. "
+                                                          "한 줄은 한 문장으로, '…입니다'·'…했습니다'·'…됩니다'처럼 끝나는 말로 끝맺고 '~하고'·'~며'·'~인데'처럼 이어지는 말로 끝내지 않는다. "
+                                                          "'기한 하루 전'·'기한 넘김'·'처리 안 됨'처럼 상태나 시점을 말하는 낱말은 뜻이 바뀌지 않게 그대로 쓴다('기한 하루 전'을 '기한은 하루 전'으로 바꾸지 않는다). "
+                                                          "원문이 이미 읽기 쉬우면 그대로 둔다. 원문 낱말을 되도록 그대로 쓰고 조사와 어미만 다듬는다. 줄 끝에 마침표를 붙이지 않는다."),
 }
+
+ITEM_KINDS = frozenset({"briefing"})        # 줄 = [꼬리표] + 본문 + 덧붙임. 본문만 보내고, 틀린 줄만 원문으로 돌려놓는다
 
 _KEEP_MARKERS = re.compile(r"말고|말 것|하지 말|마라|지 않|금지|절대|반드시|꼭 ")        # 지침카드: 하지 말라/꼭 하라는 표현은 줄어들면 뜻이 바뀐다
 _SAFETY_WORDS = ("잠금", "표지", "차단", "전원", "해제", "LOTO")
@@ -59,6 +68,30 @@ SIMILARITY_MIN = 0.5                                                            
 _MARKDOWN = re.compile(r"\*\*|`|^\s*#{1,6}\s|^\s*[-•*]\s|^\s*\d+[.)]\s", re.M)          # 굵게(**)·백틱·줄 머리의 제목/목록 기호. 설비 이름의 "#1"은 정상 글자다
 _SENT = re.compile(r"(?<=[.!?])\s+")
 _TAG = re.compile(r"^\[[^\]\s]{1,8}\]")
+_ITEM_HEAD = re.compile(r"^(?:(?:\[[^\]]+\]|[^\w\s\[(]+)\s+)*")                  # 줄 앞: [분류] 꼬리표·▲ ⓘ ⚠ 🔒 같은 기호 (뒤에 공백)
+_ITEM_PAREN = re.compile(r"\s*\([^()]*\)\s*$")                                  # 줄 끝의 (괄호 덧붙임)
+_ITEM_DOT = re.compile(r"\s+[·/]\s+(?:(?!\s[·/]\s).)*$")                                      # 줄 끝의 ' · 9/29'·' / 추가: …' 덧붙임
+_BAD_END = re.compile(r"(하고|했고|되고|됐고|이고|하며|했으며|되며|됐으며|이며|으며|했는데|하는데|인데|지만|했지만|해서|돼서|되어서|있고|없고|있으며|없으며)$")
+
+
+def split_item(text: str) -> tuple[str, str, str]:
+    """브리핑 항목 한 줄을 (앞 꼬리표·기호, 본문, 끝 덧붙임)으로 나눈다. 셋을 이으면 원래 줄이다. 본문이 비면 줄 전체를 본문으로 둔다."""
+    head = _ITEM_HEAD.match(text).group(0)
+    rest = text[len(head):]
+    body, prev = rest, None
+    while prev != body:
+        prev = body
+        body = _ITEM_PAREN.sub("", body)
+        body = _ITEM_DOT.sub("", body)
+    body = body.rstrip()
+    tail = rest[len(body):]
+    if len(body.strip()) < 2:
+        return "", text, ""
+    return head, body, tail
+
+
+def _dangling_end(src_body: str, text: str) -> bool:
+    return bool(_BAD_END.search(text.rstrip(". "))) and not _BAD_END.search(src_body.rstrip(". "))
 
 
 def sentences(text: str) -> int:
@@ -130,6 +163,11 @@ def _line_problem(kind: str, src: str, text: str, line_id: str = "") -> str | No
         g = _guide_problem(src, text2)
         if g:
             return g
+    if kind in ITEM_KINDS:                                                       # 브리핑 본문: 끝맺음·너무 다른 글을 거른다 (꼬리표·덧붙임은 코드가 따로 지킨다)
+        if _dangling_end(src, text2):
+            return "문장이 끝나지 않음(이어지는 말로 끝남)"
+        if difflib.SequenceMatcher(None, src, text2).ratio() < SIMILARITY_MIN:
+            return "원문과 너무 다르게 바꿔 씀"
     reason = adapter.check_text(text2, src, num_match="value")
     if reason:
         return reason
@@ -138,19 +176,29 @@ def _line_problem(kind: str, src: str, text: str, line_id: str = "") -> str | No
     return None
 
 
-def check(kind: str, draft: list[dict], out: dict) -> tuple[list[dict] | None, str | None]:
-    """모델이 돌려준 {lines:[{id,text}]}를 검사한다. 통과하면 (다듬은 줄, None), 아니면 (None, 사유 한 문장)."""
+def _check_each(kind: str, draft: list[dict], out: dict) -> tuple[list[dict] | None, list[str | None] | str]:
+    """줄마다 검사한다. 돌려주는 값: (다듬은 줄, 줄별 사유 — 통과면 None). 줄의 id·순서·개수가 틀리면 (None, 사유 한 문장)."""
     got = out.get("lines")
     if not isinstance(got, list) or [g.get("id") if isinstance(g, dict) else None for g in got] != [d["id"] for d in draft]:
         return None, "줄의 id·순서·개수가 입력과 다름"
-    cleaned, problems = [], []
+    cleaned, whys = [], []
     for d, g in zip(draft, got):
         text = adapter.tidy(str(g.get("text", "")).strip(), d["text"])
         text = numbers.tidy(text, d["text"])
+        if kind in ITEM_KINDS and not d["text"].rstrip().endswith("."):      # 항목 줄은 마침표 없이 쓴다 — 붙어 오면 뗀다
+            text = text.rstrip().rstrip(".").rstrip()
         why = _line_problem(kind, d["text"], text, d["id"])
-        if why:
-            problems.append(f"{d['id']}: {why}")
+        whys.append(f"{d['id']}: {why}" if why else None)
         cleaned.append({"id": d["id"], "text": text})
+    return cleaned, whys
+
+
+def check(kind: str, draft: list[dict], out: dict) -> tuple[list[dict] | None, str | None]:
+    """모델이 돌려준 {lines:[{id,text}]}를 검사한다. 통과하면 (다듬은 줄, None), 아니면 (None, 사유 한 문장)."""
+    cleaned, whys = _check_each(kind, draft, out)
+    if cleaned is None:
+        return None, whys
+    problems = [w for w in whys if w]
     if problems:
         return None, "; ".join(problems[:4])
     return cleaned, None
@@ -163,15 +211,21 @@ def compose(kind: str, draft: list[dict]) -> dict:
     ids = [d["id"] for d in draft]
     if not draft or len(draft) > MAX_LINES or len(set(ids)) != len(ids):
         raise ComposeFailed("줄 목록 모양")
+    parts = [split_item(d["text"]) for d in draft] if kind in ITEM_KINDS else None
+    work = [{"id": d["id"], "text": p[1]} for d, p in zip(draft, parts)] if parts else draft      # 브리핑은 본문만 보낸다
+
+    def whole(lines: list[dict]) -> list[dict]:
+        return [{"id": l["id"], "text": p[0] + l["text"] + p[2]} for l, p in zip(lines, parts)] if parts else lines
+
     try:
-        OG.assert_clean([d["text"] for d in draft])        # 사람 이름·ID·계정 정보가 든 재료는 가려서 보내지 않고 아예 보내지 않는다
+        OG.assert_clean([d["text"] for d in work])        # 사람 이름·ID·계정 정보가 든 재료는 가려서 보내지 않고 아예 보내지 않는다
     except OG.OutboundBlocked as e:
         raise ComposeFailed(str(e)) from e
     sch = schema(ids, KINDS[kind].max_chars)
-    feedback, why = None, "시도 없음"
+    feedback, why, last_out = None, "시도 없음", None
     for n in range(1, TRIES + 1):
         try:
-            out = LC.chat_json(messages(kind, draft, feedback), sch, f"compose_{kind}", 1500)
+            out = LC.chat_json(messages(kind, work, feedback), sch, f"compose_{kind}", 1500)
         except LC.LlmBadOutput as e:      # 응답은 왔지만 형식이 틀림(줄 수·칸 모자람 등) — 사유를 붙여 한 번 다시 요청한다
             lines, why = None, f"형식 오류: {e}"
             feedback = why
@@ -179,9 +233,16 @@ def compose(kind: str, draft: list[dict]) -> dict:
             continue
         except Exception as e:  # noqa: BLE001 — 연결·시간·차단기·외부 실패는 다시 해도 소용없다(안쪽 사정은 로그에만)
             raise ComposeFailed(f"LLM 호출 실패: {type(e).__name__}: {e}") from e
-        lines, why = check(kind, draft, out)
+        lines, why = check(kind, work, out)
         if lines is not None:
-            return {"lines": lines, "tries": n}
+            return {"lines": whole(lines), "tries": n}
         feedback = why
+        last_out = out
         log.info("문장 검사 거부(%s, %d번째): %s", kind, n, why)
+    if kind in ITEM_KINDS and last_out is not None:        # 항목 줄은 틀린 줄만 원문으로 두고 나머지는 돌려준다 (원문 본문은 프로그램이 만든 것이라 늘 안전하다)
+        cleaned, whys = _check_each(kind, work, last_out)
+        if cleaned is not None:
+            fixed = [c if w is None else d for c, d, w in zip(cleaned, work, whys)]
+            log.info("문장 일부만 사용(%s): %d줄 중 %d줄은 원문 그대로: %s", kind, len(work), sum(1 for w in whys if w), "; ".join(w for w in whys if w)[:300])
+            return {"lines": whole(fixed), "tries": TRIES}
     raise ComposeFailed(f"검사 통과 못 함: {why}")

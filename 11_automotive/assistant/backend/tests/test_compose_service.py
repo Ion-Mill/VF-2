@@ -302,3 +302,98 @@ def test_hash_in_equipment_name_is_not_treated_as_markdown_but_real_markdown_sti
     for bad in (bold, heading):
         use(bad, bad)
         assert_503(post("work_order", lines))
+
+
+# ------------------------------------------------------------------ 브리핑 항목 (2026-10-19): 꼬리표·덧붙임은 코드가 지키고 본문만 보낸다
+from backend.llm import compose as CMP  # noqa: E402
+
+ITEMS = [{"id": "L01", "text": "[재고 부족] 축 윤활유 재고가 안전 재고(4) 이하 · 9/10"},
+         {"id": "L02", "text": "[예방 정비 기한 넘김] VF2-02 윤활유 저장소 양 점검·보충 — 기한 넘김 (기한 09/28) · 9/29"},
+         {"id": "L03", "text": "▲ VF2-01 362 공구 수명 한계 도달 · 09:56부터 처리 안 됨"},
+         {"id": "L04", "text": "M6 탭 재고가 안전 재고(8) 이하 (24시간 넘게 처리 안 됨) (인계)"}]
+ITEM_BODIES = ["축 윤활유 재고가 안전 재고(4) 이하입니다", "VF2-02 윤활유 저장소 양 점검·보충이 기한 넘김입니다",
+               "VF2-01 362 공구가 수명 한계에 도달했습니다", "M6 탭 재고가 안전 재고(8) 이하입니다"]
+
+
+def item_out(*texts):
+    return {"lines": [{"id": f"L0{i + 1}", "text": t} for i, t in enumerate(texts)]}
+
+
+@pytest.mark.parametrize("text,head,body,tail", [
+    ("[재고 부족] 축 윤활유 재고가 안전 재고(4) 이하 · 9/10", "[재고 부족] ", "축 윤활유 재고가 안전 재고(4) 이하", " · 9/10"),
+    ("[예방 정비 기한 넘김] VF2-02 윤활유 저장소 양 점검·보충 — 기한 넘김 (기한 09/28) · 9/29", "[예방 정비 기한 넘김] ", "VF2-02 윤활유 저장소 양 점검·보충 — 기한 넘김", " (기한 09/28) · 9/29"),
+    ("[반복 알람 (1단계)] VF2-01 알람 108 — 7일 안 3번 (반복 알람 1단계, 처리할 때 조치 계획 필수)", "[반복 알람 (1단계)] ", "VF2-01 알람 108 — 7일 안 3번", " (반복 알람 1단계, 처리할 때 조치 계획 필수)"),
+    ("▲ VF2-01 362 공구 수명 한계 도달 · 09:56부터 처리 안 됨", "▲ ", "VF2-01 362 공구 수명 한계 도달", " · 09:56부터 처리 안 됨"),
+    ("VF2-02 주축 윤활 탱크 양 점검 — 기한 하루 전 (기한 09/29) / 추가: 다음 교대 첫 작업지시 순서 확인 (인계)", "", "VF2-02 주축 윤활 탱크 양 점검 — 기한 하루 전", " (기한 09/29) / 추가: 다음 교대 첫 작업지시 순서 확인 (인계)"),
+    ("[예방 정비 기한 넘김] VF2-01 창(유리) 손상 점검 — 기한 10/1 넘김", "[예방 정비 기한 넘김] ", "VF2-01 창(유리) 손상 점검 — 기한 10/1 넘김", ""),
+    ("(인계)", "", "(인계)", ""),                                 # 본문이 비면 줄 전체를 본문으로 둔다
+])
+def test_split_item_separates_tag_body_and_tail_and_joins_back(text, head, body, tail):
+    assert CMP.split_item(text) == (head, body, tail)
+    assert "".join(CMP.split_item(text)) == text
+
+
+def test_briefing_sends_only_the_body_and_puts_tags_and_tails_back_unchanged():
+    r = use(item_out(*ITEM_BODIES))
+    res = post("briefing", ITEMS)
+    assert res.status_code == 200 and res.json()["tries"] == 1
+    got = [l["text"] for l in res.json()["lines"]]
+    assert got == ["[재고 부족] 축 윤활유 재고가 안전 재고(4) 이하입니다 · 9/10",
+                   "[예방 정비 기한 넘김] VF2-02 윤활유 저장소 양 점검·보충이 기한 넘김입니다 (기한 09/28) · 9/29",
+                   "▲ VF2-01 362 공구가 수명 한계에 도달했습니다 · 09:56부터 처리 안 됨",
+                   "M6 탭 재고가 안전 재고(8) 이하입니다 (24시간 넘게 처리 안 됨) (인계)"]
+    sent = r.calls[0]["stdin"]
+    assert "[재고 부족]" not in sent and "· 9/10" not in sent and "(인계)" not in sent and "▲" not in sent      # 꼬리표·덧붙임은 나가지 않는다
+    assert "L01: 축 윤활유 재고가 안전 재고(4) 이하" in sent
+
+
+def test_briefing_dangling_end_is_rejected_then_the_retry_succeeds():
+    bad = item_out(ITEM_BODIES[0], "VF2-02 윤활유 저장소 양 점검·보충이 기한 넘김이고", *ITEM_BODIES[2:])      # '~이고'로 끝나면 이어지는 말이라 끝맺지 않은 줄
+    r = use(bad, item_out(*ITEM_BODIES))
+    res = post("briefing", ITEMS)
+    assert res.status_code == 200 and res.json()["tries"] == 2
+    assert "문장이 끝나지 않음" in r.calls[1]["stdin"]
+
+
+def test_briefing_trailing_period_is_removed_because_the_item_has_none():
+    use(item_out(*[b + "." for b in ITEM_BODIES]))
+    res = post("briefing", ITEMS)
+    assert res.status_code == 200 and res.json()["tries"] == 1
+    assert res.json()["lines"][0]["text"] == "[재고 부족] 축 윤활유 재고가 안전 재고(4) 이하입니다 · 9/10"
+
+
+def test_briefing_only_the_bad_line_goes_back_to_the_original_and_the_rest_is_kept():
+    bad = item_out(ITEM_BODIES[0], "VF2-02 윤활유 저장소 양 점검·보충이 기한 넘김입니다 (기한 09/29)", *ITEM_BODIES[2:])      # 숫자를 바꾼 줄 하나
+    r = use(bad, bad)
+    res = post("briefing", ITEMS)
+    assert res.status_code == 200 and len(r.calls) == 2
+    got = [l["text"] for l in res.json()["lines"]]
+    assert got[1] == ITEMS[1]["text"]                                       # 틀린 줄은 프로그램 문구 그대로
+    assert got[0].endswith("이하입니다 · 9/10") and got[2].startswith("▲ ") and got[3].endswith("(인계)")      # 나머지는 다듬은 문장
+
+
+def test_briefing_when_every_line_is_bad_it_returns_all_originals_not_a_failure():
+    bad = item_out(*[b.replace("4", "5").replace("8", "9").replace("362", "363").replace("02", "03") for b in ITEM_BODIES])
+    use(bad, bad)
+    res = post("briefing", ITEMS)
+    assert res.status_code == 200
+    assert [l["text"] for l in res.json()["lines"]] == [i["text"] for i in ITEMS]
+
+
+def test_briefing_wrong_line_ids_are_still_a_failure_not_a_partial():
+    bad = {"lines": [{"id": "L01", "text": ITEM_BODIES[0]}, {"id": "L03", "text": ITEM_BODIES[2]}]}
+    r = use(bad, bad)
+    assert_503(post("briefing", ITEMS))
+    assert len(r.calls) == 2
+
+
+def test_briefing_bodies_with_people_or_account_info_are_not_sent():
+    r = use(item_out(*ITEM_BODIES))
+    assert_503(post("briefing", [{"id": "L01", "text": "[참고] 담당 U07 점검 · 9/10"}]))
+    assert r.calls == []
+
+
+def test_other_kinds_are_not_salvaged_one_bad_line_still_fails_the_whole_call():
+    bad = out("실적은 88개, 총 목표 90개입니다.", GOOD["lines"][1]["text"], GOOD["lines"][2]["text"])
+    use(bad, bad)
+    assert_503(post())

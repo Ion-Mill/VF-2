@@ -504,3 +504,100 @@ def test_guide_card_text_rejects_bad_requests(monkeypatch, bad):
     with pytest.raises(SS.ApiError) as e:
         SS.guide_card_text(bad)
     assert e.value.status == 400 and fake.calls == []
+
+
+# ------------------------------------------------------------------ 브리핑 '먼저 챙길 일' 입구 (순위 묶음별, 2026-10-19)
+def _group(rank, n, tag="항목"):
+    return {"rank": rank, "lines": [f"[재고 부족] {tag} {i + 1} 재고 {i + 1}개 · 9/{i + 1}" for i in range(n)]}
+
+
+def test_briefing_text_is_two_step_per_rank_group_and_keyed_by_shift_and_rank(monkeypatch):
+    SS = _sim_server(monkeypatch)
+    fake = Fake()
+    SS.COMPOSER = Composer(run_id=lambda: 1, post=fake, enabled=True)
+    body = {"shift": "2026-10-01-D", "groups": [_group("0-1", 2), _group("3", 3)]}
+    assert SS.briefing_text(body) == {"ready": False, "groups": [{"rank": "0-1", "ready": False}, {"rank": "3", "ready": False}]}
+    SS.COMPOSER.wait_idle()
+    res = SS.briefing_text(body)
+    assert res["ready"] is True and [g["rank"] for g in res["groups"]] == ["0-1", "3"]
+    assert res["groups"][1]["lines"] == ["다듬음: " + t for t in body["groups"][1]["lines"]]
+    assert len(fake.calls) == 2 and {c[0] for c in fake.calls} == {"briefing"}         # 묶음 둘 = 호출 둘, 다시 물어도 더 안 부른다
+    assert [l["id"] for l in fake.calls[0][1]] == ["L01", "L02"] or [l["id"] for l in fake.calls[1][1]] == ["L01", "L02"]
+
+
+def test_briefing_text_changed_group_is_remade_alone_and_the_old_sentence_is_never_served(monkeypatch):
+    SS = _sim_server(monkeypatch)
+    fake = Fake()
+    SS.COMPOSER = Composer(run_id=lambda: 1, post=fake, enabled=True)
+    body = {"shift": "S1", "groups": [_group("3", 2), _group("4", 2)]}
+    SS.briefing_text(body)
+    SS.COMPOSER.wait_idle()
+    assert SS.briefing_text(body)["ready"] is True
+    changed = {"shift": "S1", "groups": [_group("3", 3), _group("4", 2)]}               # 3 순위에 알람이 하나 늘었다
+    res = SS.briefing_text(changed)
+    assert res["ready"] is False
+    assert [g["ready"] for g in res["groups"]] == [False, True]                          # 바뀐 묶음만 다시, 안 바뀐 묶음은 그대로 준비
+    SS.COMPOSER.wait_idle()
+    assert SS.briefing_text(changed)["ready"] is True and len(fake.calls) == 3
+
+
+def test_briefing_text_group_over_40_lines_is_split_in_chunks_and_ready_only_when_all_chunks_are(monkeypatch):
+    SS = _sim_server(monkeypatch)
+    fake = Fake()
+    SS.COMPOSER = Composer(run_id=lambda: 1, post=fake, enabled=True)
+    body = {"shift": "S1", "groups": [_group("3", 45)]}
+    assert SS.briefing_text(body)["ready"] is False
+    SS.COMPOSER.wait_idle()
+    res = SS.briefing_text(body)
+    assert res["ready"] is True and len(res["groups"][0]["lines"]) == 45                 # 40 + 5 줄이 순서대로 이어진다
+    assert sorted(len(c[1]) for c in fake.calls) == [5, 40] and res["groups"][0]["lines"][44].startswith("다듬음: ")
+
+
+def test_briefing_text_a_group_that_fails_stays_original_while_the_others_are_served(monkeypatch):
+    SS = _sim_server(monkeypatch)
+
+    class OneBad(Fake):
+        def __call__(self, kind, lines):
+            if lines[0]["text"].startswith("[재고 부족] 나쁜"):
+                raise ComposeHttpError(503, "HTTP 503")
+            return super().__call__(kind, lines)
+    fake = OneBad()
+    SS.COMPOSER = Composer(run_id=lambda: 1, post=fake, enabled=True)
+    body = {"shift": "S1", "groups": [_group("3", 2, "나쁜"), _group("4", 2)]}
+    SS.briefing_text(body)
+    SS.COMPOSER.wait_idle()
+    res = SS.briefing_text(body)
+    assert res["ready"] is False and [g["ready"] for g in res["groups"]] == [False, True]
+
+
+def test_briefing_text_off_means_not_ready_and_sends_nothing(monkeypatch):
+    SS = _sim_server(monkeypatch)
+    fake = Fake()
+    SS.COMPOSER = Composer(run_id=lambda: 1, post=fake, enabled=False)
+    res = SS.briefing_text({"shift": "S1", "groups": [_group("3", 2)]})
+    assert res == {"ready": False, "groups": [{"rank": "3", "ready": False}]} and fake.calls == []
+
+
+@pytest.mark.parametrize("bad", [
+    {}, {"shift": "", "groups": [_group("3", 1)]}, {"shift": "S 1", "groups": [_group("3", 1)]}, {"shift": "S1", "groups": []},
+    {"shift": "S1", "groups": "문자열"}, {"shift": "S1", "groups": [_group("0", 1)]},                       # 안전(0)은 비서에게 보내지 않는다
+    {"shift": "S1", "groups": [_group("x", 1)]}, {"shift": "S1", "groups": [_group("3", 1), _group("3", 1)]},
+    {"shift": "S1", "groups": [{"rank": "3", "lines": []}]}, {"shift": "S1", "groups": [{"rank": "3", "lines": ["ok", ""]}]},
+    {"shift": "S1", "groups": [{"rank": "3", "lines": ["x" * 601]}]}, {"shift": "S1", "groups": [{"rank": "3", "lines": [1, 2]}]},
+    {"shift": "S1", "groups": [_group("3", 200), _group("4", 101)]}, {"shift": "S1", "groups": [_group(str(i), 1) for i in range(1, 10)]},
+    {"shift": "S1", "groups": ["3"]},
+])
+def test_briefing_text_rejects_bad_requests(monkeypatch, bad):
+    SS = _sim_server(monkeypatch)
+    fake = Fake()
+    SS.COMPOSER = Composer(run_id=lambda: 1, post=fake, enabled=True)
+    with pytest.raises(SS.ApiError) as e:
+        SS.briefing_text(bad)
+    assert e.value.status == 400 and fake.calls == []
+
+
+def test_briefing_text_route_is_post_only(monkeypatch):
+    SS = _sim_server(monkeypatch)
+    SS.COMPOSER = Composer(run_id=lambda: 1, post=Fake(), enabled=False)
+    src = (TOOLS / "sim_server.py").read_text(encoding="utf-8")
+    assert 'key == "assist/briefing-text" and method == "POST"' in src
