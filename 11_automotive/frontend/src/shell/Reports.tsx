@@ -7,6 +7,7 @@ import { RANK_NAME, RANK_ORDER, userName } from './model';
 import { api, hm, md, simIso, useFetch } from './live';
 import { CAUSE_KO } from './data';
 import { parseHandover } from './Briefing';
+import { handoverCount, notableHead } from './reportLabels';
 import { ConfirmBox } from './Safety';
 
 const ST: Record<string, string> = { AI_DRAFT: 'AI비서 초안', EDITING: '수정 중', CONFIRMED: '확정' };
@@ -68,8 +69,8 @@ export function ShiftReportScreen() {
           {pastRecs.map((x) => <li key={x.record_no}>{x.record_no} ({x.record_type === 'QUICK' ? '간이' : '정식'}) {x.equipment_id} · {x.action}</li>)}
           {myWos.length + pastWos.length + pastRecs.length === 0 && <li>없음</li>}
         </ul>)}
-        {sec('[7] 특이 사항 (프로그램이 쓴 초안 — 비서가 켜져 있으면 비서가 다듬은 문장)', edit ? <textarea value={edit.n} onChange={(e) => setEdit({ ...edit, n: e.target.value })} rows={5} className="w-full rounded-md border border-slate-300 p-2 text-[15px]" /> : <p className="text-[15px]">{r.notable_text}</p>)}
-        {sec(`[8] 인계 사항 — 전체 ${hand.reduce((s, g) => s + g.items.length, 0)}건 (2.5 보고 순위 순, 잠금·표지 맨 위)`, edit ? <textarea value={edit.h} onChange={(e) => setEdit({ ...edit, h: e.target.value })} rows={4} className="w-full rounded-md border border-slate-300 p-2 text-[14px]" /> : (
+        {sec(notableHead(r), edit ? <textarea value={edit.n} onChange={(e) => setEdit({ ...edit, n: e.target.value })} rows={5} className="w-full rounded-md border border-slate-300 p-2 text-[15px]" /> : <p className="text-[15px]">{r.notable_text}</p>)}
+        {sec(`[8] 인계 사항 — 전체 ${handoverCount(hand)}건 (2.5 보고 순위 순, 잠금·표지 맨 위)`, edit ? <textarea value={edit.h} onChange={(e) => setEdit({ ...edit, h: e.target.value })} rows={4} className="w-full rounded-md border border-slate-300 p-2 text-[14px]" /> : (
           <ul className="text-[14px]">{RANK_ORDER.map((k) => { const g = hand.find((x) => x.rank === k); return <li key={k}><b>{k} {RANK_NAME[k]}</b> {g && g.items.length ? g.items.join('; ') : k === '0' ? (g?.name ?? '잠금·표지 중인 설비 없음') : '-'}</li>; })}</ul>
         ))}
         {(confirmed && edit) && <input value={reason} onChange={(e) => setReason(e.target.value)} placeholder="확정 후 수정 사유 (필수)" className="mb-2 h-11 w-full rounded-md border border-[#e8954a] px-2" />}
