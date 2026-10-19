@@ -49,10 +49,12 @@ def _int_clamped(v: str, default: int, lo: int, hi: int) -> int:
 # 외부 Claude 모델 ID → 화면 이름. PURE_MODEL이 받는 이름의 전부다 (claude_client.PRICES의 키와 같아야 한다 — config가 claude_client를 import하면 순환이라
 # 여기에 두고, 시험이 같은 집합인지 단정한다). 가격표에 없는 이름이면 gate_problem이 모든 외부 호출을 막기 때문에 읽을 때 걸러 낸다
 CLAUDE_MODEL_NAMES = {"claude-opus-5-5": "Claude Opus 5.5", "claude-sonnet-5-5": "Claude Sonnet 5.5", "claude-haiku-5-5": "Claude Haiku 5.5"}
+# PURE_MODEL 줄이 .env·환경에 **없을 때**의 값 (2026-10-19 사용자 결정 "코드 기본값을 Haiku로"). 줄이 있고 비어 있으면(PURE_MODEL=) Sonnet — 줄 없음과 빈 줄이 갈린다
+PURE_MODEL_DEFAULT = "claude-haiku-5-5"
 
 
 def _pure_model(v: str) -> str:
-    """PURE_MODEL 값: 앞뒤 공백을 지우고 소문자로 바꾼 뒤 CLAUDE_MODEL_NAMES에 있으면 그 ID, 아니면 빈 값(= 모든 호출 Sonnet, 지금 동작)."""
+    """PURE_MODEL 값: 앞뒤 공백을 지우고 소문자로 바꾼 뒤 CLAUDE_MODEL_NAMES에 있으면 그 ID, 아니면 빈 값(= 모든 호출 Sonnet). 빈 값·오타는 보수적인 쪽(Sonnet)이다."""
     v = str(v).strip().lower()
     return v if v in CLAUDE_MODEL_NAMES else ""
 
@@ -205,8 +207,9 @@ class Settings:
     ctx_narrow: bool = False
     # pure_follow_rewrite: 1이면 이어 묻기 "쉽게/짧게"가 순수 길(Claude가 쓴) 답의 글을 실제로 다시 쓴다(숫자·영문 이름·조건 말·길이 검사 + 뜻 판정, 안전 낱말 줄은 원문 그대로). 꺼짐·검사 실패·외부 요청 아님이면 앞 답을 그대로 보인다(지금 동작).
     pure_follow_rewrite: bool = False
-    # pure_model: 비어 있지 않으면 **채팅(외부 Claude 요청)의 순수 길 본 답변**(작업 이름 pure_answer: 질문 + 조각 → Claude 1번, PURE_RETRY의 두 번째 호출 포함)만 이 모델로 부른다 (2026-10-19, 예: claude-haiku-5-5).
-    # 판정·다시 쓰기·옛 길·compose 같은 나머지 호출은 늘 Sonnet 5.5다. 노력은 medium 그대로. 가격표에 없는 이름이면 빈 값으로 되돌린다. 기본 비움 = 지금 동작 그대로 (명령도 한 글자 안 다르다)
+    # pure_model: 비어 있지 않으면 **채팅(외부 Claude 요청)의 순수 길 본 답변**(작업 이름 pure_answer: 질문 + 조각 → Claude 1번, PURE_RETRY의 두 번째 호출 포함)만 이 모델로 부른다 (2026-10-19).
+    # 판정·다시 쓰기·옛 길·compose 같은 나머지 호출은 늘 Sonnet 5.5다. 노력은 medium 그대로. 가격표에 없는 이름이면 빈 값(= Sonnet)으로 되돌린다.
+    # settings()가 만드는 기본은 claude-haiku-5-5(PURE_MODEL 줄이 없을 때, 사용자 결정 2026-10-19), 줄을 비우면(PURE_MODEL=) Sonnet 5.5 = 예전 동작. 이 필드 자체의 기본값 ""는 Settings를 직접 만드는 코드(시험 등)가 예전 동작을 그대로 받게 하려는 것이다
     pure_model: str = ""
     llm_provider: str = "local"
     # 스위치 이름은 MOM_CLAUDE_* — 이 PC의 Claude Code 환경에 CLAUDE_EFFORT 같은 값이 이미 있어(2026-10-14 확인) 같은 이름을 쓰면 섞인다.
@@ -367,7 +370,7 @@ def settings() -> Settings:
         fixed_block=get("FIXED_BLOCK", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
         ctx_narrow=get("CTX_NARROW", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
         pure_follow_rewrite=get("PURE_FOLLOW_REWRITE", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
-        pure_model=_pure_model(get("PURE_MODEL", "")),   # 기본 비움 — 모르는 이름·빈 값도 비움(모든 호출 Sonnet, 지금 동작). 앱 외부 요청에서만 쓰인다
+        pure_model=_pure_model(get("PURE_MODEL", PURE_MODEL_DEFAULT)),   # 줄 없음 = Haiku(기본), 빈 줄·claude-sonnet-5-5·모르는 이름 = Sonnet(예전 동작). 앱 외부 요청에서만 쓰인다
         llm_provider=provider,
         claude_model="claude-sonnet-5-5" if claude_app else get("MOM_CLAUDE_MODEL", "claude-opus-5-5").strip(),   # 앱 스위치: Sonnet 5.5 medium, 구독 로그인(cli) 고정 (2026-10-15 사용자 결정). 2026-10-19: 순수 길 본 답변만 PURE_MODEL로 달라질 수 있다 — claude_client가 그 호출에서만 갈라 준다
         claude_effort="medium" if claude_app else choice("MOM_CLAUDE_EFFORT", "low"),

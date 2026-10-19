@@ -1,9 +1,12 @@
 """순수 길 본 답변 모델 선택 PURE_MODEL 시험 (2026-10-19). 기획: 261003_창민/Haiku_전환_기획_20261019.md
 
-앱 외부 요청(채팅)의 모델은 늘 Sonnet 5.5였다. PURE_MODEL에 `claude-haiku-5-5`를 적으면 **순수 길 본 답변(작업 이름 pure_answer, PURE_RETRY의 두 번째 호출 포함)만** Haiku로 부르고
-판정·다시 쓰기·옛 길·compose 같은 나머지 호출은 Sonnet 그대로다. 진짜 `claude`는 부르지 않는다 — 가짜 실행기(`CC.use_runner`)는 명령의 `--model` 값을 읽어 **요청받은 모델 이름으로** 답한다.
-지키는 것: ① 키를 비우면(기본) 모든 호출의 명령이 지금과 한 글자도 다르지 않다 ② 켜면 pure_answer 명령에서 `--model` 값 하나만 다르다 ③ 두 번째(넓게 다시 본) 호출도 같은 모델
-④ 모르는 이름은 비운 것으로 보고 호출이 막히지 않는다 ⑤ 평가 경로(MOM_CLAUDE_MODEL)는 영향이 없다 ⑥ 모델 불일치 검사가 그대로 유효하다 ⑦ 이름표(mode)는 키가 비면 지금 글자 그대로, 켜면 실제 모델 이름.
+앱 외부 요청(채팅)의 모델은 늘 Sonnet 5.5였다. PURE_MODEL로 **순수 길 본 답변(작업 이름 pure_answer, PURE_RETRY의 두 번째 호출 포함)만** 다른 모델로 부른다.
+**코드 기본은 Haiku 5.5**(사용자 결정 2026-10-19): PURE_MODEL 줄이 없으면 `claude-haiku-5-5`, 줄이 있고 비어 있거나(`PURE_MODEL=`) `claude-sonnet-5-5`면 Sonnet(예전 동작).
+판정·다시 쓰기·옛 길·compose 같은 나머지 호출은 늘 Sonnet이다. 진짜 `claude`는 부르지 않는다 — 가짜 실행기(`CC.use_runner`)는 명령의 `--model` 값을 읽어 **요청받은 모델 이름으로** 답한다.
+시험 공통 고정물(conftest)은 PURE_MODEL을 빈 줄로 고정해 두므로(기존 시험은 Sonnet 모드), 이 파일의 "줄 없음" 시험은 `unset()`으로 환경변수를 지우고 `.env` 읽기도 막는다.
+지키는 것: ① 줄 없음 → pure_answer만 Haiku, 나머지 17종 Sonnet ② 빈 줄·Sonnet 명시 → 모든 호출의 명령이 예전과 한 글자도 다르지 않다 ③ 두 번째(넓게 다시 본) 호출도 같은 모델
+④ 모르는 이름은 비운 것(Sonnet)으로 보고 호출이 막히지 않는다 ⑤ 평가 경로(MOM_CLAUDE_MODEL)·로컬 요청은 기본값이 Haiku여도 영향이 없다 ⑥ 모델 불일치 검사가 그대로 유효하다
+⑦ 이름표(mode)는 Sonnet이면 예전 글자 그대로, Haiku면 실제 모델 이름 ⑧ `.env.example`의 줄은 코드 기본값과 같다.
 """
 from __future__ import annotations
 
@@ -99,6 +102,12 @@ def env(monkeypatch):
     get_state().reset()
 
 
+def unset(monkeypatch):
+    """PURE_MODEL 줄이 **없는** 상태: 환경변수를 지우고(conftest가 빈 줄로 고정해 둠) .env 읽기도 막는다 (코드 기본값이 적용된다)."""
+    monkeypatch.delenv("PURE_MODEL", raising=False)
+    monkeypatch.setattr(CFG, "_dotenv", lambda: {})
+
+
 def call(name, runner):
     """외부 Claude 요청 안에서 chat_json 한 번 (실제 입구 그대로). 받은 명령은 runner.cmds[-1]."""
     CC.use_runner(runner)
@@ -112,12 +121,15 @@ def expected_cmd(model, effort="medium"):
 
 
 def chat(monkeypatch, runner, model="", retry="0", **env):
-    """채팅(순수 길) 한 번: /api/assistant/chat에 llm=claude. 말투·형식 스위치는 꺼짐(지금 글자)."""
+    """채팅(순수 길) 한 번: /api/assistant/chat에 llm=claude. 말투·형식 스위치는 꺼짐(지금 글자). model=None이면 PURE_MODEL 줄 없음(코드 기본값)."""
     for k, v in APP_FLAGS.items():
         monkeypatch.setenv(k, v)
     monkeypatch.setenv("PURE_EXPAND", "1")
     monkeypatch.setenv("PURE_KEEP_SIGNALS", "1")
-    monkeypatch.setenv("PURE_MODEL", model)
+    if model is None:
+        unset(monkeypatch)
+    else:
+        monkeypatch.setenv("PURE_MODEL", model)
     monkeypatch.setenv("PURE_RETRY", retry)
     for k, v in env.items():
         monkeypatch.setenv(k, v)
@@ -126,10 +138,15 @@ def chat(monkeypatch, runner, model="", retry="0", **env):
 
 
 # ------------------------------------------------------------------ 설정
-def test_default_is_empty_and_the_key_shows_in_flags(monkeypatch):
-    assert Settings.__dataclass_fields__["pure_model"].default == ""
-    monkeypatch.delenv("PURE_MODEL")                                    # 줄이 없어도
+def test_code_default_is_haiku_when_there_is_no_line_and_sonnet_when_the_line_is_empty(monkeypatch):
+    assert CFG.PURE_MODEL_DEFAULT == HAIKU
+    assert Settings.__dataclass_fields__["pure_model"].default == ""     # Settings를 직접 만드는 코드는 예전 동작(Sonnet)을 그대로 받는다
+    unset(monkeypatch)                                                   # 줄 없음 + .env 없음 → 기본값 Haiku
+    assert settings().pure_model == HAIKU and settings().flags()["pure_model"] == HAIKU
+    monkeypatch.setenv("PURE_MODEL", "")                                 # 빈 줄 → Sonnet
     assert settings().pure_model == "" and settings().flags()["pure_model"] == ""
+    monkeypatch.setenv("PURE_MODEL", SONNET)
+    assert settings().pure_model == SONNET and settings().flags()["pure_model"] == SONNET
     monkeypatch.setenv("PURE_MODEL", HAIKU)
     assert settings().pure_model == HAIKU and settings().flags()["pure_model"] == HAIKU
 
@@ -144,10 +161,17 @@ def test_value_is_trimmed_lowercased_and_unknown_names_become_empty(monkeypatch,
     assert settings().pure_model == want
 
 
-def test_dotenv_line_is_read(monkeypatch):
+@pytest.mark.parametrize("dotenv, want", [
+    ({}, HAIKU),                                   # .env에 줄이 없다 -> 기본값 Haiku
+    ({"MOM_BACKEND_URL": "http://x"}, HAIKU),      # 다른 줄만 있다 -> 기본값 Haiku
+    ({"PURE_MODEL": HAIKU}, HAIKU),
+    ({"PURE_MODEL": ""}, ""),                      # `PURE_MODEL=` -> 비운 줄 -> Sonnet
+    ({"PURE_MODEL": SONNET}, SONNET),
+    ({"PURE_MODEL": "haiku"}, "")])                # 오타 -> 비움(Sonnet)
+def test_dotenv_line_is_read_and_a_missing_line_differs_from_an_empty_one(monkeypatch, dotenv, want):
     monkeypatch.delenv("PURE_MODEL")
-    monkeypatch.setattr(CFG, "_dotenv", lambda: {"PURE_MODEL": HAIKU})
-    assert settings().pure_model == HAIKU
+    monkeypatch.setattr(CFG, "_dotenv", lambda: dict(dotenv))
+    assert settings().pure_model == want
 
 
 def test_allowed_names_match_the_price_table_and_the_job_name_matches():
@@ -156,27 +180,33 @@ def test_allowed_names_match_the_price_table_and_the_job_name_matches():
     assert all(n in CC.PRICES for n in (SONNET, HAIKU)) and CFG.CLAUDE_MODEL_NAMES[HAIKU] == "Claude Haiku 5.5" and CFG.CLAUDE_MODEL_NAMES[SONNET] == "Claude Sonnet 5.5"
 
 
-def test_env_example_has_an_empty_key_with_its_comment_on_the_line_above():
+def test_env_example_line_equals_the_code_default_with_its_comment_on_the_line_above():
     lines = (Path(__file__).resolve().parents[2] / ".env.example").read_text(encoding="utf-8").splitlines()
-    i = lines.index("PURE_MODEL=")                                      # 비운 채로 배포된다 (켜기는 각자 .env)
-    assert lines[i - 1].startswith("#") and HAIKU in lines[i - 1] and lines.count("PURE_MODEL=") == 1
+    mine = [l for l in lines if l.startswith("PURE_MODEL=")]
+    assert mine == [f"PURE_MODEL={CFG.PURE_MODEL_DEFAULT}"]             # 예시 줄 = 코드 기본값 (복사해 쓴 .env도 같은 모델)
+    i = lines.index(mine[0])
+    assert lines[i - 1].startswith("#") and "PURE_MODEL=" in lines[i - 1] and "130" in lines[i - 1] and "Sonnet" in lines[i - 1]   # 윗줄 설명: 비우면 Sonnet, 대기 130초. 값 옆 `#`은 test_env_example이 막는다
+    assert CFG._pure_model(mine[0].split("=", 1)[1]) == HAIKU
 
 
-# ------------------------------------------------------------------ ① 키를 비우면 모든 호출의 명령이 지금과 같다
+# ------------------------------------------------------------------ ① 빈 줄·Sonnet 명시면 모든 호출의 명령이 예전과 같다
 @pytest.mark.parametrize("name", NAMES)
-@pytest.mark.parametrize("how", ["empty", "absent"])
-def test_empty_key_leaves_every_call_exactly_as_it_was(monkeypatch, name, how):
-    if how == "absent":
-        monkeypatch.delenv("PURE_MODEL")
+@pytest.mark.parametrize("value", ["", SONNET])
+def test_empty_line_or_explicit_sonnet_leaves_every_call_exactly_as_it_was(monkeypatch, name, value):
+    monkeypatch.setenv("PURE_MODEL", value)
     r = Echo()
     assert call(name, r) == {"ok": True}
     assert r.cmds == [expected_cmd(SONNET)]                             # 명령 전체가 같다 (--model claude-sonnet-5-5, --effort medium)
     assert arg(r.cmds[0], "--model") == SONNET and arg(r.cmds[0], "--effort") == "medium"
 
 
-# ------------------------------------------------------------------ ② 켜면 pure_answer만 Haiku, 같은 요청 안의 나머지는 Sonnet
-def test_haiku_key_changes_only_the_model_value_of_pure_answer(monkeypatch):
-    monkeypatch.setenv("PURE_MODEL", HAIKU)
+# ------------------------------------------------------------------ ② 줄 없음(기본)·Haiku 명시면 pure_answer만 Haiku, 같은 요청 안의 나머지는 Sonnet
+@pytest.mark.parametrize("how", ["no_line", "explicit"])
+def test_haiku_changes_only_the_model_value_of_pure_answer(monkeypatch, how):
+    if how == "no_line":
+        unset(monkeypatch)                                              # PURE_MODEL 줄이 없다 = 코드 기본값
+    else:
+        monkeypatch.setenv("PURE_MODEL", HAIKU)
     r = Echo()
     call("pure_answer", r)
     assert r.cmds == [expected_cmd(HAIKU)]                              # --model 값 하나만 다르다 (노력은 medium 그대로)
@@ -184,11 +214,11 @@ def test_haiku_key_changes_only_the_model_value_of_pure_answer(monkeypatch):
     for name in OTHERS:
         r = Echo()
         call(name, r)
-        assert r.cmds == [expected_cmd(SONNET)], name                   # 나머지는 키가 있어도 한 글자도 안 바뀐다
+        assert r.cmds == [expected_cmd(SONNET)], name                   # 나머지 17종은 한 글자도 안 바뀐다
 
 
 def test_one_request_mixes_the_two_models(monkeypatch):
-    monkeypatch.setenv("PURE_MODEL", HAIKU)
+    unset(monkeypatch)                                                  # 기본값만으로 섞인다
     r = Echo()
     CC.use_runner(r)
     with EXT.external_request("claude"):
@@ -199,11 +229,18 @@ def test_one_request_mixes_the_two_models(monkeypatch):
     assert [arg(c, "--model") for c in r.cmds] == [HAIKU] + [SONNET] * len(OTHERS)
 
 
-def test_explicit_sonnet_key_is_the_same_as_empty(monkeypatch):
-    monkeypatch.setenv("PURE_MODEL", SONNET)
-    r = Echo()
-    call("pure_answer", r)
-    assert r.cmds == [expected_cmd(SONNET)]
+def test_explicit_sonnet_is_the_same_as_an_empty_line_and_not_the_same_as_no_line(monkeypatch):
+    commands = {}
+    for how in ("sonnet", "empty", "no_line"):
+        if how == "no_line":
+            unset(monkeypatch)
+        else:
+            monkeypatch.setenv("PURE_MODEL", SONNET if how == "sonnet" else "")
+        r = Echo()
+        call("pure_answer", r)
+        commands[how] = r.cmds
+    assert commands["sonnet"] == commands["empty"] == [expected_cmd(SONNET)]   # D10: 명시·빈 줄 = 예전 명령 그대로
+    assert commands["no_line"] == [expected_cmd(HAIKU)]                       # D9: 줄이 없을 때만 Haiku
 
 
 @pytest.mark.parametrize("bad", ["claude-haiku", "haiku", "foo", "claude-haiku-5", "Haiku 5.5"])
@@ -219,16 +256,17 @@ def test_unknown_names_do_not_block_any_call(monkeypatch, bad):
 def test_usage_rows_carry_the_model_that_was_asked_for(monkeypatch):
     rows = []
     monkeypatch.setattr(CC, "_write_row", lambda row, usd: rows.append(row))
-    monkeypatch.setenv("PURE_MODEL", HAIKU)
+    unset(monkeypatch)
     for name in ("pure_answer", "faith"):
         call(name, Echo())
     assert [(r["job"], r["model"], r["models"]) for r in rows] == [("pure_answer", HAIKU, [HAIKU]), ("faith", SONNET, [SONNET])]   # 기록·환산 비용도 같은 모델
 
 
 # ------------------------------------------------------------------ 끝에서 끝 (/chat)
-def test_chat_pure_answer_asks_haiku_and_the_label_says_so(monkeypatch):
+@pytest.mark.parametrize("model", [None, HAIKU])                       # 줄 없음(코드 기본값) · 명시
+def test_chat_pure_answer_asks_haiku_and_the_label_says_so(monkeypatch, model):
     r = Echo()
-    resp = chat(monkeypatch, r, HAIKU)
+    resp = chat(monkeypatch, r, model)
     j = resp.json()
     assert resp.status_code == 200 and j["status"] == "답변" and j["conclusion"] == "처음 답"
     assert r.models() == [HAIKU] and arg(r.cmds[0], "--effort") == "medium"
@@ -239,23 +277,24 @@ def test_chat_pure_answer_asks_haiku_and_the_label_says_so(monkeypatch):
     assert swapped == r.cmds[0]                                         # 같은 질문의 명령이 --model 값 하나만 다르다 (지시문·스키마·사용자 글 모두 같다)
 
 
-def test_chat_with_the_key_empty_keeps_todays_label_and_sonnet(monkeypatch):
+@pytest.mark.parametrize("model", ["", SONNET])                         # 빈 줄 · Sonnet 명시
+def test_chat_with_an_empty_line_or_sonnet_keeps_todays_label_and_sonnet(monkeypatch, model):
     r = Echo()
-    j = chat(monkeypatch, r, "").json()
+    j = chat(monkeypatch, r, model).json()
     assert r.models() == [SONNET]
     assert j["mode"] == f"외부 LLM(Claude Sonnet 5.5) · {MODE_TAIL}"    # 지금 글자 그대로 (test_pure_external과 같은 문장)
 
 
 def test_chat_retry_second_call_uses_the_same_model(monkeypatch):
     r = Echo(first="insufficient", second="answer")
-    j = chat(monkeypatch, r, HAIKU, retry="1").json()
+    j = chat(monkeypatch, r, None, retry="1").json()                    # 줄 없음(기본값)
     assert len(r.cmds) == 2 and r.models() == [HAIKU, HAIKU]            # 넓게 다시 본 호출도 pure_answer라 같은 모델
     assert [arg(c, "--effort") for c in r.cmds] == ["medium", "medium"]
     assert PURE.RETRY_NOTE in arg(r.cmds[1], "--system-prompt") and j["conclusion"] == "넓게 본 답"
     assert j["mode"].startswith("외부 LLM(Claude Haiku 5.5) · 순수 연결") and "넓게 다시 봄" in j["mode"]
 
 
-def test_chat_retry_with_the_key_empty_stays_sonnet_twice(monkeypatch):
+def test_chat_retry_with_an_empty_line_stays_sonnet_twice(monkeypatch):
     r = Echo(first="insufficient", second="answer")
     j = chat(monkeypatch, r, "", retry="1").json()
     assert r.models() == [SONNET, SONNET] and j["mode"].startswith("외부 LLM(Claude Sonnet 5.5) · 순수 연결")
@@ -264,7 +303,7 @@ def test_chat_retry_with_the_key_empty_stays_sonnet_twice(monkeypatch):
 def test_card_rewrite_calls_stay_sonnet_while_the_key_is_on(monkeypatch):
     for k, v in {"LLM_ENABLED": "1", "LLM_JOBS": "write,route", "ASSISTANT_PROVIDER": "claude", "PARSE_V2": "1", "PARSE_V3": "1", "CARD_REWRITE": "1"}.items():
         monkeypatch.setenv(k, v)
-    monkeypatch.setenv("PURE_MODEL", HAIKU)
+    unset(monkeypatch)                                                  # 줄 없음 = 기본값 Haiku가 켜진 상태
     r = Echo()
     CC.use_runner(r)
     with EXT.external_request("claude"):
@@ -278,7 +317,7 @@ def test_old_route_call_stays_sonnet_while_the_key_is_on(monkeypatch):
     for k, v in APP_FLAGS.items():
         monkeypatch.setenv(k, v)
     monkeypatch.setenv("PURE_EXTERNAL", "0")
-    monkeypatch.setenv("PURE_MODEL", HAIKU)
+    unset(monkeypatch)
     r = Echo()
     CC.use_runner(r)
     resp = client.post("/api/assistant/chat", json={"question": "쿨런트가 뭐야?", "llm": "claude"}, headers={"X-Role": "SUP"})
@@ -287,11 +326,15 @@ def test_old_route_call_stays_sonnet_while_the_key_is_on(monkeypatch):
 
 
 # ------------------------------------------------------------------ ⑤ 평가 경로는 영향이 없다
-@pytest.mark.parametrize("eval_model, pure", [(OPUS, HAIKU), (HAIKU, SONNET), (SONNET, HAIKU)])
+@pytest.mark.parametrize("eval_model, pure", [(OPUS, None), (SONNET, None), (OPUS, HAIKU), (HAIKU, SONNET), (SONNET, HAIKU)])   # None = 줄 없음(기본값 Haiku)
 def test_evaluation_path_ignores_the_key(monkeypatch, tmp_path, eval_model, pure):
-    for k, v in {"LLM_PROVIDER": "claude", "LLM_ENABLED": "1", "EXTERNAL_LLM_APP": "0", "MOM_CLAUDE_MODEL": eval_model, "PURE_MODEL": pure,
+    for k, v in {"LLM_PROVIDER": "claude", "LLM_ENABLED": "1", "EXTERNAL_LLM_APP": "0", "MOM_CLAUDE_MODEL": eval_model,
                  "MOM_EXTERNAL_LLM_OK": "1", "MOM_USAGE_LEDGER": str(tmp_path / "usage_t.jsonl")}.items():
         monkeypatch.setenv(k, v)
+    if pure is None:
+        unset(monkeypatch)
+    else:
+        monkeypatch.setenv("PURE_MODEL", pure)
     s = settings()
     assert not s.claude_app and s.claude_model == eval_model and s.pure_label == s.llm_label == "외부 LLM(Claude, 실험)"   # 앱 요청이 아니면 이름표도 그대로
     r = Echo()
@@ -300,23 +343,27 @@ def test_evaluation_path_ignores_the_key(monkeypatch, tmp_path, eval_model, pure
     assert r.models() == [eval_model]                                   # PURE_MODEL이 아니라 MOM_CLAUDE_MODEL을 따른다
 
 
-def test_local_request_ignores_the_key(monkeypatch):
-    monkeypatch.setenv("PURE_MODEL", HAIKU)
+@pytest.mark.parametrize("how", ["no_line", "explicit"])
+def test_local_request_ignores_the_key(monkeypatch, how):
+    if how == "no_line":
+        unset(monkeypatch)
+    else:
+        monkeypatch.setenv("PURE_MODEL", HAIKU)
     s = settings()                                                       # 외부 요청 밖: 로컬
     assert not s.claude_app and s.llm_label == "로컬 LLM" and s.pure_label == "로컬 LLM"
 
 
 # ------------------------------------------------------------------ ⑥ 모델 불일치 검사는 그대로 유효하다
 def test_a_different_model_answering_a_haiku_request_is_a_failure(monkeypatch):
-    monkeypatch.setenv("PURE_MODEL", HAIKU)
+    unset(monkeypatch)                                                  # 기본값 Haiku를 요청
     with pytest.raises(EXT.ExternalLlmFailure) as e:                    # pure_answer는 재료 단계라 실패하면 오류로 끝난다
         call("pure_answer", Echo(answer_as=SONNET))
     assert "요청 모델과 다른 모델이 답함" in e.value.reason
     assert call("simplify", Echo(answer_as=SONNET)) == {"ok": True}     # Sonnet을 요청한 호출에는 Sonnet이 답하는 것이 맞다
 
 
-def test_chat_fails_when_haiku_is_asked_and_only_sonnet_answers(monkeypatch):
-    resp = chat(monkeypatch, Echo(answer_as=SONNET), HAIKU)
+def test_chat_fails_when_haiku_is_asked_by_default_and_only_sonnet_answers(monkeypatch):
+    resp = chat(monkeypatch, Echo(answer_as=SONNET), None)
     assert resp.status_code == 503 and resp.json()["code"] == "EXTERNAL_LLM_UNAVAILABLE" and resp.json()["detail"]["job"] == "pure_answer"
 
 
@@ -340,7 +387,12 @@ def test_a_background_model_next_to_the_requested_one_is_fine(monkeypatch):
 def test_pure_label_follows_the_model_actually_asked_for(monkeypatch):
     with EXT.external_request("claude"):
         s = settings()
-        assert s.pure_label == s.llm_label == "외부 LLM(Claude Sonnet 5.5)"                         # 키 비움: 글자가 지금과 같다
+        assert s.pure_label == s.llm_label == "외부 LLM(Claude Sonnet 5.5)"                         # 빈 줄(시험 기본): 글자가 예전과 같다
+        unset(monkeypatch)
+        s = settings()
+        assert s.pure_label == "외부 LLM(Claude Haiku 5.5)" and s.llm_label == "외부 LLM(Claude Sonnet 5.5)"   # 줄 없음 = 기본값 Haiku
+        monkeypatch.setenv("PURE_MODEL", SONNET)
+        assert settings().pure_label == settings().llm_label == "외부 LLM(Claude Sonnet 5.5)"
         monkeypatch.setenv("PURE_MODEL", HAIKU)
         s = settings()
         assert s.pure_label == "외부 LLM(Claude Haiku 5.5)" and s.llm_label == "외부 LLM(Claude Sonnet 5.5)"   # 전역 이름표(/health·단계 로그)는 안 바꾼다
@@ -348,5 +400,5 @@ def test_pure_label_follows_the_model_actually_asked_for(monkeypatch):
         assert settings().pure_label == "외부 LLM(Claude Opus 5.5)"
         monkeypatch.setenv("PURE_MODEL", "foo")
         assert settings().pure_label == "외부 LLM(Claude Sonnet 5.5)"                                # 모르는 이름은 비운 것으로
-    odd =dataclasses.replace(settings(), claude_app=True, pure_model="claude-x-1")                    # 손으로 만든 설정: 표에 없으면 ID 그대로
+    odd = dataclasses.replace(settings(), claude_app=True, pure_model="claude-x-1")                    # 손으로 만든 설정: 표에 없으면 ID 그대로
     assert odd.pure_label == "외부 LLM(claude-x-1)"
