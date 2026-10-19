@@ -2,11 +2,13 @@
 // SCR-02 교대 시작 브리핑(전체형: SUP·MNT·MGR) / SCR-03 요약형(OPR) — 이브 사이드바 브리핑 탭 (API-AST-01 모양).
 // 지난 교대·인계 사항 = 지난 교대 보고서(생성기·서버), 먼저 챙길 일 = 인계 사항 + 지금 처리 안 된 알람·알림 (2.5 보고 순위).
 // 보고 항목은 프로그램 목록이다 (순서·건수는 프로그램 몫). 지난 교대 요약은 교대 보고서 문장을 그대로 쓰므로, 비서가 켜져 있으면 비서가 다듬은 문장이 보인다.
+// 먼저 챙길 일의 항목 문장은 비서가 다듬은 것이 준비되면 그것을 보이고(순위 묶음별, '비서 정리'), 준비 전·꺼짐·실패·탈락은 프로그램 문구 그대로다. [원문 보기]로 언제나 프로그램 문구를 본다 (2026-10-19). 순서·건수·순위 이름은 프로그램 것이다.
 import { useContext, useState } from 'react';
 import { useApp } from './ctx';
 import { EveSnap, Robot } from './Eve';
 import { MACHINES } from './data';
 import { SIM, md, type Twin } from './live';
+import { useBriefingText } from './assistText';
 import { LEVEL_VIEW, RANK_NAME, RANK_ORDER, alarmTitle, hhmm, type AlertRec, type Notice } from './model';
 
 export const lastShiftReport = (reports: Record<string, any>[] | null, twin: Twin | null) =>
@@ -19,6 +21,7 @@ export const parseHandover = (t: string): { rank: string; name: string; items: s
   }).filter(Boolean) as { rank: string; name: string; items: string[] }[];
 
 const aText = (a: AlertRec) => `${LEVEL_VIEW[a.level].icon} ${MACHINES[a.machine].name} ${alarmTitle(a.alarm, a.code)} · ${hhmm(a.time)}부터 처리 안 됨`;
+const noticeLine = (n: Notice) => `[${n.ruleName}] ${n.text}${n.past ? ` · ${md(n.at)}` : ''}`;
 export const rankOfAlert = (a: AlertRec) => (a.level === '긴급' ? '1' : a.level === '주의' ? (SIM.now() - a.ts > 864e5 ? '0-1' : '3') : '4');
 export const rankOfNotice = (n: Notice) => (n.level === '주의' && SIM.now() - n.ts > 864e5 ? '0-1' : n.rank);
 
@@ -98,7 +101,16 @@ export default function Briefing({ onDone }: { onDone?: () => void }) {
     );
   }
 
-  // 전체형: 먼저 챙길 일 = 인계 사항(지난 교대 보고서) + 지금 알람·알림. 빈 순위는 "-", 0 안전은 늘 맨 위
+  return <FullBrief v={{ twin, last, open, lockout, p, pmOver, pmCount: pmToday.length, pmTodos, good, head }} onDone={onDone} />;
+}
+
+type FullView = { twin: Twin; last: Record<string, any> | null; open: AlertRec[]; lockout: string[]; p: Twin['production']; pmOver: number; pmCount: number; pmTodos: Todo[]; good: number | null; head: string };
+
+// 전체형 (SUP·MNT·MGR). 비서 정리 훅을 부르려고 따로 뺐다 (위의 early return 뒤에서는 훅을 못 부른다).
+// 먼저 챙길 일 = 인계 사항(지난 교대 보고서) + 지금 알람·알림. 빈 순위는 "-", 0 안전은 늘 맨 위
+function FullBrief({ v, onDone }: { v: FullView; onDone?: () => void }) {
+  const { myNotices, openCard, go, wos } = useApp();
+  const { twin, last, open, lockout, p, pmOver, pmCount, pmTodos, good, head } = v;
   const base = last ? parseHandover(last.handover_text) : [];
   const groups = RANK_ORDER.map((rank) => {
     const b = base.find((g) => g.rank === rank)?.items ?? [];
@@ -113,6 +125,14 @@ export default function Briefing({ onDone }: { onDone?: () => void }) {
   const notable: string = last?.notable_text ?? '';
   const sentences = notable.split(/(?<=\.)\s+/);
 
+  // 비서 정리: 순위 묶음별 항목 줄 (화면 순서 = 알람 → 알림 → 인계). 안전(순위 0)은 보내지 않는다. 인계의 "(인계)"는 화면이 따로 붙이는 표시라 줄에 넣지 않는다
+  const itemLines = (g: typeof groups[number]) => [...g.a.map(aText), ...g.n.map(noticeLine), ...g.base];
+  const aiGroups = groups.filter((g) => g.rank !== '0').map((g) => ({ rank: g.rank, lines: itemLines(g) })).filter((g) => g.lines.length);
+  const ai = useBriefingText(twin.shift.shift_id, aiGroups);
+  const [raw, setRaw] = useState(false);
+  const hasAi = aiGroups.some((g) => ai[g.rank]?.some((t, i) => t !== g.lines[i]));       // 원문과 다른 비서 정리가 하나라도 있을 때만 꼬리표·전환 버튼
+  const pick = (g: typeof groups[number], i: number, orig: string) => (!raw && ai[g.rank]?.[i]) || orig;
+
   return (
     <Sheet>
       <Head meta={head}>{by(['0', '1']) ? <>안전·긴급 <b>{by(['0', '1'])}건</b>부터 챙겨 주세요. </> : pmOver ? <>기한 넘긴 정비 <b>{pmOver}건</b>이 있어요. </> : <>안전·긴급 일은 없어요. </>}먼저 챙길 일은 모두 {total}건, 목표는 {p.total_target_qty}개예요.</Head>
@@ -120,16 +140,16 @@ export default function Briefing({ onDone }: { onDone?: () => void }) {
       <div className="flex flex-col gap-3 px-4 py-3 text-[14px]">
       <section>
         <h4 className="m-0 text-[15px] font-extrabold">먼저 챙길 일 — 전체 {total}건 <span className="font-normal text-[#4b5560]">(안전 {by(['0'])} · 긴급 {by(['1'])} · 생산 {by(['2'])} · 주의 {by(['0-1', '3'])} · 참고 {by(['4'])})</span></h4>
-        <p className="m-0 mt-1 text-[12.5px] text-[#5b6570]">순서는 프로그램 규칙(2.5 보고 순위). 인계 사항 출처: 교대 보고서 {last?.shift_id ?? '없음'}.</p>
+        <p className="m-0 mt-1 text-[12.5px] text-[#5b6570]">{hasAi && !raw && <><b>비서 정리</b> · </>}순서는 프로그램 규칙(2.5 보고 순위). 인계 사항 출처: 교대 보고서 {last?.shift_id ?? '없음'}.{hasAi && <button onClick={() => setRaw((x) => !x)} title="프로그램이 만든 원래 문구와 비서가 다듬은 문장을 바꿔 봅니다" className="ml-2 font-semibold underline">{raw ? '비서 정리 보기' : '원문 보기'}</button>}</p>
         <ul className="mt-1 flex flex-col gap-1 pl-0">
           {groups.map((g) => (
             <li key={g.rank} className="list-none"><b>{g.rank} {RANK_NAME[g.rank]}</b>{' '}
               {cnt(g) === 0 ? (g.rank === '0' ? '🔒 잠금·표지 중인 설비 없음' : '-') : (
                 <ul className="ml-3 list-disc">
                   {g.safety.map((t) => <li key={t}>{t}</li>)}
-                  {g.a.map((a) => <li key={a.id}>{aText(a)} <button onClick={() => openCard(a.id)} className="ml-1 rounded-full bg-[#1c232b] px-2.5 text-[12px] font-bold text-white">열기</button></li>)}
-                  {g.n.map((n) => <li key={n.id}>[{n.ruleName}] {n.text}{n.past ? ` · ${md(n.at)}` : ''}</li>)}
-                  {g.base.map((t) => <li key={t}>{t} <span className="text-[12px] text-[#5b6570]">(인계)</span></li>)}
+                  {g.a.map((a, i) => <li key={a.id}>{pick(g, i, aText(a))} <button onClick={() => openCard(a.id)} className="ml-1 rounded-full bg-[#1c232b] px-2.5 text-[12px] font-bold text-white">열기</button></li>)}
+                  {g.n.map((n, i) => <li key={n.id}>{pick(g, g.a.length + i, noticeLine(n))}</li>)}
+                  {g.base.map((t, i) => <li key={t}>{pick(g, g.a.length + g.n.length + i, t)} <span className="text-[12px] text-[#5b6570]">(인계)</span></li>)}
                 </ul>
               )}
             </li>
@@ -155,7 +175,7 @@ export default function Briefing({ onDone }: { onDone?: () => void }) {
         <button onClick={() => go('stops')} className="mt-2 h-10 rounded-full border border-[#d3d7dc] bg-white px-4 text-[13px] font-semibold">정지 사유 입력 화면</button>
       </section>
       </div>
-      <H t="예방 정비 · 급한 순서" n={`${pmToday.length}건`} />
+      <H t="예방 정비 · 급한 순서" n={`${pmCount}건`} />
       <TodoList items={pmTodos} />
       <H t="이번 교대 목표" />
       <Goal p={p} />

@@ -511,6 +511,8 @@ def _route(method, p, q, body, rt, live, P):
         return work_order_text(body)
     if key == "assist/guide-card-text" and method == "POST":      # 알람 지침카드 '먼저 할 일'을 비서가 쉽게 풀어 써 뒀는지 묻는다 (원문은 그대로, 풀어 쓴 것은 카드 아래에 따로)
         return guide_card_text(body)
+    if key == "assist/briefing-text" and method == "POST":         # 브리핑 '먼저 챙길 일'을 순위 묶음별로 비서가 다듬어 뒀는지 묻는다 (기다리지 않는다, 준비된 묶음부터 받아 간다)
+        return briefing_text(body)
     if key == "users":
         return {"users": list(P.users.values())}
     raise ApiError(404, "NOT_FOUND", f"없는 주소: {key}")
@@ -583,6 +585,37 @@ def guide_card_text(body):
         raise ApiError(400, "VALIDATION", "알람 코드와 점검 순서 줄(1~12개)이 필요해요")
     out = COMPOSER.polished("guide_card", code, [s.strip() for s in steps])
     return {"ready": True, "lines": out} if out else {"ready": False}
+
+
+BRIEFING_CHUNK = 40          # 비서가 한 번에 받는 줄 수 (assistant/backend/llm/compose.py MAX_LINES와 같다)
+
+
+def briefing_text(body):
+    """브리핑 '먼저 챙길 일'의 항목 줄을 비서가 다듬은 문장으로 — 순위 묶음(0-1·1·2·3·4)마다 따로. 준비 전·꺼짐·실패인 묶음은 {"ready": False}.
+    묶음 하나가 바뀌면(알람이 늘고 줄 때) 그 묶음만 다시 만든다. 한 묶음이 40줄을 넘으면 40줄씩 쪼개 부르고 다 준비돼야 그 묶음이 준비된다.
+    줄 수·순서는 그대로 돌려준다 (꼬리표·날짜 덧붙임은 비서 쪽이 지킨다). 안전(순위 0) 줄은 화면이 보내지 않는다."""
+    shift, groups = str(body.get("shift") or ""), body.get("groups")
+    if not re.fullmatch(r"[A-Za-z0-9._-]{1,24}", shift) or not isinstance(groups, list) or not 1 <= len(groups) <= 8:
+        raise ApiError(400, "VALIDATION", "교대 번호와 순위 묶음(1~8개)이 필요해요")
+    total, ranks = 0, set()
+    for g in groups:
+        rank, lines = (g.get("rank"), g.get("lines")) if isinstance(g, dict) else (None, None)
+        bad_rank = not isinstance(rank, str) or not re.fullmatch(r"\d(?:-\d)?", rank) or rank in ranks or rank == "0"      # 안전(0)은 고정 서식이라 비서에게 보내지 않는다
+        bad_lines = not isinstance(lines, list) or not 1 <= len(lines) <= 200 or any(not isinstance(t, str) or not t.strip() or len(t) > 600 for t in lines)
+        if bad_rank or bad_lines:
+            raise ApiError(400, "VALIDATION", "순위 묶음은 순위(0이 아닌 한 자리)와 항목 줄(1~200개)이 필요해요")
+        ranks.add(rank)
+        total += len(lines)
+    if total > 300:
+        raise ApiError(400, "VALIDATION", "항목 줄이 너무 많아요")
+    out = []
+    for g in groups:
+        texts = [t.strip() for t in g["lines"]]
+        got = [COMPOSER.polished("briefing", f"{shift}:{g['rank']}:{i // BRIEFING_CHUNK}", texts[i:i + BRIEFING_CHUNK],
+                                 ids=[f"L{j + 1:02d}" for j in range(len(texts[i:i + BRIEFING_CHUNK]))]) for i in range(0, len(texts), BRIEFING_CHUNK)]
+        ready = all(x is not None for x in got)
+        out.append({"rank": g["rank"], "ready": ready, **({"lines": [t for x in got for t in x]} if ready else {})})
+    return {"ready": all(o["ready"] for o in out), "groups": out}
 
 
 def live_daily(d, with_llm=True):
