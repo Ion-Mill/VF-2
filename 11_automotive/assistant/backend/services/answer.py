@@ -3142,7 +3142,7 @@ def _pure_answer_v19(question: str, p: dict, base: dict, s, memo: dict, prev: di
     hits = PURE.context(question, k, s)         # PURE_EXPAND=1이면 상위 조각의 아래 절을 더한다 ("잠금 표지 순서" 결함 수정). 끄면 retrieve()와 같다
     chunks = [c for _, c in hits]
     safety_guard = bool(s.pure_safety) and PURE.is_safety(question) and why not in (PURE.RULE_WHY, PURE.FAULT_WHY)   # 안전 질문(규칙 질문 라우팅으로 온 "안전 재고" 같은 말은 제외 — 그 질문은 "문서에 없음"이면 기존 길로 되돌려야 한다): DOC-05를 통째로 받았고, 그래도 답이 없으면 "문서에 없다"고 하지 않는다 (PURE_SAFETY=1)
-    mode = f"{s.llm_label} · {PURE_MODE_V19}"
+    mode = f"{s.pure_label} · {PURE_MODE_V19}"   # PURE_MODEL이 있으면 실제로 부른 모델 이름 (비면 llm_label과 같은 글자)
     traces: list[dict] = []
     retrieval = {"mode": "bm25", "dense_used": False, "reason": None, "pure": True, "top_k": k, "chunk_ids": [c.chunk_id for c in chunks]}
     if s.pure_expand:
