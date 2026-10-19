@@ -41,7 +41,7 @@ export function InventoryScreen() {
   const name = (no: string) => inv.items.find((i) => i.item_no === no)?.item_name ?? no;
   const allLots = lots.data?.lots ?? [];
   const left = (l: R) => l.fg_qty - (l.shipped?.qty ?? 0);
-  const avail = allLots.filter((l) => (l.status === 'PASSED' || l.status === 'RELEASED') && left(l) > 0).sort((a, b) => (a.judged_at < b.judged_at ? -1 : 1));
+  const avail = allLots.filter((l) => (l.status === 'PASSED' || l.status === 'RELEASED') && left(l) > 0).sort((a, b) => (a.passed_at < b.passed_at ? -1 : 1));
   const held = allLots.filter((l) => l.on_hold || l.status === 'ON_HOLD');
   const dueOf = (l: R) => twin?.orders.find((o) => o.order_no === l.order_no)?.due_at ?? null;
   const today = twin?.clock.sim_at?.slice(0, 10) ?? '2026-10-01';
@@ -207,7 +207,7 @@ export function InventoryScreen() {
                   <div className="mt-3 grid grid-cols-2 gap-3">{avail.slice(0, 12).map((l) => { const q = ship[l.lot_no] ?? 0, mx = left(l), due = dueOf(l); return (
                     <div key={l.lot_no} className={`flex items-center gap-3 rounded-xl border p-3 ${q > 0 ? 'border-[#9db6ea] bg-[#f3f6ff]' : 'border-slate-200 bg-white'}`}>
                       <div className="min-w-0 flex-1"><button onClick={() => go('lots', l.lot_no)} className="font-mono text-[16px] font-bold text-[#1f5fc4] underline">{l.lot_no}</button>
-                        <div className="text-[13px] text-slate-600">합격 {md(l.judged_at)} {hm(l.judged_at)} · 납기 {due ? md(due) : '—'} · 남은 {mx}</div>{q === mx && q > 0 && <div className="text-[12px] text-slate-500">전부</div>}</div>
+                        <div className="text-[13px] text-slate-600">합격 {md(l.passed_at)} {hm(l.passed_at)} · 납기 {due ? md(due) : '—'} · 남은 {mx}</div>{q === mx && q > 0 && <div className="text-[12px] text-slate-500">전부</div>}</div>
                       {role === 'SUP' && (
                       <div className="flex h-12 items-center overflow-hidden rounded-lg border border-slate-300 bg-white">
                         <button disabled={role !== 'SUP'} onClick={() => setQ(l.lot_no, q - 1, mx)} className="h-full w-11 text-[20px]">−</button>
