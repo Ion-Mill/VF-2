@@ -12,6 +12,7 @@ from functools import lru_cache
 from backend.auth.permissions import PermissionDenied, require
 from backend.config import DATA_LABEL, REFERENCE_AT, settings
 from backend.llm import external as EXT
+from backend.safety import fixed_block as FB
 from backend.llm import jobs
 from backend.llm import think as THINK
 from backend.llm.adapter import FallbackAdapter, write_answer
@@ -752,7 +753,7 @@ FU_FILL_V8 = frozenset((
     "자세히 자세하게 구체적으로 알아듣게 이해하기 단계별로 단계별 차근차근 하나씩 방금 아까 위 위에 위의 앞 앞에 앞의 이전 "
     "그 그거 그것 그걸 그거를 이거 이것 내용 답 거 것 걸 부분 얘기 글 말한 말했던 했던 나온 쓴 얘기한 좀 조금 제발 그냥 한번 요 혹시 저기").split())
 FU_GLUED_V8 = ("설명해줘", "설명해", "설명", "요약해", "정리해", "말해줘", "말해", "알려줘")   # 붙여 쓴 꼴 ("단계별로설명해")
-FU_CTRL_OK_V8 = re.compile(r"(?:방금|아까|위|앞|이전|그)\s*(?:의\s*)?(?:내용|답|말|글|설명|거|것)\S{0,2}\s*(?:좀\s*)?줄여")
+FU_CTRL_OK_V8 = re.compile(r"(?:방금|아까|위|앞|이전|그)\s*(?:의\s*)?(?:내용|답|말|글|설명|거|것)\S{0,2}\s*(?:좀\s*)?(?:(?:짧게|간단히|간단하게|간략히|간략하게)\s*)?줄여")   # "방금 내용 짧게 줄여줘"도 이어 묻기 (2026-10-18: 조작 요청으로 거절되던 말)
 
 
 def _fu_rest_v8(question: str, fill: frozenset = FU_FILL_V8, glued: tuple = FU_GLUED_V8) -> list[str]:
@@ -852,6 +853,107 @@ def _alarm_short_v10(prev: dict, base: dict, s, same: dict, fu: dict) -> dict:
     return out
 
 
+def _pure_followup_rewrite(kind: str, prev: dict, base: dict, s, same: dict, fu: dict) -> dict | None:
+    """PURE_FOLLOW_REWRITE=1: 순수 길(Claude가 쓴) 답의 "쉽게/짧게"를 **그 답의 글**에 해서 보인다 (2026-10-18).
+    옛 방식은 근거 원문 줄을 바꿔 써서 답과 무관한 글이 나왔다 → 답의 블록(첫 문장·본문·번호 목록의 머리와 항목)을 조각으로 삼아 7차 이어 묻기의 도구를 그대로 쓴다.
+    쉽게 = `FU2.rewrite_units`(숫자·영문 이름을 자리표로 가려 새로 못 만들게 + 조각별 검사) 뒤 `jobs.faith`(뜻 판정), 짧게 = `FU2.pick_short`(남길 조각을 LLM이 고르고 나머지는 뺌, 첫 문장은 항상 남김).
+    안전 낱말이 든 조각은 보내지 않고 원문 그대로, 소제목·원문 줄 블록도 그대로. 외부 Claude 요청이 아니거나, 바꿀 조각이 없거나, 검사·판정·호출 어느 하나라도 걸리면
+    None → 부른 쪽이 앞 답을 그대로 보인다 (fail closed)."""
+    if EXT.current() is None or not s.job("write") or prev.get("status") != "답변":
+        return None
+    blocks = [b for b in (prev.get("blocks") or []) if isinstance(b, dict)]
+    if not blocks:
+        return None
+    units: list[dict] = []   # 조각: 블록 번호 i, 칸 field, 목록 번호 j, 글, 그대로 둘 조각인가
+    lead_seen = False
+    for i, b in enumerate(blocks):
+        cand: list[tuple[str, int | None, str]] = []
+        if b.get("kind") in ("lead", "text") and isinstance(b.get("text"), str):
+            cand = [("text", None, b["text"])]
+        elif b.get("kind") == "ops":
+            if isinstance(b.get("head"), str):
+                cand.append(("head", None, b["head"]))
+            cand += [("items", j, x) for j, x in enumerate(b.get("items") or []) if isinstance(x, str)]
+        for field, j, txt in cand:
+            if not txt.strip():
+                continue
+            fixed = any(w in txt for w in SAFETY_WORDS)
+            if b.get("kind") == "lead" and not lead_seen:
+                lead_seen = True
+                fixed = fixed or kind == "short"   # "짧게"는 핵심 답인 첫 문장을 항상 남긴다
+            units.append({"key": (i, field, j), "text": txt, "fixed": fixed})
+    free = [u for u in units if not u["fixed"]]
+    if not free or len(" ".join(u["text"] for u in free)) > FU_MAX_CHARS:
+        return None
+    traces: list[dict] = []
+    if kind == "short":
+        if len(free) < 2:
+            return None
+        keep, tr = FU2.pick_short([u["text"] for u in free])
+        traces.append(tr)
+        if keep is None:
+            return None
+        drop = {free[k]["key"] for k in range(len(free)) if k not in keep}
+        nb: list[dict] = []
+        for i, b in enumerate(blocks):
+            if b.get("kind") == "ops":
+                items = [x for j, x in enumerate(b.get("items") or []) if (i, "items", j) not in drop]
+                head = "" if (i, "head", None) in drop else b.get("head")
+                if not items and not head:
+                    continue
+                nb.append({**b, "head": head, "items": items})
+            elif (i, "text", None) in drop:
+                continue
+            else:
+                nb.append(dict(b))
+        def _empty_section(k: int) -> bool:   # 소제목 뒤에 화면에 보이는 블록(첫 문장·본문·목록)이 없이 다음 소제목이나 끝이 오면 내용이 다 빠진 소제목 (원문 줄 블록은 글로 안 보인다)
+            nxt = next((x.get("kind") for x in nb[k + 1:] if x.get("kind") in ("section", "lead", "text", "ops")), None)
+            return nb[k].get("kind") == "section" and nxt in (None, "section")
+        nb = [b for k, b in enumerate(nb) if not _empty_section(k)]
+        nb.append({"kind": "text", "text": "(줄임: 일부를 뺐습니다 — 전체는 바로 앞 답에 있습니다)"})
+        lead_txt = FU_LEAD_V2["short"]
+    else:
+        srcs = [u["text"] for u in free]
+        new, _, tr = FU2.rewrite_units(srcs, [])
+        traces.append(tr)
+        if new is None:
+            return None
+        changed = [k for k in range(len(srcs)) if new[k] != srcs[k]]
+        if not changed:
+            return None
+        ok, ftr = jobs.faith([srcs[k] for k in changed], [new[k] for k in changed])
+        traces.append(ftr)
+        if not ok:
+            return None
+        nb = [({**b, "items": list(b.get("items") or [])} if b.get("kind") == "ops" else dict(b)) for b in blocks]
+        for u, txt in zip(free, new):
+            i, field, j = u["key"]
+            if field == "items":
+                nb[i]["items"][j] = txt
+            else:
+                nb[i][field] = txt
+        lead_txt = FU_LEAD_V2["simple"].format(extra="")
+    parts: list[str] = []
+    for b in nb:   # 화면 글이 아닌 conclusion(이어 묻기 기억·로그용): join_layout과 같은 모양으로 다시 이은 글
+        if b.get("kind") == "section" and b.get("text"):
+            parts.append(str(b["text"]) + ":")
+        elif b.get("kind") in ("lead", "text") and b.get("text"):
+            parts.append(str(b["text"]))
+        elif b.get("kind") == "ops":
+            if b.get("head"):
+                parts.append(str(b["head"]))
+            if b.get("items"):
+                parts.append(" ".join(f"{n}) {x}" for n, x in enumerate(b["items"], 1)))
+    used = [JOB_KO.get(t["job"], t["job"]) for t in traces if t["used"]]
+    out = {**base, **same, "status": "답변", "conclusion": lead_txt + " " + " ".join(parts),
+           "blocks": [{"kind": "lead", "text": lead_txt}] + nb, "llm_trace": traces,
+           "mode": f"{s.llm_label} {s.llm_model_name} ({', '.join(dict.fromkeys(used))}) + 프로그램 검사",
+           "followup": {**fu, "rewritten": True, "reason": "순수 길 답을 다시 씀" if kind != "short" else "순수 길 답을 줄임", "parts": len(free)}}
+    if FORBIDDEN.search(" ".join(str(v) for v in (out["conclusion"], out["blocks"]))):   # 원문 출처가 새면 내보내지 않는다 (D-03)
+        return None
+    return out
+
+
 def _followup_answer(kind: str, role: str, prev: dict | None, base: dict, s, memo: dict) -> dict:
     """이어 묻기 답. prev = 서버가 기억한 바로 앞 답(처음 답)의 기록. 쉽게·짧게는 바꿔 쓸 수 있는 글만 LLM이 한 번 바꿔 쓰고 한 번 검사한다.
     하나라도 실패하면(LLM 오류·시간 부족 포함) 앞 답 원문 그대로 보인다(fail closed)."""
@@ -895,6 +997,17 @@ def _followup_answer(kind: str, role: str, prev: dict | None, base: dict, s, mem
         out = {**base, **same, "status": "답변", "conclusion": prev["conclusion"],
                "mode": "규칙 (이어 묻기 — 앞 답 그대로)", "followup": {**fu, "reason": "다시 보기"}}
         blocks = _same_blocks_v10(prev, s)
+        if blocks:
+            out["blocks"] = blocks
+        return out
+    if prev.get("pure") and kind in ("simple", "short"):   # 순수 길 답: 옛 방식은 원문 줄을 바꿔 써서 답과 무관한 글이 나온다 → 그 답의 글을 다시 쓰거나(PURE_FOLLOW_REWRITE=1), 못 하면 앞 답을 그대로 (fail closed)
+        rewritten = _pure_followup_rewrite(kind, prev, base, s, same, fu) if getattr(s, "pure_follow_rewrite", False) else None
+        if rewritten is not None:
+            return rewritten
+        note ="이 답은 바로 앞에서 AI가 쉬운 말로 쓴 글이라 다시 바꿔 쓰지 않고 그대로 보입니다."
+        out = {**base, **same, "status": "답변", "conclusion": note + " " + prev["conclusion"],
+               "mode": "규칙 (이어 묻기 — 앞 답 그대로)", "followup": {**fu, "reason": "순수 길 답은 그대로"}}
+        blocks = _same_blocks_v10(prev, s, lead=note)
         if blocks:
             out["blocks"] = blocks
         return out
@@ -1074,6 +1187,7 @@ def followup_record(question: str, role: str, context: dict | None, a: dict, mem
             "doc_lines": list(memo.get("doc_lines") or []), "ops_texts": list(memo.get("ops_texts") or []),
             "alarm": bool(memo.get("alarm")), "procedure": bool(memo.get("procedure")), "future": bool(memo.get("future")),
             "doc_lead": memo.get("doc_lead") or ""}   # 7차 B3
+    rec["pure"] = bool(memo.get("pure_answer"))
     if v9_on():   # 8차: 모양 이어 묻기(layout)가 줄 목록대로 다시 보인다
         rec["blocks"] = list(a.get("blocks") or [])
     if flow10_on():   # 9차 B: 알람 답 "짧게"가 카드 문장만 다시 보인다
@@ -2993,6 +3107,8 @@ def pure_scope_v19(p: dict, s, question: str = "") -> str | None:
             return "신호가 설비 이름뿐인 안전 질문 — 문서 질문으로 보고 순수 길로 (PURE_SAFETY=1)"
         if s.pure_rule and question and PURE.rule_question(question, p):   # "소모품 재고는 누가 관리해?"·"홀드 걸린 로트도 내보낼 수 있어?": 운영 낱말뿐인 규칙 질문은 문서 길로 (문서에 없으면 아래에서 되돌린다)
             return PURE.RULE_WHY
+        if getattr(s, "pure_rule_wide", False) and question and PURE.rule_question_wide(question, p):   # PURE_RULE_WIDE=1: 규칙 낱말이 없는 규칙 질문("출하 로트 확정은 반장이 해?")도 문서 길로 — 조회 말투는 거른다 (문서에 없으면 아래에서 되돌린다)
+            return PURE.RULE_WHY
         if s.pure_fault and question and PURE.fault_question(question, p):   # "툴 수명 다 됐다고 뜨는데 예비 날이 없어. 어떻게 해?"·"멈췄어. 내가 다시 돌려도 돼?": 운영 낱말뿐인 고장 대응 절차 질문은 문서 길로 (문서에 없으면 원래 기존 길로 되돌린다)
             return PURE.FAULT_WHY
         return None
@@ -3026,7 +3142,7 @@ def _pure_answer_v19(question: str, p: dict, base: dict, s, memo: dict, prev: di
     hits = PURE.context(question, k, s)         # PURE_EXPAND=1이면 상위 조각의 아래 절을 더한다 ("잠금 표지 순서" 결함 수정). 끄면 retrieve()와 같다
     chunks = [c for _, c in hits]
     safety_guard = bool(s.pure_safety) and PURE.is_safety(question) and why not in (PURE.RULE_WHY, PURE.FAULT_WHY)   # 안전 질문(규칙 질문 라우팅으로 온 "안전 재고" 같은 말은 제외 — 그 질문은 "문서에 없음"이면 기존 길로 되돌려야 한다): DOC-05를 통째로 받았고, 그래도 답이 없으면 "문서에 없다"고 하지 않는다 (PURE_SAFETY=1)
-    mode = f"{s.llm_label} · {PURE_MODE_V19}"
+    mode = f"{s.pure_label} · {PURE_MODE_V19}"   # PURE_MODEL이 있으면 실제로 부른 모델 이름 (비면 llm_label과 같은 글자)
     traces: list[dict] = []
     retrieval = {"mode": "bm25", "dense_used": False, "reason": None, "pure": True, "top_k": k, "chunk_ids": [c.chunk_id for c in chunks]}
     if s.pure_expand:
@@ -3037,6 +3153,7 @@ def _pure_answer_v19(question: str, p: dict, base: dict, s, memo: dict, prev: di
         retrieval["faultdoc_added_ids"] = [c.chunk_id for sc, c in hits if sc == PURE.FAULTDOC_SCORE]       # DOC-03 통째로 더해진 조각 (끄면 이 칸이 없다)
     base = {**base, "route": {"kind": "doc", "source": "순수 외부 LLM (분류 LLM 없음)"}}
     memo.update(ops_texts=[], procedure=is_procedure(question), future=False, doc_lines=[], doc_cites=[], doc_lead="", doc_written="")
+    memo["pure_answer"] = True   # 이어 묻기 기록 표시: 이 답의 글은 Claude가 쓴 것이다 — 검색된 원문 줄(doc_lines)을 바꿔 쓰는 옛 이어 묻기는 답과 무관한 글이 된다 (2026-10-18)
     if SL.on():   # STEP_LOG: 순수 길로 간 까닭 · 분류 LLM 생략 · 찾은 조각 (읽기만 한다)
         SL.step("1 규칙 판정", 결과="순수 외부 LLM 길", 까닭=why, 앞답있음=prev is not None)
         SL.step("2 질문 분류", 사용=False, 까닭="순수 외부 LLM — 분류 LLM을 부르지 않음")
@@ -3049,7 +3166,8 @@ def _pure_answer_v19(question: str, p: dict, base: dict, s, memo: dict, prev: di
             SL.step("종료 사유", 결과="답 없음", 까닭="낱말 검색 결과가 없어 Claude를 부르지 않음")
         return {**base, "status": "문서에 없음", "mode": f"{mode} — 검색 결과가 없어 Claude를 부르지 않음", "retrieval": retrieval,
                 "llm_trace": traces, "conclusion": PURE_NO_DOC_CHAT_V19 if style else PURE_NO_DOC_V19}
-    got = PURE.ask(question, chunks, prev, s, ops_note=(why in (PURE.RULE_WHY, PURE.FAULT_WHY)))
+    fixed_keys = FB.select(question) if getattr(s, "fixed_block", False) else []   # FIXED_BLOCK: 이 질문에 맞는 고정 서식 (0~2개)
+    got = PURE.ask(question, chunks, prev, s, ops_note=(why in (PURE.RULE_WHY, PURE.FAULT_WHY)), **({"fixed_note": FB.reference_note(fixed_keys)} if fixed_keys else {}))
     traces.append({"job": PURE.JOB, "used": True, "reason": None, "tries": 1, "ms": got["ms"]})
     if got["insufficient"] and s.pure_retry and not safety_guard and why not in (PURE.RULE_WHY, PURE.FAULT_WHY):   # PURE_RETRY=1: 첫 호출이 "조각에 답이 없다"고 했다 — 정답 조각이 상위 조각 밖(검색 9~50위)이라 못 본 것일 수 있어 더 넓게 한 번 다시 묻는다. 안전 질문·규칙 질문 경로는 제외
         wide_hits = PURE.context(question, s.pure_retry_topk, s)
@@ -3059,7 +3177,7 @@ def _pure_answer_v19(question: str, p: dict, base: dict, s, memo: dict, prev: di
             ext = EXT.current()
             failed_before = len(ext.failures) if ext is not None else 0
             try:
-                got2 = PURE.ask(question, wide_chunks, prev, s, retry_note=True)
+                got2 = PURE.ask(question, wide_chunks, prev, s, retry_note=True, **({"fixed_note": FB.reference_note(fixed_keys)} if fixed_keys else {}))
             except EXT.ExternalLlmFailure:   # 재시도는 오류를 새로 만들지 않는다 — 첫 결과("문서에 없음")를 그대로 낸다 (실패 기록도 이 호출 몫만 지운다)
                 got2 = None
                 if ext is not None:
@@ -3116,6 +3234,13 @@ def _pure_answer_v19(question: str, p: dict, base: dict, s, memo: dict, prev: di
            "mode": mode if cited else f"{mode} · 근거 조각 번호 없음", "llm_trace": traces, "retrieval": retrieval, "blocks": blocks}
     if cited:
         out["written"] = True   # 화면 꼬리표 "AI가 문서를 보고 쓴 답 · 원문 아래" + 원문 줄 접기
+    if fixed_keys:   # FIXED_BLOCK: 고정 서식을 프로그램이 그대로 붙인다. 풀이가 순서 전체를 묻는 질문에서 단계를 빠뜨리거나 없는 번호를 쓰면 풀이를 버리고 서식만 보인다
+        bad = FB.check_answer(got["answer"], fixed_keys, FB.wants_full(question, fixed_keys))
+        keep = [b for b in out["blocks"] if isinstance(b, dict) and b.get("orig")]   # 원문 줄(접어 두는 칸)은 그대로
+        out["blocks"] = ([{"kind": "lead", "text": FB.FALLBACK_LEAD}] if bad else [b for b in out["blocks"] if not (isinstance(b, dict) and b.get("orig"))]) + FB.blocks(fixed_keys) + keep
+        if bad:
+            out["conclusion"] = FB.FALLBACK_LEAD
+        out["fixed_block"] = {"keys": fixed_keys, "fallback": bad}
     blob = " ".join(str(v) for v in (out["conclusion"], out["steps"], out["evidence"], out["related"], out["caution"]))
     if FORBIDDEN.search(blob):   # 원문 출처가 새어 나가면 내보내지 않는다 (D-03) — 답 내용 검사가 아니라 저작권 차단
         return {**base, "status": "확인 필요", "mode": mode, "retrieval": retrieval, "llm_trace": traces,
@@ -3157,6 +3282,126 @@ def _final_step_log(a: dict, memo: dict) -> dict:
             "생각호출": None if think is None else {"호출수": think.calls, "실패": think.failures}}
 
 
+# ---------------------------------------------------------------- 채팅 알람 카드 해요체 다시 쓰기 (CARD_REWRITE=1, A2, 2026-10-18)
+# 알람 번호가 있는 질문은 프로그램이 카드(설명 문장 + ★ 점검 순서)를 문서 그대로 조립해 Claude를 거치지 않아 말투가 다른 답과 달랐다. 채팅에서만 Claude가 해요체로 다시 쓴다.
+# 안전 때문에 문장 단위로 검사한다: jobs.simplify(plain)가 숫자(값 기준)·영문 이름·[가상] 꼬리표·조건 말 개수·허락/지시 문구·길이를 보고, jobs.faith가 뜻이 같은지 따로 판정한다.
+# 하나라도 걸리거나 시간이 부족하면 원문 카드 그대로(fail closed). 운영 데이터 줄·주의 문구·출처는 프로그램이 붙이는 칸이라 건드리지 않는다.
+CARD_STEP_HEAD = re.compile(r"^(★?\d+ \([^)]*\) )")     # "★1 (작업자) " — 번호·역할 표시는 구조라 다시 쓰지 않는다
+CARD_REWRITE_MAX_CHARS = 3000
+
+
+def _rewrite_alarm_card(a: dict, memo: dict) -> dict:
+    card = (memo.get("alarm_card") or "").strip()
+    steps = a.get("steps") or []
+    if a.get("status") != "답변" or not card or not steps or not all(isinstance(x, str) for x in steps) or card not in (a.get("conclusion") or ""):
+        return a
+    heads, bodies = [], []
+    for st in steps:
+        m = CARD_STEP_HEAD.match(st)
+        heads.append(m.group(1) if m else "")
+        bodies.append(st[len(m.group(1)):] if m else st)
+    segs = [card] + bodies
+    if len(" ".join(segs)) > CARD_REWRITE_MAX_CHARS:
+        return {**a, "card_rewrite": {"applied": False, "reason": "카드가 너무 김"}}
+    new, tr = jobs.simplify(segs, "plain")
+    reason = tr.get("reason") if new is None else None
+    if new is not None:
+        ok, ftr = jobs.faith(segs, new)
+        if not ok:
+            new, reason = None, "뜻 판정: " + str(ftr.get("reason"))
+    if new is None:
+        return {**a, "card_rewrite": {"applied": False, "reason": reason or "다시 쓰지 못함"}}
+    out = {**a, "steps": [h + n for h, n in zip(heads, new[1:])], "conclusion": a["conclusion"].replace(card, new[0], 1),
+           "card_rewrite": {"applied": True, "reason": None}}
+    if isinstance(a.get("blocks"), list):
+        out["blocks"] = [({**b, "text": b["text"].replace(card, new[0])} if isinstance(b, dict) and isinstance(b.get("text"), str) and card in b["text"] else b) for b in a["blocks"]]
+    memo["alarm_card"] = new[0]   # 이어 묻기 "짧게"가 같은 카드 문장을 보이게 (answer()가 이 기록으로 앞 답 기록을 만든다)
+    return out
+
+
+# ---------------------------------------------------------------- 화면 알람 이어받기 (CTX_NARROW=1, 2026-10-18)
+# 화면이 직전 답의 알람 번호를 alarm_key로 보내 주면, "원인은?"처럼 **자기 대상이 없는** 질문만 그 알람으로 푼다. 예전 규칙은 "원인·점검·먼저·안전·뭐부터" 낱말만 보고 묶어서
+# "안전하게 자물쇠 제거 어떻게 해?"까지 직전 알람 카드로 답할 수 있었다. 여기서는 질문의 한글 낱말이 **모두** 알람 일반 낱말(CTX_GENERIC)과 조사·어미 조각(CTX_PIECES)으로 쪼개질 때만
+# 대상이 없는 질문으로 본다 — 쪼개지지 않는 내용 낱말(자물쇠·제거·워밍업 …)이 하나라도 있으면 자기 대상이 있는 질문이다 (그래서 틀리게 이어받는 쪽보다 놓치는 쪽으로 틀린다).
+# 낱말 사이를 띄우지 않은 질문("원인이뭐야")도 쪼개 본다. "아까·전에·어제" 같은 과거 지시어는 어느 알람인지 불확실하므로 이어받지 않는다.
+CTX_GENERIC = frozenset("""
+알람 경보 알림 원인 이유 왜 점검 순서 먼저 우선 일단 바로 당장 그냥 뭐부터 어디부터 뭐 뭘 무엇 무슨 어디 누가 누구 누구한테 누구에게 언제 얼마나 얼마 어떻게 어떡해 어떻해 어쩌지 어째 어찌 어떤 어느 정도
+조치 해결 해결책 대책 처리 대처 대응 방법 복구 재발 방지 재가동 가동 재시작 시작 리셋 심각도 심각 심각한 등급 위험 위험도 급해 급한 급함 안급함 급하 의미 뜻 설명 자세히 정확히
+또 다시 계속 자꾸 반복 반복돼 반복되면 뜨면 뜨는 뜨나 뜨는지 뜨네 뜬 떴어 떴는데 나면 나는 났어 났는데 나오면 나요 그다음 다음 그럼 그러면 그래서 이 상태 이대로 그대로 두면 두고 둬 둬도 놔도 놔둬 놔둬도
+괜찮 괜찮아 괜찮나 괜찮은 괜찮을까 안전 안전해 안전한가 안전하나 라인 멈춰 멈춰도 멈추나 세워 세우 세워야 돌려 돌려도 쓰면 써 써도 가도 누르면 눌러 꺼도 꺼야 켜도
+하나 하면 하지 하는 해야 봐야 봐 보면 확인 알려 알려줘 알려줘요 말해 말해줘 담당 담당자 작업자 반장 보전 보고 연락 부르면 불러 부르나 해줘 할까 할까요 하죠 걸려 걸리 걸리나 걸림 시간 오래 금방 곧
+며칠 몇 번 몇번 빈도 자주 가끔 처음 이번 지금 방금 그거 그게 그건 그 이거 이게 이건 이것 저거 요거 풀려 풀리나 사라져 없어져 곳 일 이미 벌써 아직 시도 대로 정도 상관 문제 상황 경우 때 후 뒤 호출 부르 불러야 불러야돼 신고 요청 부탁 맡기 맡겨 손대 손봐 손보 고치 고쳐 고쳐야 고쳐야돼 수리 직접 스스로 혼자 같이 함께 눌러도 꺼 켜 복귀 복원 해제 풀어 풀고 무시 넘어가 넘기 놔두 방치 미루 기다려 기다리 지켜 지켜봐 이렇게 저렇게 그렇게 이런 저런 그런 이래 저래 그래 뭔데 뭔지 뭔가 뭐길래 왜이래 왜이렇게 혹시 아니면 아님 긴급 큰일 별일 문제없 내가 제가 우리 저희 나 저 너 사람 팀 보전팀 현장 관리자 어디서 어디로 어떻게든 하려면 하려고 할수 있어 있나 있는 있는지 없나 없는지 맞아 맞나 맞는지 아닌가 어려워 쉬워 간단 복잡 가능 불가능 필요 괜히 일부러 꼭 반드시 굳이 대충 모두 전부 전체 일부
+""".split())
+CTX_PIECES = frozenset("""
+이 가 은 는 을 를 에 의 도 만 요 로 으로 야 이야 예요 에요 이에요 인 인가 인가요 인지 인데 인걸 이래 래 나 나요 까 까요 할 할까 할까요 될까 될까요 하나요 하죠 이죠 죠 네 네요 니 냐 어 아 지 게 라
+해 해요 해도 해야 해야돼 해야되 돼 돼요 되 되요 되나 되나요 됩니까 합니까 하면 으면 면 려면 는데 한 하 하세요 세요 줘 줘요 주세요 좀 거 건 걸 거야 거예요 것 은데 던 었 았 했 한가 한가요 한지 부터 까지 임 거임 인거 인거야 건가 건가요 건데 인데요 잖아 잖아요 는지 은지 할지 될지 한데 던데 거든 거든요 이라고 라고 라는 라서 라서요 이라서 니까 니까요 으니까 어서 아서 해서 하고 하는데 하는지 해보 해봐 해봐도 봐도 돼도 되도 되죠 고 며 면서 다가 다고 다는 다면 라면 이라면 이면 거면 니다 습니다 습니까 입니다 입니까 합니다 됩니다 부터 까지 에서 한테 에게 처럼 보다 랑 이랑 와 과 이나 나 라도 이라도 마다
+""".split())
+CTX_PAST_REF = re.compile(r"아까|전에|어제|엊그제|저번|지난|예전|그때|이전")
+
+
+CTX_WORDS = CTX_GENERIC | frozenset(w for w in FU_FILL_V9 if len(w) >= 2)   # 일반 낱말 조각 (한 글자짜리 이어 묻기 군더더기는 뺀다)
+
+
+def _ctx_generic_token(tok: str, vocab) -> bool:
+    """한글 낱말 하나가 vocab 조각으로 완전히 쪼개지고, 그 조각 가운데 일반 낱말(CTX_WORDS)이 하나 이상 있나 ("원인이뭐야" = 원인+이+뭐+야).
+    조사·어미 한 글자 조각만으로 쪼개지는 내용 낱말("에어건" = 에+어+건)은 일반 낱말이 아니다. 조각 하나짜리 어미("거야"·"인가요")는 일반이다."""
+    if tok in CTX_PIECES:
+        return True
+    n = len(tok)
+    plain = [True] + [False] * n     # 조각만으로 도달
+    word = [False] * (n + 1)         # 일반 낱말 조각을 하나 이상 쓰고 도달
+    for i in range(n):
+        if not (plain[i] or word[i]):
+            continue
+        for j in range(i + 1, min(n, i + 8) + 1):
+            piece = tok[i:j]
+            if piece in CTX_WORDS:
+                word[j] = True
+            elif piece in vocab:
+                word[j] = word[j] or word[i]
+                plain[j] = plain[j] or plain[i]
+    return word[n]
+
+
+def ctx_subjectless(question: str, p: dict) -> bool:
+    """질문에 자기 대상이 없나 — 알람·설비·날짜·로트·운영 낱말 신호가 없고, 과거 지시어가 없고, 한글 낱말이 모두 알람 일반 낱말·조사·어미로 쪼개진다."""
+    if PURE.has_signals(p) or CTX_PAST_REF.search(question):
+        return False
+    vocab = FU_FILL_V9 | CTX_GENERIC | CTX_PIECES
+    for tok in re.findall(r"[가-힣]+|[0-9A-Za-z][0-9A-Za-z.\-]*", question.lower()):
+        if tok[0].isascii():
+            if not tok.isdigit():
+                return False          # 영문·번호가 섞인 말(OEE, CB3, 5303.00 …)은 자기 대상이 있는 질문으로 본다
+            continue
+        if not _ctx_generic_token(tok, vocab):
+            return False
+    return True
+
+
+def _ctx_use_v2(question: str, p: dict, s, memo: dict):
+    """화면 알람(alarm_key)이 있고 질문에 알람 번호가 없을 때(parse_v2 판), 질문을 그 알람으로 풀지. CTX_NARROW=0이면 예전 규칙 그대로."""
+    explicit = re.search(r"이 알람|이 경보|이거|이것", question)   # "이 알람·이거"는 화면 알람을 가리킨다 (예전부터)
+    if not getattr(s, "ctx_narrow", False):
+        return explicit or (not p["intents"] and re.search(r"뭐부터|먼저|점검|원인|안전", question))
+    if explicit:
+        return explicit
+    if ctx_subjectless(question, p) and not followup_kind_v9(question, ""):   # "쉽게 설명해"·"요약해 줘" 같은 이어 묻기는 알람 이어받기가 아니다 (이어 묻기 길이 처리한다)
+        memo["ctx_alarm_pending"] = True   # 실제로 알람이 정해졌을 때만 "N 알람 기준"을 밝힌다 (parse가 못 읽은 번호면 안 밝힘)
+        return True
+    return None
+
+
+def _with_ctx_note(a: dict, code: str) -> dict:
+    """질문에 대상이 없어 직전 알람으로 이어받았으면, 어느 알람 기준인지 답 맨 앞에 밝힌다 (정상 답일 때만)."""
+    if not isinstance(a, dict) or a.get("status") != "답변":
+        return a
+    note = f"{code} 알람 기준으로 답해요."
+    a["conclusion"] = f"{note} {a.get('conclusion') or ''}".strip()
+    if isinstance(a.get("blocks"), list) and a["blocks"]:
+        a["blocks"] = [{"kind": "lead", "text": note}] + list(a["blocks"])
+    return a
+
+
 def answer(question: str, role: str, context: dict | None = None, prev: dict | None = None) -> dict:
     """질문 하나에 답한다. 한 답 전체의 LLM 시간 예산을 하나로 센다 (2026-10-10 계획 3단계 B).
     FOLLOWUP=1이면 prev(서버가 기억한 바로 앞 답의 기록)를 받아 이어 묻기에 쓰고, 답에 내부 칸 `_followup`(이 답의 기록)을 붙인다 —
@@ -3169,6 +3414,10 @@ def answer(question: str, role: str, context: dict | None = None, prev: dict | N
     try:
         with answer_deadline(s0.budget_s):
             a = _answer(question, role, context, prev=prev, memo=memo)
+            if memo.get("alarm") and s0.card_rewrite and s0.job("write") and EXT.current() is not None:   # CARD_REWRITE: 채팅(외부 Claude 요청)의 알람 카드만
+                a = _rewrite_alarm_card(a, memo)
+            if memo.get("ctx_alarm_note"):   # CTX_NARROW: 대상 없는 질문을 직전 알람으로 이어받았으면 어느 알람 기준인지 밝힌다
+                a = _with_ctx_note(a, memo["ctx_alarm_note"])
         if settings().followup:
             a["_followup"] = followup_record(question, role, context, a, memo)
     except BaseException as e:
@@ -3204,11 +3453,13 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
         pass
     elif not p["alarms"] and ctx_alarm:
         if s.parse_v2:  # "이 알람·이거"는 운영 낱말이 있어도 화면 알람으로 먼저 푼다 (2026-10-10: "이 알람 몇 번 났어?" → 문서에 없음이던 버그)
-            use_ctx = re.search(r"이 알람|이 경보|이거|이것", question) or (not p["intents"] and re.search(r"뭐부터|먼저|점검|원인|안전", question))
+            use_ctx = _ctx_use_v2(question, p, s, memo)
         else:
             use_ctx = not p["intents"] and re.search(r"이 알람|이거|뭐부터|먼저|점검|원인|안전", question)
         if use_ctx:
             p["alarms"] = parse(ctx_alarm)["alarms"][:1]
+            if memo.pop("ctx_alarm_pending", False) and p["alarms"]:
+                memo["ctx_alarm_note"] = p["alarms"][0]["code"]
     elif ctx_alarm and s.parse_v2 and s.parse_v3 and re.search(r"이 알람|이 경보|이거|이것", question):
         # "이거 뒤에 994, 992가 뜨면 …": 질문 속 다른 알람 번호가 있어도 주제는 화면 알람 (2026-10-10 2차, E004)
         ctx = parse(ctx_alarm)["alarms"][:1]

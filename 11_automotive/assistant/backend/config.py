@@ -46,6 +46,19 @@ def _int_clamped(v: str, default: int, lo: int, hi: int) -> int:
         return default
 
 
+# 외부 Claude 모델 ID → 화면 이름. PURE_MODEL이 받는 이름의 전부다 (claude_client.PRICES의 키와 같아야 한다 — config가 claude_client를 import하면 순환이라
+# 여기에 두고, 시험이 같은 집합인지 단정한다). 가격표에 없는 이름이면 gate_problem이 모든 외부 호출을 막기 때문에 읽을 때 걸러 낸다
+CLAUDE_MODEL_NAMES = {"claude-opus-5-5": "Claude Opus 5.5", "claude-sonnet-5-5": "Claude Sonnet 5.5", "claude-haiku-5-5": "Claude Haiku 5.5"}
+# PURE_MODEL 줄이 .env·환경에 **없을 때**의 값 (2026-10-19 사용자 결정 "코드 기본값을 Haiku로"). 줄이 있고 비어 있으면(PURE_MODEL=) Sonnet — 줄 없음과 빈 줄이 갈린다
+PURE_MODEL_DEFAULT = "claude-haiku-5-5"
+
+
+def _pure_model(v: str) -> str:
+    """PURE_MODEL 값: 앞뒤 공백을 지우고 소문자로 바꾼 뒤 CLAUDE_MODEL_NAMES에 있으면 그 ID, 아니면 빈 값(= 모든 호출 Sonnet). 빈 값·오타는 보수적인 쪽(Sonnet)이다."""
+    v = str(v).strip().lower()
+    return v if v in CLAUDE_MODEL_NAMES else ""
+
+
 def _dotenv() -> dict[str, str]:
     p = ROOT / ".env"
     out = {}
@@ -145,7 +158,7 @@ class Settings:
     # 위험한 부탁·권한·화면 설명·불량 원인·이어 묻기로 걸러지지 않은 질문을 "낱말 검색 상위 조각 + 질문 → 외부 Claude 1번 → 답을 그대로" 길로 보낸다
     # (줄 고르기·따로 검증·새 글 검사·분류 LLM 없음). 기본 꺼짐 = 지금 동작. 로컬 요청이면 이 스위치와 상관없이 지금 동작 그대로.
     # pure_keep_signals: 0(기본) = 알람 번호·날짜·설비·운영 낱말 길도 끄고 전부 순수 길 / 1 = 그 신호가 있는 질문은 기존 길 그대로(신호 없는 질문만 순수 길)
-    # pure_topk: 순수 길에서 Claude에 주는 조각 수 (1~20, 기본 8)
+    # pure_topk: 순수 길에서 Claude에 주는 조각 수 (1~60, 기본 8 — 예시 파일은 30: DOC-01·02·07 점검표 72·75·79% → 94·93·94%, 2026-10-18)
     pure_external: bool = False
     pure_keep_signals: bool = False
     pure_topk: int = 8
@@ -169,6 +182,9 @@ class Settings:
     # pure_rule: 1이면 순수 길(PURE_KEEP_SIGNALS=1)에서 신호가 운영 낱말(로트·재고·정비 기한·알림)뿐이고 지금 상태를 묻는 말이 없고 규칙·정책 낱말(누가·기준·방식·어떻게 해야 …)이 있는 질문을
     # 운영 조회가 아니라 문서 길로 보낸다 (2026-10-18, "소모품 재고는 누가 관리해?"가 문서 답을 못 받던 결함). 문서 길이 "문서에 없음"이면 원래 기존 길로 되돌린다. 기본 꺼짐 = 지금 동작 그대로.
     pure_rule: bool = False
+    # pure_rule_wide: 1이면 PURE_RULE처럼 운영 낱말뿐인 규칙 질문을 문서 길로 보내되, 규칙 낱말(누가·기준이 뭐야 …)이 없어도 보낸다("재고 입고는 사람이 직접 입력해?") — 대신 조회 말투(몇 개·있어?·알려줘·모자란·중에 …)를 데이터 질문으로 거른다
+    # (2026-10-18, PURE_RULE의 재현율이 낮아서: 독립 은행 35%·조정용 은행의 대상 구역 44%). 좁은 규칙이 받는 질문을 포함한다. 문서에 없으면 기존 길로 되돌린다. 기본 꺼짐 = 지금 동작 그대로
+    pure_rule_wide: bool = False
     # pure_retry: 1이면 순수 길에서 Claude가 "조각에 답이 없다"(insufficient)고 한 질문을 상위 pure_retry_topk개 조각으로 **한 번 더** 묻고, 그래도 없을 때만 "문서에 없음"으로 끝낸다
     # (2026-10-18, 정답 조각이 9~50위라 못 보낸 것을 없는 것으로 말하던 결함: DOC-03 순수 길 놓침 13개 중 거짓 "없다" 10개). 첫 호출 지시문에는 "조각에 없는 부분을 문서에 없다고 단정하지 않는다" 한 줄이 더해진다.
     # PURE_RULE 경로·안전 질문·검색이 빈 경우에는 재시도하지 않는다. 기본 꺼짐 = 지금 동작 그대로 (요청 글도 한 글자 안 다르다).
@@ -180,6 +196,21 @@ class Settings:
     # pure_faultdoc: 1이면 순수 길에서 질문에 **고장 낱말**(알람·경고·떴어·멈췄어·정지·고장·에러·과열·누설 …)이 있을 때 고장 대응 매뉴얼(DOC-03)을 통째로(상한 30,000자) Claude에게 준다
     # (2026-10-18, DOC-03을 현장 말로 물으면 정답 절이 검색 상위 8개 밖에 있어 놓치던 결함, 점검표 73/90). PURE_SAFETY가 DOC-05를 통째로 주는 것과 같은 방식. 기본 꺼짐 = 지금 동작 그대로
     pure_faultdoc: bool = False
+    # card_rewrite: 1이면 **채팅(외부 Claude 요청)** 에서 알람 카드의 설명 문장과 점검 순서(★ 줄)를 Claude가 해요체로 다시 쓴다(A2, 2026-10-18). 숫자·영문 이름·[가상] 꼬리표·조건 말(않·금지·반드시·먼저 …)
+    # 검사(jobs.check_rewrite)와 뜻 같은지 따로 판정(jobs.faith)을 모두 지나야 쓰고, 하나라도 걸리면 원문 카드 그대로 보인다(fail closed). 알람 카드 화면(지침카드)은 영향이 없다. 기본 꺼짐 = 지금 동작 그대로
+    card_rewrite: bool = False
+    # fixed_block: 1이면 **채팅 순수 길**에서 안전 질문에 맞는 고정 서식(잠금·표지 6+3단계, 고전압 대기, 보호구)을 프로그램이 답 아래에 그대로 붙이고(safety/fixed_block.py, 글자는 templates.py 상수),
+    # Claude에게는 공식 단계 번호·이름을 알려 준다. 순서 전체를 물었는데 풀이가 단계를 빠뜨리거나 없는 번호를 쓰면 풀이를 버리고 고정 서식만 보인다(2026-10-18, FR-AST-COM-13 채팅 병기). 기본 꺼짐 = 지금 동작 그대로
+    fixed_block: bool = False
+    # ctx_narrow: 1이면 화면 알람(alarm_key)이 있을 때 "원인·점검·먼저·안전" 낱말만으로 직전 알람에 묶지 않고, **자기 대상이 없는 질문**(알람 일반 낱말뿐 — "원인은?"·"심각도는?")만 묶는다.
+    # "안전하게 자물쇠 제거 어떻게 해?"가 직전 2075 카드로 답하던 위험을 막는다(2026-10-18). 묶으면 답 맨 앞에 "N 알람 기준으로 답해요."를 밝힌다. 기본 꺼짐 = 지금 동작 그대로
+    ctx_narrow: bool = False
+    # pure_follow_rewrite: 1이면 이어 묻기 "쉽게/짧게"가 순수 길(Claude가 쓴) 답의 글을 실제로 다시 쓴다(숫자·영문 이름·조건 말·길이 검사 + 뜻 판정, 안전 낱말 줄은 원문 그대로). 꺼짐·검사 실패·외부 요청 아님이면 앞 답을 그대로 보인다(지금 동작).
+    pure_follow_rewrite: bool = False
+    # pure_model: 비어 있지 않으면 **채팅(외부 Claude 요청)의 순수 길 본 답변**(작업 이름 pure_answer: 질문 + 조각 → Claude 1번, PURE_RETRY의 두 번째 호출 포함)만 이 모델로 부른다 (2026-10-19).
+    # 판정·다시 쓰기·옛 길·compose 같은 나머지 호출은 늘 Sonnet 5.5다. 노력은 medium 그대로. 가격표에 없는 이름이면 빈 값(= Sonnet)으로 되돌린다.
+    # settings()가 만드는 기본은 claude-haiku-5-5(PURE_MODEL 줄이 없을 때, 사용자 결정 2026-10-19), 줄을 비우면(PURE_MODEL=) Sonnet 5.5 = 예전 동작. 이 필드 자체의 기본값 ""는 Settings를 직접 만드는 코드(시험 등)가 예전 동작을 그대로 받게 하려는 것이다
+    pure_model: str = ""
     llm_provider: str = "local"
     # 스위치 이름은 MOM_CLAUDE_* — 이 PC의 Claude Code 환경에 CLAUDE_EFFORT 같은 값이 이미 있어(2026-10-14 확인) 같은 이름을 쓰면 섞인다.
     claude_model: str = "claude-opus-5-5"
@@ -208,6 +239,14 @@ class Settings:
         return "외부 LLM(Claude, 실험)" if self.llm_provider == "claude" else "로컬 LLM"
 
     @property
+    def pure_label(self) -> str:
+        """순수 길 답의 mode 앞 이름표 — PURE_MODEL이 있으면 실제로 부른 모델 이름, 없으면 llm_label 그대로(글자가 지금과 같다).
+        llm_label(/health·단계 로그용 전역 이름표)은 pure_answer 밖의 호출이 Sonnet 그대로라 바꾸지 않는다."""
+        if self.claude_app and self.pure_model:
+            return f"외부 LLM({CLAUDE_MODEL_NAMES.get(self.pure_model, self.pure_model)})"   # 표에 없는 ID(손으로 만든 설정)는 ID 그대로
+        return self.llm_label
+
+    @property
     def llm_model_name(self) -> str:
         return self.claude_model if self.llm_provider == "claude" else self.llm_model
 
@@ -227,7 +266,7 @@ class Settings:
                 "write_shots": self.write_shots, "write_titles": self.write_titles, "write_rules_v17": self.write_rules_v17,
                 "answer_gate_v17": self.answer_gate_v17, "table_fill_v18": self.table_fill_v18, "oblige_check": self.oblige_check,
                 "pure_external": self.pure_external, "pure_keep_signals": self.pure_keep_signals, "pure_topk": self.pure_topk, "pure_style": self.pure_style,
-                "pure_layout": self.pure_layout, "pure_expand": self.pure_expand, "pure_safety": self.pure_safety, "pure_period": self.pure_period, "pure_rule": self.pure_rule, "pure_retry": self.pure_retry, "pure_retry_topk": self.pure_retry_topk, "pure_fault": self.pure_fault, "pure_faultdoc": self.pure_faultdoc,
+                "pure_layout": self.pure_layout, "pure_expand": self.pure_expand, "pure_safety": self.pure_safety, "pure_period": self.pure_period, "pure_rule": self.pure_rule, "pure_retry": self.pure_retry, "pure_retry_topk": self.pure_retry_topk, "pure_fault": self.pure_fault, "pure_rule_wide": self.pure_rule_wide, "pure_faultdoc": self.pure_faultdoc, "pure_model": self.pure_model,
                 "llm_provider": self.llm_provider, "claude_via": self.claude_via, "claude_model": self.claude_model,
                 "claude_effort": self.claude_effort,
                 "external_app": self.external_app, "proc_limit": self.proc_limit, "claude_app": self.claude_app,
@@ -315,7 +354,7 @@ def settings() -> Settings:
         oblige_check=get("OBLIGE_CHECK", "1").strip().lower() not in ("0", "false", "no"),   # 기본 켜짐 — 모르는 값도 켜짐(지금 동작)
         pure_external=get("PURE_EXTERNAL", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
         pure_keep_signals=get("PURE_KEEP_SIGNALS", "0").strip().lower() in ("1", "true", "yes"),
-        pure_topk=_int_clamped(get("PURE_TOPK", "8"), 8, 1, 20),
+        pure_topk=_int_clamped(get("PURE_TOPK", "8"), 8, 1, 60),
         pure_style=get("PURE_STYLE", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 말투)
         pure_layout=get("PURE_LAYOUT", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐 (PURE_STYLE=1일 때만 뜻이 있다)
         pure_expand=get("PURE_EXPAND", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
@@ -325,9 +364,15 @@ def settings() -> Settings:
         pure_retry=get("PURE_RETRY", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
         pure_retry_topk=_int_clamped(get("PURE_RETRY_TOPK", "30"), 30, 9, 60),
         pure_fault=get("PURE_FAULT", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
+        pure_rule_wide=get("PURE_RULE_WIDE", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
         pure_faultdoc=get("PURE_FAULTDOC", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
+        card_rewrite=get("CARD_REWRITE", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
+        fixed_block=get("FIXED_BLOCK", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
+        ctx_narrow=get("CTX_NARROW", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
+        pure_follow_rewrite=get("PURE_FOLLOW_REWRITE", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
+        pure_model=_pure_model(get("PURE_MODEL", PURE_MODEL_DEFAULT)),   # 줄 없음 = Haiku(기본), 빈 줄·claude-sonnet-5-5·모르는 이름 = Sonnet(예전 동작). 앱 외부 요청에서만 쓰인다
         llm_provider=provider,
-        claude_model="claude-sonnet-5-5" if claude_app else get("MOM_CLAUDE_MODEL", "claude-opus-5-5").strip(),   # 앱 스위치: Sonnet 5.5 medium, 구독 로그인(cli) 고정
+        claude_model="claude-sonnet-5-5" if claude_app else get("MOM_CLAUDE_MODEL", "claude-opus-5-5").strip(),   # 앱 스위치: Sonnet 5.5 medium, 구독 로그인(cli) 고정 (2026-10-15 사용자 결정). 2026-10-19: 순수 길 본 답변만 PURE_MODEL로 달라질 수 있다 — claude_client가 그 호출에서만 갈라 준다
         claude_effort="medium" if claude_app else choice("MOM_CLAUDE_EFFORT", "low"),
         claude_via="cli" if claude_app else choice("MOM_CLAUDE_VIA", "cli"),
         claude_cost_cap_usd=0.0 if claude_app else _float(get("MOM_CLAUDE_COST_CAP_USD", "20"), 20.0),   # 앱 스위치: 사용 상한 없음(사용자 결정)

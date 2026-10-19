@@ -12,6 +12,7 @@ import { LEVEL_VIEW, alarmTitle, hhmm, sevText, type AlertRec, type Level, type 
 import { rankOfAlert, rankOfNotice } from './Briefing';
 import RobotIcon from './RobotIcon';
 import { canStartNewChat, currentChat, makeNewChatMark, realRows, withNewChat } from './chatLog';
+import { carryAlarm } from './carry';
 
 export type EveTab = '브리핑' | '알림' | '채팅' | '채팅 기록';
 export const EVE_TABS: EveTab[] = ['브리핑', '알림', '채팅', '채팅 기록'];
@@ -222,11 +223,16 @@ function Chat({ focus, headerSlot, onNewChat }: { focus: string | null; headerSl
   const input = useRef<HTMLInputElement>(null);
   const send = async (text = q) => {
     if (!text.trim()) return;
+    // 직전 알람 이어받기 신호 (carry.ts): 이 질문의 줄을 로그에 더하기 전의 지금 대화로 계산한다. 이어받을지는 서버가 정한다.
+    // 채팅 기록에서 열어 본 과거 대화를 보는 중이면 이어받지 않고 새 대화로 보낸다.
+    const cur = currentChat(log);
+    const alarmKey = focus ? null : carryAlarm(cur);
+    const newChat = focus ? true : cur.length === 0;
     setBusy(true); setQ('');
     let row: ChatRow;
     try {
       const r = backendChatEnabled()   // NEXT_PUBLIC_MOM_API가 있으면 백엔드의 비서(외부 LLM)로 — assistantApi.ts. 없으면 옛 길(시연 서버의 규칙 답)
-        ? await askAssistant(text, user.id, screen, selected ? MACHINES[selected].eq : null)
+        ? await askAssistant(text, user.id, screen, selected ? MACHINES[selected].eq : null, { alarmKey, newChat })
         : await api<{ answer: string; status: string; sources: ChatRow['sources']; series?: ChatRow['series'] }>('assistant/chat', { question: text, role, user_id: user.id, context: { screen, equipment_id: selected ? MACHINES[selected].eq : null } });
       row = { at: simIso(), q: text, a: r.answer, status: r.status, sources: r.sources ?? [], series: r.series };
     } catch (e) { row = { at: simIso(), q: text, a: '비서 응답 없음 — ' + (e as Error).message, status: '응답 없음', sources: [] }; }
@@ -254,7 +260,7 @@ function Chat({ focus, headerSlot, onNewChat }: { focus: string | null; headerSl
         </button>, headerSlot)}
       <div ref={body} className="ma-body text-[14px]" role="tabpanel">
         <div className="ma-pad" aria-live="polite">
-          <p className="text-[11px] text-slate-500">{backendChatEnabled() ? '외부 LLM(Claude)이 사내 문서와 정해진 운영 조회 결과로 답합니다. 알람 카드·점검 순서 같은 안전 답은 채팅에서는 AI에 보내지 않고 문서 그대로 보입니다. 알람 카드 화면에서는 문서 원문이 기준이고, 비서가 쉽게 풀어 쓴 문장이 카드 아래에 참고용으로 따로 붙을 수 있으며 그때 점검 순서 문장이 외부로 전송됩니다. 질문과 문서 조각이 외부로 전송됩니다(지금은 가상 데이터).' : '규칙 답 — 외부 LLM(비서) 연결을 켜지 않아 프로그램 숫자와 사내 문서 절을 그대로 보입니다.'} 지금 화면·고른 설비({selected ? MACHINES[selected].name : '없음'})가 질문 배경으로 갑니다.</p>
+          <p className="text-[11px] text-slate-500">{backendChatEnabled() ? '외부 LLM(Claude)이 사내 문서와 정해진 운영 조회 결과로 답합니다. 알람 카드·점검 순서 같은 안전 답은 채팅에서 AI가 쉽게 풀어 쓰며, 잠금·표지 순서처럼 정해진 고정 서식은 풀이 아래에 문서 그대로 함께 붙습니다(풀이가 어긋나면 풀이는 버리고 고정 서식만 보입니다). 알람 카드 화면에서는 문서 원문이 기준이고, 비서가 쉽게 풀어 쓴 문장이 카드 아래에 참고용으로 따로 붙을 수 있으며 그때 점검 순서 문장이 외부로 전송됩니다. 질문과 문서 조각이 외부로 전송됩니다(지금은 가상 데이터).' : '규칙 답 — 외부 LLM(비서) 연결을 켜지 않아 프로그램 숫자와 사내 문서 절을 그대로 보입니다.'} 지금 화면·고른 설비({selected ? MACHINES[selected].name : '없음'})가 질문 배경으로 갑니다.</p>
           {today.length === 0 && !busy && <p className="ma-empty">라인 상황, 알람, 사내 문서 등 무엇이든 물어보세요.</p>}
           {today.map((r, i) => <div key={i} data-at={r.at} className={r.at === focus ? 'rounded-lg ring-2 ring-[#C8F03C]' : ''}><Bubble r={r} openSource={openSource} /></div>)}
           {busy && <p className="ma-msg-bot ma-typing">답변을 만드는 중…</p>}

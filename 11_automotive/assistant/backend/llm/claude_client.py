@@ -14,6 +14,7 @@
 """
 from __future__ import annotations
 
+import dataclasses
 import json
 import os
 import subprocess
@@ -37,6 +38,7 @@ PRICES: dict[str, tuple[float, float]] = {
     "claude-sonnet-5-5": (2.00, 10.00),
     "claude-haiku-5-5": (0.10, 0.50),
 }
+PURE_ANSWER_JOB = "pure_answer"   # 순수 길 본 답변의 작업 이름 (services/pure_external.JOB — import하면 순환이라 글자로 두고 시험이 같은지 단정한다). PURE_MODEL은 이 호출에만 쓰인다
 MIN_MAX_TOKENS = 1500   # api: 생각 토큰이 max_tokens를 같이 쓴다 — 로컬용 120·300 같은 값이면 "길이 초과"로 잘린다
 BREAK_S = 30.0
 TIMEOUT_TRIPS = 2
@@ -335,6 +337,8 @@ def chat_json_claude(messages: list[dict], schema: dict, name: str, max_tokens: 
 
 
 def _chat_json_claude(messages: list[dict], schema: dict, name: str, max_tokens: int, s: Settings, grammar: str | None) -> dict:
+    if name == PURE_ANSWER_JOB and s.claude_app and s.pure_model:   # PURE_MODEL(2026-10-19): 이 호출만 다른 모델. 설정 복사본을 바꿔 쓰므로 잠금·--model·기록·모델 불일치 검사가 모두 같은 값을 본다. 노력은 그대로
+        s = dataclasses.replace(s, claude_model=s.pure_model)
     bad = gate_problem(s)
     if bad:
         raise LlmUnavailable(bad)

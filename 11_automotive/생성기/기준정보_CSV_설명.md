@@ -455,7 +455,7 @@ BRK-A100의 검사 항목과 기준(가상 도면)이다. 판정과 Cpk 기준�
 | `doc_no` | 문서 번호 | DOC-01~07, GLOSSARY |
 | `doc_kind` | 종류 | `MANUAL_DOC` / `GLOSSARY` |
 | `doc_name` | 이름 | 문서 표지 이름 |
-| `current_rev` / `rev_date` | 지금 개정 / 날짜 | 각 문서 표지와 같음 (2026-10-14: DOC-01 Rev.9, DOC-07 Rev.10) |
+| `current_rev` / `rev_date` | 지금 개정 / 날짜 | 각 문서 표지와 같음 (2026-10-19: DOC-01 Rev.2, DOC-02·03 Rev.1, DOC-04 Rev.2, DOC-05 Rev.3, DOC-06 Rev.4, DOC-07 Rev.11, 용어집 Rev.5) |
 | `status` / `approved_by` / `approved_at` | 상태 / 승인 | `APPROVED` / U12 / 개정 날짜 09:00 |
 | `is_search_target` | 비서 검색 대상 | 모두 `true` |
 | `file_ref` | 파일 | `가상사내문서/` 안 파일 경로 |

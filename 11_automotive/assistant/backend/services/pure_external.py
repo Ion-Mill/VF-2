@@ -281,7 +281,7 @@ def retrieve(question: str, k: int) -> list[tuple[float, Chunk]]:
 
 
 EXPAND_MAX_CHUNKS = 4        # PURE_EXPAND=1: 확장으로 더하는 아래 절 조각 수 상한 (보장하는 부모 조각은 따로 센다)
-EXPAND_MAX_CHARS = 2500      # 더하는 아래 절 글자 수 상한
+EXPAND_MAX_CHARS = 3000      # 더하는 아래 절 글자 수 상한 (2026-10-18 DOC-05 Rev.3: §2.1·§2.2 "우리 라인" 칸이 길어져 2.3+2.1+2.2가 2530자가 되어 2500이면 §2.2가 빠졌다. §2.4(2781자)는 3000에서도 안 들어간다)
 
 # "잠금 표지 순서" 결함의 둘째 원인: 사용자는 "잠금 표지"뿐 아니라 "작업 전에 **잠그는** 순서", "뭐부터 **잠가**?"라고도 묻는다.
 # 그러면 부모 조각(DOC-05 §2 잠금·표지 절차)조차 상위 8개에 못 들어와서(15~112위) 아래 절 확장만으로는 못 고친다. 그래서 질문에 잠금 낱말이 있으면
@@ -474,6 +474,47 @@ def rule_question(question: str, p: dict) -> bool:
     return bool(RULE_MARK_RE.search(q)) and not RULE_LIVE_RE.search(q)
 
 
+# PURE_RULE_WIDE=1 (2026-10-18, 기획 규칙질문_라우팅_넓히기): PURE_RULE은 규칙을 묻는 낱말(RULE_MARK_RE)이 있어야 문서 길로 보내 재현율이 낮았다(조정용 은행의 대상 구역 44%, 독립 은행 35%).
+# 규칙 질문의 말투는 다양한 반면("~는 반장이 해?", "~이야, 아니면 ~야?", "~인가요?") 운영 조회의 말투는 좁다(몇 개·있어?·알려줘·모자란·중에 …). 그래서 양성 표지를 풀고
+# 음성 표지(조회 말투)를 강화한다: 신호가 운영 낱말뿐 · 10자 이상 · 지금 상태를 묻는 말(RULE_LIVE_RE)이 없고 · 규칙 낱말이 있거나(= 좁은 규칙 그대로 받는다) 조회 말투(RULE_WIDE_DATA_RE)가 없음.
+# 틀려도 비용은 작다: 문서 길이 "문서에 없음"이면 기존 길로 되돌아온다(RULE_OPS_NOTE + 되돌리기, PURE_RULE과 같은 장치라 RULE_WHY를 그대로 쓴다).
+RULE_WIDE_DATA_RE = re.compile(
+    r"몇\s?(?:개|건|대|명|번|종|종류)(?:이|가)?\s?(?:야|예요|에요|인가요|나요|죠|지|고|입니까|있|남|[?？]\s*$)|"       # 개수를 묻는 끝맺음 ("몇 개 빠져?"는 수량 규칙이라 거르지 않는다)
+    r"알려\s?(?:줘|주세요|줄래|줄\s?수|주라|주실)|뽑아|골라|꺼내|추려|걸러|봐\s?(?:줘|주세요)|훑어|"                    # 조회 동사
+    r"(?:로트|재고|소모품|부품|공구|설비|정비|항목|알림|품목|것|거|건|들)\s?중(?:에|에서|의)|"                         # 부분 집합 ("측정 중에"는 하는 동안이라 거르지 않는다)
+    r"제일|가장|젤\s|보다\s|"                                                                                      # 최상급·비교
+    r"모자란|모자라(?!면|다면)|부족한|부족(?!하면|하다면|해지면)|초과한|넘은|넘긴|넘어서|밑으로|"                      # 부족·초과 상태 ("모자라면"은 조건이라 거르지 않는다)
+    r"(?:이하|미만|초과)인\s?(?:것|거|건|로트|재고|항목|소모품|공구|부품)|지난\s|지나서|지났|늦은|늦게|오래된|밀린|"
+    r"괜찮(?:은가요|아\s?[?？]|나요|은지)|문제\s?없|이상\s?없|정상(?:이야|인가요|이에요|인지)\s?[?？]|맞는지\s?(?:봐|확인)|"   # 상태 확인
+    r"어느\s?(?:로트|건|거|항목|쪽|품목|공구|설비|소모품|재고|정비)|어떤\s?(?:로트|건|거|항목|품목|공구|설비|소모품|상태)|"   # 특정 대상 고르기
+    r"누구(?:야|예요|에요|인가요|지)\s?[?？]?\s*$|화면|숫자랑|수치랑|왜\s?(?:이렇게|이래|이런|저래|저렇게)|"
+    r"올라온|올라와|나간\s?거|나간\s?적|뜬\s?거|걸린\s?거|걸려\s?있|떠\s?있|생긴\s?거|바뀐\s?거|된\s?거|난\s?거|한\s?거|안\s?된\s?거|안\s?한\s?거|"   # 사건·상태로 대상을 고르는 말
+    r"웠(?:어|나|니|는지|죠)|뤘(?:어|나|니)")                                                                        # RULE_PAST에 없는 과거형 ("채웠어?")
+RULE_WIDE_EXIST_RE = re.compile(r"있(?:어|나|니|는지|을까|는\s?게|는\s?거)\s?(?:요)?\s?[?？]|있나요|있어요|있습니까|없어\s?[?？]|없나요")   # 존재 확인 = 조회
+RULE_WIDE_FEATURE_RE = re.compile(r"(?:알림|기능|기준|규칙|규정|원칙|절차|방법|권한|제한|조건|예외|옵션|설정|표시|문구|메시지|양식|형식|단계|순서|제외|면제)(?:이|가|도|은|는|란)?\s?(?:따로|별도|특별히|있)")   # "알림이 있나요?"는 기능·기준을 묻는 규칙 질문
+
+
+def rule_question_wide(question: str, p: dict) -> bool:
+    """신호가 운영 낱말(intents)뿐이고 조회 말투가 아닌 질문인가 (PURE_RULE_WIDE). 좁은 규칙(rule_question)이 받는 질문을 포함한다.
+    번호·설비·날짜·알람이 있거나 신호가 아예 없으면 False(앞은 진짜 조회, 뒤는 이미 순수 길)."""
+    if not p.get("intents"):
+        return False
+    if p.get("alarms") or p.get("equipment") or p.get("start") or p.get("end") or p.get("lot") or p.get("order"):
+        return False
+    q = question.strip()
+    if len(re.sub(r"[\s?？!.~,]", "", q)) < RULE_MIN_LEN:
+        return False
+    if RULE_LIVE_RE.search(q):
+        return False
+    if RULE_MARK_RE.search(q):
+        return True
+    if RULE_WIDE_DATA_RE.search(q):
+        return False
+    if RULE_WIDE_EXIST_RE.search(q) and not RULE_WIDE_FEATURE_RE.search(q):
+        return False
+    return True
+
+
 def fault_question(question: str, p: dict) -> bool:
     """신호가 운영 낱말(intents)뿐인 고장 대응 절차 질문인가 (PURE_FAULT). 번호·설비·날짜·로트·작업지시·알람이 있거나 신호가 아예 없으면 False(앞은 진짜 조회·알람 카드, 뒤는 이미 순수 길)."""
     if not p.get("intents"):
@@ -602,7 +643,7 @@ def build_messages(question: str, chunks: list[Chunk], prev: dict | None = None,
     return [{"role": "system", "content": system}, {"role": "user", "content": "\n\n".join(parts)}]
 
 
-def ask(question: str, chunks: list[Chunk], prev: dict | None, s: Settings, ops_note: bool = False, retry_note: bool = False) -> dict:
+def ask(question: str, chunks: list[Chunk], prev: dict | None, s: Settings, ops_note: bool = False, retry_note: bool = False, fixed_note: str | None = None) -> dict:
     """외부 Claude 1번 호출. 돌려주는 값: {"answer", "insufficient", "cited_raw"(받은 그대로), "raw"(받은 JSON), "ms", "sent_chars"}.
     연결·시간 초과·형식 오류·빈 답은 ExternalLlmFailure로 올린다 — 자동으로 로컬·다른 길로 돌아가지 않는다(앱 입구가 EXTERNAL_LLM_UNAVAILABLE로 끝냄).
     PURE_STYLE=1이면 새 지시문·스키마·max_tokens로 부르고 "answer"는 `opening 1) … 2) … closing`을 이은 글이며, "style": True와 "opening"·"points"·"closing" 부품이 더해진다
@@ -612,7 +653,7 @@ def ask(question: str, chunks: list[Chunk], prev: dict | None, s: Settings, ops_
     style = bool(s.pure_style)
     layout = style and bool(s.pure_layout)
     messages = build_messages(question, chunks, prev, system_for(s) + ("\n\n" + RULE_OPS_NOTE if ops_note else "")   # ops_note: PURE_RULE로 문서 길에 온 질문에만
-                              + ("\n\n" + PARTIAL_NOTE if s.pure_retry else "") + ("\n\n" + RETRY_NOTE if retry_note else ""))   # PURE_RETRY=1: 첫 호출에 한 줄, 넓게 다시 본 호출에 한 줄 더
+                              + ("\n\n" + PARTIAL_NOTE if s.pure_retry else "") + ("\n\n" + RETRY_NOTE if retry_note else "") + ("\n\n" + fixed_note if fixed_note else ""))   # PURE_RETRY=1: 첫 호출에 한 줄, 넓게 다시 본 호출에 한 줄 더
     sent = sum(len(m["content"]) for m in messages)
     t0 = time.perf_counter()
     try:

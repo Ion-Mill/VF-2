@@ -322,6 +322,8 @@ class Live:
                 row["plan_mode"], row["judgement"] = p["plan_mode"], p["judgement"]
                 row["gauge_pass_qty"], row["gauge_fail_qty"] = p["gauge_pass_qty"], p["gauge_fail_qty"]
             row["judged_at"] = iso(self.to_dt(l.judged_m)) if l.judged_m is not None else None
+            pm = S4.passed_m(l)                 # 완제품으로 들어온 시각: 합격 = 판정, 해제 = 해제 (백엔드 v_production_lot.passed_at과 같음)
+            row["passed_at"] = iso(self.to_dt(pm)) if pm is not None else None
             row["first_in_at"] = iso(self.to_dt(min(p0.start["OP-10"] for p0 in l.parts))) if l.parts else None
             row["process_done"] = {k: sum(1 for p0 in l.parts if k in p0.start) for k in PROCS}
             row["process_done"]["DONE"] = sum(1 for p0 in l.parts if "done" in p0.start)

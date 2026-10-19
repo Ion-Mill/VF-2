@@ -312,17 +312,20 @@ def _route(method, p, q, body, rt, live, P):
                        "reason": body.get("reason"), "status_after": cur["status"], "changes": changes})
         return cur
     if key == "reports/daily":
-        rows = [{**r, **S.daily.get(r["work_date"], {})} for r in P.daily_reports]
+        rows = [daily_with_llm({**r, **S.daily.get(r["work_date"], {})}) for r in P.daily_reports]     # 목록을 읽을 때 아직 확정 안 된 초안(9/30)의 문장 준비가 미리 시작된다
         ld = live_daily("2026-10-01")
         if ld:
             rows.append({**ld, **S.daily.get(ld["work_date"], {})})
         return {"reports": rows}
     if len(p) >= 3 and p[:2] == ["reports", "daily"]:
         d = p[2]
-        cur = next((dict(r) for r in P.daily_reports if r["work_date"] == d), None) or live_daily(d)
+        past = next((dict(r) for r in P.daily_reports if r["work_date"] == d), None)       # 생성기가 미리 만든 날짜 (live_daily는 시연 중 만든 10/1)
+        cur = past or live_daily(d)
         if cur is None:
             raise ApiError(404, "NOT_FOUND", "없는 날짜")
         cur.update(S.daily.get(d, {}))
+        if past:
+            cur = daily_with_llm(cur)
         if method == "GET":
             cal = rt.sim.cal
             day = next((s for s in cal.shifts if s.shift_id == f"{d}-D"), None)
@@ -338,11 +341,11 @@ def _route(method, p, q, body, rt, live, P):
             raise ApiError(403, "FORBIDDEN", "일일 보고서 확정은 관리자만")
         upd = {"status": "CONFIRMED", "confirmed_by": body.get("user_id"), "confirmed_at": fmt_dt(rt.now()),
                "current_version": int(cur.get("current_version") or 0) + 1}
-        tmpl = live_daily(d, with_llm=False)                # 기본 문장으로 만든 것 (과거 날짜는 None)
-        if body.get("memo"):
-            upd["issues_summary"] = cur["issues_summary"] + " / 관리자 메모: " + body["memo"]
-        elif tmpl and cur.get("issues_summary") != tmpl.get("issues_summary"):
-            upd["issues_summary"] = cur["issues_summary"]      # 사람이 본 비서 문장을 확정 때 굳힌다 (확정 뒤 GET마다 다시 계산하지 않게)
+        tmpl = live_daily(d, with_llm=False)                # 기본 문장으로 만든 것 (생성기가 미리 만든 날짜는 None)
+        default = tmpl["issues_summary"] if tmpl else (past or {}).get("issues_summary")      # 어느 쪽이든 비서가 다듬기 전의 기본 문장
+        frozen = freeze_daily_summary(cur.get("issues_summary"), default, body.get("memo"))
+        if frozen is not None:
+            upd["issues_summary"] = frozen                  # 사람이 본 비서 문장을 확정 때 굳힌다 (확정 뒤 GET마다 다시 계산하지 않게)
         S.daily[d] = upd
         S.revs.append({"revision_id": f"L{len(S.revs) + 1}", "doc_type": "DAILY_REPORT", "doc_key": d, "version_no": upd["current_version"],
                        "author_kind": "USER", "author_user_id": body.get("user_id"), "created_at": upd["confirmed_at"], "reason": None,
@@ -442,7 +445,8 @@ def _route(method, p, q, body, rt, live, P):
                 raise ApiError(409, "INVALID_STATE", f"{x['lot_no']}은(는) 합격·해제 로트가 아니라 출하할 수 없어요")
             if int(x["qty"]) > l.fg_qty - shipped.get(l.lot_no, 0):
                 raise ApiError(409, "INVALID_STATE", f"{x['lot_no']} 남은 수량보다 많아요")
-            lines.append({"lot_no": l.lot_no, "qty": int(x["qty"])})
+            # 합격 시각도 출하 줄에 남김 — 지난 출하 상세의 [합격] 칸 (실제 백엔드 shipment_line.lot_passed_at과 같음: 합격 = 판정 시각, 해제 = 해제 시각)
+            lines.append({"lot_no": l.lot_no, "qty": int(x["qty"]), "lot_passed_at": iso(live.to_dt(S4.passed_m(l)))})
         if not lines:
             raise ApiError(400, "VALIDATION", "로트 줄이 없어요")
         no = f"SHP-2610-{len(S.ships) + 1:03d}"
@@ -517,6 +521,45 @@ def shift_with_llm(d):
         return d
     out = COMPOSER.polished("shift_report", d["shift_id"], sentences(d.get("notable_text") or ""))
     return {**d, "notable_text": " ".join(out)} if out else d
+
+
+def split_issues(summary):
+    """일일 보고서 '오늘의 문제'("전체 N건 (…): 1) … / 2) …")를 (머리, 번호 뗀 항목들)로. 화면(Reports.tsx)이 쪼개는 기준과 같다.
+    모양이 다르면(번호가 1부터 이어지지 않음, 항목 수가 머리의 N과 다름, 항목 속에 ' / ') None — 그런 글은 다듬지 않는다."""
+    head, sep, rest = str(summary or "").partition(": ")
+    m = re.fullmatch(r"전체 (\d+)건.*", head)
+    if not m or not sep:
+        return None
+    items = []
+    for i, part in enumerate(rest.split(" / "), 1):
+        mm = re.fullmatch(rf"{i}\) (.+)", part)
+        if not mm:
+            return None
+        items.append(mm.group(1))
+    return (head, items) if len(items) == int(m.group(1)) else None
+
+
+def daily_with_llm(row):
+    """생성기가 미리 만든 일일 보고서(지금은 9/30)의 아직 확정 안 된 초안: '오늘의 문제' 항목 문장을 비서가 다듬은 문장으로 바꿔 끼운다.
+    머리(건수)·항목 수·순서·번호는 그대로다. 준비 전·꺼짐·실패면 row 그대로 (기다리지 않는다 — llm_compose.py).
+    확정된 보고서(사람이 본 문장)는 건드리지 않는다. 10/1 보고서(live_daily)는 만들 때 이미 다듬으므로 여기로 오지 않는다."""
+    if not row or row.get("status") != "AI_DRAFT":
+        return row
+    parts = split_issues(row.get("issues_summary"))
+    out = COMPOSER.polished("daily_report", row["work_date"], parts[1]) if parts else None
+    if not out:
+        return row
+    return {**row, "issues_summary": f"{parts[0]}: " + " / ".join(f"{i}) {t}" for i, t in enumerate(out, 1))}
+
+
+def freeze_daily_summary(shown, default, memo):
+    """일일 보고서를 확정할 때 저장해 둘 '오늘의 문제'. 관리자 메모가 있으면 보이던 문장 뒤에 붙이고, 없으면 보이던 문장이
+    기본 문장과 다를 때(= 비서가 다듬은 문장을 사람이 본 경우)만 그 문장을 굳힌다. 저장할 것이 없으면 None."""
+    if shown is None:
+        return None
+    if memo:
+        return shown + " / 관리자 메모: " + memo
+    return shown if default is not None and shown != default else None
 
 
 def work_order_text(body):
