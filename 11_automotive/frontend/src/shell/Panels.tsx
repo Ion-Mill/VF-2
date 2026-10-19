@@ -16,7 +16,7 @@ function Bar({ pct, color = '#4b5a69' }: { pct: number; color?: string }) {
   return <div className="h-2 w-full rounded-full bg-slate-200"><div className="h-2 rounded-full" style={{ width: `${Math.max(0, Math.min(100, pct))}%`, background: `linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,0) 55%,rgba(0,0,0,.12)), ${color}`, boxShadow: `0 0 6px ${color}66` }} /></div>;
 }
 
-export default function Panels({ field = false }: { field?: boolean }) {
+export default function Panels({ field = false, ids }: { field?: boolean; ids?: MachineId[] }) {
   const { twin, alerts, wos, stopReasons, selected, go, openCard, openWo, user, connected, selectMachine, pm } = useApp();
   const [why, setWhy] = useState<string | null>(null);
   const [showDone, setShowDone] = useState(false); // 작업지시 완료 줄 접기 (훅이라 아래 return들보다 위)
@@ -60,6 +60,37 @@ export default function Panels({ field = false }: { field?: boolean }) {
   </>);
   const tone = !cur ? '' : cur.level === '긴급' ? 'border-[#e8a0a2] bg-[#fdeeee] text-[#c62a2f]' : cur.level === '주의' ? 'border-[#ecd28e] bg-[#fff8e6] text-[#7a4e00]' : 'border-slate-200 bg-slate-50';
   const mark = (a: AlertRec) => (a.level === '긴급' ? '⚠' : a.level === '주의' ? '▲' : 'ⓘ');
+
+  // 현장 보기 공정 묶음 버튼 (사용자 선택 2026-10-19): 담당 설비 2대를 반씩 — 알람 난 칸만 빨강·노랑 테두리
+  if (field && ids && ids.length > 1) return (
+    <div className="grid h-full grid-cols-2 gap-3 bg-[#eef1f4] p-3 text-[#26303a]">{ids.map((id) => {
+      const q = MACHINES[id].eq!, Q = twin.equipment[q], v = STATE_VIEW[stateOf(Q)];
+      const a = [...alerts].reverse().find((x) => x.machine === id && !x.handled);
+      const nr = (dt.data?.downtimes ?? []).filter((d) => d.equipment_id === q && !['RUN', 'BLOCKED', 'MAINT'].includes(d.state_code) && !stopReasons[`${d.equipment_id}|${d.start_at}`]?.reason).length;
+      const pq = (twin.process[Q.process_code] ?? { pq: 0 }).pq;
+      const ring = !a ? 'border-slate-200' : a.level === '긴급' ? 'border-2 border-[#d23a35] shadow-[0_0_0_3px_rgba(229,72,77,.18)]' : 'border-2 border-[#e0a100] shadow-[0_0_0_3px_rgba(240,180,41,.2)]';
+      return (
+        <section key={id} className={`flex min-h-0 min-w-0 flex-col gap-2 rounded-2xl border bg-white px-4 py-3 ${ring}`}>
+          <div className="flex flex-wrap items-center gap-2">
+            <button onClick={() => selectMachine(id)} className="font-mono text-[22px] font-bold hover:underline">{MACHINES[id].name}</button>
+            <span className="rounded bg-slate-100 px-2 py-0.5 font-mono text-[13px]">{MACHINES[id].op}</span>
+            <span className="rounded-full border border-slate-300 px-2.5 py-0.5 text-[15px] font-bold" style={{ color: v.color }}>{v.icon} {v.text} · {Q.minutes}분째</span>
+          </div>
+          {a ? (
+            <div className={`flex items-center gap-2 rounded-xl px-3 py-2 ${a.level === '긴급' ? 'bg-[#fdeeee] text-[#b4282d]' : 'bg-[#fff8e6] text-[#7a4e00]'}`}>
+              <b className="min-w-0 flex-1 truncate text-[16px]">{mark(a)} {alarmTitle(a.alarm, a.code)}</b>
+              <button onClick={() => openCard(a.id)} className="h-9 shrink-0 rounded-full bg-[#1f2933] px-3 text-[14px] font-bold text-white">지침카드 →</button>
+            </div>
+          ) : <div className="rounded-xl bg-slate-50 px-3 py-2 text-[16px] font-semibold text-slate-500">지금 알람 없음</div>}
+          <dl className="grid grid-cols-[120px_1fr] gap-x-2 gap-y-1 text-[15px]">
+            <dt className="text-slate-500">현재 로트</dt><dd className="truncate">{Q.lot_no ? <button onClick={() => go('lots', Q.lot_no)} className="font-mono font-semibold text-[#0f6f86] underline">{Q.lot_no}</button> : '—'}</dd>
+            <dt className="text-slate-500">교대 실적/목표</dt><dd><b className={num}>{pq}</b> / <b className={num}>{p.total_target_qty}</b>{MACHINES[id].op === 'OP-30' && <span className="text-slate-500"> (2대 합, 이 설비 {Q.shift_actual_qty})</span>}</dd>
+            <dt className="text-slate-500">오늘 정지</dt><dd><b className={num}>{Q.stop_min}</b>분</dd>
+            <dt className="text-slate-500">정지 사유 미입력</dt><dd><b className={num} style={{ color: nr ? AMBER : undefined }}>{nr}</b>건</dd>
+          </dl>
+        </section>);
+    })}</div>
+  );
 
   // SCR-26 현장 보기: 멀리서 보는 큰 모니터 — 알람이 먼저, 입력 버튼 없음 (입력은 현장 태블릿)
   if (field) return (

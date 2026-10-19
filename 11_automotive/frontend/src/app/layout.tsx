@@ -3,7 +3,7 @@ import '../../mom-assistant-widget/assistant-widget.css'; // 이브 겉모양 (g
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: '3D 스마트팩토리 대시보드',
+  title: '이브테크 · 제조운영관리',
   description: 'LINE A 3D Factory Process Visualization',
 };
 

@@ -2,7 +2,7 @@
 // UI설계서 2.1 [11] AI 비서 사이드바 · [15] 이브 아이콘 · [16] 이브 말풍선, SCR-07 알림 탭, SCR-10 채팅·채팅 기록.
 // 채팅 = API-AST-02. 외부 LLM(Claude) 연결을 켜지 않았으면 서버의 "규칙 답"(조회 도구 + 사내 문서 검색)을 쓰고, 답마다 "규칙 답" 표시.
 // 겉모양 = mom-assistant-widget (로봇 버튼 · 아이콘 메뉴 · 우측 어두운 창 · 알림 토스트). 위젯 JS는 innerHTML로 그려 React 탭을 못 담아서 CSS만 쓰고 틀을 여기로 옮김.
-import { Fragment, useEffect, useRef, useState } from 'react';
+import { Fragment, createContext, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useApp } from './ctx';
 import { MACHINES } from './data';
@@ -29,7 +29,10 @@ const Icon = ({ d, size = 18, w = 2 }: { d: string[]; size?: number; w?: number 
   <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth={w} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{d.map((p) => <path key={p} d={p} />)}</svg>
 );
 // SVG 로봇 = WebGL이 안 될 때·3D 로봇 사진(snap)이 아직 없을 때
-function Robot({ alert, size, disc, snap }: { alert?: boolean; size: number; disc?: boolean; snap?: string | null }) {
+// 브리핑 안에서도 머리줄과 같은 이브 얼굴을 쓰도록 (2026-10-18)
+export const EveSnap = createContext<string | null>(null);
+
+export function Robot({ alert, size, disc, snap }: { alert?: boolean; size: number; disc?: boolean; snap?: string | null }) {
   const pad = disc ? Math.round(size * 0.16) : 0;
   if (snap) return (
     <span style={{ position: 'relative', display: 'block', width: size, height: size, flexShrink: 0 }}>
@@ -112,7 +115,7 @@ export function Eve({ tab, onPick, onClose, badges, bubble, onBubble, brief, onN
           </div>
           {tab === '채팅' ? <Chat focus={focus} headerSlot={slot} onNewChat={() => setFocus(null)} /> : (
             <div className="ma-body text-[14px] leading-relaxed" role="tabpanel">
-              {tab === '채팅 기록' ? <ChatLog onOpen={(at) => { setFocus(at); onPick('채팅'); }} /> : <div className="ma-pad">{tab === '브리핑' ? brief : <AlertsTab onNotice={onNotice} />}</div>}
+              {tab === '채팅 기록' ? <ChatLog onOpen={(at) => { setFocus(at); onPick('채팅'); }} /> : <div className="ma-pad">{tab === '브리핑' ? <EveSnap.Provider value={snap}>{brief}</EveSnap.Provider> : <AlertsTab onNotice={onNotice} />}</div>}
             </div>
           )}
         </aside>

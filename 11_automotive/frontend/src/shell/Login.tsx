@@ -2,6 +2,7 @@
 // SCR-01 로그인 (페이지구조 v3 1장) — 아이디를 누르면 가상 사용자 12명 이름 목록, 고르면 비밀번호 0000이 채워진다 (생성기/masters/app_user.csv).
 import { useState } from 'react';
 import { USERS, type UserRec } from './model';
+import Logo from './Logo';
 
 // 시연용: 모든 계정 비밀번호 0000 (사용자 결정 2026-10-15)
 export const DEMO_PW = '0000';   // assistantApi.ts(이브 채팅의 백엔드 로그인)도 같은 값을 쓴다
@@ -22,7 +23,7 @@ export default function Login({ onLogin }: { onLogin: (u: UserRec) => void }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#e9ecef] p-4 text-[#26303a]">
       <form onSubmit={(e) => { e.preventDefault(); go(); }} className="flex w-full max-w-[420px] flex-col gap-3 rounded-3xl border border-slate-200 bg-white p-8 shadow-md">
-        <h1 className="mb-3 text-center text-[24px] font-bold">제조운영관리 플랫폼</h1>
+        <div className="mb-3 flex flex-col items-center gap-2"><h1 className="m-0"><Logo height={46} /></h1><span className="text-[15px] text-slate-500">이브테크 제조운영관리 플랫폼</span></div>
         <div className="relative">
           <button type="button" onClick={() => setOpen((o) => !o)} aria-haspopup="listbox" aria-expanded={open} className={`${field} justify-between`}>
             <span className={pick ? '' : 'text-slate-400'}>{pick ? pick.name : '아이디'}</span><span className="text-slate-400">▾</span>

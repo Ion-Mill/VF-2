@@ -97,3 +97,25 @@ nav .bg-\[\#1c2530\] span{display:none;}
 /* 다시 보기 카드: 가공 = 흐르는 빛 (2026-10-17) */
 @keyframes rpSheen{0%{transform:translateX(-150%) rotate(20deg)}100%{transform:translateX(450%) rotate(20deg)}}
 .rp-sheen{animation:rpSheen 3.2s ease-in-out infinite}
+
+/* 3D 카드 이브 띠 상태색 빛: 숨 쉬듯 (2026-10-18) */
+@keyframes eveGlow{0%,100%{opacity:.55}50%{opacity:1}}
+.eve-glow{animation:eveGlow 2.4s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.eve-glow{animation:none}}
+
+/* 이브 패널 시안 B (사용자 선택 2026-10-18): 지금 화면의 은색·흰 카드 테마. 이브 얼굴(로봇)은 그대로 */
+.ma-panel{--ma-panel-fg:#26303a;--ma-panel-sub:#4b5560;--ma-panel-mute:#6b7580;--ma-panel-line:#d6dade;background:linear-gradient(180deg,#fbfbfc,#eceef1)!important;color:#26303a;border-color:#d6dade;box-shadow:0 20px 50px rgba(40,44,52,.22);border-radius:24px}
+.ma-panel .ma-tabs{border-bottom-color:#dfe2e6}
+.ma-panel .ma-tab[aria-selected="true"]{border-bottom-color:#1c232b}
+.ma-panel .ma-icon-btn:hover,.ma-panel .hover\:bg-slate-50:hover,.ma-panel .hover\:bg-slate-100:hover,.ma-panel .hover\:bg-white\/10:hover{background:rgba(28,35,43,.06)}
+.ma-panel .border-slate-200,.ma-panel .border-slate-300,.ma-panel .border-white\/25{border-color:#d6dade}
+.ma-panel select,.ma-panel input:not(.ma-input){background:#fff;color:#26303a}
+.ma-panel .text-\[\#9a6200\]{color:#9a6200}
+.ma-panel *{scrollbar-color:rgba(28,35,43,.25) transparent}
+
+/* 재공 판은 3D 바닥 글자로 바꿈 (2026-10-19) — 떠 있는 판 숨김 */
+[data-tier="wip"]{display:none!important}
+
+/* 이브 창 = 오른쪽 자리 차지 (팝업 아님, 2026-10-19) — 화면 전체 높이 */
+.ma-panel{top:12px!important;bottom:12px!important;right:12px!important}
+.ma-root.is-panel .ma-fab{display:none}
