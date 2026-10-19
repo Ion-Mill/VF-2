@@ -318,6 +318,124 @@ def _sim_server(monkeypatch):
     return SS
 
 
+# ------------------------------------------------------------------ 일일 보고서 '오늘의 문제' (생성기가 미리 만든 날짜, 2026-10-19)
+def _daily_rows():
+    import csv
+    path = TOOLS.parents[1] / "생성기" / "out" / "daily_report.csv"
+    return list(csv.DictReader(open(path, encoding="utf-8")))
+
+
+def _draft(rows):
+    return next(r for r in rows if r["status"] == "AI_DRAFT")
+
+
+def test_split_issues_reads_the_real_unconfirmed_row_and_refuses_odd_shapes(monkeypatch):
+    SS = _sim_server(monkeypatch)
+    head, items = SS.split_issues(_draft(_daily_rows())["issues_summary"])
+    assert head.startswith("전체 8건 (") and len(items) == 8
+    assert items[0].startswith("[주의] ") and items[-1].startswith("[참고] ")           # 번호("1) ")는 뗀다
+    for odd in ("전체 0건", "", None, "전체 3건 (긴급 0): 1) a / 2) b",                    # 항목 수 ≠ 머리의 N
+                "전체 2건 (긴급 0): 1) a / 3) b",                                          # 번호가 이어지지 않음
+                "전체 1건 (긴급 0): 1) a / b",                                             # 항목 속 ' / '
+                "1) a / 2) b"):                                                            # 머리 없음
+        assert SS.split_issues(odd) is None
+
+
+def test_daily_off_touches_nothing(monkeypatch):
+    SS = _sim_server(monkeypatch)
+    fake = Fake()
+    SS.COMPOSER = Composer(run_id=lambda: 1, post=fake, enabled=False)
+    rows = _daily_rows()
+    assert [SS.daily_with_llm(dict(r)) for r in rows] == rows
+    SS.COMPOSER.wait_idle()
+    assert fake.calls == []
+
+
+def test_daily_on_polishes_only_the_unconfirmed_draft_and_keeps_head_count_order(monkeypatch):
+    SS = _sim_server(monkeypatch)
+    fake = Fake()
+    SS.COMPOSER = Composer(run_id=lambda: 1, post=fake, enabled=True)
+    rows = _daily_rows()
+    assert [SS.daily_with_llm(dict(r)) for r in rows] == rows                              # 처음엔 모두 준비 전 → 그대로 (기다리지 않는다)
+    SS.COMPOSER.wait_idle()
+    got = [SS.daily_with_llm(dict(r)) for r in rows]
+    draft, polished = _draft(rows), _draft(got)
+    changed = [a["work_date"] for a, b in zip(rows, got) if a != b]
+    assert changed == [draft["work_date"]]                                                 # 확정된 보고서는 한 줄도 안 바뀐다
+    head, items = SS.split_issues(draft["issues_summary"])
+    phead, pitems = SS.split_issues(polished["issues_summary"])
+    assert phead == head and len(pitems) == len(items) == 8                                # 머리·항목 수 그대로
+    assert pitems == ["다듬음: " + t for t in items]
+    assert [t.split()[1] for t in pitems] == [t.split()[0] for t in items]                  # [주의]/[참고] 순서 그대로 ("다듬음:" 다음 낱말이 꼬리표)
+    assert len(fake.calls) == 1                                                           # 비서는 초안 한 건에 한 번만 불렸다
+    kind, lines = fake.calls[0]
+    assert kind == "daily_report" and [l["id"] for l in lines] == [f"L{i}" for i in range(1, 9)]
+    assert [l["text"] for l in lines] == items and all(l["text"].startswith("[") for l in lines)    # 번호 없이, [주의]/[참고] 꼬리표는 붙인 채로 보낸다
+    assert {k: v for k, v in polished.items() if k != "issues_summary"} == {k: v for k, v in draft.items() if k != "issues_summary"}
+
+
+def test_daily_confirmed_or_edited_rows_are_never_sent(monkeypatch):
+    SS = _sim_server(monkeypatch)
+    fake = Fake()
+    SS.COMPOSER = Composer(run_id=lambda: 1, post=fake, enabled=True)
+    draft = _draft(_daily_rows())
+    for untouched in ({**draft, "status": "CONFIRMED"}, {**draft, "status": "EDITING"}):
+        assert SS.daily_with_llm(untouched) == untouched
+    assert SS.daily_with_llm(None) is None
+    SS.COMPOSER.wait_idle()
+    assert fake.calls == []
+
+
+def test_daily_failure_keeps_the_default_sentences(monkeypatch):
+    SS = _sim_server(monkeypatch)
+    fake = Fake(ComposeHttpError(503, "HTTP 503"))
+    SS.COMPOSER = Composer(run_id=lambda: 1, post=fake, enabled=True)
+    draft = _draft(_daily_rows())
+    assert SS.daily_with_llm(dict(draft)) == draft
+    SS.COMPOSER.wait_idle()
+    assert SS.daily_with_llm(dict(draft)) == draft and len(fake.calls) == 1                # 실패 뒤에는 쉬는 동안 다시 부르지도 않는다
+
+
+def test_daily_new_run_drops_the_old_polished_sentences(monkeypatch):
+    SS = _sim_server(monkeypatch)
+    fake, run = Fake(), [1]
+    SS.COMPOSER = Composer(run_id=lambda: run[0], post=fake, enabled=True)
+    draft = _draft(_daily_rows())
+    SS.daily_with_llm(dict(draft))
+    SS.COMPOSER.wait_idle()
+    assert SS.daily_with_llm(dict(draft))["issues_summary"] != draft["issues_summary"]
+    run[0] = 2                                                                             # 시뮬레이터 '처음으로'
+    assert SS.daily_with_llm(dict(draft)) == draft                                         # 옛 회차에서 받아 둔 문장을 가져가지 않는다
+    SS.COMPOSER.wait_idle()
+    assert len(fake.calls) == 2
+
+
+def test_daily_confirm_freezes_the_sentence_the_person_saw(monkeypatch):
+    SS = _sim_server(monkeypatch)
+    default, shown = "전체 1건 (긴급 0): 1) [참고] 원래", "전체 1건 (긴급 0): 1) [참고] 다듬음"
+    assert SS.freeze_daily_summary(default, default, None) is None                         # 기본 문장 그대로면 저장할 것이 없다
+    assert SS.freeze_daily_summary(shown, default, None) == shown                          # 다듬은 문장을 봤으면 굳힌다
+    assert SS.freeze_daily_summary(shown, default, "내일 확인") == shown + " / 관리자 메모: 내일 확인"
+    assert SS.freeze_daily_summary(default, default, "메모") == default + " / 관리자 메모: 메모"
+    assert SS.freeze_daily_summary(None, default, "메모") is None
+    assert SS.freeze_daily_summary(shown, None, None) is None                              # 기본 문장을 모르면(없는 날짜) 굳히지 않는다
+
+
+def test_daily_after_confirm_the_frozen_sentence_is_not_polished_again(monkeypatch):
+    SS = _sim_server(monkeypatch)
+    fake = Fake()
+    SS.COMPOSER = Composer(run_id=lambda: 1, post=fake, enabled=True)
+    draft = _draft(_daily_rows())
+    SS.daily_with_llm(dict(draft))
+    SS.COMPOSER.wait_idle()
+    shown = SS.daily_with_llm(dict(draft))                                                 # 사람이 본 다듬은 문장
+    frozen = SS.freeze_daily_summary(shown["issues_summary"], draft["issues_summary"], None)
+    confirmed = {**draft, "status": "CONFIRMED", "issues_summary": frozen}
+    assert SS.daily_with_llm(dict(confirmed)) == confirmed
+    SS.COMPOSER.wait_idle()
+    assert len(fake.calls) == 1                                                            # 확정 뒤에는 비서를 다시 부르지 않는다
+
+
 def test_work_order_text_is_two_step_and_sends_title_and_symptom_ids(monkeypatch):
     SS = _sim_server(monkeypatch)
     fake = Fake()
