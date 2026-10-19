@@ -72,7 +72,19 @@ function screenFromUrl(role: Role): [Screen, string | null] {
   if (!SCREENS.includes(p) || (lock && !lock.includes(role))) return [homeScreen(role), null];
   return [p, new URLSearchParams(location.search).get('k')];
 }
-const RAIL_LABEL: Record<string, string> = { '지침카드': '카드', '문서함': '문서', '로트 추적': '로트', '공구 수명': '공구', '예방 정비': '정비', '정지 사유': '정지', '다시 보기': '재생', '현장 모니터': '현장' };
+// 현장 화면 공정 묶음 = 작업자 1명의 담당 구역 (app_user.csv home_process_code, 사용자 선택 2026-10-19)
+const ZONES: [string, string[], MachineId[]][] = [['1·2공정', ['OP-10', 'OP-20'], ['saw', 'mil']], ['3공정', ['OP-30'], ['vf1', 'vf2']], ['4·5공정', ['OP-40', 'OP-50'], ['wsh', 'cmm']]];
+// 왼쪽 메뉴 묶음 (사용자 요청 2026-10-19): 홈 / 생산(로트·현장) / 정비(정지·재생·예방 정비·지침카드) / 품질 / 재고(공구) / 문서 / 설정.
+// 묶음 안 화면은 상단 바 가운데 탭으로 바꾼다. related = 그 묶음에서 열리는 다른 화면
+const GROUPS: { label: string; subs: [string, Screen, Role[]?][]; related?: Screen[] }[] = [
+  { label: '홈', subs: [['3D 라인', 'line']], related: ['layout2d'] },
+  { label: '생산', subs: [['로트 추적', 'lots'], ['현장 모니터', 'field']] },
+  { label: '정비', subs: [['정지 사유', 'stops'], ['다시 보기', 'replay'], ['예방 정비', 'pm', ['MNT', 'SUP', 'MGR']], ['지침카드', 'cards']], related: ['card'] },
+  { label: '품질', subs: [['검사 기록', 'quality', ['OPR', 'SUP', 'MGR']]] },
+  { label: '재고', subs: [['재고', 'inventory'], ['공구 수명', 'tools']] },
+  { label: '문서', subs: [['문서함', 'docs']], related: ['wo', 'wr', 'sr', 'shift', 'daily', 'revs', 'idocs'] },
+  { label: '설정', subs: [['설정', 'settings', ['MGR']]] },
+];
 const btn = 'h-11 rounded-md border border-slate-300 bg-white px-3 text-[14px] font-semibold hover:bg-slate-50';
 
 export default function App() {
@@ -261,7 +273,13 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
   const [setOpen, setSetOpen] = useState(false);
   const [acct, setAcct] = useState(false);
   const [side, setSide] = useState<EveTab | null>(null);
-  const [eveI, setEveI] = useState(0); // 3D 카드 이브 띠에서 보고 있는 소식 번호
+  const [eveI, setEveI] = useState(0);
+  const [zone, setZone] = useState<string | null>(null);
+  const sideW = 192; // 묶음 옆 목록 폭 + 간격
+  const curGroup = GROUPS.find((g) => g.subs.some(([, s2]) => s2 === screen) || g.related?.includes(screen));
+  const sideOn = !!curGroup && curGroup.subs.length > 1;
+  // 현장 화면에 들어오면 작업자는 자기 담당 구역으로 줌인
+  useEffect(() => { if (screen !== 'field') return; const z = role === 'OPR' ? ZONES.find(([, ops]) => ops.some((o) => user.procs.includes(o))) : undefined; if (!z) { setZone(null); return; } const t = setTimeout(() => { setZone(z[0]); api3d()?.frameGroup(z[2]); }, 500); return () => clearTimeout(t); }, [screen]); // eslint-disable-line react-hooks/exhaustive-deps // 3D 카드 이브 띠에서 보고 있는 소식 번호
   const closeSide = useCallback(() => setSide(null), []);
   const [source, setSource] = useState<[string, string] | null>(null);
   const [toastMsg, setToast] = useState('');
@@ -343,13 +361,13 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
   const style: Record<string, string> = { '--panelH': screen === 'field' ? '260px' : 'clamp(270px,34vh,350px)' };
   if (settings.fontScale) { style['--fs-big'] = `${bigPx}px`; style['--fs-body'] = `${bodyPx}px`; }
   const show3D = screen === 'line' || screen === 'field'; // 다시 보기는 3D 대신 카드 라인 (2026-10-17)
-  const fieldSel = screen === 'field' && !!snapSel;
+  const fieldSel = screen === 'field' && (!!snapSel || !!zone); // 설비를 누르거나 공정 묶음 버튼을 누르면 아래 패널
   const stagePos = screen === 'field' ? { left: 0, top: 0, right: 360, bottom: fieldSel ? 'var(--panelH)' : 0 } : { left: 88, top: 76, right: 12, bottom: 'calc(var(--panelH) + 24px)' };
 
 
   return (
     <Ctx.Provider value={ctx}>
-      <div className={`relative flex h-screen flex-col overflow-hidden bg-[#e9ecef] text-[#26303a] ${settings.fontScale ? 'fs-scaled' : ''}`} style={style as React.CSSProperties}>
+      <div className={`relative flex h-screen flex-col overflow-hidden bg-[#e9ecef] text-[#26303a] ${settings.fontScale ? 'fs-scaled' : ''}`} style={{ ...(style as React.CSSProperties), width: side ? 'calc(100% - 444px)' : '100%', transition: 'width .25s ease' }}>{/* 이브 창이 열리면 화면을 왼쪽으로 밀어 자리를 내줌 (사용자 요청 2026-10-19) */}
         {/* 상단 바 (페이지구조 v3 3장): 왼쪽 [≡][주간][날짜][시각] · 오른쪽 계정 [이름 ▾] [시연] [⚙ 화면 설정] */}
         <header className="absolute left-3 right-3 top-3 z-20 flex h-[56px] items-center gap-3 rounded-2xl border border-slate-300 bg-white px-3 shadow-lg">
           <Logo height={24} />
@@ -386,15 +404,24 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
           </div>
         </header>
 
+        {sideOn && curGroup && (
+          <aside className="absolute left-[88px] top-[76px] z-20 flex w-[180px] flex-col gap-1 rounded-3xl border border-slate-300 bg-white p-2 shadow-lg">
+            <b className="px-2 py-2 text-[17px]">{curGroup.label}</b>
+            {curGroup.subs.map(([name, s2, roles]) => { const ok = !roles || roles.includes(role); return (
+              <button key={name} disabled={!ok} onClick={() => go(s2)} title={ok ? undefined : '이 계정은 볼 수 없습니다'}
+                className={`h-11 rounded-lg px-3 text-left text-[15px] font-semibold disabled:cursor-not-allowed disabled:text-slate-300 ${screen === s2 || (s2 === 'cards' && screen === 'card') ? 'bg-[#e8f6fa] text-[#0f6f86]' : 'hover:bg-slate-100'}`}>{name}</button>); })}
+          </aside>
+        )}
         {/* 왼쪽 세로 메뉴 — 항상 보임 (구조 시안) */}
         <nav className="absolute left-3 top-[76px] z-20 flex w-[64px] flex-col items-center gap-1 overflow-y-auto rounded-3xl border border-slate-300 bg-white py-2 shadow-lg" style={{ maxHeight: 'calc(100vh - 132px)' }}>
-          {MENU_V3.map(([name, s2, roles]) => {
-            const ok = !roles || roles.includes(role);
-            const target: Screen = s2 === 'home' ? homeScreen(role) : s2;
-            const on = target === screen;
+          {GROUPS.map((g) => {
+            const first = g.subs.find(([, , roles]) => !roles || roles.includes(role));
+            const ok = !!first, name = g.label;
+            const target: Screen = first ? first[1] : g.subs[0][1];
+            const on = g === curGroup;
             return (
-              <button key={name} disabled={!ok} onClick={() => go(target)} title={ok ? name : '이 계정은 볼 수 없습니다'}
-                className={`relative flex h-12 w-[52px] shrink-0 items-center justify-center rounded-2xl text-[12px] font-bold ${on ? 'bg-[#1c2530] pt-2 text-white' : 'text-slate-600 hover:bg-[#f1f2fb]'} disabled:cursor-not-allowed disabled:text-slate-300 disabled:hover:bg-transparent`}>{on && <span className="absolute top-1.5 h-1.5 w-1.5 rounded-full bg-[#5fe0e6]" />}{RAIL_LABEL[name] ?? name}</button>
+              <button key={name} disabled={!ok} onClick={() => go(target)} title={ok ? g.subs.map((x) => x[0]).join(' · ') : '이 계정은 볼 수 없습니다'}
+                className={`relative flex h-12 w-[52px] shrink-0 items-center justify-center rounded-2xl text-[12px] font-bold ${on ? 'bg-[#1c2530] pt-2 text-white' : 'text-slate-600 hover:bg-[#f1f2fb]'} disabled:cursor-not-allowed disabled:text-slate-300 disabled:hover:bg-transparent`}>{on && <span className="absolute top-1.5 h-1.5 w-1.5 rounded-full bg-[#5fe0e6]" />}{name}</button>
             );
           })}
         </nav>
@@ -415,11 +442,11 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
         )}
         </div>
 
-        <div className="flex min-h-0 flex-1 flex-col" style={{ paddingLeft: screen === 'line' || screen === 'replay' ? 0 : 84, paddingTop: screen === 'line' || screen === 'replay' ? 0 : 72 }}>
+        <div className="flex min-h-0 flex-1 flex-col" style={{ paddingLeft: (screen === 'line' || screen === 'replay' ? 0 : 84) + (sideOn ? sideW : 0), paddingTop: screen === 'line' || screen === 'replay' ? 0 : 72 }}>
         {screen !== 'line' && screen !== 'layout2d' && screen !== 'docs' && screen !== 'pm' && !DOC_OF[screen] && !QUAL_OF[screen] && <div className="flex h-11 shrink-0 items-center border-b border-slate-200 bg-white px-4 text-[17px] font-bold">{TITLE[screen]}</div>}
         <div className={`relative min-h-0 flex-1 overflow-hidden ${connected ? '' : 'grayscale-[0.6]'}`}>
           <div className={screen === 'line' || screen === 'replay' ? 'stage-card absolute overflow-hidden rounded-3xl border border-[#e3e6f3]' : 'absolute'} style={{ ...stagePos, visibility: show3D ? 'visible' : 'hidden', opacity: show3D ? 1 : 0, pointerEvents: show3D ? 'auto' : 'none' }}>
-            <FactoryDashboard embedded dataMode layout={LAYOUT} quality="자동" introOnLoad={false} showCards={settings.cards} alarmText={alarmText} cardText={cardText}
+            <FactoryDashboard embedded dataMode warnIds={[...new Set(open.filter((a) => a.level === '주의').map((a) => a.machine))]} layout={LAYOUT} quality="자동" introOnLoad={false} showCards={settings.cards} alarmText={alarmText} cardText={cardText}
               cmmCard={cmmCard} bigTags={screen === 'field'} scenario="정상 가동" onReady={onReady}
               onSnapshot={(s: { sel: MachineId | null }) => setSnapSel(s.sel)} onSelect={(id: MachineId) => setSnapSel(id)}
               onFail={(why: string) => { setFail3d(why); setScreen((s0) => (s0 === 'line' ? 'layout2d' : s0)); }} />
@@ -441,6 +468,12 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
             </>)}
             {show3D && (
               <>
+                {screen === 'field' && (
+                  <div className="pointer-events-auto absolute left-3 top-3 z-10 flex gap-1 rounded-full border border-[#e3e6f3] bg-white/90 p-1 shadow-md">
+                    {ZONES.map(([name, , ids]) => <button key={name} onClick={() => { setZone(name); setSnapSel(null); api3d()?.frameGroup(ids); }} className={`h-10 rounded-full px-4 text-[15px] font-bold ${zone === name ? 'bg-[#1c232b] text-white' : 'hover:bg-[#eef0fb]'}`}>{name}</button>)}
+                    <button onClick={() => { setZone(null); setSnapSel(null); api3d()?.setView('front'); }} className={`h-10 rounded-full px-4 text-[15px] font-bold ${zone === null ? 'bg-[#1c232b] text-white' : 'hover:bg-[#eef0fb]'}`}>전체</button>
+                  </div>
+                )}
                 <div className="pointer-events-auto absolute bottom-3 right-3 flex gap-1 rounded-full border border-[#e3e6f3] bg-white/90 p-1 shadow-md">
                   {(() => { const sb = 'h-8 min-w-9 rounded-full px-3 text-[13px] font-semibold hover:bg-[#eef0fb]'; return (<>
                     <button onClick={() => go('layout2d')} className={sb}>2D</button>
@@ -457,7 +490,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
 
           {screen === 'layout2d' && <Layout2D />}
           {(screen === 'line' || screen === 'layout2d' || fieldSel) && (
-            <div className={screen === 'line' ? 'absolute bottom-3 left-[88px] right-3 h-[var(--panelH)]' : `absolute bottom-0 left-0 ${screen === 'field' ? 'right-[360px]' : 'right-0'} h-[var(--panelH)] border-t border-slate-300 bg-[#eef1f4]`}><Panels field={screen === 'field'} /></div>
+            <div className={screen === 'line' ? 'absolute bottom-3 left-[88px] right-3 h-[var(--panelH)]' : `absolute bottom-0 left-0 ${screen === 'field' ? 'right-[360px]' : 'right-0'} h-[var(--panelH)] border-t border-slate-300 bg-[#eef1f4]`}><Panels field={screen === 'field'} ids={screen === 'field' && zone && !snapSel ? ZONES.find((z) => z[0] === zone)?.[2] : undefined} /></div>
           )}
           {screen === 'field' && <div className="absolute bottom-0 right-0 top-0 w-[360px]"><FieldStrip onBriefing={() => { setSeenBrief((s) => ({ ...s, [user.id]: twin?.shift.shift_id ?? '' })); setSide('브리핑'); }} /></div>}
           {screen === 'replay' && <ReplayScreen />}

@@ -112,3 +112,10 @@ nav .bg-\[\#1c2530\] span{display:none;}
 .ma-panel select,.ma-panel input:not(.ma-input){background:#fff;color:#26303a}
 .ma-panel .text-\[\#9a6200\]{color:#9a6200}
 .ma-panel *{scrollbar-color:rgba(28,35,43,.25) transparent}
+
+/* 재공 판은 3D 바닥 글자로 바꿈 (2026-10-19) — 떠 있는 판 숨김 */
+[data-tier="wip"]{display:none!important}
+
+/* 이브 창 = 오른쪽 자리 차지 (팝업 아님, 2026-10-19) — 화면 전체 높이 */
+.ma-panel{top:12px!important;bottom:12px!important;right:12px!important}
+.ma-root.is-panel .ma-fab{display:none}

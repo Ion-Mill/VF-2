@@ -340,6 +340,17 @@ export default class FactoryDashboard extends React.Component<any, any> {
     this.goal = { pos, target: tgt };
   }
 
+  // 여러 설비를 한 화면에 — 현장 화면 공정 묶음 버튼 (사용자 요청 2026-10-19)
+  frameGroup(ids) {
+    const T = this.T; if (!T) return;
+    this.setState({ sel: null });
+    const bs = ids.map(id => this.MACH[id].bd || this.MACH[id].b);
+    const x0 = Math.min(...bs.map(b => b[0])), x1 = Math.max(...bs.map(b => b[1])), y0 = Math.min(...bs.map(b => b[2])), y1 = Math.max(...bs.map(b => b[3])), h = Math.max(...bs.map(b => b[5]));
+    const tgt = new T.Vector3((x0 + x1) / 2000, h * 0.35, -(y0 + y1) / 2000 + 0.3);
+    const d = (2.4 + ((x1 - x0) / 1000) * 1.15) * Math.max(1, 1.6 / this.camera.aspect);
+    this.goal = { pos: tgt.clone().add(new T.Vector3(0, 0.32, 1).normalize().multiplyScalar(d)), target: tgt }; // 설비 정면에서 (사용자 요청 2026-10-19)
+  }
+
   nav(kind, amt) {
     const T = this.T, cam = this.camera, c = this.controls; if (!T) return;
     this.goal = null;
@@ -950,12 +961,15 @@ export default class FactoryDashboard extends React.Component<any, any> {
       pallet('w1', WPX.w1, 2400, mat.part, 0xf2a052); pallet('w2', WPX.w2, 2400, mat.part, 0xf2a052);
       pallet('w3', WPX.w3, 2400, mat.part, 0xf2a052); pallet('w4', WPX.w4, 2400, mat.part, 0xf2a052);
       pallet('fg', WPX.fg, 2400, M(0xd5e3ee, { metalness: 0.75, roughness: 0.2 }), 0x8fd3a8);
-      // SOAK-01 온도 맞춤 선반 (데이터 1,219 × 457 × 1,385, CMM 앞 재공 띠) — 원본의 보라색 받침 모양으로 선반 4단
-      if (this.LY) { const S0 = this.LY.soak, sx0 = S0.x[0], sx1 = S0.x[1], sh0 = (S0.h || 1385) / 1000; let sy0 = S0.y[0], sy1 = S0.y[1];
-        if (sy1 > 1770 && sy0 < 2930) { const d = sy1 - sy0; sy1 = 1650; sy0 = 1650 - d; } // 상자 컨베이어(가운데 Y 2,350) 위에 서 있지 않게 앞쪽으로 비킴
-        [[sx0, sy0], [sx1 - 40, sy0], [sx0, sy1 - 40], [sx1 - 40, sy1 - 40]].forEach(([X, Y]) => box(X, X + 40, Y, Y + 40, 0, sh0, M(0x8a84b8)));
-        [0.15, 0.55, 0.95, sh0 - 0.03].forEach(h => box(sx0, sx1, sy0, sy1, h, h + 0.03, mat.lav)); }
-      else { box(24500, 25200, 300, 900, 0, 0.5, mat.lav); box(24550, 25150, 350, 850, 0.5, 0.53, M(0x8a84b8)); }
+      // 재공 수를 바닥에 칠한 글자로 (사용자 선택 2026-10-19) — 떠 있는 재공 판이 설비를 가려서. 각도에 따라 읽기 어려운 건 감수
+      if (this.props.dataMode) this.floorWip = [['wip-1', 'w1', 'WIP-1', 'WIP-10-20'], ['wip-2', 'w2', 'WIP-2', 'WIP-20-30'], ['wip-3', 'w3', 'WIP-3', 'WIP-30-40'], ['wip-4', 'w4', 'WIP-4', 'WIP-40-50'], ['fg-01', 'fg', 'FG-01', null]].map(([id, key, name, code]) => {
+        const cv = document.createElement('canvas'); cv.width = 512; cv.height = 128;
+        const tex = new THREE.CanvasTexture(cv); tex.anisotropy = 8;
+        const m = new THREE.Mesh(new THREE.PlaneGeometry(3.6, 0.9), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, fog: false, toneMapped: false }));
+        const a = this.anch[id]; m.rotation.x = -Math.PI / 2; m.position.set(a[0] / 1000 + 0.5, 0.09, -1.35); m.renderOrder = 5; // 상자 컨베이어(Y 1,765~) 앞 통로 바닥 scene.add(m);
+        return { key, name, code, cv, tex, last: '', m };
+      });
+      // SOAK-01 보라색 온도 맞춤 선반은 그리지 않음 (사용자 요청 2026-10-19)
 
       const red = new THREE.MeshStandardMaterial({ color: 0x29c6e6, emissive: 0x16b4d6, emissiveIntensity: 0.45, roughness: 0.35 });
       const halo = new THREE.MeshBasicMaterial({ color: 0x5fdcf2, transparent: true, opacity: 0.16, depthWrite: false }); env.halo = halo;
@@ -1781,6 +1795,19 @@ export default class FactoryDashboard extends React.Component<any, any> {
     let uiAcc = 0;
 
     const animate = (dt, t) => {
+      (this.floorWip || []).forEach(F => { // 바닥 재공 글자: 값이 바뀔 때만 다시 그림
+        if (!F.m.parent) scene.add(F.m); // 장면 정리 때 떨어져 나가면 다시 붙임
+        const n = Math.round(((this.state.wip || {})[F.key]) || 0), L0 = F.code && (this.state.wipLimits || {})[F.code], lim = L0 ? L0.limit : 30;
+        const hot = !!(L0 && L0.warn && L0.warn_over != null && n > L0.warn_over), nd = this.liveT == null, k = `${n}|${lim}|${hot}|${nd}`;
+        if (k === F.last) return; F.last = k;
+        const c = F.cv.getContext('2d'); c.clearRect(0, 0, 512, 128);
+        const col = F.code ? (hot ? '#c2570c' : '#2a323b') : '#1f7a45';
+        c.globalAlpha = 1; c.fillStyle = col; c.textBaseline = 'alphabetic';
+        c.font = '800 34px "Pretendard","Malgun Gothic",sans-serif'; const lab = F.code ? F.name : `${F.name} 오늘`; c.fillText(lab, 12, 92); let x = 24 + c.measureText(lab).width;
+        c.font = '700 84px Consolas,monospace'; const num = nd ? '—' : String(n); c.fillText(num, x, 96); x += c.measureText(num).width + 8;
+        if (F.code && !nd) { c.globalAlpha = 0.75; c.font = '600 40px Consolas,monospace'; c.fillText(`/${lim}`, x, 96); }
+        F.tex.needsUpdate = true;
+      });
       const ph = (id) => this.phOf(id);
       const run = (id) => this.state.st[id] === 'RUN';
       const pres = (id) => {
@@ -1920,6 +1947,8 @@ export default class FactoryDashboard extends React.Component<any, any> {
       Object.keys(towers).forEach(id => {
         const s0 = effOf(id) || 'RUN', L = towers[id]; if (L.length < 3) return;
         const on = s0 === 'ALARM' ? [blink, 0.05, 0.05] : s0 === 'WARN' ? [0.05, Math.sin(t * 5) > 0 ? 1.6 : 0.1, 0.05] : s0 === 'MAINT' || s0 === 'NODATA' ? [0.05, 0.05, 0.05] : s0 === 'BLOCKED' ? [0.05, 1.2, 0.05] : s0 === 'IDLE' ? [0.05, 0.05, 0.25] : s0 === 'SETUP' ? [0.05, Math.sin(t * 6) > 0 ? 1.4 : 0.1, 0.05] : [0.05, 0.05, 1.1 + Math.sin(t * 3) * 0.4];
+        // 처리 안 된 주의 알람이 있으면 신호등 노랑 깜빡임 (멈춤·가공 상태 불은 그대로) — 사용자 요청 2026-10-19
+        if (s0 !== 'ALARM' && this.props.warnIds && this.props.warnIds.includes(id)) on[1] = Math.sin(t * 5) > 0 ? 1.6 : 0.1;
         L.forEach((m, i) => { m.emissiveIntensity = on[i]; m.opacity = on[i] > 0.3 ? 0.95 : 0.4; });
       });
       const K = this.keys;
@@ -2512,7 +2541,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
     <div className="absolute left-0 top-0 invisible text-[13px] font-medium text-[color:var(--ink2)] whitespace-nowrap" data-tier="axis" data-anchor="ax-x" data-noscale="1" data-align="center">X (mm) → 동쪽 · 공정 흐름</div>
     <div className="absolute left-0 top-0 invisible text-[13px] font-medium text-[color:var(--ink2)] whitespace-nowrap" data-tier="axis" data-anchor="ax-y" data-noscale="1" data-align="center">Y (mm) ↑ 북쪽</div>
 
-    <div className="absolute left-0 top-0 invisible [transform-origin:50%_50%] text-[17px] font-semibold tracking-[0.08em] text-[color:var(--ink)] whitespace-nowrap" data-tier="zone" data-anchor="z-boundary" data-align="center">OP-30 AREA BOUNDARY</div>
+    {/* OP-30 AREA BOUNDARY 글자 뺌 (사용자 요청 2026-10-19) — 재공 바닥 글자와 겹침, 점선·OP-30 이름표로 충분 */}
     <div className="absolute left-0 top-0 invisible [transform-origin:50%_50%] text-[12px] font-semibold text-[color:var(--ink)] whitespace-nowrap" data-tier="zone" data-anchor="z-exit" data-align="center">EXIT-1 비상구</div>
     <div className="absolute left-0 top-0 invisible [transform-origin:50%_50%] text-[12px] font-semibold text-[color:var(--ink)] whitespace-nowrap" data-tier="zone" data-anchor="z-door" data-align="center">DOOR-1 반입문</div>
     <div className="absolute left-0 top-0 invisible [transform-origin:50%_50%] text-[12px] font-semibold text-[color:var(--bw)] whitespace-nowrap" data-tier="zone" data-anchor="z-wip" data-align="center">재공 띠</div>
