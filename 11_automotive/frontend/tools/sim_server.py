@@ -513,6 +513,8 @@ def _route(method, p, q, body, rt, live, P):
         return guide_card_text(body)
     if key == "assist/briefing-text" and method == "POST":         # 브리핑 '먼저 챙길 일'을 순위 묶음별로 비서가 다듬어 뒀는지 묻는다 (기다리지 않는다, 준비된 묶음부터 받아 간다)
         return briefing_text(body)
+    if key == "assist/alarm-text" and method == "POST":            # 알림 탭 알람 상세의 본문 문장을 비서가 다듬어 뒀는지 묻는다 (기다리지 않는다, 사용자가 연 알림만)
+        return alarm_text(body)
     if key == "users":
         return {"users": list(P.users.values())}
     raise ApiError(404, "NOT_FOUND", f"없는 주소: {key}")
@@ -585,6 +587,16 @@ def guide_card_text(body):
         raise ApiError(400, "VALIDATION", "알람 코드와 점검 순서 줄(1~12개)이 필요해요")
     out = COMPOSER.polished("guide_card", code, [s.strip() for s in steps])
     return {"ready": True, "lines": out} if out else {"ready": False}
+
+
+def alarm_text(body):
+    """알림 탭 알람 상세의 본문 문장(화면이 만든 기본 문장 한 줄)을 비서가 다듬은 문장으로. 준비 전·꺼짐·실패면 {"ready": False}.
+    알림(a-<알람 번호>)마다 한 줄. 알람이 해제돼 문장이 바뀌면 옛 문장은 주지 않고 새로 만든다. 사용자가 연 알림만 물으므로 안 연 알림은 비서로 안 나간다."""
+    aid, text = str(body.get("id") or ""), str(body.get("text") or "").strip()
+    if not re.fullmatch(r"a-\d{1,9}", aid) or not text or len(text) > 300:
+        raise ApiError(400, "VALIDATION", "알림 번호(a-…)와 본문 문장(300자 안)이 필요해요")
+    out = COMPOSER.polished("alarm_notice", aid, [text], ids=["L01"])
+    return {"ready": True, "text": out[0]} if out else {"ready": False}
 
 
 BRIEFING_CHUNK = 40          # 비서가 한 번에 받는 줄 수 (assistant/backend/llm/compose.py MAX_LINES와 같다)

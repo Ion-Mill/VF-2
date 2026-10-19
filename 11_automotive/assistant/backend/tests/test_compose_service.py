@@ -397,3 +397,71 @@ def test_other_kinds_are_not_salvaged_one_bad_line_still_fails_the_whole_call():
     bad = out("실적은 88개, 총 목표 90개입니다.", GOOD["lines"][1]["text"], GOOD["lines"][2]["text"])
     use(bad, bad)
     assert_503(post())
+
+
+# ------------------------------------------------------------------ 알림 탭 알람 상세 본문 (2026-10-19): 식별 낱말·심각도·해제는 코드가 지킨다
+NOTE = "VF2-01(OP-30)에서 알람 992 — 정지. 사건 S1. 로트 LOT-2610-001-1. 설비 알람 09:20 해제."
+NOTE_GOOD = "VF2-01(OP-30)에서 알람 992가 발생했습니다 (정지). 사건 S1. 로트 LOT-2610-001-1. 설비 알람이 09:20에 해제되었습니다."
+NOTE_UNKNOWN = "VF2-01(OP-30)에서 알람 9999 — 알람 코드집에 없음, 보전 담당자 호출. 로트 LOT-2610-001-1."
+NOTE_UNKNOWN_GOOD = "VF2-01(OP-30)에서 알람 9999가 났는데 알람 코드집에 없음, 보전 담당자 호출. 로트 LOT-2610-001-1."
+
+
+def note_out(text):
+    return {"lines": [{"id": "L01", "text": text}]}
+
+
+def test_alarm_notice_line_is_polished_and_keeps_every_identifier():
+    r = use(note_out(NOTE_GOOD))
+    res = post("alarm_notice", [{"id": "L01", "text": NOTE}])
+    assert res.status_code == 200 and res.json()["tries"] == 1
+    got = res.json()["lines"][0]["text"]
+    assert got == NOTE_GOOD
+    for token in ("VF2-01", "OP-30", "992", "S1", "LOT-2610-001-1", "09:20"):
+        assert token in got
+    assert NOTE in r.calls[0]["stdin"]                                    # 프로그램이 만든 기본 문장이 그대로 간다
+
+
+def test_alarm_notice_not_in_master_sentence_is_polished_too():
+    use(note_out(NOTE_UNKNOWN_GOOD))
+    res = post("alarm_notice", [{"id": "L01", "text": NOTE_UNKNOWN}])
+    assert res.status_code == 200 and "코드집에 없음" in res.json()["lines"][0]["text"] and "보전 담당자 호출" in res.json()["lines"][0]["text"]
+
+
+def test_alarm_notice_unchanged_line_is_accepted():
+    assert CMP._line_problem("alarm_notice", NOTE, NOTE) is None           # 원문이 이미 읽기 쉬우면 그대로 돌려줘도 된다
+
+
+@pytest.mark.parametrize("why,text,expect", [
+    ("알람 번호를 바꿈", NOTE_GOOD.replace("992", "922"), "식별 낱말"),
+    ("설비 이름을 바꿈", NOTE_GOOD.replace("VF2-01", "1호기"), "식별 낱말"),
+    ("로트 번호를 뺌", NOTE_GOOD.replace("LOT-2610-001-1", "해당"), "식별 낱말"),
+    ("시각을 글자로 풀어 씀", NOTE_GOOD.replace("09:20", "9시 20분"), "식별 낱말"),
+    ("심각도를 바꿈", NOTE_GOOD.replace("(정지)", "(주의)"), "'정지'"),
+    ("해제를 다른 말로 바꿈", NOTE_GOOD.replace("해제되었습니다", "꺼졌습니다"), "'해제'"),
+    ("없던 '사건'이 생김", NOTE_UNKNOWN_GOOD.replace("알람 9999가 났는데", "알람 9999 사건이 났는데"), "'사건'"),
+    ("원인을 새로 말함", NOTE_GOOD.replace("사건 S1.", "사건 S1이며 원인은 충돌입니다."), "원문에 없던 낱말"),
+    ("해야 할 일을 새로 말함", NOTE_GOOD.replace("로트 LOT-2610-001-1.", "로트 LOT-2610-001-1, 점검이 필요합니다."), "원문에 없던 낱말"),
+    ("안전 용어를 새로 씀", NOTE_GOOD.replace("사건 S1.", "사건 S1, 전원을 확인합니다."), "원문에 없던 낱말"),
+    ("문장을 합침", NOTE_GOOD.replace(". 사건", ", 사건"), "문장 수"),
+])
+def test_alarm_notice_rewrites_that_change_the_meaning_are_rejected(why, text, expect):
+    reason = CMP._line_problem("alarm_notice", NOTE_UNKNOWN if "없던" in why else NOTE, text)       # '없던 사건이 생김'만 원문에 사건이 없는 문장으로 본다
+    assert reason and expect in reason, f"{why}: {reason}"
+
+
+def test_alarm_notice_too_different_a_rewrite_is_rejected():
+    reason = CMP._line_problem("alarm_notice", "VF2-01(OP-30)에서 알람 992 — 정지.", "정지 등급의 알람이 지금 이 설비에서 울렸으며 번호는 992이고 설비는 VF2-01(OP-30)입니다.")
+    assert reason and "너무 다르게" in reason
+
+
+def test_alarm_notice_bad_twice_is_a_failure_and_the_second_request_carries_the_reason():
+    bad = note_out(NOTE_GOOD.replace("992", "922"))
+    r = use(bad, bad)
+    assert_503(post("alarm_notice", [{"id": "L01", "text": NOTE}]))
+    assert len(r.calls) == 2 and "식별 낱말" in r.calls[1]["stdin"]
+
+
+def test_alarm_notice_with_people_or_account_info_is_not_sent():
+    r = use(note_out(NOTE_GOOD))
+    assert_503(post("alarm_notice", [{"id": "L01", "text": NOTE + " 담당 U07."}]))
+    assert r.calls == []

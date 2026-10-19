@@ -48,7 +48,7 @@ def _provider_is_claude(env) -> bool:
 
 
 @router.post("/compose/{kind}")
-def compose(kind: Literal["shift_report", "daily_report", "work_order", "guide_card", "briefing"], req: ComposeRequest) -> dict:
+def compose(kind: Literal["shift_report", "daily_report", "work_order", "guide_card", "briefing", "alarm_notice"], req: ComposeRequest) -> dict:
     from backend import chat_service as CS      # 서비스 키 환경을 읽는 함수만 빌려 쓴다(순환 import를 피해 호출 때 import)
     if not _provider_is_claude(CS._env):
         raise ComposeUnavailable("provider is not claude")
