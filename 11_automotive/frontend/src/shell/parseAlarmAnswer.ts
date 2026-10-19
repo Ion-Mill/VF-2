@@ -1,7 +1,7 @@
 // 채팅 알람 답을 카드(AlarmAnswerCard)용 덩어리 목록으로 읽는다 — React 없는 순수 함수 (tools/alarm_card_check.mjs가 그대로 불러 시험한다).
 // 입력 = chat_mapping.to_answer_text 가 만든 글자: 빈 줄로 나뉜 덩어리, "■ 제목" 소제목, "★1 (작업자) …"·"5 (보전) …" 점검 순서 줄,
 //   "이 알람은 최근 7일 N번, 30일 M번 났습니다 [가상 운영 데이터]", "주의: …". 소제목 덩어리는 답마다 다르다("문서에서 더 찾은 줄", "운영 기록 [가상]" …).
-// 규칙: ① 덩어리는 **원래 순서 그대로** 목록이 된다. 모르는 덩어리도 문단으로 남긴다(지우지 않는다).
+// 규칙: ① 덩어리는 **원래 순서 그대로** 목록이 된다. 모르는 덩어리도 문단으로 남긴다(지우지 않는다). "■ 알람 설명" 앞의 안내 한 줄(이어받기 "N 알람 기준으로 답해요.")도 메모로 맨 앞에 남는다.
 //       ② 알람 답이 아니거나 모르는 모양이면 null → 화면은 지금처럼 평문 말풍선.
 //       ③ 닫힌 실패: 끝에서 "카드가 보이는 글자"의 낱말 열이 원래 글자와 같은지 확인하고, 다르거나 예외가 나면 null.
 export type AlarmRole = 'operator' | 'maintenance' | 'other';
@@ -43,9 +43,17 @@ export function cardPlainText(parts: AlarmCardPart[]): string {
 
 function readParts(a: string): AlarmCardPart[] | null {
   const chunks = a.replace(/\r\n?/g, '\n').split(/\n[ \t]*\n/).map((c) => c.split('\n').map((l) => l.trim()).filter(Boolean)).filter((l) => l.length > 0);
-  if (chunks.length === 0 || chunks[0][0] !== '■ 알람 설명') return null;          // 알람 답의 첫 소제목 (blocks_v2 SECTION_V3["card"])
+  // 알람 답의 첫 소제목 "■ 알람 설명"(blocks_v2 SECTION_V3["card"]) 앞에는 소제목 없는 안내 덩어리가 올 수 있다 — 직전 알람을 이어받으면 비서가
+  // 맨 앞에 "N 알람 기준으로 답해요." 한 줄을 붙인다(answer.py _with_ctx_note). 그 앞 덩어리는 메모로 맨 앞에 남기고(지우지 않는다) 카드는 그대로 그린다.
+  const first = chunks.findIndex((l) => l[0].startsWith('■'));
+  if (first < 0 || first > 2 || chunks[first][0] !== '■ 알람 설명') return null;
   const parts: AlarmCardPart[] = [];
-  for (const lines of chunks) {
+  const lead = chunks.slice(0, first);
+  if (lead.length > 0) {
+    if (lead.some((lines) => lines.some((l) => l.startsWith('■')))) return null;
+    parts.push({ kind: 'note', paras: lead.flat() });
+  }
+  for (const lines of chunks.slice(first)) {
     if (lines[0].startsWith('■')) {
       const title = lines[0].replace(/^■\s*/, '');
       const body = lines.slice(1);
