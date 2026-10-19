@@ -7,7 +7,7 @@ from __future__ import annotations
 from backend.tools.query_tools import EQUIPMENT
 
 INTENTS = ["stops", "production", "inventory", "tool_life", "kpi", "lots", "work_orders", "pm_due", "work_records",
-           "alarm_count", "equipment_status"]
+           "alarm_count", "equipment_status", "sensor_trend"]
 PERIODS = ["none", "today", "yesterday", "last_shift", "recent_7", "recent_30"]
 
 

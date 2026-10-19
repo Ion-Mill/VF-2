@@ -22,8 +22,10 @@ SOURCE_KEYS = ("doc_name", "doc_no", "rev", "section")     # 출처는 사내 �
 ROLE_KO = {"OPR": "작업자", "MNT": "보전 담당자", "SUP": "반장", "MGR": "공장 관리자"}
 TOPIC_RE = {
     "reliability": re.compile(r"mttr|mtbf|평균\s*수리|수리\s*시간|고장\s*간격", re.I),
-    "sensor_trend": re.compile(r"센서|모터\s*온도|공기\s*압|압력|psi|전압|부하\s*(?:값|추세)|추세", re.I),
 }
+# 센서 데이터는 낱말이 아니라 **센서 값을 묻는 질문인지**로 막는다 (2026-10-19). 예전 낱말 표("센서|압력|psi|전압|추세 …")는 "센서 1초 데이터 얼마나 보관?"·"몇 psi 필요해요?" 같은
+# 문서 질문까지 OPR·SUP에게 막았다 (센서 낱말 든 평가 질문 16개 중 12개). 판정은 답을 만드는 쪽(parse)과 같은 함수라 어긋나지 않는다 — 값 질문은 계속 막고 문서 질문은 푼다.
+SENSOR_TOOL = "sensor_trend"
 EQUIPMENT_RE = re.compile(r"\b(?:SAW|MIL|VF2|WSH|CMM)-\d{2}\b", re.I)
 VALUE_ASK_RE = re.compile(r"얼마|몇|알려|보여|현재|지금|최근|값|수치|추세|어때|어떻")
 
@@ -144,18 +146,31 @@ def to_backend(a: dict) -> dict:
     return {"answer": to_answer_text(a), "sources": to_sources(a), "related": [], "status": status}
 
 
+def _is_sensor_value_question(question: str) -> bool:
+    from backend.services.answer import SN_INTENT, parse      # 늦게 import — 이 파일은 평소 정규식만 쓰는 가벼운 순수 함수 모음이다
+    try:
+        return SN_INTENT in parse(question)["intents"]
+    except Exception:       # 판정이 터져도 입구가 500이 되지 않게 — 막지 않고 흘려도 허용 목록에 없는 도구는 백엔드를 부르기 전에 ToolDenied로 막힌다 (이중)
+        return False
+
+
 def role_gate(question: str, out_of_role: list[dict]) -> dict | None:
     """권한 밖 질문이면 값 없이 "누가 볼 수 있는지"만 담은 응답을, 아니면 None.
 
     out_of_role = 백엔드가 이 사용자 역할 때문에 뺀 도구 [{tool, about, roles}]. 값을 묻는 질문일 때만 막는다
     ("MTTR이 뭐야?" 같은 용어 질문은 사내 문서 검색이라 전원 허용 — 기획서 13장, API-AST-02)."""
     asks_values = bool(EQUIPMENT_RE.search(question)) or bool(VALUE_ASK_RE.search(question))
-    if not asks_values:
-        return None
+    sensor_value = None                                        # 센서 값 질문인지는 필요할 때 한 번만 본다
     for item in out_of_role or []:
-        pat = TOPIC_RE.get(item.get("tool"))
-        if pat is None or not pat.search(question):
-            continue
+        if item.get("tool") == SENSOR_TOOL:
+            if sensor_value is None:
+                sensor_value = _is_sensor_value_question(question)
+            if not sensor_value:
+                continue
+        else:
+            pat = TOPIC_RE.get(item.get("tool"))
+            if not asks_values or pat is None or not pat.search(question):
+                continue
         who = "와 ".join(f"{ROLE_KO.get(r, r)}({r})" for r in item.get("roles") or []) or "권한이 있는 사람"
         about = item.get("about") or "이 정보"
         return {"answer": f"{about}은(는) {who}만 볼 수 있어요. 값은 알려 드리지 않습니다.", "sources": [], "related": [], "status": "OUT_OF_ROLE"}

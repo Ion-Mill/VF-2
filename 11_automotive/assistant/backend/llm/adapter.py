@@ -146,6 +146,8 @@ def validate(raw: str, facts: dict) -> tuple[AnswerFields | None, str | None]:
     if settings().num_match == "value":
         text = numbers.tidy(text, facts["draft_conclusion"])
     reason = check_text(text, facts["draft_conclusion"])
+    if not reason and callable(facts.get("check_extra")):      # 답 종류별 추가 검사 (센서 값 답 — llm/sensor_check.py). 없으면 지금과 같다
+        reason = facts["check_extra"](text, facts["draft_conclusion"])
     if reason:
         return None, reason
     return AnswerFields(conclusion=text, related=facts.get("draft_related"), caution=facts.get("draft_caution")), None

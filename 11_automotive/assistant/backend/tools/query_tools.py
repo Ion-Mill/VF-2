@@ -1,4 +1,4 @@
-"""비서용 읽기 전용 조회 도구 11개 (FR-MNT-01-04, ai-operations-assistant 규칙 3.3).
+"""비서용 읽기 전용 조회 도구 12개 (FR-MNT-01-04, ai-operations-assistant 규칙 3.3; 센서 값 `sensor_trend`는 2026-10-19에 더했다).
 
 [11_automotive 이식 2026-10-16] 원본은 simulator/out CSV를 직접 읽었다. 여기서는 기존 백엔드의 비서 조회 도구(`/api/assistant/tools/{name}`, 14개)를
 `repositories/backend_tools.py`로 부르고, 결과를 **원본이 돌려주던 행 모양으로 번역**한다 — 3,000줄 넘는 `services/answer.py`가 읽는 칸 이름을 그대로 두기 위해서다.
@@ -288,6 +288,27 @@ def tool_life(role, equipment_id=None, min_pct=0):
     return _result("공구 수명 조회", rows, "지금", as_of=r.now, rule="공구 수명 90% 이상 = 교체 알림 (DOC-07 §9, 가상 규칙)")
 
 
+# ---------------------------------------------------------------- 센서 (OP-30 VF2-01·VF2-02만, 2026-10-19)
+MAX_SENSOR_MINUTES = 360            # 백엔드 도구의 기간 상한 (minutes 1~360)
+
+
+def sensor_trend(role, equipment_id, minutes=60, sensor_code=None):
+    """OP-30 설비의 센서별 최소·평균·최대·마지막 값과 정상 범위 [참고] — 공용 DB 시계 기준 최근 N분(1~360). 알람 기준값은 없다 (DOC-07 §3).
+    채팅 권한: MNT·MGR만 (허용 목록에 없으면 `_call`이 백엔드를 부르기 전에 ToolDenied). 도구가 기준 시각(`now`)을 주지 않으면 `clock_known`이 False —
+    답 문장은 시각을 지어내지 않는다."""
+    if not equipment_id:
+        raise ToolInputError("설비를 정해야 한다")
+    _check_equipment(equipment_id)
+    if isinstance(minutes, bool) or not isinstance(minutes, int) or not 1 <= minutes <= MAX_SENSOR_MINUTES:
+        raise ToolInputError(f"기간은 1~{MAX_SENSOR_MINUTES}분이어야 한다")
+    r = _call("sensor_trend", {"equipment_id": equipment_id, "minutes": minutes, "sensor_code": sensor_code})
+    keys = ("equipment_id", "sensor_code", "sensor_name", "unit", "samples", "min_value", "avg_value", "max_value", "last_value", "last_at",
+            "normal_min", "normal_max", "is_out_of_normal")
+    rows = [{k: x.get(k) for k in keys} for x in r.rows]
+    return _result("센서 추세 조회", rows, f"직전 {minutes}분 (공용 DB 시계)", as_of=r.now, minutes=minutes, equipment_id=equipment_id,
+                   clock_known=bool(r.now), rule="정상 범위는 [참고] — 알람 기준값이 아니다 (DOC-07 §3)")
+
+
 # ---------------------------------------------------------------- 재고
 def inventory(role, item_id=None, short_only=False):
     r = _call("inventory", {"item_no": item_id})
@@ -302,5 +323,5 @@ def inventory(role, item_id=None, short_only=False):
 TOOLS = {
     "equipment_status": equipment_status, "alarms": alarms, "stops": stops, "kpi": kpi, "production": production,
     "lots": lots, "work_orders": work_orders, "work_records": work_records, "pm_due": pm_due,
-    "tool_life": tool_life, "inventory": inventory,
+    "tool_life": tool_life, "inventory": inventory, "sensor_trend": sensor_trend,
 }
