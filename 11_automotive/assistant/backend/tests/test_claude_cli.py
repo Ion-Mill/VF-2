@@ -343,3 +343,40 @@ def test_trim_diag_only_touches_diag_keys():
     out, n = CC.trim_diag({"problem": "abcdefgh", "lead": "abcdefgh"}, sch)
     assert out == {"problem": "abcde", "lead": "abcdefgh"} and n == 1
     assert CC.trim_diag({"problem": 3}, sch) == ({"problem": 3}, 0) and CC.trim_diag([1], sch) == ([1], 0)
+
+
+# ------------------------------------------------------------------ 분류 검색어 개수·길이 (2026-10-19: Claude가 검색어를 4개 주면 분류 응답 전체가 버려졌다)
+ROUTE_OUT = {"kind": "doc", "intents": [], "equipment": [], "period": "none", "shift": "none"}
+
+
+def test_trim_queries_drops_overlong_items_then_keeps_the_first_three():
+    sch = schemas.ROUTE_V2
+    q4 = {**ROUTE_OUT, "search_queries": ["가", "나", "다", "라"]}
+    assert CC.trim_queries(q4, sch) == ({**ROUTE_OUT, "search_queries": ["가", "나", "다"]}, 1)
+    assert q4["search_queries"] == ["가", "나", "다", "라"]                                  # 받은 값은 건드리지 않는다
+    assert CC.trim_queries({**ROUTE_OUT, "search_queries": ["x" * 41, "나"]}, sch)[0]["search_queries"] == ["나"]
+    assert CC.trim_queries({**ROUTE_OUT, "search_queries": ["x" * 41, "나", "다", "라", "마"]}, sch)[0]["search_queries"] == ["나", "다", "라"]
+    assert CC.trim_queries({**ROUTE_OUT, "search_queries": ["x" * 40]}, sch)[1] == 0          # 40자는 그대로
+    ok = {**ROUTE_OUT, "search_queries": ["가", "나", "다"]}
+    assert CC.trim_queries(ok, sch) == (ok, 0)
+    assert CC.trim_queries({**ROUTE_OUT, "search_queries": []}, sch) == ({**ROUTE_OUT, "search_queries": []}, 0)
+
+
+def test_trim_queries_only_touches_search_queries_and_leaves_the_rest_to_validation():
+    other = {"type": "object", "properties": {"texts": {"type": "array", "maxItems": 1, "items": {"type": "string", "maxLength": 2}}}}
+    d = {"texts": ["가가가", "나"]}
+    assert CC.trim_queries(d, other) == (d, 0)                                              # 칸 이름이 다르면 손대지 않는다 — 답으로 나가는 글은 그대로 실패
+    assert CC.trim_queries({**ROUTE_OUT, "search_queries": "가"}, schemas.ROUTE_V2)[1] == 0   # 목록이 아니면 뒤 검사가 판단
+    assert CC.trim_queries({**ROUTE_OUT, "search_queries": [3, "나", "다", "라"]}, schemas.ROUTE_V2)[0]["search_queries"] == [3, "나", "다"]
+    assert CC.trim_queries([1], schemas.ROUTE_V2) == ([1], 0) and CC.trim_queries({"a": 1}, None) == ({"a": 1}, 0)
+
+
+def test_route_with_four_queries_or_an_overlong_query_is_kept_not_thrown_away(cli):
+    fake, tmp = cli
+    fake.replies.append(result({**ROUTE_OUT, "search_queries": ["셋업 시간", "초품 검사", "작업지시 교체", "로트 변경", "x" * 41]}))
+    out = call(schemas.ROUTE_V2, "route", 256)
+    assert out["search_queries"] == ["셋업 시간", "초품 검사", "작업지시 교체"]                  # 41자 항목은 빠지고 앞 3개
+    assert CC.ledger_summary()["calls"] == 1 and CC.ledger_summary()["trimmed_diag_fields"] == 0   # 검색어는 진단 칸 합계에 섞이지 않는다
+    fake.replies.append(result({**ROUTE_OUT, "search_queries": ["가"], "kind": "없는 값"}))
+    with pytest.raises(LlmBadOutput, match="스키마 제약 위반"):                               # 다른 위반(enum)은 여전히 버린다
+        call(schemas.ROUTE_V2, "route", 256)
