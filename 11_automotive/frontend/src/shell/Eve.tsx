@@ -163,7 +163,7 @@ function AlertsTab({ onNotice }: { onNotice: (n: Notice) => void }) {
     const lv = level(cur), done = handledOf(cur);
     return (
       <div className="flex flex-col gap-3">
-        <button onClick={() => { setOpenId(null); setPlan(''); }} className="w-fit text-[13px] font-semibold underline">← 목록</button>
+        <button onClick={() => { setOpenId(null); setPlan(''); }} className="w-fit text-[18px] font-semibold underline">← 목록</button>
         <div className="rounded-xl border-l-[6px] bg-white/5 p-3" style={{ borderColor: BAR[lv] }}>
           <div className="text-[12px] font-semibold" style={{ color: TONE[lv] }}>{LEVEL_VIEW[lv].icon} {lv} · {md(at(cur))} {hhmm(at(cur))} · {done ? '처리됨' : '처리 안 됨'}</div>
           <b className="mt-1 block text-[17px] leading-snug">{title(cur)}</b>
