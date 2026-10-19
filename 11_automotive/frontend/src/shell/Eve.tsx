@@ -15,8 +15,9 @@ import { rankOfAlert, rankOfNotice } from './Briefing';
 import RobotIcon from './RobotIcon';
 import { canStartNewChat, currentChat, makeNewChatMark, realRows, withNewChat } from './chatLog';
 import { carryAlarm } from './carry';
-import { AlarmAnswerCard } from './AlarmAnswerCard';
-import { parseAlarmAnswer } from './parseAlarmAnswer';
+import { Bubble, HistoryItem, Spark, Typing, type ChatRow } from './ChatBubble';
+
+export { Spark };   // 옛 가져오기 경로 유지 (Spark는 ChatBubble.tsx로 옮겼다)
 
 export type EveTab = '브리핑' | '알림' | '채팅' | '채팅 기록';
 export const EVE_TABS: EveTab[] = ['브리핑', '알림', '채팅', '채팅 기록'];
@@ -233,7 +234,6 @@ function AlertsTab({ onNotice }: { onNotice: (n: Notice) => void }) {
 }
 
 // ---------- SCR-10 채팅 ----------
-interface ChatRow { at: string; q: string; a: string; status: string; sources: { doc_no: string; doc_name: string; rev: string; section: string }[]; series?: Record<string, Record<string, number[]>>; newChat?: boolean }   // newChat = "여기서부터 새 대화" 표지 줄 (질문·답 없음, chatLog.ts)
 function Chat({ focus, headerSlot, onNewChat }: { focus: string | null; headerSlot: HTMLElement | null; onNewChat: () => void }) {
   const { user, role, screen, selected, openSource } = useApp();
   const [log, setLog] = useLocal<ChatRow[]>(`chat:${user.id}`, []);
@@ -281,8 +281,8 @@ function Chat({ focus, headerSlot, onNewChat }: { focus: string | null; headerSl
         <div className="ma-pad" aria-live="polite">
           <p className="text-[11px] text-slate-500">{backendChatEnabled() ? '외부 LLM(Claude)이 사내 문서와 정해진 운영 조회 결과로 답합니다. 알람 카드·점검 순서 같은 안전 답은 채팅에서 AI가 쉽게 풀어 쓰며, 잠금·표지 순서처럼 정해진 고정 서식은 풀이 아래에 문서 그대로 함께 붙습니다(풀이가 어긋나면 풀이는 버리고 고정 서식만 보입니다). 알람 카드 화면에서는 문서 원문이 기준이고, 비서가 쉽게 풀어 쓴 문장이 카드 아래에 참고용으로 따로 붙을 수 있으며 그때 점검 순서 문장이 외부로 전송됩니다. 질문과 문서 조각이 외부로 전송됩니다(지금은 가상 데이터).' : '규칙 답 — 외부 LLM(비서) 연결을 켜지 않아 프로그램 숫자와 사내 문서 절을 그대로 보입니다.'} 지금 화면·고른 설비({selected ? MACHINES[selected].name : '없음'})가 질문 배경으로 갑니다.</p>
           {today.length === 0 && !busy && <p className="ma-empty">라인 상황, 알람, 사내 문서 등 무엇이든 물어보세요.</p>}
-          {today.map((r, i) => <div key={i} data-at={r.at} className={r.at === focus ? 'rounded-lg ring-2 ring-[#C8F03C]' : ''}><Bubble r={r} openSource={openSource} role={role} /></div>)}
-          {busy && <p className="ma-msg-bot ma-typing">답변을 만드는 중…</p>}
+          {today.map((r, i) => <div key={i} data-at={r.at} className={r.at === focus ? 'rounded-lg ring-2 ring-[#C8F03C]' : ''}><Bubble r={r} meta={`${md(r.at)} ${hhmm(r.at)}`} openSource={openSource} role={role} /></div>)}
+          {busy && <Typing />}
         </div>
       </div>
       <form className="ma-compose" onSubmit={(e) => { e.preventDefault(); if (!busy) send(); }}>
@@ -296,36 +296,17 @@ function Chat({ focus, headerSlot, onNewChat }: { focus: string | null; headerSl
     </>
   );
 }
-function Bubble({ r, openSource, role }: { r: ChatRow; openSource: (d: string, s: string) => void; role: string }) {
-  const card = parseAlarmAnswer(r.a, r.sources, openSource);   // 알람 답("■ 알람 설명"으로 시작)이고 글자가 하나도 어긋나지 않을 때만 카드, 아니면 null → 평문 (parseAlarmAnswer.ts)
-  return (
-    <div className="flex flex-col gap-1">
-      <div className="ma-msg-user">{r.q}</div>
-      <div className="text-[12px] text-slate-500">{md(r.at)} {hhmm(r.at)} · 이브 · {r.status === 'ok' ? '규칙 답' : r.status}</div>
-      {card ? <div className="ma-msg-bot"><AlarmAnswerCard {...card} viewerRole={role === 'OPR' ? 'operator' : 'maintenance'} /></div> : <p className="ma-msg-bot">{r.a}</p>}   {/* 보는 사람 역할의 점검 단계만 보라색 (OPR = 작업자 줄, 나머지 = 보전 줄) */}
-      {r.series && Object.entries(r.series).map(([eq, s]) => <div key={eq} className="text-[12px]">{eq} 최근 60분: {Object.entries(s).slice(0, 3).map(([k, v]) => <span key={k} className="mr-2">{k} <Spark v={v} /></span>)}</div>)}
-      {!card && r.sources.length > 0 && <div className="flex flex-wrap gap-1 text-[12px]">출처: {r.sources.map((s, i) => <button key={i} type="button" onClick={() => openSource(s.doc_no, s.section)} className="underline">{s.doc_name} {s.doc_no} {s.rev} §{s.section}</button>)}</div>}
-    </div>
-  );
-}
-export function Spark({ v, w = 80, h = 18 }: { v: number[]; w?: number; h?: number }) {
-  if (v.length < 2) return <span>—</span>;
-  const lo = Math.min(...v), hi = Math.max(...v), r = hi - lo || 1;
-  return <svg width={w} height={h} className="inline align-middle"><polyline fill="none" stroke="#0f9fbd" strokeWidth="1.5" points={v.map((x, i) => `${(i / (v.length - 1)) * w},${h - 1 - ((x - lo) / r) * (h - 2)}`).join(' ')} /></svg>;
-}
 function ChatLog({ onOpen }: { onOpen: (at: string) => void }) {
   const { user } = useApp();
   const [log] = useLocal<ChatRow[]>(`chat:${user.id}`, []);
   const keep = realRows(log).filter((x) => Date.parse(x.at) > SIM.now() - 30 * 864e5).reverse();
   return (
-    <div className="ma-history">
+    <div className="ma-history gap-2">
       <p className="ma-history-group">내 채팅 기록 — 30일 보관 · 누르면 채팅에서 다시 엶</p>
       {keep.length === 0 ? <p className="ma-empty">저장된 대화가 없습니다.</p> : keep.map((r, i) => (
         <Fragment key={i}>
           {(i === 0 || md(keep[i - 1].at) !== md(r.at)) && <p className="ma-history-group">{md(r.at)}</p>}
-          <button type="button" className="ma-history-item" onClick={() => onOpen(r.at)}>
-            <strong>{r.q}</strong><span>{md(r.at)} {hhmm(r.at)}</span>
-          </button>
+          <HistoryItem q={r.q} when={`${md(r.at)} ${hhmm(r.at)}`} onOpen={() => onOpen(r.at)} />
         </Fragment>
       ))}
     </div>

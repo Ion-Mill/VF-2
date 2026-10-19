@@ -3,6 +3,7 @@
 // 역할 알약 글자("작업자"/"보전")는 항상 그려서 색에만 기대지 않는다. "[가상]" 꼬리표는 지우지 않고 칩으로 그린다.
 import { Fragment, useId, type ReactNode } from 'react';
 import type { AlarmAnswerCardProps, AlarmCardPart } from './parseAlarmAnswer';
+import { ANSWER_BOX, WRAP } from './bubbleBox';   // 말풍선 박스 클래스는 bubbleBox.ts 한 곳에서 정한다 (일반 답·질문·기록 항목과 같은 모양)
 
 const Chip = ({ children }: { children: ReactNode }) =>
   <span className="mx-0.5 inline-block whitespace-nowrap rounded-full bg-slate-100 px-2 py-px align-middle text-[12px] font-medium text-slate-600">{children}</span>;
@@ -71,8 +72,8 @@ function Part({ p, id, viewerRole }: { p: AlarmCardPart; id: string; viewerRole:
 export function AlarmAnswerCard({ parts, sources, viewerRole = 'operator' }: AlarmAnswerCardProps) {
   const uid = useId();   // 채팅에 알람 답이 여러 개 있어도 aria-labelledby id가 겹치지 않게
   return (
-    <div className="flex flex-col gap-3 whitespace-normal break-keep [overflow-wrap:anywhere]">
-      <div className="flex flex-col gap-4 rounded-3xl bg-white/80 p-5 text-[16px] leading-relaxed text-slate-900 shadow-sm">
+    <div className={`flex flex-col gap-3 whitespace-normal ${WRAP}`}>
+      <div className={`flex flex-col gap-4 ${ANSWER_BOX}`}>
         {parts.map((p, i) => <Part key={i} p={p} id={`${uid}-${i}`} viewerRole={viewerRole} />)}
       </div>
       {sources.length > 0 && (
