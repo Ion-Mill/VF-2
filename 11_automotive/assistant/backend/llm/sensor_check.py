@@ -20,6 +20,9 @@ NOW_WORDS = re.compile(r"지금|현재|방금|실시간|오늘|어제|내일")
 PAIR = re.compile(r"(최소|평균|최대|마지막)\s*(-?\d+(?:\.\d+)?)")
 HEAD = re.compile(r"^(VF2-0\d) 센서", re.M)
 ITEM = re.compile(r"^- ([^:\n]+): (.*)$", re.M)
+COMPARE_LINE = re.compile(r"^(.+?) 비교 — (.*)$", re.M)      # 두 설비 나란히 보기 줄 ("주축 모터 온도 비교 — 최소 VF2-01 27.7℃ · VF2-02 27.8℃ / 평균 …")
+EQ_NUM = re.compile(r"(VF2-0\d)\s*(-?\d+(?:\.\d+)?)")
+LABEL = re.compile(r"\s*(최소|평균|최대|마지막)")
 
 
 def _count(rx: re.Pattern, s: str) -> int:
@@ -28,6 +31,16 @@ def _count(rx: re.Pattern, s: str) -> int:
 
 def _pairs(s: str) -> set[tuple[str, float]]:
     return {(lab, float(num)) for lab, num in PAIR.findall(s)}
+
+
+def _triples(body: str) -> set[tuple[str, str, float]]:
+    """비교 줄 본문 → {(최소·평균·최대·마지막, 설비, 값)}"""
+    out = set()
+    for seg in re.split(r"\s/\s", body):
+        m = LABEL.match(seg)
+        if m:
+            out |= {(m.group(1), eq, float(num)) for eq, num in EQ_NUM.findall(seg)}
+    return out
 
 
 def _blocks(draft: str) -> list[tuple[str, list[tuple[str, set[tuple[str, float]]]]]]:
@@ -77,4 +90,11 @@ def check(text: str, draft: str) -> str | None:
             lost = sorted(pairs - _pairs(part))
             if lost:
                 return f"센서 값 짝이 어긋남: {n} {lost[0][0]} {lost[0][1]:g}"
+    for m in COMPARE_LINE.finditer(draft):      # 나란히 보기 줄: 설비별 값이 라벨·설비 짝 그대로 남아야 한다 (설비 둘의 값을 맞바꿔도 숫자 대조는 통과하므로)
+        name = m.group(1).strip()
+        mt = re.search(r"^" + re.escape(name) + r" 비교 — (.*)$", text, re.M)
+        if not mt:
+            return f"빠진 비교 줄: {name}"
+        if _triples(m.group(2)) - _triples(mt.group(1)):
+            return f"비교 줄 값 짝이 어긋남: {name}"
     return None

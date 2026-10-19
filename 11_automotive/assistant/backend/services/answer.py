@@ -1335,7 +1335,7 @@ def parse(question: str) -> dict:
     if not intents and not alarms and not lot and not order and SN.is_value_question(q, equipment):
         # 센서 값 질문 (2026-10-19): 다른 신호(알람 번호·로트·작업지시·MTTR 같은 운영 낱말)가 하나도 없고 기준값·보관·간격 같은 문서 질문 꼴이 아닐 때만. 겹치면 기존 의도가 이긴다
         intents = [SN_INTENT]
-        if not equipment and SN.BOTH_EQUIP.search(q):      # "VF2 두 대 다 …": 설비 ID가 없어도 설비 둘을 말한 것 (신호로 센다)
+        if not equipment and (SN.BOTH_EQUIP.search(q) or SN.process_groups(q)[0]):      # "VF2 두 대 다 …"·"OP-30": 설비 ID가 없어도 설비 둘을 말한 것 (신호로 센다)
             equipment = list(SN.SENSOR_EQUIPMENT)
     out = {"alarms": alarms, "equipment": equipment, "start": start, "end": end, "shift": shift, "intents": intents,
            "lot": lot.group(0).upper() if lot else None, "order": order.group(0).upper() if order else None}
@@ -1918,14 +1918,20 @@ def _sensor_answer(role: str, p: dict, add, texts: list[str], data: list[dict], 
         texts.append(f"어느 설비의 센서인지 알려 주세요. {SN.ONLY_OP30}.")
         add("", [], texts[-1], None)
     if pl.minutes is not None:
+        got = {}
         for eq_id in pl.equipment:
             r = T.sensor_trend(role, eq_id, pl.minutes, pl.sensor_code)
             data.append(r)
+            got[eq_id] = r
             part = SN.render(eq_id, r, pl.wanted)
             texts.append(part.text)
             add(part.head, part.items, part.text, r)
             if part.closing:
                 add("", [], part.closing, r)
+        cmp_text = SN.compare_text(got, pl.wanted) if pl.compare else None      # "A랑 B 중에 어디가 더 높아": 두 설비 값을 나란히도
+        if cmp_text:
+            texts.append(cmp_text)
+            add("", [], cmp_text, None)
     for m in pl.messages:
         texts.append(m)
         add("", [], m, None)

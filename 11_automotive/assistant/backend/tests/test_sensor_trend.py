@@ -629,3 +629,191 @@ def test_through_the_app_road_with_keep_signals_the_tool_is_called(fb, monkeypat
 def test_no_new_env_switch_was_added():
     text = (HERE.parent.parent / ".env.example").read_text(encoding="utf-8") if (HERE.parent.parent / ".env.example").exists() else ""
     assert "SENSOR" not in text.upper().replace("SENSOR_TREND", "")
+
+
+# ================================================================ 2차 개선 (2026-10-19, 봉인 은행 범주 피드백)
+# ① "몇 + 단위"로 사양·임계 값을 묻는 문서 질문이 값 질문으로 잡힘(회귀) ② 값 질문 놓침 4부류(극값·변화 / 구어 기간 / 두 설비 비교 / 일반 명칭만) ③ 공정 묶음 이름(OP-30 = VF2-01·02 둘)
+SPEC_QS = ["공기 압력 센서는 몇 psi 짜리야?", "공기 압력은 최소 몇 psi까지 괜찮아?", "VF2-01 공기 압력 몇 psi 아래로 떨어지면 안 돼?", "직류 전압 몇 V까지 허용돼?",
+           "모터 온도 최대 몇 도까지 괜찮아", "주축 부하 최대 몇 %까지 써도 돼?", "공기압 몇 bar 이하로 유지해야 해?", "에어 압력 최소 몇 psi?",
+           "VF2-01 공기 압력 몇 psi까지 괜찮아?", "VF2-01 모터 온도 어디까지 괜찮아?", "공기 압력 몇 psi 이상이어야 돼?", "VF2-01 공기 압력이 몇 psi 밑으로 내려가면 문제야?",
+           "공기 압력 센서 몇 psi까지 측정돼?", "공기 압력 스펙이 몇 psi야", "모터 온도 몇 도 넘으면 정상 아니야?", "공기 압력 최대 몇 psi 짜리 센서를 써?"]
+
+
+@pytest.mark.parametrize("q", SPEC_QS)
+def test_spec_or_threshold_questions_with_number_and_unit_are_documents(fb, mode, q):
+    """사양·임계 값을 묻는 꼴(…짜리·…까지 괜찮·…아래면·최소/최대 몇 …)은 값 단서가 있어도 센서 값 질문이 아니다 — MNT·MGR는 문서 길, OPR·SUP도 막히지 않는다"""
+    assert "sensor_trend" not in A.parse(q)["intents"], q
+    assert role_gate(q, GATE) is None
+    post(q)
+    assert sensor_calls(fb) == []
+    j = lowrole(q).json()
+    assert j["status"] != "OUT_OF_ROLE" and fb.calls == [], j
+
+
+EXTREME_QS = [("VF2-01 모터 온도 최대가 어디까지 올랐어", "SpindleMotorTemp"), ("VF2-01 공기 압력 제일 낮았을 때가 몇 psi였어", "AirPressure"),
+              ("VF2-02 주축 부하 최대가 얼마야", "SpindleLoadPct"), ("VF2-01 모터 온도 최대는 몇 도야", "SpindleMotorTemp"),
+              ("VF2-01 모터 온도 최대 몇 도까지 올랐어?", "SpindleMotorTemp"), ("VF2-01 공기 압력 최소 얼마까지 떨어졌어", "AirPressure"),
+              ("VF2-01 주축 부하 변화 어때", "SpindleLoadPct"), ("VF2-01 직류 전압 가장 높았던 값", "DcVolt"), ("VF2-01 공기 압력 최소 몇 psi였어", "AirPressure"),
+              ("VF2-02 Y축 부하 제일 높게 튀었을 때", "Yload")]
+
+
+@pytest.mark.parametrize("q,code", EXTREME_QS)
+def test_measured_extremes_and_changes_are_value_questions(fb, mode, q, code):
+    """잰 값의 극값·변화("최대가 어디까지 올랐어", "제일 낮았을 때")는 값 질문 — 사양 꼴("최대 몇 도까지 괜찮아")과 가르는 것은 잰 값 표시(올랐·떨어졌·였어·최대가/는 …)"""
+    j = post(q).json()
+    assert [c["args"].get("sensor_code") for c in sensor_calls(fb)] == [code], q
+    assert not SC.JUDGE.search(j["answer"]) and "[참고]" in j["answer"]
+
+
+@pytest.mark.parametrize("q,minutes", [("요즘 센서 어때 최근 한 시간 기준으로", 60), ("센서 어때 최근 30분 기준으로", 30), ("지금 기준으로 센서 좀 봐줘", 60), ("10분 전부터 센서 어때", 10),
+                                       ("센서 어때 반 시간 기준", 30), ("센서 좀 봐줘 2시간 기준", 120), ("요즘 센서 상태 최근 90분 기준으로 알려줘", 90)])
+def test_spoken_period_without_sensor_name_uses_screen_equipment_or_asks(fb, mode, q, minutes):
+    """센서를 가리지 않고 구어 기간만 말한 질문. "한 시간 기준으로"의 기준은 알람 기준이 아니라 기간의 기준이다"""
+    assert "sensor_trend" in A.parse(q)["intents"], q
+    j = post(q).json()
+    assert fb.calls == [] and "어느 설비의 센서인지" in j["answer"]
+    post(q, context={"equipment_id": "VF2-01", "screen": "SCR-04"})
+    assert [c["args"] for c in sensor_calls(fb)] == [{"equipment_id": "VF2-01", "minutes": minutes}]
+
+
+@pytest.mark.parametrize("q", ["VF2-01이랑 VF2-02 모터 온도 중에 어디가 더 높아", "VF2-01 모터 온도가 VF2-02보다 높아?", "VF2-01 VF2-02 공기 압력 비교해줘",
+                               "두 설비 중에 어디 모터 온도가 더 높아?", "VF2 두 대 모터 온도 비교", "VF2-02랑 VF2-01 주축 부하 어디가 더 커?"])
+def test_comparison_calls_both_and_shows_the_values_side_by_side_without_a_verdict(fb, mode, q):
+    j = post(q).json()
+    assert sorted(c["args"]["equipment_id"] for c in sensor_calls(fb)) == ["VF2-01", "VF2-02"], q
+    ans = j["answer"]
+    assert "두 설비 나란히 보기" in ans and "VF2-01 센서 (" in ans and "VF2-02 센서 (" in ans
+    line = next(ln for ln in ans.splitlines() if " 비교 — " in ln)
+    name = line.split(" 비교 — ")[0]
+    code = next(c for c, n, *_ in F.SENSORS if n == name)
+    segs = line.split(" 비교 — ")[1].split(" / ")
+    for (lab, i), seg in zip((("최소", 0), ("평균", 1), ("최대", 2), ("마지막", 3)), segs):
+        want = [F.SENSOR_VALUES[e][code][i] for e in ("VF2-01", "VF2-02")]
+        got = re.search(lab + r" VF2-01 (-?\d+(?:\.\d+)?).*?VF2-02 (-?\d+(?:\.\d+)?)", seg)
+        assert [float(got.group(1)), float(got.group(2))] == want, (lab, line)
+    assert not SC.JUDGE.search(ans) and "더 높" not in ans and "더 낮" not in ans                  # 값만 나란히, 어느 쪽이 낫다는 말은 하지 않는다
+
+
+def test_comparison_block_only_when_asked_to_compare(fb, mode):
+    ans = post("VF2-01, VF2-02 둘 다 모터 온도 알려줘").json()["answer"]
+    assert len(sensor_calls(fb)) == 2 and "나란히" not in ans
+
+
+@pytest.mark.parametrize("q", ["정밀 가공 설비 센서 좀 봐줘", "이 설비 센서 어때", "가공 설비 모터 온도 알려줘", "이 설비 온도 어때?"])
+def test_generic_equipment_name_uses_the_screen_equipment_or_asks(fb, mode, q):
+    """설비 ID 없이 일반 명칭만: 값 단서가 있으니 센서 길 — 화면 설비가 있으면 그것, 없으면 되묻기"""
+    assert "sensor_trend" in A.parse(q)["intents"], q
+    j = post(q).json()
+    assert fb.calls == [] and "어느 설비의 센서인지" in j["answer"]
+    post(q, context={"equipment_id": "VF2-02"})
+    assert [c["args"]["equipment_id"] for c in sensor_calls(fb)] == ["VF2-02"]
+
+
+@pytest.mark.parametrize("screen", [None, "VF2-01"])
+@pytest.mark.parametrize("q", ["OP-30 센서 추세", "OP30 모터 온도 어때", "op-30 센서 어때?", "정밀 가공 공정 센서 값 보여줘", "OP-30 설비 공기 압력 알려줘"])
+def test_op30_means_both_machines_never_the_one_screen_machine(fb, mode, q, screen):
+    """공정 묶음 이름(OP-30 = VF2-01·VF2-02 둘)을 말하면 화면 설비 한 대로 줄이지 않는다 — 화면 설비 폴백은 설비 언급이 아예 없을 때만"""
+    post(q, context={"equipment_id": screen} if screen else None)
+    assert [c["args"]["equipment_id"] for c in sensor_calls(fb)] == ["VF2-01", "VF2-02"], q
+
+
+def test_op30_with_an_explicit_machine_keeps_only_that_machine(fb, mode):
+    post("OP-30 VF2-02 센서 추세", context={"equipment_id": "VF2-01"})
+    assert [c["args"]["equipment_id"] for c in sensor_calls(fb)] == ["VF2-02"]
+
+
+@pytest.mark.parametrize("q,code", [("OP-20 센서 어때", "OP-20"), ("황삭 공정 센서 값 보여줘", "OP-20"), ("OP-50 모터 온도 알려줘", "OP-50"), ("절단 공정 센서 추세", "OP-10"),
+                                    ("OP-40 센서 어때", "OP-40")])
+def test_other_processes_have_no_sensors_and_the_screen_equipment_is_not_used(fb, mode, q, code):
+    j = post(q, context={"equipment_id": "VF2-01"}).json()
+    assert fb.calls == [] and f"물으신 설비({code})는 센서 기록이 없어요" in j["answer"]
+
+
+def test_process_groups_unit():
+    assert SN.process_groups("OP-30 센서") == (True, [])
+    assert SN.process_groups("op30 센서") == (True, [])
+    assert SN.process_groups("OP-20이랑 OP-30") == (True, ["OP-20"])
+    assert SN.process_groups("정밀 가공 공정과 측정 공정") == (True, ["OP-50"])
+    assert SN.process_groups("정밀 가공 설비 센서") == (False, [])                 # 공정 이름을 풀어 쓴 일반 명칭은 공정 언급이 아니다
+    assert SN.process_groups("VF2-01 센서") == (False, [])
+
+
+NEW_FORM_VALUE_QS = [q for q, _ in EXTREME_QS[:4]] + ["요즘 센서 어때 최근 한 시간 기준으로", "VF2-01이랑 VF2-02 모터 온도 중에 어디가 더 높아", "정밀 가공 설비 센서 좀 봐줘",
+                                                     "OP-30 센서 추세", "OP-30 모터 온도 어때", "두 설비 중에 어디 모터 온도가 더 높아?", "이 설비 센서 어때"]
+
+
+@pytest.mark.parametrize("role", ["OPR", "SUP"])
+@pytest.mark.parametrize("q", NEW_FORM_VALUE_QS)
+def test_opr_sup_are_told_no_values_for_the_new_value_forms_too(fb, mode, role, q):
+    j = lowrole(q, role=role).json()
+    assert j["status"] == "OUT_OF_ROLE" and fb.calls == [] and "센서 데이터" in j["answer"] and not any(ch.isdigit() for ch in j["answer"]), j
+
+
+# 사양/임계 꼴과 잰 값 꼴을 가르는 규칙 (일반 규칙의 표 — 예시 한두 문장이 아니라 꼴 전체를 고정)
+@pytest.mark.parametrize("q,expect", [
+    ("공기 압력 몇 psi 짜리야", False), ("공기 압력 몇 psi 이상이어야 해", False), ("공기 압력 몇 psi 이하로 써", False), ("공기 압력 몇 psi 아래면 돼", False),
+    ("공기 압력 최소 몇 psi까지 괜찮아", False), ("모터 온도 최대 몇 도까지 괜찮아", False), ("모터 온도 몇 도까지 견뎌", False), ("직류 전압 몇 V로 맞춰", False),
+    ("주축 부하 최대 몇 %", False), ("주축 부하 몇 % 넘으면 돼", False), ("공기 압력 최소 몇 psi?", False), ("공기 압력 하한이 몇 psi", False),
+    ("VF2-01 공기 압력 몇 psi야", True), ("VF2-01 모터 온도 몇 도야", True), ("VF2-01 모터 온도 최대가 몇 도였어", True), ("VF2-01 모터 온도 최대는 몇 도야", True),
+    ("VF2-01 모터 온도 몇 도까지 올랐어", True), ("VF2-01 공기 압력 최소 몇 psi까지 떨어졌어", True), ("VF2-01 주축 부하 최대가 몇 %까지 갔어", True),
+    ("VF2-01 공기 압력 제일 낮은 값이 몇 psi야", True), ("VF2-01 직류 전압 최소 몇 V 나왔어", True), ("VF2-01 모터 온도 평균 몇 도였어", True),
+    ("모터 온도 몇 도야", True), ("공기 압력 알려줘", True)])
+def test_spec_versus_measured_rule_table(q, expect):
+    assert SN.is_value_question(q, ["VF2-01"] if "VF2-01" in q else []) is expect, q
+
+
+def test_period_phrases_for_the_new_spoken_forms():
+    assert SN.period("10분 전부터 센서 어때")[:2] == ("ok", 10)                      # "N분 전부터"는 최근 N분 창
+    assert SN.period("한 시간 전 센서")[0] == "past"                                # 한 점의 과거
+    assert SN.period("센서 어때 반 시간 기준")[:2] == ("ok", 30)
+    assert SN.period("요즘 센서 어때")[:2] == ("default", 60)
+
+
+# 다듬기: 나란히 보기 줄도 설비별 값 짝이 그대로여야 한다
+QCMP = "VF2-01이랑 VF2-02 모터 온도 비교해줘"
+
+
+def swap_compare(d):
+    return d.replace("평균 VF2-01 28.1℃ · VF2-02 28.2℃", "평균 VF2-01 28.2℃ · VF2-02 28.1℃")
+
+
+COMPARE_VARIANTS = {
+    "비교 줄의 두 설비 값을 맞바꿈": swap_compare,
+    "비교 줄을 뺌": lambda d: re.sub(r"\n주축 모터 온도 비교 — .*$", "", d, flags=re.M),
+    "비교 줄의 설비 이름을 바꿈": lambda d: d.replace("최대 VF2-01 28.9℃ · VF2-02 29℃", "최대 VF2-02 28.9℃ · VF2-01 29℃"),
+}
+
+
+@pytest.mark.parametrize("name", list(COMPARE_VARIANTS))
+def test_bad_polish_of_the_comparison_lines_is_rejected(polish, name):
+    base, _ = ask(QCMP)
+    assert "주축 모터 온도 비교 — " in base["conclusion"]
+    a, runner = ask(QCMP, COMPARE_VARIANTS[name])
+    assert runner.calls and a["conclusion"] == base["conclusion"], name
+    assert a["llm_trace"][0]["used"] is False
+
+
+def test_sensor_check_compare_lines_directly():
+    d = "VF2-01 센서 (x)\n- 주축 부하: 최소 1% · 평균 2%\nVF2-02 센서 (x)\n- 주축 부하: 최소 3% · 평균 4%\n두 설비 나란히 보기 (같은 기간)\n주축 부하 비교 — 최소 VF2-01 1% · VF2-02 3% / 평균 VF2-01 2% · VF2-02 4%"
+    assert SC.check(d, d) is None
+    assert "어긋남" in (SC.check(d.replace("최소 VF2-01 1% · VF2-02 3%", "최소 VF2-01 3% · VF2-02 1%"), d) or "")
+    assert "빠진 비교 줄" in (SC.check(d.split("\n두 설비")[0], d) or "")
+
+
+@pytest.mark.parametrize("q,expect", [
+    ("VF2-01 모터 온도 최대 몇 도 찍었어", True), ("VF2-01 공기 압력 최소 몇 psi 있었어", True), ("VF2-01 주축 부하 최대 몇 %까지 올라간 거야", True),
+    ("공기 압력 하한이 몇 psi", False), ("공기 압력 임계가 몇 psi야", False), ("공기 압력 최소 몇 psi는 돼야 해", False)])
+def test_more_measured_and_limit_forms(q, expect):
+    assert SN.is_value_question(q, ["VF2-01"] if "VF2-01" in q else []) is expect, q
+
+
+@pytest.mark.parametrize("q,ids", [("VF2-01/02 모터 온도 비교", ["VF2-01", "VF2-02"]), ("VF2-01과 02 센서 추세", ["VF2-01", "VF2-02"]), ("VF2-01, 02 모터 온도 어때", ["VF2-01", "VF2-02"]),
+                                   ("VF2-01, 3분 센서 추세", ["VF2-01"]), ("VF2-02랑 30분 센서", ["VF2-02"])])
+def test_short_pair_of_machine_numbers(fb, mode, q, ids):
+    post(q)
+    assert [c["args"]["equipment_id"] for c in sensor_calls(fb)] == ids, q
+
+
+def test_short_pair_with_a_machine_that_has_no_sensors(fb, mode):
+    j = post("VF2-01/03 센서 추세").json()
+    assert [c["args"]["equipment_id"] for c in sensor_calls(fb)] == ["VF2-01"] and "물으신 설비(VF2-03)는 센서 기록이 없어요" in j["answer"]
