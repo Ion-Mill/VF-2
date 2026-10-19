@@ -8,7 +8,9 @@ import { useApp } from './ctx';
 import { MACHINES } from './data';
 import { SIM, api, md, simIso, useLocal } from './live';
 import { askAssistant, backendChatEnabled } from './assistantApi';
-import { LEVEL_VIEW, alarmTitle, hhmm, sevText, type AlertRec, type Level, type Notice } from './model';
+import { LEVEL_VIEW, alarmTitle, hhmm, type AlertRec, type Level, type Notice } from './model';
+import { alarmSentence } from './alarmText';
+import { useAlarmText } from './assistText';
 import { rankOfAlert, rankOfNotice } from './Briefing';
 import RobotIcon from './RobotIcon';
 import { canStartNewChat, currentChat, makeNewChatMark, realRows, withNewChat } from './chatLog';
@@ -134,6 +136,21 @@ type Item = { kind: 'a'; a: AlertRec; n: number } | { kind: 'n'; x: Notice };
 // 왼쪽 띠 색: 긴급 빨강 · 주의 주황 · 참고 회색 (Q7)
 const BAR: Record<Level, string> = { 긴급: '#E5484D', 주의: '#F5A524', 참고: '#8B98A5' };
 const idOf = (it: Item) => (it.kind === 'a' ? it.a.id : it.x.id);
+// 알람 상세 본문 한 문단. 프로그램 문장(alarmText.ts)을 보이다가, 비서가 다듬은 문장이 준비되면 그것으로 바꾸고 [원문 보기]로 프로그램 문장을 언제나 볼 수 있다 (2026-10-19).
+// 열린 알림 하나만 비서에게 묻는다. 꺼짐·실패·탈락이면 늘 프로그램 문장 그대로다. 훅은 여기서 부른다 — AlertsTab은 상세를 일찍 return 해서 거기서는 훅을 못 부른다.
+function AlarmBody({ a }: { a: AlertRec }) {
+  const base = alarmSentence({ name: MACHINES[a.machine].name, op: MACHINES[a.machine].op, code: a.code, severity: a.alarm?.severity ?? null, scenario: a.scenario, lot: a.lot, cleared: a.cleared ? hhmm(a.cleared) : null });
+  const ai = useAlarmText(a.id, base);
+  const [raw, setRaw] = useState(false);
+  const polished = !!ai && ai !== base;   // 비서가 원문 그대로 돌려줬으면 꼬리표·전환 버튼 없이 그대로 둔다
+  return (
+    <p className="mt-2">
+      {polished && !raw && <b className="mr-1 text-[12px] text-slate-500">비서 정리 ·</b>}
+      {polished && !raw ? ai : base}
+      {polished && <button onClick={() => setRaw((x) => !x)} title="프로그램이 만든 원래 문장과 비서가 다듬은 문장을 바꿔 봅니다" className="ml-2 text-[12px] font-semibold underline">{raw ? '비서 정리 보기' : '원문 보기'}</button>}
+    </p>
+  );
+}
 function AlertsTab({ onNotice }: { onNotice: (n: Notice) => void }) {
   const { alerts, myNotices, role, openCard, selectMachine, go, handleNotice, markAlert, openSource, user } = useApp();
   const [onlyOpen, setOnlyOpen] = useState(true);
@@ -168,7 +185,7 @@ function AlertsTab({ onNotice }: { onNotice: (n: Notice) => void }) {
           <div className="text-[12px] font-semibold" style={{ color: TONE[lv] }}>{LEVEL_VIEW[lv].icon} {lv} · {md(at(cur))} {hhmm(at(cur))} · {done ? '처리됨' : '처리 안 됨'}</div>
           <b className="mt-1 block text-[17px] leading-snug">{title(cur)}</b>
           {cur.kind === 'a' ? (<>
-            <p className="mt-2">{MACHINES[cur.a.machine].name}({MACHINES[cur.a.machine].op})에서 알람 {cur.a.code}{cur.a.alarm ? ` — ${sevText(cur.a.alarm)}` : ' — 알람 코드집에 없음, 보전 담당자 호출'}.{cur.a.scenario ? ` 사건 ${cur.a.scenario}.` : ''}{cur.a.lot ? ` 로트 ${cur.a.lot}.` : ''}{cur.a.cleared ? ` 설비 알람 ${hhmm(cur.a.cleared)} 해제.` : ''}</p>
+            <AlarmBody key={cur.a.id} a={cur.a} />
             {cur.a.alarm && <p className="mt-1 text-[12px] text-slate-500">관련: <button onClick={() => openSource('DOC-02', cur.a.alarm!.doc02.replace('DOC-02 ', ''))} className="underline">{cur.a.alarm.doc02}</button></p>}
           </>) : (<>
             <p className="mt-2">{cur.x.text}{cur.x.past && <span className="ml-1 text-[11px] text-slate-500">(9월 기록)</span>}</p>

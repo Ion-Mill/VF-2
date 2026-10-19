@@ -601,3 +601,69 @@ def test_briefing_text_route_is_post_only(monkeypatch):
     SS.COMPOSER = Composer(run_id=lambda: 1, post=Fake(), enabled=False)
     src = (TOOLS / "sim_server.py").read_text(encoding="utf-8")
     assert 'key == "assist/briefing-text" and method == "POST"' in src
+
+
+# ------------------------------------------------------------------ 알림 탭 알람 상세 본문 입구 (알림 하나 = 한 줄, 2026-10-19)
+ALARM_LINE = "VF2-01(OP-30)에서 알람 992 — 정지. 사건 S1. 로트 LOT-2610-001-1."
+
+
+def test_alarm_text_is_two_step_one_line_keyed_by_alert_id(monkeypatch):
+    SS = _sim_server(monkeypatch)
+    fake = Fake()
+    SS.COMPOSER = Composer(run_id=lambda: 1, post=fake, enabled=True)
+    body = {"id": "a-1203", "text": ALARM_LINE}
+    assert SS.alarm_text(body) == {"ready": False}                       # 첫 질문: 바로 돌아오고 백그라운드로 비서를 부른다
+    SS.COMPOSER.wait_idle()
+    assert SS.alarm_text(body) == {"ready": True, "text": "다듬음: " + ALARM_LINE}
+    assert SS.alarm_text(body)["ready"]                                  # 같은 알림·같은 문장은 한 번만 만든다
+    assert len(fake.calls) == 1 and fake.calls[0] == ("alarm_notice", [{"id": "L01", "text": ALARM_LINE}])
+
+
+def test_alarm_text_each_alert_is_made_alone_and_a_changed_sentence_is_remade(monkeypatch):
+    SS = _sim_server(monkeypatch)
+    fake = Fake()
+    SS.COMPOSER = Composer(run_id=lambda: 1, post=fake, enabled=True)
+    SS.alarm_text({"id": "a-1", "text": ALARM_LINE})
+    SS.alarm_text({"id": "a-2", "text": ALARM_LINE})
+    SS.COMPOSER.wait_idle()
+    assert len(fake.calls) == 2                                          # 알림마다 따로 (안 연 알림은 안 부른다)
+    cleared = ALARM_LINE + " 설비 알람 09:20 해제."
+    assert SS.alarm_text({"id": "a-1", "text": cleared}) == {"ready": False}     # 해제돼 문장이 바뀜 — 옛 문장을 주지 않고 다시 만든다
+    SS.COMPOSER.wait_idle()
+    assert SS.alarm_text({"id": "a-1", "text": cleared}) == {"ready": True, "text": "다듬음: " + cleared}
+    assert len(fake.calls) == 3
+
+
+def test_alarm_text_off_means_not_ready_and_sends_nothing(monkeypatch):
+    SS = _sim_server(monkeypatch)
+    fake = Fake()
+    SS.COMPOSER = Composer(run_id=lambda: 1, post=fake, enabled=False)
+    assert SS.alarm_text({"id": "a-1203", "text": ALARM_LINE}) == {"ready": False}
+    SS.COMPOSER.wait_idle()
+    assert fake.calls == []
+
+
+def test_alarm_text_failure_is_not_ready_and_the_screen_keeps_the_original(monkeypatch):
+    SS = _sim_server(monkeypatch)
+    SS.COMPOSER = Composer(run_id=lambda: 1, post=Fake(ComposeHttpError(503, "HTTP 503")), enabled=True)
+    SS.alarm_text({"id": "a-1203", "text": ALARM_LINE})
+    SS.COMPOSER.wait_idle()
+    assert SS.alarm_text({"id": "a-1203", "text": ALARM_LINE}) == {"ready": False}
+
+
+@pytest.mark.parametrize("bad", [{}, {"id": "a-1203"}, {"id": "a-1203", "text": ""}, {"id": "", "text": ALARM_LINE}, {"id": "n-1203", "text": ALARM_LINE},
+                                 {"id": "a-12 03", "text": ALARM_LINE}, {"id": "a-1203", "text": "x" * 301}, {"id": "a-" + "1" * 10, "text": ALARM_LINE}])
+def test_alarm_text_rejects_bad_requests(monkeypatch, bad):
+    SS = _sim_server(monkeypatch)
+    fake = Fake()
+    SS.COMPOSER = Composer(run_id=lambda: 1, post=fake, enabled=True)
+    with pytest.raises(SS.ApiError) as e:
+        SS.alarm_text(bad)
+    assert e.value.status == 400 and fake.calls == []
+
+
+def test_alarm_text_route_is_post_only(monkeypatch):
+    SS = _sim_server(monkeypatch)
+    SS.COMPOSER = Composer(run_id=lambda: 1, post=Fake(), enabled=False)
+    src = (TOOLS / "sim_server.py").read_text(encoding="utf-8")
+    assert 'key == "assist/alarm-text" and method == "POST"' in src

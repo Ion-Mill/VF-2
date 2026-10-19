@@ -8,6 +8,8 @@
   · 브리핑 항목(`briefing`, 2026-10-19)은 줄 하나가 [분류] 꼬리표 + 본문 + 끝 덧붙임(` · 9/29`·`(기한 09/28)`·`(인계)`)이다. 꼬리표·덧붙임은 프로그램이 정한 것이라
     **코드가 떼어 두고 본문만** 보내 다듬은 본문에 다시 붙인다(지침만으로는 못 지켰다: 2026-10-19 측정). 끝내 검사를 못 통과한 줄은 그 줄만 원문으로 두고
     나머지는 돌려준다(다른 종류는 지금처럼 하나라도 틀리면 전부 실패).
+  · 알림 탭 알람 상세 본문(`alarm_notice`, 2026-10-19)은 한두 문장짜리 줄이다. 설비·공정·알람 번호·로트·사건 코드·시각(식별 낱말)과 심각도·해제 같은 낱말이
+    바뀌면 뜻이 바뀌므로 **지침만 믿지 않고 코드가 대조한다**(`_alarm_notice_problem`).
 """
 from __future__ import annotations
 
@@ -58,6 +60,11 @@ KINDS: dict[str, Kind] = {
                                                           "한 줄은 한 문장으로, '…입니다'·'…했습니다'·'…됩니다'처럼 끝나는 말로 끝맺고 '~하고'·'~며'·'~인데'처럼 이어지는 말로 끝내지 않는다. "
                                                           "'기한 하루 전'·'기한 넘김'·'처리 안 됨'처럼 상태나 시점을 말하는 낱말은 뜻이 바뀌지 않게 그대로 쓴다('기한 하루 전'을 '기한은 하루 전'으로 바꾸지 않는다). "
                                                           "원문이 이미 읽기 쉬우면 그대로 둔다. 원문 낱말을 되도록 그대로 쓰고 조사와 어미만 다듬는다. 줄 끝에 마침표를 붙이지 않는다."),
+    "alarm_notice": Kind("알림 탭에서 사용자가 연 알람 알림 상세의 본문 문장", "각 줄은 알람이 났다는 알림 본문이다. 설비 이름(VF2-01)·공정 코드(OP-30)·알람 번호·심각도 낱말(정지·주의·조작 안내)·사건 코드(S1 등)·"
+                                                           "로트 번호·시각은 글자 그대로 쓴다. '사건'·'로트'·'해제'는 원문에 있을 때만 쓴다. 원인·위험·해야 할 일·점검·교체를 새로 말하지 않고, "
+                                                           "원문에 없는 안전 용어(잠금·표지·차단·전원)를 쓰지 않는다. 문장 수와 끝의 마침표를 그대로 둔다. "
+                                                           "원문이 이미 읽기 쉬우면 그대로 둔다. 원문 낱말을 되도록 그대로 쓰고 조사와 어미만 다듬는다. "
+                                                           "고쳐 쓸 때만, 문장 끝은 '…입니다'·'…했습니다'처럼 합니다체로 맞추고 반말('…났다')로 끝내지 않는다.", max_chars=300),
 }
 
 ITEM_KINDS = frozenset({"briefing"})        # 줄 = [꼬리표] + 본문 + 덧붙임. 본문만 보내고, 틀린 줄만 원문으로 돌려놓는다
@@ -71,6 +78,9 @@ _TAG = re.compile(r"^\[[^\]\s]{1,8}\]")
 _ITEM_HEAD = re.compile(r"^(?:(?:\[[^\]]+\]|[^\w\s\[(]+)\s+)*")                  # 줄 앞: [분류] 꼬리표·▲ ⓘ ⚠ 🔒 같은 기호 (뒤에 공백)
 _ITEM_PAREN = re.compile(r"\s*\([^()]*\)\s*$")                                  # 줄 끝의 (괄호 덧붙임)
 _ITEM_DOT = re.compile(r"\s+[·/]\s+(?:(?!\s[·/]\s).)*$")                                      # 줄 끝의 ' · 9/29'·' / 추가: …' 덧붙임
+_IDENT = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:-]*")                                  # 알림 본문: 설비·공정·로트·사건 코드·시각·알람 번호 덩어리 (끝의 . : - 는 문장 부호라 뗀다)
+_NOTICE_KEEP = ("정지", "주의", "조작 안내", "코드집에 없음", "보전 담당자 호출", "사건", "로트", "해제")      # 원문에 있으면 있어야 하고, 원문에 없던 것이 생겨도 안 된다 (뜻이 바뀐다)
+_NOTICE_NEW = ("원인", "조치", "점검", "교체", "수리", "고장", "충돌", "위험", "즉시", "반드시", "바로", "확인", "필요", "잠금", "표지", "차단", "전원")   # 원문에 없던 원인·지시·안전 낱말
 _BAD_END = re.compile(r"(하고|했고|되고|됐고|이고|하며|했으며|되며|됐으며|이며|으며|했는데|하는데|인데|지만|했지만|해서|돼서|되어서|있고|없고|있으며|없으며)$")
 
 
@@ -138,6 +148,23 @@ def _guide_problem(src: str, text: str) -> str | None:
     return None
 
 
+def _alarm_notice_problem(src: str, text: str) -> str | None:
+    """알림 탭 알람 상세 본문 전용 — 식별 낱말과 심각도·해제 같은 낱말이 그대로인지, 원인·지시가 새로 생기지 않았는지 본다 (숫자는 adapter.check_text가 따로 본다)."""
+    idents = dict.fromkeys(x.rstrip(".:-") for x in _IDENT.findall(src) if any(c.isdigit() for c in x))
+    miss = [t for t in idents if t not in text]
+    if miss:
+        return "원문의 식별 낱말이 빠지거나 바뀜: " + ", ".join(miss[:4])
+    for w in _NOTICE_KEEP:
+        if (w in src) != (w in text):
+            return f"낱말 '{w}'이 " + ("빠짐" if w in src else "새로 생김")
+    new = [w for w in _NOTICE_NEW if w in text and w not in src]
+    if new:
+        return "원문에 없던 낱말: " + ", ".join(new)
+    if difflib.SequenceMatcher(None, src, text).ratio() < SIMILARITY_MIN:
+        return "원문과 너무 다르게 바꿔 씀"
+    return None
+
+
 def _line_problem(kind: str, src: str, text: str, line_id: str = "") -> str | None:
     k = KINDS[kind]
     if "\n" in text or "\r" in text:
@@ -163,6 +190,10 @@ def _line_problem(kind: str, src: str, text: str, line_id: str = "") -> str | No
         g = _guide_problem(src, text2)
         if g:
             return g
+    if kind == "alarm_notice":
+        n = _alarm_notice_problem(src, text2)
+        if n:
+            return n
     if kind in ITEM_KINDS:                                                       # 브리핑 본문: 끝맺음·너무 다른 글을 거른다 (꼬리표·덧붙임은 코드가 따로 지킨다)
         if _dangling_end(src, text2):
             return "문장이 끝나지 않음(이어지는 말로 끝남)"
