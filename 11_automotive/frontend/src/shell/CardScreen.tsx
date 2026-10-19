@@ -1,6 +1,6 @@
 'use client';
 // SCR-09 지침카드 — 알람 번호로 알람 코드집(DOC-02)·고장 대응 매뉴얼(DOC-03)·안전 작업 기준서(DOC-05)를 규칙으로 찾는다.
-// 생산 영향·지난 기록·의심 로트는 시뮬레이터·9월 기록. "먼저 할 일"은 DOC-03 점검 순서의 ★(작업자) 줄 그대로 (비서 응답 없음 모양).
+// 생산 영향·지난 기록·의심 로트는 시뮬레이터·9월 기록. "먼저 할 일"은 비서 정리가 준비되면 그것을 본문으로 보이고 DOC-03 점검 순서의 ★(작업자) 줄 원문은 "원문 보기"에 둔다 (2026-10-19, UI설계서 SCR-09 [5]). 준비 전·실패·꺼짐이면 ★ 줄 원문 그대로 (비서 응답 없음 모양).
 import { useState } from 'react';
 import { BTN, CARD, DARK, PAGE, useApp } from './ctx';
 import { LAYOUT, MACHINES } from './data';
@@ -26,6 +26,8 @@ export default function CardScreen({ alertId }: { alertId: string }) {
   const wo = wos.find((w) => w.alertId === alert.id);
   const sr = srs.find((r) => r.alertId === alert.id);
   const src2 = (d: string) => { const m = d.match(/(DOC-\d+|GLOSSARY)\s+§?([\d.]+)/); return m ? <button key={d} onClick={() => openSource(m[1], m[2])} className="underline">{d}</button> : <span key={d}>{d}</span>; };
+  const stepsOrig = !a ? null : a.steps.length ? <ol className="list-decimal pl-5">{a.steps.map((s) => <li key={s}>{s}</li>)}</ol> : <span className="text-slate-500">DOC-03 해당 절을 봅니다 ({a.doc03.join(' · ') || '없음'})</span>;
+  const assisted = a && a.steps.length ? guideText : null;       // 비서 정리가 준비된 때만 (줄 수가 원문과 같은 것만 훅이 돌려준다). 아니면 원문 그대로
   const row = (k: string, v: React.ReactNode) => (<div className="grid grid-cols-[120px_1fr] gap-3 border-b border-slate-100 py-2"><dt className="text-[14px] font-bold text-slate-500">{k}</dt><dd className="min-w-0 text-[15px]">{v}</dd></div>);
 
   return (
@@ -41,13 +43,16 @@ export default function CardScreen({ alertId }: { alertId: string }) {
             {row('심각도', <b style={{ color: lv.color }}>{lv.icon} {sevText(a)}{alert.cleared ? ` · 설비 알람 ${hhmm(alert.cleared)} 해제` : ''}</b>)}
             {row('누가', <>{whoText(a)} <span className={`ml-2 rounded px-2 py-0.5 text-[12px] font-bold ${mine ? 'bg-[#ffe1e1] text-[#a01e23]' : 'bg-slate-100 text-slate-600'}`}>{mine ? '처리 책임: 나 (이 설비 담당)' : '처리 책임: 그 설비 OPR·MNT — 나는 [확인]만'}</span></>)}
             {(a.chain || chain.length > 1) && row('연쇄 알람', <>{chain.length > 1 ? <b>{chain.join(' → ')}</b> : null} {a.chain && <span className="text-slate-600">{chain.length > 1 ? ' · ' : ''}규칙: {a.chain}</span>}</>)}
-            {row('먼저 할 일', a.steps.length ? <ol className="list-decimal pl-5">{a.steps.map((s) => <li key={s}>{s}</li>)}</ol> : <span className="text-slate-500">DOC-03 해당 절을 봅니다 ({a.doc03.join(' · ') || '없음'})</span>)}
-            {guideText && row('비서 풀이 (참고)', (
-              <div className="rounded-md border-2 border-dashed border-slate-400 p-2 text-[14px]">
-                <p className="mb-1 text-[12px] font-bold text-slate-600">참고용 — 위 “먼저 할 일” 원문(DOC-03)이 기준입니다. 비서(외부 LLM)가 쉬운 말로 풀어 쓴 것이라, 원문과 다르면 원문을 따릅니다.</p>
-                <ol className="list-decimal pl-5">{guideText.map((s, i) => <li key={i}>{s}</li>)}</ol>
-              </div>
-            ))}
+            {assisted ? row('먼저 할 일 (비서 정리)', (
+              <>
+                <ol className="list-decimal pl-5">{assisted.map((s, i) => <li key={i}>{s}</li>)}</ol>
+                <p className="mt-1 text-[12px] text-slate-500">비서(외부 LLM)가 쉬운 말로 다듬은 글입니다. 원문과 다르면 원문(DOC-03)을 따릅니다.</p>
+                <details className="mt-1 text-[14px]">
+                  <summary className="cursor-pointer font-semibold text-slate-600">원문(DOC-03) 보기</summary>
+                  <div className="mt-1 rounded-md border border-slate-300 p-2">{stepsOrig}</div>
+                </details>
+              </>
+            )) : row('먼저 할 일', stepsOrig)}
             {row('안전', <SafetyBlock machine={alert.machine} alarm={a} />)}
             {row('생산 영향', <>현재 로트 {alert.lot ? <button onClick={() => go('lots', alert.lot)} className="font-semibold underline">{alert.lot}</button> : '—'} · {alert.cleared ? `정지 ${mins}분` : `${mins}분째`} · 약 {(mins / cyc).toFixed(1)}개 손실 (추정 = 시간 ÷ 기준 사이클 {cyc}분){op30 ? ` · OP-30 1대 → 라인 속도 절반` : ''}</>)}
             {alert.kind === 'alarm' && alert.lot && row('의심 로트 (비서 제안)', <div className="rounded-md border-2 border-dashed border-slate-400 p-2 text-[14px]">┄ 정지 등급 알람 {alert.code}가 뜬 동안 가공된 로트 <b>{alert.lot}</b>입니다. 제안만으로 상태가 바뀌지 않습니다 — 보류는 반장이 로트 추적에서. <button onClick={() => go('lots', alert.lot)} className="ml-1 underline">로트 추적</button> · 출처 <button onClick={() => openSource('DOC-06', '4')} className="underline">DOC-06 §4</button>{twin?.suspect_lot === alert.lot ? ' · (시뮬레이터 의심 로트와 같음)' : ''}</div>)}

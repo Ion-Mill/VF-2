@@ -1,5 +1,5 @@
 // 비서(외부 LLM)가 다듬은 문장을 시연 서버에 묻는다 (2026-10-17). 시연 서버가 MOM_LLM_COMPOSE=1이 아니거나 비서가 꺼져 있거나 실패하면
-// 늘 {ready:false}라서 화면에는 아무것도 더해지지 않는다 — 원문(프로그램 문장)은 언제나 그대로 보인다. 묻는 쪽이 기다리지 않는다.
+// 늘 {ready:false}라서 화면은 원문(프로그램 문장) 그대로다. 준비되면 지침카드는 비서 정리를 본문으로 보이되 원문을 "원문 보기"에 남긴다 (2026-10-19). 묻는 쪽이 기다리지 않는다.
 import { useEffect, useState } from 'react';
 import { api } from './live';
 
@@ -8,7 +8,7 @@ export function askGuideCard(code: string, steps: string[]) {
   return api<{ ready: boolean; lines?: string[] }>('assist/guide-card-text', { code, steps });
 }
 
-/** 카드에 붙일 '비서 풀이' 줄. 준비될 때까지 4초마다 최대 30번 묻고, 끝내 안 되면 null(아무것도 안 보임). */
+/** 카드 "먼저 할 일"에 쓸 '비서 정리' 줄. 준비될 때까지 4초마다 최대 30번 묻고, 끝내 안 되면 null(원문만 보임). */
 export function useGuideCardText(code: string | undefined, steps: string[] | undefined): string[] | null {
   const [lines, setLines] = useState<string[] | null>(null);
   const key = code && steps && steps.length ? `${code}|${steps.join('\n')}` : '';
