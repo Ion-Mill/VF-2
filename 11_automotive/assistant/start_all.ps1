@@ -15,6 +15,8 @@
 .PARAMETER Screen         시연 서버(8765)와 화면(기본 3000)도 켠다. 이미 켜져 있으면 건드리지 않는다.
 .PARAMETER ScreenPort     화면 포트 (기본 3000). 3000이 아니면 백엔드 MOM_CORS_ORIGINS 에 그 주소가 있어야 한다.
 .PARAMETER NewChat        -Screen 과 같이 쓴다. 이브 채팅 탭을 새 비서에 잇는다 (켜는 화면 프로세스에만 NEXT_PUBLIC_MOM_API 를 준다. frontend\.env.local 은 만들지 않는다).
+.PARAMETER LlmCompose     -Screen 과 같이 쓴다. 시연 서버를 켤 때 MOM_LLM_COMPOSE=1 을 그 프로세스에만 준다 — 교대·일일 보고서 문장, 작업지시서 제목·증상, 지침카드 "먼저 할 일" 풀이를 비서(외부 Claude)가 다듬는다.
+                  이 옵션 없이 켜면 시연 서버의 문장 다듬기는 꺼진다(기본). 이미 켜져 있는 시연 서버에는 적용되지 않는다 (환경변수는 켤 때 읽는다) — 끄고 다시 켠다.
 .PARAMETER CheckDb        켜기 전에 공용 DB 접속 점검(읽기만)을 먼저 한다.
 .PARAMETER WaitSeconds    준비될 때까지 기다리는 최대 시간 (기본 60초)
 .PARAMETER DryRun         아무것도 켜지 않고 무엇을 할지만 보여 준다 (설정 점검은 한다).
@@ -23,6 +25,8 @@
   .\11_automotive\assistant\start_all.ps1
 .EXAMPLE
   .\11_automotive\assistant\start_all.ps1 -Screen -NewChat
+.EXAMPLE
+  .\11_automotive\assistant\start_all.ps1 -Screen -LlmCompose
 .EXAMPLE
   .\11_automotive\assistant\start_all.ps1 -BackendPort 8021 -AssistantPort 8101 -DryRun
 #>
@@ -33,6 +37,7 @@ param(
     [switch]$Screen,
     [int]$ScreenPort = 3000,
     [switch]$NewChat,
+    [switch]$LlmCompose,
     [switch]$CheckDb,
     [int]$WaitSeconds = 60,
     [switch]$DryRun
@@ -147,6 +152,7 @@ if ($Screen) {
     if (-not $NodeCmd) { Fail 'node 를 찾을 수 없다 (화면에 필요)' }
 }
 if ($NewChat -and -not $Screen) { Say '[알림] -NewChat 은 -Screen 과 같이 쓸 때만 뜻이 있다. 무시한다.' Yellow }
+if ($LlmCompose -and -not $Screen) { Say '[알림] -LlmCompose 는 -Screen 과 같이 쓸 때만 뜻이 있다 (시연 서버가 읽는 스위치다). 무시한다.' Yellow }
 
 $keyB = Get-EnvValue $BackendEnv 'MOM_ASSISTANT_KEY'
 $keyA = Get-EnvValue $AssistantEnv 'MOM_ASSISTANT_KEY'
@@ -192,6 +198,19 @@ if ($Screen) {
     $planSim = Resolve-Port '시연 서버' $SimPort { param($l) $l.FullCmd -like '*sim_server*' }
     $planScreen = Resolve-Port '화면' $ScreenPort { param($l) $l.FullCmd -like '*next*' }
     if ($NewChat -and $planScreen -eq 'reuse') { Say '[주의] 이미 켜져 있는 화면에는 -NewChat 이 적용되지 않는다 (환경변수는 화면을 켤 때 읽는다). 화면을 끄고 다시 켜거나 frontend\.env.local 을 쓴다.' Yellow }
+}
+# 시연 서버의 문장 다듬기(MOM_LLM_COMPOSE) 상태 — 요약에 보인다: on | off | unknown (-LlmCompose 를 쓴 때만)
+$simCompose = $null
+if ($Screen -and $LlmCompose) {
+    if ($planSim -eq 'start') { $simCompose = 'on' }
+    else {
+        # 이미 켜져 있는 시연 서버는 환경변수를 다시 읽지 않는다 — 지금 켜져 있는지 읽어서 알린다 (GET 만)
+        try {
+            $h = Invoke-WebRequest -Uri "http://127.0.0.1:$SimPort/api/health" -UseBasicParsing -TimeoutSec 3
+            $simCompose = $(if (($h.Content | ConvertFrom-Json).llm_compose.enabled) { 'on' } else { 'off' })
+        } catch { $simCompose = 'unknown' }
+        if ($simCompose -ne 'on') { Say '[주의] 이미 켜져 있는 시연 서버에는 -LlmCompose 가 적용되지 않는다 (환경변수는 켤 때 읽는다). 시연 서버만 끄고 다시 켠다 (실행_안내.md 맨 앞 결론 ④).' Yellow }
+    }
 }
 
 # ---------------------------------------------------------------- 3. 켜기
@@ -263,7 +282,9 @@ if ($planAssistant -eq 'start') {
     if (-not $DryRun) { Say "비서 준비 OK  $AssistantUrl" Green }
 }
 if ($planSim -eq 'start') {
-    $pS = Start-Proc 'sim_server' $SimPy @('tools\sim_server.py') $FrontendDir $utf8 'sim_server' $SimPort
+    $envS = $utf8.Clone()
+    if ($LlmCompose) { $envS['MOM_LLM_COMPOSE'] = '1' }       # 시연 서버 프로세스에만 준다 (다른 서버·이 창에는 남지 않는다)
+    $pS = Start-Proc 'sim_server' $SimPy @('tools\sim_server.py') $FrontendDir $envS 'sim_server' $SimPort
     Wait-Ready '시연 서버' $pS { [bool](Get-NetTCPConnection -State Listen -LocalPort $SimPort -ErrorAction SilentlyContinue) } (Join-Path $RunDir 'sim_server.err.log')
     if (-not $DryRun) { Say "시연 서버 준비 OK  http://127.0.0.1:$SimPort" Green }
 }
@@ -283,6 +304,13 @@ Say "  백엔드   $BackendUrl/docs   [$(Get-PlanLabel $planBackend)]"
 Say "  비서     $AssistantUrl   [$(Get-PlanLabel $planAssistant)]  (밖에 열지 않는다. 확인할 때는 X-Service-Key 헤더가 필요하다)"
 if ($Screen) {
     Say "  시연서버 http://127.0.0.1:$SimPort   [$(Get-PlanLabel $planSim)]"
+    if ($LlmCompose) {
+        if ($simCompose -eq 'on') {
+            $state = $(if ($planSim -ne 'start') { '이미 켜져 있음' } elseif ($DryRun) { '켤 예정' } else { '켜짐' })
+            Say "  문장 다듬기 $state (-LlmCompose) — 보고서 둘·작업지시서·지침카드 문장이 외부 Claude로 간다 (가상 데이터 문장만, 한 스위치로 네 곳이 함께)" Yellow
+        }
+        else { Say "  문장 다듬기 [적용 안 됨] — 이미 켜져 있는 시연 서버에는 닿지 않는다 (지금 상태: $simCompose)" Yellow }
+    } elseif ($planSim -eq 'start') { Say '  문장 다듬기 꺼짐 (-LlmCompose 를 쓰지 않았다)' }
     Say "  화면     http://localhost:$ScreenPort   [$(Get-PlanLabel $planScreen)]  채팅 탭: $(if ($NewChat -and $planScreen -eq 'start') { '새 비서(외부 LLM)에 잇는다' } else { '스위치 상태 그대로 (frontend\.env.local 에 따름)' })"
 }
 $prov = Get-EnvValue $AssistantEnv 'ASSISTANT_PROVIDER'; $ext = Get-EnvValue $AssistantEnv 'EXTERNAL_LLM_APP'; $llm = Get-EnvValue $AssistantEnv 'LLM_ENABLED'
