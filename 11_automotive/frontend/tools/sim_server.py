@@ -298,6 +298,8 @@ def _route(method, p, q, body, rt, live, P):
             if f in body and body[f] != cur.get(f):
                 changes.append({"field_name": f, "before_value": cur.get(f), "after_value": body[f]})
                 cur[f] = body[f]
+        if any(c["field_name"] == "notable_text" for c in changes):
+            cur.pop("notable_source", None)                                  # 사람이 문장을 고쳤으니 더는 비서 글이 아니다
         ver = int(cur.get("current_version") or 0) + 1
         cur["current_version"] = ver
         if action == "confirm":
@@ -520,7 +522,7 @@ def shift_with_llm(d):
     if not d or d.get("partial") or d.get("status") != "AI_DRAFT":
         return d
     out = COMPOSER.polished("shift_report", d["shift_id"], sentences(d.get("notable_text") or ""))
-    return {**d, "notable_text": " ".join(out)} if out else d
+    return {**d, "notable_text": " ".join(out), "notable_source": "ASSISTANT"} if out else d     # 화면 머리글이 "AI비서 초안"으로 바뀌는 표시
 
 
 def split_issues(summary):
