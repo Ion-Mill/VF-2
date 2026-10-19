@@ -442,7 +442,8 @@ def _route(method, p, q, body, rt, live, P):
                 raise ApiError(409, "INVALID_STATE", f"{x['lot_no']}은(는) 합격·해제 로트가 아니라 출하할 수 없어요")
             if int(x["qty"]) > l.fg_qty - shipped.get(l.lot_no, 0):
                 raise ApiError(409, "INVALID_STATE", f"{x['lot_no']} 남은 수량보다 많아요")
-            lines.append({"lot_no": l.lot_no, "qty": int(x["qty"])})
+            # 합격 시각도 출하 줄에 남김 — 지난 출하 상세의 [합격] 칸 (실제 백엔드 shipment_line.lot_passed_at과 같음: 합격 = 판정 시각, 해제 = 해제 시각)
+            lines.append({"lot_no": l.lot_no, "qty": int(x["qty"]), "lot_passed_at": iso(live.to_dt(S4.passed_m(l)))})
         if not lines:
             raise ApiError(400, "VALIDATION", "로트 줄이 없어요")
         no = f"SHP-2610-{len(S.ships) + 1:03d}"
