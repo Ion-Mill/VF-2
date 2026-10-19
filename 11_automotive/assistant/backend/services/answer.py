@@ -1464,6 +1464,56 @@ def doc03_steps(ref: str, code: str) -> list[dict]:
     return steps
 
 
+# 2026-10-19: 알람 답의 "가능한 원인". 사용자가 원인·이유·왜를 물으면 DOC-03 그 알람 절의 원인 표를 **원문 그대로** 카드 뒤에 붙인다(LLM을 거치지 않는다).
+# 이전에는 알람 답이 "쉬운 설명 + 점검 순서 표"만 쓰고 이 표를 읽는 코드가 없었고, 질문의 "원인·이유·왜"는 ALARM_PLAIN_V9에 들어 "카드가 이미 다루는 말"로 취급돼
+# 문서 추가 검색도 안 했다(카드에는 원인 표가 없는데). 분석: 261003_창민/알람_원인_질문_가능한원인_누락_분석_20261019.md
+CAUSE_Q = re.compile(r"원인|이유|왜|때문")
+CAUSE_POSSIBLE = re.compile(r"가능한\s*(원인|이유)")     # "가능한 원인이 뭐야?"의 "가능한"은 주제 낱말이 아니라 원인 질문의 일부다
+CAUSE_HEAD = "가능한 원인(사내 문서): "
+
+
+def cause_question(question: str) -> bool:
+    """알람 질문이 원인을 묻나 (원인·이유·왜·때문 — 정책 규칙 DEFECT_CAUSE(불량 원인)는 이 함수보다 앞에서 걸러진다)."""
+    return bool(CAUSE_Q.search(question))
+
+
+def _plain_cell(s: str) -> str:
+    return re.sub(r"\s+", " ", s.replace("**", "")).strip()
+
+
+def doc03_causes(ref: str) -> list[str]:
+    """DOC-03 알람 절의 원인 줄 (원문 그대로, 새로 쓰지 않는다 — 문서 규칙 "원문이 실제로 적은 원인만").
+
+    - §2.x(OP-30): "가능한 원인" 표의 **모든 행**(원인 글). 문서 원본에는 "근거 수준·출처" 열이 있으나 **검색 조각에서 D-03(원문 출처 비표시)에 따라 지워져 있어**(rag/sanitize.py
+      SOURCE_COLUMN) 답에도 보이지 않는다 — 우회하지 않는다. 출처는 답의 출처 알약(사내 문서 이름·번호·§)이 맡는다.
+    - §3.x(다른 공정): "칸 | 내용" 표의 "원인 후보" 한 줄을 "원인 후보: …"로 ([가상] 꼬리표 그대로).
+    - 절이 검색 조각 여러 개로 나뉘어도 모두 읽는다. 표가 없으면 빈 목록(→ 붙이지 않는다)."""
+    if "§" not in ref:
+        return []
+    doc, sec = (x.strip() for x in ref.split("§"))
+    lines = "\n".join(c.text for c in load_corpus() if c.doc_id == doc and c.section == sec).splitlines()
+    out, header = [], None
+    for i, line in enumerate(lines):
+        s = line.strip()
+        if not s.startswith("|"):
+            header = None
+            continue
+        if SEP.fullmatch(s):
+            continue
+        cells = [c.replace("**", "").strip() for c in _cells(s)]
+        nxt = lines[i + 1].strip() if i + 1 < len(lines) else ""
+        if header is None and SEP.fullmatch(nxt or "x"):
+            header = cells
+            continue
+        if not header or not cells or not cells[0]:
+            continue
+        if header[0] == "가능한 원인":
+            out.append(_plain_cell(cells[0]))
+        elif header[0] == "칸" and cells[0] == "원인 후보" and len(cells) > 1 and cells[1]:
+            out.append(f"원인 후보: {_plain_cell(cells[1])}")
+    return out
+
+
 def focus_words(question: str) -> set[str]:
     """질문의 핵심 낱말: "무엇을 X", "X는 어떻게/뭐야/…"의 X (조사·어미를 뗀 꼴)."""
     out = set()
@@ -2942,6 +2992,7 @@ def alarm_topic_left_v9(question: str, alarms_: list[dict], card: str = "") -> l
     """한 마디 알람 질문에서 카드·운영 조회가 다루지 않는 주제 낱말 (없으면 빈 목록 → 카드만). 세지 않는 말: 번호·날짜, 알람 이름,
     카드·조회 말(ALARM_PLAIN_V9), 묻는 말, 동사 꼴로 끝나는 말("돼요·하면"), 사내 문서에 없는 말("거예·주세"), 카드 글(card)에 이미 있는 말."""
     master = alarm_codes()
+    question = CAUSE_POSSIBLE.sub(r"\1", question)   # "가능한 원인이 뭐야?" — "가능한"이 남아 문서 추가 검색을 켜면 다른 알람 절을 끌어온다 (기준선 21/23)
     names: set[str] = set()
     for a in alarms_:
         m = master.get(a["code"]) or {}
@@ -3588,6 +3639,12 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
                     if seg and seg not in c:
                         parts[-1] = c = c + f" 문서의 조임 값: {seg}"
                         memo["alarm_card"] = c
+            if cause_question(question):   # 원인을 묻는 알람 질문: DOC-03 그 알람 절의 원인 표를 원문 그대로 카드 뒤에 (parts[-1]이 카드라는 위 가정이 끝난 뒤에 붙인다)
+                cl = doc03_causes((alarm_codes().get(a["code"]) or {}).get("doc03_section") or "")
+                if cl:
+                    parts.append(CAUSE_HEAD + " / ".join(cl))
+                    memo["cause_lines"] = cl
+                    memo["cause_cite"] = next((e for e in evidence if e.get("doc_id") == "DOC-03"), None)
     if steps and v8_on(s) and s.safe_write_card and s.job("write"):   # 안전 영역 새로쓰기 1단계 (2026-10-14): 점검 순서를 쉬운 말로 1:1 대체 표시
         memo["steps_easy"] = safe_steps_easy_v15(steps, traces)
         if SL.on():   # STEP_LOG 안전 새로쓰기 1단계: 점검 순서를 쉬운 말로 1:1 다시 쓰기 시도 (traces[-1] = 그 시도의 기록, 거부 까닭은 rejected)
@@ -3771,7 +3828,8 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
            "blocks": (BL2.build(parts, ops_final, ops_texts, ops_entries, memo.get("doc_lines") or [], memo.get("doc_cites") or [],
                                 fields.conclusion, tail, v3=blocks3_on(s),
                                 card=memo.get("alarm_card") if memo.get("alarm") else None, steps=bool(steps),
-                                written=memo.get("doc_written") or None) if blocks_on(s)
+                                written=memo.get("doc_written") or None, causes=memo.get("cause_lines"), cause_head=CAUSE_HEAD,
+                                cause_cite=memo.get("cause_cite")) if blocks_on(s)
                       else answer_blocks(parts, ops_final, memo.get("doc_lines") or [], fields.conclusion, tail))}
     if memo.get("doc_written"):   # 10차 DOC_WRITE: 화면이 꼬리표 "AI가 문서를 보고 쓴 답"과 원문 줄 접기를 그린다
         out["written"] = True
