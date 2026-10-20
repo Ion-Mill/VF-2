@@ -44,6 +44,23 @@ def test_unrelated_questions_get_no_block(q):
     assert FB.select(q) == [], q
 
 
+# 2026-10-21: 흔한 낱말(몇 분·5분·기다려·표시등·충전) 하나만으로 고전압 서식을 붙이지 않는다 (시연 #3 "정비 몇 분 남았어"에 붙던 오탐)
+@pytest.mark.parametrize("q", [
+    "고전압 대기 시간 알려줘", "전원 끈 뒤에 전압이 빠질 때까지 얼마나 기다려?", "제어반 열고 몇 분 기다려야 해?",
+    "공급 전원 끊으면 드라이브 표시등 다 꺼질 때까지 꽤 걸린다던데 얼마나 걸려요?", "잔류 전압은 몇 분이면 빠져?", "서보 앰프 전원 내리고 5분 뒤에 열어도 돼?",
+    "표시등 꺼지고 나서 몇 분 있어야 돼?"])
+def test_high_voltage_block_is_kept_for_real_electrical_questions(q):
+    assert "high_voltage" in FB.select(q), q
+
+
+@pytest.mark.parametrize("q", [
+    "VF2-02 지금 정비 중이야? 몇 분 남았어?", "VF2-02 정비 몇 분 남았어?", "1호기 MTTR 몇 분이야?", "작업지시 바뀌어서 셋업 들어가면 보통 몇 분 잡아요?",
+    "작업 표시등이 노란색으로 깜빡거리면 뭐가 문제야?", "AGV 배터리는 며칠에 한 번 충전해요?", "991 뜨면 앰프 식히는 데 몇 분 기다려야 돼?",
+    "병목은 최근 몇 분 데이터 보고 판단하는 거예요?", "CMM 결과 파일 안 들어오면 몇 분 지나서 미수신 알림이 떠요?"])
+def test_high_voltage_block_is_not_attached_by_a_common_word_alone(q):
+    assert "high_voltage" not in FB.select(q), q
+
+
 def test_at_most_two_blocks():
     assert len(FB.select("잠금 순서랑 고전압 대기랑 보호구 다 알려줘")) <= 2
 
@@ -165,6 +182,13 @@ def test_switch_off_changes_nothing(pure, monkeypatch):
     a = ask("작업 전에 잠그는 순서 알려줘")
     assert "fixed_block" not in a and T.TITLE not in to_answer_text(a)
     assert "6.1 " + T.BEFORE[0][1] not in r.systems[0]
+
+
+def test_how_long_is_the_maintenance_left_gets_no_high_voltage_block(pure):
+    CC.use_runner(Runner("VF2-02는 정비 중이에요."))
+    a = ask("VF2-02 지금 정비 중이야? 몇 분 남았어?")
+    assert "fixed_block" not in a
+    assert "고전압" not in to_answer_text(a)
 
 
 def test_non_safety_question_never_gets_a_block(pure):
