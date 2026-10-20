@@ -730,9 +730,14 @@ CREATE OR REPLACE FUNCTION fn_speed_loss_qty(p_from timestamptz, p_to timestampt
 LANGUAGE plpgsql STABLE AS $$
 DECLARE v_closed numeric; o bottleneck_log%ROWTYPE; v_open numeric := 0; v_end timestamptz := least(p_to, app_now());
 BEGIN
-    SELECT coalesce(sum(b.speed_loss_qty), 0) INTO v_closed FROM bottleneck_log b
-     WHERE b.changed_at >= p_from AND b.changed_at < p_to
-       AND EXISTS (SELECT 1 FROM bottleneck_log n WHERE n.changed_at > b.changed_at);
+    -- 닫힌 구간: 저장된 값. 저장 값이 없는 구간(생성기 적재 — 적재 중에는 트리거가 쉼)은 같은 식으로 계산 (보고서 병목 칸과 같은 값)
+    SELECT coalesce(sum(coalesce(b.speed_loss_qty,
+                                 CASE WHEN b.cause_code IN ('C1','C2','C3')
+                                      THEN (fn_interval_losses(b.changed_at, b.next_at, b.cause_code)).speed_loss_qty END)), 0)
+      INTO v_closed
+      FROM (SELECT x.*, (SELECT min(n.changed_at) FROM bottleneck_log n WHERE n.changed_at > x.changed_at) AS next_at
+              FROM bottleneck_log x WHERE x.changed_at >= p_from AND x.changed_at < p_to) b
+     WHERE b.next_at IS NOT NULL;
     SELECT * INTO o FROM bottleneck_log WHERE changed_at <= app_now() ORDER BY changed_at DESC LIMIT 1;
     IF FOUND AND o.cause_code IN ('C1','C2','C3') AND o.changed_at < p_to AND v_end > greatest(o.changed_at, p_from) THEN
         v_open := (fn_interval_losses(greatest(o.changed_at, p_from), v_end, o.cause_code)).speed_loss_qty;
