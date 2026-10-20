@@ -64,7 +64,7 @@ def settings() -> VoiceSettings:
     dtype = _env("VOICE_DTYPE", "float32").strip().lower()
     revision = _env("VOICE_MODEL_REVISION", "").strip().lower()
     engine = engine if engine in ENGINES else "faster-whisper"
-    max_seconds = float(C._int_clamped(_env("VOICE_MAX_SECONDS", "20"), 20, 3, 60))
+    max_seconds = float(C._int_clamped(_env("VOICE_MAX_SECONDS", "60"), 60, 3, 60))
     if engine == "transformers":
         max_seconds = min(max_seconds, TRANSFORMERS_MAX_SECONDS)
     return VoiceSettings(
@@ -76,7 +76,7 @@ def settings() -> VoiceSettings:
         max_seconds=max_seconds,
         min_seconds=max(0.3, min(3.0, C._float(_env("VOICE_MIN_SECONDS", "0.7"), 0.7))),
         max_bytes=C._int_clamped(_env("VOICE_MAX_BYTES", "1500000"), 1_500_000, 50_000, 10_000_000),
-        timeout_s=max(2.0, min(120.0, C._float(_env("VOICE_TIMEOUT_S", "15"), 15.0))),
+        timeout_s=max(2.0, min(120.0, C._float(_env("VOICE_TIMEOUT_S", "40"), 40.0))),
         queue_max=C._int_clamped(_env("VOICE_QUEUE_MAX", "2"), 2, 0, 20),
         hint=hint_text[:300] if hint_on else "",
         engine=engine,

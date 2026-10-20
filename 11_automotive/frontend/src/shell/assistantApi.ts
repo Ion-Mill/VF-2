@@ -157,7 +157,7 @@ async function withToken<T>(userId: string, run: (token: string) => Promise<T>):
 const VOICE_TIMEOUT_MS = 50_000;      // 백엔드가 비서를 기다리는 45초 + 여유 (녹음 최대 60초까지 늘릴 수 있어서, 2026-10-20)
 
 export interface VoiceStatus { enabled: boolean; maxSeconds: number }
-export const VOICE_OFF: VoiceStatus = { enabled: false, maxSeconds: 20 };
+export const VOICE_OFF: VoiceStatus = { enabled: false, maxSeconds: 60 };
 
 export class VoiceFail extends Error { constructor(public reason: string) { super(reason); } }
 

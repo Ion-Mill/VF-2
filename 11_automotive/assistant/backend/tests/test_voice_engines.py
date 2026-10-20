@@ -62,10 +62,10 @@ def test_model_name_with_slash_is_accepted(monkeypatch):
 
 
 # ---------------------------------------------------------------- 최대 녹음 길이 (2026-10-20: 60초까지, transformers 는 30초 창 하나라 30초로 묶음)
-def test_max_seconds_default_is_20_and_60_is_allowed(monkeypatch):
+def test_max_seconds_default_is_60_and_shorter_values_are_kept(monkeypatch):
+    assert (S.settings().max_seconds, S.settings().timeout_s) == (60.0, 40.0)       # 팀 기본값 (사용자 결정 2026-10-20)
+    monkeypatch.setenv("VOICE_MAX_SECONDS", "20")
     assert S.settings().max_seconds == 20.0
-    monkeypatch.setenv("VOICE_MAX_SECONDS", "60")
-    assert S.settings().max_seconds == 60.0
 
 
 def test_max_seconds_is_clamped_to_60_for_faster_whisper(monkeypatch):
@@ -75,6 +75,7 @@ def test_max_seconds_is_clamped_to_60_for_faster_whisper(monkeypatch):
 
 def test_transformers_engine_caps_max_seconds_at_30(monkeypatch):
     monkeypatch.setenv("VOICE_ENGINE", "transformers")
+    assert S.settings().max_seconds == 30.0                                 # 설정을 안 해도 기본 60이 아니라 30
     monkeypatch.setenv("VOICE_MAX_SECONDS", "60")
     assert S.settings().max_seconds == S.TRANSFORMERS_MAX_SECONDS == 30.0
     monkeypatch.setenv("VOICE_MAX_SECONDS", "15")
