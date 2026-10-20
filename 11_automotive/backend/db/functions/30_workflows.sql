@@ -355,12 +355,16 @@ DECLARE v_at timestamptz := coalesce(p_at, app_now()); h lot_hold%ROWTYPE; v_fg 
 BEGIN
     SELECT * INTO h FROM lot_hold WHERE hold_id = p_hold_id FOR UPDATE;
     IF h.result <> 'IN_PROGRESS' THEN RAISE EXCEPTION '보류 %는 이미 끝남 (%)', p_hold_id, h.result USING ERRCODE = '23514'; END IF;
+    -- 폐기 제안이 있으면 관리자 승인 뒤에 해제 (1013 7장: 반장 폐기 제안 → 관리자 승인 → 반장 해제, 2026-10-20)
+    IF h.scrap_proposed_by IS NOT NULL AND h.scrap_approved_by IS NULL THEN
+        RAISE EXCEPTION '보류 %는 폐기 승인 대기 — 관리자가 폐기를 승인한 뒤 해제', p_hold_id USING ERRCODE = '23514';
+    END IF;
     -- [제안] 해제 = 전수 검사로 골라낸 합격품을 출하 가능으로 (6.8). 합격 0개면 해제가 아니라 폐기로 간다
     IF coalesce(p_pass_qty, 0) <= 0 THEN
         RAISE EXCEPTION '해제 합격 수량은 1개 이상 (로트 % 완료 수량 %) — 전부 불량이면 폐기, 생산 중이면 검사 뒤 해제',
             h.lot_no, fn_lot_completed_qty(h.lot_no) USING ERRCODE = '23514';
     END IF;
-    IF p_pass_qty > fn_lot_completed_qty(h.lot_no) THEN
+    IF p_pass_qty > fn_lot_completed_qty(h.lot_no) THEN   -- 완료 수량(GQ + RQ)은 폐기(SQ)를 이미 뺀 값
         RAISE EXCEPTION '해제 합격 수량 %가 로트 완료 수량보다 많음', p_pass_qty USING ERRCODE = '23514';
     END IF;
     UPDATE lot_hold SET result = 'RELEASED', released_by = p_actor, released_at = v_at, released_pass_qty = p_pass_qty
@@ -374,6 +378,8 @@ BEGIN
 END $$;
 
 -- 폐기: SUP 제안 → MGR 승인 (R-27, FR-PRD-05-08)
+--   일부 폐기(제안 수량 < 로트 투입 수량, 2026-10-20): 승인해도 보류는 열린 채 폐기 수량만 남기고, 반장이 나머지를 해제한다
+--   (1013 7장 — 9월 LOT-2609-056-2 등). 전부 폐기(제안 수량 ≥ 투입 수량 또는 비어 있음)면 보류·로트 모두 폐기로 닫는다
 CREATE OR REPLACE FUNCTION fn_lot_scrap_propose(p_hold_id bigint, p_actor text, p_qty int) RETURNS void
 LANGUAGE sql AS $$
     UPDATE lot_hold SET scrap_proposed_by = p_actor, scrap_proposed_qty = p_qty WHERE hold_id = p_hold_id AND result = 'IN_PROGRESS';
@@ -386,9 +392,14 @@ BEGIN
     IF h.result <> 'IN_PROGRESS' OR h.scrap_proposed_by IS NULL THEN
         RAISE EXCEPTION '폐기 승인은 반장의 폐기 제안이 있는 열린 보류만' USING ERRCODE = '23514';
     END IF;
-    UPDATE lot_hold SET result = 'SCRAPPED', scrap_approved_by = p_actor, scrap_approved_at = v_at WHERE hold_id = p_hold_id;
-    UPDATE production_lot SET status = 'SCRAPPED', scrap_qty = least(input_qty, coalesce(h.scrap_proposed_qty, input_qty))
-     WHERE lot_no = h.lot_no;
+    IF h.scrap_proposed_qty IS NOT NULL AND h.scrap_proposed_qty < (SELECT input_qty FROM production_lot WHERE lot_no = h.lot_no) THEN
+        UPDATE lot_hold SET scrap_approved_by = p_actor, scrap_approved_at = v_at WHERE hold_id = p_hold_id;
+        UPDATE production_lot SET scrap_qty = h.scrap_proposed_qty WHERE lot_no = h.lot_no;
+    ELSE
+        UPDATE lot_hold SET result = 'SCRAPPED', scrap_approved_by = p_actor, scrap_approved_at = v_at WHERE hold_id = p_hold_id;
+        UPDATE production_lot SET status = 'SCRAPPED', scrap_qty = least(input_qty, coalesce(h.scrap_proposed_qty, input_qty))
+         WHERE lot_no = h.lot_no;
+    END IF;
 END $$;
 
 -- 출하 확정 (R-67 합격 로트만, R-68 FIFO, 출하 출고 거래). 반환: 로트 줄 수

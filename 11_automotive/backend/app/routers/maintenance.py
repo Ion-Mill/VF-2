@@ -276,7 +276,7 @@ class QuickIn(BaseModel):
     lot_no: str | None = None
     worker_memo: str | None = None
     start_at: datetime | None = None
-    safety_block_required: bool = False
+    safety_block_required: bool = False   # 알람 잠금 수준이 FULL·TWO_POINT면 DB가 참으로 정함 (R-32·33)
 
 
 @router.post("/quick-records")

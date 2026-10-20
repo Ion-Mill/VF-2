@@ -423,6 +423,19 @@ class RouterFlows(unittest.TestCase):
                        body=maintenance.QuickIn(equipment_id="VF2-01", action="칩 제거", alarm_event_id=1))["record_no"]
         mine = self.call(documents.revisions, "U02", doc_type="WORK_RECORD", doc_key=no)
         self.assertTrue(mine and all(r["author_user_id"] == "U02" for r in mine))
+        # 2026-10-20: 보충용 2점 잠금 알람(2075) 간이 기록은 화면이 False를 보내도 잠금·표지 9칸이 생긴다 (R-32·33)
+        a2075 = int(self.db._run("SELECT fn_ingest_alarm('VF2-02', '2075', '2026-09-15 12:10+09', 'LOT-2609-041-1')",
+                                 quiet=True).splitlines()[1])
+        loto_no = self.call(maintenance.quick_create, "U02",
+                            body=maintenance.QuickIn(equipment_id="VF2-02", action="축 윤활유 보충", alarm_event_id=a2075,
+                                                     safety_block_required=False))["record_no"]
+        self.assertEqual(self.db._run(f"SELECT safety_block_required::text || '/' || (SELECT count(*) FROM work_record_check c "
+                                      f"WHERE c.record_no = w.record_no AND c.check_kind = 'LOTO') FROM work_record w "
+                                      f"WHERE w.record_no = '{loto_no}'", quiet=True).splitlines()[1], "true/9")
+        # 2026-10-20: MNT 문서함 "내 할 일"에 초안(DRAFT) 예방 정비 기록이 나온다 (전에는 없는 상태 EDITING을 찾아 늘 비었음)
+        self.db._run("INSERT INTO pm_record (pm_task_id, due_date, done_at, done_by, recorded_by, result, status) "
+                     "VALUES ('PM-VF2-02-2.3-01', '2026-10-15', '2026-09-15 12:20+09', 'U07', 'U07', 'NORMAL', 'DRAFT')", quiet=True)
+        self.assertIn("PM_RECORD", [r["doc_type"] for r in self.call(documents.inbox, "U07", mine=True)])
         self.assertEqual(self.call(documents.revision, "U02", revision_id=int(mine[0]["revision_id"]))["doc_key"], no)
         other = self.call(documents.revisions, "U10", doc_type="SHIFT_REPORT", doc_key="2026-09-14-N")
         self.assertTrue(other)
