@@ -106,7 +106,7 @@
 ## 10. 테이블과 관계 (실제 DB에서 생성)
 
 <!-- BEGIN:schema -->
-<!-- tools/gen_schema_doc.py 가 실제 DB에서 만든 부분: 테이블 71개 (파티션 제외), 외래 키 165개, 뷰 18개, 업무 함수 79개 -->
+<!-- tools/gen_schema_doc.py 가 실제 DB에서 만든 부분: 테이블 72개 (파티션 제외), 외래 키 166개, 뷰 18개, 업무 함수 79개 -->
 
 ### 기준 정보 (`db/schema/10_master.sql`, 13개)
 
@@ -125,8 +125,8 @@ erDiagram
     inventory_item ||--o{ product : "material_item_no"
     app_user ||--o{ shift : "supervisor_user_id"
     work_day ||--o{ shift : "work_date"
-    process ||--o{ wip_buffer : "from_process_code"
     process ||--o{ wip_buffer : "to_process_code"
+    process ||--o{ wip_buffer : "from_process_code"
 ```
 
 | 테이블 | 설명 | 칼럼 | PK | 바깥 참조 (FK) | CHECK | UNIQUE·EXCLUDE | 트리거 |
@@ -277,7 +277,7 @@ erDiagram
 | `internal_doc` | 사내 문서 (5.G.5) — DOC-01~07 + 용어집 | 10 | doc_no | app_user | 6 | 0 | 1 |
 | `shift_report` | 교대 보고서 (5.G.1) — 교대 1 : 보고서 0..1. 확정자 = 그 교대 반장 (R-36, 트리거) | 11 | shift_id | app_user, shift | 7 | 0 | 3 |
 
-### 알림·사용자·권한 (`db/schema/80_notification_auth.sql`, 6개)
+### 알림·사용자·권한 (`db/schema/80_notification_auth.sql`, 7개)
 
 ```mermaid
 erDiagram
@@ -289,6 +289,7 @@ erDiagram
 | 테이블 | 설명 | 칼럼 | PK | 바깥 참조 (FK) | CHECK | UNIQUE·EXCLUDE | 트리거 |
 |---|---|---|---|---|---|---|---|
 | `access_log` | 물리 추가: 접속 기록 1년 보관 (6.53 ACCESS_LOG, 개인정보 안전성 확보조치 기준 제8조). 실제 시각(now) 기준 | 9 | access_log_id | app_user | 1 | 0 | 1 |
+| `briefing_check` | 물리 추가 (2026-10-20): 브리핑 먼저 챙길 일 체크 — 본인 것만, 시각은 시연 시계(app_now) | 4 | user_id, shift_id, item_key | app_user | 2 | 0 | 0 |
 | `notification` | 알림 (5.H.5) — L3 (2년). report_rank는 계산 (시간이 지나면 바뀌므로 저장하지 않음) | 30 | notification_id | alarm_event, app_user, bottleneck_log, cmm_import, document_revision, equipment, inspection_result, inventory_item, maintenance_work_order (지연), notification, pm_task, production_lot, shift, tool, wip_buffer | 12 | 0 | 1 |
 | `notification_pm_task` | 알림 ↔ 예방 정비 항목 [물리 추가, 2026-10-20 정비 탭 확인 요청 5] — 여러 항목을 1건으로 묶는 알림의 관련 항목 | 2 | notification_id, pm_task_id | pm_task | 0 | 0 | 0 |
 | `notification_recipient` |  | 4 | notification_id, user_id | app_user | 0 | 0 | 0 |

@@ -606,10 +606,10 @@ class RouterFlows(unittest.TestCase):
         n = ingest.sensors(ingest.SensorsIn(equipment_id="VF2-01", rows=[
             ingest.SensorRow(sensor_code=sensor, sampled_at="2026-09-15T13:00:00+09:00", value=1.5)]), self.db)
         self.assertEqual(n["inserted"], 1)
-
-
-if __name__ == "__main__":
-    unittest.main()
+        # 시뮬레이터 시계 입구 (2026-10-20): 시연 모드가 아니면(공용 DB 서버) 409 — 시연 서버 DB 중계가 스스로 꺼진다
+        with self.assertRaises(AppError) as e:
+            ingest.clock(ingest.ClockIn(sim_at="2026-09-15T13:00:00+09:00", speed=60), self.db)
+        self.assertEqual((e.exception.status, e.exception.detail.get("reason")), (409, "NOT_DEMO_MODE"))
 
     def test_099_pm_start_end(self):
         # [정비 시작]·[정비 끝 · 실시 기록] (FR-MNT-04-10, 2026-10-20): MAINT 구간 = 두 버튼 사이. 시계를 앞으로 돌리므로 맨 끝에 둔다
@@ -622,3 +622,7 @@ if __name__ == "__main__":
                          body=maintenance.PmEndIn(result="REFILLED", measured_value=1.5, measured_unit="L"))
         self.assertEqual((done["result"], done["status"]), ("REFILLED", "DRAFT"))
         self.assertIsNone(self.db.one("maintenance.pm_open_maint", pm_record_id=st["pm_record_id"]))
+
+
+if __name__ == "__main__":
+    unittest.main()

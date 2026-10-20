@@ -129,8 +129,9 @@ t('기록 항목을 누르면 onOpen이 불린다 (버튼 동작 그대로)', ()
 t('기록 항목 박스에는 hover(연한 보라)와 포커스 링이 있다', () => { for (const c of ['hover:bg-violet-50', 'focus-visible:outline', 'focus-visible:outline-violet-600', 'min-h-[56px]']) assert.ok(Box.HISTORY_BOX.split(' ').includes(c), c); });
 
 // ---- Eve.tsx 가 이 부품을 쓴다 (훅 때문에 Eve 전체는 서버 렌더로 못 그려서 소스 점검)
-t('Eve.tsx는 Bubble·Typing·HistoryItem을 쓰고 옛 말풍선 클래스·함수를 더 갖지 않는다', () => {
-  for (const s of ['<Bubble r={r} meta={', '<Typing />', '<HistoryItem q={r.q}', "from './ChatBubble'", 'ma-history gap-2']) assert.ok(eveSource.includes(s), s);
+// 2026-10-20 이브 디자인(PR #85): 답을 기다리는 동안은 Typing 점 대신 3D 이브 <EveThinking /> (Typing은 ChatBubble에 그대로 — 위 시험)
+t('Eve.tsx는 Bubble·EveThinking·HistoryItem을 쓰고 옛 말풍선 클래스·함수를 더 갖지 않는다', () => {
+  for (const s of ['<Bubble r={r} meta={', '<EveThinking />', '<HistoryItem q={r.q}', "from './ChatBubble'", 'ma-history gap-2']) assert.ok(eveSource.includes(s), s);
   for (const s of ['ma-msg-user', 'ma-history-item', 'function Bubble(', 'interface ChatRow']) assert.ok(!eveSource.includes(s), '남아 있으면 안 됨: ' + s);
 });
 

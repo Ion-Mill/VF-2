@@ -46,7 +46,9 @@ LANGUAGE sql STABLE AS $$
     stops AS (
         SELECT st.equipment_id, dr.reason_name, st.start_at,
                round(extract(epoch FROM (least(coalesce(st.end_at, app_now()), w.t) - greatest(st.start_at, w.f))) / 60)::int AS minutes,
-               round((extract(epoch FROM (coalesce(st.end_at, app_now()) - st.start_at)) / 60 / nullif(e.std_cycle_min, 0))::numeric, 1) AS loss
+               -- 손실 = 보고서 구간 안 정지 분 ÷ 기준 사이클 (report_stops와 같음 — 1020 33장 4번: 생성기는 구간 밖까지 세는 것이 틀림)
+               round((extract(epoch FROM (least(coalesce(st.end_at, app_now()), w.t) - greatest(st.start_at, w.f))) / 60
+                      / nullif(e.std_cycle_min, 0))::numeric, 1) AS loss
           FROM equipment_state_log st CROSS JOIN w
           JOIN equipment e USING (equipment_id)
           JOIN downtime_reason dr ON dr.reason_code = coalesce(st.reason_code, st.reason_suggested_code)

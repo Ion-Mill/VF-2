@@ -38,7 +38,7 @@ def save_upload(raw: bytes, file_name: str) -> str:
         folder.mkdir(parents=True, exist_ok=True)
         path = folder / f"{stamp}_{safe}"
         path.write_bytes(raw)
-        return str(path)
+        return path.as_posix()          # 보관 위치는 "/"로 (cmm_watcher와 같게, 2026-10-20)
     except OSError:
         log.warning("업로드 원본을 저장하지 못함: %s", file_name, exc_info=True)
         return f"upload-not-saved:{safe}"

@@ -21,8 +21,8 @@ SELECT fn_pm_end(:pmr, 'U07', 'REFILLED', 1.5, 'L', '윤활유 보충');
 SELECT t.eq((SELECT round(extract(epoch FROM end_at - start_at) / 60)::int FROM equipment_state_log WHERE pm_record_id = :pmr), 90,
             'MAINT 구간 = [정비 시작] ~ [정비 끝] 90분');
 SELECT t.eq((SELECT state_code FROM equipment_state_log WHERE equipment_id = 'VF2-02' AND end_at IS NULL), 'IDLE', '끝나면 대기');
-SELECT t.eq((SELECT done_at || '/' || result || '/' || status FROM pm_record WHERE pm_record_id = :pmr),
-            '2026-09-15 16:30:00+09/REFILLED/DRAFT', '실시 시각 = 끝난 시각, 결과, 수정 중');
+SELECT t.eq((SELECT (done_at = '2026-09-15 16:30+09')::text || '/' || result || '/' || status FROM pm_record WHERE pm_record_id = :pmr),
+            'true/REFILLED/DRAFT', '실시 시각 = 끝난 시각, 결과, 수정 중');
 SELECT t.eq((SELECT count(*)::int FROM notification n JOIN notification_pm_task l USING (notification_id)
               WHERE n.rule_code = 'PM_RECORD_CHECK' AND l.pm_task_id = 'PM-VF2-02-2.3-01'), 1, '끝나면 실시 기록 확인 알림');
 SELECT t.throws(format('SELECT fn_pm_end(%s, %L)', :pmr, 'U07'), '열려 있지 않음', '두 번 끝내기 막힘');
@@ -48,7 +48,7 @@ VALUES ('VF2-01-T05', '2026-09-15 16:35+09', 'U07', 10, 'BROKEN', 3);
 SELECT t.throws(format('SELECT fn_resume_normal(%s, %L)', :hid, 'U02'), 'SUP', '확인은 반장');
 SELECT t.freeze('2026-09-15 16:40+09');
 SELECT fn_resume_normal(:hid, 'U10');
-SELECT t.eq((SELECT normal_resumed_by || '/' || normal_resumed_at FROM lot_hold WHERE hold_id = :hid), 'U10/2026-09-15 16:40:00+09',
+SELECT t.eq((SELECT normal_resumed_by || '/' || (normal_resumed_at = '2026-09-15 16:40+09')::text FROM lot_hold WHERE hold_id = :hid), 'U10/true',
             '두 조건이 맞으면 보통으로 (반장·시각)');
 SELECT t.throws(format('SELECT fn_resume_normal(%s, %L)', :hid, 'U10'), '이미 보통', '두 번은 안 됨');
 

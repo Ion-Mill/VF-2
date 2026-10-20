@@ -52,8 +52,9 @@ class PsqlDb:
         return PARAM.sub(repl, sql)
 
     def _run(self, sql: str, quiet: bool) -> str:
-        args = self.psql + ["-X", "--csv", "-v", "ON_ERROR_STOP=1"] + (["-q"] if quiet else []) + ["-c", self.prefix + sql]
-        p = subprocess.run(args, capture_output=True, text=True)
+        # SQL은 표준 입력으로 넘긴다 (-f -). 명령줄 인자(-c)로 넘기면 Windows 코드 페이지에서 한글이 깨진다 (2026-10-20)
+        args = self.psql + ["-X", "--csv", "-v", "ON_ERROR_STOP=1"] + (["-q"] if quiet else []) + ["-f", "-"]
+        p = subprocess.run(args, capture_output=True, text=True, input=self.prefix + sql, encoding="utf-8")
         if p.returncode != 0:
             raise PsqlError(p.stderr.strip())
         return p.stdout

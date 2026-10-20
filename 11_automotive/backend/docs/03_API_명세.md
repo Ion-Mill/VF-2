@@ -87,7 +87,7 @@
 ## 4. 엔드포인트 목록
 
 <!-- BEGIN:api -->
-<!-- tools/gen_api_doc.py 가 만든 표 (142개). -->
+<!-- tools/gen_api_doc.py 가 만든 표 (145개). -->
 | 방법 | 경로 | 권한 (role_permission target·action) | 설명 |
 |---|---|---|---|
 | POST | `/api/auth/login` | 없음 | 아이디·비밀번호 로그인 → JWT. 실패도 접근 기록에 남는다 |
@@ -234,6 +234,7 @@
 | POST | `/api/ingest/lots` | 서비스 키 `ingest` | 로트 투입 (OP-10 시작): 원자재 사용·검사 방식·작업지시 생산 중 (R-06a·R-08·R-28) |
 | POST | `/api/ingest/lots/{lot_no}/arrived` | 서비스 키 `ingest` | 로트가 OP-50에 도착 → 검사 대기 |
 | POST | `/api/ingest/cmm` | 서비스 키 `ingest` | CMM 결과 파일 내용 (공유 폴더 대신 API로 보낼 때) |
+| POST | `/api/ingest/clock` | 서비스 키 `ingest` | 시연 시계를 시뮬레이터 시계에 맞춘다 (팀과 논의/비서_시뮬레이터_DB_연결_논의 3-1 "서비스 키로 부르는 시계 입구", 2026-10-20). |
 <!-- END:api -->
 
 이 밖에 `GET /api/health` (DB 연결 확인, 권한 없음).
