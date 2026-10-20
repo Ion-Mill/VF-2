@@ -1,6 +1,8 @@
 -- 알람 받기·작업지시서 초안·측정 지시 (60_ingest) / 보고서 초안·시간 규칙 알림 (70_reports)
 BEGIN;
 SELECT t.freeze('2026-09-15 13:00+09');
+-- 이 파일은 초안 저장 API(fn_create_work_order_draft)를 직접 시험한다 — 정지 알람 자동 초안(2026-10-20)은 끔 (96d에서 시험)
+SET LOCAL app.auto_work_order = 'off';
 
 -- 알람 받기: 정지 등급 → 긴급 알림, 받는 사람 = 사용 중인 전원 (2026-10-13 — 로그인한 전원에게 팝업, 처리 책임은 그 설비 OPR·MNT)
 SELECT fn_ingest_alarm('VF2-02', '254', '2026-09-15 13:00+09', 'LOT-2609-041-1');

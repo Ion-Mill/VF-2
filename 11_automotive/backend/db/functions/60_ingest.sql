@@ -35,6 +35,11 @@ BEGIN
     PERFORM fn_raise_notification(v_rule, format('%s 알람 %s (%s)', p_equipment_id, p_alarm_code, m.name_ko),
                                   jsonb_build_object('alarm_event_id', v_id, 'equipment_id', p_equipment_id, 'lot_no', p_lot_no),
                                   v_at, p_recipients => v_recipients);
+    -- OP-30 정지 등급 → 작업지시서 초안 자동 (FR-MNT-03-01 ①, 2026-10-20 — views/30_live_rules.sql). 반복 판정보다 먼저:
+    --   같은 알람이 2단계가 되면 이 초안에 계기를 더한다 (R-71 "겹치면 1개")
+    IF m.severity = 'STOP' AND v_proc = 'OP-30' THEN
+        PERFORM fn_auto_work_order_draft(v_id, 'STOP_ALARM');
+    END IF;
     IF m.severity <> 'GUIDE' THEN
         PERFORM fn_check_repeat_alarm(v_id);
     END IF;

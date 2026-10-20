@@ -132,3 +132,77 @@ BEGIN
     END LOOP;
     RETURN v_n;
 END $$;
+
+-- ---------------------------------------------------------------------
+-- 작업지시서 초안 자동 생성 (2026-10-20 요구사항 대조 상 3번, FR-MNT-03-01·03·04·05·12, R-71 — 화면 App.tsx createWo와 같은 규칙)
+--   계기 ① OP-30 정지 등급 알람 (STOP_ALARM): 그 설비에 끝나지 않은 작업지시서가 없을 때
+--      ② OP-30 반복 알람 2단계 (REPEAT_2): 원인 점검 — 같은 알람의 정지 등급 초안이 있으면 거기에 계기를 더함 (fn_create_work_order_draft)
+--   제목 = "설비 알람 번호 (이름) 점검" / "설비 알람 번호 반복 — 원인 점검 (2단계)", 증상 = DOC-03 첫 문장 + 연쇄 알람
+--   작업 순서 = DOC-03 점검 순서(alarm_check_step): 정지 등급 = ★ 작업자 줄 + 보전 줄, 2단계 = 보전 줄(없으면 작업자 줄).
+--      "§2.1 점검 2~5와 같다"처럼 다른 절을 가리키는 줄은 그 절의 줄로 풀고 "(§2.1 점검 n)"을 붙인다 (문서 문장은 그대로)
+--   예상 부품 = 9월(지난) 같은 알람 작업기록서에 쓴 부품 (C-07), 담당 = 알람 시각 교대의 보전 담당자
+--   AI비서 초안(AI_DRAFT)으로 저장 — 비서가 문장을 다듬는 것은 비서 서비스 몫. 반환: wo_no (만들지 않으면 NULL)
+--   끄기: 세션·DB 설정 app.auto_work_order = 'off' (비서 서비스가 초안을 직접 만들게 되면, 또는 초안 API만 시험할 때)
+-- ---------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION fn_auto_work_order_draft(p_alarm_event_id bigint, p_trigger text, p_trigger_notification_id bigint DEFAULT NULL)
+RETURNS text LANGUAGE plpgsql AS $$
+DECLARE
+    a alarm_event%ROWTYPE; m alarm_master%ROWTYPE;
+    v_sec text; v_steps jsonb; v_parts jsonb; v_title text; v_symptom text; v_wo text; v_shift text; v_mnt text;
+BEGIN
+    IF current_setting('app.loading', true) IS NOT DISTINCT FROM 'on'
+       OR current_setting('app.auto_work_order', true) IS NOT DISTINCT FROM 'off' THEN RETURN NULL; END IF;
+    SELECT * INTO a FROM alarm_event WHERE alarm_event_id = p_alarm_event_id;
+    SELECT * INTO m FROM alarm_master WHERE alarm_code = a.alarm_code;
+    IF fn_equipment_process(a.equipment_id) <> 'OP-30' THEN RETURN NULL; END IF;
+    IF p_trigger = 'STOP_ALARM' AND EXISTS (SELECT 1 FROM maintenance_work_order
+                                              WHERE equipment_id = a.equipment_id AND status NOT IN ('DONE','CANCELLED')) THEN
+        RETURN NULL;   -- 그 설비에 진행 중인 작업지시서가 있으면 새로 만들지 않는다 (화면과 같음)
+    END IF;
+    SELECT 'DOC-03 §' || section INTO v_sec FROM alarm_guide_map WHERE alarm_code = a.alarm_code AND doc_no = 'DOC-03' ORDER BY seq LIMIT 1;
+    v_sec := coalesce(v_sec, 'DOC-03');
+    -- 작업 순서 (참조 줄 풀기)
+    WITH base AS (
+        SELECT s.seq, s.step_text FROM alarm_check_step s
+         WHERE s.alarm_code = a.alarm_code
+           AND (CASE WHEN p_trigger = 'REPEAT_2' AND EXISTS (SELECT 1 FROM alarm_check_step x WHERE x.alarm_code = a.alarm_code AND x.step_kind = 'MNT')
+                     THEN s.step_kind = 'MNT' ELSE s.step_kind IN ('OPR','MNT') END)
+    ), expanded AS (
+        SELECT b.seq, 0 AS sub, b.step_text, v_sec AS src
+          FROM base b WHERE b.step_text !~ '§\d+\.\d+ 점검 \d+~\d+와 같다$'
+        UNION ALL
+        SELECT b.seq, r.n, t.step_text || format(' (§%s 점검 %s)', mm.g[1], r.n), 'DOC-03 §' || mm.g[1]
+          FROM base b
+          CROSS JOIN LATERAL (SELECT regexp_match(b.step_text, '§(\d+\.\d+) 점검 (\d+)~(\d+)와 같다$') AS g) mm
+          CROSS JOIN LATERAL generate_series(mm.g[2]::int, mm.g[3]::int) r(n)
+          JOIN LATERAL (SELECT s2.step_text FROM alarm_check_step s2
+                          JOIN alarm_guide_map gm ON gm.alarm_code = s2.alarm_code AND gm.doc_no = 'DOC-03' AND gm.section = mm.g[1]
+                         WHERE s2.step_kind IN ('OPR','MNT') ORDER BY s2.seq OFFSET r.n - 1 LIMIT 1) t ON true
+         WHERE mm.g IS NOT NULL
+    )
+    SELECT coalesce(jsonb_agg(jsonb_build_object('step_text', step_text, 'source_section', src) ORDER BY seq, sub), '[]'::jsonb)
+      INTO v_steps FROM expanded;
+    -- 예상 부품 = 지난 같은 알람 작업기록서에 쓴 부품
+    SELECT coalesce(jsonb_agg(jsonb_build_object('item_no', item_no, 'qty', qty) ORDER BY item_no), '[]'::jsonb) INTO v_parts
+      FROM (SELECT p.item_no, max(p.qty) AS qty
+              FROM work_record_part p JOIN work_record w USING (record_no)
+              LEFT JOIN maintenance_work_order o ON o.wo_no = w.wo_no
+              JOIN alarm_event e ON e.alarm_event_id = coalesce(w.alarm_event_id, o.alarm_event_id)
+             WHERE e.alarm_code = a.alarm_code AND e.alarm_event_id <> a.alarm_event_id
+             GROUP BY p.item_no) x;
+    v_title := CASE WHEN p_trigger = 'REPEAT_2' THEN format('%s 알람 %s 반복 — 원인 점검 (2단계)', a.equipment_id, a.alarm_code)
+                    ELSE format('%s 알람 %s (%s) 점검', a.equipment_id, a.alarm_code, btrim(regexp_replace(m.name_ko, '\(.*\)', ''))) END;
+    v_symptom := coalesce((SELECT step_text FROM alarm_check_step WHERE alarm_code = a.alarm_code AND step_kind = 'SYMPTOM'), m.easy_desc, m.name_ko)
+                 || CASE WHEN coalesce(m.chain_rule, '') <> '' THEN ' — 연쇄 알람 ' || m.chain_rule ELSE '' END;
+    v_wo := fn_create_work_order_draft(a.equipment_id, v_title, v_symptom,
+                p_alarm_event_id => CASE WHEN p_trigger = 'REPEAT_2' THEN NULL ELSE a.alarm_event_id END,
+                p_trigger_notification_id => p_trigger_notification_id,
+                p_steps => v_steps, p_parts => v_parts, p_lot_no => a.lot_no, p_at => a.occurred_at);
+    -- 담당 = 알람 시각 교대의 보전 담당자 (사람이 바꿀 수 있음)
+    SELECT shift_type INTO v_shift FROM shift WHERE start_at <= a.occurred_at AND end_at > a.occurred_at;
+    v_shift := coalesce(v_shift, CASE WHEN extract(hour FROM a.occurred_at AT TIME ZONE 'Asia/Seoul') BETWEEN 8 AND 16 THEN 'DAY' ELSE 'NIGHT' END);
+    SELECT user_id INTO v_mnt FROM app_user WHERE is_active AND role_code = 'MNT' AND home_shift_type = v_shift ORDER BY user_id LIMIT 1;
+    UPDATE maintenance_work_order SET assignee_user_id = coalesce(assignee_user_id, v_mnt)
+     WHERE wo_no = v_wo AND status = 'AI_DRAFT' AND v_mnt IS NOT NULL;
+    RETURN v_wo;
+END $$;

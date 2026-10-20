@@ -621,7 +621,10 @@ BEGIN
                 jsonb_build_object('alarm_event_id', a.alarm_event_id, 'equipment_id', a.equipment_id),
                 a.occurred_at, p_repeat_stage => 'S2_OPEN', p_prev_stage => v_prev.notification_id);
             v_proc := fn_equipment_process(a.equipment_id);
-            IF v_proc <> 'OP-30' THEN
+            IF v_proc = 'OP-30' THEN
+                -- OP-30 2단계 → 원인 점검 작업지시서 초안 자동 (FR-MNT-03-01 ②, 2026-10-20)
+                PERFORM fn_auto_work_order_draft(a.alarm_event_id, 'REPEAT_2', v_id);
+            ELSE
                 -- 다른 공정: 작업지시서 없이 MNT에게 원인 점검 요청 (R-71)
                 PERFORM fn_raise_notification('CAUSE_CHECK_REQUEST',
                     format('%s 알람 %s 원인 점검 요청', a.equipment_id, a.alarm_code),

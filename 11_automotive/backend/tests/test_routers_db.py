@@ -115,8 +115,8 @@ class RouterFlows(unittest.TestCase):
         self.assertTrue(all("is_late" in o and "defect_qty" in o for o in orders))
 
     def test_03_maintenance_flow(self):
-        aid = self.db.scalar("alarms.ingest", equipment_id="VF2-02", alarm_code="254", occurred_at=None, lot_no=None,
-                             prev_alarm_event_id=None, is_injected=False, scenario_code=None)
+        # 사람·비서가 초안 API로 만드는 흐름 — 정지 알람 자동 초안(2026-10-20)은 끄고 알람만 넣는다 (자동 초안은 db/tests/96d)
+        aid = int(self.db._run("SET app.auto_work_order = 'off'; SELECT fn_ingest_alarm('VF2-02', '254')", quiet=True).splitlines()[1])
         body = maintenance.WoDraftIn(equipment_id="VF2-02", title="알람 254 점검", symptom="과열", alarm_event_id=int(aid),
                                      steps=[maintenance.StepIn(step_text="팬 확인", source_section="DOC-03 §2.9")])
         self.denied(maintenance.wo_create, "U02", body=body)
@@ -132,8 +132,7 @@ class RouterFlows(unittest.TestCase):
         self.call(maintenance.wo_edit, "U07", wo_no=wo,
                   body=maintenance.EditIn(version=0, changes={"title": "알람 254 냉각 점검"}))
         # AI비서 초안은 사람이 열어 고치기 전에는 승인 안 됨
-        aid2 = self.db.scalar("alarms.ingest", equipment_id="VF2-01", alarm_code="994", occurred_at=None, lot_no=None,
-                              prev_alarm_event_id=None, is_injected=False, scenario_code=None)
+        aid2 = int(self.db._run("SET app.auto_work_order = 'off'; SELECT fn_ingest_alarm('VF2-01', '994')", quiet=True).splitlines()[1])
         ai = assistant.draft_work_order(maintenance.WoDraftIn(equipment_id="VF2-01", title="알람 994 점검", symptom="x",
                                                               alarm_event_id=int(aid2)), self.db)["wo_no"]
         self.assertEqual(self.call(maintenance.wo_get, "U10", wo_no=ai)["status"], "AI_DRAFT")

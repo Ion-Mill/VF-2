@@ -19,7 +19,8 @@ LANGUAGE sql STABLE SET search_path = public, pg_temp AS $$
     WITH RECURSIVE keep(oid) AS (
         SELECT c.oid FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
          WHERE n.nspname = 'public' AND c.relname IN ('role', 'role_permission', 'code_label', 'notification_rule', 'app_user',
-                                                      'access_log', 'dataset_info', 'sim_clock', 'sensor_sample', 'sensor_hourly')
+                                                      'access_log', 'dataset_info', 'sim_clock', 'sensor_sample', 'sensor_hourly',
+                                                      'alarm_check_step')   -- 문서 기준 표 (2026-10-20)
         UNION
         SELECT f.confrelid FROM pg_constraint f JOIN keep k ON f.conrelid = k.oid WHERE f.contype = 'f'
     )
