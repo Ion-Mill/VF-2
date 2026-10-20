@@ -125,7 +125,7 @@ CASES = [
     {'id': 'M-03', 'turns': ['OEE라인 어제상태는?', 'VF2-01)'], 'check': {'contains': ['VF2-01', 'OEE'], 'not_contains': ['확인 필요', '안전']}},
     {'id': 'M-04', 'turns': ['OEE 어제값', '1호기'], 'check': {'contains': ['VF2-01'], 'not_contains': ['확인 필요']}},
     {'id': 'M-05', 'turns': ['OEE 어제값', '2호기요'], 'check': {'contains': ['VF2-02'], 'not_contains': ['확인 필요']}},
-    {'id': 'M-06', 'turns': ['MTTR 알려줘', 'vf2-01'], 'check': {'contains': ['VF2-01', 'MTTR'], 'not_contains': ['확인 필요']}},
+    {'id': 'M-06', 'turns': ['MTTR 알려줘', 'vf2-01'], 'check': {'route_in': ['규칙길'], 'contains': ['예:'], 'not_contains': ['앞서 물으신', '안전', 'DOC-05']}},   # 2026-10-21 사용자 결정(권장안): 앞 답이 설비를 되묻지 않은 용어 답이면 이어받지 않고 안내한다
     {'id': 'M-07', 'turns': ['가동률 어제', 'VF2-01 이요'], 'check': {'contains': ['VF2-01'], 'not_contains': ['확인 필요']}},
     {'id': 'M-08', 'turns': ['OEE 오늘값', 'VF2-01'], 'check': {'contains': ['VF2-01', 'OEE'], 'not_contains': ['확인 필요', 'MTTR']}, 'role': 'OPR'},
     {'id': 'M-09', 'turns': ['양품률 오늘', 'VF2-02'], 'check': {'contains': ['VF2-02'], 'not_contains': ['확인 필요']}},
@@ -159,12 +159,7 @@ CASES = [
 ]
 
 
-# M-06은 기획의 기대("MTTR 알려줘" 뒤 "vf2-01"이 앞 질문과 이어진다)와 앞 턴의 실제 동작이 다르다: "MTTR 알려줘"는 설비를 되묻지 않고 용어 설명(상태 '답변')으로 답한다.
-# 기획 4장 변경 B의 조건은 "바로 앞 답이 '확인 필요 — 설비'"일 때뿐이라 이어받지 않는다. 기대를 고치지 않고 사용자 결정(성과 문서)을 기다린다.
-M06_PENDING = pytest.mark.xfail(strict=True, reason="앞 턴이 설비를 되묻지 않는 용어 답이라 변경 B의 이어받기 조건(앞 답 = 확인 필요 — 설비)에 안 걸린다 — 사용자 결정 대기")
-
-
-@pytest.mark.parametrize("case", [pytest.param(c, marks=M06_PENDING) if c["id"] == "M-06" else c for c in CASES], ids=[c["id"] for c in CASES])
+@pytest.mark.parametrize("case", CASES, ids=[c["id"] for c in CASES])
 def test_question_bank(case, monkeypatch):
     from backend.repositories import backend_tools as BT
     tools = OPR_TOOLS if case.get("role") == "OPR" else ALL_TOOLS
