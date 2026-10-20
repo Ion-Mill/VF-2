@@ -128,3 +128,17 @@ UPDATE notification SET message = :message, message_source = 'ASSISTANT' WHERE n
 -- 이 사용자가 받은 알림인가 (알림 1건 보기·읽음 — NTF-01·02 "자기 역할분 / 받는 사람", MGR은 전부 보기, 실시간 알림 거르기)
 -- name: is_recipient
 SELECT EXISTS (SELECT 1 FROM notification_recipient WHERE notification_id = :notification_id AND user_id = :user_id);
+
+-- 브리핑 "먼저 챙길 일" 체크 (2026-10-20): 본인이 체크한 항목. 항목 글자(item_key)는 화면이 정한 대로 저장하고 서버는 뜻을 모른다
+-- name: briefing_checks
+SELECT item_key, checked_at FROM briefing_check
+ WHERE user_id = :user_id AND shift_id = :shift_id ORDER BY checked_at, item_key;
+
+-- 체크 (이미 체크했으면 그대로 — 거듭 보내도 같은 결과)
+-- name: briefing_check_set
+INSERT INTO briefing_check (user_id, shift_id, item_key, checked_at) VALUES (:user_id, :shift_id, :item_key, app_now())
+ON CONFLICT (user_id, shift_id, item_key) DO NOTHING;
+
+-- 체크 풀기 (체크한 적 없어도 오류 아님)
+-- name: briefing_check_unset
+DELETE FROM briefing_check WHERE user_id = :user_id AND shift_id = :shift_id AND item_key = :item_key;

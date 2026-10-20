@@ -66,6 +66,7 @@ uvicorn app.main:app --env-file .env.supabase                # → http://localh
 | API 서버 연결 점검 | 사용자 PC에서 `tools/check_connection.py --env-file .env.supabase` | 앱 계정·읽기 계정(쓰기 막힘)·**LISTEN/NOTIFY(Session pooler)** 모두 OK (사용자 확인) |
 | 계정·잠그기·데이터·문서 | Windows Git Bash에서 `./supabase/load_data.sh` | 점검 20개 위반 0, 문서 조각 209, U01~U12 비밀번호, 공개 키 권한 0, RLS 꺼진 표 0, 정책 142, 43MB |
 | 2026-10-20 정비 탭 확인 요청 반영 | Claude가 연결 도구(`apply_migration`, 이름 `check_request_1020`)로 `migrations/20261020000000_check_request_1020.sql`을 올림. 먼저 같은 상태의 로컬 DB(10/15 코드 + 9월 데이터 + 계정·잠그기)에 올려 새 `db/` 원본으로 만든 DB와 같음을 확인 | 알림 규칙 29, `daily_report.memo` 19건(복사본도), 새 표 `notification_pm_task` RLS·정책 2·권한, 트리거 2, 시연 되돌리기 목록에 새 표 |
+| 2026-10-20 브리핑 체크 저장 (새 표 `briefing_check`) | `migrations/20261020010000_briefing_check.sql` — **저장소에만 있고 공용 mom-db에는 아직 적용하지 않음**(DB 담당이 올린다). 로컬에서 같은 상태 DB(`db/` 원본 + 계정 + 시연 기준점)에 올려 새로 만든 DB와 표 모양이 같고(RLS·정책만 잠그기 몫으로 더 붙음) `demo_snapshot.meta.tables`에 들어감을 확인 | 올리면 `briefing_check` RLS·정책 2·`mom_app` 쓰기, `mom_ai_ro` 읽기 권한 없음. 올리기 전에는 `/api/assistant/briefing/checks`만 오류 |
 
 **올리면서 걸린 것과 고친 것**
 
