@@ -23,6 +23,7 @@ from backend.rag.dense import dense_last_error, dense_search, rrf
 from backend.rag.search import search, synonyms, tokens
 from backend.repositories.csv_repo import get_repo
 from backend.services import blocks_v2 as BL2
+from backend.services import continuation as CONT   # 짧은 후속 질문의 이어짐 판단 (2026-10-21, CONTINUE_LLM)
 from backend.services import followup_v2 as FU2
 from backend.services import pure_external as PURE   # 순수 외부 LLM 연결 (2026-10-15, PURE_EXTERNAL — 시험용 복사본 전용)
 from backend.services import steplog as SL
@@ -3748,6 +3749,43 @@ def answer(question: str, role: str, context: dict | None = None, prev: dict | N
     return a
 
 
+def _drop_failures_v22(ext, start: int) -> None:
+    """이어짐 판단 때문에 생긴 외부 호출 실패 기록만 지운다 — 이 작업은 실패해도 지금 동작으로 가는 일이라 화면의 "외부 호출 실패" 표시에 섞이지 않게 한다."""
+    if ext is not None:
+        ext.failures[start:] = [f for f in ext.failures[start:] if f[0] != CONT.JOB]
+
+
+def _continue_answer_v22(question: str, role: str, context: dict | None, prev: dict, memo: dict) -> dict | None:
+    """이어짐 판단(Claude 1번) → 이어지면 완성된 질문으로 평소 규칙 길을 다시 풀어 답한다. 이어지지 않거나 실패하거나 풀린 답이 '답변'이 아니면 None
+    (부른 쪽이 지금 동작 그대로 간다). 답 끝에 어떻게 이어받았는지 한 줄 밝히고, 이어 묻기 기록의 질문은 완성된 질문으로 남긴다."""
+    ext = EXT.current()
+    n_fail = len(ext.failures) if ext is not None else 0
+    pq = (prev.get("question") or "").strip()
+    rewritten = CONT.judge(question, pq, settings())
+    _drop_failures_v22(ext, n_fail)
+    if SL.on():
+        SL.step("1 규칙 판정", 결과="이어짐 판단 (CONTINUE_LLM) — 짧은 후속 질문", 이어짐=bool(rewritten), 완성된질문=rewritten, 앞질문=pq)
+    if not rewritten:
+        return None
+    trial: dict = {}
+    n_fail = len(ext.failures) if ext is not None else 0
+    try:
+        out = _answer(rewritten, role, context, prev=None, memo=trial)
+    except Exception:   # noqa: BLE001 — 이어서 푸는 중 실패하면 원래 질문 그대로 지금 동작으로 간다 (이 시도 때문에 생긴 외부 호출 실패 기록은 지운다)
+        if ext is not None:
+            del ext.failures[n_fail:]
+        return None
+    if not isinstance(out, dict) or out.get("status") != "답변":
+        return None
+    memo.update(trial)
+    memo["record_question"] = rewritten
+    note = CONT.note(pq, rewritten)
+    out = {**out, "question": question, "conclusion": f"{out.get('conclusion') or ''} {note}".strip()}
+    if isinstance(out.get("blocks"), list):
+        out["blocks"] = list(out["blocks"]) + [{"kind": "text", "text": note}]
+    return out
+
+
 def _answer(question: str, role: str, context: dict | None = None, prev: dict | None = None, memo: dict | None = None) -> dict:
     memo = {} if memo is None else memo
     try:
@@ -3837,6 +3875,10 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
         if SL.on():
             SL.step("1 규칙 판정", 결과="설비 이름뿐인 글 — 규칙이 안내 (Claude 호출 없음)", 설비=p["equipment"])
         return equipment_only_answer_v21(base, p)
+    if s.followup and not pure_drop and CONT.candidate(question, p, prev, s):   # 짧은 후속 질문의 이어짐 판단 (CONTINUE_LLM, 2026-10-21): 앞 질문+새 글 두 줄만 Claude(Haiku)에게 묻는다
+        merged = _continue_answer_v22(question, role, context, prev, memo)
+        if merged is not None:
+            return merged
     pure_why = pure_scope_v19(p, s, question)
     if pure_why:
         memo_before = dict(memo)
