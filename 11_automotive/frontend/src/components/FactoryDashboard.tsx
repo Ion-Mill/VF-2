@@ -2138,7 +2138,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
       try { Object.keys(pads).forEach(id => {
         let R = bots[id]; const mt = effOf(id) === 'MAINT' && !this.intro, G0 = gates[id];
         if (!mt && (!R || !R.root.visible)) return;
-        if (!R) { R = bots[id] = createRobot(THREE); R.root.scale.setScalar(2.4); scene.add(R.root); }
+        if (!R) { R = bots[id] = createRobot(THREE); R.root.scale.setScalar(2.4); R.root.visible = false; scene.add(R.root); } // 숨긴 채 시작해야 아래에서 통로 자리·목표를 잡는다 (안 하면 위치 NaN)
         if (mt && (!R.root.visible || R.st === 'out')) { // 정비 시작 (또는 나가다 다시 정비) → 통로에서 들어옴
           const b = this.MACH[id].bd || this.MACH[id].b, x = G0 ? G0.x : (b[0] + b[1]) / 2000;
           // 일하는 자리: 게이트 있는 설비 = 컨베이어와 설비 앞면 사이, 없으면(세척기 = 앞에 바스켓 줄) 바스켓 줄 앞 통로

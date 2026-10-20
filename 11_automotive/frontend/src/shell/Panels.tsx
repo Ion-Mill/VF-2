@@ -44,7 +44,6 @@ export default function Panels({ field = false, ids }: { field?: boolean; ids?: 
   const wo = wos.find((w) => w.machine === selId && w.state !== 'done' && w.state !== 'cancelled');
   const proc = twin.process[E.process_code] ?? { pq: 0 };
   const done = p.actual_qty >= p.total_target_qty;
-  const scale = Math.max(p.total_target_qty, p.actual_qty, 1);
   const toggle = (w: string) => setWhy(why === w ? null : w);
   // 진행 중·대기 먼저, 완료는 뒤 (스크롤)
   const orders = [...twin.orders].sort((a, b) => Number(isDone(a)) - Number(isDone(b)));
@@ -131,13 +130,17 @@ export default function Panels({ field = false, ids }: { field?: boolean; ids?: 
 
   // 생산현황·OEE 조각 (넓을 때는 한 칸 안에, 좁을 때는 두 칸으로 나눠 씀)
   const shiftTag = <span className="text-[14px] font-normal text-slate-500">({p.shift_type === 'DAY' ? '주간' : '야간'})</span>; // 교대 시각·범례 줄은 뺌 (사용자 요청 2026-10-19)
-  const prodBtn = (
-    <button onClick={() => toggle('p')} className="text-left">
-      <div className="flex items-baseline justify-between gap-2"><span className={lbl}>생산</span>
-        <b className="whitespace-nowrap text-[13px]" style={{ color: done ? '#6a43e0' : p.risk ? AMBER : '#64748b' }}>{done ? '달성' : p.risk ? '▲ 미달 위험' : '진행 중'}</b></div>
-      <div className="whitespace-nowrap"><span className={`${num} text-[34px]`}>{p.actual_qty}</span><span className="font-mono text-[22px] text-slate-500"> / {p.total_target_qty}</span><span className="text-[16px] text-slate-500"> 개</span></div>
-      <div className="relative"><Bar pct={(p.actual_qty / scale) * 100} color="#3d4a5c" /><div className="absolute -top-1 h-3.5 w-0.5 bg-slate-800" style={{ left: `${(p.total_target_qty / scale) * 100}%` }} /></div>
-    </button>
+  // 생산 숫자는 그래프 칸 안 위쪽에 (사용자 요청 2026-10-20, 시안: 큰 숫자 + 오른쪽 위 예측 알약 → 아래 그래프). 진행 막대는 그래프가 대신함
+  const ahead = p.forecast_qty >= p.total_target_qty;
+  const pill = done ? ['달성', '#5a3bc8', '#f0ebff'] : p.risk ? [`예측 ${p.forecast_qty} · ▲ 미달 위험`, AMBER, '#fff4e0'] : [`예측 ${p.forecast_qty} · ${ahead ? '목표 넘김 예상' : '진행 중'}`, ahead ? '#1f7a45' : '#4b5a69', ahead ? '#e6f6ec' : '#eef1f4'];
+  const graphBox = (noTargetText: boolean) => (
+    <div className="flex min-h-0 flex-1 flex-col rounded-lg border border-slate-200 p-2">
+      <button onClick={() => toggle('p')} className="flex shrink-0 items-start justify-between gap-2 px-1 text-left">
+        <div className="whitespace-nowrap"><span className={`${num} text-[34px] leading-none`}>{p.actual_qty}</span><span className="font-mono text-[22px] text-slate-500"> / {p.total_target_qty}</span><span className="text-[16px] text-slate-500"> 개</span></div>
+        <span className="truncate rounded-full px-2.5 py-1 text-[12.5px] font-bold" style={{ color: pill[1], background: pill[2] }}>{pill[0]}</span>
+      </button>
+      <div className="min-h-0 flex-1"><Graph p={p} noTargetText={noTargetText} /></div>
+    </div>
   );
   // OEE: 세 지표 이름·숫자를 크고 진하게 (사용자 요청 2026-10-19 — 작은 회색 글자가 안 읽혀서)
   // 넓을 때는 손실도 네 번째 칸으로 (따로 한 줄이면 카드 아래가 잘려서, 2026-10-19). 네 칸 모두 같은 글꼴: 이름 = 본문 14px, 숫자 = 고정폭 20px, 단위 '개'는 숫자 바로 옆
@@ -176,10 +179,7 @@ export default function Panels({ field = false, ids }: { field?: boolean; ids?: 
         <div className="grid min-h-0 min-w-0 grid-rows-[minmax(0,1fr)_auto] gap-4">
           <section className={sec}>
             <div className="mb-1"><b className="text-[17px]">생산현황 {shiftTag}</b></div>
-            <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_170px] gap-4">
-              <div className="min-h-0 rounded-lg border border-slate-200 p-2"><Graph p={p} noTargetText /></div>
-              <div className="flex min-w-0 flex-col justify-center">{prodBtn}</div>
-            </div>
+            {graphBox(true)}
             {whyBox(['p'])}
           </section>
           <section className={`${sec} justify-center`}>{/* 좁을 때 OEE는 한 줄: 왼쪽 OEE %·손실, 오른쪽 세 지표 — 생산현황 그래프 높이를 남기려고 */}
@@ -199,10 +199,8 @@ export default function Panels({ field = false, ids }: { field?: boolean; ids?: 
       <section className={sec}>
         <div className="mb-2"><b className="text-[17px]">생산현황 {shiftTag}</b></div>
         <div className="grid min-h-0 flex-1 grid-cols-[1fr_1.25fr] gap-4">
-          <div className="flex min-h-0 min-w-0 flex-col">
-            <div className="min-h-0 flex-1 rounded-lg border border-slate-200 p-2"><Graph p={p} /></div></div>
-          <div className="flex min-h-0 min-w-0 flex-col justify-between gap-2">
-            {prodBtn}
+          <div className="flex min-h-0 min-w-0 flex-col">{graphBox(false)}</div>
+          <div className="flex min-h-0 min-w-0 flex-col justify-center gap-2">
             <div className="flex flex-col gap-2"><button onClick={() => toggle('k')} className="text-left">{oeeHead}</button>{oeeTiles(true)}</div>
           </div>
         </div>
@@ -337,7 +335,7 @@ function GraphSvg({ p, W, H, noTargetText }: { p: Production; W: number; H: numb
   const last = p.hourly[p.hourly.length - 1];
   const step = W < 300 ? 4 : 2, ticks: number[] = []; for (let t = t0; t <= t1; t += step * 3600e3) ticks.push(t);
   // 실적 숫자 = 마지막 점 왼쪽 보라 알약 (칸이 낮아도 위로 잘리지 않게 칸 안에 가둠, 사용자 요청 2026-10-20). 글자 폭은 어림값
-  const ax = last ? x(Date.parse(last.at)) : 0, ay = last ? y(last.cum) : 0, fy = Math.max(14, y(p.forecast_qty) - 8);
+  const ax = last ? x(Date.parse(last.at)) : 0, ay = last ? y(last.cum) : 0, fy = 14; // '예측 N' = 칸 오른쪽 위 고정 (사용자 요청 2026-10-20, 전에는 예측 점선 끝 위)
   const aw = String(last?.cum ?? '').length * 8 + 14, px = Math.max(L, ax - 7 - aw), py = Math.min(H - B - 9, Math.max(10, ay));
   const fx0 = W - L - (30 + String(p.forecast_qty).length * 8);
   // 알약과 '예측 N'이 겹치면 '예측 N'은 알약 아래로, 아래 자리도 없으면(칸이 낮음) 알약 왼쪽으로
