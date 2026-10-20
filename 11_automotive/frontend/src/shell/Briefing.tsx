@@ -149,13 +149,21 @@ type FullView = { twin: Twin; last: Record<string, any> | null; open: AlertRec[]
 
 // 전체형 (SUP·MNT·MGR): 먼저 챙길 일 = 0 안전 → 순위대로 지금 알람·알림 + 인계 사항(지난 교대 보고서) → 예방 정비. 비서 정리 훅을 부르려고 따로 뺐다
 function FullBrief({ v, onDone }: { v: FullView; onDone?: () => void }) {
-  const { user, myNotices, go } = useApp();
+  const { user, myNotices, notices, go } = useApp();
   const { twin, last, open, lockout, pmTodos, good, alarmTodo } = v;
   const base = last ? parseHandover(last.handover_text) : [];
+  const shown = myNotices.filter((x) => !x.handled && x.delivery === 'LIST');
+  // 겹치는 줄 빼기 (2026-10-20): 인계 사항 중 ① 지금 알림으로 보이거나 이미 처리된 알림과 같은 줄 ② 기한이 지난 "기한 하루 전" 줄,
+  // 예방 정비 일정 중 ③ 지금 예방 정비 알림으로 보이는 항목. 같은 일이 알림·인계·일정으로 서너 번 나오던 것
+  const same = (t: string) => { const s = t.replace(/\s*\(24시간 넘게 처리 안 됨\)$/, '').trim(); return notices.some((n) => (n.handled || shown.includes(n)) && n.text.trim() === s); };
+  const today = simIso().slice(0, 10);
+  const staleSoon = (t: string) => { const m = t.match(/기한 하루 전 \(기한 (\d{2})\/(\d{2})\)/); return !!m && `${today.slice(0, 4)}-${m[1]}-${m[2]}` < today; };
+  const pmShown = new Set(shown.filter((n) => n.rule.startsWith('PM_')).flatMap((n) => n.keys ?? (n.rule === 'PM_OVERDUE' ? [n.id.slice('PM_OVERDUE:'.length)] : [])));
   const groups = RANK_ORDER.map((rank) => ({ rank,
     a: open.filter((x) => rankOfAlert(x) === rank),
-    n: myNotices.filter((x) => !x.handled && x.delivery === 'LIST' && rankOfNotice(x) === rank),
-    base: (base.find((g) => g.rank === rank)?.items ?? []).filter((t) => !t.startsWith('잠금·표지 중인 설비 없음')) }));
+    n: shown.filter((x) => rankOfNotice(x) === rank),
+    base: (base.find((g) => g.rank === rank)?.items ?? []).flatMap((t) => t.split(/ \/ (?=추가: )/)) // 맨 끝 "/ 추가: …"가 앞 줄에 붙어 오므로 떼어 따로 둔다
+      .filter((t) => !t.startsWith('잠금·표지 중인 설비 없음') && !same(t) && !staleSoon(t)) }));
   // 비서 정리: 순위 묶음별 항목 줄 (알람 → 알림 → 인계, 팀 원문 모양 그대로). 안전(순위 0)은 보내지 않는다
   const aiGroups = groups.filter((g) => g.rank !== '0').map((g) => ({ rank: g.rank, lines: [...g.a.map(aText), ...g.n.map(noticeLine), ...g.base] })).filter((g) => g.lines.length);
   const ai = useBriefingText(twin.shift.shift_id, aiGroups);
@@ -169,7 +177,7 @@ function FullBrief({ v, onDone }: { v: FullView; onDone?: () => void }) {
     ns.forEach((n, i) => todos.push({ key: n.id, text: pick(rank, as.length + i, noticeLine(n), n.text), sub: `${n.ruleName}${n.past ? ` · ${md(n.at)}` : ''}`, tag: n.level === '긴급' ? '긴급' : n.level === '주의' ? '▲ 주의' : '참고', tone: n.level === '긴급' ? 'red' : n.level === '주의' ? 'amber' : 'soon', go: () => (n.open ? go(n.open.screen as Parameters<typeof go>[0], n.open.key ?? null) : go('line')) }));
     bs.forEach((t, i) => todos.push({ key: `ho${rank}-${i}`, text: pick(rank, as.length + ns.length + i, t, t), sub: `인계 · ${RANK_NAME[rank]} · 교대 보고서 ${last?.shift_id ?? ''}`, tag: '인계', tone: 'soon', go: () => last && go('shift', last.shift_id) }));
   });
-  todos.push(...pmTodos);
+  todos.push(...pmTodos.filter((t) => !pmShown.has(t.key.slice('pm:'.length))));
   return (
     <Board todos={todos} sum={summaryOf(twin, last, good, pmTodos.length)} lockout={lockout} footSrc={`교대 보고서 ${last?.shift_id ?? '없음'} · 알람·알림 기록 · 예방 정비 일정 (순서 = 2.5 보고 순위)`} onDone={onDone}
       onOpenLast={last ? () => go('shift', last.shift_id) : undefined} check={{ userId: user.id, shiftId: twin.shift.shift_id, runId: twin.run_id }}
