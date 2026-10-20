@@ -12,10 +12,16 @@ WITH x AS (
            n.alarm_event_id, n.equipment_id, n.lot_no, n.item_no, n.pm_task_id, n.tool_id, n.wo_no, n.bottleneck_log_id,
            n.revision_id, n.result_id, n.shift_id, n.buffer_code, n.cmm_import_id, n.repeat_stage_status,
            r.process_mode, r.processor_roles, r.rank_group, r.delivery_kind, nr.popup_sound, nr.read_at,
+           -- 전달 칸 (FR-AST-02-02, 2026-10-20): ① URGENT 긴급 팝업 / ② FAULT 고장·확인 / ③ DOC 문서 알림 (말풍선 없는 확정 전·실시 기록 확인도 ③)
+           CASE WHEN r.delivery_kind = 'POPUP' THEN 'URGENT' WHEN n.rule_code IN ('WO_DRAFT_READY','WO_APPROVAL_REQUEST','APPROVAL_WAIT_30M','APPROVAL_WAIT_2H','WO_ASSIGNED','WR_CONFIRM_PENDING','WR_CHECK_REQUEST','PM_RECORD_CHECK','SHIFT_REPORT_PENDING','DAILY_REPORT_PENDING','DOC_REVISED') THEN 'DOC' ELSE 'FAULT' END AS alert_kind,
            CASE WHEN n.rule_code IN ('WR_CONFIRM_PENDING','WR_CHECK_REQUEST') THEN 'WORK_RECORD'
+                WHEN n.rule_code = 'PM_RECORD_CHECK' THEN 'PM_RECORD'
                 WHEN n.wo_no IS NOT NULL AND r.delivery_kind = 'BUBBLE' THEN 'WORK_ORDER'
                 WHEN n.rule_code = 'SHIFT_REPORT_PENDING' THEN 'SHIFT_REPORT' ELSE v.doc_type END AS doc_type,
            CASE WHEN n.rule_code IN ('WR_CONFIRM_PENDING','WR_CHECK_REQUEST') THEN (SELECT w.record_no FROM work_record w WHERE w.wo_no = n.wo_no)
+                WHEN n.rule_code = 'PM_RECORD_CHECK' THEN (SELECT min(p.pm_record_id)::text FROM notification_pm_task l
+                                                             JOIN pm_record p USING (pm_task_id)
+                                                            WHERE l.notification_id = n.notification_id AND p.status = 'DRAFT')
                 WHEN n.wo_no IS NOT NULL AND r.delivery_kind = 'BUBBLE' THEN n.wo_no
                 WHEN n.rule_code = 'SHIFT_REPORT_PENDING' THEN n.shift_id ELSE v.doc_key END AS doc_key,
            -- 여러 정비 항목을 묶은 알림(PM_DUE_SOON 하루 전·PM_RECORD_CHECK, 2026-10-20)의 관련 항목
@@ -27,7 +33,7 @@ WITH x AS (
       LEFT JOIN notification_recipient nr ON nr.notification_id = n.notification_id AND nr.user_id = :user_id
       LEFT JOIN document_revision v ON v.revision_id = n.revision_id
      WHERE (nr.user_id IS NOT NULL OR CAST(:all_visible AS boolean))
-       AND (CAST(:kind AS text) IS NULL OR (CAST(:kind AS text) = 'doc') = (r.delivery_kind = 'BUBBLE'))
+       AND (CAST(:kind AS text) IS NULL OR (CAST(:kind AS text) = 'doc') = (n.rule_code IN ('WO_DRAFT_READY','WO_APPROVAL_REQUEST','APPROVAL_WAIT_30M','APPROVAL_WAIT_2H','WO_ASSIGNED','WR_CONFIRM_PENDING','WR_CHECK_REQUEST','PM_RECORD_CHECK','SHIFT_REPORT_PENDING','DAILY_REPORT_PENDING','DOC_REVISED')))
        AND (CAST(:status AS text) = 'all' OR (CAST(:status AS text) = 'processed') = n.is_processed)
        AND (CAST(:importance AS text) IS NULL OR n.importance = CAST(:importance AS text))
        AND (CAST(:equipment_id AS text) IS NULL OR n.equipment_id = CAST(:equipment_id AS text))
@@ -128,3 +134,7 @@ UPDATE notification SET message = :message, message_source = 'ASSISTANT' WHERE n
 -- 이 사용자가 받은 알림인가 (알림 1건 보기·읽음 — NTF-01·02 "자기 역할분 / 받는 사람", MGR은 전부 보기, 실시간 알림 거르기)
 -- name: is_recipient
 SELECT EXISTS (SELECT 1 FROM notification_recipient WHERE notification_id = :notification_id AND user_id = :user_id);
+
+-- 알림 폭주 상태 (FR-AST-02-12): 10분 10건 넘으면 켜짐, 5건 아래면 풀림
+-- name: flood_state
+SELECT active, count_10min FROM fn_flood_state(app_now());

@@ -12,8 +12,10 @@
 
 -- 알림 1건 만들기. p_refs = {"alarm_event_id": 1, "equipment_id": "VF2-01", ...}
 -- 받는 사람: p_recipients가 비면 규칙의 recipient_roles 역할 사용자 전원
--- 묶기 (DOC-07 10.2): 같은 규칙·같은 설비·같은 알람 번호가 1분 안에 3번째부터는 새 알림 없이 repeat_count만 올린다
--- 폭주 (DOC-07 10.3): 최근 10분 긴급·주의 알림이 10건을 넘으면 is_flood
+-- 묶기 (DOC-07 10.2, FR-AST-02-11 "1분 안 3번 → 알림 1건"): 같은 규칙·같은 설비·같은 알람 번호가 첫 알림 뒤 1분 안에 또 나면
+--   새 알림 없이 그 첫 알림의 repeat_count만 올린다 (2026-10-20 — 전에는 3번째부터라 3번이 2건이었다. 알림은 바로 보내야 해서
+--   "3번째가 올지" 기다리지 않는다 [제안])
+-- 폭주 (DOC-07 10.3, FR-AST-02-12): 최근 10분 긴급·주의가 10건을 넘으면 켜지고 5건 아래로 내려가면 풀린다 (fn_flood_state)
 CREATE OR REPLACE FUNCTION fn_raise_notification(
     p_rule text, p_message text, p_refs jsonb DEFAULT '{}'::jsonb, p_at timestamptz DEFAULT NULL,
     p_related_info text DEFAULT NULL, p_message_source text DEFAULT 'DEFAULT',
@@ -31,32 +33,27 @@ BEGIN
     IF NOT FOUND THEN RAISE EXCEPTION '알림 규칙 % 없음', p_rule USING ERRCODE = '23503'; END IF;
     IF NOT r.is_enabled THEN RETURN NULL; END IF;
 
-    -- 묶기: 알람 알림만
+    -- 묶기: 알람 알림만 — 1분 안의 첫 알림(같은 설비·같은 알람 번호, 처리 전)에 횟수만 더한다
     IF p_rule IN ('ALARM_STOP','ALARM_WARN','ALARM_GUIDE') AND p_refs ? 'alarm_event_id' THEN
         SELECT alarm_code INTO v_alarm FROM alarm_event WHERE alarm_event_id = (p_refs->>'alarm_event_id')::bigint;
-        SELECT count(*) INTO v_same FROM alarm_event
-         WHERE equipment_id = p_refs->>'equipment_id' AND alarm_code = v_alarm
-           AND occurred_at > v_at - interval '1 minute' AND occurred_at <= v_at;
-        IF v_same >= 3 THEN
-            UPDATE notification n SET repeat_count = n.repeat_count + 1
-             WHERE n.notification_id = (
-                SELECT n2.notification_id FROM notification n2 JOIN alarm_event a USING (alarm_event_id)
-                 WHERE n2.rule_code = p_rule AND n2.equipment_id = p_refs->>'equipment_id' AND a.alarm_code = v_alarm
-                   AND n2.raised_at > v_at - interval '1 minute' AND NOT n2.is_processed
-                 ORDER BY n2.raised_at DESC LIMIT 1)
-            RETURNING n.notification_id INTO v_id;
-            IF v_id IS NOT NULL THEN RETURN v_id; END IF;
-        END IF;
+        UPDATE notification n SET repeat_count = n.repeat_count + 1
+         WHERE n.notification_id = (
+            SELECT n2.notification_id FROM notification n2 JOIN alarm_event a USING (alarm_event_id)
+             WHERE n2.rule_code = p_rule AND n2.equipment_id = p_refs->>'equipment_id' AND a.alarm_code = v_alarm
+               AND n2.raised_at > v_at - interval '1 minute' AND n2.raised_at <= v_at AND NOT n2.is_processed
+             ORDER BY n2.raised_at LIMIT 1)
+        RETURNING n.notification_id INTO v_id;
+        IF v_id IS NOT NULL THEN RETURN v_id; END IF;
     END IF;
 
-    SELECT count(*) INTO v_flood FROM notification
-     WHERE importance IN ('URGENT','CAUTION') AND raised_at > v_at - interval '10 minutes' AND raised_at <= v_at;
+    v_flood := (SELECT CASE WHEN f.active OR (r.importance IN ('URGENT','CAUTION') AND f.count_10min + 1 > 10) THEN 1 ELSE 0 END
+                  FROM fn_flood_state(v_at) f);
 
     INSERT INTO notification (rule_code, importance, raised_at, message, related_info, message_source, is_flood,
         alarm_event_id, equipment_id, lot_no, item_no, pm_task_id, tool_id, wo_no, bottleneck_log_id,
         revision_id, result_id, shift_id, buffer_code, cmm_import_id, prev_stage_notification_id,
         repeat_stage_status)
-    VALUES (p_rule, r.importance, v_at, p_message, p_related_info, p_message_source, v_flood >= 10,
+    VALUES (p_rule, r.importance, v_at, p_message, p_related_info, p_message_source, v_flood = 1,
         (p_refs->>'alarm_event_id')::bigint, p_refs->>'equipment_id', p_refs->>'lot_no', p_refs->>'item_no',
         p_refs->>'pm_task_id', p_refs->>'tool_id', p_refs->>'wo_no', (p_refs->>'bottleneck_log_id')::bigint,
         (p_refs->>'revision_id')::bigint, (p_refs->>'result_id')::bigint, p_refs->>'shift_id',
@@ -71,6 +68,16 @@ BEGIN
     ON CONFLICT DO NOTHING;
     RETURN v_id;
 END $$;
+
+-- 알림 폭주 상태 (DOC-07 10.3, FR-AST-02-12 — 2026-10-20): 최근 10분 긴급·주의 알림 수. 10건을 넘으면 켜지고, 켜진 뒤에는
+--   5건 아래로 내려갈 때까지 유지 (그 10분 안에 폭주 표시된 알림이 있으면 켜진 상태로 본다)
+CREATE OR REPLACE FUNCTION fn_flood_state(p_at timestamptz DEFAULT NULL, OUT active boolean, OUT count_10min int)
+LANGUAGE sql STABLE AS $$
+    WITH t AS (SELECT coalesce(p_at, app_now()) AS at),
+    c AS (SELECT count(*)::int AS n, bool_or(is_flood) AS any_flood FROM notification, t
+           WHERE importance IN ('URGENT','CAUTION') AND raised_at > t.at - interval '10 minutes' AND raised_at <= t.at)
+    SELECT c.n > 10 OR (c.n >= 5 AND coalesce(c.any_flood, false)), c.n FROM c;
+$$;
 
 -- 사람이 [처리] (6.36 "알림 종류별 처리" 표). 반복 알람 1단계는 조치 계획 한 줄 필수 → 1단계 닫힘
 CREATE OR REPLACE FUNCTION fn_process_notification(p_id bigint, p_actor text, p_memo text DEFAULT NULL,

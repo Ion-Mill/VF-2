@@ -78,4 +78,15 @@ SELECT t.ok((SELECT message LIKE '[납기] LOT-2609-041-1 예상 완료 09/15 15
 SELECT t.eq((SELECT expected_complete_at FROM v_production_lot WHERE lot_no = 'LOT-2609-041-1'), '2026-09-15 15:06+09'::timestamptz,
             '로트 목록(v_production_lot)의 예상 완료 시각도 채움');
 
+-- ---------- 알림 폭주 (FR-AST-02-12, 중): 10분에 10건 넘으면 켜짐 → 5건 아래로 내려가면 풀림
+SELECT t.freeze('2026-09-16 10:00+09');
+SELECT fn_raise_notification('WIP_WARN', '폭주 시험 ' || g, '{"buffer_code": "WIP-10-20"}', '2026-09-16 09:55+09'::timestamptz + make_interval(secs => g))
+  FROM generate_series(1, 11) g;
+SELECT t.ok((SELECT active AND count_10min = 11 FROM fn_flood_state('2026-09-16 09:56+09')), '10분에 11건 → 폭주');
+SELECT t.ok((SELECT is_flood FROM notification WHERE message = '폭주 시험 11'), '11번째 알림에 폭주 표시');
+SELECT t.ok(NOT (SELECT is_flood FROM notification WHERE message = '폭주 시험 10'), '10건까지는 폭주 아님');
+SELECT t.ok((SELECT active FROM fn_flood_state('2026-09-16 10:05:04+09')), '5건 이상 남아 있으면 계속 폭주 (10:05:04 → 최근 10분 7건)');
+SELECT t.ok(NOT (SELECT active FROM fn_flood_state('2026-09-16 10:05:07+09')), '5건 아래(10:05:07 → 4건)로 내려가면 풀림');
+SELECT t.ok(NOT (SELECT active FROM fn_flood_state('2026-09-16 09:55:09+09')), '9건까지는 켜지지 않음');
+
 ROLLBACK;

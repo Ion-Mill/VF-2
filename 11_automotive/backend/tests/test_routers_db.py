@@ -339,7 +339,10 @@ class RouterFlows(unittest.TestCase):
         self.assertTrue(all(n["delivery_kind"] in ("POPUP", "BUBBLE", "LIST") for n in mine["items"]))
         self.assertTrue(all(n["delivery_kind"] == "POPUP" for n in urgent))             # 긴급 = 팝업
         docs = self.call(notifications.mine, "U07", kind="doc")["items"]
-        self.assertTrue(all(n["delivery_kind"] == "BUBBLE" for n in docs))               # 문서 알림 칸 = 말풍선만
+        self.assertTrue(all(n["alert_kind"] == "DOC" for n in docs))                     # 문서 알림 칸 = 문서 알림 규칙 (2026-10-20 — 말풍선 없는 것 포함)
+        self.assertEqual(mine["badge"]["total"], sum(1 for n in mine["items"] if n["is_processed"] is False
+                                                     and n["alert_kind"] in ("FAULT", "DOC")))  # 아이콘 숫자 = ② + ③
+        self.assertIn("active", mine["flood"])                                           # 폭주 상태 (FR-AST-02-12)
         # 반장도 정지 알람 긴급 알림(팝업)을 받는다 (2026-10-11)
         stop_sup = [n for n in self.call(notifications.mine, "U10", status="all")["items"] if n["rule_code"] == "ALARM_STOP"]
         stop_mnt = [n for n in mine["items"] if n["rule_code"] == "ALARM_STOP"]
