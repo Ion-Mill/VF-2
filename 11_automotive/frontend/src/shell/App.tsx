@@ -45,12 +45,12 @@ const FactoryDashboard: any = dynamic(() => import('@/components/FactoryDashboar
 
 const TITLE: Record<Screen, string> = {
   line: '3D 라인 뷰', layout2d: '3D 라인 뷰 · 2D 배치도', field: '현장 모니터', cards: '지침카드', card: '지침카드', wo: '정비 작업지시서', wr: '작업기록서', sr: '간이 작업기록',
-  stops: '정지 사유', docs: '문서함', replay: '다시 보기', shift: '교대 보고서', daily: '일일 보고서', revs: '수정 이력', lots: '로트 추적', quality: '검사 기록',
+  stops: '정지 사유', docs: '문서함', replay: '다시 보기', shift: '교대 보고서', daily: '일일 보고서', revs: '수정 이력', lots: '로트 추적', quality: '검사 기록', qcap: '공정 능력 · 불량',
   inventory: '재고', tools: '공구 수명', pm: '예방 정비 일정', idocs: '사내 문서', settings: '설정',
 };
 // 메뉴 (페이지구조 v3 5.1). 권한 없는 페이지는 흐리게 (N3) — 열 수 있는 역할 목록, 없으면 전원
 const MENU_V3: [string, Screen | 'home', Role[]?][] = [
-  ['홈', 'home'], ['지침카드', 'cards'], ['문서함', 'docs'], ['로트 추적', 'lots'], ['품질', 'quality', ['OPR', 'SUP', 'MGR']], ['재고', 'inventory'], ['공구 수명', 'tools'],
+  ['홈', 'home'], ['지침카드', 'cards'], ['문서함', 'docs'], ['로트 추적', 'lots'], ['품질', 'quality', ['OPR', 'SUP', 'MGR']], ['공정 능력 · 불량', 'qcap', ['SUP', 'MGR']], ['재고', 'inventory'], ['공구 수명', 'tools'],
   ['예방 정비', 'pm', ['MNT', 'SUP', 'MGR']], ['정지 사유', 'stops'], ['다시 보기', 'replay'], ['현장 모니터', 'field'], ['설정', 'settings', ['MGR']],
 ];
 // 문서함 카테고리 (v3 문서함 8개) — 고르면 오른쪽에 그 화면. 문서 하나를 열어도 문서함 안에 보임
@@ -61,9 +61,9 @@ const DOC_CATS: [string, Screen, string | null, Role[]?][] = [
 ];
 const DOC_OF: Partial<Record<Screen, string>> = { wo: '작업지시서', wr: '작업기록서', sr: '간이 작업기록', shift: '교대 보고서', daily: '일일 보고서', revs: '수정 이력', idocs: '사내 문서' };
 // 품질 카테고리 — 문서함과 같은 모양(왼쪽 목록 + 오른쪽 화면). 품질 화면이 늘면 여기에 한 줄씩 더한다
-const QUAL_CATS: [string, Screen, string | null][] = [['검사 기록', 'quality', null]];
-const QUAL_OF: Partial<Record<Screen, string>> = { quality: '검사 기록' };
-const SCREENS: Screen[] = ['line', 'layout2d', 'field', 'cards', 'card', 'wo', 'wr', 'sr', 'stops', 'docs', 'replay', 'shift', 'daily', 'revs', 'lots', 'quality', 'inventory', 'tools', 'pm', 'idocs', 'settings'];
+const QUAL_CATS: [string, Screen, string | null][] = [['검사 기록', 'quality', null], ['공정 능력 · 불량', 'qcap', null]];
+const QUAL_OF: Partial<Record<Screen, string>> = { quality: '검사 기록', qcap: '공정 능력 · 불량' };
+const SCREENS: Screen[] = ['line', 'layout2d', 'field', 'cards', 'card', 'wo', 'wr', 'sr', 'stops', 'docs', 'replay', 'shift', 'daily', 'revs', 'lots', 'quality', 'qcap', 'inventory', 'tools', 'pm', 'idocs', 'settings'];
 const urlOf = (s: Screen, k: string | null) => (s === 'line' ? '/' : `/${s}`) + (k ? `?k=${encodeURIComponent(k)}` : '');
 function screenFromUrl(role: Role): [Screen, string | null] {
   if (typeof window === 'undefined') return [homeScreen(role), null];
@@ -80,7 +80,7 @@ const GROUPS: { label: string; subs: [string, Screen, Role[]?][]; related?: Scre
   { label: '홈', subs: [['3D 라인', 'line']], related: ['layout2d'] },
   { label: '생산', subs: [['로트 추적', 'lots'], ['현장 모니터', 'field']] },
   { label: '정비', subs: [['정지 사유', 'stops'], ['다시 보기', 'replay'], ['예방 정비', 'pm', ['MNT', 'SUP', 'MGR']], ['지침카드', 'cards']], related: ['card'] },
-  { label: '품질', subs: [['검사 기록', 'quality', ['OPR', 'SUP', 'MGR']]] },
+  { label: '품질', subs: [['검사 기록', 'quality', ['OPR', 'SUP', 'MGR']], ['공정 능력 · 불량', 'qcap', ['SUP', 'MGR']]] },
   { label: '재고', subs: [['재고', 'inventory'], ['공구 수명', 'tools']] },
   { label: '문서', subs: [['문서함', 'docs']], related: ['wo', 'wr', 'sr', 'shift', 'daily', 'revs', 'idocs'] },
   { label: '설정', subs: [['설정', 'settings', ['MGR']]] },
@@ -328,6 +328,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
     inv: invF.data, reloadInv: invF.reload, history: hist.data, pm: pmF.data, reloadPm: pmF.reload,
     shiftReports: shiftF.data?.reports ?? null, dailyReports: dailyF.data?.reports ?? null, reloadReports: () => { shiftF.reload(); dailyF.reload(); },
     rules, restoreMachine, setReplay,
+    eve: !!side, // 이브 창이 열려 화면 폭이 좁아짐 — 재고·출하·공구·품질 화면이 배치를 바꾼다 (사용자 요청 2026-10-19)
   };
 
   // ---------- 긴급 팝업·말풍선 ----------
@@ -504,6 +505,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
             const pmBadge = (e: string) => { const ts = pmF.data?.tasks.filter((t) => e === PM_ALL || t.equipment_id === e) ?? [], over = ts.filter((t) => t.state === 'OVERDUE').length, soon = ts.filter((t) => t.state === 'DUE_SOON').length; return over || soon ? <span className="float-right text-[13px] font-normal">{over ? <span className="text-[#9a6200]">▲{over}</span> : null}{soon ? <span className="ml-1 text-slate-500">ⓘ{soon}</span> : null}</span> : null; };
             return (
               <div className="absolute inset-0 flex bg-[#e9ecef]">
+                {!isQ && /* 품질 하위 항목은 정비처럼 왼쪽 메뉴 옆 목록에 있어 여기 목록을 뺌 (사용자 요청 2026-10-19) */
                 <aside className="flex w-[200px] shrink-0 flex-col gap-1 overflow-y-auto border-r border-slate-300 bg-white p-2">
                   <b className="px-2 py-2 text-[17px]">{isPm ? '예방 정비' : isQ ? '품질' : '문서함'}</b>
                   {cats.map(([name, s2, k2, roles]) => {
@@ -511,7 +513,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
                     return <button key={name} disabled={!ok} onClick={() => go(s2, k2)} title={ok ? undefined : '이 계정은 볼 수 없습니다'}
                       className={`h-11 rounded-lg px-3 text-left text-[15px] font-semibold disabled:cursor-not-allowed disabled:text-slate-300 ${cur === name ? 'bg-[#e8f6fa] text-[#0f6f86]' : 'hover:bg-slate-100'}`}>{name}{isPm && pmBadge(name)}</button>;
                   })}
-                </aside>
+                </aside>}
                 <div className="relative min-w-0 flex-1">
                   {screen === 'docs' && <DocBox />}
                   {screen === 'wo' && key && <WorkOrderScreen no={key} />}
@@ -520,6 +522,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
                   {screen === 'shift' && <ShiftReportScreen />}
                   {screen === 'daily' && <DailyReportScreen />}
                   {screen === 'quality' && <QualityScreen />}
+                  {screen === 'qcap' && <QualityScreen cap />}
                   {screen === 'revs' && <RevisionsScreen />}
                   {screen === 'idocs' && <DocsScreen />}
                   {isPm && (key === PM_ALL ? <PmAll /> : <PmScreen />)}
