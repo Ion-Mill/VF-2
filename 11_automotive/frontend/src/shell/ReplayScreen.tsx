@@ -81,7 +81,7 @@ const EV_VIEW: Record<Ev["kind"], { icon: string; color: string }> = {
   WARN: { icon: "▲", color: "#b07400" },
   GUIDE: { icon: "i", color: "#8a97a4" },
   OK: { icon: "✓", color: "#13994f" },
-  BN: { icon: "◆", color: "#0f6f86" },
+  BN: { icon: "◆", color: "#5a3bc8" },
 };
 const EV_RANK: Record<Ev["kind"], number> = {
   STOP: 0,
@@ -388,10 +388,10 @@ export function ReplayScreen() {
     const step = t1 - t0 > 12 * 36e5 ? 2 * 36e5 : 36e5;
     for (let h = Math.ceil(t0 / step) * step; h <= t1; h += step) ticks.push(h);
   }
-  const box = "rounded-2xl border border-[#e3e6f3] bg-white";
+  const box = "rounded-2xl border border-[#e6e3f0] bg-white";
 
   return (
-    <div className="absolute bottom-3 left-[88px] right-3 top-[32px] flex flex-col gap-3 overflow-hidden text-[13px]">
+    <div className="absolute bottom-3 left-[220px] right-3 top-[32px] flex flex-col gap-3 overflow-hidden text-[13px]">
       {/* 결론 띠: 시각 · 무슨 일 · 완제품 · 가동 */}
       <section
         className={`grid shrink-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-6 gap-y-2 rounded-2xl border px-5 py-3 ${BAND[tone]}`}
@@ -680,7 +680,7 @@ export function ReplayScreen() {
                   aria-expanded={jumpOpen}
                   aria-label={`시각으로 가기, 지금 ${hm(simIso(t))}`}
                   title="시각으로 가기"
-                  className="flex h-8 items-center gap-2 rounded-full border border-slate-300 bg-slate-50 px-3 text-[13px] font-semibold hover:border-[#0f9fbd]"
+                  className="flex h-8 items-center gap-2 rounded-full border border-slate-300 bg-slate-50 px-3 text-[13px] font-semibold hover:border-[#7a52f0]"
                 >
                   <span aria-hidden>🕘</span>
                   <span className="font-mono">{hm(simIso(t))}</span>

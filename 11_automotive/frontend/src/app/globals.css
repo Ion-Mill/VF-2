@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 html,body{margin:0;height:100%;background:#eef1f4;}
-a{color:#0f6b7a;}
-a:hover{color:#0a4c57;}
+a{color:#5a3bc8;}
+a:hover{color:#43299e;}
 canvas{outline:none;display:block;}
 @keyframes introTitle{0%{opacity:0;transform:translateY(14px) scale(.98)}
 12%{opacity:0;transform:translateY(14px) scale(.98)}
@@ -88,7 +88,7 @@ nav .bg-\[\#1c2530\] span{display:none;}
 .bg-\[\#1c2530\]{background:linear-gradient(180deg,#4a5260,#2b313b)!important;}
 /* 연한 선택색·알약 */
 .bg-\[\#e8f6fa\]{background:#ffffff!important;color:#1c2530!important;box-shadow:0 1px 4px rgba(40,40,50,.12);}
-.bg-\[\#e6f6fa\]{background:#e8eefb!important;color:#3b5bb8!important;}
+.bg-\[\#e6f6fa\]{background:#f0ebff!important;color:#5a3bc8!important;}
 /* 수치 타일·입력 */
 .bg-slate-50,.bg-slate-100,.bg-\[\#f4f6f8\]{background:#f4f4f6!important;box-shadow:0 0 0 1px #e6e7ea inset;}
 .bg-slate-200{background:#e2e3e7!important;}
@@ -103,15 +103,20 @@ nav .bg-\[\#1c2530\] span{display:none;}
 .eve-glow{animation:eveGlow 2.4s ease-in-out infinite}
 @media (prefers-reduced-motion:reduce){.eve-glow{animation:none}}
 
-/* 이브 패널 시안 B (사용자 선택 2026-10-18): 지금 화면의 은색·흰 카드 테마. 이브 얼굴(로봇)은 그대로 */
-.ma-panel{--ma-panel-fg:#26303a;--ma-panel-sub:#4b5560;--ma-panel-mute:#6b7580;--ma-panel-line:#d6dade;background:linear-gradient(180deg,#fbfbfc,#eceef1)!important;color:#26303a;border-color:#d6dade;box-shadow:0 20px 50px rgba(40,44,52,.22);border-radius:24px}
-.ma-panel .ma-tabs{border-bottom-color:#dfe2e6}
-.ma-panel .ma-tab[aria-selected="true"]{border-bottom-color:#1c232b}
-.ma-panel .ma-icon-btn:hover,.ma-panel .hover\:bg-slate-50:hover,.ma-panel .hover\:bg-slate-100:hover,.ma-panel .hover\:bg-white\/10:hover{background:rgba(28,35,43,.06)}
-.ma-panel .border-slate-200,.ma-panel .border-slate-300,.ma-panel .border-white\/25{border-color:#d6dade}
+/* 이브 창 시안 4b (사용자 선택 2026-10-20): 연보라 바탕 · 흰 알약 탭(선택 = 차콜) · 동그란 닫기. 이브 얼굴은 그대로 */
+.ma-panel{--ma-panel-fg:#1f1b33;--ma-panel-sub:#4b4766;--ma-panel-mute:#6b6683;--ma-panel-line:#ddd5f7;background:#f3f1fb!important;color:#1f1b33;border:2px solid #d9ccff;border-radius:28px;box-shadow:0 20px 50px rgba(80,60,160,.18)}
+.ma-panel .ma-panel-head{height:64px;border-bottom:0;padding:0 14px 0 20px}
+.ma-panel .ma-panel-title{font-size:18px}
+.ma-panel .ma-icon-btn{width:40px;height:40px;border-radius:50%;background:#fff;color:#3d3955;box-shadow:0 1px 3px rgba(40,30,80,.12)}
+.ma-panel .ma-icon-btn:hover,.ma-panel .hover\:bg-slate-50:hover,.ma-panel .hover\:bg-slate-100:hover,.ma-panel .hover\:bg-white\/10:hover{background:rgba(60,40,140,.06)}
+.ma-panel .ma-tabs{margin:0 14px 4px;padding:5px;border:0;background:#fff;border-radius:999px;gap:4px;box-shadow:0 1px 3px rgba(40,30,80,.08)}
+.ma-panel .ma-tab{height:40px;border:0;border-radius:999px;font-size:14px;color:#3d3955}
+.ma-panel .ma-tab[aria-selected="true"]{background:#26303a;color:#fff;border:0}
+.ma-panel .ma-tab-badge{background:none;color:#e5484d;min-width:0;height:auto;padding:0;font-size:14px}
+.ma-panel .border-slate-200,.ma-panel .border-slate-300,.ma-panel .border-white\/25{border-color:#ddd5f7}
 .ma-panel select,.ma-panel input:not(.ma-input){background:#fff;color:#26303a}
 .ma-panel .text-\[\#9a6200\]{color:#9a6200}
-.ma-panel *{scrollbar-color:rgba(28,35,43,.25) transparent}
+.ma-panel *{scrollbar-color:rgba(60,40,140,.25) transparent}
 
 /* 재공 판은 3D 바닥 글자로 바꿈 (2026-10-19) — 떠 있는 판 숨김 */
 [data-tier="wip"]{display:none!important}
@@ -119,3 +124,6 @@ nav .bg-\[\#1c2530\] span{display:none;}
 /* 이브 창 = 오른쪽 자리 차지 (팝업 아님, 2026-10-19) — 화면 전체 높이 */
 .ma-panel{top:12px!important;bottom:12px!important;right:12px!important}
 .ma-root.is-panel .ma-fab{display:none}
+
+/* 네온 바이올렛 포인트 (사용자 선택 2026-10-19): 이브 위젯의 라임 자리를 보라로. 차콜·상태색은 그대로 */
+.ma-root{--ma-lime:#b79cff;--ma-lime-ring:#6a43e0}

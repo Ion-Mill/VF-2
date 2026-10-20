@@ -203,7 +203,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
       const hang = (id, dx = 0) => { const d = this.MACH[id].bd; return [(d[0] + d[1]) / 2 + dx, tagY, tagZ]; }; // 이름표는 설비 뒤쪽 위 천장에 매달림 — 위에서 봐도 설비를 안 가림
       Object.assign(this.anch, {
         'z-boundary': [(LY.op30[0] + LY.op30[1]) / 2, LY.op30[2] - 300, 0], 'z-exit': [600, 1000, 0], 'z-door': [27300, 1300, 0],
-        'z-wip': [600, 2400, 0], 'z-work': [600, 3300, 0], 'z-front': [26500, 3650, 0], 'z-op30': [(LY.op30[0] + LY.op30[1]) / 2, LY.op30[2] + 150, 0],
+        'z-wip': [600, 2400, 0], 'z-work': [600, 3300, 0], 'z-front': [26500, 3650, 0], 'z-op30': [(LY.op30[0] + LY.op30[1]) / 2, tagY, tagZ + 1.25], // 병목 칩 = 이름표 줄 위
         'wip-1': [LY.wip.w1 * 1000, 2400, 0.62], 'wip-2': [LY.wip.w2 * 1000, 2400, 0.62], 'wip-3': [LY.wip.w3 * 1000, 2400, 0.62],
         'wip-4': [LY.wip.w4 * 1000, 2400, 0.62], 'fg-01': [LY.fg * 1000, 2400, 0.62], 'soak-01': [(LY.soak.x[0] + LY.soak.x[1]) / 2, (LY.soak.y[0] + LY.soak.y[1]) / 2, 1.45],
         'tag-inf': hang('inf', -600), 'tag-saw': hang('saw'), 'tag-vf1': hang('vf1'), 'tag-vf2': hang('vf2'), 'tag-wsh': hang('wsh'), 'tag-cmm': hang('cmm'), 'tag-rack': [(LY.rack.x[0] + LY.rack.x[1]) / 2, (LY.rack.y[0] + LY.rack.y[1]) / 2, 2.1], 'tag-mil': hang('mil'),
@@ -894,7 +894,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
     // WSH-01: tunnel washer
     machine('wsh', () => {
       box(17460, 20140, 3860, 5140, 0, 0.12, mat.dark);
-      shell(17400, 20200, 3800, 5200, 0.12, 1.55, [17600, 20000, 0.62, 1.35], mat.green, 0.85);
+      shell(17400, 20200, 3800, 5200, 0.12, 1.55, [17600, 20000, 0.3, 1.35], mat.green, 0.85); // 앞 창 아래 끝 0.62 → 0.3: 안을 지나는 바스켓이 보이게 (개선안 5, 2026-10-20)
       box(17600, 20000, 4000, 5100, 1.55, 1.82, mat.greenD);
       box(17700, 18300, 3740, 3800, 1.4, 1.52, mat.dark); box(17740, 18260, 3735, 3740, 1.42, 1.5, mat.screen);
       box(17150, 20450, 4150, 4850, 0.5, 0.55, mat.dark);
@@ -961,6 +961,8 @@ export default class FactoryDashboard extends React.Component<any, any> {
       pallet('w1', WPX.w1, 2400, mat.part, 0xf2a052); pallet('w2', WPX.w2, 2400, mat.part, 0xf2a052);
       pallet('w3', WPX.w3, 2400, mat.part, 0xf2a052); pallet('w4', WPX.w4, 2400, mat.part, 0xf2a052);
       pallet('fg', WPX.fg, 2400, M(0xd5e3ee, { metalness: 0.75, roughness: 0.2 }), 0x8fd3a8);
+      // 병목 공정의 설비 (사용자 선택 2026-10-19): 위에서 비추던 주황 조명은 빼고, 천장 표지판에 연보라 달팽이 배지로 조용히 표시 — 주의(주황 판)가 늘 먼저 보이게
+      this.bnIds = { 'OP-10': ['saw'], 'OP-20': ['mil'], 'OP-30': ['vf1', 'vf2'], 'OP-40': ['wsh'], 'OP-50': ['cmm'] };
       // 재공 수를 바닥에 칠한 글자로 (사용자 선택 2026-10-19) — 떠 있는 재공 판이 설비를 가려서. 각도에 따라 읽기 어려운 건 감수
       if (this.props.dataMode) this.floorWip = [['wip-1', 'w1', 'WIP-1', 'WIP-10-20'], ['wip-2', 'w2', 'WIP-2', 'WIP-20-30'], ['wip-3', 'w3', 'WIP-3', 'WIP-30-40'], ['wip-4', 'w4', 'WIP-4', 'WIP-40-50'], ['fg-01', 'fg', 'FG-01', null]].map(([id, key, name, code]) => {
         const cv = document.createElement('canvas'); cv.width = 512; cv.height = 128;
@@ -970,6 +972,43 @@ export default class FactoryDashboard extends React.Component<any, any> {
         return { key, name, code, cv, tex, last: '', m };
       });
       // SOAK-01 보라색 온도 맞춤 선반은 그리지 않음 (사용자 요청 2026-10-19)
+      // 천장 표지판 (사용자 선택 2026-10-19, 시안 A를 3D로): 앱 화면에서는 설비 이름표를 장면 안 실제 판으로 천장 레일에 매단다.
+      // 화면 위 글자처럼 매 프레임 자리를 다시 잡지 않으니 카메라를 움직여도 흔들리거나 비켜 내려오지 않는다. 글자·색은 아래 루프에서 상태가 바뀔 때만 다시 그림
+      if (this.props.embedded) {
+        const ids = ['inf', 'saw', 'mil', 'vf1', 'vf2', 'wsh', 'cmm'].filter(id => this.anch['tag-' + id] && this.MACH[id]);
+        const xs = ids.map(id => this.anch['tag-' + id][0] / 1000).sort((p, q) => p - q);
+        const gap = xs.length > 1 ? Math.min(...xs.slice(1).map((x, i) => x - xs[i])) : 2.2;
+        const SW = Math.min(3.0, Math.max(1.2, gap - 0.25)), SH = SW * 0.42; // 판끼리 닿지 않는 만큼 크게 (가장 좁은 설비 간격 기준)
+        const g = new THREE.Group(); scene.add(g);
+        const frameM = new THREE.MeshStandardMaterial({ color: 0x1c232b, roughness: 0.6 }), wireM = new THREE.LineBasicMaterial({ color: 0x4b5764 });
+        let rx0 = Infinity, rx1 = -Infinity, ry = 0, rz = 0;
+        const sign = (id, a, SW, SH) => {
+          const x = a[0] / 1000, y = a[2] + SH / 2, z = -a[1] / 1000;
+          const cv = document.createElement('canvas'); cv.width = 680; cv.height = 286;
+          const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
+          const face = new THREE.Mesh(new THREE.PlaneGeometry(SW, SH), new THREE.MeshBasicMaterial({ map: tex, transparent: true, toneMapped: false, fog: false })); // 안개에 묻히지 않게 (글자·상태색 그대로)
+          face.position.set(x, y, z + 0.03);
+          const back = new THREE.Mesh(new THREE.BoxGeometry(SW * 0.98, SH * 0.96, 0.05), frameM); back.position.set(x, y, z);
+          if (id !== 'inf' && id !== 'rack') { face.userData.mid = id; back.userData.mid = id; pickables.push(face, back); } // 판을 눌러도 그 설비 선택 (투입 대·봉재 랙은 선택 없음)
+          const top = y + SH / 2, ceil = top + 0.5;
+          const V3 = (vx, vy) => new THREE.Vector3(vx, vy, z);
+          g.add(face, back, new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints([V3(x - SW * 0.36, top), V3(x - SW * 0.36, ceil), V3(x + SW * 0.36, top), V3(x + SW * 0.36, ceil)]), wireM));
+          // 병목 배지: 판 아래 오른쪽 모서리에 반쯤 걸친 동그란 달팽이 판 (사용자 요청 2026-10-19). 한 번 그려 두고 병목일 때만 보임
+          const bd = SH * 0.66, bcv = document.createElement('canvas'); bcv.width = bcv.height = 192;
+          { const c = bcv.getContext('2d'); c.beginPath(); c.arc(96, 96, 88, 0, Math.PI * 2); c.fillStyle = '#1c232b'; c.fill(); c.lineWidth = 10; c.strokeStyle = '#b9a8ff'; c.stroke();
+            c.translate(36, 34); c.scale(5, 5); c.strokeStyle = '#b9a8ff'; c.lineCap = 'round'; c.lineJoin = 'round'; c.lineWidth = 2.2;
+            ['M3 18h15.5a2.5 2.5 0 0 0 2.5-2.5V13', 'M16.5 12a5.5 5.5 0 1 1-11 0a5.5 5.5 0 1 1 11 0', 'M11 12a2.2 2.2 0 1 1 2.2-2.2', 'M19.5 13 18.5 8.5', 'M21 13l1.4-4.2'].forEach(d => c.stroke(new Path2D(d))); }
+          const btex = new THREE.CanvasTexture(bcv); btex.colorSpace = THREE.SRGBColorSpace; btex.anisotropy = 8;
+          const badge = new THREE.Mesh(new THREE.PlaneGeometry(bd, bd), new THREE.MeshBasicMaterial({ map: btex, transparent: true, toneMapped: false, fog: false }));
+          badge.position.set(x + SW / 2 - bd * 0.2, y - SH / 2 + bd * 0.12, z + 0.06); badge.renderOrder = 6; badge.visible = false; g.add(badge);
+          if (id !== 'rack') { rx0 = Math.min(rx0, x - SW * 0.7); rx1 = Math.max(rx1, x + SW * 0.7); ry = ceil; rz = z; } // 봉재 랙은 설비 줄과 깊이가 달라 레일 밖에 따로 매달림
+          return { id, cv, tex, badge, last: '' };
+        };
+        this.ceilSigns = ids.map(id => sign(id, this.anch['tag-' + id], SW, SH));
+        if (this.anch['tag-rack']) this.ceilSigns.push(sign('rack', this.anch['tag-rack'], 1.9, 1.9 * 0.42));
+        if (ids.length) { const rail = new THREE.Mesh(new THREE.BoxGeometry(rx1 - rx0, 0.08, 0.1), frameM); rail.position.set((rx0 + rx1) / 2, ry + 0.04, rz); g.add(rail); }
+        this.ceilG = g;
+      }
 
       const red = new THREE.MeshStandardMaterial({ color: 0x29c6e6, emissive: 0x16b4d6, emissiveIntensity: 0.45, roughness: 0.35 });
       const halo = new THREE.MeshBasicMaterial({ color: 0x5fdcf2, transparent: true, opacity: 0.16, depthWrite: false }); env.halo = halo;
@@ -1033,8 +1072,27 @@ export default class FactoryDashboard extends React.Component<any, any> {
         return { w, fg, wi, wo, sex, fex, l1: [this.placeX('saw', 6.0) - 0.25, Math.max(this.placeX('vf2', 15.3), sex) + 0.3], l2: [wo + 0.75, fex + 0.3],
           wz: this.placeZ('wsh', -4.45), dyw: Math.round(-this.placeZ('wsh', -3.7) * 1000 - 3700), aso: fg + 2.2 - 26.2 };
       })() : null;
-      if (D3) { seg(Math.round(D3.l1[0] * 1000), Math.round(D3.l1[1] * 1000), 2950, 3350, true); seg(Math.round(D3.l2[0] * 1000), Math.round(D3.l2[1] * 1000), 2950, 3350, true); }
-      else { seg(5750, 15600, 2950, 3350, true); seg(20450, 24350, 2950, 3350, true); }
+      // ㄷ자 한 줄 (사용자 선택 2026-10-20): 일자 롤러는 세척기 왼쪽 꺾임(WIP-3 바스켓 자리) 앞에서 끝나고, 오른쪽 꺾임(꺼내는 자리) 뒤에서 다시 시작
+      const WB3 = this.MACH.wsh.bd || this.MACH.wsh.b, XA3 = WB3[0] / 1000 - 0.55, XB3 = WB3[1] / 1000 + 0.8;
+      // 게이트 컨베이어 (사용자 요청 2026-10-20): 설비 앞 0.9 m 한 토막은 따로 지어, 정비 로봇(이브)이 지날 때 오른쪽 끝 경첩으로 들려 올라감
+      const gates = {}; this.gates = gates;
+      const rg0 = new THREE.CylinderGeometry(0.026, 0.026, 1, 12);
+      const segG = (x0, x1, y0, y1) => {
+        const gs = ['saw', 'mil', 'vf1', 'vf2', 'cmm'].map(id => { const bd = this.MACH[id].bd || this.MACH[id].b; return [id, Math.round((bd[0] + bd[1]) / 2)]; }).filter(q0 => q0[1] > x0 && q0[1] < x1).sort((p0, q0) => p0[1] - q0[1]);
+        let c0 = x0;
+        gs.forEach(([id, gx]) => {
+          const ga = Math.max(c0, Math.min(gx - 450, x1 - 900)), gb = Math.min(x1, ga + 900), zc = -(y0 + y1) / 2000; if (gb - ga < 400) return;
+          if (ga - c0 > 50) seg(c0, ga, y0, y1, true);
+          const piv = new THREE.Group(), inner = new THREE.Group(); piv.position.set(gb / 1000, TOP - 0.07, zc); inner.position.set(-gb / 1000, -(TOP - 0.07), -zc); piv.add(inner); convG.add(piv);
+          box(ga + 8, gb - 8, y0, y1, TOP - 0.11, TOP - 0.035, CM.frame, inner); box(ga + 8, gb - 8, y0 - 22, y0, TOP - 0.035, TOP + 0.012, CM.rail, inner); box(ga + 8, gb - 8, y1, y1 + 22, TOP - 0.035, TOP + 0.012, CM.rail, inner);
+          for (let s = 55; s < gb - ga - 25; s += 105) { const r0 = new THREE.Mesh(rg0, CM.roller); r0.rotation.x = Math.PI / 2; r0.scale.y = (y1 - y0) / 1000 - 0.03; r0.position.set((ga + s) / 1000, TOP - 0.01, zc); r0.castShadow = true; inner.add(r0); }
+          box(ga + 15, ga + 65, y0 + 15, y1 - 15, 0, TOP - 0.11, CM.leg, convG); // 들리는 쪽 끝 받침 기둥 (바닥에 남음)
+          gates[id] = { piv, a: 0, x: (ga + gb) / 2000 }; c0 = gb;
+        });
+        if (x1 - c0 > 50) seg(c0, x1, y0, y1, true);
+      };
+      if (D3) { D3.l1[1] = XA3 - 0.72; D3.l2[0] = XB3 + 0.72; segG(Math.round(D3.l1[0] * 1000), Math.round(D3.l1[1] * 1000), 2950, 3350); segG(Math.round(D3.l2[0] * 1000), Math.round(D3.l2[1] * 1000), 2950, 3350); }
+      else { segG(5750, Math.round((XA3 - 0.72) * 1000), 2950, 3350); segG(Math.round((XB3 + 0.72) * 1000), 24350, 2950, 3350); }
       { const hz = new THREE.MeshBasicMaterial({ map: hazTex, transparent: true }); const hzT = hazTex.clone(); hzT.needsUpdate = true; hzT.repeat.set(16, 1); hz.map = hzT;
         const ends = D3 ? [[D3.l1[1] * 1000 + 100, D3.l1[1] * 1000 + 160], [D3.l2[0] * 1000 - 160, D3.l2[0] * 1000 - 100]] : [[15700, 15760], [20290, 20350]];
         ends.forEach(([a0, a1]) => { const m0 = new THREE.Mesh(new THREE.PlaneGeometry(0.06, 2.4), new THREE.MeshBasicMaterial({ color: 0xf2c230 })); m0.rotation.x = -Math.PI / 2; m0.position.set((a0 + a1) / 2000, 0.012, -2.5); convG.add(m0); });
@@ -1107,7 +1165,8 @@ export default class FactoryDashboard extends React.Component<any, any> {
       });
       const md = (x) => ((x % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
       // ---- batch logistics: pallet boxes + forklift + batch washer ----
-      const PMW = { hood: M(0x9aa5af, { metalness: 0.55, roughness: 0.35 }), hole: new THREE.MeshBasicMaterial({ color: 0x0e1216 }), shut: M(0x3b4651, { metalness: 0.4, roughness: 0.4 }) };
+      const WGL = (op) => new THREE.MeshStandardMaterial({ color: 0xdfe8ee, metalness: 0.1, roughness: 0.05, transparent: true, opacity: op, depthWrite: false });
+      const PMW = { hood: WGL(0.22), hole: WGL(0.05), shut: WGL(0.18) }; // 세척기 앞 = 유리 (2026-10-19)
       const EZA = -1.83, EZB = -2.58;
       const SB = {
         S: { x: 14.3, z: -2.35, ez: EZA, box: null, res: false, name: 'S' }, E1: { x: 16.0, z: -2.35, ez: EZA, box: null, res: false, name: 'E1' },
@@ -1117,40 +1176,71 @@ export default class FactoryDashboard extends React.Component<any, any> {
       };
       // 데이터적용본: WIP-3 상자 = OP-30→40 재공 자리, 세척 투입·배출 = 세척기 앞, FG = 완성품 자리, 자동창고는 FG 동쪽으로
       if (D3) { SB.S.x = D3.w.w3; SB.E1.x = D3.w.w3 + 1.7; SB.WI.x = D3.wi; SB.WO.x = D3.wo; SB.E2.x = Math.max(D3.wo + 1.3, D3.w.w4); SB.FG.x = D3.fg; SB.WH.x = D3.fg + 2.2; SB.ER.x = D3.fg + 9.0; }
+      const XIN = SB.WI.x, XOUT = SB.WO.x; // 세척기 안 들어가는·나오는 자리 (원래 앞자리 x)
+      { const wb = this.MACH.wsh.bd || this.MACH.wsh.b; SB.WI.x = wb[0] / 1000 - 0.55; SB.WO.x = wb[1] / 1000 + 0.8; SB.WI.z = SB.WO.z = SB.S.z; SB.E2.x = Math.max(SB.E2.x, SB.WO.x + 1.55); }
+      // ㄷ자 한 줄: WIP-3 바스켓(S)이 곧 세척 투입 자리(WI) — 일자 줄 끝 꺾임. 꺼내는 자리(WO) = 오른쪽 꺾임. 둘 사이 앞쪽 줄 = 빈 바스켓 복귀(E1에서 대기). 앞쪽 트레이 벨트는 없앰
+      SB.S.x = SB.WI.x; SB.S.z = SB.WO.z = LZ; SB.WI = SB.S;
+      // 바스켓 4개 (사용자 선택 2026-10-20 개선안 1): 복귀 줄에 빈 바스켓 대기 두 곳 — 세 등분 자리 (세척기 3,000이면 간격 1.45 > 바스켓 1.34)
+      SB.E1.x = SB.S.x + (SB.WO.x - SB.S.x) / 3; SB.E2.x = SB.S.x + (SB.WO.x - SB.S.x) * 2 / 3; SB.E1.z = SB.E2.z = LZ;
       const BM = { wall: M(0xaeb6bf, { metalness: 0.7, roughness: 0.35 }), rib: M(0x7d8792, { metalness: 0.7, roughness: 0.4 }), stand: M(0x56626e, { metalness: 0.5, roughness: 0.4 }), ship: new THREE.MeshBasicMaterial({ color: 0x8fd3a8 }) };
       const BOXY = BY - 0.075, BCAP = 30, SEX = D3 ? D3.sex : 13.8, FEX = D3 ? D3.fex : 23.5, FRZ = -2.75, GAPZ = -2.92;
-      const slotL = (n) => { const rr = 4 - Math.floor(n / 6), cc = 5 - (n % 6); return V(-0.5 + cc * 0.2, 0.075, -0.4 + rr * 0.2); };
+      // 칸 간격 = 부품(0.152 × 0.057)에 맞춤: 가로 0.18 · 세로 0.1 (전에는 0.2 × 0.2라 바스켓이 너무 컸음, 사용자 요청 2026-10-20)
+      const slotL = (n) => { const rr = 4 - Math.floor(n / 6), cc = 5 - (n % 6); return V(-0.45 + cc * 0.18, 0.075, -0.2 + rr * 0.1); };
       const takeOrder = []; [2, 1, 3, 0, 4].forEach(rr => { for (let cc = 5; cc >= 0; cc--) takeOrder.push((4 - rr) * 6 + (5 - cc)); });
       const boxes = [];
       const mkBox = () => {
         const g = new THREE.Group(); convG.add(g);
-        mesh(new THREE.BoxGeometry(1.34, 0.02, 1.14), mat.wood, g, 0, -0.03, 0);
-        [-0.55, 0, 0.55].forEach(x => mesh(new THREE.BoxGeometry(0.12, 0.1, 1.14), mat.wood, g, x, -0.09, 0));
+        // 바스켓 1.16 × 0.58 (6 × 5칸, 2026-10-20 줄임 — 전 1.34 × 1.14)
+        mesh(new THREE.BoxGeometry(1.16, 0.02, 0.58), mat.wood, g, 0, -0.03, 0);
+        [-0.47, 0, 0.47].forEach(x => mesh(new THREE.BoxGeometry(0.1, 0.1, 0.58), mat.wood, g, x, -0.09, 0));
         // 사용자 요청 2026-10-16: 파란 운반 상자 → 낮은 철제 트레이 (테두리 낮게, 부품 꽂이 칸 — 안의 부품이 잘 보임)
-        mesh(new THREE.BoxGeometry(1.32, 0.02, 1.12), BM.wall, g, 0, -0.01, 0);
-        [0.55, -0.55].forEach(z => mesh(new THREE.BoxGeometry(1.32, 0.07, 0.025), BM.wall, g, 0, 0.035, z));
-        [0.65, -0.65].forEach(x => mesh(new THREE.BoxGeometry(0.025, 0.07, 1.12), BM.wall, g, x, 0.035, 0));
-        [-0.3, -0.1, 0.1, 0.3].forEach(z => mesh(new THREE.BoxGeometry(1.26, 0.03, 0.012), BM.rib, g, 0, 0.015, z));
-        [0.55, -0.55].forEach(z => mesh(new THREE.BoxGeometry(1.36, 0.012, 0.05), BM.rib, g, 0, 0.072, z));
-        const b = { g, items: Array(BCAP).fill(null), res: new Set(), at: null, ship: 0 }; boxes.push(b); return b;
+        mesh(new THREE.BoxGeometry(1.14, 0.02, 0.56), BM.wall, g, 0, -0.01, 0);
+        [0.27, -0.27].forEach(z => mesh(new THREE.BoxGeometry(1.14, 0.07, 0.025), BM.wall, g, 0, 0.035, z));
+        [0.56, -0.56].forEach(x => mesh(new THREE.BoxGeometry(0.025, 0.07, 0.56), BM.wall, g, x, 0.035, 0));
+        [-0.15, -0.05, 0.05, 0.15].forEach(z => mesh(new THREE.BoxGeometry(1.08, 0.03, 0.012), BM.rib, g, 0, 0.015, z));
+        [0.27, -0.27].forEach(z => mesh(new THREE.BoxGeometry(1.18, 0.012, 0.05), BM.rib, g, 0, 0.072, z));
+        // LOT 꼬리표 (개선안 3): 바스켓 앞 모서리 위. 한 바스켓 = 한 LOT
+        const tc = document.createElement('canvas'); tc.width = 160; tc.height = 48; const tt = new THREE.CanvasTexture(tc); tt.colorSpace = THREE.SRGBColorSpace;
+        const tag = new THREE.Sprite(new THREE.SpriteMaterial({ map: tt, transparent: true, depthWrite: false })); tag.scale.set(0.55, 0.165, 1); tag.position.set(0, 0.3, 0.34); tag.visible = false; g.add(tag);
+        const b = { g, items: Array(BCAP).fill(null), res: new Set(), at: null, ship: 0, lot: null, closed: false, tag, tc, tt, tagKey: '' }; boxes.push(b); return b;
       };
+      const drawTag = (b) => {
+        const on = !!b.lot && cnt(b) > 0; b.tag.visible = on; if (!on) return;
+        const key = b.lot + '|' + b.closed; if (key === b.tagKey) return; b.tagKey = key;
+        const g = b.tc.getContext('2d'); g.clearRect(0, 0, 160, 48); g.fillStyle = b.closed ? '#ffe7a8' : '#ffffff'; g.beginPath(); g.roundRect(2, 2, 156, 44, 8); g.fill();
+        g.strokeStyle = '#5a3bc8'; g.lineWidth = 3; g.stroke(); g.fillStyle = '#26303a'; g.font = '700 22px JetBrains Mono, monospace'; g.textAlign = 'center';
+        g.fillText('LOT ' + String(b.lot).replace(/^LOT-\d+-/, ''), 80, 32); b.tt.needsUpdate = true;
+      };
+      // 지금 OP-30(VF2)이 깎는 LOT = WIP-3 로 나오는 부품의 LOT (데이터 lot_no)
+      const lotOf = (id) => { const E = this.liveT && this.liveT.equipment; return (E && E[this.EQ_OF[id]] && E[this.EQ_OF[id]].lot_no) || null; };
       const cnt = (b) => b ? b.items.reduce((a0, o) => a0 + (o ? 1 : 0), 0) : 0;
       const isEmpty = (b) => b && cnt(b) === 0 && b.res.size === 0;
       const isFull = (b) => b && cnt(b) >= BCAP && b.res.size === 0;
-      const placeBox = (b, sp) => { b.g.position.set(sp.x, BOXY, sp.z); b.g.rotation.set(0, 0, 0); sp.box = b; sp.res = false; b.at = sp; };
+      const placeBox = (b, sp) => { b.g.position.set(sp.x, BOXY, sp.z); b.g.rotation.set(0, 0, 0); sp.box = b; sp.res = false; b.at = sp; if (!cnt(b) && !b.res.size) { b.lot = null; b.closed = false; } };
       const slotW = (sp, n) => { const l = slotL(n); return V(sp.x + l.x, BY, sp.z + l.z); };
       // 2026-10-18: 상자 자리 받침대(빈 레일·다리)를 없앰 — 상자는 컨베이어 벨트 위에 바로 놓임 (빈 레일이 벨트 위에 걸쳐 보였음)
-      seg(Math.round(SEX * 1000) - 150, Math.round(SEX * 1000) + 150, 2880, 2950, false);
       seg(Math.round(FEX * 1000) - 150, Math.round(FEX * 1000) + 150, 2880, 2950, false);
       // 사용자 요청 2026-10-16: 지게차를 빼고 상자 받침대 사이를 컨베이어로 이음 (덮개·유리 없는 열린 벨트)
       { const BELT = M(0x2a3035, { roughness: 0.85 }), RAIL = M(0xdfe4e8, { metalness: 0.7, roughness: 0.3 });
-        const xs = [SB.S, SB.E1, SB.E2, SB.FG, SB.WI, SB.WO].map(sp => sp.x), xa = Math.round((Math.min(...xs) - 0.6) * 1000), xb = Math.round((Math.max(...xs) + 0.6) * 1000), YL = Math.round(-SB.S.z * 1000);
-        box(xa, xb, YL - 585, YL + 585, 0.33, 0.372, BELT, convG); [-610, 610].forEach(d => box(xa, xb, YL + d - 25, YL + d + 25, 0.372, 0.42, RAIL, convG)); // 상자(깊이 1,140) 밖으로
-        [SB.WI, SB.WO].forEach(sp => { const X = Math.round(sp.x * 1000), Y = Math.round(-sp.z * 1000); box(X - 680, X + 680, YL + 585, Y + 570, 0.33, 0.372, BELT, convG); [-720, 720].forEach(d => { box(X + d - 25, X + d + 25, YL + 635, Y + 570, 0.372, 0.42, RAIL, convG); box(X + d - 30, X + d + 30, Y + 420, Y + 480, 0, 0.33, CM.leg, convG); }); });
-        for (let x = xa; x < xb; x += 1500) [-560, 560].forEach(d => box(x - 30, x + 30, YL + d - 30, YL + d + 30, 0, 0.33, CM.leg, convG)); }
+        const lane0 = (xa, xb, YL) => { box(xa, xb, YL - 320, YL + 320, 0.33, 0.372, BELT, convG); [-345, 345].forEach(d => box(xa, xb, YL + d - 25, YL + d + 25, 0.372, 0.42, RAIL, convG)); // 상자(깊이 580) 밖으로
+          for (let x = xa; x < xb; x += 1500) [-290, 290].forEach(d => box(x - 30, x + 30, YL + d - 30, YL + d + 30, 0, 0.33, CM.leg, convG)); };
+        lane0(Math.round((SB.S.x - 0.7) * 1000), Math.round((SB.WO.x + 0.7) * 1000), Math.round(-LZ * 1000)); // ㄷ자 앞쪽 = 바스켓 자리 두 곳 + 빈 바스켓 복귀 줄
+        lane0(Math.round((SB.FG.x - 0.75) * 1000), Math.round((SB.FG.x + 0.75) * 1000), Math.round(-SB.FG.z * 1000)); } // FG 상자 자리
+      // 세척기: 상자가 왼쪽 옆으로 들어가 오른쪽 옆으로 나옴 (사용자 요청 2026-10-19) — 앞자리 → 옆 → 안
+      const WB = (this.MACH.wsh.bd || this.MACH.wsh.b), WZIN = D3 ? D3.wz : -4.45;
+      const wPathIn = [[SB.WI.x, SB.WI.z], [SB.WI.x, WZIN], [XIN, WZIN]]; // 왼쪽 옆 한 줄로 뒤로 → 안으로
+      const wPathOut = [[XOUT, WZIN], [SB.WO.x, WZIN], [SB.WO.x, SB.WO.z]]; // 오른쪽 옆으로 나와 앞으로
+      { const BELT2 = M(0x2a3035, { roughness: 0.85 });
+        [wPathIn, wPathOut].forEach(P => P.slice(1).forEach((q, i) => { const a = P[i], hw = 0.32;
+          const x0 = Math.min(a[0], q[0]) - hw, x1 = Math.max(a[0], q[0]) + hw, z0 = Math.min(a[1], q[1]) - hw, z1 = Math.max(a[1], q[1]) + hw;
+          box(Math.round(x0 * 1000), Math.round(x1 * 1000), Math.round(-z1 * 1000), Math.round(-z0 * 1000), 0.33, 0.372, BELT2, convG); })); }
+      const along = (P, u) => { // 꺾인 길을 거리 비율 u로 따라감
+        const L = P.slice(1).map((q, i) => Math.hypot(q[0] - P[i][0], q[1] - P[i][1])), T = L.reduce((a, c) => a + c, 0); let d = u * T;
+        for (let i = 0; i < L.length; i++) { if (d <= L[i] || i === L.length - 1) { const k = L[i] ? Math.min(1, d / L[i]) : 1; return [P[i][0] + (P[i + 1][0] - P[i][0]) * k, P[i][1] + (P[i + 1][1] - P[i][1]) * k, P[i + 1][1] !== P[i][1]]; } d -= L[i]; }
+        return [P[P.length - 1][0], P[P.length - 1][1], false]; };
       // washer batch doors
       const DY = D3 ? D3.dyw : 0; // 세척기 앞면 Y (데이터 3,800, 원본 3,700)
-      const wDoors = [SB.WI.x, SB.WO.x].map(x => {
+      const wDoors = [XIN, XOUT].map(x => {
         const X = Math.round(x * 1000);
         box(X - 720, X + 720, 3640 + DY, 3700 + DY, BOXY + 0.4, BOXY + 0.46, PMW.hood, convG);
         box(X - 720, X - 690, 3640 + DY, 3700 + DY, BOXY - 0.2, BOXY + 0.4, PMW.hood, convG); box(X + 690, X + 720, 3640 + DY, 3700 + DY, BOXY - 0.2, BOXY + 0.4, PMW.hood, convG);
@@ -1237,18 +1327,35 @@ export default class FactoryDashboard extends React.Component<any, any> {
         FL.g.position.set(P0.x, 0, P0.z); FL.g.rotation.y = P0.yaw; FL.car.position.y = P0.h;
         if (c0.tm >= c0.d) FL.cur = null;
       };
-      const WSH = { box: null, ph: 'idle', t: 0 };
+      const WSH = { box: null, ph: 'idle', t: 0 }, FGS = { ph: 'fill', t: 0, b: null };
+      const wBar = (() => {
+        const cv = document.createElement('canvas'); cv.width = 320; cv.height = 72; const tx = new THREE.CanvasTexture(cv); tx.colorSpace = THREE.SRGBColorSpace;
+        const s0 = new THREE.Sprite(new THREE.SpriteMaterial({ map: tx, transparent: true, depthWrite: false })); s0.scale.set(1.3, 0.29, 1); s0.position.set((XIN + XOUT) / 2, 1.7, -(WB[2] / 1000) + 0.1); s0.visible = false; convG.add(s0);
+        let last = '';
+        return (pr, ph) => {
+          s0.visible = pr >= 0; if (pr < 0) return;
+          const p = Math.min(1, pr), txt = ph === 'wait' ? '세척 끝 · 배출 대기' : ph === 'in' ? '세척기 투입' : ph === 'wash' ? '세척 · 헹굼 · 건조' : '배출', key = txt + Math.round(p * 50); if (key === last) return; last = key;
+          const g = cv.getContext('2d'); g.clearRect(0, 0, 320, 72); g.fillStyle = 'rgba(10,16,24,0.8)'; g.beginPath(); g.roundRect(4, 4, 312, 64, 14); g.fill();
+          g.fillStyle = '#ffffff'; g.font = '700 19px Pretendard, sans-serif'; g.textAlign = 'left'; g.fillText(txt, 18, 30); g.textAlign = 'right'; g.fillText(Math.round(p * 100) + '%', 302, 30);
+          g.fillStyle = 'rgba(255,255,255,0.15)'; g.fillRect(18, 42, 284, 12); g.fillStyle = '#5fb8ff'; g.fillRect(18, 42, 284 * p, 12); tx.needsUpdate = true;
+        };
+      })();
       const wshStep = (dt, run) => {
         const W0 = WSH;
-        if (W0.ph === 'idle' && SB.WI.box && !SB.WI.res && run) { W0.box = SB.WI.box; SB.WI.box = null; W0.box.at = null; W0.ph = 'in'; W0.t = 0; }
+        const wb0 = SB.WI.box, ready = wb0 && (isFull(wb0) || (wb0.closed && !wb0.res.size && cnt(wb0) > 0)); // 30개 또는 LOT 끝
+        if (W0.ph === 'idle' && ready && !SB.WI.res && run) { W0.box = SB.WI.box; SB.WI.box = null; W0.box.at = null; W0.ph = 'in'; W0.t = 0; }
         const b = W0.box; if (b && run) W0.t += dt;
-        const xI0 = SB.WI.x, xO0 = SB.WO.x, zIn = D3 ? D3.wz : -4.45, dz0 = SB.WI.z - zIn; // 데이터적용본: 세척기 자리에 맞춤
-        if (W0.ph === 'in') { const u = sm(Math.min(1, W0.t / 3)); b.g.position.set(xI0, BOXY, SB.WI.z - dz0 * u); if (W0.t >= 3) { W0.ph = 'wash'; W0.t = 0; } }
+        const xI0 = XIN, xO0 = XOUT, zIn = D3 ? D3.wz : -4.45, dz0 = SB.WI.z - zIn; // 데이터적용본: 세척기 자리에 맞춤
+        if (W0.ph === 'in') { const u = sm(Math.min(1, W0.t / 6)), q = along(wPathIn, u); b.g.position.set(q[0], BOXY, q[1]); b.g.rotation.y = q[2] ? Math.PI / 2 : 0; if (W0.t >= 6) { b.g.rotation.y = 0; W0.ph = 'wash'; W0.t = 0; } }
         else if (W0.ph === 'wash') { const u = Math.min(1, W0.t / 18); b.g.position.set(xI0 + (xO0 - xI0) * u, BOXY, zIn); if (W0.t >= 18) { W0.ph = 'wait'; b.items.forEach(o => { if (o) o.material = pallets.w4[0].material; }); } }
         else if (W0.ph === 'wait') { if (!SB.WO.box && !SB.WO.res) { W0.ph = 'out'; W0.t = 0; SB.WO.res = true; } }
-        else if (W0.ph === 'out') { const u = sm(Math.min(1, W0.t / 3)); b.g.position.set(xO0, BOXY, zIn + dz0 * u); if (W0.t >= 3) { placeBox(b, SB.WO); W0.box = null; W0.ph = 'idle'; } }
-        wDoors[0].want = W0.ph === 'in' ? 1 : 0; wDoors[1].want = W0.ph === 'out' ? 1 : 0;
+        else if (W0.ph === 'out') { const u = sm(Math.min(1, W0.t / 6)), q = along(wPathOut, u); b.g.position.set(q[0], BOXY, q[1]); b.g.rotation.y = q[2] ? Math.PI / 2 : 0; if (W0.t >= 6) { placeBox(b, SB.WO); W0.box = null; W0.ph = 'idle'; } }
+        wDoors[0].want = 0; wDoors[1].want = 0; // 앞 유리문은 닫힌 채 — 상자는 옆으로 드나듦
         wDoors.forEach(D => { D.o += (D.want - D.o) * Math.min(1, dt * 4); D.sh.position.y = D.y0 + D.o * 0.62; });
+        // 개선안 5: 세척기 위 진행 막대 (투입 0~20% · 세척 20~80% · 배출 대기 80% · 배출 80~100%)
+        const pr = W0.ph === 'in' ? W0.t / 6 * 0.2 : W0.ph === 'wash' ? 0.2 + W0.t / 18 * 0.6 : W0.ph === 'wait' ? 0.8 : W0.ph === 'out' ? 0.8 + W0.t / 6 * 0.2 : -1;
+        wBar(pr, W0.ph);
+        this.wshBusy = W0.ph === 'wash'; this.wshAt = W0.box ? W0.box.g.position : null; // 실제 상자가 안에 있을 때만 세척 연출
         return W0.ph === 'wash';
       };
       const mkGauge = (sp, title) => {
@@ -1266,6 +1373,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
           tx.needsUpdate = true;
         };
       };
+      (this.floorWip || []).forEach(F => { if (F.key === 'w3') F.m.position.x = SB.S.x - 0.6; }); // 바닥 WIP-3 글자 = 바스켓 자리 앞
       const gS = mkGauge(SB.S, 'WIP-3 · 세척 배치'), gW = mkGauge(SB.WO, 'WIP-4 · 측정 대기'), gF = mkGauge(SB.FG, 'FG-01 · 창고 입고 박스');
       // ===== AS/RS warehouse (x 26–33.6) =====
       let whStep = () => {};
@@ -1472,7 +1580,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
       const inbound = { w1: 0, w2: 0, w3: 0, w4: 0, fg: 0 };
       { const fillN = (b, n, m) => { for (let i = 0; i < n; i++) { const o = getItem(m); b.g.add(o); o.position.copy(slotL(i)); b.items[i] = o; } };
         const bS = mkBox(), bWO = mkBox(), bF = mkBox(), bE = mkBox();
-        placeBox(bS, SB.S); placeBox(bWO, SB.WO); placeBox(bF, SB.FG); placeBox(bE, SB.E1);
+        placeBox(bS, SB.S); placeBox(bWO, SB.WO); placeBox(bF, SB.FG); placeBox(bE, SB.E1); placeBox(mkBox(), SB.E2);
         fillN(bS, 24, pallets.w3[0].material); fillN(bWO, 6, pallets.w4[0].material); fillN(bF, 26, pallets.fg[0].material);
         const takeN = (b) => { for (const n of takeOrder) if (b.items[n]) return n; return -1; }; this.__takeN = takeN; }
       const ms = {}; Object.keys(MC).forEach(id => { ms[id] = { waiting: null, enroute: false, loaded: true, inPlace: true, hold: false, lastPh: null }; });
@@ -1502,10 +1610,15 @@ export default class FactoryDashboard extends React.Component<any, any> {
             S.hold = !!S.loaded && S.inPlace !== false;
             if (c.dst === 'w3' || c.dst === 'fg') {
               const sp = c.dst === 'w3' ? SB.S : SB.FG, ex = c.dst === 'w3' ? SEX : FEX, Sb = sp.box;
-              if (S.loaded && Sb && !sp.res && cnt(Sb) + Sb.res.size < BCAP) {
+              // 개선안 3: WIP-3 바스켓에 다른 LOT이 오면 바스켓을 닫음 (30개 안 돼도 세척기로) — 부품은 다음 빈 바스켓까지 설비에서 기다림
+              const lot = c.dst === 'w3' ? lotOf(id) : null;
+              if (Sb && lot && Sb.lot && Sb.lot !== lot && cnt(Sb) + Sb.res.size > 0) Sb.closed = true;
+              if (S.loaded && Sb && !sp.res && !Sb.closed && cnt(Sb) + Sb.res.size < BCAP) {
                 let n = 0; while (n < BCAP && (Sb.items[n] || Sb.res.has(n))) n++;
+                if (lot && !Sb.lot) Sb.lot = lot;
                 Sb.res.add(n); const o = getItem(pallets[c.dst][0].material), sw = slotW(sp, n);
-                job(o, [...outPath(c), lane(ex), V(ex, BY, GAPZ), V(ex, BY, FRZ), V(sw.x, BY, FRZ), sw], () => { Sb.res.delete(n); Sb.items[n] = o; Sb.g.attach(o); o.position.copy(slotL(n)); });
+                const pth = c.dst === 'w3' ? [...outPath(c), lane(SB.S.x - 0.78), sw] : [...outPath(c), lane(ex), V(ex, BY, GAPZ), V(ex, BY, FRZ), V(sw.x, BY, FRZ), sw]; // WIP-3: 줄 끝에서 바스켓 칸으로 밀려 들어감
+                job(o, pth, () => { Sb.res.delete(n); Sb.items[n] = o; Sb.g.attach(o); o.position.copy(slotL(n)); });
                 S.hold = false; S.loaded = false; if (S.waiting) startLoad(id);
               }
               S.lastPh = ph; return;
@@ -1556,24 +1669,37 @@ export default class FactoryDashboard extends React.Component<any, any> {
           if (!busy) {
             let mvp = null;
             if (at(SB.S) && isFull(SB.S.box) && fr(SB.WI)) mvp = [SB.S, SB.WI];
-            else if (at(SB.WO) && isEmpty(SB.WO.box) && !ms.cmm.enroute) { const d0 = fr(SB.S) ? SB.S : fr(SB.FG) ? SB.FG : emptySpot(); if (d0) mvp = [SB.WO, d0]; }
+            else if (fr(SB.S) && at(SB.E1) && isEmpty(SB.E1.box)) mvp = [SB.E1, SB.S];
+            else if (fr(SB.E1) && at(SB.E2) && isEmpty(SB.E2.box)) mvp = [SB.E2, SB.E1]; // 복귀 줄: WO → E2 → E1 → S 한 칸씩
+            else if (at(SB.WO) && isEmpty(SB.WO.box) && !ms.cmm.enroute) { const d0 = fr(SB.E2) ? SB.E2 : fr(SB.E1) ? SB.E1 : null; if (d0) mvp = [SB.WO, d0]; }
             else if (at(SB.ER) && isEmpty(SB.ER.box) && (fr(SB.FG) || fr(SB.S) || emptySpot())) { const d0 = fr(SB.FG) ? SB.FG : fr(SB.S) ? SB.S : emptySpot(); mvp = [SB.ER, d0]; }
             if (!mvp && fr(SB.S)) { const e0 = emptyBoxAt(); if (e0) mvp = [e0, SB.S]; }
             if (!mvp && fr(SB.FG)) { const e0 = emptyBoxAt(); if (e0) mvp = [e0, SB.FG]; }
             if (mvp) { if (mvp[0].box) mvp[0].box.ship = 0; convMove(mvp[0], mvp[1]); }
           }
           convStep(dt);
-          { const fb = at(SB.FG); if (fb && isFull(fb)) { fb.fgT = (fb.fgT || 0) + dt; if (fb.fgT > 4) { fb.fgT = 0; fb.items.forEach((o, i) => { if (o) { fb.items[i] = null; convG.attach(o); release(o); } }); } } } // 창고 없음: 만재 상자는 그 자리에서 완제품 입고 처리
+          { // 개선안 4: FG 만재 → 입고 대기 1.5초 → 상자를 앞(통로)으로 빼고 → 빈 상자를 넣음. 그동안 FG 자리는 잡아 둠(CMM은 기다림)
+            const F0 = FGS; F0.t += dt;
+            if (F0.ph === 'fill') { const fb = at(SB.FG); if (fb && isFull(fb)) { F0.ph = 'hold'; F0.t = 0; } }
+            else if (F0.ph === 'hold' && F0.t > 1.5) { const fb = SB.FG.box; if (fb) { F0.b = fb; SB.FG.box = null; SB.FG.res = true; fb.at = null; F0.ph = 'out'; F0.t = 0; } else F0.ph = 'fill'; }
+            else if (F0.ph === 'out') { const b = F0.b; b.g.position.z = SB.FG.z + 2.4 * sm(Math.min(1, F0.t / 1.4));
+              if (F0.t >= 1.4) { b.items.forEach((o, i) => { if (o) { b.items[i] = null; convG.attach(o); release(o); } }); F0.ph = 'in'; F0.t = 0; } } // 완제품 입고 = 부품을 거둠, 같은 상자를 빈 상자로 다시 씀
+            else if (F0.ph === 'in') { const b = F0.b; b.g.position.z = SB.FG.z + 2.4 * (1 - sm(Math.min(1, F0.t / 1.4))); if (F0.t >= 1.4) { placeBox(b, SB.FG); F0.b = null; F0.ph = 'fill'; } }
+          }
           wshStep(dt, !NOWORK.has(st0.wsh));
           whStep(dt);
           B.w3 = cnt(SB.S.box); B.w4 = cnt(SB.WO.box) + (WSH.box ? cnt(WSH.box) : 0); B.fg = cnt(SB.FG.box);
           const carryS = !!FL.carry && FL.cur?.dst === SB.WI;
           const sN = SB.S.box ? cnt(SB.S.box) : 0;
-          gS(carryS ? BCAP : sN, carryS ? '컨베이어 → 세척기 이송' : isFull(SB.S.box) ? '배치 완료 · 세척기로 이송' : !SB.S.box ? '빈 박스 대기' : '', carryS || isFull(SB.S.box) ? '#22d36b' : '#4fd2ea');
+          // LOT을 모르는 바스켓(처음 놓인 것·데이터 맞춤으로 채운 것)은 그 자리 설비의 지금 LOT으로
+          [[SB.S.box, 'vf1'], [WSH.box, 'wsh'], [SB.WO.box, 'cmm']].forEach(([b, id]) => { if (b && !b.lot && cnt(b)) b.lot = lotOf(id); });
+          boxes.forEach(drawTag);
+          const sLot = SB.S.box && SB.S.box.lot ? ' · LOT ' + String(SB.S.box.lot).replace(/^LOT-\d+-/, '') : '';
+          gS(carryS ? BCAP : sN, carryS ? '컨베이어 → 세척기 이송' : isFull(SB.S.box) ? '배치 완료 · 세척기로 이송' : SB.S.box && SB.S.box.closed ? `LOT 끝 · ${sN}개로 세척` : !SB.S.box ? '빈 박스 대기' : 'WIP-3' + sLot, carryS || isFull(SB.S.box) || (SB.S.box && SB.S.box.closed) ? '#22d36b' : '#4fd2ea');
           const wN = SB.WO.box ? cnt(SB.WO.box) : 0;
           gW(WSH.box ? cnt(WSH.box) : wN, WSH.ph === 'in' ? '세척기 투입' : WSH.ph === 'wash' ? '세척 · 헹굼 · 건조 중' : WSH.ph === 'out' ? '세척 완료 · 배출' : '', WSH.box ? '#5fb8ff' : '#4fd2ea');
           const fN = SB.FG.box ? cnt(SB.FG.box) : 0;
-          gF(fN, isFull(SB.FG.box) ? '만재 · 완제품 입고 처리' : !SB.FG.box ? '빈 박스 대기' : '', isFull(SB.FG.box) ? '#22d36b' : '#4fd2ea');
+          gF(fN, FGS.ph === 'hold' ? '만재 · 입고 대기' : FGS.ph === 'out' ? '완제품 입고 · 상자 빼기' : FGS.ph === 'in' ? '빈 상자 넣는 중' : !SB.FG.box ? '빈 박스 대기' : '', FGS.ph === 'fill' ? '#4fd2ea' : '#22d36b');
           FM.beacon.color.setHex(busy && Math.sin(performance.now() / (FL.rev ? 70 : 140)) > 0 ? 0xffd27a : 0xff9a1f);
         }
         inclines.forEach(I0 => { const run0 = !NOWORK.has(st0[Object.keys(MC).find(k => MC[k] === I0.id)]); if (run0) { let z0 = I0.cg.position.z + I0.dir * 0.6 * dt; z0 = ((z0 % CSP) + CSP) % CSP; I0.cg.position.z = z0; } });
@@ -1615,7 +1741,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
           while (Q[k].length > want && Q[k].length > (T0.outPending ? 1 : 0)) { const o = Q[k].pop(); T0.pockets[o.userData.p] = null; convG.attach(o); release(o); }
         });
         const fillBox = (sp, n0, k) => {
-          const b = sp.box; if (!b || sp.res || b.res.size) return;
+          const b = sp.box; if (!b || sp.res || b.res.size || b.closed) return; // LOT 끝으로 닫힌 바스켓엔 더 안 넣음
           const want = Math.max(0, Math.min(BCAP, Math.round(n0 || 0))); let n = cnt(b);
           for (let i = 0; i < BCAP && n < want; i++) if (!b.items[i]) { const o = getItem(pallets[k][0].material); b.g.add(o); o.position.copy(slotL(i)); b.items[i] = o; n++; }
           for (let i = BCAP - 1; i >= 0 && n > want; i--) if (b.items[i]) { const o = b.items[i]; b.items[i] = null; convG.attach(o); release(o); n--; }
@@ -1623,7 +1749,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
         fillBox(SB.S, W.w3, 'w3');
         if (!WSH.box) fillBox(SB.WO, W.w4, 'w4');
       };
-      this.convAPI = { inS, boxPath: (c) => { const b = SB.S.box; let n = 0; if (b) while (n < BCAP - 1 && b.items[n]) n++; const sw = slotW(SB.S, n); return [...outPath(c), lane(SEX), V(SEX, BY, GAPZ), V(SEX, BY, FRZ), V(sw.x, BY, FRZ), sw]; },
+      this.convAPI = { inS, boxPath: (c) => { const b = SB.S.box; let n = 0; if (b) while (n < BCAP - 1 && b.items[n]) n++; const sw = slotW(SB.S, n); return [...outPath(c), lane(SB.S.x - 0.78), sw]; },
         fgPath: (c) => { const b = SB.FG.box; let n = 0; if (b) while (n < BCAP - 1 && b.items[n]) n++; const sw = slotW(SB.FG, n); return [...outPath(c), lane(FEX), V(FEX, BY, GAPZ), V(FEX, BY, FRZ), V(sw.x, BY, FRZ), sw]; }, MC, WX, BY, lane, bufIn, bufOut, pw, aI, aO, PIT, Q, isAir, inEnd, loadPath, outPath, mkGrip, gripAt, SB, WZIN: D3 ? D3.wz : -4.45 };
     } catch (e) { console.error('[factory] conveyor', e); }
     const convPos = new THREE.Vector3();
@@ -1895,10 +2021,13 @@ export default class FactoryDashboard extends React.Component<any, any> {
       const Ws = rigs.wsh;
       if (Ws) {
         const p = ph('wsh');
-        Ws.baskets.forEach((g, i) => { g.position.x = 17.15 + ((p + i / 3) % 1) * 3.3; });
-        if (run('wsh')) [17.95, 18.4, 19.0].forEach(X => [-4.25, -4.5, -4.75].forEach(Z => Ws.water.spawn(tmpV.set(X, 1.21, Z), 40, dt, 0.35, -1.6, 0.6)));
+        // 사용자 요청 2026-10-19: 빈 바구니가 혼자 도는 연출 없앰 — 3공정에서 온 상자가 안에 들어왔을 때만 물·김이 나옴
+        const wOn = this.props.dataMode ? !!this.wshBusy : run('wsh');
+        Ws.baskets.forEach((g, i) => { g.visible = !this.props.dataMode; g.position.x = 17.15 + ((p + i / 3) % 1) * 3.3; });
+        const wa = this.props.dataMode && this.wshAt; // 데이터 화면: 물은 지금 씻기는 상자 위로
+        if (wOn) (wa ? [-0.35, 0, 0.35].map(dx => wa.x + dx) : [17.95, 18.4, 19.0]).forEach(X => (wa ? [-0.3, 0, 0.3].map(dz => wa.z + dz) : [-4.25, -4.5, -4.75]).forEach(Z => Ws.water.spawn(tmpV.set(X, 1.21, Z), 40, dt, 0.35, -1.6, 0.6)));
         Ws.water.step(dt, 6, 0.6);
-        if (run('wsh')) Ws.mist.spawn(tmpV.set(19.6, 0.98, -4.5), 80, dt, 0.9, -0.3, 0.6);
+        if (wOn) Ws.mist.spawn(wa ? tmpV.set(wa.x + 0.6, 0.98, wa.z) : tmpV.set(19.6, 0.98, -4.5), 80, dt, 0.9, -0.3, 0.6);
         Ws.mist.step(dt, -0.2, 0.55);
       }
       // CMM
@@ -1963,31 +2092,90 @@ export default class FactoryDashboard extends React.Component<any, any> {
       if (!this.intro || this.intro.t > 5.4) try { animate(dt * sp, t); } catch (e) { if (!this.animErr) { this.animErr = 1; console.error('[factory] anim', e); } }
       const sel = this.state.sel;
       const bnP = this.props.dataMode ? this.state.bn : null;
-      if (env.op30) { const on30 = bnP === 'OP-30'; env.op30.color.setHex(on30 ? 0xe8954a : 0x3c4752); }
+      if (env.op30) { const on30 = bnP === 'OP-30'; env.op30.color.setHex(on30 ? 0xa996ef : 0x3c4752); }
       Object.keys(outlines).forEach(id => {
         const o = outlines[id], e0 = effOf(id), al = e0 === 'ALARM', wn = e0 === 'WARN';
-        // 데이터 없음 = 설비를 테두리만 (SCR-04 상태 표), 병목 = 그 공정 설비에 주황 테두리 (OP-30은 구역 테두리가 주황, SCR-04 [5])
-        const nd = e0 === 'NODATA', bnH = !!bnP && bnP !== 'OP-30' && this.MACH[id].op === bnP;
-        o.visible = id === sel || (!sel && id === this.hover) || nd || bnH;
-        o.userData.ln.visible = nd || bnH; // 사용자 요청 2026-10-16: 누르거나 올렸을 때 상자 테두리 선은 없앰 (데이터 없음·병목 표시는 유지)
-        o.userData.lm.color.setHex(al ? 0xe5484d : wn ? 0xf0a500 : nd ? 0x8a97a4 : bnH ? 0xe8954a : 0x14a9cc); o.userData.pm.color.setHex(al ? 0xff5a5f : wn ? 0xffc040 : nd ? 0xb8c0c8 : bnH ? 0xf2a95c : 0x3cc8e6);
-        o.userData.pm.opacity = al ? 0.2 + 0.14 * Math.sin(t * 8) : wn ? 0.16 + 0.1 * Math.sin(t * 3) : nd ? 0.08 : 0.22;
+        // 데이터 없음 = 설비를 테두리만 (SCR-04 상태 표), 병목 = 그 공정 설비에 연보라 테두리 (OP-30은 구역 테두리가 연보라, SCR-04 [5])
+        const nd = e0 === 'NODATA', bnH = !!bnP && bnP !== 'OP-30' && this.MACH[id].op === bnP, mtH = e0 === 'MAINT'; // 정비 = 하늘색 테두리 깜빡임 (2026-10-20)
+        o.visible = id === sel || (!sel && id === this.hover) || nd || bnH || mtH;
+        o.userData.ln.visible = nd || bnH || mtH; // 사용자 요청 2026-10-16: 누르거나 올렸을 때 상자 테두리 선은 없앰 (데이터 없음·병목·정비 표시는 유지)
+        o.userData.lm.color.setHex(al ? 0xe5484d : wn ? 0xf0a500 : nd ? 0x8a97a4 : bnH ? 0xa996ef : mtH ? 0x3cc8e6 : 0x7a52f0); o.userData.pm.color.setHex(al ? 0xff5a5f : wn ? 0xffc040 : nd ? 0xb8c0c8 : bnH ? 0xc9bdf5 : mtH ? 0x7fe3f5 : 0x9d7bff);
+        o.userData.pm.opacity = al ? 0.2 + 0.14 * Math.sin(t * 8) : wn ? 0.16 + 0.1 * Math.sin(t * 3) : nd ? 0.08 : mtH ? 0.14 + 0.1 * Math.sin(t * 3) : 0.22;
         if (groups[id]) groups[id].visible = !nd;
         if (this.intro) o.visible = false;
       });
+      if (this.ceilSigns) { // 3D 천장 표지판: 설비를 확대해 볼 때는 숨기고, 상태가 바뀔 때만 다시 그림. 주의(처리 안 된 주의 알람 포함)는 주황, 고장은 빨강 판
+        if (this.ceilG) this.ceilG.visible = !sel && !this.intro && !this.tour.on;
+        const LIGHT = { RUN: '#7fe0a6', SETUP: '#9cc0ff', BLOCKED: '#f5b27a' };
+        this.ceilSigns.forEach(S => {
+          let e0 = S.id === 'inf' ? 'INF' : S.id === 'rack' ? 'RACK' : (effOf(S.id) || 'NODATA');
+          if (e0 !== 'ALARM' && e0 !== 'INF' && e0 !== 'RACK' && this.props.warnIds && this.props.warnIds.includes(S.id)) e0 = 'WARN';
+          const bn = !!this.props.dataMode && ((this.bnIds || {})[this.state.bn] || []).includes(S.id) && e0 !== 'ALARM' && e0 !== 'WARN'; // 주의·고장이면 그 판은 주의가 우선
+          const key = e0 + (bn ? '|bn' : ''); if (key === S.last) return; S.last = key; S.badge.visible = bn;
+          const c = S.cv.getContext('2d'), W0 = S.cv.width, H0 = S.cv.height, al = e0 === 'ALARM', wn = e0 === 'WARN', sv = this.STV[e0];
+          const fg = wn ? '#2a1a00' : '#ffffff';
+          c.clearRect(0, 0, W0, H0); c.save(); c.beginPath(); c.roundRect(0, 0, W0, H0, 26); c.clip();
+          c.fillStyle = al ? '#e5484d' : wn ? '#f0a500' : '#26303a'; c.fillRect(0, 0, W0, H0);
+          if (!al && !wn) { c.fillStyle = e0 === 'INF' || e0 === 'RACK' ? '#8a97a4' : (this.STAT[e0] || this.STAT.NODATA).dot; c.fillRect(0, H0 - 24, W0, 24); }
+          c.restore();
+          c.textAlign = 'center'; c.textBaseline = 'alphabetic'; c.fillStyle = fg;
+          c.font = '800 118px "JetBrains Mono", Consolas, monospace'; c.fillText(S.id === 'rack' ? 'RACK-01' : this.MACH[S.id].name, W0 / 2, 134);
+          c.font = '700 70px "Pretendard Variable", Pretendard, "Malgun Gothic", sans-serif';
+          c.fillStyle = al || wn ? fg : LIGHT[e0] || '#c3cbd3';
+          const st0 = e0 === 'INF' ? '투입 대' : e0 === 'RACK' ? '봉재 랙' : sv ? `${sv[0]} ${sv[1]}` : '';
+          if (!bn) c.fillText(st0, W0 / 2, 230);
+          else { // 상태 + 연보라 '· 병목' (달팽이는 판 아래 모서리의 동그란 배지)
+            const tail = ' · 병목', w1 = c.measureText(st0).width, w2 = c.measureText(tail).width, x0 = (W0 - w1 - w2) / 2;
+            c.textAlign = 'left'; c.fillText(st0, x0, 230); c.fillStyle = '#b9a8ff'; c.fillText(tail, x0 + w1, 230); }
+          S.tex.needsUpdate = true;
+        });
+      }
       Object.keys(pads).forEach(id => { const e0 = effOf(id); pads[id].hatch.visible = e0 === 'MAINT'; pads[id].block.visible = e0 === 'BLOCKED'; });
-      // 데이터적용본: 정비(MAINT) 중인 설비 빗금판 앞에만 정비 로봇 (로봇 3D 모델링.zip). 처음 정비 때 만들고 끝나면 숨김. 일시정지면 같이 멈춤
+      // 데이터적용본: 정비(MAINT) 중인 설비 앞에 정비 로봇(이브). 2026-10-20 사용자 요청: 크게, 통로에서 걸어 들어와 앞 컨베이어 게이트를 들고 지나 설비 앞에서 정비,
+      // 정비가 끝나면 다시 게이트를 지나 통로로 나가서 사라짐. 일시정지면 같이 멈춤
       this.botT = (this.botT || 0) + dt;
+      const GZ = -3.15, gates = this.gates || {};
       try { Object.keys(pads).forEach(id => {
-        let R = bots[id];
-        if (effOf(id) !== 'MAINT' || this.intro) { if (R) R.root.visible = false; return; }
-        if (!R) {
-          const h = pads[id].hatch; R = bots[id] = createRobot(THREE);
-          R.root.position.set(h.position.x, 0, h.position.z + h.geometry.parameters.height / 2 + 0.2); // 정면(+z, 앞 카메라 쪽) 가장자리
-          R.root.scale.setScalar(1.5); R.setMode(3); scene.add(R.root);
+        let R = bots[id]; const mt = effOf(id) === 'MAINT' && !this.intro, G0 = gates[id];
+        if (!mt && (!R || !R.root.visible)) return;
+        if (!R) { R = bots[id] = createRobot(THREE); R.root.scale.setScalar(2.4); R.root.visible = false; scene.add(R.root); } // 숨긴 채 시작해야 아래에서 통로 자리·목표를 잡는다 (안 하면 위치 NaN)
+        if (mt && (!R.root.visible || R.st === 'out')) { // 정비 시작 (또는 나가다 다시 정비) → 통로에서 들어옴
+          const b = this.MACH[id].bd || this.MACH[id].b, x = G0 ? G0.x : (b[0] + b[1]) / 2000;
+          // 일하는 자리: 게이트 있는 설비 = 컨베이어와 설비 앞면 사이, 없으면(세척기 = 앞에 바스켓 줄) 바스켓 줄 앞 통로
+          R.wz = G0 ? (-3.372 - b[2] / 1000) / 2 : GZ + 0.8; R.az = GZ + 1.9;
+          if (!R.root.visible) R.root.position.set(x, 0, R.az);
+          R.st = 'in'; R.root.visible = true; R.setMode(0);
         }
-        R.root.visible = true; R.update(this.botT, dt, this.camera);
-      }); } catch (e) { if (!this.botErr) { this.botErr = 1; console.error('[factory] robot', e); } } // 로봇 오류로 3D 그리기가 멈추지 않게
+        if (!mt) R.st = 'out';
+        const tz = R.st === 'out' ? R.az : R.wz, z0 = R.root.position.z, dz = tz - z0;
+        if (R.st !== 'work') {
+          const nz = z0 + Math.sign(dz) * Math.min(Math.abs(dz), 0.9 * dt), cross = (z) => Math.abs(z - GZ) < 0.42;
+          if (!G0 || !cross(nz) || G0.a > 1.1) R.root.position.z = nz; // 게이트가 다 들릴 때까지 컨베이어 앞에서 기다림
+          if (Math.abs(tz - R.root.position.z) < 0.01) { if (R.st === 'in') { R.st = 'work'; R.setMode(3); } else { R.root.visible = false; R.st = 'gone'; } }
+        }
+        if (G0) G0.want = R.root.visible && R.st !== 'work' && Math.abs(R.root.position.z - GZ) < 1.0;
+        if (R.root.visible) R.update(this.botT, dt, this.camera);
+      });
+      Object.values(gates).forEach((G0: any) => { G0.a += ((G0.want ? 1.25 : 0) - G0.a) * Math.min(1, dt * 3); G0.piv.rotation.z = -G0.a; }); // 왼쪽 끝이 들림 (경첩 = 오른쪽 끝)
+      } catch (e) { if (!this.botErr) { this.botErr = 1; console.error('[factory] robot', e); } } // 로봇 오류로 3D 그리기가 멈추지 않게
+      // 정비 중 설비 바닥 모션 (사용자 요청 2026-10-20): 퍼져 나가는 고리 3개 + 도는 빛 부채 + 빗금판 흐름 (설비 테두리 깜빡임은 아래 outlines)
+      const MF = this.maintFx || (this.maintFx = {});
+      Object.keys(pads).forEach(id => {
+        const on = effOf(id) === 'MAINT' && !this.intro; let F0 = MF[id];
+        if (!on) { if (F0) F0.g.visible = false; return; }
+        if (!F0) {
+          const b = this.MACH[id].bd || this.MACH[id].b, w = (b[1] - b[0]) / 1000 + 0.3, d = (b[3] - b[2]) / 1000 + 0.3;
+          const g = new THREE.Group(); g.position.set((b[0] + b[1]) / 2000, 0.03, -(b[2] + b[3]) / 2000); scene.add(g);
+          const mk0 = (geo, op) => { const m0 = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: 0x3cc8e6, transparent: true, opacity: op, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide })); m0.rotation.x = -Math.PI / 2; m0.renderOrder = 2; g.add(m0); return m0; };
+          const rings = [0, 1, 2].map(() => mk0(new THREE.RingGeometry(0.94, 1, 72), 0.6));
+          const sweep = mk0(new THREE.CircleGeometry(1, 40, 0, Math.PI / 3), 0.28);
+          F0 = MF[id] = { g, rings, sweep, w, d };
+        }
+        F0.g.visible = true;
+        F0.rings.forEach((r0, i) => { const q = (t * 0.55 + i / 3) % 1, s1 = 0.35 + q * 0.95; r0.scale.set(F0.w * 0.62 * s1, F0.d * 0.62 * s1, 1); r0.material.opacity = 0.7 * (1 - q); });
+        F0.sweep.scale.set(F0.w * 0.55, F0.d * 0.55, 1); F0.sweep.rotation.z += dt * 1.6;
+        const h = pads[id].hatch; if (h.material.map) h.material.map.offset.x -= dt * 0.35; h.material.opacity = 0.65 + 0.25 * Math.sin(t * 3);
+      });
       Object.keys(fx).forEach(id => {
         const F = fx[id], e0 = effOf(id), on = (e0 === 'ALARM' || e0 === 'WARN') && !this.intro, A = e0 === 'ALARM', G = groups[id];
         F.g.visible = on; F.ringG.visible = false;
@@ -2364,7 +2552,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
         steps: M.steps.map((s, i) => ({ n: String(i + 1).padStart(2, '0'), title: s[1], sub: s[2], isCur: i === idx,
           curLabel: running ? '진행 중' : '정지', curFg: SS.fg, curBg: SS.bg,
           rowBg: i === idx ? 'var(--chip)' : 'transparent',
-          numBg: i === idx ? (running ? '#0f9fbd' : SS.dot) : i < idx ? '#dcf5e6' : 'var(--chip)',
+          numBg: i === idx ? (running ? '#7a52f0' : SS.dot) : i < idx ? '#dcf5e6' : 'var(--chip)',
           numFg: i === idx ? '#ffffff' : i < idx ? '#13994f' : 'var(--t3)',
           tFg: i <= idx ? 'var(--t1)' : 'var(--t3)' })) };
       const box = { bg: SS.bg, bd: SS.dot, fg: SS.fg };
@@ -2409,9 +2597,9 @@ export default class FactoryDashboard extends React.Component<any, any> {
           cv: nt ? { glass: 'rgba(16,23,32,0.66)', glass2: 'rgba(14,20,28,0.9)', gbd: 'rgba(140,180,210,0.22)', t1: '#e6edf3', t2: '#b6c4d1', t3: '#8ea0b1', chip: 'rgba(255,255,255,0.08)', sep: 'rgba(255,255,255,0.12)', albg: 'rgba(90,20,26,0.8)', wnbg: 'rgba(80,56,10,0.8)' }
             : { glass: 'rgba(255,255,255,0.62)', glass2: 'rgba(255,255,255,0.88)', gbd: 'rgba(255,255,255,0.9)', t1: '#1c2530', t2: '#44515e', t3: '#5b6876', chip: 'rgba(28,37,48,0.07)', sep: 'rgba(28,37,48,0.1)', albg: 'rgba(255,238,238,0.9)', wnbg: 'rgba(255,248,230,0.9)' },
           navOpen: this.state.navOpen, toggleNav: () => this.setState(s => ({ navOpen: !s.navOpen })),
-          navBg: this.state.navOpen ? '#0f9fbd' : 'var(--glass)', navFg: this.state.navOpen ? '#ffffff' : 'var(--t1)',
+          navBg: this.state.navOpen ? '#7a52f0' : 'var(--glass)', navFg: this.state.navOpen ? '#ffffff' : 'var(--t1)',
           details: [['summary', '요약'], ['full', '전체']].map(([id, label]) => ({ label, onClick: () => this.setState({ detail: id }),
-            bg: this.state.detail === id ? '#0f9fbd' : 'transparent', fg: this.state.detail === id ? '#ffffff' : 'var(--t2)' })),
+            bg: this.state.detail === id ? '#7a52f0' : 'transparent', fg: this.state.detail === id ? '#ffffff' : 'var(--t2)' })),
           ...(() => {
             const sp = (arr) => { const a0 = arr.slice(-24); if (a0.length < 2) return ''; const lo = Math.min(...a0), hi = Math.max(...a0), rg = Math.max(1, hi - lo);
               return a0.map((v0, i) => (i * 52 / (a0.length - 1)).toFixed(1) + ',' + (16 - ((v0 - lo) / rg) * 14 - 1).toFixed(1)).join(' '); };
@@ -2419,7 +2607,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
             const key = this.ORDER.filter(k => st[k] === 'ALARM').join(',');
             if (key !== this.lastAlarmKey) { if (key && key.length >= (this.lastAlarmKey || '').length) this.alarmSince = Date.now(); this.lastAlarmKey = key; }
             const fresh = this.alarmSince && Date.now() - this.alarmSince < 5000;
-            return { uphPts: sp(hs.uph), wipPts: sp(hs.wip), wipStroke: rising ? '#e5484d' : '#0fb5d4',
+            return { uphPts: sp(hs.uph), wipPts: sp(hs.wip), wipStroke: rising ? '#e5484d' : '#7a52f0',
               edgeAnim: fresh ? 'edgePulse 1.1s ease-in-out infinite' : 'edgePulseSoft 2.8s ease-in-out infinite' };
           })(),
           tourOn: this.state.tourOn, noTour: !this.state.tourOn, startTour: () => this.startTour(),
@@ -2447,7 +2635,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
       openAlarm: () => alarmId && this.select(alarmId),
       panelTop: '104px', issues, banners: (sel || this.state.tourOn || this.state.introOn) ? [] : issues, nWarn, warnFg: nWarn ? '#e09400' : 'var(--t3)',
       legendOpen: this.state.pop === 'legend', toggleLegend: () => this.setState(s => ({ pop: s.pop === 'legend' ? null : 'legend' })),
-      legendBg: this.state.pop === 'legend' ? '#0f9fbd' : 'var(--glass)', legendFg: this.state.pop === 'legend' ? '#ffffff' : 'var(--t1)',
+      legendBg: this.state.pop === 'legend' ? '#7a52f0' : 'var(--glass)', legendFg: this.state.pop === 'legend' ? '#ffffff' : 'var(--t1)',
       presentOpen: this.state.pop === 'present', togglePresent: () => this.setState(s => ({ pop: s.pop === 'present' ? null : 'present' })),
       presentItems: [
         { label: '▶ 제품 투어', sub: '부품 하나를 따라 11단계 공정 안내', onClick: () => { this.setState({ pop: null }); this.startTour(); } },
@@ -2455,20 +2643,20 @@ export default class FactoryDashboard extends React.Component<any, any> {
         { label: '주의 · 고장 시연', sub: '설비 이상 상황 재현', onClick: () => this.setState({ pop: 'demo' }) },
       ],
       layersOpen: this.state.pop === 'layers', toggleLayers: () => this.setState(s => ({ pop: s.pop === 'layers' ? null : 'layers' })),
-      layersBg: this.state.pop === 'layers' ? '#0f9fbd' : 'var(--glass)', layersFg: this.state.pop === 'layers' ? '#ffffff' : 'var(--t1)',
+      layersBg: this.state.pop === 'layers' ? '#7a52f0' : 'var(--glass)', layersFg: this.state.pop === 'layers' ? '#ffffff' : 'var(--t1)',
       layerItems: [['bloom', '빛 번짐 (블룸)', '야간 모드에서 네온·경광등 발광'], ['holo', '홀로그램 게이지', '설비 위 3D 부하 게이지 (카드 대체)'], ['heat', '열화상 히트맵', '설비 부하·온도 분포'], ['flow', '물류 흐름선 (보조)', '컨베이어 위 이동 경로 표시']].map(([k, label, sub]) => {
         const L0 = this.state.layers || {}, on = k === 'holo' || k === 'heat' ? !!L0[k] : L0[k] !== false;
-        return { label, sub, mark: on ? '✓' : '', boxBg: on ? '#0f9fbd' : 'transparent', boxBd: on ? '#0f9fbd' : 'var(--t3)', onClick: () => this.setState(s => ({ layers: { ...s.layers, [k]: !on } })) };
+        return { label, sub, mark: on ? '✓' : '', boxBg: on ? '#7a52f0' : 'transparent', boxBd: on ? '#7a52f0' : 'var(--t3)', onClick: () => this.setState(s => ({ layers: { ...s.layers, [k]: !on } })) };
       }),
       qNote: this.state.qNote || ('품질: ' + (this.props.quality || '자동')),
       explodeLabel: this.state.explode ? '조립 보기' : '분해 보기', toggleExplode: () => { this.setState(s => ({ explode: !s.explode })); if (sel && !this.state.explode && this.camera) { const c0 = this.controls.target, off = this.camera.position.clone().sub(c0).multiplyScalar(1.35); this.goal = { pos: c0.clone().add(off), target: c0.clone() }; } },
-      explodeBg: this.state.explode ? '#0f9fbd' : 'var(--chip)', explodeFg: this.state.explode ? '#ffffff' : 'var(--t1)',
+      explodeBg: this.state.explode ? '#7a52f0' : 'var(--chip)', explodeFg: this.state.explode ? '#ffffff' : 'var(--t1)',
       wide: !this.state.narrow, sparkDisp: this.state.narrow ? 'none' : 'block',
       demoOpen: this.state.pop === 'demo', toggleDemo: () => this.setState(s => ({ pop: s.pop === 'demo' ? null : 'demo' })),
-      demoBg: this.state.pop === 'demo' ? '#0f9fbd' : 'var(--glass)', demoFg: this.state.pop === 'demo' ? '#ffffff' : 'var(--t1)',
+      demoBg: this.state.pop === 'demo' ? '#7a52f0' : 'var(--glass)', demoFg: this.state.pop === 'demo' ? '#ffffff' : 'var(--t1)',
       demoTargets: this.ORDER.map(id => { const on = this.state.demoT === id, e0 = eff(id);
         return { name: this.MACH[id].name, dot: S[e0].dot, onClick: () => this.setState({ demoT: id }),
-          bg: on ? '#0f9fbd' : 'var(--chip)', fg: on ? '#ffffff' : 'var(--t1)', bd: on ? '#0f9fbd' : 'var(--sep)' }; }),
+          bg: on ? '#7a52f0' : 'var(--chip)', fg: on ? '#ffffff' : 'var(--t1)', bd: on ? '#7a52f0' : 'var(--sep)' }; }),
       demoName: this.MACH[this.state.demoT].name, demoStText: S[eff(this.state.demoT)].label, demoStFg: S[eff(this.state.demoT)].fg,
       demoWarnMsg: this.ISSUE[this.state.demoT].w[1], demoAlarmMsg: this.ISSUE[this.state.demoT].a[1],
       doWarn: () => this.demo('warn'), doAlarm: () => this.demo('alarm'), doFix: () => this.demo('fix'), doReset: () => this.demo('reset'),
@@ -2480,17 +2668,8 @@ export default class FactoryDashboard extends React.Component<any, any> {
         card('card-vf2', 'vf2', 'VF2-02', 'OP-30 · 가공', m.vf2),
         card('card-wsh', 'wsh', 'WSH-01', 'OP-40 · 세척', m.wsh, 'Filter Life'),
       ],
-      tags: this.props.embedded
-        ? [...[['inf', 'tag-inf'], ['saw', 'card-saw'], ['mil', 'tag-mil'], ['vf1', 'card-vf1'], ['vf2', 'card-vf2'], ['wsh', 'card-wsh'], ['cmm', 'card-cmm']].map(([mid, anchor0]) => {
-          const anchor = this.props.dataMode ? 'tag-' + mid : anchor0;
-          const e0 = eff(mid) || 'NODATA', t0 = this.STV[e0] || this.STV.NODATA;
-          const DM = !!this.props.dataMode, isInf = DM && mid === 'inf';
-          const bnOn = DM && !!this.state.bn && this.state.bn !== 'OP-30' && this.MACH[mid].op === this.state.bn;
-          // 투입 대(INF-01)는 상태가 없는 배치 물체 (SCR-04 [1]) — 이름만
-          const sc0 = isInf ? S.NODATA : (S[e0] || S.NODATA), quiet = isInf || e0 === 'IDLE' || e0 === 'NODATA' || e0 === 'MAINT';
-          return { id: anchor, mid, name: this.MACH[mid].name, op: mid === 'inf' ? this.MACH[mid].op : '', dot: isInf ? '#8a97a4' : (S[e0] || S.NODATA).dot, tagBg: quiet ? '#ffffff' : sc0.bg, tagBd: quiet ? '#c3cbd3' : sc0.dot, tagBdw: e0 === 'ALARM' ? 2 : 1, tagDash: e0 === 'MAINT' || e0 === 'NODATA', st: isInf ? '' : t0[0] + ' ' + t0[1], stFg: t0[2],
-            onSelect: isInf ? null : pick(mid), bn: bnOn, big: !!this.props.bigTags, al: e0 === 'ALARM' || e0 === 'WARN' };
-        }), { id: 'tag-rack', mid: 'rack', name: 'RACK-01', op: '봉재 랙', dot: '#8a97a4', onSelect: null, big: !!this.props.bigTags }]
+      tags: this.props.embedded // 앱 화면: 설비·봉재 랙 이름은 3D 천장 표지판(장면 안 판)으로 — 화면 위 이름표 없음
+        ? []
         : [
         { id: 'tag-inf', mid: 'inf', name: 'INF-01', op: '투입 베드', dot: S[eff('inf')].dot, onSelect: pick('inf') },
         { id: 'tag-mil', mid: 'mil', name: 'MIL-01', op: 'OP-20', dot: S[eff('mil')].dot, onSelect: pick('mil') },
@@ -2512,11 +2691,11 @@ export default class FactoryDashboard extends React.Component<any, any> {
       stepper: this.ORDER.map((id, i) => {
         const M = this.MACH[id], on = sel === id;
         return { name: M.name, label: this.state.narrow ? (id === 'inf' ? 'INF' : M.op) : M.name, op: M.op, dot: S[eff(id)].dot, arrow: i < this.ORDER.length - 1, onClick: pick(id),
-          bg: on ? '#0f9fbd' : 'var(--glass)', fg: on ? '#ffffff' : 'var(--t1)', bd: on ? '#0f9fbd' : eff(id) === 'ALARM' ? '#e5484d' : eff(id) === 'WARN' ? '#f0a500' : 'var(--gbd)' };
+          bg: on ? '#7a52f0' : 'var(--glass)', fg: on ? '#ffffff' : 'var(--t1)', bd: on ? '#7a52f0' : eff(id) === 'ALARM' ? '#e5484d' : eff(id) === 'WARN' ? '#f0a500' : 'var(--gbd)' };
       }),
       views: [['front', '정면'], ['iso', '아이소'], ['top', '평면'], ['wh', '창고']].map(([id, label]) => ({
         label, onClick: () => this.setView(id),
-        bg: !sel && view === id ? '#0f9fbd' : 'transparent', fg: !sel && view === id ? '#ffffff' : 'var(--t2)',
+        bg: !sel && view === id ? '#7a52f0' : 'transparent', fg: !sel && view === id ? '#ffffff' : 'var(--t2)',
       })),
     };
   }
@@ -2547,7 +2726,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
     <div className="absolute left-0 top-0 invisible [transform-origin:50%_50%] text-[12px] font-semibold text-[color:var(--bw)] whitespace-nowrap" data-tier="zone" data-anchor="z-wip" data-align="center">재공 띠</div>
     <div className="absolute left-0 top-0 invisible [transform-origin:50%_50%] text-[12px] font-semibold text-[color:var(--bk)] whitespace-nowrap" data-tier="zone" data-anchor="z-work" data-align="center">작업 띠</div>
     <div className="absolute left-0 top-0 invisible [transform-origin:50%_50%] [font:500_11px_'JetBrains_Mono',monospace] text-[color:var(--ink2)] whitespace-nowrap" data-tier="zone" data-anchor="z-front" data-align="center">설비 앞면 선 Y 3,800</div>
-    <div className="absolute left-0 top-0 invisible [transform-origin:50%_50%] text-[13px] font-semibold whitespace-nowrap p-[3px_8px] rounded-[5px]" data-tier={v.op30Bn ? 'tag' : 'zone'} data-anchor="z-op30" data-align="center" style={{ color: v.op30Bn ? '#b45309' : '#2c3a47', background: v.op30Bn ? '#fff1e0' : 'var(--glass)', border: v.op30Bn ? '1.5px solid #e8954a' : 'none' } as any}>{v.op30Bn ? 'OP-30 (2대 병렬) · ▭ 병목' : 'OP-30 · 2대 병렬 (WIP-2 → WIP-3)'}</div>
+    {/* 병목 표시는 위에서 비추는 주황 조명으로 (2026-10-19) — 판·칩은 설비·이름표를 가려서 뺌 */}
 
     {(v.wips || []).map((w: any, $index: number) => (<React.Fragment key={$index}>
       <div className="absolute left-0 top-0 invisible [transform-origin:50%_100%]" data-tier="wip" data-alert={w.alert} data-anchor={w.id}>
@@ -2663,7 +2842,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
         </React.Fragment>))}
       </div>
       <div className="relative">
-        <button className="cursor-pointer flex items-center gap-[6px] h-[32px] p-[0_13px] rounded-[9px] border-0 bg-[#0f9fbd] text-[#ffffff] [font:700_12px_'Pretendard_Variable',sans-serif] [box-shadow:0_6px_16px_rgba(15,159,189,0.35)] whitespace-nowrap" onClick={v.togglePresent}>발표 모드<span className="text-[9px]">▾</span></button>
+        <button className="cursor-pointer flex items-center gap-[6px] h-[32px] p-[0_13px] rounded-[9px] border-0 bg-[#7a52f0] text-[#ffffff] [font:700_12px_'Pretendard_Variable',sans-serif] [box-shadow:0_6px_16px_rgba(122,82,240,0.35)] whitespace-nowrap" onClick={v.togglePresent}>발표 모드<span className="text-[9px]">▾</span></button>
         {v.presentOpen && (<>
           <div className="absolute left-0 top-[calc(100%_+_6px)] w-[220px] flex flex-col gap-[2px] p-[8px] rounded-[10px] bg-[var(--glass2)] [backdrop-filter:blur(16px)] [-webkit-backdrop-filter:blur(16px)] [border:1px_solid_var(--gbd)] [box-shadow:0_14px_34px_rgba(28,45,62,0.2)] z-[5]">
             {(v.presentItems || []).map((pi: any, $index: number) => (<React.Fragment key={$index}>
@@ -2708,7 +2887,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
     <div className="w-[1px] bg-[var(--sep)]"></div>
     <div className="flex flex-col gap-[3px] p-[10px_16px]">
       <span className="text-[11px] text-[color:var(--t3)]">시간당 생산</span>
-      <span className="flex items-center gap-[8px]"><span className="[font:600_16px_'JetBrains_Mono',monospace] whitespace-nowrap">{v.uph} <span className="text-[11px] text-[color:var(--t3)]">pcs</span></span><svg className="[overflow:visible]" width="52" height="18" viewBox="0 0 52 18" style={{ display: v.sparkDisp } as any}><polyline points={v.uphPts} fill="none" stroke="#0fb5d4" strokeWidth="1.6" strokeLinejoin="round" strokeLinecap="round" /></svg></span>
+      <span className="flex items-center gap-[8px]"><span className="[font:600_16px_'JetBrains_Mono',monospace] whitespace-nowrap">{v.uph} <span className="text-[11px] text-[color:var(--t3)]">pcs</span></span><svg className="[overflow:visible]" width="52" height="18" viewBox="0 0 52 18" style={{ display: v.sparkDisp } as any}><polyline points={v.uphPts} fill="none" stroke="#7a52f0" strokeWidth="1.6" strokeLinejoin="round" strokeLinecap="round" /></svg></span>
     </div>
     <div className="w-[1px] bg-[var(--sep)]"></div>
     <div className="flex flex-col gap-[3px] p-[10px_16px]">
@@ -2775,7 +2954,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
             <span className="text-[11px] font-bold">{s.label}</span>
           </button>
           {s.arrow && (<>
-            <span className="text-[#0fb5d4] text-[10px] font-bold">›</span>
+            <span className="text-[#7a52f0] text-[10px] font-bold">›</span>
           </>)}
         </div>
       </React.Fragment>))}
@@ -2927,9 +3106,9 @@ export default class FactoryDashboard extends React.Component<any, any> {
   {v.tourOn && (<>
     <div className="absolute left-[50%] bottom-[20px] [transform:translateX(-50%)] [width:min(760px,_calc(100%_-_48px))] flex flex-col gap-[11px] p-[14px_16px_15px] rounded-[10px] bg-[var(--glass2)] [backdrop-filter:blur(16px)_saturate(1.4)] [-webkit-backdrop-filter:blur(16px)_saturate(1.4)] [border:1px_solid_var(--gbd)] [box-shadow:0_18px_44px_rgba(10,20,30,0.22)]">
       <div className="flex items-start gap-[14px]">
-        <span className="flex-none [font:700_13px_'JetBrains_Mono',monospace] text-[#ffffff] bg-[#0f9fbd] p-[6px_9px] rounded-[7px] whitespace-nowrap">{v.tStep}</span>
+        <span className="flex-none [font:700_13px_'JetBrains_Mono',monospace] text-[#ffffff] bg-[#7a52f0] p-[6px_9px] rounded-[7px] whitespace-nowrap">{v.tStep}</span>
         <div className="flex-1 min-w-0 flex flex-col gap-[3px]">
-          <span className="[font:700_11px_'JetBrains_Mono',monospace] tracking-[0.08em] text-[#0b7f97]">{v.tK}</span>
+          <span className="[font:700_11px_'JetBrains_Mono',monospace] tracking-[0.08em] text-[#5a3bc8]">{v.tK}</span>
           <span className="text-[19px] font-bold tracking-[-0.01em] text-[color:var(--t1)]">{v.tT}</span>
           <span className="text-[13px] text-[color:var(--t2)] leading-[1.45] text-pretty">{v.tD}</span>
         </div>

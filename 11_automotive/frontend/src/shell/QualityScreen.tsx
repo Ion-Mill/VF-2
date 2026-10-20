@@ -32,7 +32,7 @@ const ITEM_COLOR: Record<string, { line: string; bg: string; text: string }> = {
 };
 const box = 'rounded-2xl border border-slate-300 bg-white p-5';
 const H3 = ({ children, right }: { children: React.ReactNode; right?: React.ReactNode }) => (
-  <div className="flex flex-wrap items-center gap-3"><h3 className="flex items-center gap-2 text-[17px] font-bold"><span className="h-2.5 w-2.5 rounded-full bg-[#1f5fc4]" />{children}</h3>{right && <div className="ml-auto flex items-center gap-3">{right}</div>}</div>);
+  <div className="flex flex-wrap items-center gap-3"><h3 className="flex items-center gap-2 text-[17px] font-bold"><span className="h-2.5 w-2.5 rounded-full bg-[#6a43e0]" />{children}</h3>{right && <div className="ml-auto flex items-center gap-3">{right}</div>}</div>);
 
 export function QualityScreen({ cap = false }: { cap?: boolean }) { // cap: 공정 능력·불량 화면 (qcap)
   const { key, role, user, twin, toast, go, wrs, eve } = useApp(); // eve: 이브 창 열림 — 결과 파일 높이를 수동 입력 끝까지로
@@ -108,13 +108,13 @@ export function QualityScreen({ cap = false }: { cap?: boolean }) { // cap: 공�
     const verdict = !done6 || !done7 ? '입력 기다림' : states[(sel ?? 1) - 1] === 'fail' || gv[k6] === 'FAIL' || gv[k7] !== 'PASS' ? '불합격' : '합격';
     const steps: [string, string, boolean][] = [['측정 시작 확인', started ? '확인함' : '바코드·본인 확인', started], ['CMM 측정', cmmAt ? `결과 ${hm(cmmAt)}` : '결과 대기', !!cmmAt], ['게이지 · 외관', 'M6 · 외관', done6 && done7], ['다음 부품', nextSeq ? `순번 ${nextSeq}` : '—', false]];
     const curStep = !started ? 0 : !cmmAt ? 1 : !(done6 && done7) ? 2 : 3;
-    const big = (on: boolean, bad?: boolean) => `h-24 rounded-xl border-2 text-[30px] font-extrabold ${on ? (bad ? 'border-[#c62a2f] bg-[#fdeeee] text-[#c62a2f]' : 'border-[#1f5fc4] bg-[#1f5fc4] text-white') : 'border-[#9db6ea] bg-white text-[#1f4fa8]'}`;
+    const big = (on: boolean, bad?: boolean) => `h-24 rounded-xl border-2 text-[30px] font-extrabold ${on ? (bad ? 'border-[#c62a2f] bg-[#fdeeee] text-[#c62a2f]' : 'border-[#6a43e0] bg-[#6a43e0] text-white') : 'border-[#c4b3f5] bg-white text-[#5532c4]'}`;
     return (
       <div className={PAGE}>
         <div className="mx-auto flex max-w-[1300px] flex-col gap-4">
           <section className={`${box} grid grid-cols-4 gap-2 !p-3`}>{steps.map(([t, sub, ok], i) => (
-            <div key={t} className={`flex items-center gap-3 rounded-xl px-3 py-2 ${i === curStep ? 'bg-[#e8eefb]' : ''}`}>
-              <span className={`flex h-11 w-11 items-center justify-center rounded-full text-[18px] font-bold ${ok ? 'bg-[#3d4a5c] text-white' : i === curStep ? 'bg-[#1f5fc4] text-white' : 'border-2 border-slate-300 text-slate-500'}`}>{ok ? '✓' : i + 1}</span>
+            <div key={t} className={`flex items-center gap-3 rounded-xl px-3 py-2 ${i === curStep ? 'bg-[#f0ebff]' : ''}`}>
+              <span className={`flex h-11 w-11 items-center justify-center rounded-full text-[18px] font-bold ${ok ? 'bg-[#3d4a5c] text-white' : i === curStep ? 'bg-[#6a43e0] text-white' : 'border-2 border-slate-300 text-slate-500'}`}>{ok ? '✓' : i + 1}</span>
               <div><div className="text-[18px] font-bold">{t}</div><div className="text-[14px] text-slate-500">{sub}</div></div></div>))}
           </section>
           {!started && (
@@ -141,10 +141,10 @@ export function QualityScreen({ cap = false }: { cap?: boolean }) { // cap: 공�
                 const pj = judge(it, v), out = q?.ucl != null && v != null && (v > q.ucl || v < q.lcl);
                 return <div key={k} className={`flex items-center justify-between rounded-lg border px-4 py-2.5 ${pj === 'FAIL' ? 'border-[#e8a0a3] bg-[#fdeeee]' : out ? 'border-[#ecd47a] bg-[#fdf3c8]' : 'border-slate-200'}`}><span className="text-[17px] font-bold">{SHORT[k]}</span><span className="flex items-center gap-4"><b className="font-mono text-[20px]">{v == null ? '—' : k === '4' && v >= 0 ? `+${v}` : v}</b><span className={`w-5 text-[18px] ${pj === 'FAIL' ? 'text-[#c62a2f]' : out ? 'text-[#b8860b]' : ''}`}>{v == null ? '' : pj === 'FAIL' ? '✕' : out ? '▲' : '✓'}</span></span></div>; })}</div>
               <div className="mt-4 text-[17px] font-bold">로트 진행 <span className="font-mono font-normal text-slate-600">{measured} / {total}</span></div>
-              <div className="mt-2 grid grid-cols-10 gap-1">{states.map((st0, i) => { const n = i + 1; return <button key={n} disabled={st0 === 'wait'} onClick={() => setSeqSel(n)} className={`relative h-9 rounded-md border text-[14px] font-bold ${st0 === 'fail' ? 'border-[#e8a0a3] bg-[#fdeeee] text-[#c62a2f]' : st0 === 'measuring' ? 'border-[#9db6ea] bg-[#e8eefb] text-[#1f5fc4]' : st0 === 'none' ? 'border-dashed border-slate-400 bg-white' : st0 === 'wait' ? 'border-transparent bg-slate-100 text-slate-500' : 'border-slate-300 bg-white'} ${n === sel ? '!border-2 !border-[#1f5fc4]' : ''}`}>{n}{st0 === 'measuring' && <span className="absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-[#1f5fc4]" />}</button>; })}</div>
+              <div className="mt-2 grid grid-cols-10 gap-1">{states.map((st0, i) => { const n = i + 1; return <button key={n} disabled={st0 === 'wait'} onClick={() => setSeqSel(n)} className={`relative h-9 rounded-md border text-[14px] font-bold ${st0 === 'fail' ? 'border-[#e8a0a3] bg-[#fdeeee] text-[#c62a2f]' : st0 === 'measuring' ? 'border-[#c4b3f5] bg-[#f0ebff] text-[#6a43e0]' : st0 === 'none' ? 'border-dashed border-slate-400 bg-white' : st0 === 'wait' ? 'border-transparent bg-slate-100 text-slate-500' : 'border-slate-300 bg-white'} ${n === sel ? '!border-2 !border-[#6a43e0]' : ''}`}>{n}{st0 === 'measuring' && <span className="absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-[#6a43e0]" />}</button>; })}</div>
               {missing.length > 0 && (
                 <div className="mt-4 rounded-xl border border-[#ecd47a] bg-[#fdf6dc] p-3">
-                  <div className="flex items-center justify-between gap-2"><b className="text-[17px] text-[#7a5600]">▲ 순번 {missing[0]} 측정값 없음</b><button onClick={() => setSeqSel(missing[0])} className="h-11 rounded-lg border-2 border-[#1f5fc4] bg-white px-4 text-[16px] font-bold text-[#1f5fc4]">수동 입력</button></div>
+                  <div className="flex items-center justify-between gap-2"><b className="text-[17px] text-[#7a5600]">▲ 순번 {missing[0]} 측정값 없음</b><button onClick={() => setSeqSel(missing[0])} className="h-11 rounded-lg border-2 border-[#6a43e0] bg-white px-4 text-[16px] font-bold text-[#6a43e0]">수동 입력</button></div>
                   {sel === missing[0] && <div className="mt-2 flex flex-wrap items-center gap-2"><select value={mi.item} onChange={(e) => setMi({ ...mi, item: e.target.value })} className="h-11 rounded-lg border border-slate-300">{cmmItems.map((i) => <option key={i.item_seq} value={i.item_seq}>{i.item_name}</option>)}</select>
                     <input value={mi.v} onChange={(e) => setMi({ ...mi, v: e.target.value })} placeholder="값" className="h-11 w-28 rounded-lg border border-slate-300 px-2" />
                     <button disabled={!mi.v} onClick={() => { setManual((l) => [...l, { lot_no: lot, part_seq: sel, item_seq: Number(mi.item), measured_value: Number(mi.v), measured_at: simIso(), input_method: 'MANUAL', entered_by: user.id, check_status: 'CHECK', use_for_judgement: false, remeasure_seq: 1 }]); setMi({ ...mi, v: '' }); toast(`순번 ${sel} 수동 저장 — 반장 확인 필요`); }} className="h-11 rounded-lg bg-[#1c2530] px-4 font-bold text-white disabled:bg-slate-300">저장</button></div>}
@@ -152,8 +152,8 @@ export function QualityScreen({ cap = false }: { cap?: boolean }) { // cap: 공�
             </section>
           </div>
           <section className={`${box} flex flex-wrap items-center gap-4`}>
-            <span className="flex items-center gap-2 text-[18px]"><span className="h-3.5 w-3.5 rounded-full bg-[#1f5fc4] shadow-[0_0_0_5px_#e8eefb]" />{nextSeq ? `다음 순번 ${nextSeq}` : '다음 부품 없음'}{measuringSeq ? ' · CMM 측정 중' : ''}</span>
-            <div className="ml-auto text-right"><button disabled={!(done6 && done7) || !nextSeq || nextSeq > total} onClick={() => setSeqSel(nextSeq)} className="h-16 rounded-xl bg-[#1f5fc4] px-10 text-[24px] font-extrabold text-white disabled:bg-slate-200 disabled:text-slate-500">다음 부품</button>
+            <span className="flex items-center gap-2 text-[18px]"><span className="h-3.5 w-3.5 rounded-full bg-[#6a43e0] shadow-[0_0_0_5px_#f0ebff]" />{nextSeq ? `다음 순번 ${nextSeq}` : '다음 부품 없음'}{measuringSeq ? ' · CMM 측정 중' : ''}</span>
+            <div className="ml-auto text-right"><button disabled={!(done6 && done7) || !nextSeq || nextSeq > total} onClick={() => setSeqSel(nextSeq)} className="h-16 rounded-xl bg-[#6a43e0] px-10 text-[24px] font-extrabold text-white disabled:bg-slate-200 disabled:text-slate-500">다음 부품</button>
               {!(done6 && done7) && <div className="mt-1 text-[14px] text-slate-500">M6 · 외관 입력 필요</div>}</div>
           </section>
         </div>
@@ -166,7 +166,7 @@ export function QualityScreen({ cap = false }: { cap?: boolean }) { // cap: 공�
         <section className={box}>
           <H3>공정능력 Cpk</H3>
           <div className="mt-3 grid grid-cols-6 gap-3">{ORDER.map((k) => { const q = qItem(k); if (!q) return null; const low = q.cpk != null && q.cpk < Number(q.cpk_min); return (
-            <button key={k} onClick={() => setItemSel(k)} className={`rounded-xl border border-t-4 bg-[#f6f8fd] p-3 text-left ${itemSel === k ? 'border-[#1f5fc4]' : 'border-slate-200 border-t-[#1f5fc4]'}`}>
+            <button key={k} onClick={() => setItemSel(k)} className={`rounded-xl border border-t-4 bg-[#f6f8fd] p-3 text-left ${itemSel === k ? 'border-[#6a43e0]' : 'border-slate-200 border-t-[#6a43e0]'}`}>
               <div className="text-[13px] font-bold">{q.item_name}</div>
               <div className={`mt-1 font-mono text-[26px] font-bold ${low ? 'text-[#b45309]' : ''}`}>{q.cpk ?? '—'}</div>
               <div className="text-[12px] text-slate-500">기준 {q.cpk_min}{low ? ' ▲ 미달' : ''}</div></button>); })}</div>
@@ -175,7 +175,7 @@ export function QualityScreen({ cap = false }: { cap?: boolean }) { // cap: 공�
         {/* 관리도 */}
         <section className={box}>
           <H3>관리도 — {items.find((x) => String(x.item_seq) === itemSel)?.item_name} <span className="text-[13px] font-normal text-slate-500">OP-30 정밀 가공 · 공차 {qItem(itemSel)?.lsl || '—'} ~ {qItem(itemSel)?.usl || '—'}</span></H3>
-          <div className="mt-3 flex flex-wrap gap-2">{ORDER.map((k) => <button key={k} onClick={() => { setItemSel(k); setPtSel(null); }} className={`h-10 rounded-lg border px-3 text-[14px] font-bold ${itemSel === k ? 'border-[#1f5fc4] bg-[#1f5fc4] text-white' : 'border-slate-300 bg-white text-[#1f5fc4]'}`}>{SHORT[k]}</button>)}</div>
+          <div className="mt-3 flex flex-wrap gap-2">{ORDER.map((k) => <button key={k} onClick={() => { setItemSel(k); setPtSel(null); }} className={`h-10 rounded-lg border px-3 text-[14px] font-bold ${itemSel === k ? 'border-[#6a43e0] bg-[#6a43e0] text-white' : 'border-slate-300 bg-white text-[#6a43e0]'}`}>{SHORT[k]}</button>)}</div>
           {qItem(itemSel) && <IMR it={qItem(itemSel)!} sel={ptSel} onSel={setPtSel} />}
         </section>
 
@@ -207,7 +207,7 @@ export function QualityScreen({ cap = false }: { cap?: boolean }) { // cap: 공�
           {twin?.bottleneck?.process_code && <span className="rounded-lg border-2 border-[#e8954a] px-3 py-1 text-[14px] font-bold text-[#b45309]">병목 {twin.bottleneck.process_code}</span>}
           <div className="ml-auto flex items-center gap-2">
             {L && ['ON_HOLD', 'HOLD_REVIEW', 'WAIT_JUDGEMENT', 'IN_PROCESS', 'WAIT_INSPECTION'].includes(L.status) && <span className="rounded-xl border-2 border-[#1c2530] px-4 py-2 text-[16px] font-extrabold">🔒 {STATUS[L.status]} · 출하 금지</span>}
-            <button onClick={() => go('lots', lot)} className="h-11 rounded-lg border border-slate-300 bg-white px-4 text-[14px] text-[#1f5fc4]">로트 추적</button>
+            <button onClick={() => go('lots', lot)} className="h-11 rounded-lg border border-slate-300 bg-white px-4 text-[14px] text-[#6a43e0]">로트 추적</button>
           </div>
         </section>
 
@@ -215,7 +215,7 @@ export function QualityScreen({ cap = false }: { cap?: boolean }) { // cap: 공�
         <section className={box}>
           <H3 right={<>
             <span className="text-[14px]">측정 <b className="font-mono text-[20px]">{measured} / {total}</b></span>
-            <div className="h-2.5 w-28 overflow-hidden rounded-full bg-slate-200"><div className="h-full bg-[#1f5fc4]" style={{ width: `${total ? (measured / total) * 100 : 0}%` }} /></div>
+            <div className="h-2.5 w-28 overflow-hidden rounded-full bg-slate-200"><div className="h-full bg-[#6a43e0]" style={{ width: `${total ? (measured / total) * 100 : 0}%` }} /></div>
             <span className="text-[14px]">합격 <b className="text-[18px]">{passN}</b></span><span className="text-[14px] text-[#c62a2f]">불합격 <b className="text-[18px]">{failN}</b></span><span className="text-[14px]">기록 없음 {noneN}</span><span className="text-[14px]">남은 <b className="text-[18px]">{Math.max(0, total - measured)}</b></span>
           </>}>한눈에 보기 — {lot || '로트를 고르세요'}</H3>
           {!rows.length ? <p className="mt-4 text-[14px] text-slate-500">측정 기록 없음{res.data ? '' : ' (불러오는 중)'}</p> : (
@@ -223,7 +223,7 @@ export function QualityScreen({ cap = false }: { cap?: boolean }) { // cap: 공�
               {/* 왼쪽: 모식도(작게) + 공차 안 위치 3×2. 오른쪽: 부품 지도 15×4 (사용자 요청 2026-10-19) */}
               <div>
                 <div className="mb-1 flex items-center gap-2 text-[15px] font-bold">부품 모식도 · 순번 {sel ?? '—'} <span className="rounded border border-slate-300 px-1.5 text-[12px] font-normal text-slate-500">모식도</span></div>
-                <button type="button" disabled={!sel} onClick={() => setZoom(true)} aria-label={`순번 ${sel} 모식도 크게 보기`} className="block w-full max-w-[520px] cursor-zoom-in rounded-xl border border-slate-200 bg-[#f6f8fc] p-1 hover:border-[#9db6ea]">
+                <button type="button" disabled={!sel} onClick={() => setZoom(true)} aria-label={`순번 ${sel} 모식도 크게 보기`} className="block w-full max-w-[520px] cursor-zoom-in rounded-xl border border-slate-200 bg-[#f6f8fc] p-1 hover:border-[#c4b3f5]">
                   <PartSketch rows={rows} seq={sel} mainRow={mainRow} items={items} qItem={qItem} m6={sel ? gv[`${lot}|${sel}|6`] : undefined} />
                 </button>
                 {eve && tolGrid}
@@ -233,11 +233,11 @@ export function QualityScreen({ cap = false }: { cap?: boolean }) { // cap: 공�
                 {/* 로트는 최대 60개 → 15×4 칸을 늘 깔고 남은 높이를 4줄이 나눠 씀. 로트 수보다 뒤 칸은 연한 번호의 빈칸 — 60까지 번호 채움 (사용자 요청 2026-10-19) */}
                 <div className="mt-2 grid flex-1 grid-cols-[repeat(15,minmax(0,1fr))] gap-1" style={{ gridTemplateRows: `repeat(${mapRows}, minmax(38px, 1fr))` }}>{states.map((s, i) => {
                   const n = i + 1, on = n === sel;
-                  const cls = s === 'fail' ? 'border-[#e8a0a3] bg-[#fdeeee] text-[#c62a2f]' : s === 'warn' ? 'border-[#ecd47a] bg-[#fdf3c8] text-[#7a5600]' : s === 'measuring' ? 'border-[#9db6ea] bg-[#e8eefb] text-[#1f5fc4]' : s === 'none' ? 'border-dashed border-slate-400 bg-white text-slate-500' : s === 'wait' ? 'border-transparent bg-slate-100 text-slate-400' : 'border-slate-300 bg-white';
+                  const cls = s === 'fail' ? 'border-[#e8a0a3] bg-[#fdeeee] text-[#c62a2f]' : s === 'warn' ? 'border-[#ecd47a] bg-[#fdf3c8] text-[#7a5600]' : s === 'measuring' ? 'border-[#c4b3f5] bg-[#f0ebff] text-[#6a43e0]' : s === 'none' ? 'border-dashed border-slate-400 bg-white text-slate-500' : s === 'wait' ? 'border-transparent bg-slate-100 text-slate-400' : 'border-slate-300 bg-white';
                   return <button key={n} disabled={s === 'wait'} onClick={() => { setSeqSel(n); setZoom(true); }} className={`relative rounded-md border text-[16px] font-bold ${cls} ${on ? '!border-2 !border-[#1c2530]' : ''}`}>
-                    {n}{s === 'measuring' && <span className="absolute right-0.5 top-0.5 h-1.5 w-1.5 rounded-full bg-[#1f5fc4]" />}</button>;
+                    {n}{s === 'measuring' && <span className="absolute right-0.5 top-0.5 h-1.5 w-1.5 rounded-full bg-[#6a43e0]" />}</button>;
                 })}{Array.from({ length: mapRows * 15 - states.length }, (_, i) => <span key={`e${i}`} title="이 로트에 없는 순번" className="flex items-center justify-center rounded-md border border-dashed border-slate-200 text-[16px] font-bold text-slate-300">{states.length + i + 1}</span>)}</div>
-                <div className="mt-2 flex flex-wrap gap-3 text-[12px] text-slate-500"><span><i className="mr-1 inline-block h-2.5 w-2.5 rounded-sm border border-slate-300 bg-white align-middle" />합격</span><span className="text-[#c62a2f]"><i className="mr-1 inline-block h-2.5 w-2.5 rounded-sm bg-[#fdeeee] align-middle ring-1 ring-[#e8a0a3]" />불합격</span><span className="text-[#7a5600]"><i className="mr-1 inline-block h-2.5 w-2.5 rounded-sm bg-[#fdf3c8] align-middle ring-1 ring-[#ecd47a]" />주의 (3σ 밖 · M6 불합격)</span><span className="text-[#1f5fc4]">● 측정 중</span><span><i className="mr-1 inline-block h-2.5 w-2.5 rounded-sm border border-dashed border-slate-400 align-middle" />기록 없음</span><span>회색 대기</span><span className="text-slate-400">연한 점선 = 이 로트에 없는 순번</span></div>
+                <div className="mt-2 flex flex-wrap gap-3 text-[12px] text-slate-500"><span><i className="mr-1 inline-block h-2.5 w-2.5 rounded-sm border border-slate-300 bg-white align-middle" />합격</span><span className="text-[#c62a2f]"><i className="mr-1 inline-block h-2.5 w-2.5 rounded-sm bg-[#fdeeee] align-middle ring-1 ring-[#e8a0a3]" />불합격</span><span className="text-[#7a5600]"><i className="mr-1 inline-block h-2.5 w-2.5 rounded-sm bg-[#fdf3c8] align-middle ring-1 ring-[#ecd47a]" />주의 (3σ 밖 · M6 불합격)</span><span className="text-[#6a43e0]">● 측정 중</span><span><i className="mr-1 inline-block h-2.5 w-2.5 rounded-sm border border-dashed border-slate-400 align-middle" />기록 없음</span><span>회색 대기</span><span className="text-slate-400">연한 점선 = 이 로트에 없는 순번</span></div>
                 {sel && <div className="mt-3 rounded-lg bg-slate-50 px-3 py-2 text-[14px]">순번 {sel} · {states[sel - 1] === 'fail' ? '불합격' : states[sel - 1] === 'none' ? '기록 없음' : '합격'}{selRow1 ? ` · Ø45 ${num(selRow1.measured_value)} · ${hm(selRow1.measured_at)}` : ''}{cmmWarn(sel) && <b className="text-[#b8860b]"> ▲ 관리도 3σ 밖</b>}
                   <span className="ml-1">· M6 {gv[`${lot}|${sel}|6`] === 'PASS' ? '통과' : gv[`${lot}|${sel}|6`] === 'FAIL' ? <b className="text-[#b8860b]">▲ 불합격 (주의)</b> : '입력 전'} <span className="text-[12px] text-slate-500">(작업자 게이지)</span></span></div>}
               </div>
@@ -259,7 +259,7 @@ export function QualityScreen({ cap = false }: { cap?: boolean }) { // cap: 공�
               <div className="flex items-center gap-2"><input value={bar} onChange={(e) => setBar(e.target.value)} placeholder="로트 바코드 찍기" className="h-10 w-[180px] rounded-lg border border-slate-300 px-2" />{bar && <span className={bar === cur?.lot_no ? 'font-bold text-[#13994f]' : 'font-bold text-[#c62a2f]'}>{bar === cur?.lot_no ? '✓ 로트 바코드 일치' : '✕ 다른 로트'}</span>}</div>
               <button onClick={() => setMe(true)} className="h-10 w-fit rounded-lg border border-slate-300 bg-white px-3">{me ? `✓ 본인 확인 ${user.name}` : '본인 확인'}</button>
             </div>) : <p className="mt-2 text-[13px] text-slate-500">바코드·본인 확인은 OP-50 작업자 태블릿</p>}
-            <div className="mt-3 inline-flex rounded-full bg-[#e8eefb] px-3 py-1.5 text-[14px] font-bold text-[#1f5fc4]">● CMM-01 {cur?.state_code === 'RUN' ? '측정 중 → 결과 대기' : STATUS[cur?.state_code ?? ''] ?? (cur?.state_code === 'IDLE' ? '대기' : cur?.state_code ?? '—')}</div>
+            <div className="mt-3 inline-flex rounded-full bg-[#f0ebff] px-3 py-1.5 text-[14px] font-bold text-[#6a43e0]">● CMM-01 {cur?.state_code === 'RUN' ? '측정 중 → 결과 대기' : STATUS[cur?.state_code ?? ''] ?? (cur?.state_code === 'IDLE' ? '대기' : cur?.state_code ?? '—')}</div>
           </section>
           <section className={box}>
             <H3 right={<span className="rounded-full bg-slate-100 px-3 py-1 text-[13px]">부품 판정: {sel && gv[`${lot}|${sel}|6`] && gv[`${lot}|${sel}|7`] ? '입력 끝' : 'M6·외관 입력 기다림'}</span>}>측정 결과 — 순번 {sel ?? '—'}</H3>
@@ -280,7 +280,7 @@ export function QualityScreen({ cap = false }: { cap?: boolean }) { // cap: 공�
             {/* 이브 열림: [contain:size]로 표 높이가 칸 높이를 늘리지 않게 → 오른쪽(재측정·수동 입력) 끝에 맞춰 자르고 안에서 스크롤 */}
             <div className="mt-3 min-h-[130px] flex-1 overflow-y-auto [contain:size]">
             <table className="w-full text-left text-[14px]">
-              <thead className="sticky top-0 bg-[#e8eefb] text-[13px] text-slate-600"><tr><th className="px-2 py-2">받은 시각</th><th className="px-2">로트 · 순번</th><th className="px-2">상태</th></tr></thead>
+              <thead className="sticky top-0 bg-[#f0ebff] text-[13px] text-slate-600"><tr><th className="px-2 py-2">받은 시각</th><th className="px-2">로트 · 순번</th><th className="px-2">상태</th></tr></thead>
               <tbody className="divide-y divide-slate-100">{todayFiles.map((x) => (
                 <tr key={x.cmm_import_id}><td className="px-2 py-2.5 font-mono">{hm(x.received_at)}</td><td className="px-2 font-mono">{fileOf(x)}</td>
                   <td className="px-2">{x.status === 'SUCCESS' ? '성공' : <span className="flex flex-wrap items-center gap-2"><b className="text-[#c62a2f]">✕ 실패 {x.error_text ? `(${x.error_text})` : ''}</b>{isSup && <button onClick={() => toast('다시 읽기 — 원본 파일은 남아 있습니다 (시연: 같은 결과)')} className="h-8 rounded-lg border border-slate-300 bg-white px-2 text-[13px]">다시 읽기</button>}</span>}</td></tr>))}
@@ -295,7 +295,7 @@ export function QualityScreen({ cap = false }: { cap?: boolean }) { // cap: 공�
                 const rs = rows.filter((r) => String(r.part_seq) === s && String(r.item_seq) === it && (r.position == null || r.position === '' || r.position === 'MID')), k = `${lot}|${s}|${it}`;
                 return (<div key={k} className="mt-2"><div className="text-[13px] text-slate-500">순번 {s} · {SHORT[it] ?? it}</div>
                   <div className="mt-1 grid grid-cols-2 gap-2">{rs.map((r) => { const pj = judge(items.find((x) => String(x.item_seq) === it), num(r.measured_value)); const on = picked[k] === Number(r.remeasure_seq);
-                    return <button key={r.remeasure_seq} disabled={!isSup} onClick={() => setPicked((p) => ({ ...p, [k]: Number(r.remeasure_seq) }))} className={`rounded-lg border px-3 py-2 text-left font-mono text-[13px] text-[#1f5fc4] ${on ? 'border-2 border-[#1f5fc4]' : 'border-slate-300'}`}><b className="font-sans">{Number(r.remeasure_seq) > 1 ? `재측정 ${Number(r.remeasure_seq) - 1}` : '처음'}</b><br />{num(r.measured_value)} · {hm(r.measured_at)} · {pj === 'PASS' ? '합격' : '불합격'}</button>; })}</div>
+                    return <button key={r.remeasure_seq} disabled={!isSup} onClick={() => setPicked((p) => ({ ...p, [k]: Number(r.remeasure_seq) }))} className={`rounded-lg border px-3 py-2 text-left font-mono text-[13px] text-[#6a43e0] ${on ? 'border-2 border-[#6a43e0]' : 'border-slate-300'}`}><b className="font-sans">{Number(r.remeasure_seq) > 1 ? `재측정 ${Number(r.remeasure_seq) - 1}` : '처음'}</b><br />{num(r.measured_value)} · {hm(r.measured_at)} · {pj === 'PASS' ? '합격' : '불합격'}</button>; })}</div>
                   <div className="mt-1 text-[13px]">{picked[k] ? `판정에 쓸 값: ${picked[k] > 1 ? `재측정 ${picked[k] - 1}` : '처음'}` : '고르기 전 · 확인 필요'}</div></div>);
               })}
             </section>
@@ -315,7 +315,7 @@ export function QualityScreen({ cap = false }: { cap?: boolean }) { // cap: 공�
           <H3>검사 강화 {enhPast && <span className="text-[14px] font-normal text-slate-500">— 지금 강화 중인 로트 없음 · 최근 강화 기록 (시연 데이터 9월)</span>}</H3>
           <div className="mt-3 grid grid-cols-[1.6fr_1fr] gap-6">
             <table className="w-full text-left text-[14px]">
-              <thead className="bg-[#e8eefb] text-[13px] text-slate-600"><tr><th className="px-2 py-2">로트</th><th className="px-2">왜 강화</th><th className="px-2">상태</th><th className="px-2 text-right">측정한 부품 / 로트</th></tr></thead>
+              <thead className="bg-[#f0ebff] text-[13px] text-slate-600"><tr><th className="px-2 py-2">로트</th><th className="px-2">왜 강화</th><th className="px-2">상태</th><th className="px-2 text-right">측정한 부품 / 로트</th></tr></thead>
               <tbody className="divide-y divide-slate-100">{enhRows.map((x) => (
                 <tr key={x.lot_no}><td className="px-2 py-2.5 font-mono font-bold">{x.lot_no}</td>
                   <td className="px-2">{x.enhance_reason === 'HOLD_LOT' ? '보류 로트 · 남은 부품 전수' : x.enhance_reason === 'NEXT_LOT' ? '보류 다음 로트' : x.enhance_reason ?? '—'}</td>
@@ -358,7 +358,7 @@ function PartZoom({ seq, total, states, onSeq, onClose, children }: { seq: numbe
       <div role="dialog" aria-modal="true" aria-label={`순번 ${seq} 부품 모식도`} onClick={(e) => e.stopPropagation()} className="max-h-[94vh] w-[min(920px,94vw)] overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl">
         <div className="flex items-center gap-3">
           <b className="text-[22px]">순번 {seq}</b>
-          <span className={`rounded-full px-3 py-0.5 text-[14px] font-bold ${st === 'fail' ? 'bg-[#fdeeee] text-[#c62a2f]' : st === 'warn' ? 'bg-[#fdf3c8] text-[#7a5600]' : st === 'none' ? 'bg-slate-100 text-slate-600' : 'bg-[#e8eefb] text-[#1f4fa8]'}`}>{st === 'fail' ? '불합격' : st === 'warn' ? '▲ 주의' : st === 'none' ? '기록 없음' : st === 'measuring' ? '측정 중' : '합격'}</span>
+          <span className={`rounded-full px-3 py-0.5 text-[14px] font-bold ${st === 'fail' ? 'bg-[#fdeeee] text-[#c62a2f]' : st === 'warn' ? 'bg-[#fdf3c8] text-[#7a5600]' : st === 'none' ? 'bg-slate-100 text-slate-600' : 'bg-[#f0ebff] text-[#5532c4]'}`}>{st === 'fail' ? '불합격' : st === 'warn' ? '▲ 주의' : st === 'none' ? '기록 없음' : st === 'measuring' ? '측정 중' : '합격'}</span>
           <div className="ml-auto flex gap-2">
             <button onClick={() => step(-1)} disabled={seq <= 1} className="h-11 w-11 rounded-lg border border-slate-300 text-[20px] disabled:text-slate-300" aria-label="앞 부품">‹</button>
             <button onClick={() => step(1)} disabled={seq >= total} className="h-11 w-11 rounded-lg border border-slate-300 text-[20px] disabled:text-slate-300" aria-label="다음 부품">›</button>
@@ -377,7 +377,7 @@ function TolBar({ it, q, v, card }: { it: R; q?: R; v: number | null; card?: boo
   const pj = judge(it, v), out = q?.ucl != null && v != null && (v > q.ucl || v < q.lcl);
   const k = String(it.item_seq), c = ITEM_COLOR[k];
   const bar = (
-    <div className="relative h-3 rounded bg-[#e8eefb]">
+    <div className="relative h-3 rounded bg-[#f0ebff]">
       {lsl != null && <span className="absolute -top-1 h-5 w-[2px] bg-[#1c2530]" style={{ left: pos(lsl) }} />}<span className="absolute -top-1 h-5 w-[2px] bg-[#1c2530]" style={{ left: pos(usl) }} />
       {q?.ucl != null && <><span className="absolute top-0 h-3 border-l border-dashed border-slate-500" style={{ left: pos(q.ucl) }} />{lsl != null && <span className="absolute top-0 h-3 border-l border-dashed border-slate-500" style={{ left: pos(q.lcl) }} />}</>}
       {v != null && <span className={`absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white ${pj === 'FAIL' ? 'bg-[#c62a2f]' : out ? 'bg-[#e0b000]' : 'bg-[#1c2530]'}`} style={{ left: pos(v) }} />}
@@ -471,14 +471,14 @@ function IMR({ it, sel, onSel }: { it: R; sel: number | null; onSel: (i: number 
       {usl != null && <><line x1={L0} x2={W - R0} y1={y(usl)} y2={y(usl)} stroke="#1c2530" strokeWidth="1.5" />{lab(y(usl), `USL ${usl}`)}</>}
       {lsl != null && <><line x1={L0} x2={W - R0} y1={y(lsl)} y2={y(lsl)} stroke="#1c2530" strokeWidth="1.5" />{lab(y(lsl), `LSL ${lsl}`)}</>}
       {it.ucl != null && <><line x1={L0} x2={W - R0} y1={y(it.ucl)} y2={y(it.ucl)} stroke="#1c2530" strokeDasharray="5 4" />{lab(y(it.ucl), `UCL ${it.ucl}`)}<line x1={L0} x2={W - R0} y1={y(it.lcl)} y2={y(it.lcl)} stroke="#1c2530" strokeDasharray="5 4" />{lab(y(it.lcl), `LCL ${it.lcl}`)}<line x1={L0} x2={W - R0} y1={y(it.mean)} y2={y(it.mean)} stroke="#94a3b8" />{lab(y(it.mean), `CL ${it.mean}`)}</>}
-      <polyline fill="none" stroke="#9db6ea" strokeWidth="1.5" points={xs.map((n, i) => `${x(i)},${y(n)}`).join(' ')} />
-      {xs.map((n, i) => { const s = st(n); return <g key={i} onClick={() => onSel(i)} className="cursor-pointer">{s === 'warn' ? <polygon points={`${x(i)},${y(n) - 7} ${x(i) - 7},${y(n) + 5} ${x(i) + 7},${y(n) + 5}`} fill="#e0b000" stroke="#8a6d00" /> : <circle cx={x(i)} cy={y(n)} r={s === 'fail' ? 6 : 4.5} fill={s === 'fail' ? '#c62a2f' : '#1f5fc4'} stroke={i === k ? '#1c2530' : 'none'} strokeWidth="2" />}</g>; })}
+      <polyline fill="none" stroke="#c4b3f5" strokeWidth="1.5" points={xs.map((n, i) => `${x(i)},${y(n)}`).join(' ')} />
+      {xs.map((n, i) => { const s = st(n); return <g key={i} onClick={() => onSel(i)} className="cursor-pointer">{s === 'warn' ? <polygon points={`${x(i)},${y(n) - 7} ${x(i) - 7},${y(n) + 5} ${x(i) + 7},${y(n) + 5}`} fill="#e0b000" stroke="#8a6d00" /> : <circle cx={x(i)} cy={y(n)} r={s === 'fail' ? 6 : 4.5} fill={s === 'fail' ? '#c62a2f' : '#6a43e0'} stroke={i === k ? '#1c2530' : 'none'} strokeWidth="2" />}</g>; })}
     </svg>
     <div className="text-[13px] font-bold">MR — 이동 범위</div>
     <svg viewBox={`0 0 ${W} ${MH}`} className="w-full">
       <line x1={L0} x2={W - R0} y1={my(mrU)} y2={my(mrU)} stroke="#1c2530" strokeDasharray="5 4" />{lab(my(mrU), `UCL ${mrU.toFixed(4)}`)}
       <line x1={L0} x2={W - R0} y1={my(mrBar)} y2={my(mrBar)} stroke="#94a3b8" />{lab(my(mrBar), `MR ${mrBar.toFixed(4)}`)}
-      <polyline fill="none" stroke="#1f5fc4" strokeWidth="1.5" points={mr.map((n, i) => `${x(i + 1)},${my(n)}`).join(' ')} />
+      <polyline fill="none" stroke="#6a43e0" strokeWidth="1.5" points={mr.map((n, i) => `${x(i + 1)},${my(n)}`).join(' ')} />
       {[0, Math.floor(v.length / 3), Math.floor((v.length * 2) / 3), v.length - 1].map((i) => <text key={i} x={x(i)} y={MH} fontSize="11" textAnchor="middle" fill="#64748b">{hm(v[i].at)}</text>)}
     </svg>
     {p && <div className="mt-2 rounded-lg bg-slate-50 px-4 py-2 text-[14px]">고른 점 · {md(p.at)} {hm(p.at)} · <b className="font-mono">{p.v}</b> · {st(p.v) === 'fail' ? '불합격' : '합격'}{st(p.v) === 'warn' ? ' · 관리 한계(3σ) 밖' : ''}{k > 0 ? ` · MR ${mr[k - 1].toFixed(4)}` : ''}</div>}

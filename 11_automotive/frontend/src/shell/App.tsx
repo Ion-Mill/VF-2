@@ -12,7 +12,7 @@ import { ALARMS, SHIFT_NAME, USERS, homeScreen, levelOfSev, type AlarmRec, type 
 import { derive, fromEvents, fromPast, groupPmPast, repeatOf, type RuleCtx } from './rules';
 import { LOCK } from './Safety';
 import { nextNo, pad, rev, type SimpleRecord, type WorkOrder, type WorkRecord } from './workflow';
-import { Eve, type EveTab } from './Eve';
+import { Eve, Robot, type EveTab } from './Eve';
 import Briefing from './Briefing';
 import CardScreen, { CardList } from './CardScreen';
 import DocBox from './DocBox';
@@ -82,16 +82,15 @@ function screenFromUrl(role: Role): [Screen, string | null] {
 }
 // 현장 화면 공정 묶음 = 작업자 1명의 담당 구역 (app_user.csv home_process_code, 사용자 선택 2026-10-19)
 const ZONES: [string, string[], MachineId[]][] = [['1·2공정', ['OP-10', 'OP-20'], ['saw', 'mil']], ['3공정', ['OP-30'], ['vf1', 'vf2']], ['4·5공정', ['OP-40', 'OP-50'], ['wsh', 'cmm']]];
-// 왼쪽 메뉴 묶음 (사용자 요청 2026-10-19): 홈 / 생산(로트·현장) / 정비(정지·재생·예방 정비·지침카드) / 품질 / 재고(공구) / 문서 / 설정.
+// 왼쪽 메뉴 묶음 (사용자 요청 2026-10-19): 홈 / 생산(로트·현장) / 정비(정지·재생·예방 정비) / 품질 / 재고(공구) / 문서(+지침카드, 2026-10-20) / 설정.
 // 묶음 안 화면은 상단 바 가운데 탭으로 바꾼다. related = 그 묶음에서 열리는 다른 화면
-// row: true 이면 그 묶음의 하위 탭을 왼쪽 세로 카드가 아니라 본문 위 가로 한 줄로 보인다 (생산)
-const GROUPS: { label: string; row?: boolean; subs: [string, Screen, Role[]?][]; related?: Screen[] }[] = [
+const GROUPS: { label: string; subs: [string, Screen, Role[]?, (string | null)?][]; related?: Screen[] }[] = [
   { label: '홈', subs: [['3D 라인', 'line']], related: ['layout2d'] },
-  { label: '생산', row: true, subs: [['로트 추적', 'lots'], ['현장 모니터', 'field']] },
-  { label: '정비', subs: [['다시 보기', 'replay'], ['예방 정비', 'pm', ['MNT', 'SUP', 'MGR']], ['지침카드', 'cards']], related: ['card'] },
+  { label: '생산', subs: [['로트 추적', 'lots'], ['현장 모니터', 'field']] },
+  { label: '정비', subs: [['다시 보기', 'replay'], ['예방 정비', 'pm', ['MNT', 'SUP', 'MGR']]] },
   { label: '품질', subs: [['검사 기록', 'quality', ['OPR', 'SUP', 'MGR']], ['공정 능력 · 불량', 'qcap', ['SUP', 'MGR']]] },
   { label: '재고', subs: [['재고', 'inventory'], ['공구 수명', 'tools']] },
-  { label: '문서', subs: [['문서함', 'docs']], related: ['wo', 'wr', 'sr', 'shift', 'daily', 'revs', 'idocs'] },
+  { label: '문서', subs: [...DOC_CATS.map(([n, s2, k2, roles]) => [n, s2, roles, k2] as [string, Screen, Role[]?, (string | null)?]), ['지침카드', 'cards']], related: ['docs', 'wo', 'wr', 'sr', 'shift', 'daily', 'revs', 'idocs', 'card'] }, // 지침카드는 정비에서 문서로 옮김 (사용자 요청 2026-10-20)
   { label: '설정', subs: [['설정', 'settings', ['MGR']]] },
 ];
 const btn = 'h-11 rounded-md border border-slate-300 bg-white px-3 text-[14px] font-semibold hover:bg-slate-50';
@@ -254,6 +253,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
   // ---------- 3D ----------
   const [replayFrame, setReplay] = useState<unknown | null>(null);
   const [fail3d, setFail3d] = useState<string | null>(null);
+  const [folded, setFolded] = useState<string[]>([]); // 왼쪽 메뉴에서 접어 둔 묶음 (사용자 요청 2026-10-19)
   const [snapSel, setSnapSel] = useState<MachineId | null>(null);
   useEffect(() => { const a = api3d(); if (a && a.applyLive) a.applyLive(replayFrame ?? (connected ? twin : null)); }, [twin, connected, replayFrame]);
   const onReady = useCallback((i: any) => { apiRef.current = i; i.applyLive && i.applyLive(null); }, []);
@@ -297,10 +297,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
   const [side, setSide] = useState<EveTab | null>(null);
   const [eveI, setEveI] = useState(0);
   const [zone, setZone] = useState<string | null>(null);
-  const sideW = 192; // 묶음 옆 목록 폭 + 간격
   const curGroup = GROUPS.find((g) => g.subs.some(([, s2]) => s2 === screen) || g.related?.includes(screen));
-  const sideOn = !!curGroup && curGroup.subs.length > 1;
-  const sideRow = sideOn && !!curGroup?.row; // 가로 메뉴바(row) 묶음: 옆 카드 대신 본문 맨 위 가로 바에 하위 탭을 보인다
   // 현장 화면에 들어오면 작업자는 자기 담당 구역으로 줌인
   useEffect(() => { if (screen !== 'field') return; const z = role === 'OPR' ? ZONES.find(([, ops]) => ops.some((o) => user.procs.includes(o))) : undefined; if (!z) { setZone(null); return; } const t = setTimeout(() => { setZone(z[0]); api3d()?.frameGroup(z[2]); }, 500); return () => clearTimeout(t); }, [screen]); // eslint-disable-line react-hooks/exhaustive-deps // 3D 카드 이브 띠에서 보고 있는 소식 번호
   const closeSide = useCallback(() => setSide(null), []);
@@ -365,8 +362,11 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
   const eveRgb = !eveCur ? null : eveCur.level === '긴급' ? '229,72,77' : '240,180,41';
   const docBubbles = myNotices.filter((n) => n.delivery === 'BUBBLE' && !n.handled);
   const briefBubble = !!twin && seenBrief[user.id] !== twin.shift.shift_id; // 교대 시작 뒤 첫 로그인 때 (9.9)
-  const bubbleText = side ? null : docBubbles.length > 1 ? `확정·검토할 문서 ${docBubbles.length}건` : docBubbles[0]?.text ?? (briefBubble ? '이번 교대 브리핑이 준비됐어요' : null);
+  const sysBubble = band && screen !== 'line' ? `⚠ 긴급 · ${MACHINES[band.machine].name} ${band.alarm ? `${band.code} ${band.alarm.nameKo}` : band.code} · ${band.time.slice(11, 16)}` : fail3d ? `3D가 느려서 2D 배치도로 바꿨어요. 열기를 누르면 3D로 돌아가요` : null;
+  const bubbleText = side ? null : sysBubble ?? (docBubbles.length > 1 ? `확정·검토할 문서 ${docBubbles.length}건` : docBubbles[0]?.text ?? (briefBubble ? '이번 교대 브리핑이 준비됐어요' : null));
   const onBubble = () => {
+    if (band && screen !== 'line') { openCard(band.id); return; }
+    if (fail3d) { setFail3d(null); go('line'); return; }
     if (docBubbles.length > 1) { setSide('알림'); return; }
     const d = docBubbles[0];
     if (d?.open) { openNotice(d); return; }
@@ -386,12 +386,12 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
   if (settings.fontScale) { style['--fs-big'] = `${bigPx}px`; style['--fs-body'] = `${bodyPx}px`; }
   const show3D = screen === 'line' || screen === 'field'; // 다시 보기는 3D 대신 카드 라인 (2026-10-17)
   const fieldSel = screen === 'field' && (!!snapSel || !!zone); // 설비를 누르거나 공정 묶음 버튼을 누르면 아래 패널
-  const stagePos = screen === 'field' ? { left: 0, top: 0, right: 0, bottom: fieldSel ? 'var(--panelH)' : 0 } : { left: 88, top: 76, right: 12, bottom: 'calc(var(--panelH) + 24px)' };
+  const stagePos = screen === 'field' ? { left: 0, top: 0, right: 0, bottom: fieldSel ? 'var(--panelH)' : 0 } : { left: 220, top: screen === 'line' && eveCur ? 128 : 76, right: 12, bottom: 'calc(var(--panelH) + 24px)' }; // 홈: 알람이 있을 때만 이브 띠(76~120)를 3D 카드 바깥 위에 두고 카드는 그 아래부터 — 띠가 천장 표지판을 가리지 않게. 알람이 없으면 띠 없이 3D가 위까지 (2026-10-19)
 
 
   return (
     <Ctx.Provider value={ctx}>
-      <div className={`relative flex h-screen flex-col overflow-hidden bg-[#e9ecef] text-[#26303a] ${settings.fontScale ? 'fs-scaled' : ''}`} style={{ ...(style as React.CSSProperties), width: side ? 'calc(100% - 444px)' : '100%', transition: 'width .25s ease' }}>{/* 이브 창이 열리면 화면을 왼쪽으로 밀어 자리를 내줌 (사용자 요청 2026-10-19) */}
+      <div className={`relative flex h-screen flex-col overflow-hidden bg-[#e9ecef] text-[#26303a] ${settings.fontScale ? 'fs-scaled' : ''}`} style={{ ...(style as React.CSSProperties), width: side ? 'calc(100% - 444px)' : '100%', transition: 'width .25s ease', marginTop: connected ? 0 : 32, height: connected ? '100vh' : 'calc(100vh - 32px)' }}>{/* 이브 창이 열리면 화면을 왼쪽으로 밀어 자리를 내줌 (사용자 요청 2026-10-19) */}
         {/* 상단 바 (페이지구조 v3 3장): 왼쪽 [≡][주간][날짜][시각] · 오른쪽 계정 [이름 ▾] [시연] [⚙ 화면 설정] */}
         <header className="absolute left-3 right-3 top-3 z-20 flex h-[56px] items-center gap-3 rounded-2xl border border-slate-300 bg-white px-3 shadow-lg">
           <Logo height={24} />
@@ -410,7 +410,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
             </button>
             {acct && (
               <div className="absolute right-0 top-[48px] z-30 max-h-[70vh] w-[220px] overflow-y-auto rounded-xl border border-slate-300 bg-white py-1 shadow-lg">
-                {USERS.map((u) => <button key={u.id} onClick={() => { setAcct(false); setUser(u); }} className={`flex h-11 w-full items-center px-4 text-left text-[14px] hover:bg-slate-100 ${u.id === user.id ? 'font-bold text-[#0f6f86]' : ''}`}>{u.name}</button>)}
+                {USERS.map((u) => <button key={u.id} onClick={() => { setAcct(false); setUser(u); }} className={`flex h-11 w-full items-center px-4 text-left text-[14px] hover:bg-slate-100 ${u.id === user.id ? 'font-bold text-[#5a3bc8]' : ''}`}>{u.name}</button>)}
                 <button onClick={() => setUser(null)} className="flex h-11 w-full items-center border-t border-slate-200 px-4 text-left text-[14px] text-slate-500 hover:bg-slate-100">로그아웃</button>
               </div>
             )}
@@ -428,132 +428,96 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
           </div>
         </header>
 
-        {sideOn && curGroup && !sideRow && (
-          <aside className="absolute left-[88px] top-[76px] z-20 flex w-[180px] flex-col gap-1 rounded-3xl border border-slate-300 bg-white p-2 shadow-lg">
-            <b className="px-2 py-2 text-[17px]">{curGroup.label}</b>
-            {curGroup.subs.map(([name, s2, roles]) => { const ok = !roles || roles.includes(role); return (
-              <button key={name} disabled={!ok} onClick={() => go(s2)} title={ok ? undefined : '이 계정은 볼 수 없습니다'}
-                className={`h-11 rounded-lg px-3 text-left text-[15px] font-semibold disabled:cursor-not-allowed disabled:text-slate-300 ${screen === s2 || (s2 === 'cards' && screen === 'card') ? 'bg-[#e8f6fa] text-[#0f6f86]' : 'hover:bg-slate-100'}`}>{name}</button>); })}
-          </aside>
+        {!connected && (
+          <div className="fixed inset-x-0 top-0 z-[60] flex h-8 items-center justify-center gap-2 bg-[#4b5a69] px-4 text-[14px] font-semibold text-white">
+            ⚠ 연결 끊김 — 마지막 갱신 {live.lastOk ? live.lastOk.slice(11, 16) : '없음'} · 시연 데이터 서버(tools/sim_server.py)를 켜 주세요. 숫자는 회색, 3D 설비는 "기록 없음"
+          </div>
         )}
         {/* 왼쪽 세로 메뉴 — 항상 보임 (구조 시안) */}
-        <nav className="absolute left-3 top-[76px] z-20 flex w-[64px] flex-col items-center gap-1 overflow-y-auto rounded-3xl border border-slate-300 bg-white py-2 shadow-lg" style={{ maxHeight: 'calc(100vh - 132px)' }}>
+        <nav className="absolute left-3 top-[76px] z-20 flex w-[200px] flex-col overflow-y-auto rounded-3xl border border-slate-300 bg-white p-2 shadow-lg" style={{ maxHeight: 'calc(100vh - 132px)' }}>
+          {/* 통합 트리 (사용자 요청 2026-10-19, 시안 7b 모양·색은 그대로): 묶음 이름은 작은 머리글, 세부 화면은 늘 펼쳐 둠 — 세부가 하나뿐인 묶음은 그 자체가 칸, 설정은 맨 아래 */}
           {GROUPS.map((g) => {
-            const first = g.subs.find(([, , roles]) => !roles || roles.includes(role));
-            const ok = !!first, name = g.label;
-            const target: Screen = first ? first[1] : g.subs[0][1];
-            const on = g === curGroup;
+            const subs = g.subs.filter(([, , roles]) => !roles || roles.includes(role)), on = g === curGroup, last = g.label === '설정';
+            const curDoc = screen === 'docs' ? (key ?? '작업지시서') : DOC_OF[screen];
+            if (!subs.length) return null;
+            // 큰 묶음 이름은 모두 같은 큰 글씨, 세부 화면은 그보다 작게 (사용자 요청 2026-10-19)
+            const HEAD = 'flex h-11 w-full items-center rounded-xl px-3 text-left text-[16px] font-bold';
+            const fold = folded.includes(g.label);
+            const DOT = "after:ml-auto after:h-1.5 after:w-1.5 after:rounded-full after:bg-[#b79cff] after:content-['']"; // 선택 칸 보라 점 (네온 바이올렛 포인트, 2026-10-19)
             return (
-              <button key={name} disabled={!ok} onClick={() => go(target)} title={ok ? g.subs.map((x) => x[0]).join(' · ') : '이 계정은 볼 수 없습니다'}
-                className={`relative flex h-12 w-[52px] shrink-0 items-center justify-center rounded-2xl text-[12px] font-bold ${on ? 'bg-[#1c2530] pt-2 text-white' : 'text-slate-600 hover:bg-[#f1f2fb]'} disabled:cursor-not-allowed disabled:text-slate-300 disabled:hover:bg-transparent`}>{on && <span className="absolute top-1.5 h-1.5 w-1.5 rounded-full bg-[#5fe0e6]" />}{name}</button>
-            );
+              <div key={g.label} className={last ? 'mt-auto border-t border-slate-200 pt-2' : 'mb-1'}>
+                {subs.length === 1
+                  ? <button onClick={() => go(subs[0][1], subs[0][3] ?? null)} className={`${HEAD} ${on ? `bg-[#2b3a4a] text-white shadow ${DOT}` : 'text-[#1c2530] hover:bg-[#f3f1fb]'}`}>{g.label}</button>
+                  : <>
+                  <button onClick={() => setFolded((f) => fold ? f.filter((x) => x !== g.label) : [...f, g.label])} aria-expanded={!fold} className={`${HEAD} text-[#1c2530] hover:bg-[#f3f1fb]`}>
+                    {g.label}<span className="ml-auto text-[11px] text-slate-400">{fold ? '▸' : '▾'}</span></button>
+                  {!fold && <div className="mb-1 ml-4 flex flex-col gap-0.5 border-l-2 border-slate-200 pl-2">
+                    {subs.map(([name, s2, , k2]) => { const sel = s2 === 'cards' ? screen === 'cards' || screen === 'card' : g.label === '문서' ? curDoc === name : screen === s2; return (
+                      <button key={name} onClick={() => go(s2, k2 ?? null)} className={`h-8 rounded-lg px-2.5 text-left text-[13px] ${sel ? `flex items-center bg-[#2b3a4a] font-bold text-white shadow ${DOT}` : 'font-medium text-slate-600 hover:bg-[#f3f1fb]'}`}>{name}</button>); })}
+                  </div>}</>}
+              </div>);
           })}
         </nav>
 
 
-        {/* 연결 끊김 띠 (2.8) · 3D 실패 띠 · 긴급 알림 띠 [9] — 상단 바 아래에 뜸 */}
-        <div className="absolute left-3 right-3 top-[72px] z-10 flex flex-col gap-1 overflow-hidden rounded-xl">
-        {!connected && (
-          <div className="flex h-10 shrink-0 items-center gap-2 bg-[#4b5a69] px-4 text-[14px] font-semibold text-white">
-            ⚠ 연결 끊김 — 마지막 갱신 {live.lastOk ? live.lastOk.slice(11, 16) : '없음'} · 시연 데이터 서버(tools/sim_server.py)를 켜 주세요. 숫자는 회색, 3D 설비는 "기록 없음"
-          </div>
-        )}
-        {fail3d && <div className="flex h-10 shrink-0 items-center gap-2 bg-[#fff1cc] px-4 text-[14px] font-semibold text-[#7a4b00]">▲ {fail3d} — 2D 배치도로 바꿨습니다 <button onClick={() => { setFail3d(null); go('line'); }} className="ml-2 underline">3D 다시 보기</button></div>}
-        {band && screen !== 'line' && (
-          <button onClick={() => openCard(band.id)} className="flex h-10 shrink-0 items-center gap-2 bg-[#ffe1e1] px-4 text-left text-[14px] font-semibold text-[#a01e23]">
-            <span>⚠ 긴급</span><span>{MACHINES[band.machine].name}</span><span className="font-normal">{band.alarm ? `${band.code} ${band.alarm.nameKo}` : `${band.code} (알람 코드집에 없음)`} · {band.time.slice(11, 16)} →</span>
-          </button>
-        )}
-        </div>
+        {/* 3D 실패·긴급 알림은 이브 말풍선으로, 연결 끊김은 화면 맨 위 띠로 옮김 (2026-10-19) */}
 
-        <div className="flex min-h-0 flex-1 flex-col" style={{ paddingLeft: (screen === 'line' || screen === 'replay' ? 0 : 84) + (sideOn && !sideRow ? sideW : 0), paddingTop: screen === 'line' || screen === 'replay' ? 0 : 72 }}>
-        {screen !== 'line' && screen !== 'layout2d' && screen !== 'docs' && !sideRow && !DOC_OF[screen] && !QUAL_OF[screen] && <div className="flex h-11 shrink-0 items-center border-b border-slate-200 bg-white px-4 text-[17px] font-bold">{TITLE[screen]}</div>}{sideRow && curGroup && (
-          <nav aria-label={curGroup.label} className="relative z-10 flex h-12 shrink-0 items-center gap-1.5 border-b border-slate-300 bg-white px-3 shadow-[0_3px_8px_rgba(28,37,48,0.08)]">
-            <span className="flex items-center pr-3 text-[15px] font-bold text-slate-500">{curGroup.label}</span>
-            {curGroup.subs.map(([name, s2, roles]) => { const ok = !roles || roles.includes(role); const on = screen === s2; return (
-              <button key={name} disabled={!ok} onClick={() => go(s2)} title={ok ? undefined : '이 계정은 볼 수 없습니다'}
-                className={`relative flex h-10 items-center gap-2 rounded-2xl px-5 text-[15px] font-bold disabled:cursor-not-allowed disabled:text-slate-300 disabled:hover:bg-transparent ${on ? 'bg-[#1c2530] text-white shadow-[0_3px_8px_rgba(28,37,48,0.35)]' : 'text-slate-600 hover:bg-[#f1f2fb]'}`}>{on && <span className="h-1.5 w-1.5 rounded-full bg-[#5fe0e6]" />}{name}</button>); })}
-          </nav>
-        )}
-        <div className={`relative min-h-0 flex-1 overflow-hidden ${sideRow && !show3D ? '-mt-4' : ''} ${connected ? '' : 'grayscale-[0.6]'}`}>
-          <div className={screen === 'line' || screen === 'replay' ? 'stage-card absolute overflow-hidden rounded-3xl border border-[#e3e6f3]' : 'absolute'} style={{ ...stagePos, visibility: show3D ? 'visible' : 'hidden', opacity: show3D ? 1 : 0, pointerEvents: show3D ? 'auto' : 'none' }}>
+        <div className="flex min-h-0 flex-1 flex-col" style={{ paddingLeft: screen === 'line' || screen === 'replay' ? 0 : 216, paddingTop: screen === 'line' || screen === 'replay' ? 0 : 72 }}>
+        {screen !== 'line' && screen !== 'layout2d' && screen !== 'docs' && !DOC_OF[screen] && !QUAL_OF[screen] && <div className="flex h-11 shrink-0 items-center border-b border-slate-200 bg-white px-4 text-[17px] font-bold">{TITLE[screen]}</div>}
+        <div className={`relative min-h-0 flex-1 overflow-hidden ${connected ? '' : 'grayscale-[0.6]'}`}>
+          {screen === 'line' && show3D && eveCur && (
+            <div className="eve-band absolute z-10 flex h-11 items-center gap-3 rounded-full border-[1.5px] pl-2 pr-1.5 backdrop-blur-sm"
+              style={{ left: 220, right: 12, top: 76, ...(eveRgb ? { borderColor: `rgba(${eveRgb},.7)`, background: `linear-gradient(90deg,rgba(${eveRgb},.30) 0%,rgba(${eveRgb},.12) 35%,rgba(255,255,255,.92) 70%)`, boxShadow: `0 0 0 4px rgba(${eveRgb},.18),0 0 26px rgba(${eveRgb},.45)` } : { borderColor: '#d6dade', background: 'rgba(255,255,255,.88)', boxShadow: '0 4px 14px rgba(40,40,50,.12)' }) }}>
+              <span role="img" aria-label="이브" className="shrink-0"><Robot size={30} face={!eveCur ? 'happy' : eveCur.level === '긴급' ? 'alarm' : 'warn'} /></span>
+              {eveCur ? (<>
+                <span className="shrink-0 rounded-full px-2.5 py-0.5 text-[12px] font-extrabold text-white" style={{ background: eveCur.level === '긴급' ? '#d23a35' : '#e0a100' }}>{eveCur.level}</span>
+                <span className="min-w-0 flex-1 truncate text-[15px]"><b>{MACHINES[eveCur.machine].name} {(eveCur.alarm?.nameKo ?? '알람').replace(/\s*\([A-Z0-9 ._/-]+\)/, '')}({eveCur.code})</b> {Math.max(1, Math.round((SIM.now() - eveCur.ts) / 60000))}분째예요. {eveCur.alarm?.steps[0] ? `먼저: ${eveCur.alarm.steps[0]}` : eveCur.alarm?.easy ?? '지침카드를 확인해 주세요.'}</span>
+                <span className="shrink-0 whitespace-nowrap rounded-full border border-slate-300 bg-white px-2.5 py-0.5 text-[12px] text-slate-600" title="알람 코드집으로 만든 문장">근거 · {eveCur.alarm?.doc03[0] ?? 'DOC-02 알람 코드집'}</span>
+                {eveList.length > 1 && <button onClick={() => setEveI((i) => i + 1)} className="shrink-0 font-mono text-[12px] text-slate-500 hover:text-slate-800" aria-label="다음 소식">{(eveI % eveList.length) + 1} / {eveList.length} ›</button>}
+                <button onClick={() => openCard(eveCur.id)} className="h-8 shrink-0 rounded-full bg-[#1c232b] px-3.5 text-[13px] font-bold text-white">지침카드</button>
+              </>) : null}
+              <button onClick={() => setSide('채팅')} className="h-8 shrink-0 rounded-full border border-slate-300 bg-white px-3.5 text-[13px] font-bold">이브에게 묻기</button>
+            </div>
+          )}
+          <div className={screen === 'line' || screen === 'replay' ? 'stage-card absolute overflow-hidden rounded-3xl border border-[#e6e3f0]' : 'absolute'} style={{ ...stagePos, visibility: show3D ? 'visible' : 'hidden', opacity: show3D ? 1 : 0, pointerEvents: show3D ? 'auto' : 'none' }}>
             <FactoryDashboard embedded dataMode warnIds={[...new Set(open.filter((a) => a.level === '주의').map((a) => a.machine))]} layout={LAYOUT} quality="자동" introOnLoad={false} showCards={settings.cards} alarmText={alarmText} cardText={cardText}
               cmmCard={cmmCard} bigTags={screen === 'field'} scenario="정상 가동" onReady={onReady}
               onSnapshot={(s: { sel: MachineId | null }) => setSnapSel(s.sel)} onSelect={(id: MachineId) => setSnapSel(id)}
               onFail={(why: string) => { setFail3d(why); setScreen((s0) => (s0 === 'line' ? 'layout2d' : s0)); }} />
             {screen === 'line' && (<>
               {eveRgb && <div className="eve-glow pointer-events-none absolute inset-0 z-[5] rounded-3xl" style={{ boxShadow: `inset 0 0 0 2px rgba(${eveRgb},.55), inset 0 60px 80px -40px rgba(${eveRgb},.35)` }} />}
-              {eveCur && <style>{`[data-tier="tag"][data-mid="${eveCur.machine}"]::after{content:'';position:absolute;top:-7px;right:-7px;width:14px;height:14px;border-radius:50%;background:radial-gradient(circle,rgb(${eveRgb}) 0 3.5px,#1c232b 4px);box-shadow:0 0 0 3px rgba(${eveRgb},.45)}`}</style>}
-              <div className="eve-band absolute left-3 right-3 top-3 z-10 flex h-11 items-center gap-3 rounded-full border-[1.5px] pl-2 pr-1.5 backdrop-blur-sm"
-                style={eveRgb ? { borderColor: `rgba(${eveRgb},.7)`, background: `linear-gradient(90deg,rgba(${eveRgb},.30) 0%,rgba(${eveRgb},.12) 35%,rgba(255,255,255,.92) 70%)`, boxShadow: `0 0 0 4px rgba(${eveRgb},.18),0 0 26px rgba(${eveRgb},.45)` } : { borderColor: '#d6dade', background: 'rgba(255,255,255,.88)', boxShadow: '0 4px 14px rgba(40,40,50,.12)' }}>
-                <span className="flex h-[30px] w-[30px] shrink-0 items-center justify-center gap-1 rounded-full [background:radial-gradient(circle_at_35%_30%,#4b5764,#151b21)]" aria-label="이브"><i className="h-1.5 w-1.5 rounded-full bg-[#3fd68a] shadow-[0_0_6px_#3fd68a]" /><i className="h-1.5 w-1.5 rounded-full bg-[#3fd68a] shadow-[0_0_6px_#3fd68a]" /></span>
-                {eveCur ? (<>
-                  <span className="shrink-0 rounded-full px-2.5 py-0.5 text-[12px] font-extrabold text-white" style={{ background: eveCur.level === '긴급' ? '#d23a35' : '#e0a100' }}>{eveCur.level}</span>
-                  <span className="min-w-0 flex-1 truncate text-[15px]"><b>{MACHINES[eveCur.machine].name} {(eveCur.alarm?.nameKo ?? '알람').replace(/\s*\([A-Z0-9 ._/-]+\)/, '')}({eveCur.code})</b> {Math.max(1, Math.round((SIM.now() - eveCur.ts) / 60000))}분째예요. {eveCur.alarm?.steps[0] ? `먼저: ${eveCur.alarm.steps[0]}` : eveCur.alarm?.easy ?? '지침카드를 확인해 주세요.'}</span>
-                  <span className="shrink-0 whitespace-nowrap rounded-full border border-slate-300 bg-white px-2.5 py-0.5 text-[12px] text-slate-600" title="알람 코드집으로 만든 문장">근거 · {eveCur.alarm?.doc03[0] ?? 'DOC-02 알람 코드집'}</span>
-                  {eveList.length > 1 && <button onClick={() => setEveI((i) => i + 1)} className="shrink-0 font-mono text-[12px] text-slate-500 hover:text-slate-800" aria-label="다음 소식">{(eveI % eveList.length) + 1} / {eveList.length} ›</button>}
-                  <button onClick={() => openCard(eveCur.id)} className="h-8 shrink-0 rounded-full bg-[#1c232b] px-3.5 text-[13px] font-bold text-white">지침카드</button>
-                </>) : <span className="min-w-0 flex-1 truncate text-[15px] text-slate-600">지금 처리할 긴급·주의 알람이 없어요.</span>}
-                <button onClick={() => setSide('채팅')} className="h-8 shrink-0 rounded-full border border-slate-300 bg-white px-3.5 text-[13px] font-bold">이브에게 묻기</button>
-              </div>
             </>)}
             {show3D && (
               <>
                 {screen === 'field' && (
-                  <div className="pointer-events-auto absolute left-3 top-3 z-10 flex gap-1 rounded-full border border-[#e3e6f3] bg-white/90 p-1 shadow-md">
-                    {ZONES.map(([name, , ids]) => <button key={name} onClick={() => { setZone(name); setSnapSel(null); api3d()?.frameGroup(ids); }} className={`h-10 rounded-full px-4 text-[15px] font-bold ${zone === name ? 'bg-[#1c232b] text-white' : 'hover:bg-[#eef0fb]'}`}>{name}</button>)}
-                    <button onClick={() => { setZone(null); setSnapSel(null); api3d()?.setView('front'); }} className={`h-10 rounded-full px-4 text-[15px] font-bold ${zone === null ? 'bg-[#1c232b] text-white' : 'hover:bg-[#eef0fb]'}`}>전체</button>
+                  <div className="pointer-events-auto absolute left-3 top-3 z-10 flex gap-1 rounded-full border border-[#e6e3f0] bg-white/90 p-1 shadow-md">
+                    {ZONES.map(([name, , ids]) => <button key={name} onClick={() => { setZone(name); setSnapSel(null); api3d()?.frameGroup(ids); }} className={`h-10 rounded-full px-4 text-[15px] font-bold ${zone === name ? 'bg-[#1c232b] text-white' : 'hover:bg-[#f1eefb]'}`}>{name}</button>)}
+                    <button onClick={() => { setZone(null); setSnapSel(null); api3d()?.setView('front'); }} className={`h-10 rounded-full px-4 text-[15px] font-bold ${zone === null ? 'bg-[#1c232b] text-white' : 'hover:bg-[#f1eefb]'}`}>전체</button>
                   </div>
                 )}
-                {(() => {
-                  const sb = 'h-8 min-w-9 rounded-full px-3 text-[13px] font-semibold hover:bg-[#eef0fb]';
-                  const zb = 'h-11 w-11 rounded-full text-[22px] font-bold leading-none hover:bg-[#eef0fb]'; // 현장 모니터: 터치로 누르기 쉽게 크게
-                  return (<>
-                    {screen !== 'field' && (
-                      <div className="pointer-events-auto absolute bottom-3 right-3 flex gap-1 rounded-full border border-[#e3e6f3] bg-white/90 p-1 shadow-md">
-                        <button onClick={() => go('layout2d')} className={sb}>2D</button>
-                        <button onClick={() => { api3d()?.setView('front'); setSnapSel(null); }} className={sb}>전체</button>
-                        {screen === 'line' && <button onClick={() => api3d()?.setView('top')} className={sb}>위</button>}
-                        <button onClick={() => api3d()?.nav('zoom', 0.85)} className={sb} aria-label="확대">+</button>
-                        <button onClick={() => api3d()?.nav('zoom', 1.18)} className={sb} aria-label="축소">−</button>
-                      </div>
-                    )}
-                    {screen === 'field' && (
-                      <div className="pointer-events-auto absolute right-3 top-3 flex gap-1 rounded-full border border-[#e3e6f3] bg-white/90 p-1 shadow-md">
-                        <button onClick={() => api3d()?.nav('zoom', 0.85)} className={zb} aria-label="확대">+</button>
-                        <button onClick={() => api3d()?.nav('zoom', 1.18)} className={zb} aria-label="축소">−</button>
-                      </div>
-                    )}
-                  </>);
-                })()}
-                <div className="pointer-events-none absolute bottom-3 left-3 rounded-full border border-[#e3e6f3] bg-white/85 px-3 py-1.5 text-[12px] text-slate-600">설비 클릭(탭) = 확대 · 스크롤(두 손가락) = 확대/축소 · 끌기 = 각도 · 호버 = 반응 없음</div>
+                <div className="pointer-events-auto absolute bottom-3 right-3 flex gap-1 rounded-full border border-[#e6e3f0] bg-white/90 p-1 shadow-md">
+                  {(() => { const sb = 'h-8 min-w-9 rounded-full px-3 text-[13px] font-semibold hover:bg-[#f1eefb]'; return (<>
+                    <button onClick={() => go('layout2d')} className={sb}>2D</button>
+                    <button onClick={() => { api3d()?.setView('front'); setSnapSel(null); }} className={sb}>전체</button>
+                    {screen === 'line' && <button onClick={() => api3d()?.setView('top')} className={sb}>위</button>}
+                    <button onClick={() => api3d()?.nav('zoom', 0.85)} className={sb} aria-label="확대">+</button>
+                    <button onClick={() => api3d()?.nav('zoom', 1.18)} className={sb} aria-label="축소">−</button>
+                  </>); })()}
+                </div>
               </>
             )}
           </div>
 
           {screen === 'layout2d' && <Layout2D />}
           {(screen === 'line' || screen === 'layout2d' || fieldSel) && (
-            <div className={screen === 'line' ? 'absolute bottom-3 left-[88px] right-3 h-[var(--panelH)]' : `absolute bottom-0 left-0 right-0 h-[var(--panelH)] border-t border-slate-300 bg-[#eef1f4]`}><Panels field={screen === 'field'} ids={screen === 'field' && zone && !snapSel ? ZONES.find((z) => z[0] === zone)?.[2] : undefined} /></div>
-          )}
-          {screen === 'replay' && <ReplayScreen />}
+            <div className={screen === 'line' ? 'absolute bottom-3 left-[220px] right-3 h-[var(--panelH)]' : `absolute bottom-0 left-0 right-0 h-[var(--panelH)] border-t border-slate-300 bg-[#eef1f4]`}><Panels field={screen === 'field'} ids={screen === 'field' && zone && !snapSel ? ZONES.find((z) => z[0] === zone)?.[2] : undefined} /></div>
+          )}          {screen === 'replay' && <ReplayScreen />}
           {screen === 'cards' && <CardList />}
           {screen === 'card' && key && <CardScreen alertId={key} />}
           {(screen === 'docs' || DOC_OF[screen] || QUAL_OF[screen]) && (() => {
-            const isQ = !!QUAL_OF[screen];
-            // 예방 정비는 왼쪽 목록 대신 화면 위쪽 칩 탭으로 옮겼다 (PmScreen.tsx, 2026-10-19 정비 탭 구조 수정)
-            const cats: [string, Screen, string | null, Role[]?][] = isQ ? QUAL_CATS : DOC_CATS;
-            const cur = isQ ? QUAL_OF[screen] : screen === 'docs' ? (key ?? '작업지시서') : DOC_OF[screen];
+            // 문서·품질 하위 항목은 왼쪽 메뉴 묶음에 다 있어 화면 옆 목록은 없음. 예방 정비는 화면 위쪽 칩 탭 (PmScreen.tsx)
             return (
               <div className="absolute inset-0 flex bg-[#e9ecef]">
-                {!isQ && /* 품질 하위 항목은 정비처럼 왼쪽 메뉴 옆 목록에 있어 여기 목록을 뺌 (사용자 요청 2026-10-19) */
-                <aside className="flex w-[200px] shrink-0 flex-col gap-1 overflow-y-auto border-r border-slate-300 bg-white p-2">
-                  <b className="px-2 py-2 text-[17px]">{isQ ? '품질' : '문서함'}</b>
-                  {cats.map(([name, s2, k2, roles]) => {
-                    const ok = !roles || roles.includes(role);
-                    return <button key={name} disabled={!ok} onClick={() => go(s2, k2)} title={ok ? undefined : '이 계정은 볼 수 없습니다'}
-                      className={`h-11 rounded-lg px-3 text-left text-[15px] font-semibold disabled:cursor-not-allowed disabled:text-slate-300 ${cur === name ? 'bg-[#e8f6fa] text-[#0f6f86]' : 'hover:bg-slate-100'}`}>{name}</button>;
-                  })}
-                </aside>}
                 <div className="relative min-w-0 flex-1">
                   {screen === 'docs' && <DocBox />}
                   {screen === 'wo' && key && <WorkOrderScreen no={key} />}
@@ -580,7 +544,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
         </div>
         <footer className="mx-3 mb-3 flex h-[40px] shrink-0 items-center gap-4 overflow-x-auto rounded-2xl border border-slate-300 bg-white px-4 text-[13px]">
           <b>범례</b>
-          {LEGEND.map((l) => <span key={l.text} className="whitespace-nowrap"><span style={{ color: l.color }}>{l.icon}</span> {l.text}</span>)}
+          {LEGEND.map((l) => <span key={l.text} className="whitespace-nowrap">{l.text === '병목' ? <SnailBadge /> : <span style={{ color: l.color }}>{l.icon}</span>} {l.text}</span>)}
           <span className="ml-auto whitespace-nowrap text-slate-600">알림: <b className="text-[#c62a2f]">⚠ 긴급</b> │ <b className="text-[#9a6200]">▲ 주의</b> │ ⓘ 참고</span>
         </footer>
 
@@ -597,6 +561,17 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
       </div>
     </Ctx.Provider>
   );
+}
+
+// 범례의 병목 표시 = 3D 천장 표지판 모서리의 달팽이 배지와 같은 그림 (FactoryDashboard 병목 배지 경로 그대로)
+function SnailBadge() {
+  return (
+    <svg viewBox="-6.6 -6.2 37.2 37.2" width="17" height="17" className="inline-block align-[-3px]" aria-hidden="true">
+      <circle cx="12" cy="12.4" r="17.6" fill="#1c232b" stroke="#b9a8ff" strokeWidth="2" />
+      <g fill="none" stroke="#b9a8ff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+        {['M3 18h15.5a2.5 2.5 0 0 0 2.5-2.5V13', 'M16.5 12a5.5 5.5 0 1 1-11 0a5.5 5.5 0 1 1 11 0', 'M11 12a2.2 2.2 0 1 1 2.2-2.2', 'M19.5 13 18.5 8.5', 'M21 13l1.4-4.2'].map((d) => <path key={d} d={d} />)}
+      </g>
+    </svg>);
 }
 
 function SettingsPopover({ settings, setSettings, api3d, bigPx, bodyPx }: { settings: Settings; setSettings: (f: (s: Settings) => Settings) => void; api3d: () => any; bigPx: number; bodyPx: number }) {

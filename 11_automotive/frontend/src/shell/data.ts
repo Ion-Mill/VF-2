@@ -61,7 +61,7 @@ export const LEGEND: { icon: string; text: string; color: string }[] = [
   { icon: '⛔', text: '막힘', color: '#e8954a' },
   { icon: '▲', text: '주의 알람', color: '#f0a500' },
   { icon: '■', text: '재공 주황', color: '#e8954a' },
-  { icon: '▭', text: '병목', color: '#e8954a' },
+  { icon: '', text: '병목', color: '#b9a8ff' }, // 아이콘 = 3D 표지판의 달팽이 배지 (App.tsx SnailBadge, 2026-10-20)
   { icon: '□', text: '기록 없음', color: '#8a97a4' },
 ];
 

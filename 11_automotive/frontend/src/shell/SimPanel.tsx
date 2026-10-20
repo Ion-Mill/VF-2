@@ -42,7 +42,7 @@ export default function SimPanel({ twin, refresh, toast, api3d, onClose }: { twi
       </div>
       <div className="mt-3 border-t border-slate-200 pt-2 font-bold">시연 시계 {c ? `· ${c.sim_at.slice(11, 16)} ×${c.speed}${c.paused ? ' ⏸' : ''}` : ''}</div>
       <div className="mt-1 flex flex-wrap gap-1">
-        {[180, 60, 10, 1].map((s) => <button key={s} disabled={!twin} onClick={() => call('sim/clock', { speed: s }, `배속 ×${s}`)} className={`${b} ${c?.speed === s ? 'border-[#0f9fbd] bg-[#e8f6fa]' : ''}`}>×{s}</button>)}
+        {[180, 60, 10, 1].map((s) => <button key={s} disabled={!twin} onClick={() => call('sim/clock', { speed: s }, `배속 ×${s}`)} className={`${b} ${c?.speed === s ? 'border-[#7a52f0] bg-[#e8f6fa]' : ''}`}>×{s}</button>)}
         <button disabled={!twin} onClick={() => call('sim/clock', { paused: !c?.paused }, c?.paused ? '다시 시작' : '일시정지 — 3D 움직임도 멈춤')} className={b}>{c?.paused ? '▶ 다시 시작' : '⏸ 일시정지'}</button>
         <button disabled={!skipTo} onClick={() => call('sim/clock', { skip: `TODAY_${skipTo}` }, skipTo === '17:00' ? '17:00으로 넘김 — 남은 주간 교대를 만듦' : '20:00으로 넘김 — 야간 교대 시작')} className={b}>{skipTo ? `${skipTo}으로` : '넘기기 없음'}</button>
         <button disabled={!twin} onClick={() => setReset(true)} className={b}>처음으로</button>
@@ -54,7 +54,7 @@ export default function SimPanel({ twin, refresh, toast, api3d, onClose }: { twi
         <button onClick={() => { onClose(); api3d()?.startIntro(); }} className={b}>오프닝</button>
         <button onClick={() => { onClose(); api3d()?.startTour(); }} className={b}>제품 투어</button>
         {([['night', '야간'], ['explode', '분해 보기'], ['holo', '홀로그램'], ['heat', '열화상'], ['flow', '흐름선']] as const).map(([k, l]) => (
-          <button key={k} onClick={() => toggle(k)} className={`${b} ${fx[k] ? '!border-[#0f9fbd] !bg-[#0f9fbd] text-white' : ''}`}>{l}</button>
+          <button key={k} onClick={() => toggle(k)} className={`${b} ${fx[k] ? '!border-[#7a52f0] !bg-[#7a52f0] text-white' : ''}`}>{l}</button>
         ))}
       </div>
       {reset && <ConfirmBox title="시연을 처음으로 되돌릴까요?" okLabel="처음으로" body="10/1 08:00(9/30 끝 상태)으로 돌아갑니다. 이 회차에 화면에서 만든 문서·알림 처리는 새 회차로 바뀌어 보이지 않습니다."

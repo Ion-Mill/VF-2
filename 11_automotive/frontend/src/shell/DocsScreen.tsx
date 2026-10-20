@@ -36,7 +36,7 @@ function DocView({ docNo, section, onClose }: { docNo: string; section?: string;
   return (
     <div className="flex h-full flex-col">
       <div className="flex flex-wrap items-center gap-1 border-b border-slate-200 pb-2">
-        {(list.data?.docs ?? []).map((x) => <button key={x.doc_no} onClick={() => setCur(x.doc_no)} className={`h-10 rounded-md border px-2 text-[13px] font-semibold ${x.doc_no === cur ? 'border-[#0f9fbd] bg-[#e8f6fa]' : 'border-slate-300'}`}>{x.doc_no === 'GLOSSARY' ? '00 용어집' : x.doc_no}</button>)}
+        {(list.data?.docs ?? []).map((x) => <button key={x.doc_no} onClick={() => setCur(x.doc_no)} className={`h-10 rounded-md border px-2 text-[13px] font-semibold ${x.doc_no === cur ? 'border-[#7a52f0] bg-[#e8f6fa]' : 'border-slate-300'}`}>{x.doc_no === 'GLOSSARY' ? '00 용어집' : x.doc_no}</button>)}
         {onClose && <button onClick={onClose} className={`${BTN} ml-auto`}>✕ 닫기 → 원래 화면</button>}
       </div>
       {!d.data ? <p className="p-3 text-slate-500">불러오는 중…</p> : (<>
@@ -45,7 +45,7 @@ function DocView({ docNo, section, onClose }: { docNo: string; section?: string;
         {target && !hit && <p className="mt-2 text-[14px] text-[#9a6200]">이 절이 없습니다 (개정으로 바뀌었을 수 있음) — 최신 {d.data.rev}</p>}
         <div className="min-h-0 flex-1 overflow-y-auto pr-2">
           {d.data.sections.map((s) => (
-            <div key={s.section + s.title} ref={s === hit ? ref : undefined} className={`mt-3 ${s === hit ? 'rounded-md border-l-4 border-[#0f9fbd] bg-[#f0fafc] p-2' : ''}`}>
+            <div key={s.section + s.title} ref={s === hit ? ref : undefined} className={`mt-3 ${s === hit ? 'rounded-md border-l-4 border-[#7a52f0] bg-[#f6f3ff] p-2' : ''}`}>
               <div className={s.level <= 2 ? 'text-[17px] font-bold' : 'text-[15px] font-bold'}>{/^\d/.test(s.section) ? `§${s.section} ` : ''}{s.title}</div>
               {s.text && <Md text={s.text} />}
             </div>))}

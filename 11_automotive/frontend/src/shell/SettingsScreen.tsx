@@ -27,7 +27,7 @@ export function SettingsScreen() {
       <div className={CARD}>
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-[19px] font-bold">설정</h2>
-          <div className="flex flex-wrap gap-1">{TABS.map((t) => <button key={t} onClick={() => setTab(t)} className={`${BTN} ${tab === t ? '!border-[#0f9fbd] !bg-[#e8f6fa]' : ''}`}>{t}</button>)}<button onClick={back} className={BTN}>닫기</button></div>
+          <div className="flex flex-wrap gap-1">{TABS.map((t) => <button key={t} onClick={() => setTab(t)} className={`${BTN} ${tab === t ? '!border-[#7a52f0] !bg-[#e8f6fa]' : ''}`}>{t}</button>)}<button onClick={back} className={BTN}>닫기</button></div>
         </div>
         {tab === '설비' && <table className="mt-3 w-full text-left text-[14px]"><thead className="text-slate-500"><tr><th>설비</th><th>공정</th><th>모델</th><th>크기 (mm)</th><th>가운데 (mm)</th><th>정면</th><th>기준 사이클</th><th>구분</th></tr></thead>
           <tbody>{Object.entries(LAYOUT.equipment).map(([k, e]) => <tr key={k} className="border-t border-slate-100"><td>{k}</td><td>{e.process}</td><td>{e.model}{e.ref ? ` (${e.ref})` : ''}</td><td>{e.size.join(' × ')}</td><td>{e.center.join(', ')}</td><td>{e.facing === 'POS_X' ? '동쪽' : '통로(남)'}</td><td>{e.std_cycle_min ? `${e.std_cycle_min}분` : `${e.batch_time_min}분/${e.batch_qty}개`}</td><td>{e.tag}</td></tr>)}</tbody></table>}
