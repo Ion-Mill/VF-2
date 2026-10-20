@@ -417,6 +417,10 @@ RULE_MARK_RE = re.compile(                                              # 규칙
     r"어느\s?(?:것|쪽)부터|어느\s?(?:공정|시점|단계|시간대|때)|안전\s?재고(?:는|가)?\s?(?:몇|얼마)|(?:로|으로)\s?관리해|관리\s?(?:하나|해야)|지나면|"
     r"(?:이면|하면|할\s?때|일\s?때|라면)[^?？]{0,25}?어떻게\s?(?:되|돼|처리|해)|정해\s?(?:뒀|놨|져|둔|두었)|정의|차이가\s?뭐|뭐가\s?달라")
 # 문서 길 지시문에만 더하는 한 줄: 운영 기록을 묻는 질문이 문서의 느슨한 조각으로 그럴듯하게 답되지 않고 "문서에 없음"(→ 기존 길로 되돌림)이 되게 한다
+# 질문대로 답하기 2단계 (ASK_ONLY, 2026-10-21): 문서 답이 질문에 직접 답한 뒤 교체 방법·잠금·다른 설비 이야기까지 덧붙이던 것을 줄인다. 묶음 목록 형식(PURE_LAYOUT)의 지시문 끝에만 더한다.
+ASK_ONLY_NOTE = ("[답의 범위] 질문이 묻는 것에만 답한다. 첫 묶음의 결론 한 문장이 질문에 직접 답하면 그것으로 충분하다. "
+                 "묻지 않은 배경·부연·교체 방법·다른 설비나 다른 품목 이야기는 쓰지 않는다. 묶음은 질문에 꼭 필요한 만큼만, 많아도 3개 이내로 쓴다. "
+                 "단, 질문과 직접 관련된 안전 경고와 [가상] 표시는 빼지 않는다.")
 RULE_OPS_NOTE = ("[추가 규칙] 이 질문이 지금·과거의 실제 운영 기록(재고 수량, 로트 상태, 알림 내역, 정지 횟수, 누가 했는지 등 일어난 일)을 묻는 것이면 "
                  "사내 문서로는 답할 수 없다. 규칙·기준·절차를 묻는 것이 아니면 insufficient를 true로 하고 answer에는 \"문서에 없음\"이라고만 쓴다.")
 
@@ -653,7 +657,8 @@ def ask(question: str, chunks: list[Chunk], prev: dict | None, s: Settings, ops_
     (opening·points·closing 키는 만들지 않는다. insufficient면 sections는 모든 묶음 text를 이은 한 묶음 — 글이 없으면 짧은 고정 문구)."""
     style = bool(s.pure_style)
     layout = style and bool(s.pure_layout)
-    messages = build_messages(question, chunks, prev, system_for(s) + ("\n\n" + RULE_OPS_NOTE if ops_note else "")   # ops_note: PURE_RULE로 문서 길에 온 질문에만
+    messages = build_messages(question, chunks, prev, system_for(s) + ("\n\n" + ASK_ONLY_NOTE if (s.ask_only and layout) else "")   # ASK_ONLY(2026-10-21): 묻는 것에만 답하고 묶음은 3개 이내
+                              + ("\n\n" + RULE_OPS_NOTE if ops_note else "")   # ops_note: PURE_RULE로 문서 길에 온 질문에만
                               + ("\n\n" + PARTIAL_NOTE if s.pure_retry else "") + ("\n\n" + RETRY_NOTE if retry_note else "") + ("\n\n" + fixed_note if fixed_note else ""))   # PURE_RETRY=1: 첫 호출에 한 줄, 넓게 다시 본 호출에 한 줄 더
     sent = sum(len(m["content"]) for m in messages)
     t0 = time.perf_counter()
