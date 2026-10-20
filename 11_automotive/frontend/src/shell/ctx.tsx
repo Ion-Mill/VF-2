@@ -5,9 +5,9 @@ import type { MachineId } from '@/components/types';
 import type { Role } from './data';
 import type { Twin } from './live';
 import type { AlertRec, Notice, UserRec } from './model';
-import type { SimpleRecord, StopReason, WorkOrder, WorkRecord } from './workflow';
+import type { SimpleRecord, WorkOrder, WorkRecord } from './workflow';
 
-export type Screen = 'line' | 'layout2d' | 'field' | 'cards' | 'card' | 'wo' | 'wr' | 'sr' | 'stops' | 'docs' | 'replay' | 'shift' | 'daily' | 'revs'
+export type Screen = 'line' | 'layout2d' | 'field' | 'cards' | 'card' | 'wo' | 'wr' | 'sr' | 'docs' | 'replay' | 'shift' | 'daily' | 'revs'
   | 'lots' | 'quality' | 'inventory' | 'tools' | 'pm' | 'idocs' | 'settings';
 
 export interface Settings { bloom: boolean; sound: boolean; cards: boolean; monitorInch: number; distanceM: number; fontScale: boolean; autoReturnSec: number }
@@ -25,10 +25,9 @@ export interface AppCtx {
   alerts: AlertRec[]; notices: Notice[]; myNotices: Notice[];
   wos: WorkOrder[]; wrs: WorkRecord[]; srs: SimpleRecord[];
   putWo: (w: WorkOrder) => void; putWr: (w: WorkRecord) => void; putSr: (r: SimpleRecord) => void;
-  stopReasons: Record<string, StopReason>; setStopReasons: (f: (p: Record<string, StopReason>) => Record<string, StopReason>) => void;
   addNotice: (n: Notice) => void; handleNotice: (id: string, plan?: string) => void; markAlert: (ids: string[], by: string) => void;
   screen: Screen; key: string | null; go: (s: Screen, key?: string | null) => void; back: () => void;
-  openCard: (alertId: string) => void; openWo: (no: string) => void; openRecord: (woNo: string) => void; openSimple: (alertId: string, kind?: 'alarm' | 'cause') => void;
+  openCard: (alertId: string) => void; openWo: (no: string) => void; openRecord: (woNo: string, nav?: boolean) => void; openSimple: (alertId: string, kind?: 'alarm' | 'cause') => void;
   openSource: (doc: string, section: string) => void; openReplay: (atIso: string) => void;
   selectMachine: (m: MachineId | null) => void; selected: MachineId | null;
   toast: (msg: string) => void; settings: Settings; setSettings: (f: (s: Settings) => Settings) => void;

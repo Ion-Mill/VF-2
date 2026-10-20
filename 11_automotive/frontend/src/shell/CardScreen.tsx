@@ -5,15 +5,16 @@ import { useState } from 'react';
 import { BTN, CARD, DARK, PAGE, useApp } from './ctx';
 import { LAYOUT, MACHINES } from './data';
 import { md, minsSince } from './live';
-import { LEVEL_VIEW, alarmTitle, chainOf, hhmm, machineLabel, responsible, sevText, whoText } from './model';
-import { SafetyBlock } from './Safety';
-import { useGuideCardText } from './assistText';
+import { LEVEL_VIEW, alarmTitle, chainOf, hhmm, responsible, sevText } from './model';
+import { SafeTag, SafetyBlock, safetySrc } from './Safety';
+import { Band, Chip, DocHead, DocPage, Fold, Kpi, NumList, Sec, SrcFold } from './DocKit';
 
+const SEV_KO: Record<string, string> = { STOP: '정지', WARN: '주의', GUIDE: '조작 안내' };
+
+// 시안(2026-10-20): 결론 띠 → 먼저 할 일(큰 번호) → 보전 단계(펼침) → 생산 영향 숫자 → 안전 고정 서식. 지난 기록(표)·출처는 접음.
 export default function CardScreen({ alertId }: { alertId: string }) {
-  const { alerts, back, wos, srs, openWo, openSimple, user, history, go, twin, openSource } = useApp();
-  const [src, setSrc] = useState(false);
+  const { alerts, back, wos, srs, openWo, openSimple, user, history, go, openSource } = useApp();
   const alert = alerts.find((x) => x.id === alertId);
-  const guideText = useGuideCardText(alert?.code, alert?.alarm?.steps);     // 비서가 풀어 쓴 점검 순서 (없으면 null — 원문만 보인다). 훅이라 아래 early return보다 위에 둔다
   if (!alert) return <div className={PAGE}><div className={CARD}>알람 기록을 찾지 못했습니다 (시연을 처음으로 되돌렸을 수 있음) <button onClick={back} className={BTN}>닫기</button></div></div>;
   const a = alert.alarm, lv = LEVEL_VIEW[alert.level], eq = MACHINES[alert.machine].eq!;
   const op30 = MACHINES[alert.machine].op === 'OP-30';
@@ -26,86 +27,120 @@ export default function CardScreen({ alertId }: { alertId: string }) {
   const wo = wos.find((w) => w.alertId === alert.id);
   const sr = srs.find((r) => r.alertId === alert.id);
   const src2 = (d: string) => { const m = d.match(/(DOC-\d+|GLOSSARY)\s+§?([\d.]+)/); return m ? <button key={d} onClick={() => openSource(m[1], m[2])} className="underline">{d}</button> : <span key={d}>{d}</span>; };
-  const row = (k: string, v: React.ReactNode) => (<div className="grid grid-cols-[120px_1fr] gap-3 border-b border-slate-100 py-2"><dt className="text-[14px] font-bold text-slate-500">{k}</dt><dd className="min-w-0 text-[15px]">{v}</dd></div>);
+  const tone = alert.level === '긴급' ? 'crit' : alert.level === '주의' ? 'warn' : 'mute';
+  const rule = a?.chain.match(/\(([^)]+)\)/)?.[1];
 
   return (
-    <div className={PAGE}>
-      <div className={`${CARD} max-w-[900px]`}>
-        <div className="flex items-center justify-between gap-2 border-b-2 pb-2" style={{ borderColor: lv.color }}>
-          <h2 className="text-[18px] font-bold" style={{ color: lv.color }}>{lv.icon} 지침카드 · {machineLabel(alert.machine)} · {md(alert.time)} {hhmm(alert.time)} 발생{alert.scenario ? ` · 사건 ${alert.scenario}` : ''}</h2>
-          <button onClick={back} className={BTN}>닫기</button>
-        </div>
-        {!a ? <p className="mt-3 font-semibold">{alert.code} — 알람 코드집에 없음 · 보전 담당자 호출</p> : (
-          <dl>
-            {row('알람', <b>{alarmTitle(a)}</b>)}
-            {row('심각도', <b style={{ color: lv.color }}>{lv.icon} {sevText(a)}{alert.cleared ? ` · 설비 알람 ${hhmm(alert.cleared)} 해제` : ''}</b>)}
-            {row('누가', <>{whoText(a)} <span className={`ml-2 rounded px-2 py-0.5 text-[12px] font-bold ${mine ? 'bg-[#ffe1e1] text-[#a01e23]' : 'bg-slate-100 text-slate-600'}`}>{mine ? '처리 책임: 나 (이 설비 담당)' : '처리 책임: 그 설비 OPR·MNT — 나는 [확인]만'}</span></>)}
-            {(a.chain || chain.length > 1) && row('연쇄 알람', <>{chain.length > 1 ? <b>{chain.join(' → ')}</b> : null} {a.chain && <span className="text-slate-600">{chain.length > 1 ? ' · ' : ''}규칙: {a.chain}</span>}</>)}
-            {row('먼저 할 일', a.steps.length ? <ol className="list-decimal pl-5">{a.steps.map((s) => <li key={s}>{s}</li>)}</ol> : <span className="text-slate-500">DOC-03 해당 절을 봅니다 ({a.doc03.join(' · ') || '없음'})</span>)}
-            {guideText && row('비서 풀이 (참고)', (
-              <div className="rounded-md border-2 border-dashed border-slate-400 p-2 text-[14px]">
-                <p className="mb-1 text-[12px] font-bold text-slate-600">참고용 — 위 “먼저 할 일” 원문(DOC-03)이 기준입니다. 비서(외부 LLM)가 쉬운 말로 풀어 쓴 것이라, 원문과 다르면 원문을 따릅니다.</p>
-                <ol className="list-decimal pl-5">{guideText.map((s, i) => <li key={i}>{s}</li>)}</ol>
-              </div>
-            ))}
-            {row('안전', <SafetyBlock machine={alert.machine} alarm={a} />)}
-            {row('생산 영향', <>현재 로트 {alert.lot ? <button onClick={() => go('lots', alert.lot)} className="font-semibold underline">{alert.lot}</button> : '—'} · {alert.cleared ? `정지 ${mins}분` : `${mins}분째`} · 약 {(mins / cyc).toFixed(1)}개 손실 (추정 = 시간 ÷ 기준 사이클 {cyc}분){op30 ? ` · OP-30 1대 → 라인 속도 절반` : ''}</>)}
-            {alert.kind === 'alarm' && alert.lot && row('의심 로트 (비서 제안)', <div className="rounded-md border-2 border-dashed border-slate-400 p-2 text-[14px]">┄ 정지 등급 알람 {alert.code}가 뜬 동안 가공된 로트 <b>{alert.lot}</b>입니다. 제안만으로 상태가 바뀌지 않습니다 — 보류는 반장이 로트 추적에서. <button onClick={() => go('lots', alert.lot)} className="ml-1 underline">로트 추적</button> · 출처 <button onClick={() => openSource('DOC-06', '4')} className="underline">DOC-06 §4</button>{twin?.suspect_lot === alert.lot ? ' · (시뮬레이터 의심 로트와 같음)' : ''}</div>)}
-            {row('지난 기록', past.length ? (
-              <ul className="text-[14px]">{past.map((x) => { const r = recOf(x.alarm_event_id); return <li key={x.alarm_event_id}>{md(x.occurred_at)} {hhmm(x.occurred_at)} · {x.severity_at_event}{r ? ` · ${r.record_no} 원인: ${r.cause || '—'} / 조치: ${r.action || '—'} (${r.repair_min || '—'}분)` : ' · 기록 없음'}</li>; })}</ul>
-            ) : '9월 기록 없음')}
-          </dl>
-        )}
-        <div className="mt-3 flex flex-wrap gap-2">
-          {a?.severity === 'STOP' && op30 && <button onClick={() => wo && openWo(wo.no)} disabled={!wo} className={DARK}>{wo ? `작업지시서 ${wo.no} 보기` : '작업지시서 초안 만드는 중'}</button>}
-          {a?.severity === 'STOP' && !op30 && <button onClick={() => openSimple(alert.id)} className={DARK}>{sr ? `간이 작업기록 ${sr.no}` : '간이 작업기록 쓰기 — 보전 담당자 확정'}</button>}
-          {a?.severity === 'WARN' && <button onClick={() => openSimple(alert.id)} className={DARK}>{sr ? `간이 작업기록 ${sr.no}` : '간이 작업기록 쓰기'}</button>}
-          {a?.severity === 'GUIDE' && <span className="text-[14px] text-slate-600">조작 안내 — 작업자가 원인을 고치면(알람 해제) 처리됩니다.</span>}
-          <button onClick={() => go('replay', alert.time)} className={BTN}>다시 보기 (발생 시각)</button>
-        </div>
-        <button onClick={() => setSrc((s) => !s)} className="mt-3 h-11 text-[14px] font-semibold text-slate-600">{src ? '▾' : '▸'} 출처 더보기</button>
-        {src && a && (
-          <ul className="mt-1 list-disc pl-5 text-[13px] text-slate-600">
-            <li>알람·심각도·누가 — 알람 코드집 {src2(a.doc02)}</li>
-            {a.doc03.length > 0 && <li>연쇄 알람·먼저 할 일 — 고장 대응 매뉴얼 {a.doc03.map(src2)}</li>}
-            <li>안전 — 안전 작업 기준서 {src2(`DOC-05 §${a.severity === 'STOP' ? '7' : '2.4'}`)} (Rev.2)</li>
-            <li>생산 영향 — 설비 데이터·지표 정의서 {src2('DOC-07 §5.3')}</li>
-          </ul>
-        )}
-      </div>
-    </div>
+    <DocPage width={900}>
+      <DocHead title="지침카드" sub={`${md(alert.time)} ${hhmm(alert.time)} 발생${alert.scenario ? ` · 사건 ${alert.scenario}` : ''}`} right={<button onClick={back} className={BTN}>닫기</button>} />
+      {!a ? <Band tone="crit" title={<>{alert.code} — 알람 코드집에 없음</>} chips={<Chip tone="solid-crit">보전 담당자 호출</Chip>} /> : (<>
+        <Band tone={tone}
+          title={<><span style={{ color: lv.color }}>{lv.icon} {sevText(a)}</span> · {MACHINES[alert.machine].name} · 알람 <span className="font-mono" style={{ color: lv.color }}>{a.code}</span> {a.nameKo.replace(/\(.*\)/, '')} · <span className="font-mono">{mins}</span>분{alert.cleared ? '' : '째'}</>}
+          desc={a.easy}
+          chips={<>
+            <Chip tone={a.severity === 'STOP' ? 'solid-crit' : a.severity === 'WARN' ? 'solid-warn' : 'mute'}>{mine ? '처리 책임: 나' : `처리 책임: ${a.responder === 'MNT' ? '보전 담당자' : '그 설비 작업자'}`}</Chip>
+            {chain.length > 1 && <Chip tone="crit">연쇄 {chain.join(' → ')}{rule ? ` · ${rule}` : ''}</Chip>}
+            {alert.lot && <button onClick={() => go('lots', alert.lot)}><Chip mono>로트 {alert.lot}</Chip></button>}
+            {a.severity === 'STOP' && op30 && <Chip tone="warn">OP-30 1대 → 라인 속도 절반</Chip>}
+            {alert.cleared && <Chip tone="ok">설비 알람 {hhmm(alert.cleared)} 해제</Chip>}
+          </>}>
+          <div className="flex flex-wrap gap-2">
+            {a.severity === 'STOP' && op30 && <button onClick={() => wo && openWo(wo.no)} disabled={!wo} className={DARK}>{wo ? `작업지시서 ${wo.no} 보기 →` : '작업지시서 초안 만드는 중'}</button>}
+            {a.severity === 'STOP' && !op30 && <button onClick={() => openSimple(alert.id)} className={DARK}>{sr ? `간이 작업기록 ${sr.no} →` : '간이 작업기록 쓰기 →'}</button>}
+            {a.severity === 'WARN' && <button onClick={() => openSimple(alert.id)} className={DARK}>{sr ? `간이 작업기록 ${sr.no} →` : '간이 작업기록 쓰기 →'}</button>}
+            <button onClick={() => go('replay', alert.time)} className={BTN}>▶ 다시 보기 (발생 시각)</button>
+          </div>
+        </Band>
+        <Sec title="먼저 할 일" right={a.steps.length ? <Chip tone="acc">작업자 {a.steps.length}단계</Chip> : undefined}>
+          {a.steps.length ? <NumList items={a.steps} big /> : <span className="text-[14px] text-slate-500">{a.doc03.join(' · ') || '해당 절 없음'}</span>}
+        </Sec>
+        {a.maint.length > 0 && <Sec title="보전 담당자 단계" right={<Chip>보전 {a.maint.length}단계</Chip>}><NumList items={a.maint} start={a.steps.length + 1} /></Sec>}
+        <Sec title="생산 영향" right={<Chip>추정</Chip>}>
+          <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
+            <Kpi label="정지" value={mins} unit={alert.cleared ? '분' : '분째'} sub={`${hhmm(alert.time)}부터`} />
+            <Kpi label="손실 (추정)" value={`약 ${(mins / cyc).toFixed(1)}`} unit="개" sub={`${mins}분 ÷ 기준 사이클 ${cyc}분`} />
+            <Kpi label="가공 중이던 로트" value={<span className="text-[18px]">{alert.lot ?? '—'}</span>} sub={alert.kind === 'alarm' && alert.lot ? '의심 로트 제안' : undefined} />
+          </div>
+        </Sec>
+        <Sec title="안전" right={a.severity === 'STOP' ? SafeTag : undefined}><SafetyBlock machine={alert.machine} alarm={a} /></Sec>
+        <Fold summary={`지난 기록 — 9월 ${eq} · 알람 ${alert.code}`}>
+          {past.length ? (
+            <div className="overflow-x-auto"><table className="w-full min-w-[620px] table-fixed text-left text-[13.5px]">
+              <colgroup><col className="w-[112px]" /><col className="w-[64px]" /><col className="w-[96px]" /><col /><col /><col className="w-[84px]" /></colgroup>
+              <thead className="text-[12px] text-slate-500"><tr>{['날짜·시각', '등급', '기록 번호', '원인', '조치', '수리 시간'].map((h) => <th key={h} className="border-b border-slate-300 px-2 py-1.5 font-semibold">{h}</th>)}</tr></thead>
+              <tbody>{past.map((x) => { const r = recOf(x.alarm_event_id); const clamp = 'line-clamp-2'; return (
+                <tr key={x.alarm_event_id} className="border-b border-slate-100 align-top">
+                  <td className="whitespace-nowrap px-2 py-2 font-mono">{md(x.occurred_at)} {hhmm(x.occurred_at)}</td>
+                  <td className="px-2 py-2">{SEV_KO[x.severity_at_event] ?? x.severity_at_event}</td>
+                  <td className="px-2 py-2 font-mono">{r?.record_no ?? '—'}</td>
+                  <td className="px-2 py-2"><span className={clamp} title={r?.cause}>{r?.cause || '—'}</span></td>
+                  <td className="px-2 py-2"><span className={clamp} title={r?.action}>{r?.action || '—'}</span></td>
+                  <td className="px-2 py-2">{r?.repair_min ? <><b className="font-mono text-[18px]">{r.repair_min}</b><span className="ml-0.5 text-slate-500">분</span></> : '—'}</td>
+                </tr>); })}</tbody>
+            </table></div>
+          ) : <span className="text-slate-500">없음</span>}
+        </Fold>
+        <SrcFold>
+          <li>알람·심각도·누가 — 알람 코드집 {src2(a.doc02)}</li>
+          {a.doc03.length > 0 && <li>연쇄 알람·먼저 할 일 — 고장 대응 매뉴얼 {a.doc03.map(src2)}</li>}
+          {safetySrc(alert.machine, a, openSource)}
+          <li>생산 영향 — 설비 데이터·지표 정의서 {src2('DOC-07 §5.3')}</li>
+          {alert.kind === 'alarm' && alert.lot && <li>의심 로트 — {src2('DOC-06 §4')}</li>}
+        </SrcFold>
+      </>)}
+    </DocPage>
   );
 }
 
 // 메뉴 "지침카드" — 전체 지침카드 목록, 누르면 그 지침카드 (페이지구조 v3 Q28)
+// 연표 모양 (2026-10-20 팀 검토): 날짜 머리 → 왼쪽 세로선의 시각 점(등급 색) → 오른쪽 카드. 기본 = 처리 필요한 것만 · 최신순
+const WD = ['일', '월', '화', '수', '목', '금', '토'];
 export function CardList() {
   const { alerts, go } = useApp();
   const [mach, setMach] = useState('');
   const [lv, setLv] = useState('');
-  const list = [...alerts].filter((a) => (!mach || a.machine === mach) && (!lv || a.level === lv)).reverse();
-  const sel = 'h-11 rounded-md border border-slate-300 bg-white px-2 text-[14px]';
+  const [all, setAll] = useState(false);
+  const [asc, setAsc] = useState(false);
+  const open = alerts.filter((a) => !a.handled).length;
+  const list = alerts.filter((a) => (all || !a.handled) && (!mach || a.machine === mach) && (!lv || a.level === lv)).sort((x, y) => (asc ? x.ts - y.ts : y.ts - x.ts));
+  const days: [string, typeof list][] = [];
+  list.forEach((a) => { const d = a.time.slice(0, 10); const g = days.find(([k]) => k === d); if (g) g[1].push(a); else days.push([d, [a]]); });
+  const wd = (d: string) => WD[new Date(Date.UTC(+d.slice(0, 4), +d.slice(5, 7) - 1, +d.slice(8, 10))).getUTCDay()];
+  const sel = 'h-10 rounded-full border border-slate-300 bg-white px-3 text-[13px]';
+  const seg = (on: boolean) => `h-10 px-4 text-[13px] font-semibold ${on ? 'bg-[#1c2530] text-white' : 'bg-white'}`;
   return (
-    <div className={PAGE}>
-      <div className="mx-auto flex max-w-[1100px] flex-col gap-3">
-        <div className="flex items-center justify-end gap-2">
-          <select value={mach} onChange={(e) => setMach(e.target.value)} className={sel}><option value="">설비 전체</option>{Object.entries(MACHINES).filter(([, m]) => m.eq).map(([k, m]) => <option key={k} value={k}>{m.name}</option>)}</select>
-          <select value={lv} onChange={(e) => setLv(e.target.value)} className={sel}><option value="">등급 전체</option>{['긴급', '주의', '참고'].map((l) => <option key={l}>{l}</option>)}</select>
-        </div>
-        {list.length === 0 ? <div className={CARD}>지침카드가 없습니다 (오늘 뜬 알람이 없음)</div> : (
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-3">
-            {list.map((a) => {
-              const v = LEVEL_VIEW[a.level];
+    <DocPage width={900}>
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="flex overflow-hidden rounded-full border border-slate-300"><button onClick={() => setAll(false)} className={seg(!all)}>처리 필요 {open}</button><button onClick={() => setAll(true)} className={seg(all)}>전체 {alerts.length}</button></div>
+        <button onClick={() => setAsc((v) => !v)} className={sel} aria-label="정렬 바꾸기">{asc ? '오래된순' : '최신순'} ⇅</button>
+        <select aria-label="설비" value={mach} onChange={(e) => setMach(e.target.value)} className={sel}><option value="">설비 전체</option>{Object.entries(MACHINES).filter(([, m]) => m.eq).map(([k, m]) => <option key={k} value={k}>{m.name}</option>)}</select>
+        <select aria-label="등급" value={lv} onChange={(e) => setLv(e.target.value)} className={sel}><option value="">등급 전체</option>{['긴급', '주의', '참고'].map((l) => <option key={l}>{l}</option>)}</select>
+      </div>
+      {list.length === 0 ? <div className="flex min-h-[55vh] items-center justify-center"><div className="rounded-2xl border border-slate-300 bg-white px-8 py-6 text-[15px] text-slate-600">{all ? '지침카드가 없습니다' : '처리할 지침카드가 없습니다'}</div></div> : days.map(([d, as]) => (
+        <section key={d} className="flex flex-col gap-2">
+          <h3 className="text-[17px] font-bold">{md(d)} <span className="text-[14px] font-semibold text-slate-500">({wd(d)})</span></h3>
+          <ol className="relative ml-[58px] flex flex-col gap-2.5 border-l-2 border-slate-300 py-1 pl-5">
+            {as.map((a) => {
+              const v = LEVEL_VIEW[a.level], who = a.alarm?.responder === 'MNT' ? '보전' : '작업자';
+              const col = a.handled ? '#94a3b8' : v.color; // 처리됨 = 회색 줄 (2026-10-20)
               return (
-                <button key={a.id} onClick={() => go('card', a.id)} className="flex flex-col gap-1 rounded-xl border border-slate-200 border-l-[6px] bg-white p-3 text-left shadow-sm hover:bg-slate-50" style={{ borderLeftColor: v.color }}>
-                  <b className="text-[17px]" style={{ color: v.color }}>{v.icon} {a.code}</b>
-                  <span className="truncate text-[15px] font-semibold">{alarmTitle(a.alarm, a.code)}</span>
-                  <span className="text-[13px] text-slate-500">{MACHINES[a.machine].name} · {md(a.time)} {hhmm(a.time)}{a.handled ? ' · 처리됨' : ''}</span>
-                </button>
+                <li key={a.id} className="relative">
+                  <span className="absolute -left-[88px] top-3 w-[48px] text-right font-mono text-[13px] text-slate-600">{hhmm(a.time)}</span>
+                  <span className="absolute -left-[28px] top-[14px] h-3.5 w-3.5 rounded-full border-2 border-white" style={{ background: col }} aria-hidden />
+                  <button onClick={() => go('card', a.id)} className={`flex w-full flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border px-3 py-2.5 text-left ${a.handled ? 'border-slate-200 bg-slate-100 text-slate-400 hover:bg-slate-200' : 'border-slate-300 bg-white hover:bg-slate-50'}`}>
+                    <b className="text-[15px]" style={{ color: col }}>{v.icon} {MACHINES[a.machine].name} · {a.code}</b>
+                    <span className="min-w-0 flex-1 truncate text-[15px] font-semibold">{a.alarm ? a.alarm.nameKo.replace(/\(.*\)/, '') : alarmTitle(a.alarm, a.code)}</span>
+                    <span className="flex flex-wrap gap-1.5">
+                      <Chip tone={a.handled ? 'mute' : a.level === '긴급' ? 'solid-crit' : a.level === '주의' ? 'warn' : 'mute'}>처리 책임: {who}</Chip>
+                      {a.handled ? <Chip>✓ 처리됨</Chip> : <Chip mono>{minsSince(a.time)}분째</Chip>}
+                    </span>
+                  </button>
+                </li>
               );
             })}
-          </div>
-        )}
-      </div>
-    </div>
+          </ol>
+        </section>
+      ))}
+    </DocPage>
   );
 }
