@@ -98,7 +98,7 @@ INSERT INTO work_record (record_no, record_type, alarm_event_id, cause_check_not
 VALUES (fn_next_doc_no('MR-S', app_now()), 'SIMPLE', CAST(:alarm_event_id AS bigint), CAST(:cause_check_notification_id AS bigint),
         :equipment_id, CAST(:lot_no AS text), :action, CAST(:worker_memo AS text), coalesce(CAST(:start_at AS timestamptz), app_now()),
         :safety_block_required, 'EDITING', 0)
-RETURNING record_no;
+RETURNING record_no, safety_block_required;
 
 -- name: wr_add_loto
 INSERT INTO work_record_check (record_no, check_seq, check_kind, loto_step_code)

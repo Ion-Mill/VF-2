@@ -29,11 +29,13 @@ def create_work_record_full(db: Db, wo_no: str, author_kind: str, author: str | 
 def create_work_record_simple(db: Db, actor: str, equipment_id: str, action: str, alarm_event_id: int | None = None,
                               cause_check_notification_id: int | None = None, lot_no: str | None = None,
                               worker_memo: str | None = None, start_at=None, safety_block_required: bool = False) -> str:
-    record_no = db.scalar("maintenance.wr_create_simple", alarm_event_id=alarm_event_id,
-                          cause_check_notification_id=cause_check_notification_id, equipment_id=equipment_id, lot_no=lot_no,
-                          action=action, worker_memo=worker_memo, start_at=start_at,
-                          safety_block_required=safety_block_required)
-    if safety_block_required:
+    row = db.one("maintenance.wr_create_simple", alarm_event_id=alarm_event_id,
+                 cause_check_notification_id=cause_check_notification_id, equipment_id=equipment_id, lot_no=lot_no,
+                 action=action, worker_memo=worker_memo, start_at=start_at,
+                 safety_block_required=safety_block_required)
+    record_no = row["record_no"]
+    # 잠금·표지 필요 여부는 DB가 알람 잠금 수준으로 정한다 (화면이 False를 보내도 FULL·TWO_POINT 알람이면 참, 2026-10-20)
+    if row["safety_block_required"] in (True, "t", "true"):
         db.exec("maintenance.wr_add_loto", record_no=record_no)
     db.scalar("documents.save_revision", doc_type="WORK_RECORD", doc_key=record_no, author_kind="HUMAN", author=actor,
               reason=None, status_after="EDITING", content={"action": action, "worker_memo": worker_memo}, changes=[])

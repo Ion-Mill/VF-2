@@ -332,7 +332,8 @@ DECLARE
 BEGIN
     SELECT array_agg(d.pm_task_id ORDER BY d.equipment_id, d.pm_task_id) INTO v_tasks
       FROM v_pm_task_due d
-     WHERE d.is_active AND d.on_calendar AND d.next_due_date = v_due
+     WHERE d.is_active AND d.on_calendar AND d.cycle_code IN ('WEEKLY','MONTHLY','HALF_YEAR','YEARLY')   -- 주 1회 이상만
+       AND d.next_due_date = v_due
        AND NOT EXISTS (SELECT 1 FROM notification n
                         WHERE n.rule_code = 'PM_DUE_SOON' AND NOT n.is_processed
                           AND (n.pm_task_id = d.pm_task_id
@@ -425,13 +426,14 @@ BEGIN
             v_n := v_n + 1;
         END IF;
     END LOOP;
-    -- 예방 정비 기한 하루 전(참고)·넘김(주의) — 달력에 있는 항목만
+    -- 예방 정비 기한 하루 전(참고)·넘김(주의) — 달력에 있는 주 1회 이상 주기 항목만 (매일·교대 점검은 점검표, 2026-10-20 고침)
     --   하루 전은 같은 기한 날짜끼리 1건으로 묶는다 (2026-10-20 정비 탭 확인 요청 5, FR-AST-02-08) → fn_raise_pm_due_soon.
     --   묶인 항목이 모두 끝나거나 기한을 넘기면 자동 처리 (fn_close_pm_due_soon — 항목마다 1건이던 9월 알림도 같은 규칙)
     PERFORM fn_close_pm_due_soon(NULL, v_at);
     v_n := v_n + fn_raise_pm_due_soon(v_at);
     FOR r IN SELECT pm_task_id, equipment_id, item_name, next_due_date FROM v_pm_task_due
-              WHERE is_active AND on_calendar AND next_due_date IS NOT NULL AND next_due_date < v_today LOOP
+              WHERE is_active AND on_calendar AND cycle_code IN ('WEEKLY','MONTHLY','HALF_YEAR','YEARLY')
+                AND next_due_date IS NOT NULL AND next_due_date < v_today LOOP
         IF NOT EXISTS (SELECT 1 FROM notification
                 WHERE rule_code = 'PM_OVERDUE' AND pm_task_id = r.pm_task_id AND NOT is_processed) THEN
             PERFORM fn_raise_notification('PM_OVERDUE', format('%s 예방 정비 기한 넘김: %s', r.equipment_id, r.item_name),

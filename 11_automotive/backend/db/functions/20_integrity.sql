@@ -238,15 +238,34 @@ END $$;
 CREATE TRIGGER work_order_check BEFORE INSERT OR UPDATE ON maintenance_work_order
     FOR EACH ROW EXECUTE FUNCTION trg_work_order_check();
 
+-- 간이 작업기록에 잠금·표지 9단계가 필요한 알람인가 (R-32·33, DOC-05 §2.4·§7): 잠금 수준 FULL·TWO_POINT
+CREATE OR REPLACE FUNCTION fn_simple_record_needs_loto(p_alarm_event_id bigint) RETURNS boolean
+LANGUAGE sql STABLE AS $$
+    SELECT coalesce((SELECT m.lockout_level IN ('FULL','TWO_POINT')
+                       FROM alarm_event a JOIN alarm_master m USING (alarm_code)
+                      WHERE a.alarm_event_id = p_alarm_event_id), false);
+$$;
+
 -- ---------------------------------------------------------------------
 -- 작업기록서 (5.D.4, R-32, 6.15)
 --   확정자: 작업기록서 = MNT / 간이: 주의 등급 = OPR·MNT, 다른 공정 정지 등급 = MNT, 원인 점검 = MNT
 --   확인자 = SUP
 --   확정 순간(UPDATE로 CONFIRMED가 될 때): 잠금·표지가 필요한 기록은 9단계 모두 체크 (R-32)
+--   간이 작업기록의 잠금·표지 필요 여부는 DB가 정한다 (2026-10-20, R-32·33, FR-MNT-05-15, NFR-SAFE-02·03): 알람 코드집의
+--   잠금 수준이 전체 잠금(FULL — 다른 공정 정지 등급) 또는 보충용 2점 잠금(TWO_POINT — 예: 2075, DOC-05 §2.4)이면 화면이
+--   보낸 값과 상관없이 참. 한 번 참이면 거짓으로 못 바꾼다. 생성기 적재(app.loading)는 9월 기록 그대로 둔다
 -- ---------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION trg_work_record_check() RETURNS trigger LANGUAGE plpgsql AS $$
 DECLARE v_sev text; v_proc text; v_roles text[]; v_loto int; v_wo_eq text;
 BEGIN
+    IF current_setting('app.loading', true) IS DISTINCT FROM 'on' THEN
+        IF TG_OP = 'INSERT' AND NEW.record_type = 'SIMPLE' AND NEW.alarm_event_id IS NOT NULL
+           AND fn_simple_record_needs_loto(NEW.alarm_event_id) THEN
+            NEW.safety_block_required := true;
+        ELSIF TG_OP = 'UPDATE' AND OLD.safety_block_required AND NOT NEW.safety_block_required THEN
+            NEW.safety_block_required := true;
+        END IF;
+    END IF;
     IF NEW.wo_no IS NOT NULL THEN
         SELECT equipment_id INTO v_wo_eq FROM maintenance_work_order WHERE wo_no = NEW.wo_no;
         IF v_wo_eq <> NEW.equipment_id THEN

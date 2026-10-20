@@ -161,7 +161,7 @@ WITH docs AS (
       FROM daily_report d
     UNION ALL
     SELECT 'PM_RECORD', p.pm_record_id::text, t.item_name, p.status, t.equipment_id, p.done_at,
-           p.status = 'EDITING' AND p.recorded_by = CAST(:user_id AS text)
+           p.status = 'DRAFT' AND p.recorded_by = CAST(:user_id AS text)
       FROM pm_record p JOIN pm_task t USING (pm_task_id)
     UNION ALL
     SELECT 'SHIPMENT', s.shipment_no, s.customer_code || ' 출하 (납기 ' || s.due_date || ')', s.status, NULL,
