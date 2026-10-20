@@ -99,16 +99,48 @@ class Live:
                 "lot_no": e.get("lot_no"), "prev_alarm_event_id": e.get("prev"), "scenario_code": e.get("scenario")}
 
     def stops(self, a, b):
-        """필수 정지 (DOC-07 §5.4)."""
+        """필수 정지 (DOC-07 §5.4). 정지마다 그 정지로 만든 작업지시서와 보고서 시점(구간 끝 b)의 상태를 붙인다 (wo_link)."""
         out = []
         for eq in EQS:
             for s, e, st in self.runs(eq, a, b):
                 if st and st[1] in self.fail and st[0] in ("DOWN", "IDLE") and e - s >= 5:
                     out.append({"equipment_id": eq, "reason_code": st[1], "reason_name": self.reason_name.get(st[1], st[1]),
                                 "start_at": iso(self.to_dt(s)), "end_at": iso(self.to_dt(e)), "minutes": e - s,
-                                "alarm_event_id": st[3], "loss_qty": round((e - s) / self.per_part(eq), 1), "is_estimated": True})
+                                "alarm_event_id": st[3], "loss_qty": round((e - s) / self.per_part(eq), 1), "is_estimated": True,
+                                **self.wo_link(st[3], self.to_dt(b))})
         out.sort(key=lambda x: (-x["minutes"], x["start_at"]))
         return out
+
+    def wo_link(self, alarm_id, at):
+        """정지 ↔ 작업지시서 (2026-10-20 정비 탭 확인 요청 2 — 백엔드 app/sql/documents.sql report_stops와 같은 규칙).
+        작업지시서 = 그 알람으로 만든 것(alarm_event_id) 또는 그 알람의 반복 알람 2단계 알림으로 만든 것(trigger_notification_id →
+        알림의 alarm_event_id, 예: MW-0904). 9월 기록(생성기 CSV)만 안다 — 시연 중 화면에서 만든 작업지시서는 브라우저에 있다.
+        wo_status_at_report: 보고서 시점 at의 상태 WAITING_APPROVAL / IN_PROGRESS / DONE / CANCELLED (그때 없던 것은 None)"""
+        if not hasattr(self, "_wo_by_alarm"):
+            noti_alarm = {n["notification_id"]: n["alarm_event_id"] for n in self.P.notifications if n.get("alarm_event_id")}
+            by = {}
+            for w in sorted(self.P.work_orders, key=lambda w: w["created_at"] or ""):
+                direct = w.get("alarm_event_id")
+                via = noti_alarm.get(w.get("trigger_notification_id") or "")
+                for aid, rank in ((direct, 0), (via, 1)):
+                    if aid and (aid not in by or by[aid][0] > rank):
+                        by[aid] = (rank, w)
+            self._wo_by_alarm = {k: v[1] for k, v in by.items()}
+        w = self._wo_by_alarm.get(str(alarm_id)) if alarm_id is not None else None
+        if not w:
+            return {"wo_no": None, "wo_status": None, "wo_status_at_report": None}
+        t = lambda k: datetime.fromisoformat(w[k]) if w.get(k) else None
+        if t("created_at") is None or t("created_at") > at:
+            st = None
+        elif t("cancelled_at") and t("cancelled_at") <= at:
+            st = "CANCELLED"
+        elif t("completed_at") and t("completed_at") <= at:
+            st = "DONE"
+        elif t("approved_at") and t("approved_at") <= at:
+            st = "IN_PROGRESS"
+        else:
+            st = "WAITING_APPROVAL"
+        return {"wo_no": w["wo_no"], "wo_status": w.get("status"), "wo_status_at_report": st}
 
     def losses(self, a, b):
         """손실 = 고장 손실(필수 정지 ÷ 기준 사이클) + 속도 손실(병목 원인 ①②③ 구간: 계획 ÷ 3.5분 − 완료 − 고장 손실) — gen/reports.py 일일 보고서와 같은 식."""

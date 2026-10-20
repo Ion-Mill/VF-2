@@ -3,7 +3,8 @@
 -- 알림 목록 (NTF-01): 받은 알림 (MGR은 전부). 처리 상태(open/processed/all)·중요도·설비로 거르고, 최근 순 또는 보고 순위 순.
 -- 보고 순위: 24시간 넘게 처리 안 된 주의 알림은 0-1 (DOC-07 §10.5). 카드 칸: ×N 묶음(repeat_count), 폭주(is_flood),
 -- 관련 정보 한 줄(related_info), 처리할 역할(processor_roles), 전달 방식(delivery_kind — POPUP 팝업 / BUBBLE 말풍선 / LIST 목록,
--- 2026-10-13). 칸(:kind): fault = 고장·확인 알림(팝업·목록), doc = 문서 알림(말풍선). 문서 알림은 열 문서(doc_type·doc_key)
+-- 2026-10-13). 칸(:kind): fault = 고장·확인 알림(팝업·목록), doc = 문서 알림(말풍선). 문서 알림은 열 문서(doc_type·doc_key —
+-- 작업기록서 알림 2종은 그 작업기록서). 묶은 알림의 정비 항목 = pm_task_ids
 -- name: mine
 WITH x AS (
     SELECT n.notification_id, n.rule_code, r.rule_name, n.importance, n.raised_at, n.message, n.related_info, n.message_source,
@@ -11,10 +12,15 @@ WITH x AS (
            n.alarm_event_id, n.equipment_id, n.lot_no, n.item_no, n.pm_task_id, n.tool_id, n.wo_no, n.bottleneck_log_id,
            n.revision_id, n.result_id, n.shift_id, n.buffer_code, n.cmm_import_id, n.repeat_stage_status,
            r.process_mode, r.processor_roles, r.rank_group, r.delivery_kind, nr.popup_sound, nr.read_at,
-           CASE WHEN n.wo_no IS NOT NULL AND r.delivery_kind = 'BUBBLE' THEN 'WORK_ORDER'
+           CASE WHEN n.rule_code IN ('WR_CONFIRM_PENDING','WR_CHECK_REQUEST') THEN 'WORK_RECORD'
+                WHEN n.wo_no IS NOT NULL AND r.delivery_kind = 'BUBBLE' THEN 'WORK_ORDER'
                 WHEN n.rule_code = 'SHIFT_REPORT_PENDING' THEN 'SHIFT_REPORT' ELSE v.doc_type END AS doc_type,
-           CASE WHEN n.wo_no IS NOT NULL AND r.delivery_kind = 'BUBBLE' THEN n.wo_no
+           CASE WHEN n.rule_code IN ('WR_CONFIRM_PENDING','WR_CHECK_REQUEST') THEN (SELECT w.record_no FROM work_record w WHERE w.wo_no = n.wo_no)
+                WHEN n.wo_no IS NOT NULL AND r.delivery_kind = 'BUBBLE' THEN n.wo_no
                 WHEN n.rule_code = 'SHIFT_REPORT_PENDING' THEN n.shift_id ELSE v.doc_key END AS doc_key,
+           -- 여러 정비 항목을 묶은 알림(PM_DUE_SOON 하루 전·PM_RECORD_CHECK, 2026-10-20)의 관련 항목
+           (SELECT array_agg(t.pm_task_id ORDER BY t.pm_task_id) FROM notification_pm_task t
+             WHERE t.notification_id = n.notification_id) AS pm_task_ids,
            (NOT n.is_processed AND n.importance = 'CAUTION' AND n.raised_at < app_now() - interval '24 hours') AS is_stale,
            r.report_rank AS rule_rank
       FROM notification n JOIN notification_rule r USING (rule_code)

@@ -88,13 +88,16 @@ def edit_shift_report(db: Db, shift_id: str, actor_id: str, changes: dict, reaso
 def edit_daily_report(db: Db, work_date: str, actor_id: str, changes: dict, reason: str | None, version: int | None = None) -> int:
     cur = _must(db.one("documents.daily_report", work_date=work_date), "일일 보고서")
     _guard("DAILY_REPORT", cur, reason, version)
-    fields = ("issues_summary",)
+    fields = ("issues_summary", "memo")         # memo = 관리자 메모 (2026-10-20). 빈 글자는 메모 지우기
+    if "memo" in changes:                       # 비교는 빈 글자로 맞춰서 (없음 → "" 도 바뀐 것으로 보지 않게)
+        changes = {**changes, "memo": (changes["memo"] or "").strip()}
+        cur = {**cur, "memo": cur.get("memo") or ""}
     diffs = _diff(cur, changes, fields)
     status = _next_status("DAILY_REPORT", cur["status"])
     ver = _save(db, "DAILY_REPORT", str(work_date), actor_id, reason, status,
-                {"issues_summary": changes.get("issues_summary", cur.get("issues_summary"))}, diffs)
+                {f: changes.get(f, cur.get(f)) for f in fields}, diffs)
     db.exec("documents.daily_report_update", work_date=work_date, issues_summary=changes.get("issues_summary"),
-            status=status, version=ver)
+            memo_given="memo" in changes, memo=changes.get("memo") or None, status=status, version=ver)
     return ver
 
 

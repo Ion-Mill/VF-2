@@ -7,14 +7,14 @@ import { createPortal } from 'react-dom';
 import { useApp } from './ctx';
 import { MACHINES } from './data';
 import { SIM, api, md, simIso, useLocal } from './live';
-import { askAssistant, backendChatEnabled } from './assistantApi';
+import { askAssistant, backendChatEnabled, fetchChatLog } from './assistantApi';
 import { LEVEL_VIEW, alarmTitle, hhmm, type AlertRec, type Level, type Notice } from './model';
 import { alarmSentence } from './alarmText';
 import { useAlarmText } from './assistText';
 import { rankOfAlert, rankOfNotice } from './Briefing';
 import RobotIcon from './RobotIcon';
 import EveThinking from './EveThinking';
-import { canStartNewChat, currentChat, makeNewChatMark, realRows, withNewChat } from './chatLog';
+import { canStartNewChat, currentChat, lastChatId, makeNewChatMark, mergeServerLog, withNewChat } from './chatLog';
 import { carryAlarm } from './carry';
 import { Bubble, HistoryItem, Spark, Typing, type ChatRow } from './ChatBubble';
 
@@ -229,12 +229,27 @@ function AlertsTab({ onNotice }: { onNotice: (n: Notice) => void }) {
 }
 
 // ---------- SCR-10 채팅 ----------
+// 서버에 저장된 내 채팅 기록 (API-AST-02 GET). 백엔드 비서를 켰을 때만 받는다 — 끄면 이 브라우저 기록만 (옛 길). again이 바뀔 때마다 다시 받는다
+function useServerChat(userId: string, again: unknown): ChatRow[] {
+  const [rows, setRows] = useState<ChatRow[]>([]);
+  useEffect(() => {
+    if (!backendChatEnabled()) return;
+    let live = true;
+    fetchChatLog(userId).then((r) => { if (live && r) setRows(r); });
+    return () => { live = false; };
+  }, [userId, again]);
+  return rows;
+}
+
 function Chat({ focus, headerSlot, onNewChat }: { focus: string | null; headerSlot: HTMLElement | null; onNewChat: () => void }) {
   const { user, role, screen, selected, openSource } = useApp();
   const [log, setLog] = useLocal<ChatRow[]>(`chat:${user.id}`, []);
   const [q, setQ] = useState('');
   const [busy, setBusy] = useState(false);
   const input = useRef<HTMLInputElement>(null);
+  const server = useServerChat(user.id, focus);   // 채팅 기록에서 연 대화가 다른 PC에서 물은 것일 수 있다
+  // 채팅 기록에서 열면 그 대화가 있는 날 대화 전부(서버 기록 포함), 아니면 지금 대화의 최근 12개
+  const today = focus ? mergeServerLog(log, server).filter((x) => md(x.at) === md(focus)) : currentChat(log).slice(-12);
   const send = async (text = q) => {
     if (!text.trim()) return;
     // 직전 알람 이어받기 신호 (carry.ts): 이 질문의 줄을 로그에 더하기 전의 지금 대화로 계산한다. 이어받을지는 서버가 정한다.
@@ -242,13 +257,15 @@ function Chat({ focus, headerSlot, onNewChat }: { focus: string | null; headerSl
     const cur = currentChat(log);
     const alarmKey = focus ? null : carryAlarm(cur);
     const newChat = focus ? true : cur.length === 0;
+    // 이어서 묻기 (API-AST-02 prev_chat_id): 보고 있는 대화의 마지막 질문에 잇는다. 새 대화의 첫 질문이면 없음
+    const prevChatId = lastChatId(focus ? today : cur);
     setBusy(true); setQ('');
     let row: ChatRow;
     try {
       const r = backendChatEnabled()   // NEXT_PUBLIC_MOM_API가 있으면 백엔드의 비서(외부 LLM)로 — assistantApi.ts. 없으면 옛 길(시연 서버의 규칙 답)
-        ? await askAssistant(text, user.id, screen, selected ? MACHINES[selected].eq : null, { alarmKey, newChat })
+        ? await askAssistant(text, user.id, screen, selected ? MACHINES[selected].eq : null, { alarmKey, newChat, prevChatId })
         : await api<{ answer: string; status: string; sources: ChatRow['sources']; series?: ChatRow['series'] }>('assistant/chat', { question: text, role, user_id: user.id, context: { screen, equipment_id: selected ? MACHINES[selected].eq : null } });
-      row = { at: simIso(), q: text, a: r.answer, status: r.status, sources: r.sources ?? [], series: r.series };
+      row = { at: simIso(), q: text, a: r.answer, status: r.status, sources: r.sources ?? [], series: r.series, ...('chatId' in r && typeof r.chatId === 'number' ? { chatId: r.chatId } : {}) };
     } catch (e) { row = { at: simIso(), q: text, a: '비서 응답 없음 — ' + (e as Error).message, status: '응답 없음', sources: [] }; }
     // 채팅 기록 30일 (FR-MNT-01-01, NFR-DATA-13)
     setLog((l) => [...l.filter((x) => Date.parse(x.at) > SIM.now() - 30 * 864e5), row]);
@@ -257,8 +274,6 @@ function Chat({ focus, headerSlot, onNewChat }: { focus: string | null; headerSl
   // [새 채팅]: 기록은 한 줄도 지우지 않고 "여기서부터 새 대화" 표지 줄만 더한다 → 채팅 탭은 표지 뒤 줄만 보이고, 이전 대화는 채팅 기록 탭에 그대로 있다 (chatLog.ts)
   const canNew = !busy && canStartNewChat(log, !!focus);   // 답을 기다리는 중에는 끈다 (늦게 온 답이 새 대화에 끼지 않게)
   const startNew = () => { if (!canNew) return; const m = makeNewChatMark(simIso()); setLog((l) => withNewChat(l, m, !!focus)); setQ(''); onNewChat(); input.current?.focus(); };
-  // 채팅 기록에서 열면 그 대화가 있는 날 대화 전부, 아니면 지금 대화의 최근 12개
-  const today = focus ? realRows(log).filter((x) => md(x.at) === md(focus)) : currentChat(log).slice(-12);
   const ex = role === 'MNT' || role === 'MGR' ? ['VF2-01 MTTR 알려줘', 'VF2-01 센서 추세', '2075 알람 뭐야', '이 화면 설명해 줘'] : ['2075 알람 뭐야', '잠금 표지 순서', '이 화면 설명해 줘', '병목 원인'];
   const body = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -294,7 +309,8 @@ function Chat({ focus, headerSlot, onNewChat }: { focus: string | null; headerSl
 function ChatLog({ onOpen }: { onOpen: (at: string) => void }) {
   const { user } = useApp();
   const [log] = useLocal<ChatRow[]>(`chat:${user.id}`, []);
-  const keep = realRows(log).filter((x) => Date.parse(x.at) > SIM.now() - 30 * 864e5).reverse();
+  const server = useServerChat(user.id, null);   // 탭을 열 때마다 받는다 — 다른 PC·브라우저에서 물은 것도 보인다 (FR-MNT-01-01)
+  const keep = mergeServerLog(log, server).filter((x) => Date.parse(x.at) > SIM.now() - 30 * 864e5).reverse();
   return (
     <div className="ma-history gap-2">
       {keep.length === 0 ? <p className="ma-empty">저장된 대화가 없습니다.</p> : keep.map((r, i) => (

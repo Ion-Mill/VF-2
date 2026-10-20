@@ -80,6 +80,9 @@ CREATE TABLE daily_report (
     failure_loss_qty  numeric(10,2) NOT NULL CHECK (failure_loss_qty >= 0),
     speed_loss_qty    numeric(10,2) NOT NULL,
     issues_summary    text          NOT NULL,
+    -- 물리 추가 (2026-10-20 정비 탭 확인 요청 1): 관리자 메모 (선택). 확정·저장 때 받는다. 9월 기록은 issues_summary 끝의
+    -- "관리자 메모: …"를 적재 때 떼어 여기로 옮긴다 (tools/load_generated.py)
+    memo              text,
     confirmed_by      varchar(20)   REFERENCES app_user,
     confirmed_at      timestamptz,
     current_version   integer       NOT NULL DEFAULT 0 CHECK (current_version >= 0),

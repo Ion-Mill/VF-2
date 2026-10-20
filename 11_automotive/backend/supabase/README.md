@@ -65,6 +65,7 @@ uvicorn app.main:app --env-file .env.supabase                # → http://localh
 | 시연 되돌리기 함수 2개 | 대시보드 SQL Editor에 붙여 넣음 (연결 도구는 `DROP`·`TRUNCATE` 글자가 있으면 확인 창을 띄우는데, 그 창이 앱에 보이지 않아 3분 뒤 시간 초과) | 줄 끝(CRLF)만 다르고 같음. 기준점 → 되돌리기 실제로 돎 (표 55개, 끝나면 `origin`) |
 | API 서버 연결 점검 | 사용자 PC에서 `tools/check_connection.py --env-file .env.supabase` | 앱 계정·읽기 계정(쓰기 막힘)·**LISTEN/NOTIFY(Session pooler)** 모두 OK (사용자 확인) |
 | 계정·잠그기·데이터·문서 | Windows Git Bash에서 `./supabase/load_data.sh` | 점검 20개 위반 0, 문서 조각 209, U01~U12 비밀번호, 공개 키 권한 0, RLS 꺼진 표 0, 정책 142, 43MB |
+| 2026-10-20 정비 탭 확인 요청 반영 | Claude가 연결 도구(`apply_migration`, 이름 `check_request_1020`)로 `migrations/20261020000000_check_request_1020.sql`을 올림. 먼저 같은 상태의 로컬 DB(10/15 코드 + 9월 데이터 + 계정·잠그기)에 올려 새 `db/` 원본으로 만든 DB와 같음을 확인 | 알림 규칙 29, `daily_report.memo` 19건(복사본도), 새 표 `notification_pm_task` RLS·정책 2·권한, 트리거 2, 시연 되돌리기 목록에 새 표 |
 
 **올리면서 걸린 것과 고친 것**
 
@@ -77,7 +78,7 @@ uvicorn app.main:app --env-file .env.supabase                # → http://localh
 | Windows의 `python3`는 Store 안내로 이어지는 가짜 실행 파일일 수 있음 | `load_all.sh`가 실제로 도는 파이썬을 고르고 `PYTHONUTF8=1`·`PGCLIENTENCODING=UTF8`을 건다 |
 
 **알아 둘 것**
-- Supabase 마이그레이션 기록은 9개(`mom_schema_p01…p07`, `mom_rls_on_until_lockdown`)다. Supabase CLI `db push`를 쓰려면 이 저장소의 파일 1개와 맞지 않으니 `supabase migration repair`로 맞춘다.
+- Supabase 마이그레이션 기록은 10개(`mom_schema_p01…p07`, `mom_rls_on_until_lockdown`, 2026-10-20 `check_request_1020`)다. Supabase CLI `db push`를 쓰려면 이 저장소의 파일 1개와 맞지 않으니 `supabase migration repair`로 맞춘다.
 - 보안 점검(advisor) 남은 경고: 뷰 18개 SECURITY DEFINER(뷰는 RLS를 건너뜀 — 그래서 데이터보다 잠그기가 먼저), 함수 search_path 미지정, btree_gist가 public. 화면은 Supabase API를 부르지 않으므로 당장 문제는 아님.
 - Supabase DB 정렬 규칙(collation)이 로컬(C.UTF-8)과 달라 문자열 `ORDER BY` 순서가 조금 다를 수 있다 (시드 값 자체는 같음).
 - `load_data.sh`의 4단계(사내 문서)가 시연 기준점을 다시 만든다 — 시연 도중에는 다시 돌리지 않는다.

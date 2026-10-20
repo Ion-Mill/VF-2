@@ -48,3 +48,35 @@ export function withNewChat<T extends NewChatFlag>(log: T[], mark: T, viewingPas
   if (!canStartNewChat(log, viewingPast)) return log;
   return [...log, mark];
 }
+
+// ---------- 서버 채팅 기록과 합치기 (API-AST-02 GET, FR-MNT-01-01 "채팅 기록 탭에서 본인 것을 다시 본다") ----------
+// 질문·답은 서버 chat_log에 사용자별로 저장된다. 이 브라우저 기록(위)은 그 사본 — 다른 PC·브라우저에서 물은 것은 서버에만 있다.
+
+/** 서버 번호가 붙을 수 있는 줄 (Eve.tsx의 ChatRow·assistantApi.ts의 ServerChatRow가 이 모양을 포함한다) */
+export interface LoggedRow extends NewChatFlag { at: string; q: string; a: string; chatId?: number }
+
+/**
+ * 채팅 기록 탭에 보일 줄 = 이 브라우저의 질문·답 줄 + 서버에만 있는 줄. 오래된 것부터 (시각이 같으면 이 브라우저 줄 먼저, 그다음 서버 순서).
+ * - chat_id가 같은 줄은 이 브라우저 것을 쓴다 (화면에서 본 시각 그대로).
+ * - chat_id가 없는 옛 브라우저 줄(이 기능 전)은 질문·답 글자가 같은 서버 줄 하나와 같은 것으로 본다 — 두 번 보이지 않게.
+ * 표지 줄은 빠진다. 원본 배열은 바꾸지 않는다.
+ */
+export function mergeServerLog<T extends LoggedRow>(local: readonly T[], server: readonly T[]): T[] {
+  const mine = realRows(local);
+  const ids = new Set(mine.flatMap((r) => (typeof r.chatId === 'number' ? [r.chatId] : [])));
+  const old = mine.filter((r) => typeof r.chatId !== 'number').map((r) => r.q + '\u0000' + r.a);
+  const extra = server.filter((r) => {
+    if (typeof r.chatId === 'number' && ids.has(r.chatId)) return false;
+    const k = old.indexOf(r.q + '\u0000' + r.a);
+    if (k < 0) return true;
+    old.splice(k, 1);
+    return false;
+  });
+  return [...mine, ...extra].map((r, i) => ({ r, i })).sort((x, y) => (Date.parse(x.r.at) - Date.parse(y.r.at)) || (x.i - y.i)).map((x) => x.r);
+}
+
+/** 이어서 물을 앞 질문의 서버 번호: 보이는 대화에서 번호가 있는 마지막 줄. 없으면 null (새 대화로 묻는다) */
+export function lastChatId(rows: readonly LoggedRow[]): number | null {
+  for (let i = rows.length - 1; i >= 0; i--) { const id = rows[i].chatId; if (typeof id === 'number') return id; }
+  return null;
+}

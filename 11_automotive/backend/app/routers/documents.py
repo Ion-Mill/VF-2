@@ -36,6 +36,10 @@ class VersionIn(BaseModel):
     version: int
 
 
+class DailyConfirmIn(VersionIn):
+    memo: str | None = Field(None, max_length=2000, description="관리자 메모 (선택). 비우면 있던 메모 그대로")
+
+
 def _not_locked(doc_type: str, row: dict, what: str) -> None:
     if documents.is_locked(doc_type, row["status"]):
         raise AppError(409, "INVALID_STATE", f"확정된 {what}는 …/revise (사유 필수)로 고친다")
@@ -57,8 +61,10 @@ def _own_shift(db: Db, actor: Actor, shift_id: str) -> None:
 
 @router.get("/reports/shift/{shift_id}")
 def shift_report(shift_id: str, _: Actor = Depends(require("SHIFT_REPORT", "VIEW")), db: Db = Depends(get_db)):
-    """교대 보고서 (RPT-01): 생산(총 목표 = 목표 + 이월·실적·불량·가동률), 특이 사항, 인계 사항, 상태, 버전"""
-    return must(db.one("documents.shift_report", shift_id=shift_id), "교대 보고서")
+    """교대 보고서 (RPT-01): 생산(총 목표 = 목표 + 이월·실적·불량·가동률), 특이 사항, 인계 사항, 상태, 버전, 필수 정지 stops[]
+    stops[] = 필수 정지마다 연결된 작업지시서 wo_no와 보고서 시점 상태 wo_status_at_report (2026-10-20, documents.sql report_stops)"""
+    row = must(db.one("documents.shift_report", shift_id=shift_id), "교대 보고서")
+    return {**row, "stops": db.all("documents.report_stops", shift_id=shift_id, work_date=None)}
 
 
 @router.patch("/reports/shift/{shift_id}")
@@ -93,9 +99,10 @@ def shift_report_revise(shift_id: str, body: ReviseIn, actor: Actor = Depends(re
 # ---------------- 일일 보고서 (RPT-05) ----------------
 @router.get("/reports/daily/{work_date}")
 def daily_report(work_date: date, _: Actor = Depends(require("DAILY_REPORT", "VIEW")), db: Db = Depends(get_db)):
-    """일일 보고서 (RPT-05, 조회 S·M·G): 하루 생산(목표 180 고정·실적·부족 = 180 − 실적), 손실, OEE, 오늘의 문제,
-    잠정 교대(provisional_shift_ids)"""
-    return must(db.one("documents.daily_report", work_date=work_date), "일일 보고서")
+    """일일 보고서 (RPT-05, 조회 S·M·G): 하루 생산(목표 180 고정·실적·부족 = 180 − 실적), 손실, OEE, 오늘의 문제, 관리자 메모, 필수 정지
+    잠정 교대(provisional_shift_ids). memo = 관리자 메모, stops[] = 교대 보고서와 같은 필수 정지 목록 (2026-10-20)"""
+    row = must(db.one("documents.daily_report", work_date=work_date), "일일 보고서")
+    return {**row, "stops": db.all("documents.report_stops", shift_id=None, work_date=work_date)}
 
 
 @router.patch("/reports/daily/{work_date}")
@@ -107,16 +114,18 @@ def daily_report_edit(work_date: date, body: EditIn, actor: Actor = Depends(requ
 
 
 @router.post("/reports/daily/{work_date}/confirm")
-def daily_report_confirm(work_date: date, body: VersionIn, actor: Actor = Depends(require("DAILY_REPORT", "CONFIRM")),
+def daily_report_confirm(work_date: date, body: DailyConfirmIn, actor: Actor = Depends(require("DAILY_REPORT", "CONFIRM")),
                          db: Db = Depends(get_db)):
-    """일일 보고서 확정 (RPT-05, MGR). 잠정 칸(확정 안 된 교대 보고서)이 있으면 INVALID_STATE (R-72 — [확정] 비활성)"""
+    """일일 보고서 확정 (RPT-05, MGR) + 관리자 메모(memo, 선택). 잠정 칸(확정 안 된 교대 보고서)이 있으면 INVALID_STATE (R-72)
+    [확정] 비활성. memo는 조회 응답의 memo로 나온다 — 전에는 버려졌다 (2026-10-20)"""
     row = must(db.one("documents.daily_report", work_date=work_date), "일일 보고서")
     pending = row["provisional_shift_ids"]
     if pending not in (None, [], "[]"):
         raise AppError(409, "INVALID_STATE", f"확정 안 된 교대 보고서가 있어 확정할 수 없음 (잠정: {pending})",
                        {"provisional_shift_ids": pending})
     check_version(db, "DAILY_REPORT", str(work_date), body.version)
-    changed(db.exec("documents.daily_report_confirm", work_date=work_date, actor=actor.user_id), "일일 보고서 확정")
+    changed(db.exec("documents.daily_report_confirm", work_date=work_date, actor=actor.user_id, memo=body.memo),
+            "일일 보고서 확정")
     return {"work_date": work_date, "status": "CONFIRMED"}
 
 

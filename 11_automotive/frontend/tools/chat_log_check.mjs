@@ -8,7 +8,7 @@ import ts from 'typescript';
 
 const file = fileURLToPath(new URL('../src/shell/chatLog.ts', import.meta.url));
 const js = ts.transpileModule(readFileSync(file, 'utf8'), { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2020 } }).outputText;
-const { currentChat, realRows, canStartNewChat, withNewChat, makeNewChatMark } = await import('data:text/javascript;base64,' + Buffer.from(js).toString('base64'));
+const { currentChat, realRows, canStartNewChat, withNewChat, makeNewChatMark, mergeServerLog, lastChatId } = await import('data:text/javascript;base64,' + Buffer.from(js).toString('base64'));
 
 const T = '2026-10-01T10:00:00+09:00';
 const row = (q, at = T) => ({ at, q, a: '답 ' + q, status: 'ok', sources: [] });
@@ -63,6 +63,25 @@ t('시작한 뒤 지금 대화는 비어 있고 새 질문부터 쌓인다', () 
   assert.deepEqual(currentChat(started), []);
   assert.deepEqual(qs(currentChat([...started, row('c')])), ['c']);
   assert.deepEqual(qs(realRows([...started, row('c')])), ['a', 'b', 'c'], '이전 대화는 기록에 그대로');
+});
+
+// ---- 서버 채팅 기록과 합치기 (채팅 기록 탭, API-AST-02 GET)
+const T2 = '2026-10-01T11:00:00+09:00';
+const srv = (q, chatId, at = T) => ({ ...row(q, at), chatId });
+t('서버에만 있는 줄(다른 PC에서 물은 것)이 더해진다', () => { assert.deepEqual(qs(mergeServerLog([row('a', T2)], [srv('b', 7)])), ['b', 'a']); });
+t('chat_id가 같은 줄은 한 번만, 이 브라우저 시각으로', () => {
+  const m = mergeServerLog([srv('a', 5, T2)], [srv('a', 5, T)]);
+  assert.equal(m.length, 1); assert.equal(m[0].at, T2);
+});
+t('chat_id 없는 옛 브라우저 줄은 질문·답이 같은 서버 줄 하나와 겹친다', () => {
+  assert.deepEqual(qs(mergeServerLog([row('a')], [srv('a', 1), srv('a', 2)])), ['a', 'a'], '같은 질문을 두 번 물었으면 하나만 겹친다');
+});
+t('표지 줄은 빠지고 시각이 같으면 이 브라우저 줄 먼저', () => { assert.deepEqual(qs(mergeServerLog([row('a'), mark(), row('b')], [srv('c', 9)])), ['a', 'b', 'c']); });
+t('서버 기록이 비어도(백엔드 꺼짐) 이 브라우저 기록 그대로', () => { assert.deepEqual(qs(mergeServerLog([row('a'), row('b')], [])), ['a', 'b']); });
+t('이어서 물을 번호 = 번호 있는 마지막 줄, 없으면 null', () => {
+  assert.equal(lastChatId([srv('a', 3), srv('b', 4), row('c')]), 4);
+  assert.equal(lastChatId([row('a')]), null);
+  assert.equal(lastChatId([]), null);
 });
 
 console.log(fail ? `\n${fail}개 실패` : '\n전부 통과');
