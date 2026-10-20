@@ -3,12 +3,12 @@
 // 역할 알약 글자("작업자"/"보전")는 항상 그려서 색에만 기대지 않는다. "[가상]" 꼬리표는 지우지 않고 칩으로 그린다.
 import { Fragment, useId, type ReactNode } from 'react';
 import type { AlarmAnswerCardProps, AlarmCardPart } from './parseAlarmAnswer';
-import { ANSWER_BOX, WRAP } from './bubbleBox';   // 말풍선 박스 클래스는 bubbleBox.ts 한 곳에서 정한다 (일반 답·질문·기록 항목과 같은 모양)
+import { ANSWER_BOX, HEADING, WRAP } from './bubbleBox';   // 말풍선 박스·소제목 클래스는 bubbleBox.ts 한 곳에서 정한다 (일반 답·질문·기록 항목과 같은 모양)
 
 const Chip = ({ children }: { children: ReactNode }) =>
   <span className="mx-0.5 inline-block whitespace-nowrap rounded-full bg-slate-100 px-2 py-px align-middle text-[12px] font-medium text-slate-600">{children}</span>;
 const H = ({ children, id }: { children: ReactNode; id: string }) =>
-  <h3 id={id} className="m-0 text-[15px] font-bold text-violet-600">{children}</h3>;
+  <h3 id={id} className={HEADING}>{children}</h3>;
 
 /** 글 속 "[가상]"·"[가상 운영 데이터]"를 칩으로 (나머지는 글자 그대로) */
 const TAG = /(\[가상(?: 운영 데이터)?\])/;

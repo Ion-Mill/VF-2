@@ -19,10 +19,11 @@ symlinkSync(path.join(front, 'node_modules'), link, 'junction');
 const emit = (file, jsx) => writeFileSync(path.join(dir, file.replace(/\.tsx?$/, '.mjs')),
   ts.transpileModule(readFileSync(path.join(shell, file), 'utf8'), { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2020, ...(jsx ? { jsx: ts.JsxEmit.ReactJSX } : {}) } })
     .outputText.replace(/from '\.\/(\w+)'/g, "from './$1.mjs'"));
-for (const f of ['bubbleBox.ts', 'parseAlarmAnswer.ts']) emit(f, false);
+for (const f of ['bubbleBox.ts', 'parseAlarmAnswer.ts', 'parsePlainAnswer.ts']) emit(f, false);
 for (const f of ['AlarmAnswerCard.tsx', 'ChatBubble.tsx']) emit(f, true);
 const imp = (n) => import(pathToFileURL(path.join(dir, n + '.mjs')).href);
 const Box = await imp('bubbleBox');
+const { parsePlainAnswer } = await imp('parsePlainAnswer');
 const { Bubble, Typing, HistoryItem } = await imp('ChatBubble');
 const React = (await import(pathToFileURL(req.resolve('react')).href)).default;
 const rs = await import(pathToFileURL(req.resolve('react-dom/server')).href);
@@ -31,6 +32,8 @@ const eveSource = readFileSync(path.join(shell, 'Eve.tsx'), 'utf8');
 
 const A230 = "■ 알람 설명\n알람 230 도어 열림(DOOR OPEN) 심각도는 조작 안내, 조치는 작업자입니다.\n\n■ 점검 순서 (사내 문서)\n★1 (작업자) 알람 번호·이름을 본다\n★2 (작업자) 아래 표의 \"볼 곳\"을 확인해 고친다\n★2-1 (작업자) 알람 230 — 볼 곳: 도어 · 고치는 법: 도어 장치에 고장이나 걸림이 없는지 보고 닫는다\n★3 (작업자) [RESET] 후 다시 시작한다. 같은 알람이 되풀이되면 반장에게 알린다.\n\n이 알람은 최근 7일 0번, 30일 0번 났습니다 [가상 운영 데이터]\n\n주의: 근거 안내이며 실행 지시가 아닙니다. 잠금·표지와 고전압 대기는 안전 작업 기준서 DOC-05 고정 서식을 따르고, 전기 측정·수리는 자격자/HFO 작업입니다. 현장 담당자 확인이 필요합니다.";   // 실제 답: 230 알람 뭐야
 const PLAIN = "6.1 · ① 해당 설비의 §3 표를 연다 (차단 지점, 저장 에너지) ② 작업지시서에 적힌 차단 지점과 맞는지 본다 ③ 해당 작업자(OPR)와 반장에게 \"정비로 정지한다\"고 알린다 (5.9 \"문서화된 방법으로 알려야\") ④ 정지하기 전에 에너지의 크기, 형태, 위험 정도, 관리 방법을 알고 있어야 한다\n6.2 · ① 가공 중이면 사이클을 멈추고 주축·축·톱날이 완전히 멈춘 것을 눈으로 본다 ② 제어기 전원을 끈다 (Haas: [POWER OFF])\n6.3 · §3의 차단 지점을 순서대로 끈다: 주 차단기 OFF → 공압 주 밸브 닫음 → (해당되면) 공급 쪽 분전반 차단기 OFF. 제조사는 \"기계로 가는 모든 전원을 공급원에서\" 끄라고 한다\n6.4 · ① 차단 지점마다 내 자물쇠를 건다 ② 표지를 자물쇠에 묶는다 ③ 일하는 사람이 여러 명이면 §2.3 ④ 각각의 차단장치에 단다. 잠금장치는 \"안전\" 또는 \"오프(Off)\" 상태를 계속 유지시키는 수단이다\n6.5 · §3의 \"저장 에너지\" 칸대로: 고전압 대기(§4), 공압 잔압 빼기, 주축 헤드 받치기, 회전체 멈춤 확인, 세척조 식히기. 법 제92조 ④ \"미리 방출\". 남은 에너지는 방출·분리·제한하거나 안전한 상태로 두고, 다시 쌓일 수 있으면 작업이 끝날 때까지 계속 확인한다\n6.6 · ① 전기: 교류 검전기로 들어오는 선 전부를 확인 ② 공압: 압력계가 0인지 ③ 기동 버튼을 눌러 켜지지 않는지 본 뒤 다시 정지 위치로 둔다 ④ 작업을 시작하기 전에 승인작업자가 에너지가 차단되었는지 확인한다\n\n주의: 근거 안내이며 실행 지시가 아닙니다. 잠금·표지와 고전압 대기는 안전 작업 기준서 DOC-05 고정 서식을 따르고, 전기 측정·수리는 자격자/HFO 작업입니다. 현장 담당자 확인이 필요합니다.";   // 실제 답: 안전 작업 순서 알려줘
+const T05 = "아니요, 90%가 뜨면 바로 멈추고 바꾸는 것이 아니에요. 가공 중인 사이클이 끝난 뒤나 다음 셋업 때 교체하는 것이 문서의 기준이에요.\n\n■ 90%의 뜻\n1. T05의 90%는 공구 수명 사용률이라, 한도의 90%를 쓰고 남은 수명이 10%라는 뜻이에요.\n2. 화면에는 교체 알림으로 뜨고, 교대 시작 브리핑에도 '공구 수명 90% 이상'으로 올라와요.\n3. 이 90% 기준은 팀이 정한 가상 기준이고, 비율의 근거는 문서에 없어요.\n\n■ 교체할 때 지킬 것\n1. 교체는 프로그램을 중단하지 않은 상태, 곧 사이클이 끝난 뒤에 해요.\n2. 교체 순서와 교체 기록은 작업자(OPR)가 해요.\n\n■ 80~90% 구간과 90% 이후\n1. 수명 80~90% 구간에서 교체를 앞당길지는 반장(SUP)이 판단해요.\n2. 의심 로트를 보류할지는 반장이 판단해요.\n\n주의: 근거 안내이며 실행 지시가 아닙니다.";   // 실제 답: T05 공구 90%는 교체 알림이야 (시연 #1 턴 3)
+const STOCK = "재고 부족\n1. 공기 필터 2개 (안전 재고 2.0)\n2. 축 윤활유 3.6L (안전 재고 4.0)";   // 실제 답: 조회 답 — 머리 줄에 ■가 없다 (비서가 붙이면 그때 소제목이 된다)
 const SOURCES = [{"doc_name": "알람 코드집", "doc_no": "DOC-02", "rev": "Rev.1 (2026-10-07)", "section": "4.11"}, {"doc_name": "고장 대응 매뉴얼", "doc_no": "DOC-03", "rev": "Rev.1 (2026-10-07)", "section": "2.11"}];
 const AT = '2026-10-01T10:00:00+09:00';
 const row = (q, a, extra = {}) => ({ at: AT, q, a, status: 'ok', sources: [], ...extra });
@@ -95,6 +98,63 @@ t('질문 → 날짜·상태 줄 → 답 순서 (날짜 글자는 부른 쪽이 
   const h = bubble(row('q1', '답1'));
   assert.ok(h.indexOf('q1') < h.indexOf('10/1 10:00 · 이브 · 규칙 답') && h.indexOf('10/1 10:00') < h.indexOf('답1'));
   assert.ok(bubble(row('q', 'a', { status: '응답 없음' })).includes('· 이브 · 응답 없음'));
+});
+
+// ---- 일반 답의 "■ 제목" (2026-10-21): 제목은 알람 카드와 같은 보라색 굵은 소제목, ■ 기호는 그리지 않는다
+t('소제목 클래스 상수는 알람 카드 제목과 같은 문자열이다', () => {
+  assert.equal(Box.HEADING, 'm-0 text-[15px] font-bold text-violet-600');
+});
+t('T05 답: "■ 제목" 3개가 h3 소제목이 되고 ■ 기호는 화면에 없다', () => {
+  const h = bubble(row('T05 공구 90%는 교체 알림이야, 바로 바꿔야 해?', T05, { sources: SOURCES }));
+  const heads = [...h.matchAll(/<h3 id="[^"]*" class="([^"]*)">([^<]*)<\/h3>/g)];
+  assert.deepEqual(heads.map((m) => m[2]), ['90%의 뜻', '교체할 때 지킬 것', '80~90% 구간과 90% 이후']);
+  assert.ok(heads.every((m) => m[1] === Box.HEADING));
+  assert.ok(!h.includes('■'), '■ 기호가 남아 있다');
+});
+t('T05 답: 머리 문단·번호 목록·주의 줄이 글자와 줄바꿈 그대로 남는다 (답 박스는 하나)', () => {
+  const h = bubble(row('T05 공구 90%는 교체 알림이야, 바로 바꿔야 해?', T05, { sources: SOURCES }));
+  assert.equal((h.match(new RegExp(esc(`class="${Box.ANSWER_BOX}"`), 'g')) ?? []).length, 1);
+  const [s0, e0] = boxRange(h), box = h.slice(s0, e0);
+  assert.ok(box.indexOf('아니요, 90%가 뜨면') < box.indexOf('90%의 뜻'), '머리 문단은 첫 제목 앞');
+  for (const s of ['1. T05의 90%는 공구 수명 사용률이라,', '3. 이 90% 기준은 팀이 정한 가상 기준이고,', '2. 교체 순서와 교체 기록은 작업자(OPR)가 해요.', '주의: 근거 안내이며 실행 지시가 아닙니다.']) assert.ok(box.includes(s.replace(/'/g, '&#x27;')) || box.includes(s), s);
+  assert.ok(box.includes('1. 교체는 프로그램을 중단하지 않은 상태, 곧 사이클이 끝난 뒤에 해요.\n2. 교체 순서'), '줄바꿈 그대로');
+  assert.ok(h.indexOf('출처:') >= e0, '출처 줄은 박스 밖');
+});
+t('T05 답: 보이는 글자의 낱말 열이 원래와 같다 (글자가 하나도 사라지지 않는다)', () => {
+  const h = bubble(row('q', T05));
+  const [s0, e0] = boxRange(h);
+  const text = h.slice(s0, e0).replace(/<[^>]*>/g, ' ').replace(/&#x27;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, '&');
+  const words = (s) => s.match(/[\p{L}\p{N}]+/gu) ?? [];
+  assert.deepEqual(words(text), words(T05));
+});
+t('■가 없는 조회 답(재고)은 예전과 같은 평문 한 덩어리다 (비서가 ■를 붙이기 전까지)', () => {
+  const h = bubble(row('축 윤활유 재고', STOCK));
+  assert.ok(!h.includes('<h3'));
+  assert.match(h, new RegExp(`<div class="${esc(Box.ANSWER_BOX)}"><p class="ma-msg-bot ${esc(Box.WRAP)}">재고 부족\n1\\. 공기 필터`));
+});
+t('조회 답의 머리 줄에 비서가 ■를 붙이면 그 줄이 소제목이 된다', () => {
+  const h = bubble(row('축 윤활유 재고', '■ ' + STOCK));
+  assert.match(h, /<h3 id="[^"]*" class="m-0 text-\[15px\] font-bold text-violet-600">재고 부족<\/h3>/);
+  assert.ok(!h.includes('■') && h.includes('1. 공기 필터 2개'));
+});
+t('알람 카드의 제목도 같은 소제목 클래스를 쓴다 (카드는 그대로 카드)', () => {
+  const h = bubble(row('230 알람 뭐야', A230, { sources: SOURCES }));
+  assert.ok(h.includes(`<h3 id=`) && (h.match(new RegExp(esc(`class="${Box.HEADING}"`), 'g')) ?? []).length >= 2);
+  assert.ok(h.includes(`flex flex-col gap-4 ${Box.ANSWER_BOX}`));
+});
+t('parsePlainAnswer: ■가 없거나 제목이 비었거나 글이 아니면 null (예외 없음)', () => {
+  for (const x of ['', '그냥 문장입니다.', '1. 목록\n2. 목록', '■', '■   ', '문장 가운데 ■ 기호는 제목이 아니다', undefined, null, 5, {}]) assert.equal(parsePlainAnswer(x), null, String(x));
+});
+t('parsePlainAnswer: 머리 문단·소제목·본문을 순서대로 읽고 \\r\\n·앞뒤 빈 줄·제목 앞 공백도 같은 결과', () => {
+  const a = parsePlainAnswer('머리\r\n\r\n  ■ 첫째\r\n1. 가\r\n2. 나\r\n\r\n■ 둘째 제목\r\n\r\n\r\n마지막 글\r\n');
+  assert.deepEqual(a, [{ title: null, body: '머리' }, { title: '첫째', body: '1. 가\n2. 나' }, { title: '둘째 제목', body: '마지막 글' }]);
+});
+t('parsePlainAnswer: 본문이 없는 제목과 맨 앞 제목도 남는다 (머리 문단은 만들지 않는다)', () => {
+  assert.deepEqual(parsePlainAnswer('■ 하나\n\n■ 둘\n내용'), [{ title: '하나', body: '' }, { title: '둘', body: '내용' }]);
+});
+t('parsePlainAnswer: 제목 안의 <, &는 글자 그대로 (태그로 해석되지 않는다)', () => {
+  const h = bubble(row('q', '■ <b>x</b> & y\n본문'));
+  assert.ok(h.includes('&lt;b&gt;x&lt;/b&gt; &amp; y') && !h.includes('<b>x</b>'));
 });
 
 // ---- 알람 카드
