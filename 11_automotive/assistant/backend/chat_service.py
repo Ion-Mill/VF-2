@@ -24,6 +24,8 @@ from pydantic import BaseModel, Field
 
 from backend import compose_service as CMPS
 from backend import config as C
+from backend import voice_service as VOICE
+from backend.voice.pipeline import VoiceError
 from backend.chat_mapping import UnknownStatus, role_gate, to_backend
 from backend.llm import external as EXT
 from backend.rag.chunker import CorpusError, load_corpus
@@ -73,7 +75,7 @@ def service_key(x_service_key: str | None = Header(default=None)) -> None:
 
 
 # docs_url=None 등: 자동 문서 화면을 열지 않는다 (서비스 키가 필요한 내부 서비스)
-app = FastAPI(title="MOM AI 비서 서비스", version="0.1.0", docs_url=None, redoc_url=None, openapi_url=None)
+app = FastAPI(title="MOM AI 비서 서비스", version="0.1.0", docs_url=None, redoc_url=None, openapi_url=None, lifespan=VOICE.lifespan)
 
 
 @app.exception_handler(PermissionError)
@@ -85,6 +87,12 @@ def _unauthorized(_, __):
 def _unavailable(_, exc: Unavailable):
     log.warning("비서 응답 실패: %s", exc.why)
     return JSONResponse(status_code=503, content={"code": "ASSISTANT_UNAVAILABLE", "message": UNAVAILABLE_MESSAGE, "detail": {"retryable": True}})
+
+
+@app.exception_handler(VoiceError)
+def _voice_error(_, exc: VoiceError):
+    log.info("음성 입구: %s", exc.code)
+    return JSONResponse(status_code=exc.status, content={"code": exc.code, "message": exc.message, "detail": {}})
 
 
 @app.exception_handler(CMPS.ComposeUnavailable)
@@ -175,6 +183,7 @@ def chat(req: ChatRequest) -> dict:
 
 
 app.include_router(CMPS.router, dependencies=[Depends(service_key)])     # POST /compose/{kind} — 기본 문장 줄 다듬기 (같은 서비스 키)
+app.include_router(VOICE.router, dependencies=[Depends(service_key)])    # POST /transcribe · GET /voice/status — 채팅 마이크 (ASSISTANT_VOICE=1일 때만, 같은 서비스 키)
 
 
 @app.get("/health", dependencies=[Depends(service_key)])

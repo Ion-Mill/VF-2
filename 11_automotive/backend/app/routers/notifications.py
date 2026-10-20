@@ -133,6 +133,33 @@ def briefing(shift_id: str | None = None, view: str | None = Query(None, pattern
             "prev_shift": prev, "this_shift": this}
 
 
+class BriefingCheckIn(BaseModel):
+    shift_id: str = Field(..., min_length=1, max_length=40, description="브리핑의 교대 (화면이 정한 글자 — 시연 회차를 붙일 수 있음)")
+    item_key: str = Field(..., min_length=1, max_length=120, description="먼저 챙길 일 항목 (화면이 정한 글자, 서버는 뜻을 모름)")
+    checked: bool = True
+
+
+@router.get("/assistant/briefing/checks")
+def briefing_checks(shift_id: str = Query(..., min_length=1, max_length=40),
+                    actor: Actor = Depends(require("BRIEFING", "VIEW")), db: Db = Depends(get_db)):
+    """브리핑 "먼저 챙길 일"에서 본인이 체크한 항목 (2026-10-20). 다시 열어도 체크가 남게 한다 — 개인 메모일 뿐
+    알림·알람의 처리 상태는 바꾸지 않는다 (처리는 R-38 규칙). 본인 것만 돌려준다"""
+    return {"shift_id": shift_id, "items": db.all("notifications.briefing_checks", user_id=actor.user_id, shift_id=shift_id)}
+
+
+@router.post("/assistant/briefing/checks")
+def briefing_check(body: BriefingCheckIn, actor: Actor = Depends(require("BRIEFING", "VIEW")), db: Db = Depends(get_db)):
+    """체크하기·풀기 (checked = true / false). 같은 요청을 거듭 보내도 결과가 같다 (체크한 적 없는 걸 풀어도 오류 아님)"""
+    shift_id, item_key = body.shift_id.strip(), body.item_key.strip()
+    if not shift_id or not item_key:
+        raise AppError(422, "VALIDATION", "shift_id와 item_key는 비울 수 없음")
+    if body.checked:
+        db.exec("notifications.briefing_check_set", user_id=actor.user_id, shift_id=shift_id, item_key=item_key)
+    else:
+        db.exec("notifications.briefing_check_unset", user_id=actor.user_id, shift_id=shift_id, item_key=item_key)
+    return {"shift_id": shift_id, "item_key": item_key, "checked": body.checked}
+
+
 # ---------------- 알림 규칙 설정 (SET-01) ----------------
 @router.get("/settings/notification-rules")
 def rules(_: Actor = Depends(require("SETTINGS", "VIEW")), db: Db = Depends(get_db)):

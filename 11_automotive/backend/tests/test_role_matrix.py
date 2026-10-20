@@ -31,8 +31,10 @@ EXPECTED = {
     ("POST", "/api/notifications/{notification_id}/resolve"): ALL,  # * 규칙의 처리 역할 (DB)
     ("POST", "/api/notifications/{notification_id}/ack"): ALL,      # * 받는 사람
     ("GET", "/api/assistant/briefing"): ALL,                        # * AST-01 전형 S·M·G / 요약형 O
+    ("GET", "/api/assistant/briefing/checks"): ALL, ("POST", "/api/assistant/briefing/checks"): ALL,   # * 본인 체크만 (2026-10-20)
     ("POST", "/api/assistant/chat"): ALL,                           # * 답은 역할이 볼 수 있는 도구만 (MTTR·센서 = M·G)
     ("GET", "/api/assistant/chat"): ALL, ("GET", "/api/assistant/chat/{chat_id}"): ALL,   # * 본인 채팅 기록만 (30일)
+    ("POST", "/api/assistant/transcribe"): ALL, ("GET", "/api/assistant/voice"): ALL,     # 채팅 마이크 (2026-10-20 [제안]) — 채팅과 같은 권한
     # 정비 (MNT·PM)
     ("GET", "/api/maint/guide-card/{alarm_event_id}"): ALL,
     ("GET", "/api/maint/work-orders"): ALL, ("GET", "/api/maint/work-orders/{wo_no}"): ALL,
