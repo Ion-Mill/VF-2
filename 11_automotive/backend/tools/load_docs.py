@@ -138,7 +138,8 @@ def main():
     if a.dry_run:
         print(f"(dry-run) 조각 {total}개")
         return
-    with tempfile.NamedTemporaryFile("w", suffix=".sql", delete=False, encoding="utf-8") as tf:
+    # newline="\n": Windows에서 \n이 \r\n으로 바뀌어 조각 본문에 들어가지 않게 (어느 OS에서 넣어도 같은 조각)
+    with tempfile.NamedTemporaryFile("w", suffix=".sql", delete=False, encoding="utf-8", newline="\n") as tf:
         tf.write("\n".join(lines) + "\n")
     r = subprocess.run(shlex.split(a.psql) + ["-X", "-q", "-f", tf.name], capture_output=True, text=True,
                        encoding="utf-8", errors="replace")

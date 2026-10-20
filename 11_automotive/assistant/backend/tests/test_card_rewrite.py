@@ -154,14 +154,26 @@ def test_a_prohibition_that_gets_weaker_is_rejected():
     assert jobs.check_rewrite("공구를 빼지 마세요", "공구를 빼지 말 것")[1] == "빠진 조건 말: 말 것"
 
 
-def test_carried_alarm_note_and_rewritten_card_work_together(card, monkeypatch):
-    """직전 알람 이어받기(CTX_NARROW)와 카드 다시 쓰기(CARD_REWRITE)가 함께 켜진 경우: 대상 없는 질문 "원인은?"이 2075 카드로 이어받아지면
-    카드는 해요체로 다시 쓰이고, 어느 알람 기준인지 밝히는 한 줄은 프로그램이 쓴 그대로 맨 앞에 붙는다(Claude에 보내지 않는다)."""
+def test_carried_cause_question_skips_rewrite_and_keeps_the_causes(card, monkeypatch):
+    """대상 없는 "원인은?"은 설명·점검 순서를 빼므로 해요체 다시 쓰기를 부르지 않는다. 원인 줄은 원문이고, 안내 줄만 앞에 붙는다."""
     monkeypatch.setenv("CTX_NARROW", "1")
     r = CardRunner("good")
     CC.use_runner(r)
     with EXT.external_request("claude"):
         a = A.answer("원인은?", "OPR", {"alarm_key": "2075"})
     assert a["conclusion"].startswith("2075 알람 기준으로 답해요."), a["conclusion"][:60]
-    assert a.get("card_rewrite") == {"applied": True, "reason": None} and "어요" in a["conclusion"]
-    assert r.texts and all("알람 기준으로 답해요" not in x for x in r.texts)                      # 안내 문구는 Claude 요청에 실리지 않는다
+    assert "card_rewrite" not in a and r.texts == []
+    assert "윤활유 저장소가 비어 있음" in a["conclusion"] and "■ 알람 설명" not in (a.get("conclusion") or "")
+
+
+def test_carried_steps_question_still_rewrites_the_steps(card, monkeypatch):
+    """점검 순서만 남기는 이어받기는 그 줄의 해요체 다시 쓰기를 그대로 한다. 안내 줄은 Claude에 보내지 않는다."""
+    monkeypatch.setenv("CTX_NARROW", "1")
+    r = CardRunner("good")
+    CC.use_runner(r)
+    with EXT.external_request("claude"):
+        a = A.answer("점검 순서 알려줘", "OPR", {"alarm_key": "2075"})
+    assert a["conclusion"].startswith("2075 알람 기준으로 답해요.")
+    assert a.get("card_rewrite") == {"applied": True, "reason": None}
+    assert r.texts and all("알람 기준으로 답해요" not in x for x in r.texts)
+    assert a["steps"] and any("어요" in s for s in a["steps"])
