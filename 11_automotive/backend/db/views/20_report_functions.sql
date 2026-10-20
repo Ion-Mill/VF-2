@@ -441,6 +441,8 @@ BEGIN
             v_n := v_n + 1;
         END IF;
     END LOOP;
+    -- 로트 납기 지연 위험 (FR-AST-02-06, 2026-10-20 — views/30_live_rules.sql)
+    v_n := v_n + fn_raise_lot_due_risk(v_at);
     -- CMM 결과 미수신 (대기 시간은 [선택 필요: 기술 회의])
     FOR r IN SELECT instruction_id, lot_no, part_seq FROM cmm_instruction
               WHERE status = 'STARTED' AND started_at < v_at - make_interval(mins => p_cmm_wait_min) LOOP

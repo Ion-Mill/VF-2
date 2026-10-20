@@ -12,7 +12,7 @@ SELECT l.lot_no, l.order_no, l.lot_seq, l.input_shift_id, l.material_lot_no, l.i
        l.judged_at, o.product_code, o.due_at,
        coalesce(c.completed_qty, 0)                                    AS completed_qty,
        c.op50_done_at,
-       NULL::timestamptz                                               AS expected_complete_at,  -- 계산 방법 [선택 필요: 기술 회의]
+       fn_lot_expected_complete(l.lot_no)                              AS expected_complete_at,  -- [제안 2026-10-20] functions/35_live_calc.sql
        p.plan_mode, p.enhance_reason, p.judgement AS plan_judgement,
        CASE WHEN p.plan_mode = 'ENHANCED' THEN l.input_qty ELSE 1 + l.input_qty / 5 END AS planned_measure_qty,
        fg.fg_in_qty, fg.passed_at,

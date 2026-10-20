@@ -702,10 +702,21 @@ LANGUAGE sql STABLE AS $$
 $$;
 
 -- 속도 손실 수량 (추정, R-47): [p_from, p_to) 안에서 바뀐 병목 구간의 속도 손실 합 (구간이 끝날 때 저장된 값)
+--   2026-10-20: 구간이 끝날 때 trg_bottleneck_live(views/30_live_rules.sql)가 값을 채운다 (전에는 채우는 곳이 없어 실시간은 늘 0).
+--   지금 열려 있는 구간(마지막 기록)은 그때까지를 바로 계산해 더한다 (fn_interval_losses, functions/35_live_calc.sql)
 CREATE OR REPLACE FUNCTION fn_speed_loss_qty(p_from timestamptz, p_to timestamptz) RETURNS numeric
-LANGUAGE sql STABLE AS $$
-    SELECT coalesce(sum(speed_loss_qty), 0) FROM bottleneck_log WHERE changed_at >= p_from AND changed_at < p_to;
-$$;
+LANGUAGE plpgsql STABLE AS $$
+DECLARE v_closed numeric; o bottleneck_log%ROWTYPE; v_open numeric := 0; v_end timestamptz := least(p_to, app_now());
+BEGIN
+    SELECT coalesce(sum(b.speed_loss_qty), 0) INTO v_closed FROM bottleneck_log b
+     WHERE b.changed_at >= p_from AND b.changed_at < p_to
+       AND EXISTS (SELECT 1 FROM bottleneck_log n WHERE n.changed_at > b.changed_at);
+    SELECT * INTO o FROM bottleneck_log WHERE changed_at <= app_now() ORDER BY changed_at DESC LIMIT 1;
+    IF FOUND AND o.cause_code IN ('C1','C2','C3') AND o.changed_at < p_to AND v_end > greatest(o.changed_at, p_from) THEN
+        v_open := (fn_interval_losses(greatest(o.changed_at, p_from), v_end, o.cause_code)).speed_loss_qty;
+    END IF;
+    RETURN v_closed + coalesce(v_open, 0);
+END $$;
 
 -- =====================================================================
 -- 7. 알람 관련 재고 품목 (alarm_related_item, 논리 ERD 5.C.8·R-89) — 보고 순위 같은 원인 묶기
