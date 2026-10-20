@@ -3144,6 +3144,83 @@ PURE_UNSURE_V19 = "자동으로 확인하지 못했습니다. 문서에 없다�
 PURE_UNSURE_CHAT_V19 = "자동으로 확인하지 못했어요. 문서에 없다는 뜻은 아니에요. 안전에 관한 질문이니 아래 안전 작업 기준서(DOC-05) 절을 직접 확인하거나 현장 담당자에게 확인해 주세요."
 
 
+# ---------------------------------------------------------------- 설비 이름만 든 글 · 되묻기 답 이어받기 · 못 읽은 조각 안내 · 기간 안내 (2026-10-20, 기획 설비이름_되묻기_안내)
+# 설비 이름만 있는 글("VF2-01)")을 안전 질문으로 보던 것을 고치고, "설비를 알려 주세요"에 설비 이름으로 답하면 앞 질문과 잇고,
+# 규칙이 못 읽은 조각(센서·정비현황·브리핑)과 기간이 다른 값을 말없이 넘기지 않는다. 새 스위치는 없다 (버그 수정 — 되돌릴 때는 git revert).
+EQUIP_DOC_WHY_V21 = "신호가 설비 이름뿐이고 안전 낱말이 없는 질문 — 문서 질문으로 보고 안전망 없이 순수 길로 (2026-10-20)"
+EQUIP_ONLY_END_V21 = re.compile(r"(?:이?요|이에요|예요|입니다|이야|야|은|는|이|가|을|를|도|만|에|의|로|으로)?")
+ASKBACK_NEED_V21 = re.compile(r"알려 주세요: 설비 \(예: [^)]*\)\.?\s*$")   # ops_answer가 설비 하나만 되물은 답 ("… 다음을 알려 주세요: 설비 (예: VF2-01).")
+EQUIP_ONLY_NOTE_V21 = "{names}에 대해 무엇을 볼까요? 예: '{e} OEE 어제값', '{e} 지금 상태 어때?', '{e} 정비 기한'"
+UNREAD_V21 = [(re.compile(r"센서"), "센서 값"), (re.compile(r"정비\s*현황"), "정비현황"), (re.compile(r"브리핑"), "브리핑")]   # 이 채팅이 아직 못 하는 일의 이름 (목록 밖의 말은 추측하지 않는다)
+UNREAD_NOTE_V21 = "이 채팅에서는 아직 {names}을 답하지 못했어요. 해당 화면에서 확인해 주세요."
+KPI_DATED_WORDS_V21 = re.compile(r"OEE|가동률|성능|양품|지표|효율|KPI", re.I)
+KPI_30D_ONLY_V21 = re.compile(r"MTTR|MTBF|평균\s*수리|평균\s*고장", re.I)
+NO_DATE_NOTE_V21 = "기간을 정하지 않아 9월 한 달(9/1~9/30) 값이에요. 날짜를 말씀해 주시면 그날 값을 드려요 (예: '어제', '오늘')."
+MIXED_PERIOD_NOTE_V21 = "OEE·가동률은 {rng} 값이고, MTTR·MTBF는 최근 30일 값이에요."
+
+
+def equipment_only_v21(question: str, p: dict) -> bool:
+    """설비 이름·별명·기호·조사뿐인 글인가 ("VF2-01)"·"vf2-01"·"1호기"·"2호기요"·"VF2-01 이요"). 규칙이 설비를 읽었고, 알람·날짜·운영 낱말·로트가 없고, 안전 낱말이 없고,
+    이름을 지운 나머지가 조사뿐일 때만 참이다. 이름에 다른 말이 붙은 글("VF2-01 정비 상태는?")은 거짓."""
+    if not p.get("equipment") or p.get("alarms") or p.get("intents") or p.get("start") or p.get("lot") or p.get("order"):
+        return False
+    if PURE.is_safety(question):
+        return False
+    rest = EQUIP_RE_V5.sub(" ", question)
+    for rx, _ in EQUIP_ALIAS_V2 + EQUIP_ALIAS_V3:
+        rest = rx.sub(" ", rest)
+    return EQUIP_ONLY_END_V21.fullmatch(re.sub(r"[\W_]+", "", rest)) is not None
+
+
+def equipment_only_answer_v21(base: dict, p: dict) -> dict:
+    """설비 이름뿐인 글에 대한 안내 한 줄 (규칙 고정 문구 — Claude를 부르지 않는다)."""
+    eqs = list(dict.fromkeys(p["equipment"]))
+    text = EQUIP_ONLY_NOTE_V21.format(names="·".join(eqs), e=eqs[0])
+    return {**base, "status": "안내", "mode": "규칙 (설비 이름뿐인 글 — 안내 고정 문구)", "conclusion": text, "blocks": [{"kind": "text", "text": text}]}
+
+
+def askback_merge_v21(question: str, p: dict, prev: dict | None) -> tuple[str, str] | None:
+    """바로 앞 답이 "설비를 알려 주세요"(확인 필요)였고 이번 글이 설비 이름 하나뿐이면 (앞 질문, 설비). 아니면 None — 설비를 다음 질문들에 계속 가져가지 않고, 되묻기 직후 한 번만 잇는다
+    (이어받은 답은 상태가 '답변'이라 다음 글은 이 조건에 걸리지 않는다). 알람 번호·로트 번호를 되물은 답은 잇지 않는다."""
+    if not prev or prev.get("status") != "확인 필요" or not ASKBACK_NEED_V21.search(prev.get("conclusion") or ""):
+        return None
+    pq = (prev.get("question") or "").strip()
+    eqs = list(dict.fromkeys(p.get("equipment") or []))
+    if not pq or len(eqs) != 1 or not equipment_only_v21(question, p):
+        return None
+    return pq, eqs[0]
+
+
+def with_askback_note_v21(a: dict, prev_question: str, eq: str) -> dict:
+    """이어받아 답한 사실을 답 끝에 한 줄 밝힌다 (정상 답·안내일 때만 — 앞 질문을 설비와 합쳐 다시 풀었다는 것을 숨기지 않는다)."""
+    if not isinstance(a, dict) or a.get("status") not in ("답변", "안내"):
+        return a
+    pq = prev_question if len(prev_question) <= 40 else prev_question[:40] + "…"
+    note = f"앞서 물으신 '{pq}'을 {eq} 기준으로 답했어요."
+    a["conclusion"] = f"{a.get('conclusion') or ''} {note}".strip()
+    if isinstance(a.get("blocks"), list):
+        a["blocks"] = list(a["blocks"]) + [{"kind": "text", "text": note}]
+    return a
+
+
+def unread_note_v21(question: str) -> str | None:
+    """규칙 길 답이 읽지 못한 조각 중 알려진 못 하는 일(센서·정비현황·브리핑)이 질문에 보이면 그 이름을 든 한 줄. 목록 밖의 말은 보지 않는다."""
+    names = [label for rx, label in UNREAD_V21 if rx.search(question)]
+    return UNREAD_NOTE_V21.format(names="·".join(names)) if names else None
+
+
+def period_notes_v21(question: str, p: dict, ops_texts: list[str]) -> list[str]:
+    """기간 안내. ① 날짜를 정하지 않은 지표(OEE 등) 질문은 9월 한 달 값임을 ② 하루·며칠 값과 MTTR·MTBF(30일 고정)가 한 줄이면 기간 차이를 밝힌다 (MTTR이 보이지 않는 역할에는 붙이지 않는다)."""
+    if "kpi" not in p["intents"] or not p["equipment"] or not any("OEE" in x for x in ops_texts):
+        return []
+    if p["start"] is None:
+        return [] if (KPI_30D_ONLY_V21.search(question) and not KPI_DATED_WORDS_V21.search(question)) else [NO_DATE_NOTE_V21]
+    full_month = p["start"] == date(2026, 9, 1) and p["end"] == date(2026, 9, 30)
+    if not full_month and any("MTTR" in x for x in ops_texts):
+        return [MIXED_PERIOD_NOTE_V21.format(rng=_range_text(p))]
+    return []
+
+
 def pure_scope_v19(p: dict, s, question: str = "") -> str | None:
     """이 질문이 순수 외부 LLM 길로 가나 — 가는 까닭 글, 아니면 None. (권한·화면 설명·위험한 부탁·불량 원인·이어 묻기는 이 함수보다 앞에서 이미 처리됐다.)
     PURE_KEEP_SIGNALS=0(기본): 알람 번호·날짜·설비·운영 낱말 신호가 있어도 전부 순수 길.
@@ -3154,8 +3231,12 @@ def pure_scope_v19(p: dict, s, question: str = "") -> str | None:
         return "신호 끔(PURE_KEEP_SIGNALS=0) — 알람 번호·날짜·설비·운영 낱말 길을 거치지 않고 순수 길로"
     if PURE.has_signals(p):
         only_equipment = bool(p.get("equipment")) and not (p.get("alarms") or p.get("intents") or p.get("start") or p.get("lot") or p.get("order"))
-        if s.pure_safety and question and only_equipment and PURE.is_safety(question):   # "VF2-01 차단 지점"·"SAW-01 정비 전에 어디를 차단해?": 운영 조회가 아니라 안전 문서 질문
-            return "신호가 설비 이름뿐인 안전 질문 — 문서 질문으로 보고 순수 길로 (PURE_SAFETY=1)"
+        if s.pure_safety and question and only_equipment:
+            if equipment_only_v21(question, p):   # "VF2-01)"·"1호기"·"2호기요": 설비 이름뿐인 글 — Claude를 부르지 않고 규칙이 안내한다 (_answer, 2026-10-20)
+                return None
+            if PURE.is_safety(question):   # "VF2-01 차단 지점"·"SAW-01 정비 전에 어디를 차단해?": 운영 조회가 아니라 안전 문서 질문
+                return "신호가 설비 이름뿐인 안전 질문 — 문서 질문으로 보고 순수 길로 (PURE_SAFETY=1)"
+            return EQUIP_DOC_WHY_V21   # "VF2-01 정비 상태는?"·"2호기 정비 상태는?": 설비 이름에 다른 말이 붙었고 안전 낱말은 없다 — 문서 질문, 안전망은 켜지 않는다
         if s.pure_rule and question and PURE.rule_question(question, p):   # "소모품 재고는 누가 관리해?"·"홀드 걸린 로트도 내보낼 수 있어?": 운영 낱말뿐인 규칙 질문은 문서 길로 (문서에 없으면 아래에서 되돌린다)
             return PURE.RULE_WHY
         if getattr(s, "pure_rule_wide", False) and question and PURE.rule_question_wide(question, p):   # PURE_RULE_WIDE=1: 규칙 낱말이 없는 규칙 질문("출하 로트 확정은 반장이 해?")도 문서 길로 — 조회 말투는 거른다 (문서에 없으면 아래에서 되돌린다)
@@ -3629,6 +3710,18 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
 
     # 순수 외부 LLM 연결 (PURE_EXTERNAL, 2026-10-15): 위 단계(권한·화면 설명·위험한 부탁 거절·불량 원인·이어 묻기)에서 걸러지지 않은 질문은
     # 알람 카드·운영 조회·LLM 질문 분류를 거치지 않고 "낱말 검색 상위 조각 + 질문 → 외부 Claude 1번 → 답 그대로"로 답한다.
+    if s.followup and not pure_drop:   # 설비 이름뿐인 글 (2026-10-20): 앞 답이 "설비를 알려 주세요"면 앞 질문과 이어 답한다
+        merged = askback_merge_v21(question, p, prev)
+        if merged:
+            if SL.on():
+                SL.step("1 규칙 판정", 결과="되묻기 답 이어받기 — 앞 질문 + 설비로 다시 풀어 답함", 앞질문=merged[0], 설비=merged[1])
+            new_q = f"{merged[0]} {merged[1]}"
+            memo["record_question"] = new_q
+            return with_askback_note_v21({**_answer(new_q, role, context, prev=None, memo=memo), "question": question}, merged[0], merged[1])
+    if not pure_drop and equipment_only_v21(question, p):   # 아니면 무엇을 볼지 안내한다 (안전 안내도, 엉뚱한 문서 줄도 아니다)
+        if SL.on():
+            SL.step("1 규칙 판정", 결과="설비 이름뿐인 글 — 규칙이 안내 (Claude 호출 없음)", 설비=p["equipment"])
+        return equipment_only_answer_v21(base, p)
     pure_why = pure_scope_v19(p, s, question)
     if pure_why:
         memo_before = dict(memo)
@@ -3836,6 +3929,9 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
                 도구=[{k: d.get(k) for k in ("tool", "range", "as_of")} for d in data], 초안=SL.cut(" ".join(ops_texts), 300))
     if tail and not ops_texts:   # 운영 조회가 비었으면 "문서 쪽 못 찾음" 안내만 남기지 않는다 (아래 문서에 없음·확인 필요 길로)
         tail = []
+    tail += period_notes_v21(question, p, ops_texts)   # 기간 안내 (2026-10-20): 날짜 없는 지표는 9월 한 달 값, 하루 값과 MTTR·MTBF(30일)가 한 줄이면 기간 차이
+    if (parts or ops_texts) and (unread := unread_note_v21(question)):   # 못 읽은 조각 안내 (2026-10-20): 센서·정비현황·브리핑은 아직 이 채팅이 답하지 못한다
+        tail.append(unread)
     # 이어 묻기 기록: 운영 답의 프로그램 초안 글(다듬기 전), 절차 질문인가, 날짜 확인 안내가 있나 (2026-10-12)
     memo.update(ops_texts=list(ops_texts), procedure=is_procedure(question), future=bool(future_note))
     if s.parse_v2 and not parts and not ops_texts and not searched and not evidence and not future_note:

@@ -543,14 +543,15 @@ SAFETY_TERMS = ("잠금", "표지", "고전압", "전기", "저항", "차단", "
                 "보호구", "감전", "안전", "위험", "자물쇠", "잠그", "잠가", "잠궈", "차단기", "공압", "압축 공기", "절삭유", "알루미늄 칩", "칩 치",
                 "톱", "절단", "콜드쏘", "밀링", "머시닝", "세척", "측정기", "프로브", "바렐", "주축", "제어반", "트립", "에너지",
                 "정비 전", "정비할", "정비 시작", "수리 전", "전원", "전압", "도어", "협력업체")
-EQUIPMENT_RE = re.compile(r"(?<![A-Za-z0-9])(?:(?:SAW|MIL|VF2|WSH|CMM)-\d{2}|VF-2|CMM)(?![A-Za-z0-9])", re.I)     # 설비 이름 (한글이 바로 붙어도 잡는다)
 UNSURE_DEFAULT_SECTIONS = ("2", "3", "5")      # 가까운 절을 못 고를 때: 잠금·표지 절차 / 설비별 차단 지점 / 보호구
 
 
 def is_safety(question: str) -> bool:
-    """안전 질문인가 — 낱말만 본다 (대소문자 무시). 이 판정이 켜져야 DOC-05를 통째로 주고 "자동으로 확인하지 못함" 문구를 쓴다."""
+    """안전 질문인가 — 안전 낱말(SAFETY_TERMS)만 본다 (대소문자 무시). 이 판정이 켜져야 DOC-05를 통째로 주고 "자동으로 확인하지 못함" 문구를 쓴다.
+    설비 이름은 보지 않는다 (2026-10-20): 예전에는 설비 이름(EQUIPMENT_RE)만 있어도 참이라 "VF2-01)"이 안전 안내로, "VF2-01 정비 상태는?"이 안전 문구가 붙은 답으로 갔다.
+    안전 질문이 설비 이름 때문에만 걸리던 것이 있으면 EQUIPMENT_RE를 되살리지 말고 그 낱말을 SAFETY_TERMS에 더한다."""
     q = question.upper()
-    return any(w.upper() in q for w in SAFETY_TERMS) or bool(EQUIPMENT_RE.search(question))
+    return any(w.upper() in q for w in SAFETY_TERMS)
 
 
 def add_safety_doc(hits: list[tuple[float, Chunk]]) -> list[tuple[float, Chunk]]:
