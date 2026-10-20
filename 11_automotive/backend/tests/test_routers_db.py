@@ -312,6 +312,17 @@ class RouterFlows(unittest.TestCase):
         self.assertIn(stops[0]["wo_status_at_report"], ("IN_PROGRESS", "DONE"))
         self.assertTrue(float(stops[0]["loss_qty"]) > 0)
         self.assertEqual([s["wo_no"] for s in d["stops"]], ["MW-0901"])                  # 일일 보고서도 같은 목록
+        # 보고서 원기록 칸 (2026-10-20 상 4번): 교대 = 로트·병목·정비·순간 정지, 일일 = + 손실 전체·교대 비교·알람·MTTR·재고
+        shift = self.call(documents.shift_report, "U10", shift_id="2026-09-15-D")
+        self.assertTrue({"lots", "bottleneck", "maintenance", "micro_stops"} <= set(shift))
+        self.assertIn("MW-0901", [m["wo_no"] for m in shift["maintenance"]])
+        self.assertIn("LOT-2609-041-1", [x["lot_no"] for x in shift["lots"] if x["made_here"] is True])
+        self.assertEqual([x["shift_id"] for x in d["shifts"]], ["2026-09-15-D", "2026-09-15-N"])
+        self.assertEqual(int(d["alarms"]["total"]), int(d["alarms"]["stop_count"]) + int(d["alarms"]["warn_count"])
+                         + int(d["alarms"]["guide_count"]))
+        self.assertEqual([x["kind"] for x in d["losses"]][:1], ["FAILURE"])
+        fg = d["inventory"]["finished"]
+        self.assertEqual(float(fg["end_qty"]), float(fg["start_qty"]) + float(fg["in_qty"]) - float(fg["ship_qty"]) + float(fg["adjust_qty"]))
 
     def test_07_notifications(self):
         mine = self.call(notifications.mine, "U07", sort="rank")

@@ -67,7 +67,7 @@ SELECT s.state_log_id, s.equipment_id, s.state_code, s.reason_code, s.reason_nam
        ORDER BY (m.alarm_event_id IS NOT DISTINCT FROM s.alarm_event_id) DESC, m.created_at
        LIMIT 1) wo ON true
  WHERE s.e_at - s.s_at >= interval '5 minutes'
- ORDER BY minutes DESC, s.s_at;
+ ORDER BY minutes DESC, loss_qty DESC NULLS LAST, s.s_at;   -- ① 정지 시간 ② 손실 ③ 시작 (R-74, FR-PRD-02-04)
 
 -- name: daily_report_update
 UPDATE daily_report SET issues_summary = coalesce(CAST(:issues_summary AS text), issues_summary),
@@ -203,3 +203,160 @@ SELECT fn_save_revision('INTERNAL_DOC', :doc_no, 'HUMAN', :actor, :reason, 'APPR
 -- 그 교대 반장 (RPT-02~04 "그 교대 S", R-36). 저장·확정·확정 후 수정 모두 이 사람만
 -- name: shift_supervisor
 SELECT supervisor_user_id FROM shift WHERE shift_id = :shift_id;
+
+-- ---------------------------------------------------------------------
+-- 보고서 칸 (2026-10-20 요구사항 대조 상 4번 — FR-PRD-02-03~06, FR-PRD-04-02~07). 교대(:shift_id) 또는 그 생산일(:work_date) 구간.
+-- 저장 칸이 아니라 원기록으로 그때그때 계산한다 (보고서 숫자 = 원기록, FR-PRD-02-12). 쓰는 곳: GET /api/reports/shift·daily
+-- ---------------------------------------------------------------------
+
+-- 순간 정지 한 줄 (R-74): 필수 정지와 같은 고장 정지 중 구간 안 5분 미만 — 건수·합계 분
+-- name: report_micro_stops
+WITH w AS (
+    SELECT min(start_at) AS f, max(end_at) AS t, array_agg(shift_id) AS shifts FROM shift
+     WHERE shift_id = CAST(:shift_id AS text) OR work_date = CAST(:work_date AS date)
+), s AS (
+    SELECT extract(epoch FROM (least(coalesce(st.end_at, app_now()), w.t) - greatest(st.start_at, w.f))) / 60 AS mins
+      FROM equipment_state_log st CROSS JOIN w
+      LEFT JOIN downtime_reason dr ON dr.reason_code = coalesce(st.reason_code, st.reason_suggested_code)
+     WHERE st.state_code <> 'RUN' AND (st.state_code = 'DOWN' OR dr.reason_group = 'FAILURE')
+       AND st.start_at < w.t AND coalesce(st.end_at, 'infinity'::timestamptz) > w.f
+)
+SELECT count(*) FILTER (WHERE mins > 0 AND mins < 5)::int AS count,
+       round(coalesce(sum(mins) FILTER (WHERE mins > 0 AND mins < 5), 0), 1) AS minutes
+  FROM s;
+
+-- 로트 칸 (FR-PRD-02-03·04-06): 구간에 만든(투입 교대) · 완료(OP-50 끝) · 진행 · 보류 · 판정 대기 · 출하 가능 로트, 구간 출하 번호
+-- name: report_lots
+WITH w AS (
+    SELECT min(start_at) AS f, max(end_at) AS t, array_agg(shift_id) AS shifts FROM shift
+     WHERE shift_id = CAST(:shift_id AS text) OR work_date = CAST(:work_date AS date)
+)
+SELECT v.lot_no, v.order_no, v.status, v.input_shift_id, v.input_qty, v.completed_qty, v.scrap_qty, v.op50_done_at, v.passed_at,
+       v.input_shift_id = ANY (w.shifts)                                        AS made_here,
+       coalesce(v.op50_done_at >= w.f AND v.op50_done_at < w.t, false)          AS completed_here,
+       v.status = 'IN_PROCESS'                                                  AS in_progress,
+       v.status IN ('ON_HOLD','HOLD_REVIEW')                                    AS held,
+       v.status IN ('WAIT_INSPECTION','WAIT_JUDGEMENT')                         AS waiting_judgement,
+       v.status IN ('PASSED','RELEASED') AND v.fg_remaining_qty > 0              AS shippable,
+       (SELECT string_agg(DISTINCT s.shipment_no, ',') FROM shipment_line sl JOIN shipment s USING (shipment_no)
+         WHERE sl.lot_no = v.lot_no AND s.status <> 'DRAFT' AND s.shipped_at >= w.f AND s.shipped_at < w.t) AS shipped_here
+  FROM v_production_lot v CROSS JOIN w
+ WHERE v.input_shift_id = ANY (w.shifts)
+    OR (v.op50_done_at >= w.f AND v.op50_done_at < w.t)
+    OR EXISTS (SELECT 1 FROM operation_report r WHERE r.lot_no = v.lot_no AND r.start_at < w.t
+                 AND coalesce(r.end_at, 'infinity'::timestamptz) > w.f)
+    OR EXISTS (SELECT 1 FROM lot_hold h WHERE h.lot_no = v.lot_no AND h.held_at < w.t
+                 AND coalesce(h.released_at, h.scrap_approved_at, 'infinity'::timestamptz) >= w.f)
+ ORDER BY v.lot_no;
+
+-- 병목 칸 (FR-PRD-02-05): 구간에 걸친 병목 구간 — 공정·원인·시간(구간 안), 속도 손실(구간 안, 추정), DOC-07 §7.5 조치 줄
+-- name: report_bottleneck
+WITH w AS (
+    SELECT min(start_at) AS f, max(end_at) AS t, array_agg(shift_id) AS shifts FROM shift
+     WHERE shift_id = CAST(:shift_id AS text) OR work_date = CAST(:work_date AS date)
+), b AS (
+    SELECT bl.*, lead(bl.changed_at) OVER (ORDER BY bl.changed_at) AS next_at FROM bottleneck_log bl
+)
+SELECT b.bottleneck_log_id, b.new_process_code AS process_code, b.cause_code, fn_bottleneck_cause_ko(b.cause_code) AS cause_name,
+       greatest(b.changed_at, w.f) AS from_at, least(coalesce(b.next_at, app_now()), w.t) AS to_at,
+       round(extract(epoch FROM (least(coalesce(b.next_at, app_now()), w.t) - greatest(b.changed_at, w.f))) / 60)::int AS minutes,
+       (fn_interval_losses(greatest(b.changed_at, w.f), least(coalesce(b.next_at, app_now()), w.t), b.cause_code)).speed_loss_qty,
+       true AS is_estimated, fn_bottleneck_action_line(b.cause_code) AS action_line
+  FROM b CROSS JOIN w
+ WHERE b.changed_at < w.t AND coalesce(b.next_at, 'infinity'::timestamptz) > w.f
+   AND least(coalesce(b.next_at, app_now()), w.t) > greatest(b.changed_at, w.f)
+ ORDER BY from_at;
+
+-- 정비 칸 (FR-PRD-02-06·04-05): 구간에 만들었거나 구간 동안 열려 있던 작업지시서 + 짝 작업기록서, 구간에 시작한 간이 작업기록.
+--   상태는 보고서 시점(구간 끝) 기준 (report_stops와 같은 규칙)
+-- name: report_maintenance
+WITH w AS (
+    SELECT min(start_at) AS f, max(end_at) AS t, array_agg(shift_id) AS shifts FROM shift
+     WHERE shift_id = CAST(:shift_id AS text) OR work_date = CAST(:work_date AS date)
+)
+SELECT 'WORK_ORDER' AS kind, m.wo_no, m.equipment_id, a.alarm_code, m.title,
+       CASE WHEN m.cancelled_at <= w.t THEN 'CANCELLED' WHEN m.completed_at <= w.t THEN 'DONE'
+            WHEN m.approved_at <= w.t THEN 'IN_PROGRESS' ELSE 'WAITING_APPROVAL' END AS status_at_report,
+       r.record_no, r.status AS record_status, r.cause, r.action, m.created_at AS at
+  FROM maintenance_work_order m CROSS JOIN w
+  LEFT JOIN alarm_event a ON a.alarm_event_id = m.alarm_event_id
+  LEFT JOIN work_record r ON r.wo_no = m.wo_no
+ WHERE m.created_at < w.t AND coalesce(m.completed_at, m.cancelled_at, 'infinity'::timestamptz) >= w.f
+UNION ALL
+SELECT 'SIMPLE_RECORD', NULL, r.equipment_id, a.alarm_code, NULL, r.status, r.record_no, r.status, r.cause, r.action, r.start_at
+  FROM work_record r CROSS JOIN w
+  LEFT JOIN alarm_event a ON a.alarm_event_id = r.alarm_event_id
+ WHERE r.record_type = 'SIMPLE' AND r.start_at >= w.f AND r.start_at < w.t
+ ORDER BY at;
+
+-- 그날 MTTR (FR-PRD-04-05): 구간 안에서 시작한 정지 등급 DOWN의 분 평균 (DOC-07 §6, 고장 0건이면 NULL = "—")
+-- name: report_mttr
+WITH w AS (
+    SELECT min(start_at) AS f, max(end_at) AS t, array_agg(shift_id) AS shifts FROM shift
+     WHERE shift_id = CAST(:shift_id AS text) OR work_date = CAST(:work_date AS date)
+)
+SELECT count(*)::int AS failures,
+       round(avg(extract(epoch FROM (coalesce(st.end_at, app_now()) - st.start_at)) / 60), 1) AS mttr_min
+  FROM equipment_state_log st CROSS JOIN w
+ WHERE st.state_code = 'DOWN' AND st.start_at >= w.f AND st.start_at < w.t;
+
+-- 알람 칸 (FR-PRD-04-04): 등급별 건수(합 = 그날 알람 수), 반복 알람 1·2단계
+-- name: report_alarm_counts
+WITH w AS (
+    SELECT min(start_at) AS f, max(end_at) AS t, array_agg(shift_id) AS shifts FROM shift
+     WHERE shift_id = CAST(:shift_id AS text) OR work_date = CAST(:work_date AS date)
+)
+SELECT count(a.alarm_event_id) FILTER (WHERE a.severity_at_event = 'STOP')::int  AS stop_count,
+       count(a.alarm_event_id) FILTER (WHERE a.severity_at_event = 'WARN')::int  AS warn_count,
+       count(a.alarm_event_id) FILTER (WHERE a.severity_at_event = 'GUIDE')::int AS guide_count,
+       count(a.alarm_event_id)::int AS total,
+       (SELECT count(*) FROM notification n WHERE n.rule_code = 'REPEAT_ALARM' AND n.raised_at >= w.f AND n.raised_at < w.t)::int AS repeat_stage1,
+       (SELECT count(*) FROM notification n WHERE n.rule_code = 'REPEAT_ALARM_2' AND n.raised_at >= w.f AND n.raised_at < w.t)::int AS repeat_stage2
+  FROM w LEFT JOIN alarm_event a ON a.occurred_at >= w.f AND a.occurred_at < w.t
+ GROUP BY w.f, w.t;
+
+-- 재고 칸 (FR-PRD-04-07): 품목별 오늘 사용량(사용 거래 합)과 부족 품목(재고 ≤ 안전 재고, 완제품 제외)
+-- name: report_inventory_usage
+WITH w AS (
+    SELECT min(start_at) AS f, max(end_at) AS t, array_agg(shift_id) AS shifts FROM shift
+     WHERE shift_id = CAST(:shift_id AS text) OR work_date = CAST(:work_date AS date)
+)
+SELECT i.item_no, i.item_name, i.unit, i.category,
+       coalesce(-sum(t.qty_change) FILTER (WHERE t.txn_type = 'USE' AND t.txn_at >= w.f AND t.txn_at < w.t), 0) AS used_qty,
+       i.on_hand_qty, i.safety_stock,
+       (i.category <> 'FINISHED' AND i.safety_stock IS NOT NULL AND i.on_hand_qty <= i.safety_stock) AS is_low
+  FROM inventory_item i CROSS JOIN w
+  LEFT JOIN inventory_txn t ON t.item_no = i.item_no
+ WHERE i.is_active
+ GROUP BY i.item_no, i.item_name, i.unit, i.category, i.on_hand_qty, i.safety_stock, w.f, w.t
+HAVING coalesce(-sum(t.qty_change) FILTER (WHERE t.txn_type = 'USE' AND t.txn_at >= w.f AND t.txn_at < w.t), 0) > 0
+    OR (i.category <> 'FINISHED' AND i.safety_stock IS NOT NULL AND i.on_hand_qty <= i.safety_stock)
+ ORDER BY i.item_no;
+
+-- 완제품 한 줄 (FR-PRD-04-07, R-69 ⑧): 시작 / 입고(합격) / 출하 / 조정 / 종료(= 시작 + 입고 − 출하 ± 조정) / 보류 수량(참고)
+-- name: report_fg_line
+WITH w AS (
+    SELECT min(start_at) AS f, max(end_at) AS t, array_agg(shift_id) AS shifts FROM shift
+     WHERE shift_id = CAST(:shift_id AS text) OR work_date = CAST(:work_date AS date)
+)
+SELECT i.item_no,
+       coalesce(sum(t.qty_change) FILTER (WHERE t.txn_at < w.f), 0) AS start_qty,
+       coalesce(sum(t.qty_change) FILTER (WHERE t.txn_type = 'FG_IN' AND t.txn_at >= w.f AND t.txn_at < w.t), 0) AS in_qty,
+       coalesce(-sum(t.qty_change) FILTER (WHERE t.txn_type = 'SHIP_OUT' AND t.txn_at >= w.f AND t.txn_at < w.t), 0) AS ship_qty,
+       coalesce(sum(t.qty_change) FILTER (WHERE t.txn_type = 'ADJUST' AND t.txn_at >= w.f AND t.txn_at < w.t), 0) AS adjust_qty,
+       coalesce(sum(t.qty_change) FILTER (WHERE t.txn_at < w.t), 0) AS end_qty,
+       (SELECT coalesce(sum(v.completed_qty), 0) FROM v_production_lot v WHERE v.status IN ('ON_HOLD','HOLD_REVIEW')) AS hold_qty
+  FROM inventory_item i CROSS JOIN w
+  LEFT JOIN inventory_txn t ON t.item_no = i.item_no
+ WHERE i.category = 'FINISHED'
+ GROUP BY i.item_no, w.f, w.t;
+
+-- 교대별 비교 (FR-PRD-04-02): 그날 교대의 총 목표·실적·불량·보고서 상태 (확정 전이면 원기록 집계)
+-- name: report_shift_compare
+SELECT s.shift_id, s.shift_type, s.target_qty + s.carry_over_qty AS total_target_qty,
+       coalesce(r.actual_qty, fn_shift_actual_qty(s.shift_id)) AS actual_qty,
+       coalesce(r.defect_qty, (SELECT coalesce(sum(o.sq), 0) FROM operation_report o WHERE o.shift_id = s.shift_id))::int AS defect_qty,
+       coalesce(r.status, 'AI_DRAFT') AS report_status
+  FROM shift s LEFT JOIN shift_report r USING (shift_id)
+ WHERE s.work_date = CAST(:work_date AS date)
+ ORDER BY s.start_at;
