@@ -3,6 +3,8 @@
   · 화면 → POST /api/assistant/chat (사용자 로그인, API-AST-02): 질문을 AI 비서 서비스(MOM_ASSISTANT_URL)로 넘긴다. 답은 그
     사용자의 역할이 볼 수 있는 것만 — 서비스는 아래 조회 도구를 on_behalf_of로 부른다. 질문·답은 chat_log에 사용자별로
     30일 저장하고(2026-10-13) GET /api/assistant/chat 으로 본인 기록만 본다. 비서가 응답하지 않으면 status = NO_RESPONSE
+  · 화면 → POST /api/assistant/transcribe (사용자 로그인, 2026-10-20 [제안]): 채팅 마이크 버튼의 소리를 비서 서비스(사내 서버)가 글자로 바꿔 돌려준다.
+    GET /api/assistant/voice 는 마이크 버튼을 보일지(켜짐 여부). 채팅과 같은 권한(ASSISTANT INPUT). 소리는 저장하지 않는다
   · 채팅 권한 (2026-10-13 [가상]): MTTR(reliability)·센서 데이터(sensor_trend) 도구는 MNT·MGR만 — 다른 역할은 도구 목록에서
     빠지고, 서비스에는 "누가 볼 수 있는지"(out_of_role)를 넘겨 권한 밖 답(OUT_OF_ROLE)을 쓰게 한다
   · 비서 서비스 → (서비스 키 X-Service-Key: assistant) 아래 API. 브리핑 재료는 /api/assistant/briefing (notifications.py)
@@ -14,6 +16,7 @@ LLM 호출·프롬프트·RAG(사내 문서 검색)는 이 서버 밖 AI 비서 
 """
 from __future__ import annotations
 
+import asyncio
 from datetime import datetime
 from typing import Any
 
@@ -154,6 +157,43 @@ def chat(body: ChatIn, request: Request, actor: Actor = Depends(require("ASSISTA
     log_access(actor.user_id, "API", "POST", "/api/assistant/chat", 200, request.client.host if request.client else None,
                {"status": out["status"], "sources": len(out["sources"]), "chat_id": chat_id})
     return {"chat_id": chat_id, **out}
+
+
+VOICE_MAX_BYTES = 1_500_000      # 비서 쪽 VOICE_MAX_BYTES 기본과 같다 (20초 webm/opus는 수십 KB) — 넘으면 비서에 보내기 전에 막는다
+
+
+async def _read_audio(request: Request, cap: int = VOICE_MAX_BYTES) -> bytes:
+    """요청 본문(소리 원본)을 상한까지만 읽는다 — content-length 가 거짓이거나 없어도 넘으면 읽기를 멈춘다."""
+    declared = request.headers.get("content-length", "")
+    if declared.isdigit() and int(declared) > cap:
+        raise AppError(422, "VALIDATION", "녹음이 너무 큼", {"reason": "AUDIO_TOO_LARGE"})
+    buf = bytearray()
+    async for chunk in request.stream():
+        buf += chunk
+        if len(buf) > cap:
+            raise AppError(422, "VALIDATION", "녹음이 너무 큼", {"reason": "AUDIO_TOO_LARGE"})
+    return bytes(buf)
+
+
+@router.get("/voice")
+def voice_status(actor: Actor = Depends(require("ASSISTANT", "INPUT"))):
+    """채팅 마이크 버튼을 보일지 (음성 입력 켜짐 여부). 비서가 없거나 꺼져 있으면 enabled = false — 오류로 돌려주지 않는다 (버튼만 안 보임)"""
+    try:
+        return client.voice_status()
+    except AppError:
+        return {"enabled": False, "ready": False, "max_seconds": 0}
+
+
+@router.post("/transcribe")
+async def transcribe(request: Request, actor: Actor = Depends(require("ASSISTANT", "INPUT"))):
+    """채팅 음성 입력 (2026-10-20): 본문 = 녹음된 소리 원본 바이트. 사내 서버의 AI 비서가 글자로 바꿔
+    {text, reason, seconds, ms} 를 돌려준다 (text 가 비면 reason: too_short·no_speech·hallucination·repeated·hint_echo).
+    소리는 저장하지 않고 글자는 접근 기록에도 남기지 않는다 (길이·걸린 시간·글자 수만). 질문으로 보내는 것은 사용자가 글자를 보고 직접 한다."""
+    audio = await _read_audio(request)
+    out = await asyncio.to_thread(client.voice_transcribe, audio)
+    log_access(actor.user_id, "API", "POST", "/api/assistant/transcribe", 200, request.client.host if request.client else None,
+               {"seconds": out["seconds"], "ms": out["ms"], "chars": len(out["text"]), "reason": out["reason"]})
+    return out
 
 
 @router.get("/chat")

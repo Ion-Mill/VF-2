@@ -135,3 +135,10 @@ nav .bg-\[\#1c2530\] span{display:none;}
 .ma-panel .ma-input{height:44px;color:#1f1b33}
 .ma-panel .ma-input::placeholder{color:#8a879a}
 .ma-panel .ma-send{width:44px;height:44px;border-radius:50%;background:#26303a;color:#b79cff}
+
+/* 채팅 마이크 버튼 (2026-10-20): 누르고 있는 동안 녹음. 서버의 음성 스위치가 켜졌을 때만 보인다 */
+.ma-panel .ma-mic{width:44px;height:44px;border-radius:50%;background:transparent;color:#4b4766;display:inline-flex;align-items:center;justify-content:center;flex:none;touch-action:none;user-select:none;-webkit-user-select:none}
+.ma-panel .ma-mic:hover:not(:disabled){background:#f1eefb}
+.ma-panel .ma-mic.is-rec{background:#c62a2f;color:#fff;box-shadow:0 0 0 4px rgba(198,42,47,.25)}
+.ma-panel .ma-mic:disabled{opacity:.4;cursor:not-allowed}
+.ma-panel .ma-voice-note{margin:0 6px 8px;text-align:center;font-size:12.5px;line-height:1.45;color:#4b4766}
