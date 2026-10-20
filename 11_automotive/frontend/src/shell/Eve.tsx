@@ -7,7 +7,8 @@ import { createPortal } from 'react-dom';
 import { useApp } from './ctx';
 import { MACHINES } from './data';
 import { SIM, api, md, simIso, useLocal } from './live';
-import { askAssistant, backendChatEnabled, fetchChatLog } from './assistantApi';
+import { VOICE_OFF, VoiceFail, askAssistant, backendChatEnabled, fetchChatLog, fetchVoiceStatus, transcribeAudio, type VoiceStatus } from './assistantApi';
+import { micSupported, useMic, voiceMessage } from './voiceInput';
 import { LEVEL_VIEW, alarmTitle, hhmm, type AlertRec, type Level, type Notice } from './model';
 import { alarmSentence } from './alarmText';
 import { useAlarmText } from './assistText';
@@ -271,6 +272,30 @@ function Chat({ focus, headerSlot, onNewChat }: { focus: FocusRef | null; header
   const [q, setQ] = useState('');
   const [busy, setBusy] = useState(false);
   const input = useRef<HTMLInputElement>(null);
+  // 마이크 (2026-10-20): 서버의 음성 스위치가 켜져 있을 때만 버튼이 보인다. 누르고 있는 동안 녹음 → 떼면 글자로 바꿔 입력창에 **채우기만** 한다 (보내는 것은 사용자가 글자를 보고 직접)
+  const [voice, setVoice] = useState<VoiceStatus>(VOICE_OFF);
+  const [micOk, setMicOk] = useState(false);          // 이 브라우저·주소에서 마이크를 쓸 수 있나 (https·localhost만) — 서버 렌더와 달라서 마운트 뒤에 정한다
+  const [voiceBusy, setVoiceBusy] = useState(false);   // 소리를 글자로 바꾸는 중
+  const [voiceNote, setVoiceNote] = useState('');      // 실패·안내 한 줄
+  useEffect(() => {
+    setMicOk(micSupported());
+    if (!backendChatEnabled()) return;
+    let live = true;
+    fetchVoiceStatus(user.id).then((v) => { if (live) setVoice(v); });
+    return () => { live = false; };
+  }, [user.id]);
+  const mic = useMic({
+    maxSeconds: voice.maxSeconds,
+    onError: (m) => setVoiceNote(m),
+    onAudio: async (blob) => {
+      setVoiceBusy(true); setVoiceNote('');
+      try {
+        const r = await transcribeAudio(user.id, blob);
+        if (r.text) { setQ((p) => (p.trim() ? `${p.trim()} ${r.text}` : r.text)); input.current?.focus(); } else setVoiceNote(voiceMessage(r.reason));
+      } catch (e) { setVoiceNote(voiceMessage(e instanceof VoiceFail ? e.reason : 'FAILED')); }
+      finally { setVoiceBusy(false); }
+    },
+  });
   const server = useServerChat(user.id, focus ? (focus.chatId ?? focus.at) : null);   // 채팅 기록에서 연 대화가 다른 PC에서 물은 것일 수 있다
   // 채팅 기록에서 열면 눌러 연 줄이 속한 대화만(서버 기록 포함, 앞 질문 번호로 이어진 덩어리), 아니면 지금 대화의 최근 12개
   const today = focus ? sessionOf(mergeServerLog(log, server), log, focus) : currentChat(log).slice(-12);
@@ -320,9 +345,24 @@ function Chat({ focus, headerSlot, onNewChat }: { focus: FocusRef | null; header
       </div>
       <form className="ma-compose" onSubmit={(e) => { e.preventDefault(); if (!busy) send(); }}>
         <div className="mb-3 flex flex-wrap justify-center gap-1.5">{ex.map((x) => <button key={x} type="button" disabled={busy} onClick={() => send(x)} className="h-9 rounded-full border border-slate-300 bg-[#ffffff] px-3.5 text-[13px] font-bold hover:bg-[#f7f5fd]">{x}</button>)}</div>
+        {voice.enabled && (mic.state === 'recording' || voiceBusy || voiceNote !== '') && (
+          <div className="ma-voice-note" role="status">
+            {mic.state === 'recording' ? '듣고 있어요… 말이 끝나면 버튼에서 손을 떼세요.' : voiceBusy ? '글자로 바꾸는 중이에요 (몇 초 걸려요)…' : voiceNote}
+          </div>
+        )}
         <div className="ma-compose-box">
           <label className="ma-sr" htmlFor="ma-input">이브에게 질문</label>
           <input id="ma-input" ref={input} className="ma-input" autoFocus autoComplete="off" value={q} onChange={(e) => setQ(e.target.value)} placeholder="질문 (예: 992 알람 점검 순서)" />
+          {voice.enabled && (
+            <button type="button" className={`ma-mic${mic.state === 'recording' ? ' is-rec' : ''}`} disabled={busy || voiceBusy || !micOk}
+              aria-label="누르고 있는 동안 말하기" aria-pressed={mic.state === 'recording'}
+              title={micOk ? '버튼을 누른 채로 질문을 말하고, 끝나면 손을 떼세요. 글자로 바뀌어 입력창에 들어갑니다.' : '이 주소에서는 마이크를 쓸 수 없어요. localhost 또는 https 주소로 열어 주세요.'}
+              onPointerDown={(e) => { e.preventDefault(); setVoiceNote(''); mic.start(); }} onPointerUp={mic.stop} onPointerLeave={mic.stop} onPointerCancel={mic.stop} onBlur={mic.stop}
+              onKeyDown={(e) => { if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) { e.preventDefault(); setVoiceNote(''); mic.start(); } }}
+              onKeyUp={(e) => { if (e.key === ' ' || e.key === 'Enter') mic.stop(); }} onContextMenu={(e) => e.preventDefault()}>
+              <Icon d={['M12 3a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3z', 'M5 11a7 7 0 0 0 14 0', 'M12 18v3']} w={2.2} />
+            </button>
+          )}
           <button type="submit" className="ma-send" disabled={busy} aria-label="보내기"><Icon d={['M12 19V5M5 12l7-7 7 7']} w={2.4} /></button>
         </div>
       </form>
