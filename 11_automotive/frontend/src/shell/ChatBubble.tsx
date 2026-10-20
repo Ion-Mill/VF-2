@@ -41,5 +41,5 @@ export function HistoryItem({ q, when, onOpen }: { q: string; when: string; onOp
 export function Spark({ v, w = 80, h = 18 }: { v: number[]; w?: number; h?: number }) {
   if (v.length < 2) return <span>—</span>;
   const lo = Math.min(...v), hi = Math.max(...v), r = hi - lo || 1;
-  return <svg width={w} height={h} className="inline align-middle"><polyline fill="none" stroke="#0f9fbd" strokeWidth="1.5" points={v.map((x, i) => `${(i / (v.length - 1)) * w},${h - 1 - ((x - lo) / r) * (h - 2)}`).join(' ')} /></svg>;
+  return <svg width={w} height={h} className="inline align-middle"><polyline fill="none" stroke="#7a52f0" strokeWidth="1.5" points={v.map((x, i) => `${(i / (v.length - 1)) * w},${h - 1 - ((x - lo) / r) * (h - 2)}`).join(' ')} /></svg>;
 }

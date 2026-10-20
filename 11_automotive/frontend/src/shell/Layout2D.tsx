@@ -42,16 +42,16 @@ export default function Layout2D() {
         <text x={150} y={Y(1000)} fontSize="240" fill="#26303a">◁ EXIT-1 비상구</text>
         <text x={W - 150} y={Y(1300)} fontSize="240" textAnchor="end" fill="#26303a">DOOR-1 반입문 ▷</text>
 
-        {/* OP-30 구역 테두리 — 병목이면 주황 + "병목" */}
-        <rect x={op30[0]} y={Y(op30[3])} width={op30[1] - op30[0]} height={op30[3] - op30[2]} fill="none" stroke={bn === 'OP-30' ? '#e8954a' : '#3c4752'} strokeWidth="50" strokeDasharray="220 130" />
-        <text x={(op30[0] + op30[1]) / 2} y={Y(op30[2]) - 80} fontSize="300" fontWeight="700" textAnchor="middle" fill={bn === 'OP-30' ? '#b45309' : '#3c4752'}>OP-30 (2대 병렬){bn === 'OP-30' ? ` · 병목 (${CAUSE_KO[twin!.bottleneck.cause_code] ?? ''})` : ''}</text>
+        {/* OP-30 구역 테두리 — 병목이면 연보라 + "병목" (3D와 같은 색, 2026-10-20) */}
+        <rect x={op30[0]} y={Y(op30[3])} width={op30[1] - op30[0]} height={op30[3] - op30[2]} fill="none" stroke={bn === 'OP-30' ? '#a996ef' : '#3c4752'} strokeWidth="50" strokeDasharray="220 130" />
+        <text x={(op30[0] + op30[1]) / 2} y={Y(op30[2]) - 80} fontSize="300" fontWeight="700" textAnchor="middle" fill={bn === 'OP-30' ? '#6a43e0' : '#3c4752'}>OP-30 (2대 병렬){bn === 'OP-30' ? ` · 병목 (${CAUSE_KO[twin!.bottleneck.cause_code] ?? ''})` : ''}</text>
 
         {EQS.map((eq) => {
           const e = LAYOUT.equipment[eq], id: MachineId = ID_OF[eq], x0 = e.center[0] - e.size[0] / 2, x1 = e.center[0] + e.size[0] / 2, y0 = e.center[1] - e.size[1] / 2, y1 = e.center[1] + e.size[1] / 2;
           const s = stateOf(twin?.equipment[eq]), v = STATE_VIEW[s], sel = selected === id, isBn = !!bn && bn !== 'OP-30' && e.process === bn;
           return (
             <g key={eq} onClick={() => selectMachine(id)} className="cursor-pointer" role="button" aria-label={`${eq} ${v.text}`}>
-              <rect x={x0} y={Y(y1)} width={x1 - x0} height={y1 - y0} fill={FILL[s]} stroke={sel ? '#0f9fbd' : isBn ? '#e8954a' : EDGE[s]} strokeWidth={sel || isBn ? 90 : 50} strokeDasharray={s === 'NODATA' ? '120 80' : undefined} />
+              <rect x={x0} y={Y(y1)} width={x1 - x0} height={y1 - y0} fill={FILL[s]} stroke={sel ? '#7a52f0' : isBn ? '#a996ef' : EDGE[s]} strokeWidth={sel || isBn ? 90 : 50} strokeDasharray={s === 'NODATA' ? '120 80' : undefined} />
               <text x={e.center[0]} y={Y(e.center[1]) - 120} fontSize="360" fontWeight="700" textAnchor="middle" fill="#26303a">{eq}</text>
               <text x={e.center[0]} y={Y(e.center[1]) + 320} fontSize="330" fontWeight="700" textAnchor="middle" fill={v.color}>{v.icon} {v.text}</text>
               <text x={e.center[0]} y={Y(y1) - 120} fontSize="240" textAnchor="middle" fill="#56616c">{e.process} · {(e.size[0] / 1000).toFixed(1)}×{(e.size[1] / 1000).toFixed(1)} m{isBn ? ' · 병목' : ''}</text>

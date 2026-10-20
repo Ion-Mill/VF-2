@@ -2,7 +2,7 @@
 // UI설계서 2.1 [11] AI 비서 사이드바 · [15] 이브 아이콘 · [16] 이브 말풍선, SCR-07 알림 탭, SCR-10 채팅·채팅 기록.
 // 채팅 = API-AST-02. 외부 LLM(Claude) 연결을 켜지 않았으면 서버의 "규칙 답"(조회 도구 + 사내 문서 검색)을 쓰고, 답마다 "규칙 답" 표시.
 // 겉모양 = mom-assistant-widget (로봇 버튼 · 아이콘 메뉴 · 우측 어두운 창 · 알림 토스트). 위젯 JS는 innerHTML로 그려 React 탭을 못 담아서 CSS만 쓰고 틀을 여기로 옮김.
-import { Fragment, createContext, useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useApp } from './ctx';
 import { MACHINES } from './data';
@@ -13,6 +13,7 @@ import { alarmSentence } from './alarmText';
 import { useAlarmText } from './assistText';
 import { rankOfAlert, rankOfNotice } from './Briefing';
 import RobotIcon from './RobotIcon';
+import EveThinking from './EveThinking';
 import { canStartNewChat, currentChat, makeNewChatMark, realRows, withNewChat } from './chatLog';
 import { carryAlarm } from './carry';
 import { Bubble, HistoryItem, Spark, Typing, type ChatRow } from './ChatBubble';
@@ -33,33 +34,27 @@ const TONE: Record<Level, string> = { 긴급: '#FF8A7E', 주의: '#FFC46B', 참�
 const Icon = ({ d, size = 18, w = 2 }: { d: string[]; size?: number; w?: number }) => (
   <svg viewBox="0 0 24 24" width={size} height={size} fill="none" stroke="currentColor" strokeWidth={w} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{d.map((p) => <path key={p} d={p} />)}</svg>
 );
-// SVG 로봇 = WebGL이 안 될 때·3D 로봇 사진(snap)이 아직 없을 때
-// 브리핑 안에서도 머리줄과 같은 이브 얼굴을 쓰도록 (2026-10-18)
-export const EveSnap = createContext<string | null>(null);
-
-export function Robot({ alert, size, disc, snap }: { alert?: boolean; size: number; disc?: boolean; snap?: string | null }) {
-  const pad = disc ? Math.round(size * 0.16) : 0;
-  if (snap) return (
-    <span style={{ position: 'relative', display: 'block', width: size, height: size, flexShrink: 0 }}>
-      {disc && <span style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: '#1A1F23' }} />}
-      <img src={snap} alt="" style={{ position: 'absolute', inset: pad / 2, width: size - pad, height: size - pad }} />
-    </span>
-  );
-  const eye = (cx: number) => (alert ? <circle cx={cx} cy={32.5} r={4.5} fill="#FFB020" /> : <rect x={cx - 2.8} y={28} width={5.6} height={9} rx={2.8} fill="#C8F03C" />);
+// 작은 자리(토스트·창 머리·브리핑·3D 띠)의 이브 = 얼굴만 (헬멧째 시안, 사용자 선택 2026-10-19). 몸 전체를 줄이면 눈이 점이 돼서 표정이 안 보임.
+// 표정: 평소 ^ ^ · 새 소식 반짝 눈 · 주의 주황 반쯤 감은 눈 · 긴급 빨강 > < (3D 모델의 눈 모양을 평면으로). 이브 버튼(58px)은 3D 전신 그대로
+export type EveFace = 'happy' | 'news' | 'warn' | 'alarm';
+export function Robot({ face = 'happy', size }: { face?: EveFace; size: number }) {
+  const c = face === 'warn' ? '#FFB020' : face === 'alarm' ? '#FF5A52' : '#B79CFF';
+  const eye = (x: number, s: 1 | -1) =>
+    face === 'happy' ? <path d={`M${x - 5} 37.5Q${x} 29.5 ${x + 5} 37.5`} fill="none" stroke={c} strokeWidth="2.9" strokeLinecap="round" />
+    : face === 'news' ? <><ellipse cx={x} cy={35} rx={3.4} ry={4.8} fill={c} /><circle cx={x + 1.3} cy={33.2} r={1.1} fill="#fff" /></>
+    : face === 'warn' ? <path d={`M${x - 4.6} 34.4H${x + 4.6}V35.8Q${x} 40 ${x - 4.6} 35.8Z`} fill={c} transform={`rotate(${-8 * s} ${x} 35)`} />
+    : <path d={`M${x + 3.8 * s} 31L${x - 3.4 * s} 35L${x + 3.8 * s} 39`} fill="none" stroke={c} strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" />;
   return (
-    <span style={{ position: 'relative', display: 'block', width: size, height: size, flexShrink: 0 }}>
-      {disc && <span style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: '#1A1F23' }} />}
-      <svg viewBox="0 0 64 64" aria-hidden="true" style={{ position: 'absolute', inset: pad, width: size - pad * 2, height: size - pad * 2 }}>
-        <line x1="32" y1="8" x2="32" y2="15" stroke="#C9D0C6" strokeWidth="2.6" strokeLinecap="round" />
-        <circle cx="32" cy="7" r="3.4" fill="#C8F03C" />
-        <rect x="5" y="28" width="6.5" height="14" rx="2.6" fill="#C9D0C6" />
-        <rect x="52.5" y="28" width="6.5" height="14" rx="2.6" fill="#C9D0C6" />
-        <rect x="9" y="15" width="46" height="39" rx="13" fill="#F2F4EF" />
-        <rect x="15" y="23.5" width="34" height="18" rx="9" fill="#14181B" />
-        <rect x="27" y="46.5" width="10" height="2.6" rx="1.3" fill="#C9D0C6" />
-        {eye(24.5)}{eye(39.5)}
-      </svg>
-    </span>
+    <svg viewBox="0 0 64 64" width={size} height={size} aria-hidden="true" style={{ display: 'block', flexShrink: 0 }}>
+      <rect x="4" y="28" width="5" height="12" rx="2.5" fill="#C9D0C6" />
+      <rect x="55" y="28" width="5" height="12" rx="2.5" fill="#C9D0C6" />
+      <ellipse cx="32" cy="34" rx="25" ry="22" fill="#F6F7F8" stroke="#C3C8CE" strokeWidth="1.2" />
+      <path d="M12 25Q32 14 52 25" fill="none" stroke="#D9DDE2" strokeWidth="1.2" />
+      <rect x="13.5" y="24" width="37" height="21" rx="10.5" fill="#05070A" />
+      <path d="M18 27.5Q26 25.5 34 26.5" fill="none" stroke="#fff" strokeOpacity=".22" strokeWidth="2" strokeLinecap="round" />
+      <g style={{ filter: `drop-shadow(0 0 1.6px ${c})` }}>{eye(25, -1)}{eye(39, 1)}</g>
+      {(face === 'happy' || face === 'news') && <><ellipse cx="17.5" cy="47" rx="3.1" ry="1.5" fill="#FF8FB0" opacity=".6" /><ellipse cx="46.5" cy="47" rx="3.1" ry="1.5" fill="#FF8FB0" opacity=".6" /></>}
+    </svg>
   );
 }
 
@@ -69,7 +64,7 @@ export function Eve({ tab, onPick, onClose, badges, bubble, onBubble, brief, onN
 }) {
   const [menu, setMenu] = useState(false);
   const [later, setLater] = useState<string | null>(null); // [나중에] 누른 말풍선 — 글이 바뀌면 다시 뜸
-  const [gl, setGl] = useState(true), [snap, setSnap] = useState<string | null>(null);
+  const [gl, setGl] = useState(true);
   const [focus, setFocus] = useState<string | null>(null);
   const [slot, setSlot] = useState<HTMLElement | null>(null);   // 머리줄의 [새 채팅] 자리 — 상태를 가진 Chat이 여기에 버튼을 그린다 (createPortal)
   const closed = !tab && !menu;
@@ -88,7 +83,7 @@ export function Eve({ tab, onPick, onClose, badges, bubble, onBubble, brief, onN
       {toast && (
         <div className="ma-toast ma-rise" role="status">
           <button type="button" className="ma-toast-main" onClick={onBubble}>
-            <Robot alert size={36} disc snap={snap} />
+            <Robot face={toast.startsWith('⚠') ? 'alarm' : 'news'} size={36} />
             <span className="ma-toast-text"><span className="ma-toast-time ma-mono">이브</span><strong className="ma-toast-title">{toast}</strong></span>
           </button>
           <div className="ma-actions">
@@ -110,8 +105,8 @@ export function Eve({ tab, onPick, onClose, badges, bubble, onBubble, brief, onN
       {tab && (
         <aside className="ma-panel ma-side" aria-label="이브">
           <header className="ma-panel-head">
-            <Robot size={30} disc snap={snap} />
-            <strong className="ma-panel-title">이브 · {tab}</strong>
+            <Robot size={30} />
+            <strong className="ma-panel-title">이브</strong>
             {tab === '채팅' && <span ref={setSlot} className="flex shrink-0 items-center" />}
             <button type="button" className="ma-icon-btn" onClick={onClose} aria-label="창 닫기"><Icon d={['M6 6l12 12M18 6L6 18']} /></button>
           </header>
@@ -120,14 +115,14 @@ export function Eve({ tab, onPick, onClose, badges, bubble, onBubble, brief, onN
           </div>
           {tab === '채팅' ? <Chat focus={focus} headerSlot={slot} onNewChat={() => setFocus(null)} /> : (
             <div className="ma-body text-[14px] leading-relaxed" role="tabpanel">
-              {tab === '채팅 기록' ? <ChatLog onOpen={(at) => { setFocus(at); onPick('채팅'); }} /> : <div className="ma-pad">{tab === '브리핑' ? <EveSnap.Provider value={snap}>{brief}</EveSnap.Provider> : <AlertsTab onNotice={onNotice} />}</div>}
+              {tab === '채팅 기록' ? <ChatLog onOpen={(at) => { setFocus(at); onPick('채팅'); }} /> : <div className="ma-pad">{tab === '브리핑' ? brief : <AlertsTab onNotice={onNotice} />}</div>}
             </div>
           )}
         </aside>
       )}
       <button type="button" className="ma-fab" aria-expanded={!closed} onClick={() => (tab ? onClose() : setMenu((m) => !m))}
         aria-label={closed ? `이브 메뉴 열기${total ? `, 새 소식 ${total}건` : ''}` : '이브 닫기'}>
-        {gl ? <RobotIcon mode={toast ? 1 : 0} size={58} onSnap={setSnap} onFail={() => setGl(false)} /> : <Robot alert={!!toast} size={44} />}
+        {gl ? <RobotIcon mode={toast ? 1 : 0} size={58} onFail={() => setGl(false)} /> : <Robot face={toast ? 'news' : 'happy'} size={44} />}
         {closed && total > 0 && <span className="ma-fab-badge" aria-hidden="true">{total}</span>}
       </button>
     </div>
@@ -172,7 +167,7 @@ function AlertsTab({ onNotice }: { onNotice: (n: Notice) => void }) {
   const items = all.filter((it) => !onlyOpen || !handledOf(it)).sort((a, b) => tsOfI(b) - tsOfI(a));
   // 알림 폭주: 10분 안 10건 넘으면 띠 (DOC-07 10.3)
   const recent = alerts.filter((a) => SIM.now() - a.ts < 600000).length;
-  const chip = (on: boolean) => `h-9 whitespace-nowrap rounded-full border px-3 text-[12px] font-semibold ${on ? 'border-[#C8F03C] bg-[#C8F03C] text-[#1A1F23]' : 'border-slate-300'}`;
+  const chip = (on: boolean) => `h-9 whitespace-nowrap rounded-full border px-3 text-[12px] font-semibold ${on ? 'border-[#B79CFF] bg-[#B79CFF] text-[#1A1F23]' : 'border-slate-300'}`;
   const ab = 'h-11 rounded-full border border-slate-300 px-4 text-[14px] font-semibold hover:bg-slate-50 disabled:text-slate-400';
   const title = (it: Item) => (it.kind === 'a' ? `${MACHINES[it.a.machine].name} ${alarmTitle(it.a.alarm, it.a.code)}${it.n > 1 ? ` ×${it.n}` : ''}` : it.x.ruleName);
   const level = (it: Item) => (it.kind === 'a' ? it.a.level : it.x.level);
@@ -280,8 +275,8 @@ function Chat({ focus, headerSlot, onNewChat }: { focus: string | null; headerSl
       <div ref={body} className="ma-body text-[14px]" role="tabpanel">
         <div className="ma-pad" aria-live="polite">
           {today.length === 0 && !busy && <p className="ma-empty">라인 상황, 알람, 사내 문서 등 무엇이든 물어보세요.</p>}
-          {today.map((r, i) => <div key={i} data-at={r.at} className={r.at === focus ? 'rounded-lg ring-2 ring-[#C8F03C]' : ''}><Bubble r={r} meta={`${md(r.at)} ${hhmm(r.at)}`} openSource={openSource} role={role} /></div>)}
-          {busy && <Typing />}
+          {today.map((r, i) => <div key={i} data-at={r.at} className={r.at === focus ? 'rounded-lg ring-2 ring-[#B79CFF]' : ''}><Bubble r={r} meta={`${md(r.at)} ${hhmm(r.at)}`} openSource={openSource} role={role} /></div>)}
+          {busy && <EveThinking />}
         </div>
       </div>
       <form className="ma-compose" onSubmit={(e) => { e.preventDefault(); if (!busy) send(); }}>
@@ -295,6 +290,7 @@ function Chat({ focus, headerSlot, onNewChat }: { focus: string | null; headerSl
     </>
   );
 }
+
 function ChatLog({ onOpen }: { onOpen: (at: string) => void }) {
   const { user } = useApp();
   const [log] = useLocal<ChatRow[]>(`chat:${user.id}`, []);

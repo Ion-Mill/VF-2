@@ -51,6 +51,7 @@ class Calendar:
 
     def shift_or_near(self, m: int) -> Shift:
         """일하는 분이 아니면 직전(없으면 직후) 교대 — 교대 밖 기록의 담당자를 고를 때."""
+        m = min(m, self.n_min - 1)  # 실시간 시연이 끝난 시각(= 달력 끝)도 마지막 교대로
         for k in range(m, -1, -1):
             if self.minute_shift[k] >= 0:
                 return self.shifts[self.minute_shift[k]]

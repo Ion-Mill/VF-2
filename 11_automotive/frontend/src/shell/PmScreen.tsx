@@ -28,7 +28,7 @@ const AMBER = 'text-[#9a6200]';
 function SecHead({ title, right }: { title: React.ReactNode; right?: React.ReactNode }) {
   return (
     <div className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5">
-      <span className="h-5 w-1 shrink-0 rounded-full bg-[#0f6f86]" aria-hidden />
+      <span className="h-5 w-1 shrink-0 rounded-full bg-[#5a3bc8]" aria-hidden />
       <h3 className="text-[16px] font-bold">{title}</h3>
       {right && <div className="ml-auto flex flex-wrap items-center gap-2">{right}</div>}
     </div>
@@ -71,7 +71,7 @@ export function PmPage() {
               const chip = (e: string) => {
                 const c = countOf(e === PM_ALL ? pm.tasks : pm.tasks.filter((t) => t.equipment_id === e)), on = tab === e;
                 return (
-                  <button key={e} role="tab" aria-selected={on} onClick={() => go('pm', e)} className={`flex h-11 shrink-0 items-center gap-2 rounded-full border px-4 text-[15px] font-semibold ${on ? 'border-[#1c2530] bg-[#1c2530] text-white' : 'border-slate-300 bg-white hover:border-[#0f9fbd]'}`}>
+                  <button key={e} role="tab" aria-selected={on} onClick={() => go('pm', e)} className={`flex h-11 shrink-0 items-center gap-2 rounded-full border px-4 text-[15px] font-semibold ${on ? 'border-[#1c2530] bg-[#1c2530] text-white' : 'border-slate-300 bg-white hover:border-[#7a52f0]'}`}>
                     <span className={e === PM_ALL ? '' : 'font-mono'}>{e}</span>
                     {c.over > 0 && <span className="rounded-full bg-[#fff1d1] px-2 text-[12px] text-[#9a6200]">지남 ▲{c.over}</span>}
                     {c.soon > 0 && <span className={`rounded-full px-2 text-[12px] ${on ? 'bg-white/20' : 'bg-slate-100 text-slate-600'}`}>오늘 {c.soon}</span>}
@@ -115,7 +115,7 @@ export function PmAll() {
   return (<>
     <section className="grid grid-cols-2 gap-6 lg:grid-cols-[repeat(4,minmax(0,250px))] lg:justify-between" aria-label="전체 장비 숫자">
       {kpis.map((k) => (
-        <div key={k.l} className={`rounded-lg border p-3 ${k.main ? 'border-transparent bg-[#0f6f86] text-white' : 'border-slate-200'}`}>
+        <div key={k.l} className={`rounded-lg border p-3 ${k.main ? 'border-transparent bg-[#5a3bc8] text-white' : 'border-slate-200'}`}>
           <div className={`text-[13px] ${k.main ? 'text-white/85' : 'text-slate-500'}`}>{k.l}</div>
           <div className="font-mono text-[32px] font-bold leading-tight">{k.v}<span className={`ml-1 text-[14px] font-normal ${k.main ? 'text-white/85' : 'text-slate-500'}`}>{k.u}</span></div>
           <div className={`text-[12px] ${k.main ? 'text-white/85' : 'text-slate-500'}`}>{k.s}</div>
@@ -167,7 +167,7 @@ export function PmAll() {
             const over = ts.filter((t) => bucketOf(t) === 'over').length, soon = dd === 0 ? ts.length - over : 0, later = dd > 0 ? ts.length : 0;
             return (
               <button key={d} onClick={() => setSel(d)} aria-pressed={sel === d} aria-label={`${m}월 ${i + 1}일 기한 ${ts.length}건`}
-                className={`flex min-h-[72px] flex-col gap-1 rounded-md border p-1.5 text-left ${sel === d ? 'border-[#0f9fbd] bg-[#e8f6fa]' : dd === 0 ? 'border-2 border-[#0f9fbd]' : dd < 0 ? 'border-slate-200 bg-slate-50 text-slate-400' : 'border-slate-200 hover:border-[#0f9fbd]'}`}>
+                className={`flex min-h-[72px] flex-col gap-1 rounded-md border p-1.5 text-left ${sel === d ? 'border-[#7a52f0] bg-[#e8f6fa]' : dd === 0 ? 'border-2 border-[#7a52f0]' : dd < 0 ? 'border-slate-200 bg-slate-50 text-slate-400' : 'border-slate-200 hover:border-[#7a52f0]'}`}>
                 <b className="font-mono text-[13px]">{i + 1}</b>
                 <span className="flex flex-wrap gap-1 font-mono text-[11px] font-semibold">
                   {over > 0 && <span className={`rounded-full px-1.5 ${DOT.over}`}>▲{over}</span>}
@@ -234,7 +234,7 @@ export function PmScreen({ eq }: { eq: string }) {
     const d = -diffDays(t.last.done_at);
     return <span className="text-[12px] leading-snug text-slate-500"><b className="font-mono text-[13px] text-slate-800">{d <= 0 ? `오늘 ${hm(t.last.done_at)}` : md(t.last.done_at)}</b>{d > 0 ? ` · ${d}일 전` : ''}<br />{userName(t.last.by)}</span>;
   };
-  const stepCls = (n: number) => (step > n ? 'bg-[#13804a] text-white' : step === n ? 'bg-[#0f6f86] text-white' : 'border border-slate-300 bg-white text-slate-400');
+  const stepCls = (n: number) => (step > n ? 'bg-[#13804a] text-white' : step === n ? 'bg-[#5a3bc8] text-white' : 'border border-slate-300 bg-white text-slate-400');
 
   return (
     <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
@@ -248,7 +248,7 @@ export function PmScreen({ eq }: { eq: string }) {
             </div>
             <div className="mt-1 flex flex-wrap gap-1.5">
               <span className={`${CHIP} bg-white text-slate-600`}>{PROC[eq]}</span>
-              {isMaint ? <span className={`${CHIP} bg-[#0f6f86] text-white`}>▨ 지금 정비 중</span> : w && <span className={`${CHIP} bg-[#e8f6fa] text-[#0f6f86]`}>▨ {untilText(w)}</span>}
+              {isMaint ? <span className={`${CHIP} bg-[#5a3bc8] text-white`}>▨ 지금 정비 중</span> : w && <span className={`${CHIP} bg-[#e8f6fa] text-[#5a3bc8]`}>▨ {untilText(w)}</span>}
               {lockNeed > 0 && <span className={`${CHIP} border border-slate-400 bg-white text-slate-700`}>🔒 지남·오늘 중 잠금·표지 필요 {lockNeed}건</span>}
             </div>
           </div>
@@ -280,7 +280,7 @@ export function PmScreen({ eq }: { eq: string }) {
                     <span className="flex flex-wrap gap-1">
                       <span className={`${CHIP} bg-slate-100 text-slate-600`}>{CYC[t.cycle_code]?.[0] ?? t.cycle_code} · §{t.doc04_section}{t.source_tag === 'REFERENCE' ? ' (참고)' : t.source_tag === 'REAL' ? '' : ' (가상)'}</span>
                       {lk && <span className={`${CHIP} border bg-white ${t.lockout_level === 'FULL' ? 'border-slate-700 font-bold text-slate-800' : 'border-slate-300 text-slate-700'}`}>🔒 {lk}</span>}
-                      <span className={`${CHIP} ${t.default_role === 'MNT' ? 'bg-slate-100 text-slate-600' : 'bg-[#e8f6fa] text-[#0f6f86]'}`}>{t.default_role === 'MNT' ? '보전' : '작업자'}</span>
+                      <span className={`${CHIP} ${t.default_role === 'MNT' ? 'bg-slate-100 text-slate-600' : 'bg-[#e8f6fa] text-[#5a3bc8]'}`}>{t.default_role === 'MNT' ? '보전' : '작업자'}</span>
                     </span>
                     {lastCell(t)}
                   </li>);
@@ -334,7 +334,7 @@ export function PmScreen({ eq }: { eq: string }) {
           <div className="grid grid-cols-[28px_1fr] gap-2">
             <span className={`flex h-7 w-7 items-center justify-center rounded-full font-mono text-[13px] font-bold ${stepCls(2)}`}>{step > 2 ? '✓' : '2'}</span>
             <div className="flex flex-col gap-1.5"><b className="text-[14px]">정비 시작</b>
-              {isMaint ? <p className="rounded-lg border border-[#0f9fbd] bg-white p-2 text-[13px]">▨ 지금 정비 중 — 설비 상태가 정비로 기록되고 고장으로 세지 않습니다</p> : (<>
+              {isMaint ? <p className="rounded-lg border border-[#7a52f0] bg-white p-2 text-[13px]">▨ 지금 정비 중 — 설비 상태가 정비로 기록되고 고장으로 세지 않습니다</p> : (<>
                 <label className="flex items-center gap-2 text-[13px]">예상 <input type="number" min={5} step={5} value={mins} onChange={(e) => setMins(Number(e.target.value) || 60)} className="h-10 w-20 rounded border border-slate-300 bg-white px-2" />분</label>
                 <button disabled={picked.length === 0} onClick={() => call('maint/pm-start', { minutes: mins, pm_task_ids: [...pick] }, `${eq} 정비 시작 — 설비 상태 정비(MAINT), 고장으로 세지 않음`)} className={DARK}>정비 시작</button>
               </>)}
