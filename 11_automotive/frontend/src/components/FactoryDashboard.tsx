@@ -2055,6 +2055,8 @@ export default class FactoryDashboard extends React.Component<any, any> {
       inD: new THREE.Color(0xb3bec8), inN: new THREE.Color(0x151d26), wlD: new THREE.Color(0x6c7b8a), wlN: new THREE.Color(0x0c1117), coD: new THREE.Color(0x5fdcf2), coN: new THREE.Color(0x8ff4ff) };
     const cA = new THREE.Color(), heroPos = new THREE.Vector3(), fxOff = new THREE.Vector3(), camOff = new THREE.Vector3(), camGoal = new THREE.Vector3(), yAxis = new THREE.Vector3(0, 1, 0);
     const backOut = (x) => { const c1 = 1.4, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+    // 그림자 줄이기 (사용자 요청 2026-10-20 "그림자 줄이는 것부터"): 반지름 20cm 미만 물체(볼트·롤러·작은 판)는 그림자를 만들지 않음 — 1,715 → 약 840개. 받는 그림자는 그대로
+    { const ws = new THREE.Vector3(); scene.traverse(o => { if (!o.isMesh || !o.castShadow || o.isInstancedMesh) return; const g = o.geometry; if (!g.boundingSphere) g.computeBoundingSphere(); o.getWorldScale(ws); if (g.boundingSphere.radius * Math.max(ws.x, ws.y, ws.z) < 0.2) o.castShadow = false; }); }
     const loop = () => {
       if (this.dead) return;
       cancelAnimationFrame(this.raf); this.raf = requestAnimationFrame(loop); this.lastFrame = performance.now();
@@ -2332,8 +2334,10 @@ export default class FactoryDashboard extends React.Component<any, any> {
           G.children.forEach(ch => { const bp = ch.userData.base; if (!bp) return; dirV.copy(bp).sub(cvec); dirV.y = 0; const len = dirV.length(); if (len > 1e-4) dirV.divideScalar(len); ch.position.copy(bp).addScaledVector(dirV, e * (0.12 + len * 0.42)); ch.position.y = bp.y + e * (0.06 + bp.y * 0.35); });
           ud.exOn = ud.ex > 0.0005; if (!ud.exOn) G.children.forEach(ch => { if (ch.userData.base) ch.position.copy(ch.userData.base); });
         });
-        // 처음 30프레임은 셰이더 컴파일로 느리므로 빼고 잰다 (안 빼면 빠른 PC도 2D로 넘어감)
-        if (!this.intro && !this.qDone && qual() === '자동' && (this.qW = (this.qW || 0) + 1) > 30) { this.qT = (this.qT || 0) + rawDt; this.qF = (this.qF || 0) + 1; if (this.qT > 4) { this.qDone = true; if (this.qF / this.qT < 30) { this.lowQ = true; if (this.qF / this.qT < 8 && this.props.onFail) this.props.onFail('3D가 너무 느립니다'); renderer.setPixelRatio(1); if (composer) composer.setPixelRatio(1); lastW = 0; this.setState({ qNote: '저사양 모드 자동 적용' }); } } }
+        // 자동 화질 (2026-10-20 고침 — 사용자 "흐릿하거나 계단처럼 깨지고, 가끔 3D가 2D 배치도로 바뀌어"):
+        // 처음 90프레임(셰이더 컴파일)은 빼고, 탭이 가려졌거나 한 프레임이 0.25초 넘게 멈춘 때(창 전환·로딩)는 재지 않는다.
+        // 보이는 상태로 4초 재서 30fps 미만이면 빛 번짐·그림자만 끈다. 해상도는 낮추지 않고(흐려짐), 2D로도 넘기지 않는다
+        if (!this.intro && !this.qDone && qual() === '자동' && !document.hidden && rawDt < 0.25 && (this.qW = (this.qW || 0) + 1) > 90) { this.qT = (this.qT || 0) + rawDt; this.qF = (this.qF || 0) + 1; if (this.qT > 4) { this.qDone = true; if (this.qF / this.qT < 30) { this.lowQ = true; renderer.shadowMap.enabled = false; scene.traverse(o => { if (o.material) (Array.isArray(o.material) ? o.material : [o.material]).forEach(m0 => { m0.needsUpdate = true; }); }); this.setState({ qNote: '저사양 모드 자동 적용 (빛 번짐·그림자 끔)' }); } } }
       }
       controls.autoRotate = !!this.props.autoRotate && !sel && !this.tour.on && !this.intro;
       if (this.goal) {
@@ -3104,24 +3108,23 @@ export default class FactoryDashboard extends React.Component<any, any> {
   </div>)}
 
   {v.tourOn && (<>
-    <div className="absolute left-[50%] bottom-[20px] [transform:translateX(-50%)] [width:min(760px,_calc(100%_-_48px))] flex flex-col gap-[11px] p-[14px_16px_15px] rounded-[10px] bg-[var(--glass2)] [backdrop-filter:blur(16px)_saturate(1.4)] [-webkit-backdrop-filter:blur(16px)_saturate(1.4)] [border:1px_solid_var(--gbd)] [box-shadow:0_18px_44px_rgba(10,20,30,0.22)]">
-      <div className="flex items-start gap-[14px]">
-        <span className="flex-none [font:700_13px_'JetBrains_Mono',monospace] text-[#ffffff] bg-[#7a52f0] p-[6px_9px] rounded-[7px] whitespace-nowrap">{v.tStep}</span>
-        <div className="flex-1 min-w-0 flex flex-col gap-[3px]">
-          <span className="[font:700_11px_'JetBrains_Mono',monospace] tracking-[0.08em] text-[#5a3bc8]">{v.tK}</span>
-          <span className="text-[19px] font-bold tracking-[-0.01em] text-[color:var(--t1)]">{v.tT}</span>
-          <span className="text-[13px] text-[color:var(--t2)] leading-[1.45] text-pretty">{v.tD}</span>
-        </div>
+    {/* 투어 설명 = 화면 아래 한 줄 띠 (사용자 요청 2026-10-20 "최대한 한줄로 길게 … 화면을 최대한 안가리도록"). 설명이 넘치면 … (마우스를 올리면 전체) */}
+    <div className={`absolute left-[12px] ${v.embedded ? 'right-[244px]' : 'right-[12px]'} bottom-[10px] flex flex-col overflow-hidden rounded-[10px] bg-[var(--glass2)] [backdrop-filter:blur(16px)_saturate(1.4)] [-webkit-backdrop-filter:blur(16px)_saturate(1.4)] [border:1px_solid_var(--gbd)] [box-shadow:0_8px_24px_rgba(10,20,30,0.18)]`}>{/* 앱 안에서는 오른쪽 아래 [2D][전체][위][+][−] 버튼 줄(App.tsx) 앞에서 멈춤 */}
+      <div className="flex items-center gap-[12px] p-[6px_8px_6px_8px]">
+        <span className="flex-none [font:700_12px_'JetBrains_Mono',monospace] text-[#ffffff] bg-[#7a52f0] p-[4px_8px] rounded-[6px] whitespace-nowrap">{v.tStep}</span>
+        <span className="flex-none [font:700_11px_'JetBrains_Mono',monospace] tracking-[0.06em] text-[#5a3bc8] whitespace-nowrap">{v.tK}</span>
+        <span className="flex-none text-[16px] font-bold tracking-[-0.01em] text-[color:var(--t1)] whitespace-nowrap">{v.tT}</span>
+        <span className="flex-1 min-w-0 truncate text-[13px] text-[color:var(--t2)]" title={v.tD}>{v.tD}</span>
         <div className="flex-none flex gap-[4px]">
-          <button className="cursor-pointer w-[34px] h-[34px] rounded-[8px] border-0 bg-[var(--chip)] text-[color:var(--t1)] text-[12px]" onClick={v.tourPrev} title="이전 단계">◀◀</button>
-          <button className="cursor-pointer w-[34px] h-[34px] rounded-[8px] border-0 bg-[#1c2530] text-[#ffffff] text-[12px]" onClick={v.tourToggle} title="일시정지 / 재생">{v.pauseLabel}</button>
-          <button className="cursor-pointer w-[34px] h-[34px] rounded-[8px] border-0 bg-[var(--chip)] text-[color:var(--t1)] text-[12px]" onClick={v.tourNext} title="다음 단계">▶▶</button>
-          <button className="cursor-pointer h-[34px] p-[0_12px] rounded-[8px] border-0 bg-[var(--chip)] text-[color:var(--t1)] [font:600_12px_'Pretendard_Variable',sans-serif]" onClick={v.tourStop} title="투어 종료">종료</button>
+          <button className="cursor-pointer w-[30px] h-[30px] rounded-[8px] border-0 bg-[var(--chip)] text-[color:var(--t1)] text-[12px]" onClick={v.tourPrev} title="이전 단계">◀◀</button>
+          <button className="cursor-pointer w-[30px] h-[30px] rounded-[8px] border-0 bg-[#1c2530] text-[#ffffff] text-[12px]" onClick={v.tourToggle} title="일시정지 / 재생">{v.pauseLabel}</button>
+          <button className="cursor-pointer w-[30px] h-[30px] rounded-[8px] border-0 bg-[var(--chip)] text-[color:var(--t1)] text-[12px]" onClick={v.tourNext} title="다음 단계">▶▶</button>
+          <button className="cursor-pointer h-[30px] p-[0_10px] rounded-[8px] border-0 bg-[var(--chip)] text-[color:var(--t1)] [font:600_12px_'Pretendard_Variable',sans-serif]" onClick={v.tourStop} title="투어 종료">종료</button>
         </div>
       </div>
-      <div className="flex gap-[3px]">
+      <div className="flex gap-[2px]">{/* 진행 막대 = 띠 아래 가장자리 */}
         {(v.tourSegs || []).map((sg: any, $index: number) => (<React.Fragment key={$index}>
-          <div className="h-[4px] rounded-[2px] bg-[rgba(28,37,48,0.12)] overflow-hidden" style={{ flex: sg.flex } as any}><div className="h-full bg-[#0fb5d4] rounded-[2px]" style={{ width: sg.fill } as any}></div></div>
+          <div className="h-[3px] bg-[rgba(28,37,48,0.12)] overflow-hidden" style={{ flex: sg.flex } as any}><div className="h-full bg-[#0fb5d4] rounded-[2px]" style={{ width: sg.fill } as any}></div></div>
         </React.Fragment>))}
       </div>
     </div>

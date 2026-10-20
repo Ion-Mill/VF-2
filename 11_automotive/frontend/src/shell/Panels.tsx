@@ -144,26 +144,41 @@ export default function Panels({ field = false, ids }: { field?: boolean; ids?: 
   );
   // OEE: 세 지표 이름·숫자를 크고 진하게 (사용자 요청 2026-10-19 — 작은 회색 글자가 안 읽혀서)
   // 넓을 때는 손실도 네 번째 칸으로 (따로 한 줄이면 카드 아래가 잘려서, 2026-10-19). 네 칸 모두 같은 글꼴: 이름 = 본문 14px, 숫자 = 고정폭 20px, 단위 '개'는 숫자 바로 옆
-  const tile = `flex min-w-0 flex-col rounded-lg bg-slate-50 px-3 text-left ${tight ? 'gap-1 py-1.5' : 'gap-1.5 py-2'}`;
-  const tileName = 'whitespace-nowrap text-[14px] font-semibold text-slate-600';
-  const tileNum = `${num} whitespace-nowrap text-[20px] leading-none`;
+  // 넓을 때(손실 칸 있음)는 OEE 칸·숫자를 크게 (사용자 요청 2026-10-20 "OEE 부분을 좀 키워줘"). 낮을 때(tight)·좁을 때는 그대로
+  const big = (withLoss: boolean) => withLoss && !tight;
+  const tile = (b: boolean) => `flex min-w-0 flex-col rounded-lg bg-slate-50 text-left ${b ? 'gap-2.5 px-4 py-3' : tight ? 'gap-1 px-3 py-1.5' : 'gap-1.5 px-3 py-2'}`;
+  const tileName = (b: boolean) => `whitespace-nowrap ${b ? 'text-[17px]' : 'text-[14px]'} font-semibold text-slate-600`;
+  const tileNum = (b: boolean) => `${num} whitespace-nowrap ${b ? 'text-[30px]' : 'text-[20px]'} leading-none`;
   const oeeTiles = (withLoss: boolean) => (
-    <div className={`grid ${withLoss ? 'grid-cols-4' : 'grid-cols-3'} gap-2`}>
+    <div className={`grid ${withLoss ? 'grid-cols-4' : 'grid-cols-3'} ${big(withLoss) ? 'gap-3' : 'gap-2'}`}>
       {([['가동률', kp.availability_pct, kp.warn.includes('가동률')], ['성능', kp.performance_pct, false], ['양품률', kp.quality_pct, false]] as const).map(([t, v, w]) => (
-        <button key={t} onClick={() => toggle('k')} className={tile}>
-          <span className={tileName}>{t}</span>
-          <b className={tileNum} style={{ color: w ? AMBER : '#26303a' }}>{v ?? '—'}{w ? ' ▲' : ''}</b>
+        <button key={t} onClick={() => toggle('k')} className={tile(big(withLoss))}>
+          <span className={tileName(big(withLoss))}>{t}</span>
+          <b className={tileNum(big(withLoss))} style={{ color: w ? AMBER : '#26303a' }}>{v ?? '—'}{w ? ' ▲' : ''}</b>
           {!tight && <Bar pct={v ?? 0} color={w ? AMBER : '#4b5a69'} />}
         </button>))}
       {withLoss && (
-        <button onClick={() => toggle('l')} className={tile}>
-          <span className={tileName}>손실 <span className="font-normal text-slate-500">추정</span></span>
-          <b className={tileNum} style={{ color: '#26303a' }}>{Math.round(p.loss_qty)}<span className={`${tileName} ml-1 font-sans`}>개</span></b>
+        <button onClick={() => toggle('l')} className={tile(big(withLoss))}>
+          <span className={tileName(big(withLoss))}>손실 <span className="font-normal text-slate-500">추정</span></span>
+          <b className={tileNum(big(withLoss))} style={{ color: '#26303a' }}>{Math.round(p.loss_qty)}<span className={`${tileName(big(withLoss))} ml-1 font-sans`}>개</span></b>
           {!tight && <div className="h-2" />}
         </button>)}
     </div>
   );
-  const oeeHead = <div className="flex items-baseline justify-between"><span className="text-[15px] font-semibold text-slate-600">OEE <span className="text-[13px] font-normal text-slate-500">{isOp30 && selected ? eq : '라인'}</span></span><span className={`${num} ${tight ? 'text-[24px]' : 'text-[28px]'} leading-none`} style={{ color: kp.warn.includes('OEE') ? AMBER : undefined }}>{kp.oee_pct ?? '—'}%{kp.warn.includes('OEE') ? ' ▲' : ''}</span></div>;
+  const oeeHead = <div className="flex items-baseline justify-between"><span className={`${tight ? 'text-[15px]' : 'text-[20px]'} font-bold text-slate-600`}>OEE <span className={`${tight ? 'text-[13px]' : 'text-[16px]'} font-normal text-slate-500`}>{isOp30 && selected ? eq : '라인'}</span></span><span className={`${num} ${tight ? 'text-[24px]' : 'text-[44px]'} leading-none`} style={{ color: kp.warn.includes('OEE') ? AMBER : undefined }}>{kp.oee_pct ?? '—'}%{kp.warn.includes('OEE') ? ' ▲' : ''}</span></div>;
+  // 손실 나눠 보기 (사용자 선택 2026-10-20): 멈춰서 잃은 것(고장) vs 느려서 잃은 것(속도) — 넓을 때 OEE 칸 아래 빈자리에
+  const fl = Math.max(0, p.failure_loss_qty), sl = Math.max(0, p.speed_loss_qty), lt = fl + sl;
+  const lossSplit = (
+    <button onClick={() => toggle('l')} className="flex flex-col gap-2 rounded-lg bg-slate-50 px-4 py-3 text-left">
+      <span className="flex items-baseline justify-between"><span className="text-[17px] font-semibold text-slate-600">손실 <b className={`${num} text-[20px] text-[#26303a]`}>{Math.round(p.loss_qty)}</b>개 어디서?</span>
+        <span className="text-[14px] text-slate-500">순간 정지 {p.short_stops.count}건 · {p.short_stops.minutes}분</span></span>
+      <div className="flex h-4 overflow-hidden rounded-full bg-slate-200">{lt > 0 && <><div style={{ width: `${(fl / lt) * 100}%`, background: '#e5484d' }} /><div style={{ width: `${(sl / lt) * 100}%`, background: '#e0a100' }} /></>}</div>
+      <span className="flex justify-between text-[16px] text-slate-600">
+        <span><i className="mr-1.5 inline-block h-3 w-3 rounded-sm align-middle" style={{ background: '#e5484d' }} />고장 <b className={`${num} text-[#26303a]`}>{Math.round(fl)}</b>개 <span className="text-slate-500">(멈춤)</span></span>
+        <span><i className="mr-1.5 inline-block h-3 w-3 rounded-sm align-middle" style={{ background: '#e0a100' }} />속도 <b className={`${num} text-[#26303a]`}>{Math.round(sl)}</b>개 <span className="text-slate-500">(느림)</span></span>
+      </span>
+    </button>
+  );
   const whyBox = (keys: string[]) => why && keys.includes(why) && (
     <p className="mt-2 shrink-0 rounded bg-slate-50 px-3 py-2 text-[12px]">
       {why === 'p' && <>예측 {p.forecast_qty}개 = 실적 {p.actual_qty} + 최근 1시간 속도 {p.rate_per_hour}개/시 × 남은 {Math.round(p.left_work_min)}분 (추정). 예측이 총 목표의 90%({p.risk_line_qty}개) 미만이면 ▲ — DOC-07 §8</>}
@@ -201,7 +216,7 @@ export default function Panels({ field = false, ids }: { field?: boolean; ids?: 
         <div className="grid min-h-0 flex-1 grid-cols-[1fr_1.25fr] gap-4">
           <div className="flex min-h-0 min-w-0 flex-col">{graphBox(false)}</div>
           <div className="flex min-h-0 min-w-0 flex-col justify-center gap-2">
-            <div className="flex flex-col gap-2"><button onClick={() => toggle('k')} className="text-left">{oeeHead}</button>{oeeTiles(true)}</div>
+            <div className="flex flex-col gap-3"><button onClick={() => toggle('k')} className="text-left">{oeeHead}</button>{oeeTiles(true)}{!tight && lossSplit}</div>
           </div>
         </div>
         {whyBox(['p', 'k', 'l'])}
