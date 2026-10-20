@@ -9,6 +9,7 @@ import { CAUSE_KO, MACHINES } from './data';
 import { RANK_NAME, RANK_ORDER, userName } from './model';
 import { api, hm, md, simIso, useFetch } from './live';
 import { parseHandover } from './Briefing';
+import { NO_LOCKOUT, handoverCount } from './reportLabels';
 import { ConfirmBox } from './Safety';
 import { WO_STEPS } from './workflow';
 import { Acts, Bar, Chip, DocHead, DocPage, Fold, InfoRow, Kpi, RankRow, ReportLine, ReportLines, RO, Sec, Steps, type Tone } from './DocKit';
@@ -79,7 +80,7 @@ export function ShiftReportScreen() {
   const nt = splitNotable(r.notable_text);
   // 인계 사항: 순위 6개를 항상 보이고 비면 "없음" (안전의 "잠금·표지 중인 설비 없음"도 "없음"으로, 2026-10-20)
   const RANK_TONE: Record<string, Tone> = { '0': 'crit', '0-1': 'warn', '1': 'solid-crit', '2': 'warn', '3': 'mute', '4': 'mute' };
-  const handOf = (k: string) => (hand.find((g) => g.rank === k)?.items ?? []).filter((x) => !(k === '0' && / 없음$/.test(x)));
+  const handOf = (k: string) => (hand.find((g) => g.rank === k)?.items ?? []).filter((x) => !x.startsWith(NO_LOCKOUT));
 
   return (
     <DocPage width={1100}>
@@ -126,7 +127,8 @@ export function ShiftReportScreen() {
       <Sec title="정비" right={rows.length ? countChips(rows.map((x) => x.label)) : undefined}>
         {rows.length ? rows.map((x) => x.node) : <span className="text-[14px] text-slate-500">없음</span>}
       </Sec>
-      <Sec title="특이 사항">
+      {/* 비서가 다듬은 글이고 아직 초안이면 "AI비서 초안" (reportLabels notableHead와 같은 조건, 팀원 2026-10-19) */}
+      <Sec title="특이 사항" right={r.notable_source === 'ASSISTANT' && r.status === 'AI_DRAFT' ? <Chip tone="acc">AI비서 초안</Chip> : undefined}>
         {edit ? <textarea aria-label="특이 사항" value={edit.n} onChange={(e) => setEdit({ ...edit, n: e.target.value })} rows={5} className="w-full rounded-md border border-slate-300 p-2 text-[15px]" /> : (
           <div className="flex flex-col gap-2">
             {nt.chips.length > 0 && <div className="flex flex-wrap gap-1.5">{nt.chips.map((c) => <Chip key={c} tone={/^정지/.test(c) ? 'crit' : /^주의/.test(c) ? 'warn' : 'mute'}>{/^정지/.test(c) ? '⚠ ' : /^주의/.test(c) ? '▲ ' : ''}{c}</Chip>)}</div>}
@@ -134,7 +136,7 @@ export function ShiftReportScreen() {
           </div>
         )}
       </Sec>
-      <Sec title="인계 사항" right={<Chip>전체 {RANK_ORDER.reduce((s, k) => s + handOf(k).length, 0)}건</Chip>}>
+      <Sec title="인계 사항" right={<Chip>전체 {handoverCount(hand)}건</Chip>}>
         {edit ? <textarea aria-label="인계 사항" value={edit.h} onChange={(e) => setEdit({ ...edit, h: e.target.value })} rows={4} className="w-full rounded-md border border-slate-300 p-2 text-[14px]" /> : (
           <div>{RANK_ORDER.map((k) => { const xs = handOf(k); return <RankRow key={k} left={<Chip tone={RANK_TONE[k]}>{RANK_NAME[k]}</Chip>}>{xs.length ? <ReportLines items={xs} /> : <span className="text-[14px] text-slate-500">없음</span>}</RankRow>; })}
           </div>

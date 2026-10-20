@@ -58,10 +58,13 @@ def ops_blocks(entries: list[dict], ops_texts: list[str], ops_final: str) -> lis
 
 def build(parts: list[str], ops_final: str | None, ops_texts: list[str], entries: list[dict], doc_lines: list[str],
           doc_cites: list[dict], conclusion: str, tail: list[str] | None = None,
-          v3: bool = False, card: str | None = None, steps: bool = False, written: str | None = None) -> list[dict]:
+          v3: bool = False, card: str | None = None, steps: bool = False, written: str | None = None,
+          causes: list[str] | None = None, cause_head: str = "", cause_cite: dict | None = None) -> list[dict]:
     """줄 목록 칸 2판. 다시 이은 글(parts + 운영 글 + 꼬리)이 conclusion과 다르면 통째 한 칸 (7차와 같은 안전장치).
     v3 (9차 BLOCKS_V3): 덩어리(알람 카드·문서 줄·운영 기록)마다 제목 칸을 두고, 알람 답은 점검 순서 자리(steps)를 카드 바로 뒤에 둔다.
-    written (10차 DOC_WRITE): AI가 새로 쓴 답 — 앞머리 칸 {kind: lead, written: true}로 두고, 원문 줄에는 orig: true를 붙인다(화면이 접음)."""
+    written (10차 DOC_WRITE): AI가 새로 쓴 답 — 앞머리 칸 {kind: lead, written: true}로 두고, 원문 줄에는 orig: true를 붙인다(화면이 접음).
+    causes (2026-10-19): 원인을 물은 알람 답의 "가능한 원인" 줄(DOC-03 원인 표 원문). 조립 글(parts)에 cause_head + " / ".join(causes) 한 덩어리로 들어 있고,
+    v3면 알람 설명 → **가능한 원인** → 점검 순서 순서로 제목 칸을 둔다. 줄마다 출처(cause_cite)."""
     tail = list(tail or [])
     rebuilt = " ".join(parts + ([ops_final] if ops_final else []) + tail)
     if rebuilt != conclusion:
@@ -70,6 +73,9 @@ def build(parts: list[str], ops_final: str | None, ops_texts: list[str], entries
     cites = doc_cites if len(doc_cites) == len(doc_lines) else [None] * len(doc_lines)
     out: list[dict] = []
     for p in parts:
+        if causes and p == cause_head + " / ".join(causes):
+            out += [{**doc_line(x, cause_cite), "grp": "cause"} for x in causes]
+            continue
         if doc_lines and p.endswith(joined):
             head = p[: len(p) - len(joined)].strip()
             orig = bool(written and head.startswith(written))
@@ -90,18 +96,18 @@ def build(parts: list[str], ops_final: str | None, ops_texts: list[str], entries
 
 # 9차 (1부 원인 C): 덩어리 제목. 알람 답은 지침카드 순서(규칙 4.1 — 알람 설명 → 점검 순서 → … → 운영 기록)를 따른다. 제목에 숫자를 넣지 않는다
 SECTION_V3 = {"card": "알람 설명", "steps": "점검 순서 (사내 문서)", "doc_after_card": "문서에서 더 찾은 줄", "doc": "사내 문서",
-              "ops": "운영 기록 [가상]"}
+              "ops": "운영 기록 [가상]", "cause": "가능한 원인 (사내 문서)"}
 
 
 def sections_v3(blocks: list[dict], steps: bool) -> list[dict]:
     """덩어리가 둘 이상(점검 순서 포함)이면 제목 칸 {kind: "section", text}을 둔다. 점검 순서는 자리표 {kind: "steps"} —
     화면이 그 자리에 점검 순서 목록을 그린다. 덩어리가 하나뿐이면 제목을 두지 않는다 (글자·순서는 그대로)."""
-    groups = [g for g in ("card", "doc", "ops") if any(b["grp"] == g for b in blocks)]
+    groups = [g for g in ("card", "cause", "doc", "ops") if any(b["grp"] == g for b in blocks)]
     clean = lambda bs: [{k: v for k, v in b.items() if k != "grp"} for b in bs]   # noqa: E731
     if len(groups) + (1 if steps else 0) < 2:
         return clean(blocks)
     out: list[dict] = []
-    for g in ("card", "steps", "doc", "ops"):
+    for g in ("card", "cause", "steps", "doc", "ops"):
         if g == "steps":
             if steps:
                 out += [{"kind": "section", "text": SECTION_V3["steps"]}, {"kind": "steps"}]

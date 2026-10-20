@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { PAGE, useApp } from './ctx';
 import { MASTERS } from './data';
 import { hm, md, simIso, useFetch, usePersist } from './live';
+import { userName } from './model';
 import { ConfirmBox } from './Safety';
 
 type R = Record<string, any>;
@@ -19,17 +20,27 @@ const STATUS: Record<string, string> = { IN_PROCESS: '생산 중', WAIT_INSPECTI
 const POS: Record<string, string> = { TOP: '위', MID: '중간', BOT: '아래', BOTTOM: '아래' };
 const SHORT: Record<string, string> = { '1': '◆ Ø45 H7', '2': '전체 길이', '8': '폭', '3': '두께', '4': '구멍 간 거리', '5': '평면도' };
 const ORDER = ['1', '2', '8', '3', '4', '5'];
+// 측정 항목 6가지 색 (모식도 치수선·이름표·공차 칸이 같은 색). 빨강·노랑은 불합격·주의에 쓰므로 뺌 (사용자 요청 2026-10-19)
+const ITEM_COLOR: Record<string, { line: string; bg: string; text: string }> = {
+  '1': { line: '#2563eb', bg: '#e8efff', text: '#1d4ed8' }, // Ø45 파랑
+  '2': { line: '#ea7a1a', bg: '#fff1e4', text: '#b45309' }, // 길이 주황
+  '8': { line: '#0d9488', bg: '#e2f6f3', text: '#0f766e' }, // 폭 청록
+  '3': { line: '#8b5cf6', bg: '#f1ebff', text: '#6d28d9' }, // 두께 보라
+  '4': { line: '#db2777', bg: '#fde8f2', text: '#be185d' }, // 구멍 간 분홍
+  '5': { line: '#65a30d', bg: '#eef7e1', text: '#4d7c0f' }, // 평면도 연두
+  M6: { line: '#64748b', bg: '#f1f5f9', text: '#334155' }, // M6 게이지 (작업자 확인) 회색
+};
 const box = 'rounded-2xl border border-slate-300 bg-white p-5';
 const H3 = ({ children, right }: { children: React.ReactNode; right?: React.ReactNode }) => (
   <div className="flex flex-wrap items-center gap-3"><h3 className="flex items-center gap-2 text-[17px] font-bold"><span className="h-2.5 w-2.5 rounded-full bg-[#1f5fc4]" />{children}</h3>{right && <div className="ml-auto flex items-center gap-3">{right}</div>}</div>);
 
-export function QualityScreen() {
-  const { key, role, user, twin, toast, go, wrs } = useApp();
+export function QualityScreen({ cap = false }: { cap?: boolean }) { // cap: 공정 능력·불량 화면 (qcap)
+  const { key, role, user, twin, toast, go, wrs, eve } = useApp(); // eve: 이브 창 열림 — 결과 파일 높이를 수동 입력 끝까지로
   const items = MASTERS.inspection_items as R[], defs = MASTERS.defect_codes as R[];
   const cmmItems = items.filter((i) => i.method === 'CMM');
   const [lot, setLot] = useState(key ?? twin?.equipment['CMM-01'].lot_no ?? '');
   const res = useFetch<{ results: R[]; plan: R | null }>(lot ? `inspection/results?lot=${encodeURIComponent(lot)}` : null, 8000, [lot]);
-  const lotsF = useFetch<{ lots: R[] }>(`lots?lot=${encodeURIComponent(lot)}`, 15000, [lot]);
+  const lotsF = useFetch<{ lots: R[]; past_holds?: R[] }>(`lots?lot=${encodeURIComponent(lot)}`, 15000, [lot]);
   const cmm = useFetch<{ imports: R[]; errors_30d: R[]; counts: R }>('inspection/cmm-imports', 15000);
   const qs = useFetch<{ defects: { defect_code: string; qty: number }[]; items: R[]; today_defects: R[] }>('quality/summary', 30000);
   const run = twin?.run_id ?? null;
@@ -43,6 +54,7 @@ export function QualityScreen() {
   const [ptSel, setPtSel] = useState<number | null>(null);
   const [mi, setMi] = useState({ item: '1', v: '' });
   const [confirmBack, setConfirmBack] = useState(false);
+  const [zoom, setZoom] = useState(false); // 부품 모식도 크게 보기 팝업
   const isOpr = role === 'OPR', isSup = role === 'SUP' || role === 'MGR';
 
   const allLots = lotsF.data?.lots ?? [];
@@ -63,15 +75,17 @@ export function QualityScreen() {
   const total = Math.max(L?.input_qty ?? 0, seqs[seqs.length - 1] ?? 0);
   const cur = twin?.equipment['CMM-01'];
   const measuringSeq = cur?.state_code === 'RUN' && cur.lot_no === lot ? (seqs[seqs.length - 1] ?? 0) + 1 : null;
-  // 부품마다: 불합격 / 관리 한계(3σ) 밖 / 합격 / 기록 없음
+  const cmmWarn = (seq: number) => cmmItems.some((it) => { const r = mainRow(seq, String(it.item_seq)), q = qItem(String(it.item_seq)), v = r ? num(r.measured_value) : null; return q?.ucl != null && v != null && (v > q.ucl || v < q.lcl); });
+  // 부품마다: 불합격 / 관리 한계(3σ) 밖·M6 불합격(주의) / 합격 / 기록 없음
   const partState = (seq: number) => {
     const rs = cmmItems.map((it) => ({ it, r: mainRow(seq, String(it.item_seq)) })).filter((x) => x.r);
     if (!rs.length) return seqs.includes(seq) ? 'none' : seq === measuringSeq ? 'measuring' : 'wait';
     if (rs.some(({ it, r }) => (judge(it, num(r!.measured_value)) ?? r!.judgement) === 'FAIL')) return 'fail';
-    const out = rs.some(({ it, r }) => { const q = qItem(String(it.item_seq)), v = num(r!.measured_value); return q?.ucl != null && v != null && (v > q.ucl || v < q.lcl); });
-    return out ? 'warn' : 'pass';
+    if (cmmWarn(seq)) return 'warn';
+    return gv[`${lot}|${seq}|6`] === 'FAIL' ? 'warn' : 'pass'; // M6 게이지 불합격(작업자 확인)은 측정 부품에서 주의 등급으로만 표시 (사용자 요청 2026-10-19)
   };
   const states = Array.from({ length: total }, (_, i) => partState(i + 1));
+  const mapRows = Math.max(4, Math.ceil(total / 15)); // 부품 지도 줄 수 (최대 60개 = 4줄)
   const cnt = (k: string) => states.filter((s) => s === k).length;
   const passN = cnt('pass') + cnt('warn'), failN = cnt('fail'), noneN = cnt('none'), measured = passN + failN + noneN;
   const sel = seqSel ?? [...seqs].reverse().find((s) => states[s - 1] === 'warn' || states[s - 1] === 'fail') ?? seqs[seqs.length - 1] ?? null;
@@ -80,6 +94,9 @@ export function QualityScreen() {
   const enhancedLots = allLots.filter((x) => x.enhanced && !['PASSED', 'RELEASED', 'SCRAPPED'].includes(x.status) || (x.enhanced && x.lot_no === lot));
   const causeDone = wrs.some((w) => w.state === 'confirmed' || w.state === 'checked');
   const allPass = enhancedLots.length > 0 && enhancedLots.every((x) => x.judgement === 'PASS');
+  // 지금 강화 중인 로트가 없으면 최근 강화 기록(시연 데이터 9월의 보류 → 강화 → 보통 복귀)을 보여 줌 (사용자 요청 2026-10-19)
+  const enhPast = enhancedLots.length === 0, enhRows = enhPast ? allLots.filter((x) => x.enhanced).slice(-6) : enhancedLots;
+  const lastHold = [...(lotsF.data?.past_holds ?? [])].filter((h) => h.normal_resumed_at).pop();
   const fileOf = (x: R) => { const m = String(x.file_name ?? '').match(/(LOT-\d{4}-\d{3}-\d)_(\d{3})/); return m ? `${m[1].slice(-5)} · ${Number(m[2])}` : x.file_name; };
   const todayFiles = (cmm.data?.imports ?? []).filter((x) => String(x.received_at).startsWith('2026-10-01')).slice(0, 12);
 
@@ -144,6 +161,40 @@ export function QualityScreen() {
     );
   }
 
+  const capSections = (<>
+        {/* 공정능력 Cpk */}
+        <section className={box}>
+          <H3>공정능력 Cpk</H3>
+          <div className="mt-3 grid grid-cols-6 gap-3">{ORDER.map((k) => { const q = qItem(k); if (!q) return null; const low = q.cpk != null && q.cpk < Number(q.cpk_min); return (
+            <button key={k} onClick={() => setItemSel(k)} className={`rounded-xl border border-t-4 bg-[#f6f8fd] p-3 text-left ${itemSel === k ? 'border-[#1f5fc4]' : 'border-slate-200 border-t-[#1f5fc4]'}`}>
+              <div className="text-[13px] font-bold">{q.item_name}</div>
+              <div className={`mt-1 font-mono text-[26px] font-bold ${low ? 'text-[#b45309]' : ''}`}>{q.cpk ?? '—'}</div>
+              <div className="text-[12px] text-slate-500">기준 {q.cpk_min}{low ? ' ▲ 미달' : ''}</div></button>); })}</div>
+        </section>
+
+        {/* 관리도 */}
+        <section className={box}>
+          <H3>관리도 — {items.find((x) => String(x.item_seq) === itemSel)?.item_name} <span className="text-[13px] font-normal text-slate-500">OP-30 정밀 가공 · 공차 {qItem(itemSel)?.lsl || '—'} ~ {qItem(itemSel)?.usl || '—'}</span></H3>
+          <div className="mt-3 flex flex-wrap gap-2">{ORDER.map((k) => <button key={k} onClick={() => { setItemSel(k); setPtSel(null); }} className={`h-10 rounded-lg border px-3 text-[14px] font-bold ${itemSel === k ? 'border-[#1f5fc4] bg-[#1f5fc4] text-white' : 'border-slate-300 bg-white text-[#1f5fc4]'}`}>{SHORT[k]}</button>)}</div>
+          {qItem(itemSel) && <IMR it={qItem(itemSel)!} sel={ptSel} onSel={setPtSel} />}
+        </section>
+
+        {/* 불량 집계 — 불량 코드별 + 불량률 */}
+        <DefectBox defects={qs.data?.defects ?? []} defs={defs} lots={allLots} />
+  </>);
+  const tolGrid = (<>
+    <div className="mt-3 text-[15px] font-bold">공차 안 위치 · 순번 {sel ?? '—'}</div>
+    <div className="mt-2 grid grid-cols-3 gap-2">{ORDER.map((k) => { const it = items.find((x) => String(x.item_seq) === k); const r = sel ? mainRow(sel, k) : undefined; return it ? <TolBar key={k} card it={it} q={qItem(k)} v={r ? num(r.measured_value) : null} /> : null; })}</div>
+  </>);
+  // 품질 하위 화면: 검사 기록(로트 단위) | 공정 능력·불량(공장 전체 지표: Cpk·관리도·불량 집계). 고르는 곳은 왼쪽 메뉴 옆 목록 (사용자 요청 2026-10-19)
+  if (cap) return (
+    <div className={PAGE}>
+      <div className="mx-auto flex max-w-[1400px] flex-col gap-4">
+        <p className="text-[13px] text-slate-500">로트 하나가 아니라 9/1 ~ 10/1 측정값 전체로 본 공장의 공정 능력과 불량입니다.</p>
+        {capSections}
+      </div>
+    </div>);
+
   return (
     <div className={PAGE}>
       <div className="mx-auto flex max-w-[1400px] flex-col gap-4">
@@ -168,28 +219,36 @@ export function QualityScreen() {
             <span className="text-[14px]">합격 <b className="text-[18px]">{passN}</b></span><span className="text-[14px] text-[#c62a2f]">불합격 <b className="text-[18px]">{failN}</b></span><span className="text-[14px]">기록 없음 {noneN}</span><span className="text-[14px]">남은 <b className="text-[18px]">{Math.max(0, total - measured)}</b></span>
           </>}>한눈에 보기 — {lot || '로트를 고르세요'}</H3>
           {!rows.length ? <p className="mt-4 text-[14px] text-slate-500">측정 기록 없음{res.data ? '' : ' (불러오는 중)'}</p> : (
-            <div className="mt-4 grid grid-cols-[1.15fr_1fr] gap-6">
+            <div className={`mt-4 grid gap-6 ${eve ? 'grid-cols-1' : 'grid-cols-[1fr_1fr]'}`}>
+              {/* 왼쪽: 모식도(작게) + 공차 안 위치 3×2. 오른쪽: 부품 지도 15×4 (사용자 요청 2026-10-19) */}
               <div>
-                <div className="mb-2 flex items-center gap-2 text-[15px] font-bold">부품 모식도 · 순번 {sel ?? '—'} <span className="rounded border border-slate-300 px-1.5 text-[12px] font-normal text-slate-500">모식도</span></div>
-                <PartSketch rows={rows} seq={sel} mainRow={mainRow} />
+                <div className="mb-1 flex items-center gap-2 text-[15px] font-bold">부품 모식도 · 순번 {sel ?? '—'} <span className="rounded border border-slate-300 px-1.5 text-[12px] font-normal text-slate-500">모식도</span></div>
+                <button type="button" disabled={!sel} onClick={() => setZoom(true)} aria-label={`순번 ${sel} 모식도 크게 보기`} className="block w-full max-w-[520px] cursor-zoom-in rounded-xl border border-slate-200 bg-[#f6f8fc] p-1 hover:border-[#9db6ea]">
+                  <PartSketch rows={rows} seq={sel} mainRow={mainRow} items={items} qItem={qItem} m6={sel ? gv[`${lot}|${sel}|6`] : undefined} />
+                </button>
+                {eve && tolGrid}
               </div>
-              <div>
+              <div className="flex flex-col">{/* 부품 지도 칸이 왼쪽 모식도 높이만큼 늘어나 번호가 커짐 (사용자 요청 2026-10-19) */}
                 <div className="text-[15px] font-bold">부품 지도</div>
-                <div className="mt-2 grid grid-cols-10 gap-1.5">{states.map((s, i) => {
+                {/* 로트는 최대 60개 → 15×4 칸을 늘 깔고 남은 높이를 4줄이 나눠 씀. 로트 수보다 뒤 칸은 연한 번호의 빈칸 — 60까지 번호 채움 (사용자 요청 2026-10-19) */}
+                <div className="mt-2 grid flex-1 grid-cols-[repeat(15,minmax(0,1fr))] gap-1" style={{ gridTemplateRows: `repeat(${mapRows}, minmax(38px, 1fr))` }}>{states.map((s, i) => {
                   const n = i + 1, on = n === sel;
-                  const cls = s === 'fail' ? 'border-[#e8a0a3] bg-[#fdeeee] text-[#c62a2f]' : s === 'measuring' ? 'border-[#9db6ea] bg-[#e8eefb] text-[#1f5fc4]' : s === 'none' ? 'border-dashed border-slate-400 bg-white' : s === 'wait' ? 'border-transparent bg-slate-100 text-slate-500' : 'border-slate-300 bg-white';
-                  return <button key={n} disabled={s === 'wait'} onClick={() => setSeqSel(n)} className={`relative flex h-12 flex-col items-center justify-center rounded-md border text-[13px] font-bold ${cls} ${on ? '!border-2 !border-[#1c2530]' : ''}`}>
-                    {s === 'warn' && <span className="absolute right-0.5 top-0 text-[9px] text-[#b8860b]">▲</span>}
-                    {n}<span className="text-[12px] font-normal">{s === 'pass' || s === 'warn' ? '✓' : s === 'fail' ? '✕' : s === 'measuring' ? '●' : s === 'none' ? '—' : ''}</span></button>;
-                })}</div>
-                <div className="mt-2 flex flex-wrap gap-3 text-[12px] text-slate-500"><span>✓ 합격</span><span className="text-[#c62a2f]">✕ 불합격</span><span className="text-[#b8860b]">▲ 확인 필요·3σ 밖</span><span className="text-[#1f5fc4]">● 측정 중</span><span>— 기록 없음</span><span>빈칸 대기</span></div>
-                {sel && <div className="mt-3 rounded-lg bg-slate-50 px-3 py-2 text-[14px]">순번 {sel} · {states[sel - 1] === 'fail' ? '불합격' : states[sel - 1] === 'none' ? '기록 없음' : '합격'}{selRow1 ? ` · Ø45 ${num(selRow1.measured_value)} · ${hm(selRow1.measured_at)}` : ''}{states[sel - 1] === 'warn' && <b className="text-[#b8860b]"> ▲ 관리도 3σ 밖</b>}</div>}
-                <div className="mt-4 text-[15px] font-bold">공차 안 위치 · 순번 {sel ?? '—'}</div>
-                <div className="mt-1 flex flex-col">{ORDER.map((k) => { const it = items.find((x) => String(x.item_seq) === k); const r = sel ? mainRow(sel, k) : undefined; return it ? <TolBar key={k} it={it} q={qItem(k)} v={r ? num(r.measured_value) : null} /> : null; })}</div>
+                  const cls = s === 'fail' ? 'border-[#e8a0a3] bg-[#fdeeee] text-[#c62a2f]' : s === 'warn' ? 'border-[#ecd47a] bg-[#fdf3c8] text-[#7a5600]' : s === 'measuring' ? 'border-[#9db6ea] bg-[#e8eefb] text-[#1f5fc4]' : s === 'none' ? 'border-dashed border-slate-400 bg-white text-slate-500' : s === 'wait' ? 'border-transparent bg-slate-100 text-slate-400' : 'border-slate-300 bg-white';
+                  return <button key={n} disabled={s === 'wait'} onClick={() => { setSeqSel(n); setZoom(true); }} className={`relative rounded-md border text-[16px] font-bold ${cls} ${on ? '!border-2 !border-[#1c2530]' : ''}`}>
+                    {n}{s === 'measuring' && <span className="absolute right-0.5 top-0.5 h-1.5 w-1.5 rounded-full bg-[#1f5fc4]" />}</button>;
+                })}{Array.from({ length: mapRows * 15 - states.length }, (_, i) => <span key={`e${i}`} title="이 로트에 없는 순번" className="flex items-center justify-center rounded-md border border-dashed border-slate-200 text-[16px] font-bold text-slate-300">{states.length + i + 1}</span>)}</div>
+                <div className="mt-2 flex flex-wrap gap-3 text-[12px] text-slate-500"><span><i className="mr-1 inline-block h-2.5 w-2.5 rounded-sm border border-slate-300 bg-white align-middle" />합격</span><span className="text-[#c62a2f]"><i className="mr-1 inline-block h-2.5 w-2.5 rounded-sm bg-[#fdeeee] align-middle ring-1 ring-[#e8a0a3]" />불합격</span><span className="text-[#7a5600]"><i className="mr-1 inline-block h-2.5 w-2.5 rounded-sm bg-[#fdf3c8] align-middle ring-1 ring-[#ecd47a]" />주의 (3σ 밖 · M6 불합격)</span><span className="text-[#1f5fc4]">● 측정 중</span><span><i className="mr-1 inline-block h-2.5 w-2.5 rounded-sm border border-dashed border-slate-400 align-middle" />기록 없음</span><span>회색 대기</span><span className="text-slate-400">연한 점선 = 이 로트에 없는 순번</span></div>
+                {sel && <div className="mt-3 rounded-lg bg-slate-50 px-3 py-2 text-[14px]">순번 {sel} · {states[sel - 1] === 'fail' ? '불합격' : states[sel - 1] === 'none' ? '기록 없음' : '합격'}{selRow1 ? ` · Ø45 ${num(selRow1.measured_value)} · ${hm(selRow1.measured_at)}` : ''}{cmmWarn(sel) && <b className="text-[#b8860b]"> ▲ 관리도 3σ 밖</b>}
+                  <span className="ml-1">· M6 {gv[`${lot}|${sel}|6`] === 'PASS' ? '통과' : gv[`${lot}|${sel}|6`] === 'FAIL' ? <b className="text-[#b8860b]">▲ 불합격 (주의)</b> : '입력 전'} <span className="text-[12px] text-slate-500">(작업자 게이지)</span></span></div>}
               </div>
+              {!eve && <div className="col-span-2">{tolGrid}</div>}{/* 이브 닫힘: 공차 칸을 아래 한 줄 전체에 좌·가운데·우 2개씩 (사용자 요청 2026-10-19) */}
             </div>
           )}
         </section>
+        {zoom && sel && <PartZoom seq={sel} total={total} states={states} onSeq={(n) => setSeqSel(n)} onClose={() => setZoom(false)}>
+          <PartSketch rows={rows} seq={sel} mainRow={mainRow} items={items} qItem={qItem} m6={gv[`${lot}|${sel}|6`]} />
+          <div className="mt-3 grid grid-cols-3 gap-2">{ORDER.map((k) => { const it = items.find((x) => String(x.item_seq) === k); const r = mainRow(sel, k); return it ? <TolBar key={k} card it={it} q={qItem(k)} v={r ? num(r.measured_value) : null} /> : null; })}</div>
+        </PartZoom>}
 
         {/* 측정 시작 확인 · 측정 결과 */}
         <div className="grid grid-cols-[1fr_2fr] gap-4">
@@ -215,16 +274,19 @@ export function QualityScreen() {
         </div>
 
         {/* 결과 파일 · 재측정 · 수동 입력 */}
-        <div className="grid grid-cols-[1.6fr_1fr] items-start gap-4">
-          <section className={box}>
-            <H3>결과 파일 (가져오기 기록) <span className="text-[14px] font-normal text-slate-500">— 9월 {cmm.data?.counts.past ?? '—'}건 · 오늘 {cmm.data?.counts.today ?? '—'}건 · 9월 오류 {cmm.data?.errors_30d.length ?? 0}건</span></H3>
-            <table className="mt-3 w-full text-left text-[14px]">
-              <thead className="bg-[#e8eefb] text-[13px] text-slate-600"><tr><th className="px-2 py-2">받은 시각</th><th className="px-2">로트 · 순번</th><th className="px-2">상태</th></tr></thead>
+        <div className="grid grid-cols-[1.6fr_1fr] items-stretch gap-4">{/* 결과 파일 높이 = 오른쪽(재측정·수동 입력) 끝까지 (사용자 요청 2026-10-19) */}
+          <section className={`${box} flex flex-col`}>
+            <H3><span className="whitespace-nowrap">결과 파일 (가져오기 기록)</span> <span className="text-[14px] font-normal text-slate-500">— 9월 {cmm.data?.counts.past ?? '—'}건 · 오늘 {cmm.data?.counts.today ?? '—'}건 · 9월 오류 {cmm.data?.errors_30d.length ?? 0}건</span></H3>
+            {/* 이브 열림: [contain:size]로 표 높이가 칸 높이를 늘리지 않게 → 오른쪽(재측정·수동 입력) 끝에 맞춰 자르고 안에서 스크롤 */}
+            <div className="mt-3 min-h-[130px] flex-1 overflow-y-auto [contain:size]">
+            <table className="w-full text-left text-[14px]">
+              <thead className="sticky top-0 bg-[#e8eefb] text-[13px] text-slate-600"><tr><th className="px-2 py-2">받은 시각</th><th className="px-2">로트 · 순번</th><th className="px-2">상태</th></tr></thead>
               <tbody className="divide-y divide-slate-100">{todayFiles.map((x) => (
                 <tr key={x.cmm_import_id}><td className="px-2 py-2.5 font-mono">{hm(x.received_at)}</td><td className="px-2 font-mono">{fileOf(x)}</td>
                   <td className="px-2">{x.status === 'SUCCESS' ? '성공' : <span className="flex flex-wrap items-center gap-2"><b className="text-[#c62a2f]">✕ 실패 {x.error_text ? `(${x.error_text})` : ''}</b>{isSup && <button onClick={() => toast('다시 읽기 — 원본 파일은 남아 있습니다 (시연: 같은 결과)')} className="h-8 rounded-lg border border-slate-300 bg-white px-2 text-[13px]">다시 읽기</button>}</span>}</td></tr>))}
                 {todayFiles.length === 0 && <tr><td colSpan={3} className="py-3 text-slate-500">오늘 받은 결과 파일 없음</td></tr>}</tbody>
             </table>
+            </div>
           </section>
           <div className="flex flex-col gap-4">
             <section className={box}>
@@ -250,43 +312,35 @@ export function QualityScreen() {
 
         {/* 검사 강화 */}
         <section className={box}>
-          <H3>검사 강화</H3>
+          <H3>검사 강화 {enhPast && <span className="text-[14px] font-normal text-slate-500">— 지금 강화 중인 로트 없음 · 최근 강화 기록 (시연 데이터 9월)</span>}</H3>
           <div className="mt-3 grid grid-cols-[1.6fr_1fr] gap-6">
             <table className="w-full text-left text-[14px]">
-              <thead className="bg-[#e8eefb] text-[13px] text-slate-600"><tr><th className="px-2 py-2">로트</th><th className="px-2">지금</th><th className="px-2 text-right">측정</th></tr></thead>
-              <tbody className="divide-y divide-slate-100">{enhancedLots.map((x) => (
-                <tr key={x.lot_no}><td className="px-2 py-2.5 font-mono font-bold">{x.lot_no}</td><td className="px-2">{x.on_hold ? '🔒 ' : ''}<b>{STATUS[x.status] ?? x.status}</b>{x.status === 'IN_PROCESS' ? ` (${Object.entries(x.process_done ?? {}).filter(([k, v]) => k !== 'DONE' && Number(v) > 0).map(([k]) => k).pop() ?? 'OP-10'})` : ''}</td><td className="px-2 text-right font-mono">{x.process_done?.['OP-50'] ?? 0} / {x.input_qty}</td></tr>))}
-                {enhancedLots.length === 0 && <tr><td colSpan={3} className="py-3 text-slate-500">검사 강화 중인 로트 없음</td></tr>}</tbody>
+              <thead className="bg-[#e8eefb] text-[13px] text-slate-600"><tr><th className="px-2 py-2">로트</th><th className="px-2">왜 강화</th><th className="px-2">상태</th><th className="px-2 text-right">측정한 부품 / 로트</th></tr></thead>
+              <tbody className="divide-y divide-slate-100">{enhRows.map((x) => (
+                <tr key={x.lot_no}><td className="px-2 py-2.5 font-mono font-bold">{x.lot_no}</td>
+                  <td className="px-2">{x.enhance_reason === 'HOLD_LOT' ? '보류 로트 · 남은 부품 전수' : x.enhance_reason === 'NEXT_LOT' ? '보류 다음 로트' : x.enhance_reason ?? '—'}</td>
+                  <td className="px-2">{x.on_hold ? '🔒 ' : ''}<b>{STATUS[x.status] ?? x.status}</b>{x.status === 'IN_PROCESS' ? ` (${Object.entries(x.process_done ?? {}).filter(([k, v]) => k !== 'DONE' && Number(v) > 0).map(([k]) => k).pop() ?? 'OP-10'})` : ''}</td>
+                  <td className="px-2 text-right font-mono">{x.process_done?.['OP-50'] ?? 0} / {x.input_qty}</td></tr>))}
+                {enhRows.length === 0 && <tr><td colSpan={4} className="py-3 text-slate-500">검사 강화 기록 없음</td></tr>}</tbody>
             </table>
             <div className="text-[14px]">
               <b>보통으로 돌아오기</b>
+              {enhPast ? (lastHold ? (
+                <div className="mt-2 rounded-lg bg-slate-50 px-3 py-2 leading-relaxed">
+                  <div className="text-[12px] text-slate-500">최근 기록</div>
+                  <div><b className="font-mono">{lastHold.lot_no}</b> 보류 · {md(lastHold.held_at)} {hm(lastHold.held_at)}</div>
+                  <div className="text-[13px] text-slate-600">{String(lastHold.hold_reason ?? '').split(' — ')[0]}</div>
+                  <div>→ 다음 로트 {lastHold.enhanced_next_lots}개 강화</div>
+                  <div>→ <b>보통 복귀</b> {lastHold.normal_resumed_at ? `${md(lastHold.normal_resumed_at)} ${hm(lastHold.normal_resumed_at)} · ${userName(lastHold.normal_resumed_by)}` : '—'}</div>
+                </div>) : <p className="mt-2 text-slate-500">기록 없음</p>) : (<>
               <div className="mt-2 flex items-start gap-2"><input type="checkbox" readOnly checked={causeDone} className="mt-1 h-4 w-4" /><div>원인 조치 완료<div className="text-[12px] text-slate-500">작업기록서 확정 {causeDone ? '있음' : '없음'}</div></div></div>
               <div className="mt-2 flex items-start gap-2"><input type="checkbox" readOnly checked={allPass} className="mt-1 h-4 w-4" /><div>강화 로트 모두 합격<div className="text-[12px] text-slate-500">판정 끝 {enhancedLots.filter((x) => x.judgement).length} / {enhancedLots.length}</div></div></div>
               <button disabled={!isSup || !causeDone || !allPass || !!backOk[lot]} onClick={() => setConfirmBack(true)} className="mt-3 h-10 rounded-lg border border-slate-300 bg-slate-100 px-4 font-bold disabled:text-slate-400">{backOk[lot] ? '확인함' : '확인'}</button>
-              <div className="mt-1 text-[12px] text-slate-500">조건 {Number(causeDone) + Number(allPass)} / 2</div>
+              <div className="mt-1 text-[12px] text-slate-500">조건 {Number(causeDone) + Number(allPass)} / 2</div></>)}
             </div>
           </div>
         </section>
 
-        {/* 공정능력 Cpk */}
-        <section className={box}>
-          <H3>공정능력 Cpk</H3>
-          <div className="mt-3 grid grid-cols-6 gap-3">{ORDER.map((k) => { const q = qItem(k); if (!q) return null; const low = q.cpk != null && q.cpk < Number(q.cpk_min); return (
-            <button key={k} onClick={() => setItemSel(k)} className={`rounded-xl border border-t-4 bg-[#f6f8fd] p-3 text-left ${itemSel === k ? 'border-[#1f5fc4]' : 'border-slate-200 border-t-[#1f5fc4]'}`}>
-              <div className="text-[13px] font-bold">{q.item_name}</div>
-              <div className={`mt-1 font-mono text-[26px] font-bold ${low ? 'text-[#b45309]' : ''}`}>{q.cpk ?? '—'}</div>
-              <div className="text-[12px] text-slate-500">기준 {q.cpk_min}{low ? ' ▲ 미달' : ''}</div></button>); })}</div>
-        </section>
-
-        {/* 관리도 */}
-        <section className={box}>
-          <H3>관리도 — {items.find((x) => String(x.item_seq) === itemSel)?.item_name} <span className="text-[13px] font-normal text-slate-500">OP-30 정밀 가공 · 공차 {qItem(itemSel)?.lsl || '—'} ~ {qItem(itemSel)?.usl || '—'}</span></H3>
-          <div className="mt-3 flex flex-wrap gap-2">{ORDER.map((k) => <button key={k} onClick={() => { setItemSel(k); setPtSel(null); }} className={`h-10 rounded-lg border px-3 text-[14px] font-bold ${itemSel === k ? 'border-[#1f5fc4] bg-[#1f5fc4] text-white' : 'border-slate-300 bg-white text-[#1f5fc4]'}`}>{SHORT[k]}</button>)}</div>
-          {qItem(itemSel) && <IMR it={qItem(itemSel)!} sel={ptSel} onSel={setPtSel} />}
-        </section>
-
-        {/* 불량 집계 — 불량 코드별 + 불량률 */}
-        <DefectBox defects={qs.data?.defects ?? []} defs={defs} lots={allLots} />
       </div>
       {confirmBack && <ConfirmBox title="보통 검사로 돌아갈까요?" okLabel="확인" body="원인 조치와 강화 로트 합격을 확인했습니다. 다음 로트부터 발췌 검사로 돌아갑니다."
         onOk={() => { setBackOk((b) => ({ ...b, [lot]: user.id })); setConfirmBack(false); toast('반장 확인 — 보통 검사로 돌아감'); }} onCancel={() => setConfirmBack(false)} />}
@@ -294,39 +348,108 @@ export function QualityScreen() {
   );
 }
 
-// 공차 안 위치 — 공차(실선) · 관리 한계(점선) 안에서 값 위치
-function TolBar({ it, q, v }: { it: R; q?: R; v: number | null }) {
-  const lsl = num(it.lsl), usl = num(it.usl)!, lo = lsl ?? 0, span = usl - lo || 1, pad = span * 0.18;
-  const pos = (n: number) => `${Math.min(100, Math.max(0, ((n - (lo - pad)) / (span + pad * 2)) * 100))}%`;
-  const pj = judge(it, v), out = q?.ucl != null && v != null && (v > q.ucl || v < q.lcl);
+// 부품 모식도 크게 보기 — 부품 지도·모식도를 누르면 뜸. ‹ › 로 앞뒤 부품, Esc·바깥 누르면 닫힘
+function PartZoom({ seq, total, states, onSeq, onClose, children }: { seq: number; total: number; states: string[]; onSeq: (n: number) => void; onClose: () => void; children: React.ReactNode }) {
+  const step = (d: number) => { let n = seq + d; while (n >= 1 && n <= total && states[n - 1] === 'wait') n += d; if (n >= 1 && n <= total) onSeq(n); };
+  useEffect(() => { const f = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); if (e.key === 'ArrowLeft') step(-1); if (e.key === 'ArrowRight') step(1); }; window.addEventListener('keydown', f); return () => window.removeEventListener('keydown', f); });
+  const st = states[seq - 1];
   return (
-    <div className="grid grid-cols-[110px_1fr_90px] items-center gap-3 border-b border-slate-100 py-2">
-      <div><b className="text-[14px]">{SHORT[String(it.item_seq)] ?? it.item_name}</b><div className="font-mono text-[11px] text-slate-500">{lsl != null ? `${lsl}~${usl}` : `${usl} 이하`}</div></div>
-      <div className="relative h-3 rounded bg-[#e8eefb]">
-        {lsl != null && <span className="absolute -top-1 h-5 w-[2px] bg-[#1c2530]" style={{ left: pos(lsl) }} />}<span className="absolute -top-1 h-5 w-[2px] bg-[#1c2530]" style={{ left: pos(usl) }} />
-        {q?.ucl != null && <><span className="absolute top-0 h-3 border-l border-dashed border-slate-500" style={{ left: pos(q.ucl) }} />{lsl != null && <span className="absolute top-0 h-3 border-l border-dashed border-slate-500" style={{ left: pos(q.lcl) }} />}</>}
-        {v != null && <span className={`absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white ${pj === 'FAIL' ? 'bg-[#c62a2f]' : out ? 'bg-[#e0b000]' : 'bg-[#1c2530]'}`} style={{ left: pos(v) }} />}
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#1c2530]/45 p-4" onClick={onClose}>
+      <div role="dialog" aria-modal="true" aria-label={`순번 ${seq} 부품 모식도`} onClick={(e) => e.stopPropagation()} className="max-h-[94vh] w-[min(920px,94vw)] overflow-y-auto rounded-2xl bg-white p-5 shadow-2xl">
+        <div className="flex items-center gap-3">
+          <b className="text-[22px]">순번 {seq}</b>
+          <span className={`rounded-full px-3 py-0.5 text-[14px] font-bold ${st === 'fail' ? 'bg-[#fdeeee] text-[#c62a2f]' : st === 'warn' ? 'bg-[#fdf3c8] text-[#7a5600]' : st === 'none' ? 'bg-slate-100 text-slate-600' : 'bg-[#e8eefb] text-[#1f4fa8]'}`}>{st === 'fail' ? '불합격' : st === 'warn' ? '▲ 주의' : st === 'none' ? '기록 없음' : st === 'measuring' ? '측정 중' : '합격'}</span>
+          <div className="ml-auto flex gap-2">
+            <button onClick={() => step(-1)} disabled={seq <= 1} className="h-11 w-11 rounded-lg border border-slate-300 text-[20px] disabled:text-slate-300" aria-label="앞 부품">‹</button>
+            <button onClick={() => step(1)} disabled={seq >= total} className="h-11 w-11 rounded-lg border border-slate-300 text-[20px] disabled:text-slate-300" aria-label="다음 부품">›</button>
+            <button onClick={onClose} className="h-11 rounded-lg bg-[#1c2530] px-5 text-[15px] font-bold text-white">닫기</button>
+          </div>
+        </div>
+        <div className="mt-3 rounded-xl border border-slate-200 bg-[#f6f8fc] p-2">{children}</div>
       </div>
-      <div className="text-right"><b className="font-mono text-[15px]">{v ?? '—'}</b>{pj === 'FAIL' ? <div className="text-[11px] text-[#c62a2f]">공차 밖</div> : out ? <div className="text-[11px] text-[#b8860b]">관리 한계 밖</div> : null}</div>
     </div>);
 }
 
-// 부품 모식도 — 실제 형상이 아니라 측정 위치 안내용 그림
-function PartSketch({ rows, seq, mainRow }: { rows: R[]; seq: number | null; mainRow: (s: number, i: string) => R | undefined }) {
+// 공차 안 위치 — 공차(실선) · 관리 한계(점선) 안에서 값 위치. card = 3×2 칸용 세로 모양 (사용자 요청 2026-10-19)
+function TolBar({ it, q, v, card }: { it: R; q?: R; v: number | null; card?: boolean }) {
+  const lsl = num(it.lsl), usl = num(it.usl)!, lo = lsl ?? 0, span = usl - lo || 1, pad = span * 0.18;
+  const pos = (n: number) => `${Math.min(100, Math.max(0, ((n - (lo - pad)) / (span + pad * 2)) * 100))}%`;
+  const pj = judge(it, v), out = q?.ucl != null && v != null && (v > q.ucl || v < q.lcl);
+  const k = String(it.item_seq), c = ITEM_COLOR[k];
+  const bar = (
+    <div className="relative h-3 rounded bg-[#e8eefb]">
+      {lsl != null && <span className="absolute -top-1 h-5 w-[2px] bg-[#1c2530]" style={{ left: pos(lsl) }} />}<span className="absolute -top-1 h-5 w-[2px] bg-[#1c2530]" style={{ left: pos(usl) }} />
+      {q?.ucl != null && <><span className="absolute top-0 h-3 border-l border-dashed border-slate-500" style={{ left: pos(q.ucl) }} />{lsl != null && <span className="absolute top-0 h-3 border-l border-dashed border-slate-500" style={{ left: pos(q.lcl) }} />}</>}
+      {v != null && <span className={`absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white ${pj === 'FAIL' ? 'bg-[#c62a2f]' : out ? 'bg-[#e0b000]' : 'bg-[#1c2530]'}`} style={{ left: pos(v) }} />}
+    </div>);
+  const note = pj === 'FAIL' ? <span className="text-[11px] font-bold text-[#c62a2f]">공차 밖</span> : out ? <span className="text-[11px] font-bold text-[#b8860b]">관리 한계 밖</span> : null;
+  const range = <span className="font-mono text-[11px] text-slate-500">{lsl != null ? `${lsl}~${usl}` : `${usl} 이하`}</span>;
+  if (card) return (
+    <div className="rounded-lg border-2 px-3 py-2" style={{ borderColor: c?.line ?? '#cbd5e1', background: c?.bg ?? '#fff' }}>
+      <div className="flex items-baseline justify-between gap-2"><b className="whitespace-nowrap text-[14px]" style={{ color: c?.text }}>{SHORT[k] ?? it.item_name}</b><span className="flex items-baseline gap-2">{note}<b className="font-mono text-[16px]">{v == null ? '—' : k === '4' && v >= 0 ? `+${v}` : v}</b></span></div>
+      <div className="mt-2">{bar}</div>
+      {/* 공차 하한·상한을 검은 공차선 바로 밑에 (사용자 요청 2026-10-19) */}
+      <div className="relative mt-1 h-4 font-mono text-[12px] font-semibold text-slate-600">
+        {lsl != null && <span className="absolute -translate-x-1/2 whitespace-nowrap" style={{ left: pos(lsl) }}>{it.lsl}</span>}
+        <span className="absolute -translate-x-1/2 whitespace-nowrap" style={{ left: pos(usl) }}>{it.usl}</span>
+      </div>
+    </div>);
+  return (
+    <div className="grid grid-cols-[110px_1fr_90px] items-center gap-3 border-b border-slate-100 py-2">
+      <div><b className="text-[14px]" style={{ color: c?.text }}>{SHORT[k] ?? it.item_name}</b><div>{range}</div></div>
+      {bar}
+      <div className="text-right"><b className="font-mono text-[15px]">{v ?? '—'}</b>{note && <div>{note}</div>}</div>
+    </div>);
+}
+
+// 부품 모식도 — 실제 형상이 아니라 측정 위치 안내용 그림. 측정 항목 6가지를 색으로 나눔 (치수선·이름표·공차 칸이 같은 색)
+// M6 나사는 작업자가 게이지로 확인한 통과·불합격 (숫자 없음)
+function PartSketch({ rows, seq, mainRow, items, qItem, m6 }: { rows: R[]; seq: number | null; mainRow: (s: number, i: string) => R | undefined; items: R[]; qItem: (k: string) => R | undefined; m6?: string }) {
   const val = (i: string) => (seq ? num(mainRow(seq, i)?.measured_value) : null);
   const pos = (p: string) => (seq ? num(rows.find((r) => Number(r.part_seq) === seq && String(r.item_seq) === '1' && r.position === p)?.measured_value) : null);
-  const tag = (x: number, y: number, t: string, hl?: boolean) => <g><rect x={x} y={y - 13} width={t.length * 7.2 + 14} height={20} rx="5" fill={hl ? '#fff6d6' : '#fff'} stroke={hl ? '#e0b000' : '#cbd5e1'} /><text x={x + 7} y={y + 1} fontSize="12" fontFamily="monospace" fill="#1c2530">{t}</text></g>;
+  // 윗면 평행사변형 A(150,190)·B(410,88)·C(530,136)·D(270,236): 길이 150 mm → A→B, 폭 55 mm → A→D. 두께 12 mm → 아래로 28
+  const FACE = `matrix(${260 / 150} ${-102 / 150} ${120 / 55} ${46 / 55} 150 190)`, DEPTH = 28;
+  const P = (u: number, v: number) => [150 + (u * 260) / 150 + (v * 120) / 55, 190 - (u * 102) / 150 + (v * 46) / 55];
+  const HOLE = [32, 27.5], M6: [number, number][] = [[128, 14], [128, 41]]; // 폭 가운데 Ø45, 쪽마다 5 mm 살 (DOC-06 §2 8번). 길이 방향 자리는 도면에 없어 [모식도] 값
+  const hc = P(HOLE[0], HOLE[1]), m6a = P(...M6[0]), m6b = P(...M6[1]), hl = P(HOLE[0] - 22.5, HOLE[1]), hr = P(HOLE[0] + 22.5, HOLE[1]), flat = P(92, 44);
+  const tw = (t: string) => [...t].reduce((n, ch) => n + (ch >= 'ᄀ' ? 16.5 : 9.8), 0) + 18;
+  const state = (k: string) => { const it = items.find((x) => String(x.item_seq) === k), v = val(k), q = qItem(k); if (v == null) return ''; if (judge(it, v) === 'FAIL') return 'fail'; return q?.ucl != null && (v > q.ucl || v < q.lcl) ? 'warn' : ''; };
+  // 이름표: x,y = 왼쪽 위. 글자 굵게, 항목 색 테두리·바탕. 불합격 ✕ 빨강, 관리 한계 밖 ▲
+  const tag = (k: string, x: number, y: number, label: string, value: string, sub?: string) => {
+    const c = ITEM_COLOR[k] ?? { line: '#94a3b8', bg: '#fff', text: '#475569' }, st = k === 'M6' ? (m6 === 'FAIL' ? 'warn' : '') : state(k);
+    const mark = st === 'fail' ? '✕ ' : st === 'warn' ? '▲ ' : '', w = tw(mark + label + ' ' + value);
+    return <g key={k}><rect x={x} y={y} width={w} height={30} rx="7" fill={st === 'fail' ? '#fdeeee' : c.bg} stroke={st === 'fail' ? '#c62a2f' : c.line} strokeWidth="2.5" />
+      <text x={x + 9} y={y + 21} fontSize="16" fontWeight="800" fill={st === 'fail' ? '#c62a2f' : st === 'warn' ? '#8a6d00' : c.text}>{mark}{label} <tspan fill="#1c2530" fontFamily="monospace">{value}</tspan></text>
+      {sub && <text x={x + 4} y={y + 46} fontSize="13" fontWeight="700" fill="#475569">{sub}</text>}</g>;
+  };
+  const lead = (k: string, x1: number, y1: number, x2: number, y2: number) => <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={ITEM_COLOR[k]?.line ?? '#94a3b8'} strokeWidth="2" />;
+  const dim = (k: string, x1: number, y1: number, x2: number, y2: number, tick: [number, number]) => <g stroke={ITEM_COLOR[k].line} strokeWidth="2.5">
+    <line x1={x1} y1={y1} x2={x2} y2={y2} /><line x1={x1 - tick[0]} y1={y1 - tick[1]} x2={x1 + tick[0]} y2={y1 + tick[1]} /><line x1={x2 - tick[0]} y1={y2 - tick[1]} x2={x2 + tick[0]} y2={y2 + tick[1]} /></g>;
+  const fmt = (k: string) => { const v = val(k); return v == null ? '—' : k === '4' && v >= 0 ? `+${v}` : String(v); };
+  const t1 = pos('TOP'), b1 = pos('BOT') ?? pos('BOTTOM');
   return (
-    <svg viewBox="0 0 560 330" className="w-full rounded-xl border border-slate-200 bg-[#f6f8fc]">
-      <polygon points="120,200 400,90 520,140 240,250" fill="#c9d3e0" stroke="#5b6b80" strokeWidth="1.5" />
-      <polygon points="120,200 240,250 240,280 120,230" fill="#9fb0c6" stroke="#5b6b80" strokeWidth="1.5" />
-      <polygon points="240,250 520,140 520,170 240,280" fill="#b3c1d4" stroke="#5b6b80" strokeWidth="1.5" />
-      <ellipse cx="235" cy="185" rx="62" ry="34" fill="#7f90a6" stroke="#5b6b80" /><ellipse cx="235" cy="196" rx="54" ry="28" fill="#f6f8fc" />
-      <circle cx="420" cy="122" r="7" fill="#5b6b80" /><circle cx="455" cy="150" r="7" fill="#5b6b80" />
-      <line x1="235" y1="185" x2="420" y2="122" stroke="#5b6b80" strokeDasharray="4 4" />
-      {tag(20, 120, `위 ${pos('TOP') ?? '—'}`)}{tag(20, 150, `중간 ${pos('MID') ?? val('1') ?? '—'}`)}{tag(20, 180, `아래 ${pos('BOT') ?? pos('BOTTOM') ?? '—'}`)}
-      {tag(190, 256, `◆ Ø45 ${val('1') ?? '—'}`, true)}{tag(320, 110, `구멍 간 ${val('4') != null ? (val('4')! >= 0 ? '+' : '') + val('4') : '—'}`)}
-      {tag(370, 190, `평면도 ${val('5') ?? '—'}`)}{tag(330, 250, `길이 ${val('2') ?? '—'}`)}{tag(40, 240, `폭 ${val('8') ?? '—'}`)}{tag(70, 300, `두께 ${val('3') ?? '—'}`)}
+    <svg viewBox="0 0 600 320" className="w-full">
+      <polygon points="150,190 410,88 530,136 270,236" fill="#c9d3e0" stroke="#5b6b80" strokeWidth="1.5" />
+      <polygon points="150,190 270,236 270,264 150,218" fill="#9fb0c6" stroke="#5b6b80" strokeWidth="1.5" />
+      <polygon points="270,236 530,136 530,164 270,264" fill="#b3c1d4" stroke="#5b6b80" strokeWidth="1.5" />
+      {/* 구멍은 윗면 좌표(mm)로 그린 뒤 윗면 기울기(FACE)대로 옮김. 관통 구멍이라 아래 구멍(두께 아래)이 비쳐 보임 */}
+      <defs><clipPath id="ps-hole"><circle cx={HOLE[0]} cy={HOLE[1]} r={22.5} transform={FACE} /></clipPath></defs>
+      <circle cx={HOLE[0]} cy={HOLE[1]} r={22.5} transform={FACE} fill="#7f90a6" stroke="#5b6b80" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+      <g clipPath="url(#ps-hole)"><circle cx={HOLE[0]} cy={HOLE[1]} r={22.5} transform={`translate(0 ${DEPTH}) ${FACE}`} fill="#f6f8fc" /></g>
+      {M6.map(([u, v]) => <circle key={v} cx={u} cy={v} r={3.5} transform={FACE} fill="#5b6b80" />)}
+      {/* 치수선 — 항목 색 */}
+      <line x1={hl[0]} y1={hl[1]} x2={hr[0]} y2={hr[1]} stroke={ITEM_COLOR['1'].line} strokeWidth="3" />
+      <line x1={hc[0]} y1={hc[1]} x2={m6a[0]} y2={m6a[1]} stroke={ITEM_COLOR['4'].line} strokeWidth="2.5" strokeDasharray="6 4" />
+      {dim('2', 270, 278, 530, 178, [3, 8])}{dim('8', 140, 228, 260, 274, [7, -3])}{dim('3', 140, 190, 140, 218, [6, 0])}
+      <polygon points={`${flat[0] - 14},${flat[1] + 6} ${flat[0] + 6},${flat[1] - 2} ${flat[0] + 16},${flat[1] + 2} ${flat[0] - 4},${flat[1] + 10}`} fill="none" stroke={ITEM_COLOR['5'].line} strokeWidth="2.5" />
+      {/* 이름표 + 끌어낸 선 */}
+      {lead('1', 150, 128, hl[0] + 6, hl[1] - 4)}{tag('1', 8, 98, 'Ø45', fmt('1'), t1 != null || b1 != null ? `위 ${t1 ?? '—'} · 아래 ${b1 ?? '—'}` : undefined)}
+      {lead('4', 330, 52, (hc[0] + m6a[0]) / 2, (hc[1] + m6a[1]) / 2)}{tag('4', 250, 24, '구멍 간', fmt('4'))}
+      {lead('5', 470, 64, flat[0] + 4, flat[1])}{tag('5', 430, 36, '평면도', fmt('5'))}
+      {tag('3', 6, 190, '두께', fmt('3'))}
+      {lead('8', 120, 284, 200, 252)}{tag('8', 40, 282, '폭', fmt('8'))}
+      {tag('2', 380, 256, '길이', fmt('2'))}
+      {lead('M6', 466, 112, m6b[0] + 4, m6b[1] - 2)}{tag('M6', 466, 96, 'M6', m6 === 'PASS' ? '통과' : m6 === 'FAIL' ? '불합격' : '—')}
     </svg>);
 }
 

@@ -1,6 +1,6 @@
 'use client';
 // SCR-09 지침카드 — 알람 번호로 알람 코드집(DOC-02)·고장 대응 매뉴얼(DOC-03)·안전 작업 기준서(DOC-05)를 규칙으로 찾는다.
-// 생산 영향·지난 기록·의심 로트는 시뮬레이터·9월 기록. "먼저 할 일"은 DOC-03 점검 순서의 ★(작업자) 줄 그대로 (비서 응답 없음 모양).
+// 생산 영향·지난 기록·의심 로트는 시뮬레이터·9월 기록. "먼저 할 일"은 비서 정리가 준비되면 그것을 본문으로 보이고 DOC-03 점검 순서의 ★(작업자) 줄 원문은 "원문 보기"에 둔다 (2026-10-19, UI설계서 SCR-09 [5]). 준비 전·실패·꺼짐이면 ★ 줄 원문 그대로 (비서 응답 없음 모양).
 import { useState } from 'react';
 import { BTN, CARD, DARK, PAGE, useApp } from './ctx';
 import { LAYOUT, MACHINES } from './data';
@@ -8,6 +8,7 @@ import { md, minsSince } from './live';
 import { LEVEL_VIEW, alarmTitle, chainOf, hhmm, responsible, sevText } from './model';
 import { SafeTag, SafetyBlock, safetySrc } from './Safety';
 import { Band, Chip, DocHead, DocPage, Fold, Kpi, NumList, Sec, SrcFold } from './DocKit';
+import { useGuideCardText } from './assistText';
 
 const SEV_KO: Record<string, string> = { STOP: '정지', WARN: '주의', GUIDE: '조작 안내' };
 
@@ -15,6 +16,7 @@ const SEV_KO: Record<string, string> = { STOP: '정지', WARN: '주의', GUIDE: 
 export default function CardScreen({ alertId }: { alertId: string }) {
   const { alerts, back, wos, srs, openWo, openSimple, user, history, go, openSource } = useApp();
   const alert = alerts.find((x) => x.id === alertId);
+  const guideText = useGuideCardText(alert?.code, alert?.alarm?.steps); // 비서가 쉬운 말로 다듬은 "먼저 할 일" (없으면 null). 훅이라 아래 early return보다 위
   if (!alert) return <div className={PAGE}><div className={CARD}>알람 기록을 찾지 못했습니다 (시연을 처음으로 되돌렸을 수 있음) <button onClick={back} className={BTN}>닫기</button></div></div>;
   const a = alert.alarm, lv = LEVEL_VIEW[alert.level], eq = MACHINES[alert.machine].eq!;
   const op30 = MACHINES[alert.machine].op === 'OP-30';
@@ -28,6 +30,7 @@ export default function CardScreen({ alertId }: { alertId: string }) {
   const sr = srs.find((r) => r.alertId === alert.id);
   const src2 = (d: string) => { const m = d.match(/(DOC-\d+|GLOSSARY)\s+§?([\d.]+)/); return m ? <button key={d} onClick={() => openSource(m[1], m[2])} className="underline">{d}</button> : <span key={d}>{d}</span>; };
   const tone = alert.level === '긴급' ? 'crit' : alert.level === '주의' ? 'warn' : 'mute';
+  const assisted = a && a.steps.length ? guideText : null; // 비서 정리가 준비된 때만 본문으로 (줄 수가 원문과 같은 것만 훅이 돌려준다), 원문은 접어 둔다 (팀원 2026-10-19)
   const rule = a?.chain.match(/\(([^)]+)\)/)?.[1];
 
   return (
@@ -51,8 +54,14 @@ export default function CardScreen({ alertId }: { alertId: string }) {
             <button onClick={() => go('replay', alert.time)} className={BTN}>▶ 다시 보기 (발생 시각)</button>
           </div>
         </Band>
-        <Sec title="먼저 할 일" right={a.steps.length ? <Chip tone="acc">작업자 {a.steps.length}단계</Chip> : undefined}>
-          {a.steps.length ? <NumList items={a.steps} big /> : <span className="text-[14px] text-slate-500">{a.doc03.join(' · ') || '해당 절 없음'}</span>}
+        <Sec title="먼저 할 일" right={a.steps.length ? <>{assisted && <Chip tone="acc">비서 정리</Chip>}<Chip tone="acc">작업자 {a.steps.length}단계</Chip></> : undefined}>
+          {assisted ? (
+            <div className="flex flex-col gap-2">
+              <NumList items={assisted} big />
+              <p className="text-[12px] text-slate-500">비서(외부 LLM)가 쉬운 말로 다듬은 글입니다. 원문과 다르면 원문(DOC-03)을 따릅니다.</p>
+              <details className="text-[14px]"><summary className="cursor-pointer font-semibold text-slate-600">원문(DOC-03) 보기</summary><div className="mt-2 rounded-xl border border-slate-300 p-3"><NumList items={a.steps} /></div></details>
+            </div>
+          ) : a.steps.length ? <NumList items={a.steps} big /> : <span className="text-[14px] text-slate-500">{a.doc03.join(' · ') || '해당 절 없음'}</span>}
         </Sec>
         {a.maint.length > 0 && <Sec title="보전 담당자 단계" right={<Chip>보전 {a.maint.length}단계</Chip>}><NumList items={a.maint} start={a.steps.length + 1} /></Sec>}
         <Sec title="생산 영향" right={<Chip>추정</Chip>}>

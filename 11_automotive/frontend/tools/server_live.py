@@ -27,6 +27,11 @@ def iso(v):
     return fmt_dt(v) if v is not None else None
 
 
+def draft_defect_sentence(sq: int, held_lot_nos: list[str]) -> str:
+    """교대 보고서 특이 사항의 불량 문장. 로트 보류가 있어도 한 문장이다 — 마침표 문장을 둘로 만들면 특이 사항이 6문장이 된다 (요구사항 FR-PRD-02-07은 3~5문장)."""
+    return f"불량(폐기) {sq}개" + (f" (로트 보류: {', '.join(held_lot_nos)})" if held_lot_nos else "") + "."
+
+
 class Live:
     """Realtime 하나를 감싸 계산을 나눠 둔다. 모든 함수는 서버 잠금 안에서 부른다."""
 
@@ -445,7 +450,7 @@ class Live:
         s2 = (f"필수 정지 {len(stops)}건, 합계 {sum(x['minutes'] for x in stops)}분 — 가장 긴 것 {stops[0]['equipment_id']} "
               f"{stops[0]['reason_name']} {stops[0]['minutes']}분 (고장 손실 약 {stops[0]['loss_qty']}개, 추정).") if stops else "필수 정지(고장 그룹 5분 이상) 없음."
         s3 = ("병목: " + ", ".join(f"{self.to_dt(r['m']):%H:%M} {r['new']} {cause.get(r['cause'], r['cause'])}" for r in bns) + ".") if bns else "병목은 기준 병목(OP-30) 그대로."
-        s4 = f"불량(폐기) {sq}개." + (" 로트 보류: " + ", ".join(h["lot"].lot_no for h in held) + "." if held else "")
+        s4 = draft_defect_sentence(sq, [h["lot"].lot_no for h in held])
         s5 = (f"주의 알람 {len(warn)}건 ({', '.join(sorted({x['alarm_code'] for x in warn}))})" if warn else "주의 알람 없음") + (f", 정지 등급 알람 {len(stop)}건." if stop else ".")
         kp = self.kpi(a, b)["by"]
         open_ = []

@@ -31,8 +31,9 @@ export default function WorkOrderScreen({ no, focusRecord }: { no: string; focus
   const synced = useRef({ title: wo?.title ?? '', symptom: wo?.symptom ?? '' });
   useEffect(() => {
     if (!wo) return;
-    if (wo.title !== synced.current.title) { setTitle((t) => (t === synced.current.title ? wo.title : t)); synced.current.title = wo.title; }
-    if (wo.symptom !== synced.current.symptom) { setSymptom((s) => (s === synced.current.symptom ? wo.symptom : s)); synced.current.symptom = wo.symptom; }
+    // 비교할 옛 값과 새 값은 setState를 부르기 전에 잡아 둔다 — 갱신 함수는 그리는 단계에서 나중에 돌 수 있어, 그때는 synced.current가 이미 새 값이라 비교가 어긋난다
+    if (wo.title !== synced.current.title) { const before = synced.current.title, next = wo.title; setTitle((t) => (t === before ? next : t)); synced.current.title = next; }
+    if (wo.symptom !== synced.current.symptom) { const before = synced.current.symptom, next = wo.symptom; setSymptom((s) => (s === before ? next : s)); synced.current.symptom = next; }
   }, [wo?.title, wo?.symptom]); // eslint-disable-line react-hooks/exhaustive-deps
   const [confirm, setConfirm] = useState<'approve' | 'cancel' | 'revise' | null>(null);
   const [reason, setReason] = useState('');

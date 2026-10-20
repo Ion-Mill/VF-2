@@ -261,6 +261,23 @@ def trim_diag(data, schema) -> tuple:
     return out, n
 
 
+def trim_queries(data, schema) -> tuple:
+    """검색어(search_queries)가 스키마의 개수·길이 제한을 넘으면 맞춘다: 길이를 넘는 항목은 빼고, 남은 것이 개수 제한을 넘으면 앞에서부터 남긴다.
+    내부 검색에만 쓰는 말이라 화면에 나가지 않는다 — 한 항목 때문에 분류 응답 전체를 버리지 않는다(jobs.validate_route_v2가 하던 정리를 검사 앞으로 당긴 것).
+    문자열이 아닌 항목은 손대지 않는다(그 뒤 검사가 판단). (바뀐 복사본, 고친 개수)"""
+    if not (isinstance(data, dict) and isinstance(schema, dict)):
+        return data, 0
+    spec = (schema.get("properties") or {}).get("search_queries") or {}
+    lim_n, lim_len = spec.get("maxItems"), (spec.get("items") or {}).get("maxLength")
+    qs = data.get("search_queries")
+    if not isinstance(qs, list):
+        return data, 0
+    kept = [q for q in qs if not (isinstance(q, str) and isinstance(lim_len, int) and len(q) > lim_len)]
+    if isinstance(lim_n, int):
+        kept = kept[:lim_n]
+    return ({**data, "search_queries": kept}, 1) if kept != qs else (data, 0)
+
+
 def validate_constraints(data, schema, path: str = "$") -> str | None:
     """원래 스키마의 제약을 받은 값에 다시 건다. 첫 위반의 설명, 없으면 None."""
     if not isinstance(schema, dict):
@@ -364,6 +381,7 @@ def _chat_json_claude(messages: list[dict], schema: dict, name: str, max_tokens:
     out, n_trim = trim_diag(out, schema)
     if n_trim:   # 자른 횟수는 따로 센다(호출 기록과 별개 줄 — 합계는 ledger_summary의 trimmed_diag_fields)
         _write_row({"kind": "trim", "t": datetime.now().isoformat(timespec="seconds"), "job": name, "n": n_trim}, 0.0)
+    out, _ = trim_queries(out, schema)   # 검색어는 기록하지 않는다(위 trim 줄은 진단 칸 합계라 섞이지 않게)
     viol = validate_constraints(out, schema)
     if viol:
         raise LlmBadOutput(f"스키마 제약 위반: {viol}")

@@ -8,7 +8,7 @@ import type { AlertRec, Notice, UserRec } from './model';
 import type { SimpleRecord, WorkOrder, WorkRecord } from './workflow';
 
 export type Screen = 'line' | 'layout2d' | 'field' | 'cards' | 'card' | 'wo' | 'wr' | 'sr' | 'docs' | 'replay' | 'shift' | 'daily' | 'revs'
-  | 'lots' | 'quality' | 'inventory' | 'tools' | 'pm' | 'idocs' | 'settings';
+  | 'lots' | 'quality' | 'qcap' | 'inventory' | 'tools' | 'pm' | 'idocs' | 'settings';
 
 export interface Settings { bloom: boolean; sound: boolean; cards: boolean; monitorInch: number; distanceM: number; fontScale: boolean; autoReturnSec: number }
 export const DEFAULT_SETTINGS: Settings = { bloom: true, sound: true, cards: false, monitorInch: 55, distanceM: 3, fontScale: false, autoReturnSec: 90 };
@@ -37,6 +37,7 @@ export interface AppCtx {
   rules: { repeat_days: number; repeat_count: number; target_risk_pct: number; repeat2_days: number; burst: string; flood: string };
   restoreMachine: (m: MachineId) => Promise<void>;
   setReplay: (frame: unknown | null) => void;
+  eve: boolean; // 이브 창 열림 (화면 폭 444px 줄어듦)
 }
 
 export const Ctx = createContext<AppCtx | null>(null);
