@@ -3670,7 +3670,57 @@ def _ctx_use_v2(question: str, p: dict, s, memo: dict):
 
 
 CARRY_STEPS = re.compile(r"점검|순서|뭐부터|먼저|누가|누구")
-_CARRY_SECTION = {"cause": "가능한 원인 (사내 문서)", "steps": "점검 순서 (사내 문서)"}
+_CARRY_SECTION = {"cause": "가능한 원인 (사내 문서)", "steps": "점검 순서 (사내 문서)", "desc": "알람 설명"}
+
+# 질문대로 답하기 2단계 (ASK_ONLY, 2026-10-21): 알람 번호 질문이 묻는 칸만 남긴다. 뜻을 묻는 말만 있으면 설명, 대처·점검을 묻는 말만 있으면 점검 순서, 둘 다면 카드 전체(None).
+DESC_ASK_V23 = re.compile(r"뭐야|뭔데|뭐예요|뭔가요|무슨\s*(?:알람|뜻|의미)|뜻|의미|설명|무엇")
+STEPS_ASK_V23 = re.compile(r"뭐부터|먼저|점검|순서|조치|대처|대응|해결|처리|방법|절차|뜨면|나오면|발생하면|뜰\s*때|어떻게|해야")
+# 지난 조치·횟수 같은 조회만 묻는 말이 아닌 경우를 가르는 카드 질문 말 (1단계 CARD_ASK_V22에 왜·어떻게·누가·언제·어디·해야를 더함)
+CARD_ASK_V23 = re.compile(CARD_ASK_V22.pattern + r"|왜|어떻게|누가|누구|언제|어디|해야")
+ALARM_BARE_STOP_V23 = {"알람", "경보", "번", "코드", "대해", "대해서", "좀", "그", "이거", "저", "거", "것", "알람이", "경보가"}
+
+
+def alarm_focus_v23(question: str) -> str | None:
+    """알람 질문이 묻는 칸: 뜻만 → 'desc', 대처·점검만 → 'steps', 둘 다이거나 어느 쪽도 아니면 None (카드 전체 — 지금 동작)."""
+    d, st = bool(DESC_ASK_V23.search(question)), bool(STEPS_ASK_V23.search(question))
+    return "desc" if d and not st else "steps" if st and not d else None
+
+
+def alarm_bare_v23(question: str, p: dict) -> bool:
+    """알람 번호뿐인 질문인가 — 번호·'알람/경보/번/코드'·조사 말고 남는 말이 없다 ("2075는?", "2075 알람"). 묻는 말이 있으면 False."""
+    q = question
+    for a in p["alarms"]:
+        q = q.replace(a["code"], " ")
+    q = re.sub(r"\d+(?:\.\d+)?", " ", q)
+    toks = [re.sub(r"(?:는|은|이|가|도|요|을|를|에|의|만)$", "", t) for t in re.findall(r"[가-힣A-Za-z]+", q)]
+    return not [t for t in toks if t and t not in ALARM_BARE_STOP_V23]
+
+
+def alarm_askback_v23(base: dict, a: dict) -> dict:
+    """번호뿐인 알람 질문의 되묻기 (고정 문구 — 기본 카드 대신, Claude를 부르지 않는다)."""
+    code = a["code"].split(".")[0]
+    name = re.sub(r"\([^)]*\)", "", (alarm_codes().get(a["code"]) or {}).get("name_ko") or "").strip()
+    text = (f"알람 {code}" + (f"({name})" if name else "") + f"에 대해 무엇이 궁금하세요? 예: '{code}가 뭐야?', '{code} 뜨면 뭐부터 해?', "
+            f"'{code} 원인은?', '{code} 최근 몇 번 났어?', '{code} 지난 조치'")
+    return {**base, "status": "안내", "mode": "규칙 (번호뿐인 알람 질문 — 되묻기 고정 문구)", "conclusion": text, "blocks": [{"kind": "text", "text": text}]}
+
+
+# 재고 품목 이름뿐인 짧은 질문("공기 필터는?")은 무엇이 궁금한지 모르는데 문서 개요를 길게 말하던 것을 되묻는다. 품목이 아닌 용어(OEE는?)는 문서 길 그대로.
+ITEM_TOPICS_V23 = {"공기 필터": ("공기필터",), "절삭유 필터": ("절삭유필터",), "절삭유 원액": ("절삭유원액", "절삭유"), "그리스": ("그리스",), "주축 윤활유": ("주축윤활유",),
+                   "축 윤활유": ("축윤활유",), "봉재": ("6061-t6봉재", "봉재", "6061"), "보링바 인서트": ("보링바인서트", "보링바"), "드릴": ("드릴",), "엔드밀": ("엔드밀",),
+                   "페이스밀 인서트": ("페이스밀인서트", "페이스밀"), "M6 탭": ("m6탭", "탭"), "완제품": ("완제품",)}
+
+
+def item_only_topic_v23(question: str) -> str | None:
+    """질문이 재고 품목 이름 하나뿐이면(조사·물음표만 붙음) 그 품목의 보이는 이름, 아니면 None."""
+    q = re.sub(r"[?？!.\s]+", "", question or "").lower()
+    q = re.sub(r"(?:은|는|이|가|도|만|요)$", "", q)
+    return next((disp for disp, al in ITEM_TOPICS_V23.items() if q in al), None)
+
+
+def item_askback_v23(base: dict, topic: str) -> dict:
+    text = f"{topic}의 무엇이 궁금하세요? 예: '{topic} 재고는?', '{topic} 교체 주기는?', '{topic} 교체 방법은?'"
+    return {**base, "status": "안내", "mode": "규칙 (품목 이름뿐인 질문 — 되묻기 고정 문구)", "conclusion": text, "blocks": [{"kind": "text", "text": text}]}
 
 
 def carry_focus(question: str) -> str | None:
@@ -3698,9 +3748,10 @@ def _slice_blocks(blocks: list, title: str) -> list | None:
     return kept
 
 
-def _narrow_carried_alarm(a: dict, focus: str, cause_lines: list | None = None) -> dict:
+def _narrow_carried_alarm(a: dict, focus: str, cause_lines: list | None = None, only_evidence: bool = False) -> dict:
     """묻는 덩어리만 남긴다. 안내 줄은 부른 쪽이 이 다음에 붙인다. 주의·출처는 그대로 두고, 최근 횟수(related)는 뺀다.
-    원인 질문은 원인 줄로 conclusion을 바꿔 BLOCKS_V3를 켜고 꺼도 결론이 같게 한다 (표시만 다른 계약)."""
+    원인 질문은 원인 줄로 conclusion을 바꿔 BLOCKS_V3를 켜고 꺼도 결론이 같게 한다 (표시만 다른 계약).
+    only_evidence(ASK_ONLY, 2026-10-21): 설명만 남기면 DOC-02 출처만, 점검 순서만 남기면 DOC-03 출처만 보인다 (끔이면 출처는 그대로 둔다 — 지금 동작)."""
     if a.get("status") != "답변":
         return a
     lines = [x for x in (cause_lines or []) if x] if focus == "cause" else []
@@ -3711,14 +3762,25 @@ def _narrow_carried_alarm(a: dict, focus: str, cause_lines: list | None = None) 
             return a
         lines = [b["text"] for b in kept if b.get("kind") in ("line", "text") and b.get("text")]
         lines.extend(str(s) for s in (a.get("steps") or []) if s)
+    elif focus == "desc":
+        if not kept:
+            return a
+        lines = [b["text"] for b in kept if b.get("kind") in ("line", "text") and b.get("text")]
+        if not lines:
+            return a
     elif not lines:
         return a
     out = {**a, "conclusion": " ".join(lines), "related": None}
     if kept:
         out["blocks"] = kept
-    if focus == "cause":
+    if focus in ("cause", "desc"):
         out["steps"] = []
         out.pop("steps_easy", None)
+    if only_evidence and focus in ("desc", "steps"):
+        want = "DOC-02" if focus == "desc" else "DOC-03"
+        ev = [e for e in (a.get("evidence") or []) if e.get("doc_id") == want]
+        if ev:
+            out["evidence"] = ev
     if not a.get("current_data"):
         out["is_synthetic"] = False
         out["data_label"] = None
@@ -3753,11 +3815,14 @@ def answer(question: str, role: str, context: dict | None = None, prev: dict | N
             if (focus is None and memo.get("alarm") and cause_question(question)
                     and not memo.get("ops_texts") and not CARRY_STEPS.search(question)):
                 focus = "cause"
+            if (s0.ask_only and focus is None and memo.get("alarm") and not memo.get("ctx_alarm_note")
+                    and not memo.get("ops_texts") and not memo.get("doc_lines")):
+                focus = alarm_focus_v23(question)   # 질문대로 답하기 2단계 (ASK_ONLY): 뜻만 물었으면 설명, 대처·점검만 물었으면 점검 순서. 문서를 더 붙인 섞인 질문·조회를 같이 한 질문은 안 좁힌다
             # 원인만 남기면 설명·점검 순서를 화면에 안 보이므로 해요체 다시 쓰기를 건너뛴다 (원인 줄은 원문 그대로)
             if memo.get("alarm") and s0.card_rewrite and s0.job("write") and EXT.current() is not None and focus != "cause":
                 a = _rewrite_alarm_card(a, memo)
             if focus:
-                narrowed = _narrow_carried_alarm(a, focus, memo.get("cause_lines"))
+                narrowed = _narrow_carried_alarm(a, focus, memo.get("cause_lines"), only_evidence=s0.ask_only)
                 if narrowed is not a:
                     a = narrowed
                     memo["alarm_card"] = ""   # 화면에 안 보인 설명으로 다음 "짧게"가 돌아가지 않게
@@ -3909,6 +3974,10 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
         merged = _continue_answer_v22(question, role, context, prev, memo)
         if merged is not None:
             return merged
+    if s.ask_only and not pure_drop and not PURE.has_signals(p) and not CONT.blocked_by_safety(question) and (topic := item_only_topic_v23(question)):
+        if SL.on():   # 질문대로 답하기 2단계: 품목 이름뿐인 짧은 질문은 문서 개요 대신 되묻는다 (이어짐 판단이 이어받지 못한 경우)
+            SL.step("1 규칙 판정", 결과="품목 이름뿐인 질문 — 규칙이 되묻기 (ASK_ONLY, Claude 호출 없음)", 품목=topic)
+        return item_askback_v23(base, topic)
     pure_why = pure_scope_v19(p, s, question)
     if pure_why:
         memo_before = dict(memo)
@@ -3936,9 +4005,15 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
     parts, steps, evidence = [], [], []
     # 질문대로 답하기 1단계: 알람 번호가 있어도 "지난 두 번 조치"만 물었으면 기본 카드(설명·점검 순서·횟수 줄)를 내지 않고 작업기록만 답한다.
     # 카드가 묻는 말(뜻·점검 순서·원인 …)이 같이 있으면 지금처럼 카드도 낸다 (카드 전체를 없애는 일은 2·3단계)
+    if s.ask_only and p["alarms"] and not p["intents"] and alarm_bare_v23(question, p):   # 질문대로 답하기 2단계: 번호뿐인 알람 질문("2075는?")은 기본 카드 대신 되묻는다
+        if SL.on():
+            SL.step("1 규칙 판정", 결과="번호뿐인 알람 질문 — 규칙이 되묻기 (ASK_ONLY, 알람 카드 없음)", 알람=p["alarms"][0]["code"])
+        return alarm_askback_v23(base, p["alarms"][0])
     skip_card = bool(p["alarms"]) and p.get("past_n") is not None and not CARD_ASK_V22.search(question)
+    if s.ask_only and p["alarms"] and p["intents"] and not CARD_ASK_V23.search(question):   # 횟수·지난 조치 같은 조회만 물었으면 카드 없이 조회만 (ASK_ONLY)
+        skip_card = True
     if skip_card and SL.on():
-        SL.step("1 규칙 판정", 결과="지난 조치만 묻는 알람 질문 — 알람 카드 없이 작업기록만 답함", 건수=p["past_n"])
+        SL.step("1 규칙 판정", 결과="조회만 묻는 알람 질문 — 알람 카드 없이 조회만 답함", 지난조치건수=p.get("past_n"), 의도=p["intents"])
     for a in (p["alarms"][:1] if not skip_card else []):  # 알람 답(의미·점검 순서)은 LLM에 보내지 않는다 — 사내 문서 그대로
         got = alarm_doc_answer(a, en=flow_on(s))   # 8차 FLOW_V9: 카드 이름에 영문명
         if got:

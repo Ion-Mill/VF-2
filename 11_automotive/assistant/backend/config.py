@@ -210,6 +210,9 @@ class Settings:
     # continue_llm: 1이면 채팅(외부 Claude 요청)에서 앞 답이 있고 짧고 신호(알람·설비·날짜·운영 낱말)·안전 낱말이 없는 새 글("공기 필터는?")이 앞 질문의 틀을 이어 가는지
     # Claude(Haiku)가 판단한다. 이어지면 완성된 질문 한 문장으로 바꿔 평소 규칙 길로 풀고 답 끝에 밝힌다. 앞 질문+새 글 두 줄만 밖으로 나간다. 꺼짐·실패·이어짐 아님이면 지금 동작(2026-10-21).
     continue_llm: bool = False
+    # ask_only: 1이면 "질문대로 답하기 2단계"(2026-10-21) — ① 알람 번호 질문은 묻는 칸만 답한다(뜻 → 설명만, 뭐부터·점검 → 점검 순서만, 횟수·지난 조치 → 조회만, 번호만 있으면 카드 대신 되묻기)
+    # ② 재고 품목 이름뿐인 짧은 질문은 문서 개요 대신 되묻는다 ③ 외부 Claude 지시문에 "묻는 것에만 답하고 묶음은 3개 이내" 한 덩어리를 더한다. 기본 꺼짐 = 지금 동작 그대로(알람 기본 카드).
+    ask_only: bool = False
     # pure_model: 비어 있지 않으면 **채팅(외부 Claude 요청)의 순수 길 본 답변**(작업 이름 pure_answer: 질문 + 조각 → Claude 1번, PURE_RETRY의 두 번째 호출 포함)만 이 모델로 부른다 (2026-10-19).
     # 판정·다시 쓰기·옛 길·compose 같은 나머지 호출은 늘 Sonnet 5.5다. 노력은 medium 그대로. 가격표에 없는 이름이면 빈 값(= Sonnet)으로 되돌린다.
     # settings()가 만드는 기본은 claude-haiku-5-5(PURE_MODEL 줄이 없을 때, 사용자 결정 2026-10-19), 줄을 비우면(PURE_MODEL=) Sonnet 5.5 = 예전 동작. 이 필드 자체의 기본값 ""는 Settings를 직접 만드는 코드(시험 등)가 예전 동작을 그대로 받게 하려는 것이다
@@ -374,6 +377,7 @@ def settings() -> Settings:
         ctx_narrow=get("CTX_NARROW", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
         pure_follow_rewrite=get("PURE_FOLLOW_REWRITE", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
         continue_llm=get("CONTINUE_LLM", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
+        ask_only=get("ASK_ONLY", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
         pure_model=_pure_model(get("PURE_MODEL", PURE_MODEL_DEFAULT)),   # 줄 없음 = Haiku(기본), 빈 줄·claude-sonnet-5-5·모르는 이름 = Sonnet(예전 동작). 앱 외부 요청에서만 쓰인다
         llm_provider=provider,
         claude_model="claude-sonnet-5-5" if claude_app else get("MOM_CLAUDE_MODEL", "claude-opus-5-5").strip(),   # 앱 스위치: Sonnet 5.5 medium, 구독 로그인(cli) 고정 (2026-10-15 사용자 결정). 2026-10-19: 순수 길 본 답변만 PURE_MODEL로 달라질 수 있다 — claude_client가 그 호출에서만 갈라 준다
