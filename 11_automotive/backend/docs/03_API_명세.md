@@ -193,13 +193,13 @@
 | GET | `/api/quality/summary` | `QUALITY·VIEW` | 불량 집계·관리도·Cpk (QLT-05, FR-QLT-01-08~13): 불량 코드별 수(기본 최근 7일), 기준값이 있는 항목마다 관리도 점(최근 |
 | GET | `/api/quality/cpk` | `QUALITY·VIEW` | Cpk (I-MR) 항목 하나. 50개 미만이면 '계산 중'. 설비별(가공 설비 — 05 결정기록 P-11)은 참고용 |
 | GET | `/api/quality/defects` | `QUALITY·VIEW` | 불량 코드별 수량 (기본 최근 7일) |
-| GET | `/api/reports/shift/{shift_id}` | `SHIFT_REPORT·VIEW` | 교대 보고서 (RPT-01): 생산(총 목표 = 목표 + 이월·실적·불량·가동률), 특이 사항, 인계 사항, 상태, 버전 |
+| GET | `/api/reports/shift/{shift_id}` | `SHIFT_REPORT·VIEW` | 교대 보고서 (RPT-01): 생산(총 목표 = 목표 + 이월·실적·불량·가동률), 특이 사항, 인계 사항, 상태, 버전, 필수 정지 stops[] |
 | PATCH | `/api/reports/shift/{shift_id}` | `SHIFT_REPORT·EDIT` | 저장 (RPT-02, 그 교대 반장) = 새 버전. 확정 뒤에는 /revise |
 | POST | `/api/reports/shift/{shift_id}/confirm` | `SHIFT_REPORT·CONFIRM` | 확정 (RPT-03, 그 교대 반장만 — DB 트리거 R-36) → 잠김. 확정 요청 알림 자동 처리, 주간이면 야간 이월 다시 계산, |
 | POST | `/api/reports/shift/{shift_id}/revise` | `SHIFT_REPORT·CONFIRM` | 확정 후 수정 (RPT-04, 그 교대 반장): 사유 필수 → 새 버전 + 관리자에게 문서 수정 알림 (FR-AST-03-06·07) |
-| GET | `/api/reports/daily/{work_date}` | `DAILY_REPORT·VIEW` | 일일 보고서 (RPT-05, 조회 S·M·G): 하루 생산(목표 180 고정·실적·부족 = 180 − 실적), 손실, OEE, 오늘의 문제, |
+| GET | `/api/reports/daily/{work_date}` | `DAILY_REPORT·VIEW` | 일일 보고서 (RPT-05, 조회 S·M·G): 하루 생산(목표 180 고정·실적·부족 = 180 − 실적), 손실, OEE, 오늘의 문제, 관리자 메모, 필수 정지 |
 | PATCH | `/api/reports/daily/{work_date}` | `DAILY_REPORT·EDIT` | 일일 보고서 저장 = 새 버전 (RPT-05, MGR). 확정 뒤에는 /revise |
-| POST | `/api/reports/daily/{work_date}/confirm` | `DAILY_REPORT·CONFIRM` | 일일 보고서 확정 (RPT-05, MGR). 잠정 칸(확정 안 된 교대 보고서)이 있으면 INVALID_STATE (R-72 — [확정] 비활성) |
+| POST | `/api/reports/daily/{work_date}/confirm` | `DAILY_REPORT·CONFIRM` | 일일 보고서 확정 (RPT-05, MGR) + 관리자 메모(memo, 선택). 잠정 칸(확정 안 된 교대 보고서)이 있으면 INVALID_STATE (R-72) |
 | POST | `/api/reports/daily/{work_date}/revise` | `DAILY_REPORT·CONFIRM` | 일일 보고서 확정 후 수정 (MGR): 사유 필수 → 새 버전 |
 | GET | `/api/documents` | `REVISION_HISTORY·VIEW` | 문서함 (DOC-01, SCR-18): 문서 6종 중 역할이 볼 수 있는 것만. mine = 내 할 일만 (할 일이 위로) |
 | GET | `/api/documents/{doc_type}/{doc_key}/revisions` | `REVISION_HISTORY·VIEW` | 수정 이력 (DOC-02): 버전 목록·바뀐 칸 수·사유 (누가·언제·왜). OPR은 자기가 고친 것만 (OWN) |

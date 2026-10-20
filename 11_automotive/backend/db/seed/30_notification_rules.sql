@@ -1,10 +1,12 @@
 -- =====================================================================
--- 알림 규칙 처음 값 25행 (논리 ERD 6.36, 2026-10-13: WO_ASSIGNED·WO_DRAFT_READY·DAILY_REPORT_PENDING 추가)
+-- 알림 규칙 처음 값 29행 (논리 ERD 6.36, 2026-10-13: WO_ASSIGNED·WO_DRAFT_READY·DAILY_REPORT_PENDING 추가)
+--   2026-10-20 (정비 탭 확인 요청 5): 문서 알림 4종 WO_APPROVAL_REQUEST·WR_CONFIRM_PENDING·WR_CHECK_REQUEST·PM_RECORD_CHECK 추가.
+--   PM_DUE_SOON은 같은 기한 날짜끼리 1건으로 묶는다 (fn_run_time_rules, notification_pm_task)
 --   규칙 코드·이름·조건·중요도·전달 방식 = 생성기 masters/notification_rule.csv 와 같은 글 (생성기 적재 때 그대로 덮어씀)
 --   + 처리 방법(6.36 처리 표) + 받는 역할 + 보고 순위(6.43) — 물리 추가 칸
 -- 기준 숫자는 DOC-07 10장 값만 (condition_text). 바꾸는 사람은 MGR (설정 화면)
 -- 전달 방식 (2026-10-13): POPUP = ALARM_STOP 긴급 팝업 (받는 사람 = 로그인한 전원, 처리 책임은 그 설비 OPR·MNT) /
---   BUBBLE = 문서 알림 6종 (이브 말풍선) / LIST = 나머지 (이브 아이콘 숫자·사이드바 알림 탭)
+--   BUBBLE = 문서 알림 6종 + 2026-10-20 2종(승인 요청·작업기록서 확인 요청) (이브 말풍선) / LIST = 나머지 (이브 아이콘 숫자·사이드바 알림 탭)
 -- rank_group: 같은 순위 안 묶음 순서 (6.43 순위 3의 ①~⑤ = 10~50, 순위 2 = 목표 미달 10·병목 20·납기 30)
 -- =====================================================================
 INSERT INTO notification_rule (rule_code, rule_name, condition_text, importance, delivery_kind, process_mode, processor_roles,
@@ -20,13 +22,17 @@ INSERT INTO notification_rule (rule_code, rule_name, condition_text, importance,
   ('WIP_WARN', '재공 경고', '공정 사이 재공이 경고 기준(wip_buffer.warn_over_qty) 초과 — 20개, WIP-20-30은 한도 30 도달(OP-20 막힘). WIP-30-40 제외. 재공 위치마다 교대에 처음 1번', 'CAUTION', 'LIST', 'MANUAL', '{SUP}', '{SUP}', 'R2', 20),
   ('LOT_DUE_RISK', '로트 납기 지연 위험', '로트 예상 완료 시각 > 납기', 'CAUTION', 'LIST', 'MANUAL', '{SUP}', '{SUP}', 'R2', 30),
   ('STOCK_LOW', '재고 부족', '재고 수량 ≤ 안전 재고 → 그 품목의 관리 역할 + MGR', 'CAUTION', 'LIST', 'BOTH', '{MGR}', '{MGR}', 'R3', 40),
-  ('PM_DUE_SOON', '예방 정비 기한 하루 전', '기한 하루 전 (주 1회 이상 주기 항목만 — 매일·교대 점검은 점검표)', 'INFO', 'LIST', 'AUTO', '{}', '{MNT}', 'R4', 0),
+  ('PM_DUE_SOON', '예방 정비 기한 하루 전', '기한 하루 전 (주 1회 이상 주기 항목만 — 매일·교대 점검은 점검표). 같은 기한 날짜끼리 1건으로 묶음 — 묶인 항목이 모두 끝나거나 기한을 넘기면 자동 처리', 'INFO', 'LIST', 'AUTO', '{}', '{MNT}', 'R4', 0),
   ('PM_OVERDUE', '예방 정비 기한 넘김', '기한 넘김 (주 1회 이상 주기 항목만)', 'CAUTION', 'LIST', 'AUTO', '{}', '{MNT}', 'R3', 40),
   ('TOOL_LIFE_90', '공구 수명', '사용률 90%', 'CAUTION', 'LIST', 'AUTO', '{}', '{OPR,MNT}', 'R3', 40),
   ('APPROVAL_WAIT_30M', '승인 대기', '작업지시서 승인 대기 30분 이상', 'INFO', 'BUBBLE', 'AUTO', '{}', '{SUP}', 'R4', 0),
   ('APPROVAL_WAIT_2H', '승인 대기', '작업지시서 승인 대기 2시간 이상', 'CAUTION', 'BUBBLE', 'AUTO', '{}', '{SUP}', 'R3', 50),
   ('WO_ASSIGNED', '작업지시서 배정', '작업지시서가 승인됨 → 담당 MNT', 'INFO', 'BUBBLE', 'AUTO', '{}', '{MNT}', 'R4', 0),
   ('WO_DRAFT_READY', '작업지시서 초안 검토', '작업지시서 AI비서 초안이 생길 때 → 그 설비 MNT', 'INFO', 'BUBBLE', 'AUTO', '{}', '{MNT}', 'R4', 0),
+  ('WO_APPROVAL_REQUEST', '작업지시서 승인 요청', '작업지시서 초안이 생길 때 → 반장. 승인·취소, 또는 승인 대기 30분 알림이 뜨면 자동 처리', 'INFO', 'BUBBLE', 'AUTO', '{}', '{SUP}', 'R4', 0),
+  ('WR_CONFIRM_PENDING', '작업기록서 확정 전', '작업기록서(작업지시서 짝)가 생길 때(초안·수정 중) → 그 작업지시서 담당 MNT. 확정하면 자동 처리', 'INFO', 'LIST', 'AUTO', '{}', '{MNT}', 'R4', 0),
+  ('WR_CHECK_REQUEST', '작업기록서 확인 요청', '보전 담당자가 작업기록서를 확정할 때 → 반장. 반장이 [확인]하면 자동 처리', 'INFO', 'BUBBLE', 'AUTO', '{}', '{SUP}', 'R4', 0),
+  ('PM_RECORD_CHECK', '예방 정비 실시 기록 확인', '예방 정비 실시 기록이 초안으로 생길 때 → MNT (설비마다 1건으로 묶음). 묶인 기록이 모두 확정되면 자동 처리', 'INFO', 'LIST', 'AUTO', '{}', '{MNT}', 'R4', 0),
   ('DAILY_REPORT_PENDING', '일일 보고서 확정 요청', '일일 보고서 AI비서 초안이 생길 때 (야간 교대 보고서 확정 즉시, 늦어도 06:00) → MGR', 'INFO', 'BUBBLE', 'AUTO', '{}', '{MGR}', 'R4', 0),
   ('DOC_REVISED', '문서 수정', '작업지시서 수정 → 담당 보전원, 보고서 수정 → 관리자, 사내 문서 개정 → 관련 역할 전체', 'INFO', 'BUBBLE', 'AUTO', '{}', '{}', 'R4', 0),
   ('SPC_OUT', '관리도 이상', '점 1개가 +3σ 위 또는 −3σ 아래 → 반장', 'CAUTION', 'LIST', 'AUTO', '{}', '{SUP}', 'R3', 30),

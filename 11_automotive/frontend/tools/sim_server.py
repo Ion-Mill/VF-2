@@ -314,10 +314,10 @@ def _route(method, p, q, body, rt, live, P):
                        "reason": body.get("reason"), "status_after": cur["status"], "changes": changes})
         return cur
     if key == "reports/daily":
-        rows = [daily_with_llm({**r, **S.daily.get(r["work_date"], {})}) for r in P.daily_reports]     # 목록을 읽을 때 아직 확정 안 된 초안(9/30)의 문장 준비가 미리 시작된다
+        rows = [with_memo(daily_with_llm({**r, **S.daily.get(r["work_date"], {})})) for r in P.daily_reports]     # 목록을 읽을 때 아직 확정 안 된 초안(9/30)의 문장 준비가 미리 시작된다
         ld = live_daily("2026-10-01")
         if ld:
-            rows.append({**ld, **S.daily.get(ld["work_date"], {})})
+            rows.append(with_memo({**ld, **S.daily.get(ld["work_date"], {})}))
         return {"reports": rows}
     if len(p) >= 3 and p[:2] == ["reports", "daily"]:
         d = p[2]
@@ -337,12 +337,14 @@ def _route(method, p, q, body, rt, live, P):
                 a, b = cal.to_min(day.start), min(cal.to_min(night.end), rt.m)
                 comp = {"stops": live.stops(a, b), "kpi": live.kpi(a, b)["by"], "range": [iso(day.start), iso(night.end)],
                         "alarms": [live.alarm_json(e) for e in rt.sim.alarm_events if a <= e["occurred_m"] < b]}
-            return {**cur, **comp, "revisions": [x for x in P.revisions if x["doc_type"] == "DAILY_REPORT" and x["doc_key"] == d] + [x for x in S.revs if x["doc_key"] == d],
+            return {**with_memo(cur), **comp, "revisions": [x for x in P.revisions if x["doc_type"] == "DAILY_REPORT" and x["doc_key"] == d] + [x for x in S.revs if x["doc_key"] == d],
                     "changes": {x["revision_id"]: P.rev_changes.get(x["revision_id"], []) for x in P.revisions if x["doc_type"] == "DAILY_REPORT" and x["doc_key"] == d}}
         if body.get("role") != "MGR":
             raise ApiError(403, "FORBIDDEN", "일일 보고서 확정은 관리자만")
         upd = {"status": "CONFIRMED", "confirmed_by": body.get("user_id"), "confirmed_at": fmt_dt(rt.now()),
                "current_version": int(cur.get("current_version") or 0) + 1}
+        if str(body.get("memo") or "").strip():
+            upd["memo"] = str(body["memo"]).strip()          # 관리자 메모 칸 (백엔드 daily_report.memo와 같은 이름, 2026-10-20)
         tmpl = live_daily(d, with_llm=False)                # 기본 문장으로 만든 것 (생성기가 미리 만든 날짜는 None)
         default = tmpl["issues_summary"] if tmpl else (past or {}).get("issues_summary")      # 어느 쪽이든 비서가 다듬기 전의 기본 문장
         frozen = freeze_daily_summary(cur.get("issues_summary"), default, body.get("memo"))
@@ -556,6 +558,25 @@ def daily_with_llm(row):
     if not out:
         return row
     return {**row, "issues_summary": f"{parts[0]}: " + " / ".join(f"{i}) {t}" for i, t in enumerate(out, 1))}
+
+
+MEMO_RE = re.compile(r"^(.*\S)\s+관리자 메모:\s*(.*)$", re.S)
+
+
+def split_memo(text):
+    """오늘의 문제 글 끝의 "관리자 메모: X" → (글, 메모). 메모가 없으면 (글, None). 백엔드 fn_split_memo와 같은 규칙 (2026-10-20)"""
+    m = MEMO_RE.match(text or "")
+    if not m:
+        return text, None
+    return re.sub(r"\s*/\s*$", "", m.group(1)), (m.group(2).strip() or None)
+
+
+def with_memo(d):
+    """일일 보고서에 관리자 메모 칸(memo)을 붙인다 (2026-10-20 정비 탭 확인 요청 1). 오늘의 문제 글(issues_summary)은 지금 화면이
+    끝의 "관리자 메모: …"를 떼어 보이므로 그대로 둔다 — 백엔드(FastAPI)는 글과 메모를 나눠 둔다"""
+    if d.get("memo"):
+        return d
+    return {**d, "memo": split_memo(d.get("issues_summary"))[1]}
 
 
 def freeze_daily_summary(shown, default, memo):

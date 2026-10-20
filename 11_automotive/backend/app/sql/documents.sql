@@ -26,14 +26,60 @@ SELECT d.*, greatest(0, d.target_qty - d.actual_qty) AS shortfall_qty,
          WHERE t.work_date = d.work_date AND NOT t.is_report_confirmed) AS provisional_shift_ids
   FROM daily_report d WHERE d.work_date = CAST(:work_date AS date);
 
+-- 보고서의 필수 정지 + 그 정지로 만든 작업지시서 (2026-10-20 정비 탭 확인 요청 2 — 화면이 알람·설비로 추측하던 연결)
+--   구간 = 교대(:shift_id) 또는 그 생산일의 두 교대(:work_date). 고장 정지(DOWN, 또는 사유가 고장 그룹)이고 구간 안 길이가
+--   5분 이상인 것 (DOC-07 §5.4). 분·손실은 구간 안 부분만 — 손실 = 구간 안 정지 분 ÷ 그 설비 기준 사이클 (fn_failure_loss_qty와 같은 기준)
+--   작업지시서 = 정지 알람으로 만든 것(alarm_event_id) 또는 그 알람의 반복 알람 2단계 알림으로 만든 것(trigger_notification_id →
+--   알림의 alarm_event_id, 예: MW-0904). 보고서 시점(구간 끝)의 상태 wo_status_at_report: WAITING_APPROVAL 승인 전 /
+--   IN_PROGRESS 진행 중(승인 뒤) / DONE 완료 / CANCELLED 취소. 그때 아직 없던 작업지시서는 NULL (지금 상태는 wo_status)
+-- name: report_stops
+WITH w AS (
+    SELECT min(start_at) AS f, max(end_at) AS t FROM shift
+     WHERE shift_id = CAST(:shift_id AS text) OR work_date = CAST(:work_date AS date)
+), s AS (
+    SELECT st.state_log_id, st.equipment_id, st.state_code, coalesce(st.reason_code, st.reason_suggested_code) AS reason_code,
+           dr.reason_name, st.start_at, st.end_at, st.alarm_event_id, a.alarm_code, e.std_cycle_min, w.t AS report_at,
+           greatest(st.start_at, w.f) AS s_at, least(coalesce(st.end_at, app_now()), w.t) AS e_at
+      FROM equipment_state_log st
+      JOIN equipment e USING (equipment_id)
+      CROSS JOIN w
+      LEFT JOIN downtime_reason dr ON dr.reason_code = coalesce(st.reason_code, st.reason_suggested_code)
+      LEFT JOIN alarm_event a ON a.alarm_event_id = st.alarm_event_id
+     WHERE st.state_code <> 'RUN' AND (st.state_code = 'DOWN' OR dr.reason_group = 'FAILURE')
+       AND st.start_at < w.t AND coalesce(st.end_at, 'infinity'::timestamptz) > w.f
+)
+SELECT s.state_log_id, s.equipment_id, s.state_code, s.reason_code, s.reason_name, s.start_at, s.end_at,
+       s.s_at AS from_at, s.e_at AS to_at, round(extract(epoch FROM (s.e_at - s.s_at)) / 60)::int AS minutes,
+       round(extract(epoch FROM (s.e_at - s.s_at)) / 60 / nullif(s.std_cycle_min, 0), 1) AS loss_qty, true AS is_estimated,
+       s.alarm_event_id, s.alarm_code, wo.wo_no, wo.status AS wo_status,
+       CASE WHEN wo.wo_no IS NULL OR wo.created_at > s.report_at THEN NULL
+            WHEN wo.cancelled_at <= s.report_at THEN 'CANCELLED'
+            WHEN wo.completed_at <= s.report_at THEN 'DONE'
+            WHEN wo.approved_at <= s.report_at THEN 'IN_PROGRESS'
+            ELSE 'WAITING_APPROVAL' END AS wo_status_at_report
+  FROM s
+  LEFT JOIN LATERAL (
+      SELECT m.wo_no, m.status, m.created_at, m.approved_at, m.completed_at, m.cancelled_at
+        FROM maintenance_work_order m
+       WHERE s.alarm_event_id IS NOT NULL
+         AND (m.alarm_event_id = s.alarm_event_id
+              OR m.trigger_notification_id IN (SELECT n.notification_id FROM notification n WHERE n.alarm_event_id = s.alarm_event_id))
+       ORDER BY (m.alarm_event_id IS NOT DISTINCT FROM s.alarm_event_id) DESC, m.created_at
+       LIMIT 1) wo ON true
+ WHERE s.e_at - s.s_at >= interval '5 minutes'
+ ORDER BY minutes DESC, s.s_at;
+
 -- name: daily_report_update
 UPDATE daily_report SET issues_summary = coalesce(CAST(:issues_summary AS text), issues_summary),
+       memo = CASE WHEN CAST(:memo_given AS boolean) THEN CAST(:memo AS text) ELSE memo END,
        status = CAST(:status AS varchar), current_version = :version
  WHERE work_date = CAST(:work_date AS date);
 
--- 잠정 칸(확정 안 된 교대 보고서)이 있으면 MGR [확정] 불가 (R-72)
+-- 잠정 칸(확정 안 된 교대 보고서)이 있으면 MGR [확정] 불가 (R-72). 관리자 메모(선택)를 같이 받는다 — 비우면 있던 메모 그대로
+--   (2026-10-20 정비 탭 확인 요청 1: 전에는 확정 API가 memo를 버렸다)
 -- name: daily_report_confirm
-UPDATE daily_report d SET status = 'CONFIRMED', confirmed_by = :actor, confirmed_at = app_now()
+UPDATE daily_report d SET status = 'CONFIRMED', confirmed_by = :actor, confirmed_at = app_now(),
+       memo = coalesce(nullif(btrim(CAST(:memo AS text)), ''), d.memo)
  WHERE d.work_date = CAST(:work_date AS date) AND d.status IN ('AI_DRAFT','EDITING')
    AND NOT EXISTS (SELECT 1 FROM shift s LEFT JOIN shift_report r USING (shift_id)
                     WHERE s.work_date = d.work_date AND coalesce(r.status, 'AI_DRAFT') NOT IN ('CONFIRMED','REVISED'));

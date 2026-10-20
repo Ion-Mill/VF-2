@@ -26,7 +26,7 @@ CREATE TABLE notification_rule (
     rule_name        varchar(60)  NOT NULL,
     condition_text   text         NOT NULL,
     importance       varchar(7)   NOT NULL CHECK (importance IN ('URGENT','CAUTION','INFO')),
-    -- 전달 방식 (2026-10-13 팀 회의, 6.36 아래): POPUP 긴급 팝업(ALARM_STOP) / BUBBLE 이브 말풍선(문서 알림 6종) / LIST 목록
+    -- 전달 방식 (2026-10-13 팀 회의, 6.36 아래): POPUP 긴급 팝업(ALARM_STOP) / BUBBLE 이브 말풍선(문서 알림 6종 + 2026-10-20 승인 요청·작업기록서 확인 요청) / LIST 목록
     delivery_kind    varchar(6)   NOT NULL DEFAULT 'LIST' CHECK (delivery_kind IN ('POPUP','BUBBLE','LIST')),
     is_enabled       boolean      NOT NULL DEFAULT true,
     updated_by       varchar(20)  REFERENCES app_user,
@@ -78,10 +78,11 @@ CREATE TABLE notification (
     repeat_stage_status         varchar(10) CHECK (repeat_stage_status IN
                                 ('S1_OPEN','S1_CLOSED','S2_OPEN','S2_CHECKED','EFFECTIVE','ESCALATED')),
     effect_check_due_at         timestamptz,
-    -- R-38 알림마다 관련 기록이 있어야 한다
+    -- R-38 알림마다 관련 기록이 있어야 한다. 예방 정비 기한 하루 전(PM_DUE_SOON)은 같은 기한 날짜의 항목을 1건으로 묶어
+    -- (2026-10-20) 관련 항목을 notification_pm_task에 둔다 — 항목마다 1건이던 9월 기록은 pm_task_id 그대로
     CONSTRAINT ck_notification_related CHECK (num_nonnulls(alarm_event_id, equipment_id, lot_no, item_no, pm_task_id,
         tool_id, wo_no, bottleneck_log_id, revision_id, result_id, shift_id, buffer_code, cmm_import_id,
-        prev_stage_notification_id) >= 1),
+        prev_stage_notification_id) >= 1 OR rule_code = 'PM_DUE_SOON'),
     CONSTRAINT ck_notification_processed CHECK (is_processed = (process_kind IS NOT NULL AND processed_at IS NOT NULL)),
     CONSTRAINT ck_notification_manual CHECK (process_kind IS DISTINCT FROM 'MANUAL' OR processed_by IS NOT NULL),
     -- 반복 알람(1단계)을 사람이 처리하면 조치 계획 한 줄 필수 (6.36 처리 표)
@@ -106,6 +107,18 @@ CREATE TABLE notification_recipient (
     PRIMARY KEY (notification_id, user_id)
 );
 CREATE INDEX ix_notification_recipient_unread ON notification_recipient (user_id) WHERE read_at IS NULL;
+
+-- ---------------------------------------------------------------------
+-- 알림 ↔ 예방 정비 항목 [물리 추가, 2026-10-20 정비 탭 확인 요청 5] — 여러 항목을 1건으로 묶는 알림의 관련 항목
+--   PM_DUE_SOON  예방 정비 기한 하루 전: 같은 기한 날짜끼리 1건 (묶인 항목이 모두 끝나거나 기한을 넘기면 자동 처리)
+--   PM_RECORD_CHECK  예방 정비 실시 기록 확인: 설비마다 1건, 초안 실시 기록의 항목 (묶인 기록이 모두 확정되면 자동 처리)
+-- ---------------------------------------------------------------------
+CREATE TABLE notification_pm_task (
+    notification_id  bigint      NOT NULL REFERENCES notification ON DELETE CASCADE,
+    pm_task_id       varchar(30) NOT NULL REFERENCES pm_task,
+    PRIMARY KEY (notification_id, pm_task_id)
+);
+CREATE INDEX ix_notification_pm_task_task ON notification_pm_task (pm_task_id);
 
 -- ---------------------------------------------------------------------
 -- 접속 기록 [물리 추가] — 6.53 ACCESS_LOG (1년). 논리 ERD에 엔터티가 없어서 더함

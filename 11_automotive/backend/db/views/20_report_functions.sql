@@ -193,11 +193,13 @@ CREATE TRIGGER shift_report_confirmed AFTER UPDATE OF status ON shift_report
 --   AI비서 초안 → 수정 중(보전 담당자가 저장) → 초안 검토 알림(WO_DRAFT_READY) 자동 처리
 --   승인 → 진행 중([작업 시작]) → 배정 알림 자동 처리 (담당 MNT가 작업지시서를 "열면"도 처리 — API-MNT-06 GET)
 --   작업지시서를 취소하면 남은 초안 검토·배정 알림도 닫는다
+--   승인·취소 → 승인 요청 알림(WO_APPROVAL_REQUEST, 2026-10-20)도 자동 처리
 CREATE OR REPLACE FUNCTION trg_work_order_approved() RETURNS trigger LANGUAGE plpgsql AS $$
 BEGIN
     IF NEW.status IN ('APPROVED','CANCELLED') AND OLD.status IN ('AI_DRAFT','EDITING') THEN
         PERFORM fn_auto_process(ARRAY(SELECT notification_id FROM notification
-                                       WHERE rule_code IN ('APPROVAL_WAIT_30M','APPROVAL_WAIT_2H') AND wo_no = NEW.wo_no AND NOT is_processed),
+                                       WHERE rule_code IN ('APPROVAL_WAIT_30M','APPROVAL_WAIT_2H','WO_APPROVAL_REQUEST')
+                                         AND wo_no = NEW.wo_no AND NOT is_processed),
                                 coalesce(NEW.approved_by, NEW.cancelled_by), coalesce(NEW.approved_at, NEW.cancelled_at));
     END IF;
     IF NEW.status = 'APPROVED' AND OLD.status IN ('AI_DRAFT','EDITING') AND NEW.assignee_user_id IS NOT NULL THEN
@@ -220,10 +222,17 @@ END $$;
 
 -- 작업지시서 AI비서 초안이 생기면 → 그 설비 MNT에게 "작업지시서 초안 검토" (6.36 WO_DRAFT_READY, 2026-10-13).
 -- 받는 사람 = 보전 담당자 전원 (긴급 알림 처리 책임 MNT와 같은 사람 — 설비별 담당 MNT 칸이 없어 MNT 전원 [제안])
+-- 초안(AI비서 초안·수정 중)이 생기면 반장에게 "작업지시서 승인 요청"도 (WO_APPROVAL_REQUEST, 2026-10-20 정비 탭 확인 요청 5).
+--   승인·취소하면(trg_work_order_approved), 또는 승인 대기 30분 알림이 뜨면(fn_run_time_rules) 자동 처리 — 그 뒤는 승인 대기 알림이 맡는다
 CREATE OR REPLACE FUNCTION trg_work_order_draft_ready() RETURNS trigger LANGUAGE plpgsql AS $$
 BEGIN
-    IF NEW.status = 'AI_DRAFT' AND current_setting('app.loading', true) IS DISTINCT FROM 'on' THEN
+    IF current_setting('app.loading', true) IS NOT DISTINCT FROM 'on' THEN RETURN NULL; END IF;
+    IF NEW.status = 'AI_DRAFT' THEN
         PERFORM fn_raise_notification('WO_DRAFT_READY', format('작업지시서 초안 검토: %s (%s)', NEW.wo_no, NEW.title),
+                                      jsonb_build_object('wo_no', NEW.wo_no, 'equipment_id', NEW.equipment_id), NEW.created_at);
+    END IF;
+    IF NEW.status IN ('AI_DRAFT','EDITING') THEN
+        PERFORM fn_raise_notification('WO_APPROVAL_REQUEST', format('작업지시서 %s 승인해 주세요 (%s)', NEW.wo_no, NEW.title),
                                       jsonb_build_object('wo_no', NEW.wo_no, 'equipment_id', NEW.equipment_id), NEW.created_at);
     END IF;
     RETURN NULL;
@@ -248,6 +257,147 @@ CREATE TRIGGER daily_report_confirmed AFTER UPDATE OF status ON daily_report
 CREATE TRIGGER work_order_approved AFTER UPDATE OF status ON maintenance_work_order
     FOR EACH ROW EXECUTE FUNCTION trg_work_order_approved();
 
+-- ---------------------------------------------------------------------
+-- 문서 알림 4종·예방 정비 하루 전 묶기 (2026-10-20 정비 탭 확인 요청 5 — 화면 규칙 frontend/src/shell/rules.ts와 같은 뜻)
+-- ---------------------------------------------------------------------
+
+-- 작업기록서(작업지시서 짝, FULL) 알림:
+--   생김(AI비서 초안·수정 중) → 그 작업지시서 담당 MNT에게 "확정 전"(WR_CONFIRM_PENDING, 알림 탭만). 담당이 없으면 MNT 전원
+--   확정 → 확정 전 알림 자동 처리 + 반장에게 "확인 요청"(WR_CHECK_REQUEST, 말풍선). 확인 뒤 고쳐서 다시 확정 전 상태가 되면 다시 요청
+--   반장 [확인](CHECKED) → 확인 요청 자동 처리. 간이 작업기록(SIMPLE)은 확인 단계가 없어 알리지 않는다
+CREATE OR REPLACE FUNCTION trg_work_record_doc_alert() RETURNS trigger LANGUAGE plpgsql AS $$
+DECLARE v_assignee text;
+BEGIN
+    IF current_setting('app.loading', true) IS NOT DISTINCT FROM 'on' OR NEW.record_type <> 'FULL' THEN RETURN NULL; END IF;
+    IF TG_OP = 'INSERT' THEN
+        IF NEW.status IN ('AI_DRAFT','EDITING') THEN
+            SELECT assignee_user_id INTO v_assignee FROM maintenance_work_order WHERE wo_no = NEW.wo_no;
+            PERFORM fn_raise_notification('WR_CONFIRM_PENDING',
+                format('작업기록서 %s 확정 전 (작업지시서 %s)', NEW.record_no, NEW.wo_no),
+                jsonb_build_object('wo_no', NEW.wo_no, 'equipment_id', NEW.equipment_id), NULL,
+                p_recipients => CASE WHEN v_assignee IS NOT NULL THEN ARRAY[v_assignee] END);
+        END IF;
+        RETURN NULL;
+    END IF;
+    IF NEW.status = 'CONFIRMED' AND OLD.status IS DISTINCT FROM 'CONFIRMED' THEN
+        PERFORM fn_auto_process(ARRAY(SELECT notification_id FROM notification
+                                       WHERE rule_code = 'WR_CONFIRM_PENDING' AND wo_no = NEW.wo_no AND NOT is_processed),
+                                NEW.confirmed_by, NEW.confirmed_at);
+        IF NOT EXISTS (SELECT 1 FROM notification WHERE rule_code = 'WR_CHECK_REQUEST' AND wo_no = NEW.wo_no AND NOT is_processed) THEN
+            PERFORM fn_raise_notification('WR_CHECK_REQUEST',
+                format('작업기록서 %s 확정됨 — 확인해 주세요 (작업지시서 %s)', NEW.record_no, NEW.wo_no),
+                jsonb_build_object('wo_no', NEW.wo_no, 'equipment_id', NEW.equipment_id), NULL);
+        END IF;
+    ELSIF NEW.status = 'CHECKED' AND OLD.status IS DISTINCT FROM 'CHECKED' THEN
+        PERFORM fn_auto_process(ARRAY(SELECT notification_id FROM notification
+                                       WHERE rule_code = 'WR_CHECK_REQUEST' AND wo_no = NEW.wo_no AND NOT is_processed),
+                                NEW.checked_by, NEW.checked_at);
+    END IF;
+    RETURN NULL;
+END $$;
+CREATE TRIGGER work_record_doc_alert AFTER INSERT OR UPDATE OF status ON work_record
+    FOR EACH ROW EXECUTE FUNCTION trg_work_record_doc_alert();
+
+-- 예방 정비 기한 하루 전 묶음 자동 처리: 열린 PM_DUE_SOON 중 묶인 항목(notification_pm_task + 9월 기록의 pm_task_id)이
+--   하나도 "아직 기한 전·당일"이 아니면 처리 — 실시해서 다음 기한이 밀렸거나, 기한을 넘겼거나(그쪽은 PM_OVERDUE가 맡음).
+--   알림의 기한 날짜 = 알린 날(한국 날짜) + 1. 반환: 처리한 수
+CREATE OR REPLACE FUNCTION fn_close_pm_due_soon(p_actor text DEFAULT NULL, p_at timestamptz DEFAULT NULL)
+RETURNS int LANGUAGE sql AS $$
+    WITH t AS (SELECT coalesce(p_at, app_now()) AS at),
+    open_n AS (
+        SELECT n.notification_id, (n.raised_at AT TIME ZONE 'Asia/Seoul')::date + 1 AS due
+          FROM notification n WHERE n.rule_code = 'PM_DUE_SOON' AND NOT n.is_processed
+    ), members AS (
+        SELECT notification_id, pm_task_id FROM notification_pm_task
+        UNION
+        SELECT notification_id, pm_task_id FROM notification WHERE rule_code = 'PM_DUE_SOON' AND pm_task_id IS NOT NULL
+    )
+    SELECT fn_auto_process(ARRAY(
+        SELECT o.notification_id FROM open_n o, t
+         WHERE NOT EXISTS (SELECT 1 FROM members m JOIN v_pm_task_due d USING (pm_task_id)
+                            WHERE m.notification_id = o.notification_id AND d.is_active
+                              AND d.next_due_date BETWEEN (t.at AT TIME ZONE 'Asia/Seoul')::date AND o.due)),
+        p_actor, (SELECT at FROM t));
+$$;
+
+-- 예방 정비 기한 하루 전 알림 (참고, MNT): 내일이 기한인 항목(달력에 있는 것)을 같은 기한 날짜끼리 1건으로 묶는다.
+--   이미 열린 하루 전 알림에 든 항목은 빼고, 같은 날짜의 열린 묶음이 있으면 거기에 더한다 (건수·항목 목록 다시 씀).
+--   문장 "기한 10/02 (내일) 예방 정비 4건", 관련 정보 = "설비 항목 · …". 반환: 새로 만든 알림 수
+CREATE OR REPLACE FUNCTION fn_raise_pm_due_soon(p_at timestamptz DEFAULT NULL) RETURNS int
+LANGUAGE plpgsql AS $$
+DECLARE
+    v_at timestamptz := coalesce(p_at, app_now());
+    v_due date := (v_at AT TIME ZONE 'Asia/Seoul')::date + 1;
+    v_tasks text[]; v_id bigint; v_new int := 0; v_cnt int; v_items text;
+BEGIN
+    SELECT array_agg(d.pm_task_id ORDER BY d.equipment_id, d.pm_task_id) INTO v_tasks
+      FROM v_pm_task_due d
+     WHERE d.is_active AND d.on_calendar AND d.next_due_date = v_due
+       AND NOT EXISTS (SELECT 1 FROM notification n
+                        WHERE n.rule_code = 'PM_DUE_SOON' AND NOT n.is_processed
+                          AND (n.pm_task_id = d.pm_task_id
+                               OR EXISTS (SELECT 1 FROM notification_pm_task l
+                                           WHERE l.notification_id = n.notification_id AND l.pm_task_id = d.pm_task_id)));
+    IF v_tasks IS NULL THEN RETURN 0; END IF;
+    SELECT notification_id INTO v_id FROM notification
+     WHERE rule_code = 'PM_DUE_SOON' AND NOT is_processed AND pm_task_id IS NULL
+       AND (raised_at AT TIME ZONE 'Asia/Seoul')::date + 1 = v_due
+     ORDER BY raised_at LIMIT 1;
+    IF v_id IS NULL THEN
+        SELECT count(*), string_agg(equipment_id || ' ' || item_name, ' · ' ORDER BY equipment_id, pm_task_id) INTO v_cnt, v_items
+          FROM pm_task WHERE pm_task_id = ANY (v_tasks);
+        v_id := fn_raise_notification('PM_DUE_SOON', format('기한 %s (내일) 예방 정비 %s건', to_char(v_due, 'MM/DD'), v_cnt),
+                                      '{}'::jsonb, v_at, p_related_info => v_items);
+        IF v_id IS NULL THEN RETURN 0; END IF;          -- 규칙이 꺼져 있음
+        v_new := 1;
+    END IF;
+    INSERT INTO notification_pm_task (notification_id, pm_task_id) SELECT v_id, unnest(v_tasks) ON CONFLICT DO NOTHING;
+    IF v_new = 0 THEN
+        SELECT count(*), string_agg(t.equipment_id || ' ' || t.item_name, ' · ' ORDER BY t.equipment_id, t.pm_task_id)
+          INTO v_cnt, v_items
+          FROM notification_pm_task l JOIN pm_task t USING (pm_task_id) WHERE l.notification_id = v_id;
+        UPDATE notification SET message = format('기한 %s (내일) 예방 정비 %s건', to_char(v_due, 'MM/DD'), v_cnt),
+               related_info = v_items
+         WHERE notification_id = v_id;
+    END IF;
+    RETURN v_new;
+END $$;
+
+-- 예방 정비 실시 기록 알림 (PM_RECORD_CHECK, 참고·알림 탭만, MNT): 실시 기록이 초안으로 생기면 그 설비의 열린 알림 1건에
+--   항목을 더한다 (없으면 새로, "VF2-01 예방 정비 2건 끝남 — 실시 기록 확인"). 묶인 항목의 초안 기록이 모두 확정되면 자동 처리.
+--   확정되면 예방 정비 기한 하루 전 묶음도 다시 본다 (fn_close_pm_due_soon)
+CREATE OR REPLACE FUNCTION trg_pm_record_doc_alert() RETURNS trigger LANGUAGE plpgsql AS $$
+DECLARE v_eq text; v_id bigint; v_ids bigint[];
+BEGIN
+    IF current_setting('app.loading', true) IS NOT DISTINCT FROM 'on' THEN RETURN NULL; END IF;
+    IF TG_OP = 'INSERT' THEN
+        IF NEW.status <> 'DRAFT' THEN RETURN NULL; END IF;
+        SELECT equipment_id INTO v_eq FROM pm_task WHERE pm_task_id = NEW.pm_task_id;
+        SELECT notification_id INTO v_id FROM notification
+         WHERE rule_code = 'PM_RECORD_CHECK' AND equipment_id = v_eq AND NOT is_processed ORDER BY raised_at DESC LIMIT 1;
+        IF v_id IS NULL THEN
+            v_id := fn_raise_notification('PM_RECORD_CHECK', format('%s 예방 정비 1건 끝남 — 실시 기록 확인', v_eq),
+                                          jsonb_build_object('equipment_id', v_eq), NULL);
+            IF v_id IS NULL THEN RETURN NULL; END IF;    -- 규칙이 꺼져 있음
+        END IF;
+        INSERT INTO notification_pm_task (notification_id, pm_task_id) VALUES (v_id, NEW.pm_task_id) ON CONFLICT DO NOTHING;
+        UPDATE notification SET message = format('%s 예방 정비 %s건 끝남 — 실시 기록 확인', v_eq,
+                                                 (SELECT count(*) FROM notification_pm_task WHERE notification_id = v_id))
+         WHERE notification_id = v_id;
+    ELSIF NEW.status = 'CONFIRMED' AND OLD.status = 'DRAFT' THEN
+        SELECT array_agg(n.notification_id) INTO v_ids FROM notification n
+         WHERE n.rule_code = 'PM_RECORD_CHECK' AND NOT n.is_processed
+           AND EXISTS (SELECT 1 FROM notification_pm_task l WHERE l.notification_id = n.notification_id AND l.pm_task_id = NEW.pm_task_id)
+           AND NOT EXISTS (SELECT 1 FROM notification_pm_task l JOIN pm_record p USING (pm_task_id)
+                            WHERE l.notification_id = n.notification_id AND p.status = 'DRAFT');
+        IF v_ids IS NOT NULL THEN PERFORM fn_auto_process(v_ids, NEW.recorded_by); END IF;
+        PERFORM fn_close_pm_due_soon(NEW.recorded_by);
+    END IF;
+    RETURN NULL;
+END $$;
+CREATE TRIGGER pm_record_doc_alert AFTER INSERT OR UPDATE OF status ON pm_record
+    FOR EACH ROW EXECUTE FUNCTION trg_pm_record_doc_alert();
+
 -- 스케줄러가 몇 분마다 부르는 시간 규칙 알림 (승인 대기·예방 정비 기한·CMM 결과 미수신·목표 미달 위험) + 지금 야간 이월. 반환: 새 알림 수
 CREATE OR REPLACE FUNCTION fn_run_time_rules(p_cmm_wait_min int DEFAULT 10, p_at timestamptz DEFAULT NULL)
 RETURNS int LANGUAGE plpgsql AS $$
@@ -264,6 +414,10 @@ BEGIN
                                           jsonb_build_object('wo_no', r.wo_no, 'equipment_id', r.equipment_id), v_at);
             v_n := v_n + 1;
         END IF;
+        -- 승인 대기 30분이 되면 승인 요청 알림은 그쪽으로 넘어가 닫힌다 (2026-10-20)
+        PERFORM fn_auto_process(ARRAY(SELECT notification_id FROM notification
+                                       WHERE rule_code = 'WO_APPROVAL_REQUEST' AND wo_no = r.wo_no AND NOT is_processed),
+                                NULL, v_at);
         IF r.created_at <= v_at - interval '2 hours'
            AND NOT EXISTS (SELECT 1 FROM notification WHERE rule_code = 'APPROVAL_WAIT_2H' AND wo_no = r.wo_no) THEN
             PERFORM fn_raise_notification('APPROVAL_WAIT_2H', format('작업지시서 %s 승인 대기 2시간', r.wo_no),
@@ -272,14 +426,13 @@ BEGIN
         END IF;
     END LOOP;
     -- 예방 정비 기한 하루 전(참고)·넘김(주의) — 달력에 있는 항목만
+    --   하루 전은 같은 기한 날짜끼리 1건으로 묶는다 (2026-10-20 정비 탭 확인 요청 5, FR-AST-02-08) → fn_raise_pm_due_soon.
+    --   묶인 항목이 모두 끝나거나 기한을 넘기면 자동 처리 (fn_close_pm_due_soon — 항목마다 1건이던 9월 알림도 같은 규칙)
+    PERFORM fn_close_pm_due_soon(NULL, v_at);
+    v_n := v_n + fn_raise_pm_due_soon(v_at);
     FOR r IN SELECT pm_task_id, equipment_id, item_name, next_due_date FROM v_pm_task_due
-              WHERE is_active AND on_calendar AND next_due_date IS NOT NULL AND next_due_date <= v_today + 1 LOOP
-        IF r.next_due_date = v_today + 1 AND NOT EXISTS (SELECT 1 FROM notification
-                WHERE rule_code = 'PM_DUE_SOON' AND pm_task_id = r.pm_task_id AND NOT is_processed) THEN
-            PERFORM fn_raise_notification('PM_DUE_SOON', format('%s 예방 정비 내일: %s', r.equipment_id, r.item_name),
-                                          jsonb_build_object('pm_task_id', r.pm_task_id, 'equipment_id', r.equipment_id), v_at);
-            v_n := v_n + 1;
-        ELSIF r.next_due_date < v_today AND NOT EXISTS (SELECT 1 FROM notification
+              WHERE is_active AND on_calendar AND next_due_date IS NOT NULL AND next_due_date < v_today LOOP
+        IF NOT EXISTS (SELECT 1 FROM notification
                 WHERE rule_code = 'PM_OVERDUE' AND pm_task_id = r.pm_task_id AND NOT is_processed) THEN
             PERFORM fn_raise_notification('PM_OVERDUE', format('%s 예방 정비 기한 넘김: %s', r.equipment_id, r.item_name),
                                           jsonb_build_object('pm_task_id', r.pm_task_id, 'equipment_id', r.equipment_id), v_at);

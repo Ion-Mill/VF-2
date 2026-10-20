@@ -294,6 +294,25 @@ class RouterFlows(unittest.TestCase):
         box = self.call(documents.inbox, "U10", mine=True)
         self.assertTrue(box and all(r["is_todo"] is True for r in box))                # 반장의 할 일
         self.assertFalse([r for r in self.call(documents.inbox, "U02") if r["doc_type"] == "DAILY_REPORT"])
+        # 관리자 메모 (2026-10-20 정비 탭 확인 요청 1): 저장(PATCH)·확정 때 받아 조회 응답 memo로
+        self.call(documents.daily_report_edit, "U12", work_date="2026-09-15",
+                  body=documents.EditIn(version=int(d["current_version"]), changes={"memo": "공구 재고 주문 확인"}))
+        d = self.call(documents.daily_report, "U12", work_date="2026-09-15")
+        self.assertEqual(d["memo"], "공구 재고 주문 확인")
+        night = self.call(documents.shift_report, "U11", shift_id="2026-09-15-N")
+        self.call(documents.shift_report_confirm, "U11", shift_id="2026-09-15-N",
+                  body=documents.VersionIn(version=int(night["current_version"])))
+        d = self.call(documents.daily_report, "U12", work_date="2026-09-15")
+        self.call(documents.daily_report_confirm, "U12", work_date="2026-09-15",
+                  body=documents.DailyConfirmIn(version=int(d["current_version"]), memo="내일 오전 정비 일정 확인"))
+        d = self.call(documents.daily_report, "U12", work_date="2026-09-15")
+        self.assertEqual((d["status"], d["memo"]), ("CONFIRMED", "내일 오전 정비 일정 확인"))
+        # 필수 정지 ↔ 작업지시서 (확인 요청 2): VF2-01 992 정지(10:58~) → MW-0901, 보고서 시점 상태. 2분 정지(994)는 빠짐
+        stops = self.call(documents.shift_report, "U10", shift_id="2026-09-15-D")["stops"]
+        self.assertEqual([(s["equipment_id"], s["alarm_code"], s["wo_no"]) for s in stops], [("VF2-01", "992", "MW-0901")])
+        self.assertIn(stops[0]["wo_status_at_report"], ("IN_PROGRESS", "DONE"))
+        self.assertTrue(float(stops[0]["loss_qty"]) > 0)
+        self.assertEqual([s["wo_no"] for s in d["stops"]], ["MW-0901"])                  # 일일 보고서도 같은 목록
 
     def test_07_notifications(self):
         mine = self.call(notifications.mine, "U07", sort="rank")

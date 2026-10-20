@@ -5,10 +5,10 @@ SELECT t.freeze('2026-09-15 13:00+09');
 
 -- 전달 방식 (6.36 아래): 긴급 = 팝업, 문서 알림 6종 = 말풍선, 나머지 = 목록
 SELECT t.eq((SELECT string_agg(rule_code, ',' ORDER BY rule_code) FROM notification_rule WHERE delivery_kind = 'BUBBLE'),
-            'APPROVAL_WAIT_2H,APPROVAL_WAIT_30M,DAILY_REPORT_PENDING,DOC_REVISED,SHIFT_REPORT_PENDING,WO_ASSIGNED,WO_DRAFT_READY',
-            '말풍선 = 문서 알림 6종 (승인 대기 2개 포함 7규칙)');
+            'APPROVAL_WAIT_2H,APPROVAL_WAIT_30M,DAILY_REPORT_PENDING,DOC_REVISED,SHIFT_REPORT_PENDING,WO_APPROVAL_REQUEST,WO_ASSIGNED,WO_DRAFT_READY,WR_CHECK_REQUEST',
+            '말풍선 = 문서 알림 6종 (승인 대기 2개 포함 7규칙) + 2026-10-20 승인 요청·작업기록서 확인 요청');
 SELECT t.eq((SELECT string_agg(rule_code, ',') FROM notification_rule WHERE delivery_kind = 'POPUP'), 'ALARM_STOP', '팝업 = 정지 알람만');
-SELECT t.eq((SELECT count(*) FROM notification_rule)::int, 25, '알림 규칙 25행');
+SELECT t.eq((SELECT count(*) FROM notification_rule)::int, 29, '알림 규칙 29행 (2026-10-20 문서 알림 4종 추가)');
 
 -- 작업지시서 AI비서 초안 → 그 설비 MNT에게 초안 검토 (WO_DRAFT_READY)
 SELECT fn_ingest_alarm('VF2-02', '254', '2026-09-15 13:00+09', 'LOT-2609-041-1') AS a \gset

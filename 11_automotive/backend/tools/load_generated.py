@@ -46,7 +46,11 @@ DERIVED = {
         "availability_pct": "(SELECT coalesce(jsonb_object_agg(k.equipment_id, k.availability_pct), '{}'::jsonb) "
                             "FROM v_shift_equipment_kpi k WHERE k.shift_id = t.shift_id AND k.process_code = 'OP-30')",
     },
+    # 관리자 메모 (2026-10-20): 생성기는 issues_summary 끝에 "관리자 메모: …"를 붙여 둔다 → 떼어 memo 칸으로 (fn_split_memo)
+    "daily_report": {"memo": "(fn_split_memo(t.issues_summary))[2]"},
 }
+# CSV 값을 바꿔 넣는 칼럼 (위 DERIVED와 짝)
+TRANSFORM = {("daily_report", "issues_summary"): "(fn_split_memo(t.issues_summary))[1]"}
 
 COLS_SQL = """
 SELECT c.table_name, c.column_name,
@@ -172,7 +176,8 @@ def table_lines(t, path, upsert, pk, checks, defaults):
         checks.append((f"{t}.{c} (CSV) = DB 계산 값", IGNORE[(t, c)]))
     dcols = [c for c in derived if c not in cols]
     ins_cols = cols + dcols
-    ins_vals = [f"coalesce(t.{c}, {dflt[c]})" if c in dflt else f"t.{c}" for c in cols] + [derived[c] for c in dcols]
+    ins_vals = [TRANSFORM[(t, c)] if (t, c) in TRANSFORM else f"coalesce(t.{c}, {dflt[c]})" if c in dflt else f"t.{c}"
+                for c in cols] + [derived[c] for c in dcols]
     if upsert:
         setc = [c for c in cols if c not in pk]
         on = " AND ".join(f"x.{k} = t.{k}" for k in pk)

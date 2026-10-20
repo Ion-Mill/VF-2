@@ -105,3 +105,13 @@ BEGIN
     RETURNING instruction_id INTO v_id;
     RETURN v_id;
 END $$;
+
+-- 일일 보고서 글에서 관리자 메모 떼기 (2026-10-20 정비 탭 확인 요청 1 — daily_report.memo 칸이 생기기 전 글 모양).
+--   생성기 9월 기록은 issues_summary 끝에 "… 관리자 메모: X", 시연 서버는 "… / 관리자 메모: X"를 붙였다 (맨 끝 것을 뗀다).
+--   반환 {오늘의 문제 글, 메모}. 메모가 없으면 {글 그대로, NULL}. 쓰는 곳: tools/load_generated.py (적재 때)
+CREATE OR REPLACE FUNCTION fn_split_memo(p_text text) RETURNS text[]
+LANGUAGE sql IMMUTABLE AS $$
+    SELECT CASE WHEN x.g IS NULL THEN ARRAY[p_text, NULL]
+                ELSE ARRAY[regexp_replace(x.g[1], '\s*/\s*$', ''), nullif(btrim(x.g[2]), '')] END
+      FROM (SELECT regexp_match(p_text, '^(.*\S)\s+관리자 메모:\s*(.*)$') AS g) x;
+$$;
