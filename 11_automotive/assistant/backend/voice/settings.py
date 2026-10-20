@@ -22,6 +22,9 @@ _MODEL_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._/-]{0,80}$")
 ENGINES = ("faster-whisper", "transformers")
 DTYPES = ("float32", "bfloat16")                 # transformers 실행기의 계산 정밀도. 기본 float32 = 모델 카드의 CPU 예시와 같음
 _REV_RE = re.compile(r"^(main|[0-9a-f]{7,40})$")
+# transformers 실행기는 소리를 30초 창 하나로만 처리한다 (WhisperFeatureExtractor 가 30초에서 자른다 — truncation 기본 True). 더 긴 녹음을 받으면 뒷부분이 조용히 사라지므로
+# 그 실행기에서는 최대 길이를 30초로 묶는다 (화면도 /voice/status 의 max_seconds 로 같이 멈춘다). faster-whisper 는 30초 창을 이어서 처리해 60초까지 허용한다.
+TRANSFORMERS_MAX_SECONDS = 30.0
 
 
 def _env(name: str, default: str = "") -> str:
@@ -60,19 +63,23 @@ def settings() -> VoiceSettings:
     engine = _env("VOICE_ENGINE", "faster-whisper").strip().lower()
     dtype = _env("VOICE_DTYPE", "float32").strip().lower()
     revision = _env("VOICE_MODEL_REVISION", "").strip().lower()
+    engine = engine if engine in ENGINES else "faster-whisper"
+    max_seconds = float(C._int_clamped(_env("VOICE_MAX_SECONDS", "60"), 60, 3, 60))
+    if engine == "transformers":
+        max_seconds = min(max_seconds, TRANSFORMERS_MAX_SECONDS)
     return VoiceSettings(
         enabled=_flag(_env("ASSISTANT_VOICE", "0")),
         model=model if _MODEL_RE.match(model) else "large-v3-turbo",
         device=device if device in DEVICES else "cpu",
         compute=compute if compute in COMPUTE_TYPES else "int8",
         threads=C._int_clamped(_env("VOICE_THREADS", "0"), 0, 0, 64),
-        max_seconds=float(C._int_clamped(_env("VOICE_MAX_SECONDS", "20"), 20, 3, 60)),
+        max_seconds=max_seconds,
         min_seconds=max(0.3, min(3.0, C._float(_env("VOICE_MIN_SECONDS", "0.7"), 0.7))),
         max_bytes=C._int_clamped(_env("VOICE_MAX_BYTES", "1500000"), 1_500_000, 50_000, 10_000_000),
-        timeout_s=max(2.0, min(120.0, C._float(_env("VOICE_TIMEOUT_S", "15"), 15.0))),
+        timeout_s=max(2.0, min(120.0, C._float(_env("VOICE_TIMEOUT_S", "40"), 40.0))),
         queue_max=C._int_clamped(_env("VOICE_QUEUE_MAX", "2"), 2, 0, 20),
         hint=hint_text[:300] if hint_on else "",
-        engine=engine if engine in ENGINES else "faster-whisper",
+        engine=engine,
         dtype=dtype if dtype in DTYPES else "float32",
         revision=revision if _REV_RE.match(revision) else "",
         local_only=_flag(_env("VOICE_LOCAL_ONLY", "0")),

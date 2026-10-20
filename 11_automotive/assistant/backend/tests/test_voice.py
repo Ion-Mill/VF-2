@@ -81,7 +81,7 @@ def post(data=b"x" * 2000, headers=H):
 # ---------------------------------------------------------------- 설정
 def test_settings_defaults_off():
     s = S.settings()
-    assert (s.model, s.device, s.compute, s.timeout_s, s.max_seconds) == ("large-v3-turbo", "cpu", "int8", 15.0, 20.0)
+    assert (s.model, s.device, s.compute, s.timeout_s, s.max_seconds) == ("large-v3-turbo", "cpu", "int8", 40.0, 60.0)
     assert s.hint == S.DEFAULT_HINT
 
 
@@ -97,7 +97,7 @@ def test_settings_bad_values_fall_back(monkeypatch):
     monkeypatch.setenv("VOICE_TIMEOUT_S", "9999")
     monkeypatch.setenv("VOICE_MAX_SECONDS", "abc")
     s = S.settings()
-    assert (s.device, s.compute, s.model, s.timeout_s, s.max_seconds) == ("cpu", "int8", "large-v3-turbo", 120.0, 20.0)
+    assert (s.device, s.compute, s.model, s.timeout_s, s.max_seconds) == ("cpu", "int8", "large-v3-turbo", 120.0, 60.0)
 
 
 def test_settings_hint_can_be_turned_off_or_replaced(monkeypatch):
@@ -156,7 +156,7 @@ def test_off_switch_returns_404_and_never_touches_engine(monkeypatch):
     r = post()
     assert r.status_code == 404 and r.json()["code"] == "VOICE_OFF"
     assert eng.decoded == [] and eng.hints == []
-    assert client.get("/voice/status", headers=H).json() == {"enabled": False, "ready": False, "max_seconds": 20.0}
+    assert client.get("/voice/status", headers=H).json() == {"enabled": False, "ready": False, "max_seconds": 60.0}
 
 
 def test_service_key_required():
@@ -174,7 +174,7 @@ def test_success_returns_text_and_passes_hint():
     j = r.json()
     assert j["text"] == GOOD and j["reason"] is None and j["seconds"] == 4.0
     assert eng.hints == [S.DEFAULT_HINT]
-    assert client.get("/voice/status", headers=H).json() == {"enabled": True, "ready": True, "max_seconds": 20.0}
+    assert client.get("/voice/status", headers=H).json() == {"enabled": True, "ready": True, "max_seconds": 60.0}
 
 
 def test_hint_off_sends_empty_hint(monkeypatch):
@@ -209,7 +209,7 @@ def test_too_short_audio_returns_empty_text_without_transcribing():
 
 
 def test_too_long_audio_is_refused_not_truncated():
-    V.set_engine(Fake(seconds=25.0))
+    V.set_engine(Fake(seconds=65.0))
     r = post()
     assert r.status_code == 413 and r.json()["code"] == "AUDIO_TOO_LONG"
 

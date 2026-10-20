@@ -43,7 +43,7 @@ def call(path: str, payload: dict[str, Any]) -> dict[str, Any]:
 
 # ---- 음성 입력 (2026-10-20): 화면의 마이크 소리를 비서의 POST /transcribe 로 그대로 넘긴다. 비서 서비스가 사내 서버에서 글자로 바꾼다.
 # 비서가 돌려주는 오류 코드 → 명세서의 7개 코드 (errors.py: 새 코드를 만들지 않는다). 원래 코드는 detail.reason 에 남긴다.
-VOICE_TIMEOUT_S = 20.0     # 비서의 음성 시간 제한(기본 15초)보다 조금 길게. 채팅 답처럼 130초를 기다리지 않는다
+VOICE_TIMEOUT_S = 45.0     # 비서의 음성 시간 제한(기본 15초, 녹음을 60초까지 늘리면 40초)보다 조금 길게. 채팅 답처럼 130초를 기다리지 않는다 (2026-10-20: 20 → 45초)
 VOICE_ERRORS: dict[str, tuple[int, str, str]] = {
     "VOICE_OFF": (404, NOT_FOUND, "음성 입력이 꺼져 있음"),
     "EMPTY_AUDIO": (422, VALIDATION, "녹음이 비어 있음"),
@@ -76,7 +76,7 @@ def call_voice(method: str, path: str, data: bytes | None = None) -> dict[str, A
         headers["Content-Type"] = "application/octet-stream"        # 소리 원본 바이트 (webm/opus·mp4·wav) — 서버가 내용으로 알아본다
     req = urllib.request.Request(s.assistant_url.rstrip("/") + path, method=method, data=data, headers=headers)
     try:
-        with urllib.request.urlopen(req, timeout=min(s.assistant_timeout_seconds, VOICE_TIMEOUT_S)) as r:   # noqa: S310 (설정한 내부 주소만)
+        with urllib.request.urlopen(req, timeout=VOICE_TIMEOUT_S) as r:   # noqa: S310 (설정한 내부 주소만)
             out = json.loads(r.read().decode("utf-8"))
     except urllib.error.HTTPError as e:           # URLError 의 하위 — 먼저 잡는다
         raise _voice_http_error(e) from None

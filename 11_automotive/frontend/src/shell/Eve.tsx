@@ -272,7 +272,7 @@ function Chat({ focus, headerSlot, onNewChat }: { focus: FocusRef | null; header
   const [q, setQ] = useState('');
   const [busy, setBusy] = useState(false);
   const input = useRef<HTMLInputElement>(null);
-  // 마이크 (2026-10-20): 서버의 음성 스위치가 켜져 있을 때만 버튼이 보인다. 누르고 있는 동안 녹음 → 떼면 글자로 바꿔 입력창에 **채우기만** 한다 (보내는 것은 사용자가 글자를 보고 직접)
+  // 마이크 (2026-10-20): 서버의 음성 스위치가 켜져 있을 때만 버튼이 보인다. 한 번 누르면 녹음 시작 → 다시 누르면 끝나고 글자로 바꿔 입력창에 **채우기만** 한다 (보내는 것은 사용자가 글자를 보고 직접)
   const [voice, setVoice] = useState<VoiceStatus>(VOICE_OFF);
   const [micOk, setMicOk] = useState(false);          // 이 브라우저·주소에서 마이크를 쓸 수 있나 (https·localhost만) — 서버 렌더와 달라서 마운트 뒤에 정한다
   const [voiceBusy, setVoiceBusy] = useState(false);   // 소리를 글자로 바꾸는 중
@@ -347,7 +347,7 @@ function Chat({ focus, headerSlot, onNewChat }: { focus: FocusRef | null; header
         <div className="mb-3 flex flex-wrap justify-center gap-1.5">{ex.map((x) => <button key={x} type="button" disabled={busy} onClick={() => send(x)} className="h-9 rounded-full border border-slate-300 bg-[#ffffff] px-3.5 text-[13px] font-bold hover:bg-[#f7f5fd]">{x}</button>)}</div>
         {voice.enabled && (mic.state === 'recording' || voiceBusy || voiceNote !== '') && (
           <div className="ma-voice-note" role="status">
-            {mic.state === 'recording' ? '듣고 있어요… 말이 끝나면 버튼에서 손을 떼세요.' : voiceBusy ? '글자로 바꾸는 중이에요 (몇 초 걸려요)…' : voiceNote}
+            {mic.state === 'recording' ? `듣고 있어요… 말이 끝나면 마이크 버튼을 다시 누르세요 (최대 ${Math.round(voice.maxSeconds)}초).` : voiceBusy ? '글자로 바꾸는 중이에요 (길게 말했다면 더 걸려요)…' : voiceNote}
           </div>
         )}
         <div className="ma-compose-box">
@@ -355,11 +355,9 @@ function Chat({ focus, headerSlot, onNewChat }: { focus: FocusRef | null; header
           <input id="ma-input" ref={input} className="ma-input" autoFocus autoComplete="off" value={q} onChange={(e) => setQ(e.target.value)} placeholder="질문 (예: 992 알람 점검 순서)" />
           {voice.enabled && (
             <button type="button" className={`ma-mic${mic.state === 'recording' ? ' is-rec' : ''}`} disabled={busy || voiceBusy || !micOk}
-              aria-label="누르고 있는 동안 말하기" aria-pressed={mic.state === 'recording'}
-              title={micOk ? '버튼을 누른 채로 질문을 말하고, 끝나면 손을 떼세요. 글자로 바뀌어 입력창에 들어갑니다.' : '이 주소에서는 마이크를 쓸 수 없어요. localhost 또는 https 주소로 열어 주세요.'}
-              onPointerDown={(e) => { e.preventDefault(); setVoiceNote(''); mic.start(); }} onPointerUp={mic.stop} onPointerLeave={mic.stop} onPointerCancel={mic.stop} onBlur={mic.stop}
-              onKeyDown={(e) => { if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) { e.preventDefault(); setVoiceNote(''); mic.start(); } }}
-              onKeyUp={(e) => { if (e.key === ' ' || e.key === 'Enter') mic.stop(); }} onContextMenu={(e) => e.preventDefault()}>
+              aria-label={mic.state === 'recording' ? '말하기 끝내기' : '말하기 시작'} aria-pressed={mic.state === 'recording'}
+              title={micOk ? (mic.state === 'recording' ? '다시 누르면 녹음이 끝나고 글자로 바뀌어 입력창에 들어갑니다.' : `한 번 누르면 녹음이 시작됩니다. 질문을 말하고 다시 누르면 끝나요 (최대 ${Math.round(voice.maxSeconds)}초).`) : '이 주소에서는 마이크를 쓸 수 없어요. localhost 또는 https 주소로 열어 주세요.'}
+              onClick={() => { if (mic.state === 'recording') mic.stop(); else { setVoiceNote(''); mic.start(); } }}>
               <Icon d={['M12 3a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3z', 'M5 11a7 7 0 0 0 14 0', 'M12 18v3']} w={2.2} />
             </button>
           )}

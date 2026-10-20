@@ -1,5 +1,5 @@
 'use client';
-// 채팅 마이크 버튼의 녹음 (2026-10-20). 누르고 있는 동안 녹음하고, 떼면 소리(Blob)를 onAudio 로 넘긴다. 서버 호출·화면은 Eve.tsx / assistantApi.ts.
+// 채팅 마이크 버튼의 녹음 (2026-10-20). 한 번 누르면 녹음 시작, 다시 누르면 끝나고 소리(Blob)를 onAudio 로 넘긴다 (처음엔 누르고 있는 동안만 녹음했으나 2026-10-20 사용자 요청으로 토글로). 서버 호출·화면은 Eve.tsx / assistantApi.ts.
 //
 // - 마이크는 보안 연결(https 또는 localhost)에서만 열린다. 아니면 micSupported() 가 false → 버튼은 꺼진 채 이유를 알려 준다.
 // - 브라우저 기본 보정(잡음 억제·에코 제거·자동 이득)을 그대로 쓴다. 비교 시험용 스위치: 브라우저 콘솔에서 localStorage.setItem('voice:raw','1') 이면 셋 다 끄고 녹음한다
@@ -17,7 +17,7 @@ export function pickMime(isSupported: (t: string) => boolean): string {
 /** 서버·네트워크가 돌려준 까닭 → 쉬운 한국어 안내 (화면에 보이는 글. 안쪽 사정은 싣지 않는다) */
 export function voiceMessage(reason: string | null | undefined): string {
   switch (reason) {
-    case 'too_short': return '너무 짧아요. 버튼을 누른 채로 말하고, 말이 끝나면 손을 떼 주세요.';
+    case 'too_short': return '너무 짧아요. 마이크 버튼을 누르고 질문을 말한 다음, 끝나면 다시 눌러 주세요.';
     case 'no_speech': case 'hallucination': case 'repeated': case 'hint_echo':
       return '잘 알아듣지 못했어요. 마이크에 조금 더 가까이서 다시 말해 주세요.';
     case 'AUDIO_TOO_LONG': case 'AUDIO_TOO_LARGE': return '녹음이 너무 길어요. 짧게 나눠서 말해 주세요.';
@@ -52,7 +52,7 @@ function audioConstraints(): MediaTrackConstraints | boolean {
 
 export type MicState = 'idle' | 'recording';
 
-/** 누르고 말하기 녹음. start()는 누를 때, stop()은 뗄 때. 너무 길면(maxSeconds) 저절로 멈춘다. 오류는 onError 에 쉬운 문장으로 */
+/** 눌러서 시작·다시 눌러서 끝내는 녹음. start()는 첫 클릭, stop()은 두 번째 클릭. 너무 길면(maxSeconds) 저절로 멈춘다. 오류는 onError 에 쉬운 문장으로 */
 export function useMic(opts: { maxSeconds: number; onAudio: (audio: Blob) => void; onError: (message: string) => void }) {
   const [state, setState] = useState<MicState>('idle');
   const phase = useRef<'idle' | 'starting' | 'recording'>('idle');
