@@ -30,21 +30,38 @@ def seed_table() -> PermissionTable:
     return PermissionTable([Grant(r, t, a, s) for (r, t, a), s in grants.items()])
 
 
+def _api_routes(app):
+    """(method, path, 처리기, 의존성 목록). 가짜 fastapi(tests/stubs)와 진짜 fastapi 둘 다 읽는다.
+    라우터 모듈(app.routers.*)의 처리기만 — /api/health 같은 앱 직속 경로는 뺀다 (가짜 fastapi도 모으지 않음)"""
+    if hasattr(app, "routers"):                  # 가짜: include_router 한 라우터를 그대로 모아 둔다, 경로는 dict
+        for r in app.routers:
+            for route in r.routes:
+                yield route["method"], route["path"], route["endpoint"], list(r.dependencies) + list(route.get("dependencies") or [])
+        return
+    pending = list(app.routes)
+    while pending:
+        route = pending.pop(0)
+        sub = getattr(route, "original_router", None)    # fastapi 0.14x: include_router 한 라우터를 _IncludedRouter로 감싼다
+        if sub is not None:
+            pending[0:0] = list(sub.routes)
+            continue
+        fn = getattr(route, "endpoint", None)
+        if fn is None or not fn.__module__.startswith("app.routers.") or not getattr(route, "methods", None):
+            continue
+        for method in sorted(route.methods):     # 라우터 수준 의존성(dependencies=)은 진짜 fastapi가 경로마다 붙여 둔다
+            yield method, route.path, fn, list(route.dependencies)
+
+
 def routes():
     import app.main as main
-    for r in main.app.routers:
-        service = next((getattr(d.dependency, "service", None) for d in r.dependencies
-                        if getattr(d.dependency, "service", None)), None)
-        for route in r.routes:
-            fn = route["endpoint"]
-            route_service = next((getattr(d.dependency, "service", None) for d in route.get("dependencies") or []
-                                  if getattr(d.dependency, "service", None)), None)
-            perm = None
-            for p in inspect.signature(fn).parameters.values():
-                dep = getattr(p.default, "dependency", None)
-                if dep is not None and hasattr(dep, "permission"):
-                    perm = dep.permission
-            yield route["method"], route["path"], fn, service or route_service, perm
+    for method, path, fn, deps in _api_routes(main.app):
+        service = next((getattr(d.dependency, "service", None) for d in deps if getattr(d.dependency, "service", None)), None)
+        perm = None
+        for p in inspect.signature(fn).parameters.values():
+            dep = getattr(p.default, "dependency", None)
+            if dep is not None and hasattr(dep, "permission"):
+                perm = dep.permission
+        yield method, path, fn, service, perm
 
 
 def actual_matrix(table: PermissionTable) -> dict[tuple[str, str], str]:
