@@ -60,7 +60,24 @@ def test_candidate_only_when_every_condition_holds(monkeypatch):
     assert _cand("공기 필터는?", prev={**PREV, "status": "확인 필요"}) is False                        # 앞 답이 정상 답이 아님
     assert _cand("공기 필터는 얼마마다 교체하고 누가 그 기록을 남기고 재고는 어디서 빠지는지 알려줘") is False   # 짧은 글이 아님
     assert _cand("2075는?") is False and _cand("VF2-02는?") is False                                  # 알람·설비 신호는 기존 길
-    assert _cand("잠금은 어떻게 해?") is False                                                         # 안전 낱말은 기존 안전 길
+    assert _cand("잠금은 어떻게 해?") is False                                                         # 안전 절차 낱말은 기존 안전 길
+    assert _cand("전원은?") is False and _cand("고전압은?") is False
+
+
+def test_item_and_equipment_names_do_not_block_but_safety_words_still_do():
+    """2026-10-21 시연: "주축 윤활유는?"이 안전 목록의 품목 낱말 "주축"에 걸려 판단 호출이 막혔다 → 이름 낱말만 풀고 절차·위험 낱말은 그대로 막는다."""
+    for q in ("주축 윤활유는?", "절삭유 원액은?", "절삭유 필터는?", "세척액은?", "톱 인서트는?"):
+        assert _cand(q) is True, q
+    for q in ("주축 정비 전 어떻게 해?", "절삭유 교체 안전은?", "세척 전 차단은?"):    # 이름 낱말에 절차·위험 낱말이 함께 있으면 여전히 막힌다
+        assert _cand(q) is False, q
+
+
+def test_gate_follows_the_safety_list_automatically():
+    """관문 목록을 베끼지 않고 안전 목록에서 이름 낱말만 뺐으니 — 이름 낱말은 모두 안전 목록 안에 있어야 하고, 안전 목록의 나머지 낱말은 하나도 빠짐없이 막아야 한다."""
+    from backend.services import pure_external as PURE
+    assert set(CONT.ITEM_NAME_TERMS) <= set(PURE.SAFETY_TERMS)
+    assert all(CONT.blocked_by_safety(w) for w in PURE.SAFETY_TERMS if w not in CONT.ITEM_NAME_TERMS)
+    assert not any(CONT.blocked_by_safety(w) for w in CONT.ITEM_NAME_TERMS)
 
 
 # ---------------------------------------------------------------- 완성된 질문 대조
@@ -106,6 +123,17 @@ def test_continuation_answers_the_completed_question_and_says_so(real_like, monk
     assert shown.count(note) == 1 and a["conclusion"].endswith(note)
     assert [n for n, _ in calls].count(CONT.JOB) == 1
     assert a["_followup"]["question"] == "공기 필터 재고는 얼마나 부족해?"                                   # 다음 이어 묻기는 완성된 질문을 기준으로
+
+
+def test_spindle_oil_follow_up_is_continued_end_to_end(real_like, monkeypatch):  # noqa: F811
+    """시연 세션 2의 실패 재현: 축 윤활유 질문 뒤 "주축 윤활유는?" → 이어받아 주축 윤활유 재고 답 (더 긴 이름 "주축 윤활유"가 "축 윤활유"를 이긴다)."""
+    prev = {**PREV, "question": "축 윤활유 재고는 안전 재고보다 얼마나 부족해?"}
+    calls = fake_llm(monkeypatch, {"continues": True, "question": "주축 윤활유 재고는 안전 재고보다 얼마나 부족해?"})
+    with EXT.external_request("claude"):
+        a = A.answer("주축 윤활유는?", "MNT", {}, prev=prev)
+    shown = to_answer_text(a)
+    assert "주축 윤활유 7.63 L, 안전 재고 4 L보다 3.63 L 많아요." in shown and "축 윤활유 3.6" not in shown
+    assert "'주축 윤활유 재고는 안전 재고보다 얼마나 부족해?'로 이해했어요." in shown and [n for n, _ in calls].count(CONT.JOB) == 1
 
 
 def test_switch_off_never_calls_the_judge(real_like, monkeypatch):  # noqa: F811

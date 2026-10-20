@@ -35,9 +35,20 @@ SYSTEM = (
 
 _WORD = re.compile(r"[0-9A-Za-z가-힣][0-9A-Za-z가-힣.\-]*")
 
+# 안전 목록(PURE.SAFETY_TERMS)에는 안전 절차를 불러내려고 넓게 잡은 품목·설비 이름도 들어 있다("주축 윤활유는?"이 "주축"에 걸려 판단 호출이 막혔다, 2026-10-21 시연 테스트).
+# 이어짐 판단의 관문은 그 이름 낱말만 뺀 나머지(절차·위험 낱말: 잠금·표지·고전압·전기·차단·안전·위험·전원 …)로 막는다. 목록을 새로 베끼지 않고 SAFETY_TERMS에서 빼므로
+# 안전 목록에 낱말이 더해지면 여기서도 자동으로 막힌다(안전 쪽으로 실패). 안전 목록과 안전 길 자체는 바꾸지 않는다 — 이어서 푼 질문은 평소처럼 안전 길을 다시 거친다.
+ITEM_NAME_TERMS = ("알루미늄 칩", "칩 치", "톱", "절단", "콜드쏘", "밀링", "머시닝", "세척", "측정기", "프로브", "바렐", "주축", "절삭유")
+
 
 def _squash(text: str) -> str:
     return re.sub(r"\s+", "", text or "").lower()
+
+
+def blocked_by_safety(question: str) -> bool:
+    """안전 절차·위험 낱말이 있어 이어짐 판단(LLM)을 부르지 않을 질문인가 — 품목·설비 이름 낱말(ITEM_NAME_TERMS)은 세지 않는다."""
+    q = (question or "").upper()
+    return any(w.upper() in q for w in PURE.SAFETY_TERMS if w not in ITEM_NAME_TERMS)
 
 
 def candidate(question: str, p: dict, prev: dict | None, s: Settings) -> bool:
@@ -49,7 +60,7 @@ def candidate(question: str, p: dict, prev: dict | None, s: Settings) -> bool:
     q = (question or "").strip()
     if not q or len(_squash(q)) > MAX_CHARS or len(q.split()) > MAX_WORDS:
         return False
-    if PURE.has_signals(p) or PURE.is_safety(q):   # 알람·설비·날짜·로트·운영 낱말이나 안전 낱말이 있으면 기존 길이 처리한다
+    if PURE.has_signals(p) or blocked_by_safety(q):   # 알람·설비·날짜·로트·운영 낱말이나 안전 절차·위험 낱말이 있으면 기존 길이 처리한다
         return False
     return True
 
