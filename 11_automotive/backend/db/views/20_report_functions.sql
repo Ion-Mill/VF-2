@@ -347,8 +347,13 @@ BEGIN
     IF v_id IS NULL THEN
         SELECT count(*), string_agg(equipment_id || ' ' || item_name, ' · ' ORDER BY equipment_id, pm_task_id) INTO v_cnt, v_items
           FROM pm_task WHERE pm_task_id = ANY (v_tasks);
+        -- 받는 사람 = MNT + 작업자 담당 항목(DOC-04 매일·매주 일부)이 있으면 그 설비 공정의 작업자 (1015 DOC-04, 2026-10-20)
         v_id := fn_raise_notification('PM_DUE_SOON', format('기한 %s (내일) 예방 정비 %s건', to_char(v_due, 'MM/DD'), v_cnt),
-                                      '{}'::jsonb, v_at, p_related_info => v_items);
+                                      '{}'::jsonb, v_at, p_related_info => v_items,
+                                      p_recipients => ARRAY(SELECT u.user_id FROM app_user u WHERE u.is_active AND (u.role_code = 'MNT'
+                                          OR (u.role_code = 'OPR' AND EXISTS (SELECT 1 FROM pm_task t WHERE t.pm_task_id = ANY (v_tasks)
+                                               AND t.default_role = 'OPR'
+                                               AND fn_equipment_process(t.equipment_id) IN (u.home_process_code, u.home_process_code_2))))));
         IF v_id IS NULL THEN RETURN 0; END IF;          -- 규칙이 꺼져 있음
         v_new := 1;
     END IF;
@@ -441,6 +446,10 @@ BEGIN
             v_n := v_n + 1;
         END IF;
     END LOOP;
+    -- 반복 알람 효과 확인 (FR-AST-02-18·R-70, 2026-10-20): 조치 계획(1단계)·원인 점검 확정(2단계) 뒤 7일 동안 재발이 없으면
+    --   "효과 있음"으로 닫는다 (전에는 다음 알람이 와야만 바뀌었다)
+    UPDATE notification SET repeat_stage_status = 'EFFECTIVE'
+     WHERE repeat_stage_status IN ('S1_CLOSED','S2_CHECKED') AND effect_check_due_at IS NOT NULL AND effect_check_due_at <= v_at;
     -- 로트 납기 지연 위험 (FR-AST-02-06, 2026-10-20 — views/30_live_rules.sql)
     v_n := v_n + fn_raise_lot_due_risk(v_at);
     -- CMM 결과 미수신 (대기 시간은 [선택 필요: 기술 회의])

@@ -398,6 +398,17 @@ END $$;
 CREATE TRIGGER inventory_txn_apply AFTER INSERT ON inventory_txn
     FOR EACH ROW EXECUTE FUNCTION trg_inventory_txn_apply();
 
+-- 재고가 움직이면 그 품목의 재고 부족을 다시 본다 (R-39, FR-AST-02-07·FR-INV-01-07 — 2026-10-20). 전에는 작업기록서 확정·공구
+--   교체·실사 API만 불러, 예방 정비 확정의 소모품 차감으로 줄어도 재고 부족 알림이 안 떴다. 이름 순서상 inventory_txn_apply 뒤에 돈다
+CREATE OR REPLACE FUNCTION trg_inventory_txn_stock() RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+    IF current_setting('app.loading', true) IS NOT DISTINCT FROM 'on' THEN RETURN NULL; END IF;
+    PERFORM fn_check_stock(NEW.item_no, NEW.txn_by, NEW.txn_at);
+    RETURN NULL;
+END $$;
+CREATE TRIGGER inventory_txn_stock AFTER INSERT ON inventory_txn
+    FOR EACH ROW EXECUTE FUNCTION trg_inventory_txn_stock();
+
 -- 추가만 하는 표 (수불대장·문서 버전·접속 기록)
 CREATE OR REPLACE FUNCTION trg_append_only() RETURNS trigger LANGUAGE plpgsql AS $$
 BEGIN

@@ -621,6 +621,18 @@ BEGIN
      ORDER BY n.raised_at DESC LIMIT 1;
     IF v_prev.notification_id IS NOT NULL THEN
         IF v_prev.repeat_stage_status IN ('S1_OPEN','S2_OPEN') THEN RETURN 'NONE'; END IF;
+        -- 조치 작업이 진행 중(같은 설비·같은 알람의 작업지시서가 끝나지 않았거나 작업기록서가 확정 전)일 때 난 알람은 재발로 세지 않는다
+        --   (FR-AST-02-18, R-70 — 2026-10-20: 전에는 1단계 셈에만 적용)
+        IF EXISTS (SELECT 1 FROM maintenance_work_order o
+                     LEFT JOIN notification tn ON tn.notification_id = o.trigger_notification_id
+                     JOIN alarm_event e ON e.alarm_event_id = coalesce(o.alarm_event_id, tn.alarm_event_id)
+                    WHERE e.equipment_id = a.equipment_id AND e.alarm_code = a.alarm_code AND e.alarm_event_id <> a.alarm_event_id
+                      AND o.status NOT IN ('DONE','CANCELLED'))
+           OR EXISTS (SELECT 1 FROM work_record w JOIN alarm_event e ON e.alarm_event_id = w.alarm_event_id
+                       WHERE e.equipment_id = a.equipment_id AND e.alarm_code = a.alarm_code AND e.alarm_event_id <> a.alarm_event_id
+                         AND w.status IN ('AI_DRAFT','EDITING')) THEN
+            RETURN 'NONE';
+        END IF;
         IF a.occurred_at <= v_prev.effect_check_due_at THEN
             UPDATE notification SET repeat_stage_status = 'ESCALATED' WHERE notification_id = v_prev.notification_id;
             v_id := fn_raise_notification('REPEAT_ALARM_2',
