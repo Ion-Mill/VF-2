@@ -214,12 +214,22 @@ def test_non_answer_prev_has_no_blocks(all10):
 
 # ---------------------------------------------------------------- C 덩어리 제목·점검 순서 자리 (BLOCKS_V3)
 def test_alarm_answer_sections_follow_guide_card_order(all10):
-    a = ask("2075가 왜 자꾸 떠?")
+    a = ask("2075가 자꾸 떠?")
     secs = [b["text"] for b in a["blocks"] if b["kind"] == "section"]
     assert secs[:2] == ["알람 설명", "점검 순서 (사내 문서)"] and secs[-1] == "운영 기록 [가상]"
     kinds = [b["kind"] for b in a["blocks"]]
     assert kinds[:4] == ["section", "text", "section", "steps"]
     assert not any(re.search(r"\d", t) for t in secs)                       # 제목에 숫자 없음
+
+
+def test_alarm_answer_with_a_cause_word_puts_causes_between_description_and_steps(all10):
+    """2026-10-19: "왜"·"원인"을 물으면 알람 설명 → 가능한 원인 → 점검 순서 → … → 운영 기록 (test_alarm_causes.py가 자세히 본다)."""
+    a = ask("2075가 왜 자꾸 떠?")
+    secs = [b["text"] for b in a["blocks"] if b["kind"] == "section"]
+    assert secs[:3] == ["알람 설명", "가능한 원인 (사내 문서)", "점검 순서 (사내 문서)"] and secs[-1] == "운영 기록 [가상]"
+    kinds = [b["kind"] for b in a["blocks"]]
+    assert kinds[:4] == ["section", "text", "section", "line"]
+    assert not any(re.search(r"\d", t) for t in secs)
 
 
 def test_single_group_answer_has_no_sections(all10):

@@ -18,9 +18,11 @@ const IN_CHECKS: [string, string][] = [['성적서 EN 10204 3.1 받음', '공급
 const TXN: Record<string, string> = { IN: '입고', USE: '사용', ADJUST: '조정', FG_IN: '합격 입고', SHIP: '출하', RECEIVE: '입고' };
 const box = 'rounded-2xl border border-slate-300 bg-white p-5';
 const tabBtn = (on: boolean) => `h-14 rounded-xl border px-7 text-[18px] font-bold ${on ? 'border-[#1f5fc4] bg-[#1f5fc4] text-white' : 'border-slate-300 bg-white text-[#1f4fa8]'}`;
+// 할 일 버튼 — 누른 것(열린 입력 칸)만 파란색
+const todo = (on: boolean) => `h-11 rounded-lg border px-4 text-[15px] font-bold disabled:text-slate-400 ${on ? 'border-[#1f5fc4] bg-[#1f5fc4] text-white' : 'border-slate-300 bg-white text-[#1f4fa8]'}`;
 
 export function InventoryScreen() {
-  const { inv, reloadInv, role, user, back, go, toast, twin } = useApp();
+  const { inv, reloadInv, role, user, back, go, toast, twin, eve } = useApp(); // eve: 이브 창이 열려 좁을 때 배치 바꿈
   const [tab, setTab] = useState<'stock' | 'ship'>('stock');
   const [shipTab, setShipTab] = useState<'now' | 'past'>('now');
   const [cat, setCat] = useState('');
@@ -83,7 +85,7 @@ export function InventoryScreen() {
             <div className="flex items-center justify-between"><h3 className="flex items-center gap-2 text-[17px] font-bold"><span className="h-2.5 w-2.5 rounded-full bg-[#1f5fc4]" />한눈에 보기</h3><span className="rounded-full border border-slate-400 px-3 py-1 text-[13px]">입고 검사 대기 {pendingIn.length}</span></div>
             <div className="mt-3 flex flex-wrap gap-2">{(['전체', ...GROUPS.map((g) => g[0])] as string[]).map((g) => { const its = g === '전체' ? inv.items : inv.items.filter((i) => groupOf(i) === g), lw = its.filter((i) => i.low).length; return (
               <button key={g} onClick={() => setCat(g === '전체' ? '' : g)} className={`flex h-11 items-center gap-2 rounded-lg border px-4 text-[15px] font-bold ${(cat || '전체') === g ? 'border-[#1f5fc4] bg-[#1f5fc4] text-white' : 'border-slate-300 bg-white text-[#1f4fa8]'}`}>{g} <span className="font-normal">{its.length}</span>{lw > 0 && <span className="rounded-full border border-[#e0b000] bg-[#fff6d6] px-2 text-[12px] text-[#7a5600]">▲ {lw}</span>}</button>); })}</div>
-            <div className="mt-4 grid grid-cols-[1.45fr_1fr] gap-8">
+            <div className={`mt-4 grid gap-8 ${eve ? 'grid-cols-1' : 'grid-cols-[1.45fr_1fr]'}`}>
               <div>
                 <div className="flex items-center gap-4 text-[13px]"><b className="text-[15px]">재고 여유</b><span><i className="mr-1 inline-block h-2 w-5 rounded-sm bg-[#4b5563]" />지금</span><span><i className="mr-1 inline-block h-3 w-[2px] bg-[#1c2530]" />안전 재고</span></div>
                 {GROUPS.filter(([g]) => g !== '완제품' && (!cat || cat === g)).map(([g, note]) => { const its = inv.items.filter((i) => groupOf(i) === g); if (!its.length) return null; return (
@@ -98,12 +100,14 @@ export function InventoryScreen() {
                   </div>); })}
               </div>
               {(!cat || cat === '완제품') && fgItem && (
-                <div>
+                <div className={eve ? 'border-t border-slate-200 pt-4' : ''}>
                   <b className="text-[15px]">완제품 {fgItem.item_name.replace(' 완제품', '')}</b>
+                  <div className={eve ? 'grid grid-cols-2 gap-x-8' : ''}>{/* 이브 열림: 4줄을 2칸씩 */}
                   {([['지금', fgNow, '#4b5563', false], ['이번 출하', -total, '', true], ['출하 뒤', Math.max(0, fgNow - total), '#4b5563', false], ['🔒 보류', heldQty, '', false]] as [string, number, string, boolean][]).map(([k, v, c, dash]) => (
                     <div key={k} className="mt-3 grid grid-cols-[80px_1fr_56px] items-center gap-3 text-[14px]"><span>{k}</span>
                       <div className="relative h-5 rounded bg-slate-100">{dash ? <div className="absolute inset-y-0 right-0 rounded border border-dashed border-slate-500" style={{ width: `${fgNow ? (total / fgNow) * 100 : 0}%` }} /> : c ? <div className="h-full rounded" style={{ width: `${fgNow ? (Math.max(0, v) / fgNow) * 100 : 0}%`, background: c }} /> : <div className="h-full w-5 rounded border-2 border-[#1c2530]" />}</div>
                       <b className="text-right font-mono text-[17px]">{v}</b></div>))}
+                  </div>
                 </div>)}
             </div>
           </section>
@@ -112,7 +116,7 @@ export function InventoryScreen() {
             {/* 거래 기록 */}
             <section className={box}>
               <h3 className="flex items-center gap-2 text-[17px] font-bold"><span className="h-2.5 w-2.5 rounded-full bg-[#1f5fc4]" />거래 기록</h3>
-              <ul className="mt-3 max-h-[440px] divide-y divide-slate-100 overflow-y-auto border-t border-slate-200 text-[14px]">{txns.map((t, i) => { const ref = t.lot_no || t.fg_lot_no; const q = Number(t.qty_change); return (
+              <ul className="mt-3 max-h-[300px] divide-y divide-slate-100 overflow-y-auto border-t border-slate-200 text-[14px]">{txns.map((t, i) => { const ref = t.lot_no || t.fg_lot_no; const q = Number(t.qty_change); return (
                 <li key={i} className="grid grid-cols-[90px_80px_1fr_70px] items-center gap-2 py-2.5">
                   <span className={`font-mono ${t.live ? '' : 'text-slate-500'}`}>{t.live ? '' : `${md(t.txn_at)} `}{hm(t.txn_at)}</span><b>{TXN[t.txn_type] ?? t.txn_type}</b>
                   <span className="min-w-0 truncate">{name(t.item_no)} {ref ? <button onClick={() => go('lots', ref)} className="rounded border border-[#9db6ea] px-1.5 font-mono text-[12px] text-[#1f5fc4] underline">{ref}</button> : t.shipment_no ? <span className="rounded border border-slate-300 px-1.5 font-mono text-[12px]">{t.shipment_no}</span> : t.memo ? <span className="rounded border border-slate-300 px-1.5 text-[12px]">{t.memo}</span> : null}</span>
@@ -123,10 +127,11 @@ export function InventoryScreen() {
             {/* 할 일 */}
             <section className={box}>
               <h3 className="flex items-center gap-2 text-[17px] font-bold"><span className="h-2.5 w-2.5 rounded-full bg-[#1f5fc4]" />할 일</h3>
+              {/* 누른 버튼(열린 입력 칸)만 파란색 — 출하 등록이 늘 파래서 눌린 것처럼 보이던 것을 고침 (사용자 요청 2026-10-20) */}
               <div className="mt-3 flex flex-wrap gap-2 border-b border-slate-200 pb-4">
-                <button disabled={!myItems.length} onClick={() => setForm({ item: myItems[0]?.item_no ?? '', type: 'IN', qty: '', memo: '' })} className="h-11 rounded-lg border border-slate-300 bg-white px-4 text-[15px] font-bold text-[#1f4fa8] disabled:text-slate-400">입고 등록</button>
-                <button disabled={!myItems.length} onClick={() => setForm({ item: myItems[0]?.item_no ?? '', type: 'ADJUST', qty: '', memo: '' })} className="h-11 rounded-lg border border-slate-300 bg-white px-4 text-[15px] font-bold text-[#1f4fa8] disabled:text-slate-400">실사·조정</button>
-                <button onClick={() => setTab('ship')} className="h-11 rounded-lg bg-[#1f5fc4] px-4 text-[15px] font-bold text-white">출하 등록</button>
+                <button disabled={!myItems.length} onClick={() => setForm({ item: myItems[0]?.item_no ?? '', type: 'IN', qty: '', memo: '' })} className={todo(form?.type === 'IN')}>입고 등록</button>
+                <button disabled={!myItems.length} onClick={() => setForm({ item: myItems[0]?.item_no ?? '', type: 'ADJUST', qty: '', memo: '' })} className={todo(form?.type === 'ADJUST')}>실사·조정</button>
+                <button onClick={() => setTab('ship')} className={todo(false)}>출하 등록</button>
               </div>
               {form && (
                 <div className="mt-3 flex flex-col gap-2 rounded-xl border border-slate-300 p-3 text-[14px]">
@@ -164,10 +169,13 @@ export function InventoryScreen() {
                 <section className={box}>
                   <h3 className="text-[19px] font-bold">지난 출하</h3>
                   <div className="mt-3 flex max-h-[560px] flex-col gap-2 overflow-y-auto">{list.map((s) => (
-                    <button key={s.shipment_no} onClick={() => setPastSel(s.shipment_no)} className={`grid grid-cols-[150px_1fr_60px] items-center gap-3 rounded-xl border px-4 py-3 text-left ${s.shipment_no === cur?.shipment_no ? 'border-[#9db6ea] bg-[#eef3fd]' : 'border-slate-200 bg-white'}`}>
-                      <b className="font-mono text-[16px]">{s.shipment_no}</b>
-                      <span className="text-[15px]">{md(s.shipped_at)} {hm(s.shipped_at)} · {s.customer_code}<span className="block text-[13px] text-slate-500">{s.status === 'CONFIRMED' ? '확정' : s.status} · 로트 {s.lines.length}</span></span>
-                      <b className="text-right font-mono text-[18px]">{sum(s)}</b>
+                    <button key={s.shipment_no} onClick={() => setPastSel(s.shipment_no)} className={`grid items-center rounded-xl border text-left ${eve ? 'grid-cols-[62px_1fr_auto] gap-2 px-3 py-2.5' : 'grid-cols-[150px_1fr_60px] gap-3 px-4 py-3'} ${s.shipment_no === cur?.shipment_no ? 'border-[#9db6ea] bg-[#eef3fd]' : 'border-slate-200 bg-white'}`}>
+                      {/* 이브 열림: SHP / -2610 / -001 세 줄로 접어 폭을 줄이고 수량을 당겨 옴 */}
+                      {eve
+                        ? <b className="font-mono text-[14px] leading-tight">{String(s.shipment_no).split('-').map((p, i) => <span key={i} className="block">{i ? `-${p}` : p}</span>)}</b>
+                        : <b className="font-mono text-[16px]">{s.shipment_no}</b>}
+                      <span className="min-w-0 text-[15px]"><span className="whitespace-nowrap">{md(s.shipped_at)} {hm(s.shipped_at)}</span> · <span className="whitespace-nowrap">{s.customer_code}</span><span className="block text-[13px] text-slate-500">{s.status === 'CONFIRMED' ? '확정' : s.status} · 로트 {s.lines.length}</span></span>
+                      <b className={`text-right font-mono ${eve ? 'pr-1 text-[20px]' : 'text-[18px]'}`}>{sum(s)}</b>
                     </button>))}</div>
                 </section>
                 {cur && (
@@ -179,10 +187,11 @@ export function InventoryScreen() {
                       <div><div className="text-[13px] text-slate-500">확인자</div>{cur.confirmed_by ? userName(cur.confirmed_by) : '—'}</div>
                       <div className="col-span-3"><div className="text-[13px] text-slate-500">비고</div>{cur.fifo_skip_reason || cur.memo || '—'}</div>
                     </div>
-                    <table className="mt-4 w-full text-left text-[15px]">
-                      <thead className="border-b border-slate-200 text-[13px] text-slate-500"><tr><th className="py-2">로트</th><th>합격</th><th className="text-right">수량</th></tr></thead>
+                    {/* 이브 열림: 출하 로트 표를 줄임 — 합격 칸을 빼고 줄 간격·글자를 줄임 */}
+                    <table className={`w-full text-left ${eve ? 'mt-3 text-[14px]' : 'mt-4 text-[15px]'}`}>
+                      <thead className="border-b border-slate-200 text-[13px] text-slate-500"><tr><th className={eve ? 'py-1.5' : 'py-2'}>로트</th>{!eve && <th>합격</th>}<th className="text-right">수량</th></tr></thead>
                       <tbody className="divide-y divide-slate-100">{cur.lines.map((x: R) => (
-                        <tr key={x.lot_no}><td className="py-2.5"><button onClick={() => go('lots', x.lot_no)} className="font-mono text-[#1f5fc4] underline">{x.lot_no}</button></td><td className="font-mono">{x.lot_passed_at ? `${md(x.lot_passed_at)} ${hm(x.lot_passed_at)}` : '—'}</td><td className="text-right font-mono font-bold">{x.qty}</td></tr>))}</tbody>
+                        <tr key={x.lot_no}><td className={eve ? 'py-1.5' : 'py-2.5'}><button onClick={() => go('lots', x.lot_no)} className="font-mono text-[#1f5fc4] underline">{x.lot_no}</button></td>{!eve && <td className="font-mono">{x.lot_passed_at ? `${md(x.lot_passed_at)} ${hm(x.lot_passed_at)}` : '—'}</td>}<td className="text-right font-mono font-bold">{x.qty}</td></tr>))}</tbody>
                     </table>
                     <div className="mt-2 border-t border-slate-200 pt-2 text-right text-[16px]">합 <b className="font-mono text-[18px]">{sum(cur)}</b> 개</div>
                     <div className="mt-4 text-[15px] font-bold">버전</div>
@@ -205,14 +214,14 @@ export function InventoryScreen() {
                   {role === 'SUP' && <button onClick={() => { setShip(Object.fromEntries(avail.filter((l) => (dueOf(l) ?? '0000').slice(0, 10) <= today).map((l) => [l.lot_no, left(l)]))); setReview(false); }} className="h-11 rounded-lg border border-slate-300 bg-white px-4 text-[14px] text-[#1f5fc4] disabled:text-slate-400">오늘 납기 전부 채우기</button>}</div>
                 {avail.length === 0 ? <p className="mt-3 text-[14px] text-slate-500">출하할 수 있는 합격 로트가 없습니다</p> : (
                   <div className="mt-3 grid grid-cols-2 gap-3">{avail.slice(0, 12).map((l) => { const q = ship[l.lot_no] ?? 0, mx = left(l), due = dueOf(l); return (
-                    <div key={l.lot_no} className={`flex items-center gap-3 rounded-xl border p-3 ${q > 0 ? 'border-[#9db6ea] bg-[#f3f6ff]' : 'border-slate-200 bg-white'}`}>
-                      <div className="min-w-0 flex-1"><button onClick={() => go('lots', l.lot_no)} className="font-mono text-[16px] font-bold text-[#1f5fc4] underline">{l.lot_no}</button>
+                    <div key={l.lot_no} className={`flex gap-3 rounded-xl border p-3 ${eve ? 'flex-col items-stretch' : 'items-center'} ${q > 0 ? 'border-[#9db6ea] bg-[#f3f6ff]' : 'border-slate-200 bg-white'}`}>{/* 이브 열림: 로트 번호 → 설명 → −0+ 위에서 아래로 */}
+                      <div className="min-w-0 flex-1"><button onClick={() => go('lots', l.lot_no)} className="whitespace-nowrap font-mono text-[16px] font-bold text-[#1f5fc4] underline">{l.lot_no}</button>
                         <div className="text-[13px] text-slate-600">합격 {md(l.passed_at)} {hm(l.passed_at)} · 납기 {due ? md(due) : '—'} · 남은 {mx}</div>{q === mx && q > 0 && <div className="text-[12px] text-slate-500">전부</div>}</div>
                       {role === 'SUP' && (
-                      <div className="flex h-12 items-center overflow-hidden rounded-lg border border-slate-300 bg-white">
-                        <button disabled={role !== 'SUP'} onClick={() => setQ(l.lot_no, q - 1, mx)} className="h-full w-11 text-[20px]">−</button>
-                        <input disabled={role !== 'SUP'} value={q} onChange={(e) => setQ(l.lot_no, Number(e.target.value) || 0, mx)} className="h-full w-14 border-x border-slate-200 text-center font-mono text-[18px] font-bold" />
-                        <button disabled={role !== 'SUP'} onClick={() => setQ(l.lot_no, q + 1, mx)} className="h-full w-11 text-[20px]">+</button></div>
+                      <div className={`flex h-12 items-center overflow-hidden rounded-lg border border-slate-300 bg-white ${eve ? 'w-full' : ''}`}>
+                        <button disabled={role !== 'SUP'} onClick={() => setQ(l.lot_no, q - 1, mx)} className="h-full w-11 shrink-0 text-[20px]">−</button>
+                        <input disabled={role !== 'SUP'} value={q} onChange={(e) => setQ(l.lot_no, Number(e.target.value) || 0, mx)} className={`h-full min-w-0 border-x border-slate-200 text-center font-mono text-[18px] font-bold ${eve ? 'flex-1' : 'w-14'}`} />
+                        <button disabled={role !== 'SUP'} onClick={() => setQ(l.lot_no, q + 1, mx)} className="h-full w-11 shrink-0 text-[20px]">+</button></div>
                       )}
                     </div>); })}</div>
                 )}
@@ -221,7 +230,7 @@ export function InventoryScreen() {
 
               {/* 출하 요약 */}
               <section className={box}>
-                <div className="flex items-center justify-between"><h3 className="flex items-center gap-2 text-[17px] font-bold"><span className="h-2.5 w-2.5 rounded-full bg-[#1f5fc4]" />출하 <span className="font-mono">{nextNo}</span></h3><span className="rounded-lg border border-slate-300 px-3 py-1 text-[14px]">{chosen.length ? '작성 중' : '비어 있음'}</span></div>
+                <div className="flex items-center justify-between gap-2"><h3 className="flex items-center gap-2 whitespace-nowrap text-[17px] font-bold"><span className="h-2.5 w-2.5 shrink-0 rounded-full bg-[#1f5fc4]" />출하 <span className="font-mono">{nextNo}</span></h3><span className="shrink-0 whitespace-nowrap rounded-lg border border-slate-300 px-3 py-1 text-[14px]">{chosen.length ? '작성 중' : '비어 있음'}</span></div>
                 <div className="mt-3 grid grid-cols-2 gap-3 text-[14px]">
                   <div><div className="text-[12px] text-slate-500">출하처</div>CUST-01</div>
                   <div><div className="text-[12px] text-slate-500">출하 일시</div>확정 때 기록</div>
