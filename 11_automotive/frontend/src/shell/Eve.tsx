@@ -114,7 +114,11 @@ export function Eve({ tab, onPick, onClose, badges, bubble, onBubble, brief, onN
           <div className="ma-tabs" role="tablist" aria-label="이브 메뉴">
             {EVE_TABS.map((t) => <button key={t} type="button" role="tab" className="ma-tab" aria-selected={tab === t} onClick={() => { setFocus(null); onPick(t); }}>{t}{badge(t, 'ma-tab-badge')}</button>)}
           </div>
-          {tab === '채팅' ? <Chat focus={focus} headerSlot={slot} onNewChat={() => setFocus(null)} /> : (
+          {/* 채팅은 다른 탭으로 가도 지우지 않고 숨기기만 한다 — 보낸 질문·기다리는 답·입력 중인 글이 그대로 남는다 (2026-10-20). contents = 보일 때 모양은 그대로 */}
+          <div className={tab === '채팅' ? 'contents' : 'hidden'}>
+            <Chat active={tab === '채팅'} focus={focus} headerSlot={slot} onNewChat={() => setFocus(null)} />
+          </div>
+          {tab !== '채팅' && (
             <div className="ma-body text-[14px] leading-relaxed" role="tabpanel">
               {tab === '채팅 기록' ? <ChatLog onOpen={(r) => { setFocus({ at: r.at, q: r.q, ...(typeof r.chatId === 'number' ? { chatId: r.chatId } : {}) }); onPick('채팅'); }} /> : <div className="ma-pad">{tab === '브리핑' ? brief : <AlertsTab onNotice={onNotice} />}</div>}
             </div>
@@ -266,7 +270,7 @@ function useServerChat(userId: string, again: unknown): ChatRow[] {
   return rows;
 }
 
-function Chat({ focus, headerSlot, onNewChat }: { focus: FocusRef | null; headerSlot: HTMLElement | null; onNewChat: () => void }) {
+function Chat({ active, focus, headerSlot, onNewChat }: { active: boolean; focus: FocusRef | null; headerSlot: HTMLElement | null; onNewChat: () => void }) {
   const { user, role, screen, selected, openSource } = useApp();
   const [log, setLog] = useLocal<ChatRow[]>(`chat:${user.id}`, []);
   const [q, setQ] = useState('');
@@ -284,10 +288,13 @@ function Chat({ focus, headerSlot, onNewChat }: { focus: FocusRef | null; header
     fetchVoiceStatus(user.id).then((v) => { if (live) setVoice(v); });
     return () => { live = false; };
   }, [user.id]);
+  const activeRef = useRef(active);   // 채팅 탭을 떠난 뒤에 끝난 녹음은 글자로 바꾸지 않고 버린다
+  activeRef.current = active;
   const mic = useMic({
     maxSeconds: voice.maxSeconds,
     onError: (m) => setVoiceNote(m),
     onAudio: async (blob) => {
+      if (!activeRef.current) return;
       setVoiceBusy(true); setVoiceNote('');
       try {
         const r = await transcribeAudio(user.id, blob);
@@ -296,6 +303,11 @@ function Chat({ focus, headerSlot, onNewChat }: { focus: FocusRef | null; header
       finally { setVoiceBusy(false); }
     },
   });
+  // 채팅 탭을 떠나면 숨겨진 채로 녹음이 이어지지 않게 멈추고, 돌아오면 안내 줄을 비우고 입력 칸에 초점을 준다 (예전에는 탭을 옮기면 Chat이 사라져 저절로 끊기고, 열릴 때 autoFocus가 했다)
+  useEffect(() => {
+    if (!active) { mic.stop(); return; }
+    setVoiceNote(''); input.current?.focus();
+  }, [active]); // eslint-disable-line react-hooks/exhaustive-deps
   const server = useServerChat(user.id, focus ? (focus.chatId ?? focus.at) : null);   // 채팅 기록에서 연 대화가 다른 PC에서 물은 것일 수 있다
   // 채팅 기록에서 열면 눌러 연 줄이 속한 대화만(서버 기록 포함, 앞 질문 번호로 이어진 덩어리), 아니면 지금 대화의 최근 12개
   const today = focus ? sessionOf(mergeServerLog(log, server), log, focus) : currentChat(log).slice(-12);
@@ -328,7 +340,7 @@ function Chat({ focus, headerSlot, onNewChat }: { focus: FocusRef | null; header
   useEffect(() => {
     const el = focus && body.current?.querySelector('[data-focus="1"]');
     if (el) el.scrollIntoView({ block: 'center' }); else if (body.current) body.current.scrollTop = body.current.scrollHeight;
-  }, [log.length, busy, focus]);
+  }, [log.length, busy, focus, active]);   // active: 숨겼다 다시 보일 때도 맨 아래(또는 눌러 연 줄)로
   return (
     <>
       {headerSlot && createPortal(
