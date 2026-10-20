@@ -76,7 +76,7 @@ export function ReplayScreen() {
   const stopMin = data ? Math.round(EQS.reduce((n, eq) => n + (data.states[eq] ?? []).filter((r) => r.state_code !== 'RUN').reduce((m, r) => m + Math.max(0, Math.min(Date.parse(r.end_at), t) - Math.max(Date.parse(r.start_at), t0)), 0), 0) / 60000) : 0;
   const runNow = EQS.filter((eq) => (frame?.equipment as Record<string, { state_code: string }>)?.[eq]?.state_code === 'RUN').length;
   const alarmsNow = (data?.alarms ?? []).filter((a) => Date.parse(a.occurred_at) <= t && (!a.cleared_at || t < Date.parse(a.cleared_at)));
-  const box = 'rounded-3xl border border-[#e3e6f3] bg-white shadow-xl';
+  const box = 'rounded-3xl border border-[#e6e3f0] bg-white shadow-xl';
   const cards = EQS.map((eq) => {
     const e = (frame?.equipment as Record<string, { state_code: string; warn_marker: boolean; reason_code?: string | null; alarm?: { alarm_code: string } | null }>)?.[eq];
     const st = stateOf(e), hot = st === 'ALARM' || st === 'WARN' || !!e?.alarm;
@@ -88,7 +88,7 @@ export function ReplayScreen() {
   return (
     <>
       {/* 재생 중에는 3D 대신 카드 라인 (사용자 요청 2026-10-17) */}
-      <div className="absolute bottom-[calc(var(--panelH)+24px)] left-[88px] right-3 top-[76px] flex flex-col overflow-hidden rounded-3xl border border-[#c4c8cd] px-6 py-4" style={{ background: `radial-gradient(ellipse 38% 60% at ${focusX}% 55%, #eceef0 0%, #c3c7cc 55%, #adb2b8 100%)` }}>
+      <div className="absolute bottom-[calc(var(--panelH)+24px)] left-[220px] right-3 top-[76px] flex flex-col overflow-hidden rounded-3xl border border-[#c4c8cd] px-6 py-4" style={{ background: `radial-gradient(ellipse 38% 60% at ${focusX}% 55%, #eceef0 0%, #c3c7cc 55%, #adb2b8 100%)` }}>
         <div className="flex items-center gap-3">
           <h3 className="text-[17px] font-bold text-[#2a323b]">라인 상태</h3>
           <span className="text-[13px] text-[#4b5560]">표면 재질이 곧 상태 · 회전광 = 가공 · 달아오름 = 주의 · 무광 = 정지</span>
@@ -129,7 +129,7 @@ export function ReplayScreen() {
           <div className="mt-2 text-center text-[13px] font-semibold text-[#4b5560]">OP-30 2대 병렬{frame?.bottleneck ? ` · 병목 ${frame.bottleneck.process_code}` : ''}</div>
         </div>
       </div>
-      <div className="absolute bottom-3 left-[88px] right-3 grid h-[var(--panelH)] grid-cols-[210px_1fr_250px] gap-3 text-[13px]">
+      <div className="absolute bottom-3 left-[220px] right-3 grid h-[var(--panelH)] grid-cols-[210px_1fr_250px] gap-3 text-[13px]">
         {/* 다이얼 + 재생 */}
         <section className={`${box} flex flex-col items-center justify-center gap-3`}>
           <svg width="150" height="150" viewBox="-75 -75 150 150" className="cursor-grab touch-none select-none active:cursor-grabbing" aria-label="시간 다이얼 (한 바퀴 3시간)"

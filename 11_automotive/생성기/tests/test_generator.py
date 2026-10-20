@@ -106,3 +106,14 @@ def test_realtime_event_buttons_same_result():
     assert ev_a == ev_b
     assert [e["code"] for e in a.event_log] == ["S3", "S6", "S1", "S4"] and all(e.get("end_m") for e in a.event_log)
     assert not [o for o in a.ops if o["op"] == "failed"]
+
+
+def test_realtime_skip_to_night_start():
+    """시연 넘기기: 17:00(주간 끝) 다음 20:00(야간 시작)으로 (2026-10-19)."""
+    from gen.realtime import Realtime
+    cfg = load_config()
+    a = Realtime(cfg, load_masters(cfg))
+    a.skip("TODAY_17:00")
+    assert a.clock()["sim_at"] == "2026-10-01T17:00:00+09:00"
+    a.skip("TODAY_20:00")
+    assert a.clock()["sim_at"] == "2026-10-01T20:00:00+09:00"

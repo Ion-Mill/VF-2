@@ -189,11 +189,12 @@ class Realtime:
         self._op("resume")
 
     def skip(self, to: str = "TODAY_17:00"):
-        """지금 → 오늘 17:00 (주간 교대 끝). 그 사이를 빠르게 만든다. 17:00이 지났으면 아무것도 안 함."""
+        """지금 → 오늘 17:00 (주간 교대 끝) 또는 20:00 (교대 사이 정지 끝 = 야간 시작). 그 사이를 빠르게 만든다. 그 시각이 지났으면 아무것도 안 함."""
         if to not in self.rt["skip_targets"]:
             raise ValueError(f"넘기기는 {self.rt['skip_targets']}만")
         day = self.sim.cal.shift_or_near(self.m).work_date
-        target = self.sim.cal.to_min(datetime(day.year, day.month, day.day, 17, 0, tzinfo=KST))
+        hh, mm = map(int, to.split("_")[1].split(":"))
+        target = self.sim.cal.to_min(datetime(day.year, day.month, day.day, hh, mm, tzinfo=KST))
         start = self.now()
         out = []
         while self.m < min(target, self.end_m):

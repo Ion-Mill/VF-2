@@ -51,7 +51,7 @@ export default function Layout2D() {
           const s = stateOf(twin?.equipment[eq]), v = STATE_VIEW[s], sel = selected === id, isBn = !!bn && bn !== 'OP-30' && e.process === bn;
           return (
             <g key={eq} onClick={() => selectMachine(id)} className="cursor-pointer" role="button" aria-label={`${eq} ${v.text}`}>
-              <rect x={x0} y={Y(y1)} width={x1 - x0} height={y1 - y0} fill={FILL[s]} stroke={sel ? '#0f9fbd' : isBn ? '#e8954a' : EDGE[s]} strokeWidth={sel || isBn ? 90 : 50} strokeDasharray={s === 'NODATA' ? '120 80' : undefined} />
+              <rect x={x0} y={Y(y1)} width={x1 - x0} height={y1 - y0} fill={FILL[s]} stroke={sel ? '#7a52f0' : isBn ? '#e8954a' : EDGE[s]} strokeWidth={sel || isBn ? 90 : 50} strokeDasharray={s === 'NODATA' ? '120 80' : undefined} />
               <text x={e.center[0]} y={Y(e.center[1]) - 120} fontSize="360" fontWeight="700" textAnchor="middle" fill="#26303a">{eq}</text>
               <text x={e.center[0]} y={Y(e.center[1]) + 320} fontSize="330" fontWeight="700" textAnchor="middle" fill={v.color}>{v.icon} {v.text}</text>
               <text x={e.center[0]} y={Y(y1) - 120} fontSize="240" textAnchor="middle" fill="#56616c">{e.process} · {(e.size[0] / 1000).toFixed(1)}×{(e.size[1] / 1000).toFixed(1)} m{isBn ? ' · 병목' : ''}</text>

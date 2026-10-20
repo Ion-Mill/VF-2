@@ -81,7 +81,7 @@ export default function DocBox() {
       <colgroup><col className="w-[120px]" /><col className="w-[90px]" /><col className="w-[64px]" /><col className="w-[64px]" /><col className="w-[110px]" /><col /></colgroup>
       <thead className="text-[12px] text-slate-500"><tr>{['번호', '설비', '알람', '날짜', '상태', '요약'].map((h) => <th key={h} className="px-3 py-2 font-semibold">{h}</th>)}</tr></thead>
       <tbody>{list.slice(0, 120).map((r, n) => (
-        <tr key={r.key} onClick={r.go} className={`${n % 2 ? 'bg-[#f8f9fd]' : ''} ${r.go ? 'cursor-pointer hover:bg-[#eef1ff]' : ''}`}>
+        <tr key={r.key} onClick={r.go} className={`${n % 2 ? 'bg-[#f8f9fd]' : ''} ${r.go ? 'cursor-pointer hover:bg-[#f2eeff]' : ''}`}>
           {r.cells.map((c, i) => (
             <td key={i} className={`px-3 py-2.5 align-top ${i === 0 || i === 2 || i === 3 ? 'font-mono tabular-nums' : ''} ${i === 0 ? 'font-semibold' : ''} ${i === 5 ? 'min-w-0' : 'whitespace-nowrap'}`}>
               {i === 4 ? <span className={`inline-block rounded-full px-2.5 py-0.5 text-[12px] font-bold ${r.warn ? 'bg-[#fff1cc] text-[#9a6200]' : stTone(String(c))}`}>{r.warn ? '▲ ' : ''}{c}</span>

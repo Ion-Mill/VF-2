@@ -42,8 +42,8 @@ export default function StopsScreen() {
           <button onClick={back} className={BTN}>닫기</button>
         </div>
         <div className="mt-3 flex flex-wrap items-center gap-2 text-[14px]">
-          <button onClick={() => setOnlyOpen(true)} className={`${BTN} ${onlyOpen ? '!border-[#0f9fbd] !bg-[#e8f6fa]' : ''}`}>미확정</button>
-          <button onClick={() => setOnlyOpen(false)} className={`${BTN} ${!onlyOpen ? '!border-[#0f9fbd] !bg-[#e8f6fa]' : ''}`}>전체</button>
+          <button onClick={() => setOnlyOpen(true)} className={`${BTN} ${onlyOpen ? '!border-[#7a52f0] !bg-[#e8f6fa]' : ''}`}>미확정</button>
+          <button onClick={() => setOnlyOpen(false)} className={`${BTN} ${!onlyOpen ? '!border-[#7a52f0] !bg-[#e8f6fa]' : ''}`}>전체</button>
           <label>설비 <select value={machine} onChange={(e) => setMachine(e.target.value)} className="h-11 rounded-md border border-slate-300 px-2"><option value="">전체</option>{['SAW-01', 'MIL-01', 'VF2-01', 'VF2-02', 'WSH-01', 'CMM-01'].map((m) => <option key={m}>{m}</option>)}</select></label>
         </div>
         {!f.data ? <p className="mt-4 text-slate-500">불러오는 중…</p> : rows.length === 0 ? <p className="mt-4 text-slate-500">미확정 정지 구간이 없습니다</p> : (

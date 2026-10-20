@@ -50,8 +50,8 @@ export default function WorkOrderScreen({ no }: { no: string }) {
     setReviseOpen(false); setReason('');
   };
   const idx = WO_STEPS.findIndex(([k]) => k === wo.state);
-  const hl = (f: string) => (humanEdited.has(f) ? 'border-[#0f9fbd] bg-[#f0fafc]' : '');
-  const tag = (f: string) => <span className={`ml-1 rounded px-1 text-[11px] font-bold ${humanEdited.has(f) ? 'bg-[#e8f6fa] text-[#0f6f86]' : 'bg-slate-100 text-slate-600'}`}>{humanEdited.has(f) ? '[수정]' : '[프로그램]'}</span>;
+  const hl = (f: string) => (humanEdited.has(f) ? 'border-[#7a52f0] bg-[#f6f3ff]' : '');
+  const tag = (f: string) => <span className={`ml-1 rounded px-1 text-[11px] font-bold ${humanEdited.has(f) ? 'bg-[#e8f6fa] text-[#5a3bc8]' : 'bg-slate-100 text-slate-600'}`}>{humanEdited.has(f) ? '[수정]' : '[프로그램]'}</span>;
   const sec = (head: string, body: React.ReactNode) => (<section className="border-t border-slate-200 py-3"><h3 className="mb-1 text-[14px] font-bold text-slate-500">{head}</h3>{body}</section>);
 
   return (

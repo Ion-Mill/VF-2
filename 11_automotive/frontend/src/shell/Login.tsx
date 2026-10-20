@@ -34,7 +34,7 @@ export default function Login({ onLogin }: { onLogin: (u: UserRec) => void }) {
               {USERS.map((u) => (
                 <li key={u.id} role="option" aria-selected={u.id === id}>
                   <button type="button" onClick={() => { setId(u.id); setPw(DEMO_PW); setOpen(false); setFail(''); }}
-                    className={`flex h-11 w-full items-center px-5 text-left text-[15px] hover:bg-slate-100 ${u.id === id ? 'font-bold text-[#0f6f86]' : ''}`}>{u.name}</button>
+                    className={`flex h-11 w-full items-center px-5 text-left text-[15px] hover:bg-slate-100 ${u.id === id ? 'font-bold text-[#5a3bc8]' : ''}`}>{u.name}</button>
                 </li>
               ))}
             </ul>

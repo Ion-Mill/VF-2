@@ -50,8 +50,8 @@ export function LotScreen() {
     const on = x.lot_no === lot, live = x.status === 'IN_PROCESS';
     const wait = x.status === 'WAIT_JUDGEMENT'; // 판정 대기 = 노란 테두리·글자
     return (
-      <button key={x.lot_no} onClick={() => setLot(x.lot_no)} className={`${chip} ${on ? 'border-2 bg-[#f3f6ff] font-bold' : live ? 'border-dashed border-slate-400' : wait ? 'bg-[#fffdf5]' : 'bg-white'} ${wait ? '!border-[#9c7400] text-[#9c7400]' : on ? 'border-[#1f5fc4]' : live ? '' : 'border-slate-300'}`}>
-        <b className={`font-mono ${wait ? 'text-[#9c7400]' : live ? 'text-[#26303a]' : 'text-[#1f5fc4]'}`}>{x.lot_no}</b><span className={x.status === 'ON_HOLD' ? 'font-bold' : ''}>{STATUS[x.status] ?? x.status}</span>{extra && <span className="text-[12px] text-slate-500">{extra}</span>}
+      <button key={x.lot_no} onClick={() => setLot(x.lot_no)} className={`${chip} ${on ? 'border-2 bg-[#f3f6ff] font-bold' : live ? 'border-dashed border-slate-400' : wait ? 'bg-[#fffdf5]' : 'bg-white'} ${wait ? '!border-[#9c7400] text-[#9c7400]' : on ? 'border-[#6a43e0]' : live ? '' : 'border-slate-300'}`}>
+        <b className={`font-mono ${wait ? 'text-[#9c7400]' : live ? 'text-[#26303a]' : 'text-[#6a43e0]'}`}>{x.lot_no}</b><span className={x.status === 'ON_HOLD' ? 'font-bold' : ''}>{STATUS[x.status] ?? x.status}</span>{extra && <span className="text-[12px] text-slate-500">{extra}</span>}
       </button>);
   };
 
@@ -64,10 +64,10 @@ export function LotScreen() {
             <b className="text-[15px]">번호로 찾기</b>
             <input list="lots" value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && find(q)} placeholder="LOT · MAT · SHP 번호" className="h-11 w-[280px] rounded-lg border border-slate-300 px-3 font-mono text-[15px]" />
             <datalist id="lots">{[...all].reverse().slice(0, 200).map((x) => <option key={x.lot_no} value={x.lot_no}>{STATUS[x.status] ?? x.status}</option>)}</datalist>
-            <button onClick={() => find(q)} className="h-11 rounded-lg bg-[#1f5fc4] px-5 text-[15px] font-bold text-white">찾기</button>
+            <button onClick={() => find(q)} className="h-11 rounded-lg bg-[#6a43e0] px-5 text-[15px] font-bold text-white">찾기</button>
             <span className="ml-2 text-[13px] text-slate-500">예시</span>
             {[L?.material_lot_no, all.find((x) => x.shipped?.shipments?.length)?.shipped.shipments[0].shipment_no, all[0]?.lot_no].filter(Boolean).map((v) => (
-              <button key={v} onClick={() => { setQ(v); find(v); }} className="h-9 rounded-lg border border-slate-300 bg-white px-3 font-mono text-[13px] text-[#1f5fc4]">{v}</button>))}
+              <button key={v} onClick={() => { setQ(v); find(v); }} className="h-9 rounded-lg border border-slate-300 bg-white px-3 font-mono text-[13px] text-[#6a43e0]">{v}</button>))}
           </div>
           {!L ? <p className="mt-4 text-[14px] text-slate-500">로트를 고르세요{f.data ? '' : ' (불러오는 중)'}</p> : (<>
             <div className="mt-4 flex flex-wrap items-center gap-2 rounded-xl bg-slate-50 px-4 py-3">
@@ -88,7 +88,7 @@ export function LotScreen() {
                 <b className="mr-1 text-[15px]">결정 필요 {decide.length}</b>
                 {decide.slice(0, 6).map((x) => (
                   <button key={x.lot_no} onClick={() => setLot(x.lot_no)} className={`${chip} border-2 ${x.status === 'WAIT_JUDGEMENT' ? 'border-[#9c7400] bg-[#fffdf5] text-[#9c7400]' : 'border-[#1c2530] bg-white'}`}>
-                    <b className={`font-mono ${x.status === 'WAIT_JUDGEMENT' ? 'text-[#9c7400]' : 'text-[#1f5fc4]'}`}>{x.lot_no}</b><b>{x.status === 'WAIT_JUDGEMENT' ? '판정 대기' : '보류 · 해제 결정'}</b>
+                    <b className={`font-mono ${x.status === 'WAIT_JUDGEMENT' ? 'text-[#9c7400]' : 'text-[#6a43e0]'}`}>{x.lot_no}</b><b>{x.status === 'WAIT_JUDGEMENT' ? '판정 대기' : '보류 · 해제 결정'}</b>
                     <span className="text-[12px] text-slate-500">{x.enhanced ? '전수 검사' : '발췌 검사'} {x.process_done?.['OP-50'] ?? 0} / {x.input_qty} 뒤 · 반장</span>
                   </button>))}
               </div>
@@ -103,7 +103,7 @@ export function LotScreen() {
           <div className="grid grid-cols-[1.15fr_1fr] gap-4">
             {/* [3] 수량 */}
             <section className={box}>
-              <div className="flex items-center justify-between"><h3 className="flex items-center gap-2 text-[17px] font-bold"><span className="h-2.5 w-2.5 rounded-full bg-[#1f5fc4]" />수량</h3><button onClick={() => go('quality', lot)} className="h-10 rounded-lg border border-slate-300 bg-white px-4 text-[14px] text-[#1f5fc4]">검사 기록</button></div>
+              <div className="flex items-center justify-between"><h3 className="flex items-center gap-2 text-[17px] font-bold"><span className="h-2.5 w-2.5 rounded-full bg-[#6a43e0]" />수량</h3><button onClick={() => go('quality', lot)} className="h-10 rounded-lg border border-slate-300 bg-white px-4 text-[14px] text-[#6a43e0]">검사 기록</button></div>
               <QtyRow label="투입" segs={[[L.input_qty, '#4b5563']]} total={L.input_qty} num={`${L.input_qty}`} />
               <QtyRow label="OP-50 판정" segs={[[L.gauge_pass_qty ?? 0, '#4b5563'], [fail, '#c62a2f']]} total={L.input_qty} num={`${(L.gauge_pass_qty ?? 0) + fail} / ${L.input_qty}`} sub={`합격 ${L.gauge_pass_qty ?? 0} · 불합격 ${fail}`} />
               <QtyRow label="완제품 입고" segs={[[L.fg_qty, '#4b5563']]} total={L.input_qty} num={`${L.fg_qty}`} sub={L.on_hold ? `보류 ${L.input_qty - L.scrap_qty}` : undefined} outline={L.on_hold} />
@@ -112,7 +112,7 @@ export function LotScreen() {
 
             {/* [4] 보류 · 해제 · 폐기 */}
             <section className={box}>
-              <h3 className="flex items-center gap-2 text-[17px] font-bold"><span className="h-2.5 w-2.5 rounded-full bg-[#1f5fc4]" />보류 · 해제 · 폐기 <span className="ml-1 font-mono text-[15px] text-slate-500">{L.lot_no}</span></h3>
+              <h3 className="flex items-center gap-2 text-[17px] font-bold"><span className="h-2.5 w-2.5 rounded-full bg-[#6a43e0]" />보류 · 해제 · 폐기 <span className="ml-1 font-mono text-[15px] text-slate-500">{L.lot_no}</span></h3>
               {!canHold ? <p className="mt-3 text-[14px] text-slate-500">보기 전용 (보류·해제·폐기는 반장·관리자)</p> : (<>
                 <div className="mt-3 flex flex-wrap items-center gap-2 border-b border-slate-200 pb-4">
                   {!L.on_hold && (<>
@@ -125,8 +125,8 @@ export function LotScreen() {
                 </div>
                 {L.scrap_qty > 0 ? (
                   <div className="mt-4 flex flex-col items-start gap-2">
-                    {role === 'SUP' && <button disabled={!!scrapProp[lot]} onClick={() => setScrapProp((p) => ({ ...p, [lot]: user.id }))} className="h-12 rounded-lg bg-[#1f5fc4] px-5 text-[15px] font-bold text-white disabled:bg-slate-300">폐기 결재 요청 (반장) — {L.lot_no} 불합격 {L.scrap_qty}개{scrapProp[lot] ? ' · 요청함' : ''}</button>}
-                    {role === 'MGR' && <button disabled={!scrapProp[lot] || !!scrapOk[lot]} onClick={() => setScrapOk((p) => ({ ...p, [lot]: user.id }))} className="h-12 rounded-lg bg-[#1f5fc4] px-5 text-[15px] font-bold text-white disabled:bg-slate-300">폐기 결재 승인 (관리자) — {L.lot_no} 불합격 {L.scrap_qty}개{!scrapProp[lot] ? ' · 반장 요청 전' : scrapOk[lot] ? ' · 승인함' : ''}</button>}
+                    {role === 'SUP' && <button disabled={!!scrapProp[lot]} onClick={() => setScrapProp((p) => ({ ...p, [lot]: user.id }))} className="h-12 rounded-lg bg-[#6a43e0] px-5 text-[15px] font-bold text-white disabled:bg-slate-300">폐기 결재 요청 (반장) — {L.lot_no} 불합격 {L.scrap_qty}개{scrapProp[lot] ? ' · 요청함' : ''}</button>}
+                    {role === 'MGR' && <button disabled={!scrapProp[lot] || !!scrapOk[lot]} onClick={() => setScrapOk((p) => ({ ...p, [lot]: user.id }))} className="h-12 rounded-lg bg-[#6a43e0] px-5 text-[15px] font-bold text-white disabled:bg-slate-300">폐기 결재 승인 (관리자) — {L.lot_no} 불합격 {L.scrap_qty}개{!scrapProp[lot] ? ' · 반장 요청 전' : scrapOk[lot] ? ' · 승인함' : ''}</button>}
                     <span className="text-[13px] text-slate-500">결재: 요청 {scrapProp[lot] ? userName(scrapProp[lot]) : '—'} → 승인 {scrapOk[lot] ? userName(scrapOk[lot]) : '—'}</span>
                   </div>
                 ) : <p className="mt-4 text-[14px] text-slate-500">폐기할 불합격품 없음</p>}
@@ -166,8 +166,8 @@ function Timeline({ lot, reports, alarms, now }: { lot: R; reports: R[]; alarms:
   return (
     <section className={box}>
       <div className="flex flex-wrap items-center gap-3">
-        <h3 className="flex items-center gap-2 text-[17px] font-bold"><span className="h-2.5 w-2.5 rounded-full bg-[#1f5fc4]" />설비별 시간표 — {lot.lot_no}</h3>
-        <div className="ml-auto flex gap-4 text-[13px] text-slate-600"><span><i className="mr-1 inline-block h-2.5 w-5 rounded-sm bg-[#1f5fc4]" />이 로트</span><span><i className="mr-1 inline-block h-2.5 w-5 bg-[#f6dede]" />알람</span><span><i className="mr-1 inline-block h-3 w-0 border-l-2 border-dashed border-[#1c2530]" />보류</span><span><i className="mr-1 inline-block h-3 w-[2px] bg-[#1f5fc4]" />지금</span></div>
+        <h3 className="flex items-center gap-2 text-[17px] font-bold"><span className="h-2.5 w-2.5 rounded-full bg-[#6a43e0]" />설비별 시간표 — {lot.lot_no}</h3>
+        <div className="ml-auto flex gap-4 text-[13px] text-slate-600"><span><i className="mr-1 inline-block h-2.5 w-5 rounded-sm bg-[#6a43e0]" />이 로트</span><span><i className="mr-1 inline-block h-2.5 w-5 bg-[#f6dede]" />알람</span><span><i className="mr-1 inline-block h-3 w-0 border-l-2 border-dashed border-[#1c2530]" />보류</span><span><i className="mr-1 inline-block h-3 w-[2px] bg-[#6a43e0]" />지금</span></div>
       </div>
       <div className="mt-4 flex">
         <div className="w-[150px] shrink-0 pt-6">{EQS.map(([eq, op]) => <div key={eq} className="flex h-14 flex-col justify-center border-t border-slate-100"><b className="text-[15px]">{eq}</b><span className="text-[12px] text-slate-500">{op}</span></div>)}</div>
@@ -177,10 +177,10 @@ function Timeline({ lot, reports, alarms, now }: { lot: R; reports: R[]; alarms:
           {EQS.map(([eq]) => (
             <div key={eq} className="relative h-14 border-t border-slate-100">
               {alarms.filter((a) => a.equipment_id === eq).map((a) => { const s0 = tsOf(a.occurred_at), e = a.cleared_at ? tsOf(a.cleared_at) : nowT; return <div key={a.alarm_event_id} className="absolute top-0 h-full border-t-2 border-[#c62a2f] bg-[#f6dede]" style={{ left: x(s0), width: w(s0, e) }} title={`알람 ${a.alarm_code}`}>{(e - s0) / (t1 - t0) > 0.05 && <span className="absolute bottom-0.5 left-1 whitespace-nowrap text-[11px] text-[#c62a2f]">{a.severity === 'STOP' ? '고장' : '알람'} {a.alarm_code}</span>}</div>; })}
-              {reports.filter((r) => r.equipment_id === eq).map((r, i) => { const s0 = tsOf(r.start_at), e = tsOf(r.end_at); return <div key={i} className="absolute top-1/2 h-7 -translate-y-1/2 overflow-hidden whitespace-nowrap rounded bg-[#1f5fc4] px-2 text-[12px] font-bold leading-7 text-white" style={{ left: x(s0), width: w(s0, e), minWidth: 6 }} title={`${hm(r.start_at)}~${hm(r.end_at)} · 양품 ${r.gq + r.rq} · 폐기 ${r.sq}`}>{lot.lot_no.slice(-5)} · {r.pq}개</div>; })}
+              {reports.filter((r) => r.equipment_id === eq).map((r, i) => { const s0 = tsOf(r.start_at), e = tsOf(r.end_at); return <div key={i} className="absolute top-1/2 h-7 -translate-y-1/2 overflow-hidden whitespace-nowrap rounded bg-[#6a43e0] px-2 text-[12px] font-bold leading-7 text-white" style={{ left: x(s0), width: w(s0, e), minWidth: 6 }} title={`${hm(r.start_at)}~${hm(r.end_at)} · 양품 ${r.gq + r.rq} · 폐기 ${r.sq}`}>{lot.lot_no.slice(-5)} · {r.pq}개</div>; })}
             </div>))}
           {Number.isFinite(held) && <div className="pointer-events-none absolute bottom-0 top-6 border-l-2 border-dashed border-[#1c2530]" style={{ left: x(held) }}><span className="absolute -top-6 -translate-x-1/2 whitespace-nowrap rounded-full border border-[#1c2530] bg-white px-2 text-[11px] font-bold">🔒 보류 {hm(lot.hold.held_at)}</span></div>}
-          {Number.isFinite(nowT) && nowT <= t1 && <div className="pointer-events-none absolute bottom-0 top-6 w-[2px] bg-[#1f5fc4]" style={{ left: x(nowT) }} />}
+          {Number.isFinite(nowT) && nowT <= t1 && <div className="pointer-events-none absolute bottom-0 top-6 w-[2px] bg-[#6a43e0]" style={{ left: x(nowT) }} />}
         </div>
       </div>
     </section>

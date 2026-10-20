@@ -47,7 +47,7 @@ export function PmAll() {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-[19px] font-bold">전체 장비 예방 정비 {view} <span className="text-[14px] font-normal text-slate-500">· {title} · 설비 {EQS.length}대 · 기한이 다음에 오는 날만 표시</span></h2>
           <div className="flex flex-wrap items-center gap-1">
-            {(['달력', '주간 일정'] as const).map((v) => <button key={v} onClick={() => { setView(v); setOff(0); setSel(null); }} className={`${BTN} ${view === v ? '!border-[#0f9fbd] !bg-[#e8f6fa]' : ''}`}>{v}</button>)}
+            {(['달력', '주간 일정'] as const).map((v) => <button key={v} onClick={() => { setView(v); setOff(0); setSel(null); }} className={`${BTN} ${view === v ? '!border-[#7a52f0] !bg-[#e8f6fa]' : ''}`}>{v}</button>)}
             <button onClick={() => step(-1)} className={BTN}>◀</button><button onClick={() => setOff(0)} className={BTN}>오늘</button><button onClick={() => step(1)} className={BTN}>▶</button>
             <button onClick={back} className={BTN}>닫기</button>
           </div>
@@ -58,7 +58,7 @@ export function PmAll() {
             if (!d) return <div key={i} />;
             const ts = tasksOn(d), ws = winsOn(d);
             return (
-              <button key={d} onClick={() => setSel(d === sel ? null : d)} className={`min-h-[96px] rounded border p-1 text-left align-top ${d === sel ? 'border-[#0f9fbd] bg-[#e8f6fa]' : d === today ? 'border-[#0f9fbd] bg-[#f4fbfd]' : 'border-slate-200 hover:bg-slate-50'}`}>
+              <button key={d} onClick={() => setSel(d === sel ? null : d)} className={`min-h-[96px] rounded border p-1 text-left align-top ${d === sel ? 'border-[#7a52f0] bg-[#e8f6fa]' : d === today ? 'border-[#7a52f0] bg-[#f4fbfd]' : 'border-slate-200 hover:bg-slate-50'}`}>
                 <b className="text-[12px]">{Number(d.slice(8))}</b>{ts.length + ws.length > 0 && <span className="ml-1 text-slate-500">{ts.length + ws.length}건</span>}
                 {ts.slice(0, 3).map((t) => <div key={t.pm_task_id} className={`truncate ${tone(t)}`}>{mark(t)}{t.equipment_id} {t.item_name}</div>)}
                 {ts.length > 3 && <div className="text-slate-500">+{ts.length - 3}건 더</div>}
@@ -75,7 +75,7 @@ export function PmAll() {
             </section>)}
         </>) : (
           <div className="mt-3 overflow-x-auto"><table className="w-full min-w-[760px] table-fixed border-collapse text-[12px]">
-            <thead><tr><th className="w-[84px] p-1 text-left text-slate-500">설비</th>{wk.map((d) => <th key={d} className={`p-1 font-semibold ${d === today ? 'bg-[#e8f6fa] text-[#0f6f86]' : 'text-slate-500'}`}>{md(d)} ({WD[new Date(d).getUTCDay()]})</th>)}</tr></thead>
+            <thead><tr><th className="w-[84px] p-1 text-left text-slate-500">설비</th>{wk.map((d) => <th key={d} className={`p-1 font-semibold ${d === today ? 'bg-[#e8f6fa] text-[#5a3bc8]' : 'text-slate-500'}`}>{md(d)} ({WD[new Date(d).getUTCDay()]})</th>)}</tr></thead>
             <tbody>{EQS.map((e) => (
               <tr key={e} className="border-t border-slate-200 align-top">
                 <th className="p-1 text-left text-[13px]">{e}</th>
@@ -119,7 +119,7 @@ export function PmScreen() {
       <div className={CARD}>
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-[19px] font-bold">{eq} 예방 정비 일정 <span className="text-[14px] font-normal text-slate-500">· 제때 실시율 (9월) {pm.on_time_rate_pct ?? '—'}% [참고: NASA RCM 90% 이상 목표]</span></h2>
-          <div className="flex flex-wrap items-center gap-1">{(['달력', '목록'] as const).map((v) => <button key={v} onClick={() => setView(v)} className={`${BTN} ${view === v ? '!border-[#0f9fbd] !bg-[#e8f6fa]' : ''}`}>{v}</button>)}<button onClick={back} className={BTN}>닫기</button></div>
+          <div className="flex flex-wrap items-center gap-1">{(['달력', '목록'] as const).map((v) => <button key={v} onClick={() => setView(v)} className={`${BTN} ${view === v ? '!border-[#7a52f0] !bg-[#e8f6fa]' : ''}`}>{v}</button>)}<button onClick={back} className={BTN}>닫기</button></div>
         </div>
         {view === '달력' ? (
           <div className="mt-3 grid grid-cols-7 gap-1 text-[13px]">{days.map((d) => (

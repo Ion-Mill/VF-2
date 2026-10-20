@@ -220,7 +220,7 @@
     "default_speed": 60,
     "auto_slowdown_to": 10,
     "_auto_slowdown_note": "1로 바꿀 수 있음 (설계서 4장)",
-    "skip_targets": ["TODAY_17:00"],
+    "skip_targets": ["TODAY_17:00", "TODAY_20:00"],
     "_skip_note": "다음 날 06:00으로 넘기기는 없음 (2026-10-13)",
     "buttons": ["S1", "S3", "S4", "S6"],
     "_buttons_note": "S2·S5는 버튼 없음 — 9월 과거 기록으로 진행 (S5는 2026-10-13에 뺌)",

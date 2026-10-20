@@ -66,7 +66,7 @@ export function RevisionsScreen() {
                 <ul className="flex flex-col gap-2 text-[14px]">{cur.changes.map((c, i) => (
                   <li key={i} className="rounded border border-slate-200 p-2"><b>{c.field}</b>
                     <div className="text-[#a01e23]">− {c.before || '(없음)'} <span className="rounded bg-slate-100 px-1 text-[11px] text-slate-600">{i === 0 && revs[0]?.byRole === 'PROGRAM' ? '[프로그램]' : '[이전]'}</span></div>
-                    <div className="text-[#155a33]">+ {c.after || '(없음)'} <span className="rounded bg-[#e8f6fa] px-1 text-[11px] text-[#0f6f86]">[수정] {cur.by}</span></div>
+                    <div className="text-[#155a33]">+ {c.after || '(없음)'} <span className="rounded bg-[#e8f6fa] px-1 text-[11px] text-[#5a3bc8]">[수정] {cur.by}</span></div>
                   </li>))}</ul>
               )}
               <p className="mt-2 text-[12px] text-slate-500">범례: [프로그램]·[AI] = 비서·프로그램이 쓴 부분 · [수정] = 사람. 되돌리기 버튼은 없습니다 (FR-AST-COM-12).</p>

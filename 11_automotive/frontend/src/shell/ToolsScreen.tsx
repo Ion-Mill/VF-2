@@ -42,7 +42,7 @@ export function ToolsScreen() {
 
   const history = (
     <section className={box}>
-      <h3 className="flex items-center gap-2 text-[17px] font-bold"><span className="h-2.5 w-2.5 rounded-full bg-[#1f5fc4]" />교체 이력 — {sel ? `${sel.equipment_id}  ${sel.tool_no}` : EQS.join(' · ')}</h3>
+      <h3 className="flex items-center gap-2 text-[17px] font-bold"><span className="h-2.5 w-2.5 rounded-full bg-[#6a43e0]" />교체 이력 — {sel ? `${sel.equipment_id}  ${sel.tool_no}` : EQS.join(' · ')}</h3>
       {changes.length === 0 ? <p className="mt-3 text-[14px] text-slate-500">교체 기록 없음</p> : (
         <table className="mt-3 w-full text-left text-[15px]">
           <thead className="border-y border-slate-200 text-[13px] text-slate-500"><tr>{['교체 시각', ...(sel ? [] : ['공구']), '교체 시 사용량 / 한도', '교체 사유', '교체자'].map((h) => <th key={h} className="py-2 pr-6 font-semibold">{h}</th>)}</tr></thead>
@@ -68,16 +68,16 @@ export function ToolsScreen() {
       <div className="mx-auto grid max-w-[1400px] grid-cols-[minmax(320px,0.9fr)_1.6fr] items-start gap-4">
         {/* 왼쪽: 공구 목록 */}
         <section className={box}>
-          <h2 className="flex items-center gap-2 text-[19px] font-bold"><span className="h-2.5 w-2.5 rounded-sm bg-[#1f5fc4]" />공구 — OP-30 {EQS.join(' · ')}</h2>
+          <h2 className="flex items-center gap-2 text-[19px] font-bold"><span className="h-2.5 w-2.5 rounded-sm bg-[#6a43e0]" />공구 — OP-30 {EQS.join(' · ')}</h2>
           <div className="mt-4 grid grid-cols-3 gap-2">{['전체', ...EQS].map((e) => (
-            <button key={e} onClick={() => pickEq(e)} className={`h-12 rounded-lg border text-[15px] font-bold ${eq === e ? 'border-[#1f5fc4] bg-[#1f5fc4] text-white shadow' : 'border-slate-300 bg-white text-[#1f5fc4]'}`}>{e}{e === '전체' ? ` ${all.length}` : ''}</button>))}
+            <button key={e} onClick={() => pickEq(e)} className={`h-12 rounded-lg border text-[15px] font-bold ${eq === e ? 'border-[#6a43e0] bg-[#6a43e0] text-white shadow' : 'border-slate-300 bg-white text-[#6a43e0]'}`}>{e}{e === '전체' ? ` ${all.length}` : ''}</button>))}
           </div>
           <p className="mt-3 text-right text-[13px] text-slate-500"><span className="mr-1 inline-block h-3 w-[2px] translate-y-0.5 bg-[#26303a]" />교체 준비 기준 = 한도의 {LIMIT_PCT}%</p>
           <ul className="mt-2 flex flex-col gap-2">{list.map((t) => {
             const on = sel?.tool_id === t.tool_id;
             return (
               <li key={t.tool_id}>
-                <button onClick={() => { if (eq === '전체') setEq(t.equipment_id); setSelId(t.tool_id); }} className={`w-full rounded-lg border px-4 py-3 text-left ${on ? 'border-2 border-[#1f5fc4] bg-[#f3f6ff]' : 'border-slate-200 bg-white'}`}>
+                <button onClick={() => { if (eq === '전체') setEq(t.equipment_id); setSelId(t.tool_id); }} className={`w-full rounded-lg border px-4 py-3 text-left ${on ? 'border-2 border-[#6a43e0] bg-[#f3f6ff]' : 'border-slate-200 bg-white'}`}>
                   <div className="flex items-center gap-3 text-[15px]">
                     {t.warn && <span className="text-[#d39a00]">▲</span>}<b>{t.equipment_id}</b><span className="min-w-0 flex-1 truncate">{t.tool_no} {nameOf(t)}</span>
                     {t.limit != null && <span className="shrink-0 whitespace-nowrap font-mono text-[13px] text-slate-500">{Math.round(t.cum)} / {t.limit}{unitOf(t)}</span>}<b className="font-mono">{t.usage_pct}%</b>
@@ -101,7 +101,7 @@ export function ToolsScreen() {
                 <div className="text-[30px] font-bold leading-tight">{sel.tool_no} {nameOf(sel)}</div>
               </div>
               {sel.warn && <span className="rounded-full border border-[#e0b000] bg-[#fff6d6] px-4 py-1.5 text-[16px] font-bold text-[#7a5600]">▲ 교체 준비</span>}
-              {canChange && <button onClick={() => setConfirm(sel.tool_id)} className="ml-auto h-14 rounded-lg bg-[#1f5fc4] px-8 text-[18px] font-bold text-white shadow">공구 교체</button>}
+              {canChange && <button onClick={() => setConfirm(sel.tool_id)} className="ml-auto h-14 rounded-lg bg-[#6a43e0] px-8 text-[18px] font-bold text-white shadow">공구 교체</button>}
             </section>
             <div className="grid grid-cols-[1fr_1.3fr] gap-4">
               <section className={`${box} flex items-center justify-center`}><Ring pct={sel.usage_pct} warn={sel.warn} /></section>
