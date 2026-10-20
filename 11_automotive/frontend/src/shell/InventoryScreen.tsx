@@ -18,6 +18,8 @@ const IN_CHECKS: [string, string][] = [['성적서 EN 10204 3.1 받음', '공급
 const TXN: Record<string, string> = { IN: '입고', USE: '사용', ADJUST: '조정', FG_IN: '합격 입고', SHIP: '출하', RECEIVE: '입고' };
 const box = 'rounded-2xl border border-slate-300 bg-white p-5';
 const tabBtn = (on: boolean) => `h-14 rounded-xl border px-7 text-[18px] font-bold ${on ? 'border-[#1f5fc4] bg-[#1f5fc4] text-white' : 'border-slate-300 bg-white text-[#1f4fa8]'}`;
+// 할 일 버튼 — 누른 것(열린 입력 칸)만 파란색
+const todo = (on: boolean) => `h-11 rounded-lg border px-4 text-[15px] font-bold disabled:text-slate-400 ${on ? 'border-[#1f5fc4] bg-[#1f5fc4] text-white' : 'border-slate-300 bg-white text-[#1f4fa8]'}`;
 
 export function InventoryScreen() {
   const { inv, reloadInv, role, user, back, go, toast, twin, eve } = useApp(); // eve: 이브 창이 열려 좁을 때 배치 바꿈
@@ -125,10 +127,11 @@ export function InventoryScreen() {
             {/* 할 일 */}
             <section className={box}>
               <h3 className="flex items-center gap-2 text-[17px] font-bold"><span className="h-2.5 w-2.5 rounded-full bg-[#1f5fc4]" />할 일</h3>
+              {/* 누른 버튼(열린 입력 칸)만 파란색 — 출하 등록이 늘 파래서 눌린 것처럼 보이던 것을 고침 (사용자 요청 2026-10-20) */}
               <div className="mt-3 flex flex-wrap gap-2 border-b border-slate-200 pb-4">
-                <button disabled={!myItems.length} onClick={() => setForm({ item: myItems[0]?.item_no ?? '', type: 'IN', qty: '', memo: '' })} className="h-11 rounded-lg border border-slate-300 bg-white px-4 text-[15px] font-bold text-[#1f4fa8] disabled:text-slate-400">입고 등록</button>
-                <button disabled={!myItems.length} onClick={() => setForm({ item: myItems[0]?.item_no ?? '', type: 'ADJUST', qty: '', memo: '' })} className="h-11 rounded-lg border border-slate-300 bg-white px-4 text-[15px] font-bold text-[#1f4fa8] disabled:text-slate-400">실사·조정</button>
-                <button onClick={() => setTab('ship')} className="h-11 rounded-lg bg-[#1f5fc4] px-4 text-[15px] font-bold text-white">출하 등록</button>
+                <button disabled={!myItems.length} onClick={() => setForm({ item: myItems[0]?.item_no ?? '', type: 'IN', qty: '', memo: '' })} className={todo(form?.type === 'IN')}>입고 등록</button>
+                <button disabled={!myItems.length} onClick={() => setForm({ item: myItems[0]?.item_no ?? '', type: 'ADJUST', qty: '', memo: '' })} className={todo(form?.type === 'ADJUST')}>실사·조정</button>
+                <button onClick={() => setTab('ship')} className={todo(false)}>출하 등록</button>
               </div>
               {form && (
                 <div className="mt-3 flex flex-col gap-2 rounded-xl border border-slate-300 p-3 text-[14px]">
