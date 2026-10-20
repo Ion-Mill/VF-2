@@ -51,12 +51,14 @@ UPDATE maintenance_work_order SET status = 'CANCELLED', cancelled_by = :actor, c
  WHERE wo_no = :wo_no AND status IN ('AI_DRAFT','EDITING','APPROVED');
 
 -- name: wr_list
-SELECT record_no, record_type, wo_no, alarm_event_id, cause_check_notification_id, equipment_id, status, confirmed_by,
-       confirmed_at, checked_by, start_at, end_at, repair_min, current_version
-  FROM work_record
- WHERE (CAST(:record_type AS text) IS NULL OR record_type = CAST(:record_type AS text))
-   AND (CAST(:status AS text) IS NULL OR status = CAST(:status AS text))
- ORDER BY start_at DESC LIMIT CAST(:limit AS int);
+SELECT w.record_no, w.record_type, w.wo_no, w.alarm_event_id, a.alarm_code, w.cause_check_notification_id, w.equipment_id, w.status,
+       w.confirmed_by, w.confirmed_at, w.checked_by, w.start_at, w.end_at, w.repair_min, w.current_version
+  FROM work_record w LEFT JOIN alarm_event a ON a.alarm_event_id = w.alarm_event_id
+ WHERE (CAST(:record_type AS text) IS NULL OR w.record_type = CAST(:record_type AS text))
+   AND (CAST(:status AS text) IS NULL OR w.status = CAST(:status AS text))
+   AND (CAST(:equipment_id AS text) IS NULL OR w.equipment_id = CAST(:equipment_id AS text))
+   AND (CAST(:alarm_code AS text) IS NULL OR a.alarm_code = CAST(:alarm_code AS text))
+ ORDER BY w.start_at DESC LIMIT CAST(:limit AS int);
 
 -- name: wr_get
 SELECT * FROM work_record WHERE record_no = :record_no;

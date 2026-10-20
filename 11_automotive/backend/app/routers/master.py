@@ -91,6 +91,8 @@ def sim_clock(_: User = Depends(current_user), db: Db = Depends(get_db)):
 class SimClockIn(BaseModel):
     mode: str = "SIM"
     skip_to_1700: bool = Field(False, description="넘기기: 지금 → 오늘 17:00 (API-SIM-02, 2026-10-13 — 다음 날 06:00으로 넘기기는 없음)")
+    skip: str | None = Field(None, pattern="^TODAY_(17|20):00$",
+                             description="넘기기 목표 (생성기·시연 패널과 같은 이름): TODAY_17:00 / TODAY_20:00 (17:00 뒤 휴무 → 야간 시작, 2026-10-20)")
     sim_at: datetime | None = Field(None, description="시계를 이 시각으로 (MGR 준비용 — 시연 발표 중 넘기기는 skip_to_1700)")
     speed: float | None = Field(None, description="배속 180·60·10·1 (1초 = 1분 → 60)")
     paused: bool | None = None
@@ -104,10 +106,13 @@ def set_sim_clock(body: SimClockIn, user: User = Depends(current_user), db: Db =
     if (not get_settings().demo_mode or body.sim_at is not None) and user.role_code != "MGR":
         raise AppError(403, "FORBIDDEN", "시각 직접 지정과 시연 모드 밖 시계 바꾸기는 MGR만")
     sim_at = body.sim_at
-    if body.skip_to_1700:
-        t = db.one("common.today_1700")
+    target = body.skip or ("TODAY_17:00" if body.skip_to_1700 else None)
+    if target:
+        hhmm = target.split("_", 1)[1]
+        t = db.one("common.today_at", hhmm=hhmm)
         if t["past"] in (True, "t"):
-            raise AppError(409, "INVALID_STATE", "이미 17:00이 지남 — 넘기기는 지금 → 17:00만", {"reason": "PAST_1700"})
+            raise AppError(409, "INVALID_STATE", f"이미 {hhmm}이 지남 — 넘기기는 지금 → 오늘 {hhmm}만",
+                           {"reason": "PAST_" + hhmm.replace(":", "")})
         sim_at = t["at"]
     return db.one("common.sim_set", mode=body.mode, sim_at=sim_at, speed=body.speed, paused=body.paused)
 

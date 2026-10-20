@@ -150,11 +150,13 @@ def _record_perm(db: Db, actor: Actor, record_no: str, action: str) -> dict:
 
 @router.get("/work-records")
 def wr_list(record_type: str | None = None, status: str | None = None, limit: int = Query(100, le=500),
+            equipment_id: str | None = None, alarm_code: str | None = None,
             actor: Actor = Depends(WR_VIEW), db: Db = Depends(get_db)):
-    """작업기록 목록 (OPR은 간이 기록만)"""
+    """작업기록 목록 (OPR은 간이 기록만). 설비·알람 번호로 거르기 (같은 사례 찾기 — 2026-10-20)"""
     if not permissions(db).allows(actor.role, "WORK_RECORD", "VIEW"):
         record_type = "SIMPLE"           # OPR은 간이 기록만 (13.1)
-    return db.all("maintenance.wr_list", record_type=record_type, status=status, limit=limit)
+    return db.all("maintenance.wr_list", record_type=record_type, status=status, limit=limit,
+                  equipment_id=equipment_id, alarm_code=alarm_code)
 
 
 @router.get("/work-records/{record_no}")
@@ -249,7 +251,8 @@ def wr_assist(record_no: str, body: AssistIn, actor: Actor = Depends(require("WO
     out = client.call("/work-record-assist", {"record_no": record_no, "equipment_id": rec["equipment_id"],
                                               "memo": body.memo, "user_id": actor.user_id})
     return {"record_no": record_no, "author_kind": "AI",
-            "cause": out.get("cause"), "action": out.get("action"), "sources": out.get("sources") or []}
+            "cause": out.get("cause"), "action": out.get("action"), "sources": out.get("sources") or [],
+            "parts": out.get("parts") or []}          # 사용 부품 제안 [{item_no, qty}] (FR-MNT-05-02, 2026-10-20 — 전에는 버렸다)
 
 
 @router.post("/work-records/{record_no}/confirm")

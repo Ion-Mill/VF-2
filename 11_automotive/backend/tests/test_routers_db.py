@@ -85,6 +85,8 @@ class RouterFlows(unittest.TestCase):
         with self.assertRaises(AppError):
             auth.login(auth.LoginIn(user_id="nobody", password="mom1234!"), REQ, self.db)
         self.assertEqual([a[1] for a in self.logged[-3:]], ["LOGIN", "LOGIN_FAIL", "LOGIN_FAIL"])
+        opr = auth.login(auth.LoginIn(user_id="U02", password="mom1234!"), REQ, self.db)   # 담당 공정 (API-AUTH-01, 2026-10-20)
+        self.assertTrue(opr.process_codes and all(p.startswith("OP-") for p in opr.process_codes))
 
     def test_02_line_and_alarms(self):
         now = self.call(line.twin, "U02", shift_id=None)
@@ -101,6 +103,10 @@ class RouterFlows(unittest.TestCase):
         card = self.call(alarms.guide_card, "U02", alarm_event_id=3)
         self.assertEqual(card["alarm_code"], "992")
         self.assertIn("same_cases", card)
+        # 연쇄 알람·작업지시서·영어 이름 (API-MNT-01, 2026-10-20): 992의 앞 알람 = 994(2번), 작업지시서 MW-0901
+        self.assertEqual(str(card["prev_alarm_event_id"]), "2")
+        self.assertIn("name_en", card)
+        self.assertIn("\"wo_no\": \"MW-0901\"", str(card["work_order"]).replace("'", "\""))     # 시험 DB는 jsonb를 글로 줌
         # 의심 로트 제안 (FR-PRD-05-05 수용 기준: S1에서 LOT-2609-041-1, 2026-10-20) — 제안만, 상태는 그대로
         self.assertIn("LOT-2609-041-1", [x["lot_no"] for x in card["suspect_lots"]])
         self.denied(alarms.downtime_patch, "U02", state_log_id=1, body=alarms.DowntimeIn(confirm=True))   # 확정은 SUP

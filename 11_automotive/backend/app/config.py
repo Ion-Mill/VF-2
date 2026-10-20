@@ -31,7 +31,7 @@ class Settings(BaseModel):
     # AI 비서 서비스 (로컬 LLM, 백엔드 밖) 주소 — 비서 질문(/api/assistant/chat)·작업기록 메모 정리를 넘긴다.
     # 비우면 ASSISTANT_UNAVAILABLE (화면은 기본 문구). 넘기는 형식은 LLM 담당 팀원과 맞춘다 [선택 필요: 기술 회의]
     assistant_url: str | None = None
-    assistant_timeout_seconds: float = 30.0
+    assistant_timeout_seconds: float = 130.0      # 화면 assistantApi.ts가 130초 + 여유로 기다린다 (2026-10-20, 전 30초)
     # [제안] 출하 확정 전에 출하 줄의 로트 QR을 모두 찍어야 하는지 (2026-10-13 QR 가정). 기본은 끔 —
     # 라벨이 상하거나 QR 찍개가 없을 때 출하가 멈추지 않게. 켜면 안 찍은 로트가 있을 때 확정이 409 QR_NOT_CHECKED
     qr_ship_check_required: bool = False
