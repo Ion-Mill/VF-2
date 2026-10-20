@@ -8,7 +8,7 @@ import ts from 'typescript';
 
 const file = fileURLToPath(new URL('../src/shell/chatLog.ts', import.meta.url));
 const js = ts.transpileModule(readFileSync(file, 'utf8'), { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2020 } }).outputText;
-const { currentChat, realRows, canStartNewChat, withNewChat, makeNewChatMark, mergeServerLog, lastChatId, sessionOf, isFocusRow } = await import('data:text/javascript;base64,' + Buffer.from(js).toString('base64'));
+const { currentChat, realRows, canStartNewChat, withNewChat, makeNewChatMark, mergeServerLog, lastChatId, sessionOf, isFocusRow, settlePending, resolvePending, isPending, PENDING_GIVEUP_MS } = await import('data:text/javascript;base64,' + Buffer.from(js).toString('base64'));
 
 const T = '2026-10-01T10:00:00+09:00';
 const row = (q, at = T) => ({ at, q, a: '답 ' + q, status: 'ok', sources: [] });
@@ -144,6 +144,87 @@ t('묶기는 원본 줄 목록을 바꾸지 않는다', () => {
   const copy = JSON.stringify(day);
   sessionOf(day, [], focusOf(day[2]));
   assert.equal(JSON.stringify(day), copy);
+});
+
+// ---- 대기 줄: 질문을 보내자마자 저장하고, 새로고침으로 끊기면 서버 기록으로 되살린다
+const pend = (q, sentAt, prev) => ({ at: T, q, a: '', status: '', sources: [], pending: true, sentAt, ...(prev !== undefined ? { prevChatId: prev } : {}) });
+const answerOf = (q, chatId, prev, a = '답 ' + q) => ({ q, a, status: '답변', sources: [], chatId, ...(prev !== undefined ? { prevChatId: prev } : {}) });
+const LOST = { a: '끊김', status: '응답 없음' };
+const NONE = new Set();
+const pendKeys = (rows) => rows.map((r) => (isPending(r) ? 'P' : '') + r.q);
+
+t('settlePending: 대기 줄이 같은 자리에서 진짜 줄로 바뀐다 (앞뒤 줄·순서 그대로)', () => {
+  const log = [row('a'), pend('b', 5), row('c')];
+  const out = settlePending(log, 5, { ...row('b'), chatId: 7 });
+  assert.deepEqual(pendKeys(out), ['a', 'b', 'c']); assert.equal(out[1].chatId, 7); assert.equal(out[1].pending, undefined);
+});
+t('settlePending: 대기 줄이 이미 없으면 끝에 더한다', () => { assert.deepEqual(qs(settlePending([row('a')], 5, row('b'))), ['a', 'b']); });
+t('settlePending: 다른 sentAt의 대기 줄은 건드리지 않는다', () => {
+  const out = settlePending([pend('a', 1), pend('b', 2)], 2, row('b'));
+  assert.deepEqual(pendKeys(out), ['Pa', 'b']);
+});
+t('settlePending: 원본 배열·표지를 바꾸지 않는다', () => {
+  const log = [row('a'), mark(), pend('b', 5)]; const copy = JSON.stringify(log);
+  const out = settlePending(log, 5, row('b'));
+  assert.equal(JSON.stringify(log), copy); assert.equal(out[1].newChat, true);
+});
+t('resolvePending: 같은 질문의 서버 줄을 붙이고 chatId·답·상태를 채운다 (대기 표시·sentAt은 지운다)', () => {
+  const out = resolvePending([pend('물어봄', 5)], [answerOf('물어봄', 100)], 6e4, NONE, PENDING_GIVEUP_MS, LOST);
+  assert.equal(out[0].a, '답 물어봄'); assert.equal(out[0].chatId, 100); assert.equal(out[0].status, '답변');
+  assert.equal(out[0].pending, undefined); assert.equal(out[0].sentAt, undefined); assert.equal(out[0].at, T);
+});
+t('resolvePending: 앞 질문 번호가 다른 서버 줄은 붙이지 않는다', () => {
+  const log = [pend('물어봄', 5, 90)];
+  assert.equal(resolvePending(log, [answerOf('물어봄', 100)], 6e4, NONE, PENDING_GIVEUP_MS, LOST), log);
+  assert.equal(resolvePending(log, [answerOf('물어봄', 100, 91)], 6e4, NONE, PENDING_GIVEUP_MS, LOST), log);
+  assert.equal(resolvePending(log, [answerOf('물어봄', 100, 90)], 6e4, NONE, PENDING_GIVEUP_MS, LOST)[0].chatId, 100);
+});
+t('resolvePending: 이 브라우저가 이미 쓴 번호는 붙이지 않는다', () => {
+  const log = [{ ...row('물어봄'), chatId: 100 }, pend('물어봄', 5)];
+  assert.equal(resolvePending(log, [answerOf('물어봄', 100)], 6e4, NONE, PENDING_GIVEUP_MS, LOST), log);
+});
+t('resolvePending: 이 브라우저가 아는 가장 큰 번호보다 작은 옛 서버 줄은 붙이지 않는다 (오래전 같은 질문)', () => {
+  const log = [{ ...row('다른 질문'), chatId: 50 }, pend('물어봄', 5)];
+  assert.equal(resolvePending(log, [answerOf('물어봄', 10)], 6e4, NONE, PENDING_GIVEUP_MS, LOST), log);
+  assert.equal(resolvePending(log, [answerOf('물어봄', 51)], 6e4, NONE, PENDING_GIVEUP_MS, LOST)[1].chatId, 51);
+});
+t('resolvePending: 같은 질문을 두 번 보냈으면 대기 줄 둘이 서로 다른 서버 줄을 오래된 것부터 하나씩 받는다', () => {
+  const out = resolvePending([pend('같은', 1), pend('같은', 2)], [answerOf('같은', 100), answerOf('같은', 101)], 6e4, NONE, PENDING_GIVEUP_MS, LOST);
+  assert.deepEqual(out.map((r) => r.chatId), [100, 101]);
+});
+t('resolvePending: 서버 줄이 하나뿐이면 첫 대기 줄만 받고 둘째는 그대로 기다린다', () => {
+  const out = resolvePending([pend('같은', 1), pend('같은', 2)], [answerOf('같은', 100)], 6e4, NONE, PENDING_GIVEUP_MS, LOST);
+  assert.deepEqual(pendKeys(out), ['같은', 'P같은']);
+});
+t('resolvePending: 서버에 아직 없고 150초 전이면 그대로 기다린다 (같은 배열)', () => {
+  const log = [pend('물어봄', 1000)];
+  assert.equal(resolvePending(log, [], 1000 + PENDING_GIVEUP_MS - 1, NONE, PENDING_GIVEUP_MS, LOST), log);
+});
+t('resolvePending: 서버를 못 받았어도(null) 150초가 지나면 끊김 줄로 바꾼다', () => {
+  const out = resolvePending([pend('물어봄', 1000)], null, 1000 + PENDING_GIVEUP_MS, NONE, PENDING_GIVEUP_MS, LOST);
+  assert.equal(out[0].a, '끊김'); assert.equal(out[0].status, '응답 없음'); assert.equal(out[0].pending, undefined); assert.deepEqual(out[0].sources, []);
+});
+t('resolvePending: 옛 길(서버 기록 없음, giveUp 0)은 바로 끊김 줄로 바꾼다', () => {
+  const out = resolvePending([pend('물어봄', 1000)], [], 1001, NONE, 0, LOST);
+  assert.equal(out[0].a, '끊김'); assert.equal(isPending(out[0]), false);
+});
+t('resolvePending: 이 화면이 지금 요청을 보내 둔 줄(live)은 150초가 지나도 건드리지 않는다', () => {
+  const log = [pend('물어봄', 1000)];
+  assert.equal(resolvePending(log, [answerOf('물어봄', 100)], 1e9, new Set([1000]), PENDING_GIVEUP_MS, LOST), log);
+});
+t('resolvePending: 대기 줄이 아닌 줄·표지는 불변이고 바뀐 것이 없으면 같은 배열을 돌려준다', () => {
+  const log = [row('a'), mark(), row('b')];
+  assert.equal(resolvePending(log, [answerOf('a', 100)], 1e9, NONE, 0, LOST), log);
+});
+t('resolvePending: 원본 배열을 바꾸지 않는다', () => {
+  const log = [pend('물어봄', 5)]; const copy = JSON.stringify(log);
+  resolvePending(log, [answerOf('물어봄', 100)], 6e4, NONE, PENDING_GIVEUP_MS, LOST);
+  assert.equal(JSON.stringify(log), copy);
+});
+t('대기 줄은 질문·답이 있는 줄로 세고(기록 탭에 질문이 보인다), 지금 대화에 포함된다', () => {
+  const log = [row('a'), mark(), pend('b', 5)];
+  assert.deepEqual(qs(realRows(log)), ['a', 'b']); assert.deepEqual(qs(currentChat(log)), ['b']);
+  assert.equal(lastChatId([{ ...row('a'), chatId: 3 }, pend('b', 5)]), 3);
 });
 
 console.log(fail ? `\n${fail}개 실패` : '\n전부 통과');
