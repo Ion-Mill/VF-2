@@ -66,7 +66,10 @@ uvicorn app.main:app --env-file .env.supabase                # → http://localh
 | API 서버 연결 점검 | 사용자 PC에서 `tools/check_connection.py --env-file .env.supabase` | 앱 계정·읽기 계정(쓰기 막힘)·**LISTEN/NOTIFY(Session pooler)** 모두 OK (사용자 확인) |
 | 계정·잠그기·데이터·문서 | Windows Git Bash에서 `./supabase/load_data.sh` | 점검 20개 위반 0, 문서 조각 209, U01~U12 비밀번호, 공개 키 권한 0, RLS 꺼진 표 0, 정책 142, 43MB |
 | 2026-10-20 정비 탭 확인 요청 반영 | Claude가 연결 도구(`apply_migration`, 이름 `check_request_1020`)로 `migrations/20261020000000_check_request_1020.sql`을 올림. 먼저 같은 상태의 로컬 DB(10/15 코드 + 9월 데이터 + 계정·잠그기)에 올려 새 `db/` 원본으로 만든 DB와 같음을 확인 | 알림 규칙 29, `daily_report.memo` 19건(복사본도), 새 표 `notification_pm_task` RLS·정책 2·권한, 트리거 2, 시연 되돌리기 목록에 새 표 |
-| 2026-10-20 브리핑 체크 저장 (새 표 `briefing_check`) | `migrations/20261020010000_briefing_check.sql` — **저장소에만 있고 공용 mom-db에는 아직 적용하지 않음**(DB 담당이 올린다). 로컬에서 같은 상태 DB(`db/` 원본 + 계정 + 시연 기준점)에 올려 새로 만든 DB와 표 모양이 같고(RLS·정책만 잠그기 몫으로 더 붙음) `demo_snapshot.meta.tables`에 들어감을 확인 | 올리면 `briefing_check` RLS·정책 2·`mom_app` 쓰기, `mom_ai_ro` 읽기 권한 없음. 올리기 전에는 `/api/assistant/briefing/checks`만 오류 |
+| 2026-10-20 시연 안전·버그 7가지 | 연결 도구(`apply_migration`, 이름 `safety_fixes_1020`)로 `migrations/20261020010000_safety_fixes_1020.sql`. 먼저 지금 main으로 만든 로컬 DB에 올려 새 원본 DB와 같음을 확인 | 함수 7개 바뀜(표 구조 그대로), 새 함수 `fn_simple_record_needs_loto` 앱 계정 실행 권한, 2075 = 잠금·표지 필요·108 = 아님 |
+| 2026-10-20 요구사항 대조 상·중 보강 | 연결 도구(`apply_migration`)로 `migrations/20261020020000_requirements_mid_high_1020.sql`을 13번에 나눠 올림 (이름 `requirements_mid_high_1020_p1a`~`p4` — 한 번에 보내면 연결이 끊김). 먼저 PR #86 상태로 만든 로컬 DB + 9월 데이터에 올려 새 원본 DB와 같음을 확인 | 새 표 `alarm_check_step`(134줄, RLS·권한), 새 트리거 4개, 함수 약 40개, `v_production_lot`·`v_report_items`, CMM 결과 파일 오류 처리 방식. 올린 뒤 바꾼 함수·뷰·트리거·규칙이 로컬과 같음 |
+| 2026-10-20 브리핑 체크 저장 (새 표 `briefing_check`) | `migrations/20261020030000_briefing_check.sql` — **2026-10-20 DB 담당이 연결 도구(`apply_migration`, 이름 `briefing_check`)로 공용 mom-db에 적용** (PR #90 상태 + 9월 데이터 로컬 DB에 먼저 올려 새 원본 DB와 권한·시연 기준점 목록까지 같음 확인). 로컬에서 같은 상태 DB(`db/` 원본 + 계정 + 시연 기준점)에 올려 새로 만든 DB와 표 모양이 같고(RLS·정책만 잠그기 몫으로 더 붙음) `demo_snapshot.meta.tables`에 들어감을 확인 | 올리면 `briefing_check` RLS·정책 2·`mom_app` 쓰기, `mom_ai_ro` 읽기 권한 없음. 올리기 전에는 `/api/assistant/briefing/checks`만 오류 |
+| 2026-10-20 오늘의 문제 정지 손실 | 연결 도구(이름 `daily_issues_stop_loss_window`)로 `fn_daily_issues_text` 하나만 다시 만듦 (정지 손실 = 보고서 구간 안, 1020 33장 4번·38장). 원본 `db/views/20_report_functions.sql`, 마이그레이션 `20261020020000`에도 같은 내용 | 함수 정의가 로컬과 같음 |
 
 **올리면서 걸린 것과 고친 것**
 
@@ -79,7 +82,7 @@ uvicorn app.main:app --env-file .env.supabase                # → http://localh
 | Windows의 `python3`는 Store 안내로 이어지는 가짜 실행 파일일 수 있음 | `load_all.sh`가 실제로 도는 파이썬을 고르고 `PYTHONUTF8=1`·`PGCLIENTENCODING=UTF8`을 건다 |
 
 **알아 둘 것**
-- Supabase 마이그레이션 기록은 10개(`mom_schema_p01…p07`, `mom_rls_on_until_lockdown`, 2026-10-20 `check_request_1020`)다. Supabase CLI `db push`를 쓰려면 이 저장소의 파일 1개와 맞지 않으니 `supabase migration repair`로 맞춘다.
+- Supabase 마이그레이션 기록은 11개(`mom_schema_p01…p07`, `mom_rls_on_until_lockdown`, 2026-10-20 `check_request_1020`·`safety_fixes_1020`)다. Supabase CLI `db push`를 쓰려면 이 저장소의 파일 1개와 맞지 않으니 `supabase migration repair`로 맞춘다.
 - 보안 점검(advisor) 남은 경고: 뷰 18개 SECURITY DEFINER(뷰는 RLS를 건너뜀 — 그래서 데이터보다 잠그기가 먼저), 함수 search_path 미지정, btree_gist가 public. 화면은 Supabase API를 부르지 않으므로 당장 문제는 아님.
 - Supabase DB 정렬 규칙(collation)이 로컬(C.UTF-8)과 달라 문자열 `ORDER BY` 순서가 조금 다를 수 있다 (시드 값 자체는 같음).
 - `load_data.sh`의 4단계(사내 문서)가 시연 기준점을 다시 만든다 — 시연 도중에는 다시 돌리지 않는다.

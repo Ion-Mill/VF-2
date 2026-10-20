@@ -37,7 +37,7 @@ INSERT INTO notification_rule (rule_code, rule_name, condition_text, importance,
   ('DOC_REVISED', '문서 수정', '작업지시서 수정 → 담당 보전원, 보고서 수정 → 관리자, 사내 문서 개정 → 관련 역할 전체', 'INFO', 'BUBBLE', 'AUTO', '{}', '{}', 'R4', 0),
   ('SPC_OUT', '관리도 이상', '점 1개가 +3σ 위 또는 −3σ 아래 → 반장', 'CAUTION', 'LIST', 'AUTO', '{}', '{SUP}', 'R3', 30),
   ('SHIFT_REPORT_PENDING', '교대 보고서 확정 요청', '교대 끝(주간 17:00, 야간 05:00) 교대 보고서 AI비서 초안이 생길 때 → 그 교대 반장', 'INFO', 'BUBBLE', 'AUTO', '{}', '{}', 'R4', 0),
-  ('CMM_FILE_ERROR', 'CMM 결과 파일 오류', '결과 파일을 읽지 못함 또는 확인 필요 → 작업자·반장', 'CAUTION', 'LIST', 'AUTO', '{}', '{OPR,SUP}', 'R3', 30),
+  ('CMM_FILE_ERROR', 'CMM 결과 파일 오류', '결과 파일을 읽지 못함 또는 확인 필요 → 작업자·반장. 반장이 [처리] (2026-10-20 — 자동 처리할 기록이 없음)', 'CAUTION', 'LIST', 'BOTH', '{SUP}', '{OPR,SUP}', 'R3', 30),
   ('CMM_JUDGE_MISMATCH', 'CMM 판정 불일치', '측정기 판정 ≠ 플랫폼 판정 → 반장', 'CAUTION', 'LIST', 'AUTO', '{}', '{SUP}', 'R3', 30),
   ('CMM_NO_RESULT', 'CMM 결과 미수신', '측정 시작 뒤 정한 시간 안에 결과 파일이 오지 않음 → 작업자·반장 (시간은 [선택 필요: 기술 회의])', 'CAUTION', 'LIST', 'AUTO', '{}', '{OPR,SUP}', 'R3', 30)
 ON CONFLICT (rule_code) DO UPDATE SET rule_name = EXCLUDED.rule_name, condition_text = EXCLUDED.condition_text,

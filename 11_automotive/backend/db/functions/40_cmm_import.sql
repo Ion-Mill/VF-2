@@ -165,9 +165,10 @@ BEGIN
     SELECT * INTO r FROM inspection_result WHERE result_id = p_result_id FOR UPDATE;
     PERFORM fn_require_role(p_actor, ARRAY['SUP'], '측정값 반장 확인');
     IF p_use_for_judgement THEN
-        -- 같은 부품·항목의 다른 값은 판정에서 뺀다 (하나만 참)
+        -- 같은 부품·항목·측정 위치의 다른 값은 판정에서 뺀다 (하나만 참, R-81). 강화 검사 3단(TOP·MID·BOTTOM)은 위치마다 따로
         UPDATE inspection_result SET use_for_judgement = false
-         WHERE lot_no = r.lot_no AND part_seq = r.part_seq AND item_seq = r.item_seq AND result_id <> p_result_id;
+         WHERE lot_no = r.lot_no AND part_seq = r.part_seq AND item_seq = r.item_seq
+           AND position IS NOT DISTINCT FROM r.position AND result_id <> p_result_id;
     END IF;
     UPDATE inspection_result SET check_status = 'CHECKED', checked_by = p_actor, checked_at = v_at,
                                  use_for_judgement = p_use_for_judgement

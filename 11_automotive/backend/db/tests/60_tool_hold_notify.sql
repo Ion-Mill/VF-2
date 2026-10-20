@@ -58,15 +58,15 @@ SELECT t.throws($$SELECT fn_lot_scrap_approve((SELECT hold_id FROM lot_hold WHER
 SELECT fn_lot_scrap_approve((SELECT hold_id FROM lot_hold WHERE lot_no = 'LOT-2609-041-1'), 'U12');
 SELECT t.eq((SELECT status || '/' || scrap_qty FROM production_lot WHERE lot_no = 'LOT-2609-041-1'), 'SCRAPPED/36', '로트 폐기');
 
--- 알림 묶기: 같은 설비·같은 알람 1분 안 3번째부터는 repeat_count만 (DOC-07 10.2)
+-- 알림 묶기: 같은 설비·같은 알람이 1분 안에 또 나면 첫 알림에 횟수만 (DOC-07 10.2, FR-AST-02-11 — 2026-10-20 "3번 → 1건")
 INSERT INTO alarm_event (equipment_id, alarm_code, severity_at_event, occurred_at) VALUES
   ('VF2-02', '314', 'GUIDE', '2026-09-15 13:00:05+09'), ('VF2-02', '314', 'GUIDE', '2026-09-15 13:00:20+09'),
   ('VF2-02', '314', 'GUIDE', '2026-09-15 13:00:40+09');
 SELECT fn_raise_notification('ALARM_GUIDE', '314', jsonb_build_object('alarm_event_id', a.alarm_event_id, 'equipment_id', 'VF2-02'),
                              a.occurred_at)
   FROM alarm_event a WHERE alarm_code = '314' ORDER BY occurred_at;
-SELECT t.eq((SELECT count(*)::text || '/' || max(repeat_count) FROM notification WHERE rule_code = 'ALARM_GUIDE'), '2/2',
-            '3번째는 묶어서 2건, 마지막 알림 repeat_count 2');
+SELECT t.eq((SELECT count(*)::text || '/' || max(repeat_count) FROM notification WHERE rule_code = 'ALARM_GUIDE'), '1/3',
+            '1분 안 3번 → 알림 1건 ×3');
 SELECT t.throws($$SELECT fn_process_notification((SELECT min(notification_id) FROM notification WHERE rule_code = 'ALARM_GUIDE'), 'U07')$$,
                 'OPR·SUP', '조작 안내 알림 처리는 OPR·SUP');
 SELECT fn_process_notification((SELECT min(notification_id) FROM notification WHERE rule_code = 'ALARM_GUIDE'), 'U02');

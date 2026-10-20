@@ -27,6 +27,8 @@ class TokenOut(BaseModel):
     user_name: str
     role_code: str
     home: str                    # 역할별 첫 화면 (UI 4.1, 2026-10-13): OPR = SCR-26 현장 보기, 나머지 = SCR-04 3D 라인 뷰
+    process_codes: list[str] = []      # 담당 공정 (OPR은 두 개까지 — API-AUTH-01, 2026-10-20)
+    shift_type: str | None = None      # 기본 교대 (D 주간 / N 야간)
 
 
 # 2026-10-13 팀 결정: MNT 첫 화면 SCR-18 → SCR-04 (문서함은 메뉴), MGR SCR-16 → SCR-04. 로그인 팝업 없음
@@ -37,7 +39,9 @@ HOME = {"OPR": "SCR-26", "MNT": "SCR-04", "SUP": "SCR-04", "MGR": "SCR-04"}
 def _token_for(row: dict) -> TokenOut:
     s = get_settings()
     return TokenOut(access_token=create_token(row["user_id"], row["role_code"], s.jwt_secret, s.jwt_minutes),
-                    user_id=row["user_id"], user_name=row["user_name"], role_code=row["role_code"], home=HOME[row["role_code"]])
+                    user_id=row["user_id"], user_name=row["user_name"], role_code=row["role_code"], home=HOME[row["role_code"]],
+                    process_codes=[p for p in (row.get("home_process_code"), row.get("home_process_code_2")) if p],
+                    shift_type=row.get("home_shift_type") or None)
 
 
 @router.post("/auth/login", response_model=TokenOut)

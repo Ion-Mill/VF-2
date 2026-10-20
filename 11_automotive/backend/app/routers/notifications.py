@@ -30,7 +30,8 @@ def counts(rows: list[dict], bucket_key: str = "count_bucket") -> dict:
 @router.get("/notifications")
 def mine(status: str = Query("open", pattern="^(open|processed|all)$"), sort: str = Query("recent", pattern="^(recent|rank)$"),
          importance: str | None = Query(None, pattern="^(URGENT|CAUTION|INFO)$"), equipment_id: str | None = None,
-         kind: str | None = Query(None, pattern="^(fault|doc)$", description="칸: fault 고장·확인 알림 / doc 문서 알림 (비우면 둘 다)"),
+         kind: str | None = Query(None, pattern="^(fault|doc)$",
+                                  description="칸: fault 고장·확인 알림(긴급 포함) / doc 문서 알림 — 규칙 종류로 나눔 (비우면 둘 다)"),
          limit: int = Query(100, le=500), actor: Actor = Depends(require("NOTIFICATION", "VIEW")), db: Db = Depends(get_db)):
     """알림 목록 (API-NTF-01, 이브 사이드바 알림 탭): 자기 역할분, MGR은 전부 (R-76). 카드마다 중요도·보고 순위·×N 묶음·폭주·
     24시간 넘음·관련 정보·처리할 역할·전달 방식(delivery_kind: POPUP 긴급 팝업 / BUBBLE 이브 말풍선 / LIST 목록 — 2026-10-13)·
@@ -40,9 +41,11 @@ def mine(status: str = Query("open", pattern="^(open|processed|all)$"), sort: st
                    importance=importance, equipment_id=equipment_id, kind=kind, limit=limit)
     open_items = [dict(i, count_bucket=RANK_BUCKET.get(i["report_rank"], "INFO")) for i in items
                   if str(i["is_processed"]).lower() in ("false", "f")]
-    badge = {"fault": sum(1 for i in open_items if i["delivery_kind"] != "BUBBLE"),
-             "doc": sum(1 for i in open_items if i["delivery_kind"] == "BUBBLE")}
-    return {"counts": counts(open_items), "badge": {**badge, "total": badge["fault"] + badge["doc"]}, "items": items}
+    # 이브 아이콘 숫자 = ② 고장·확인 + ③ 문서 (① 긴급 팝업은 빼고 — FR-AST-02-02·UI 2.1 [15], 2026-10-20)
+    badge = {"fault": sum(1 for i in open_items if i["alert_kind"] == "FAULT"),
+             "doc": sum(1 for i in open_items if i["alert_kind"] == "DOC")}
+    return {"counts": counts(open_items), "badge": {**badge, "total": badge["fault"] + badge["doc"]},
+            "flood": db.one("notifications.flood_state"), "items": items}
 
 
 def _received(db: Db, actor: Actor, notification_id: int) -> bool:

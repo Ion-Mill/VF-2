@@ -58,8 +58,8 @@ SELECT t.eq((SELECT string_agg(r.user_id, ',') FROM notification n JOIN notifica
             'FR-AST-02-17 교대 끝에 그 교대 반장에게 확정 요청');
 SELECT t.eq((SELECT carry_over_qty || '/' || total_target_qty || '/' || carry_over_is_provisional FROM v_shift_target
               WHERE shift_id = '2026-09-16-N'), '3/93/true', 'R-88 주간 87 → 야간 이월 3, 총 목표 93 (확정 전이라 잠정)');
-SELECT t.ok((SELECT handover_text LIKE '전체 %건 (안전 % · 긴급 % · 생산 % · 주의 % · 참고 %)%' AND handover_text LIKE '%[2 생산 위험] %'
-              FROM shift_report WHERE shift_id = '2026-09-16-D'), '인계 사항 = 머리 + 순위별 칸');
+SELECT t.ok((SELECT handover_text LIKE '0 안전: % / 0-1 오래 방치: % / 1 긴급: % / 2 생산 위험: % / 3 주의: % / 4 참고: %'
+              FROM shift_report WHERE shift_id = '2026-09-16-D'), '인계 사항 = 순위별 칸 (생성기·화면 모양, 2026-10-20)');
 -- 반장이 확정 → 확정 요청 자동 처리, 이월 잠정이 풀림
 UPDATE shift_report SET status = 'CONFIRMED', confirmed_by = 'U10', confirmed_at = app_now() WHERE shift_id = '2026-09-16-D';
 SELECT t.ok((SELECT is_processed AND process_kind = 'AUTO' FROM notification
@@ -129,11 +129,11 @@ SELECT t.eq((SELECT report_rank || '/' || count_bucket FROM v_report_lines WHERE
             '0-1 오래 방치는 주의에 센다');
 SELECT t.eq((SELECT count(*)::int FROM v_report_lines), (SELECT count(DISTINCT coalesce(group_key, item_kind || ':' ||
                 coalesce(notification_id::text, equipment_id, lot_no)))::int FROM v_report_items), '전체 N = 묶은 뒤 줄 수');
-SELECT t.ok(fn_report_items_text() LIKE format('전체 %s건 (안전 %s · %%', (SELECT count(*) FROM v_report_lines),
-                                               (SELECT count(*) FROM v_report_lines WHERE count_bucket = 'SAFETY')),
-            '머리 N = 줄 수, 안전 = 순위 0만');
-SELECT t.ok(fn_report_items_text() LIKE '%[0 안전] ' || E'\n' || '- 잠금·표지 중: VF2-01%', '순위 0: 잠금·표지 중인 VF2-01이 맨 위');
-SELECT t.ok(fn_report_items_text() LIKE '%[2 생산 위험] -%', '빈 순위는 "-"');
+SELECT t.eq((SELECT sum(CASE WHEN x ~ ': -$' THEN 0 ELSE array_length(string_to_array(split_part(x, ': ', 2), '; '), 1) END)::int
+              FROM unnest(string_to_array(fn_report_items_text(), ' / ')) x), (SELECT count(*)::int FROM v_report_lines),
+            '칸 속 항목 수 합 = 묶은 뒤 줄 수 (화면 머리 N)');
+SELECT t.ok(fn_report_items_text() LIKE '0 안전: 잠금·표지 중: VF2-01%', '순위 0: 잠금·표지 중인 VF2-01이 맨 위');
+SELECT t.ok(fn_report_items_text() LIKE '%0-1 오래 방치: %(24시간 넘게 처리 안 됨)%', '0-1 줄 표시');
 SELECT t.ok(fn_report_items_text() LIKE '%(같은 원인 4건 묶음)%', '묶인 줄 표시');
 ROLLBACK;
 
@@ -141,7 +141,7 @@ ROLLBACK;
 BEGIN;
 UPDATE work_record_check SET is_checked = true, checked_by = 'U07', checked_at = '2026-09-15 12:30+09'
  WHERE record_no = 'MR-0901' AND loto_step_code IN ('7.1','7.2','7.3');
-SELECT t.ok(fn_report_items_text() LIKE '%[0 안전] 잠금·표지 중인 설비 없음%', '빈 순위 0 = "잠금·표지 중인 설비 없음"');
+SELECT t.ok(fn_report_items_text() LIKE '0 안전: 잠금·표지 중인 설비 없음 / %', '빈 순위 0 = "잠금·표지 중인 설비 없음"');
 ROLLBACK;
 
 -- ---------------------------------------------------------------------

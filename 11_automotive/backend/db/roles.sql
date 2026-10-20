@@ -42,6 +42,10 @@ GRANT EXECUTE ON FUNCTION app_now() TO mom_ai_ro;
 -- 교대 진행 뷰(v_shift_progress)가 부르는 읽기 전용 계산 함수 (손실 수량·교대 실적, R-46·R-47)
 GRANT EXECUTE ON FUNCTION fn_failure_loss_qty(timestamptz, timestamptz), fn_speed_loss_qty(timestamptz, timestamptz),
                           fn_shift_actual_qty(text) TO mom_ai_ro;
+-- 2026-10-20: 속도 손실·로트 예상 완료 계산 (v_shift_progress·v_production_lot이 부름 — functions/35_live_calc.sql)
+GRANT EXECUTE ON FUNCTION fn_shift_break_start(text, date), fn_work_minutes(timestamptz, timestamptz),
+                          fn_add_work_minutes(timestamptz, numeric), fn_lot_expected_complete(text),
+                          fn_interval_losses(timestamptz, timestamptz, text) TO mom_ai_ro;
 
 -- 나중에 만드는 표·함수도 같은 권한 (스키마 주인 계정으로 실행했을 때)
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO mom_app;

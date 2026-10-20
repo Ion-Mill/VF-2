@@ -26,7 +26,15 @@ SELECT a.*, m.name_ko, m.name_en, m.easy_desc, m.responder, m.responder_note, m.
 -- 원문 출처(source_ref)는 내보내지 않는다 (R-85)
 -- name: guide_card
 SELECT a.alarm_event_id, a.equipment_id, a.alarm_code, a.severity_at_event, a.occurred_at, a.lot_no,
-       m.name_ko, m.easy_desc, m.responder, m.responder_note, m.lockout_level, m.chain_rule,
+       m.name_ko, m.name_en, m.easy_desc, m.responder, m.responder_note, m.lockout_level, m.chain_rule,
+       -- 연쇄 알람 (2026-10-20): 앞 알람 번호와 그 알람 (예: 108 → 994 → 992에서 992의 앞 = 994)
+       a.prev_alarm_event_id,
+       (SELECT jsonb_build_object('alarm_event_id', p.alarm_event_id, 'alarm_code', p.alarm_code, 'occurred_at', p.occurred_at,
+                                  'severity', p.severity_at_event)
+          FROM alarm_event p WHERE p.alarm_event_id = a.prev_alarm_event_id) AS prev_alarm,
+       -- 이 알람의 작업지시서 ([작업지시서 열기] 버튼, 2026-10-20). 없으면 NULL
+       (SELECT jsonb_build_object('wo_no', o.wo_no, 'status', o.status, 'assignee_user_id', o.assignee_user_id)
+          FROM maintenance_work_order o WHERE o.alarm_event_id = a.alarm_event_id) AS work_order,
        'DOC-02 ' || m.doc02_section AS code_source,
        (SELECT coalesce(jsonb_agg(jsonb_build_object('doc_no', g.doc_no, 'doc_name', d.doc_name, 'section', g.section) ORDER BY g.seq), '[]')
           FROM alarm_guide_map g JOIN internal_doc d USING (doc_no) WHERE g.alarm_code = a.alarm_code) AS guide_sections,

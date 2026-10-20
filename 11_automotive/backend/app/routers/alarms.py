@@ -36,6 +36,8 @@ def guide_card(alarm_event_id: int, _: Actor = Depends(require("GUIDE_CARD", "VI
     비서는 이 재료로 문장만 쓴다. 고정 서식 블록(잠금·표지)은 화면이 그대로 붙인다 (R-33)"""
     card = must(db.one("alarms.guide_card", alarm_event_id=alarm_event_id), "알람")
     card["same_cases"] = db.all("alarms.same_cases", alarm_code=card["alarm_code"], equipment_id=card["equipment_id"])
+    # 생산 영향 칸의 의심 로트 제안 (FR-PRD-05-05, 2026-10-20) — 제안만, 알림·상태 바뀜 없음
+    card["suspect_lots"] = db.all("production.suspect_lots", alarm_event_id=alarm_event_id, lot_no=None, since=None)
     return card
 
 

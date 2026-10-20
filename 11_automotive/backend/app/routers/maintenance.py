@@ -150,11 +150,13 @@ def _record_perm(db: Db, actor: Actor, record_no: str, action: str) -> dict:
 
 @router.get("/work-records")
 def wr_list(record_type: str | None = None, status: str | None = None, limit: int = Query(100, le=500),
+            equipment_id: str | None = None, alarm_code: str | None = None,
             actor: Actor = Depends(WR_VIEW), db: Db = Depends(get_db)):
-    """작업기록 목록 (OPR은 간이 기록만)"""
+    """작업기록 목록 (OPR은 간이 기록만). 설비·알람 번호로 거르기 (같은 사례 찾기 — 2026-10-20)"""
     if not permissions(db).allows(actor.role, "WORK_RECORD", "VIEW"):
         record_type = "SIMPLE"           # OPR은 간이 기록만 (13.1)
-    return db.all("maintenance.wr_list", record_type=record_type, status=status, limit=limit)
+    return db.all("maintenance.wr_list", record_type=record_type, status=status, limit=limit,
+                  equipment_id=equipment_id, alarm_code=alarm_code)
 
 
 @router.get("/work-records/{record_no}")
@@ -246,10 +248,14 @@ def wr_assist(record_no: str, body: AssistIn, actor: Actor = Depends(require("WO
     """메모를 비서로 정리 (MNT-10): AI 비서 서비스가 원인·조치 칸 AI비서 초안을 돌려준다 (저장하지 않음 — 보전 담당자가
     PATCH로 넣는다). 비서가 없거나 응답이 틀리면 ASSISTANT_UNAVAILABLE"""
     rec = _record_perm(db, actor, record_no, "EDIT")
+    # 알람 번호(근거 문서 찾기)·재고 품목(메모에 나온 사용 부품 고르기 — 비서는 지어내지 않고 이 목록에서만, 2026-10-20)
     out = client.call("/work-record-assist", {"record_no": record_no, "equipment_id": rec["equipment_id"],
-                                              "memo": body.memo, "user_id": actor.user_id})
+                                              "memo": body.memo, "user_id": actor.user_id,
+                                              "alarm_code": db.scalar("maintenance.wr_alarm_code", record_no=record_no),
+                                              "items": db.all("maintenance.assist_items")})
     return {"record_no": record_no, "author_kind": "AI",
-            "cause": out.get("cause"), "action": out.get("action"), "sources": out.get("sources") or []}
+            "cause": out.get("cause"), "action": out.get("action"), "sources": out.get("sources") or [],
+            "parts": out.get("parts") or []}          # 사용 부품 제안 [{item_no, qty}] (FR-MNT-05-02, 2026-10-20 — 전에는 버렸다)
 
 
 @router.post("/work-records/{record_no}/confirm")
@@ -276,7 +282,7 @@ class QuickIn(BaseModel):
     lot_no: str | None = None
     worker_memo: str | None = None
     start_at: datetime | None = None
-    safety_block_required: bool = False
+    safety_block_required: bool = False   # 알람 잠금 수준이 FULL·TWO_POINT면 DB가 참으로 정함 (R-32·33)
 
 
 @router.post("/quick-records")
@@ -326,6 +332,37 @@ class PmRecordIn(BaseModel):
 def pm_record_create(body: PmRecordIn, actor: Actor = Depends(require("PM_RECORD", "CREATE")), db: Db = Depends(get_db)):
     """예방 정비 실시 기록 (PM-02) 저장 (v0). 확정하면 소모품 재고 차감 (…/confirm)"""
     return {"pm_record_id": records.create_pm_record(db, actor.user_id, **body.model_dump())}
+
+
+class PmStartIn(BaseModel):
+    due_date: date | None = None        # 비우면 그 항목의 다음 기한
+
+
+@router.post("/pm-tasks/{pm_task_id}/start")
+def pm_start(pm_task_id: str, body: PmStartIn | None = None, actor: Actor = Depends(require("PM_RECORD", "CREATE")),
+             db: Db = Depends(get_db)):
+    """[정비 시작] (FR-MNT-04-10, API-PM-02 — 2026-10-20): 실시 기록(수정 중)을 만들고 그 설비에 MAINT 구간을 연다.
+    설비를 켜고 끄는 명령이 아니라 기록이다. 이미 정비 중·고장 정지 중이면 INVALID_STATE (DB가 막음)"""
+    rid = db.scalar("maintenance.pm_start", pm_task_id=pm_task_id, actor=actor.user_id, due_date=body.due_date if body else None)
+    return {"pm_record_id": rid, "maint": db.one("maintenance.pm_open_maint", pm_record_id=rid)}
+
+
+class PmEndIn(BaseModel):
+    result: str = "NORMAL"
+    measured_value: Decimal | None = None
+    measured_unit: str | None = None
+    memo: str | None = None
+
+
+@router.post("/pm-records/{pm_record_id}/end")
+def pm_end(pm_record_id: int, body: PmEndIn, actor: Actor = Depends(require("PM_RECORD", "CREATE")), db: Db = Depends(get_db)):
+    """[정비 끝 · 실시 기록] (FR-MNT-04-10): MAINT 구간을 닫고 실시 시각 = 끝난 시각, 결과를 적는다 (v0). 확정은 …/confirm"""
+    db.scalar("maintenance.pm_end", pm_record_id=pm_record_id, actor=actor.user_id, result=body.result,
+              measured_value=body.measured_value, measured_unit=body.measured_unit, memo=body.memo)
+    db.scalar("documents.save_revision", doc_type="PM_RECORD", doc_key=str(pm_record_id), author_kind="HUMAN", author=actor.user_id,
+              reason=None, status_after="EDITING", content={"result": body.result, "measured_value": body.measured_value,
+                                                            "measured_unit": body.measured_unit, "memo": body.memo}, changes=[])
+    return must(db.one("documents.pm_record_get", pm_record_id=pm_record_id), "예방 정비 기록")
 
 
 @router.get("/pm-records/{pm_record_id}")

@@ -85,6 +85,8 @@ class RouterFlows(unittest.TestCase):
         with self.assertRaises(AppError):
             auth.login(auth.LoginIn(user_id="nobody", password="mom1234!"), REQ, self.db)
         self.assertEqual([a[1] for a in self.logged[-3:]], ["LOGIN", "LOGIN_FAIL", "LOGIN_FAIL"])
+        opr = auth.login(auth.LoginIn(user_id="U02", password="mom1234!"), REQ, self.db)   # 담당 공정 (API-AUTH-01, 2026-10-20)
+        self.assertTrue(opr.process_codes and all(p.startswith("OP-") for p in opr.process_codes))
 
     def test_02_line_and_alarms(self):
         now = self.call(line.twin, "U02", shift_id=None)
@@ -101,6 +103,12 @@ class RouterFlows(unittest.TestCase):
         card = self.call(alarms.guide_card, "U02", alarm_event_id=3)
         self.assertEqual(card["alarm_code"], "992")
         self.assertIn("same_cases", card)
+        # 연쇄 알람·작업지시서·영어 이름 (API-MNT-01, 2026-10-20): 992의 앞 알람 = 994(2번), 작업지시서 MW-0901
+        self.assertEqual(str(card["prev_alarm_event_id"]), "2")
+        self.assertIn("name_en", card)
+        self.assertIn("\"wo_no\": \"MW-0901\"", str(card["work_order"]).replace("'", "\""))     # 시험 DB는 jsonb를 글로 줌
+        # 의심 로트 제안 (FR-PRD-05-05 수용 기준: S1에서 LOT-2609-041-1, 2026-10-20) — 제안만, 상태는 그대로
+        self.assertIn("LOT-2609-041-1", [x["lot_no"] for x in card["suspect_lots"]])
         self.denied(alarms.downtime_patch, "U02", state_log_id=1, body=alarms.DowntimeIn(confirm=True))   # 확정은 SUP
         got = self.call(alarms.downtime_patch, "U02", state_log_id=4, body=alarms.DowntimeIn(reason_code="F01"))
         self.assertEqual(got["reason_status"], "ENTERED")
@@ -115,8 +123,8 @@ class RouterFlows(unittest.TestCase):
         self.assertTrue(all("is_late" in o and "defect_qty" in o for o in orders))
 
     def test_03_maintenance_flow(self):
-        aid = self.db.scalar("alarms.ingest", equipment_id="VF2-02", alarm_code="254", occurred_at=None, lot_no=None,
-                             prev_alarm_event_id=None, is_injected=False, scenario_code=None)
+        # 사람·비서가 초안 API로 만드는 흐름 — 정지 알람 자동 초안(2026-10-20)은 끄고 알람만 넣는다 (자동 초안은 db/tests/96d)
+        aid = int(self.db._run("SET app.auto_work_order = 'off'; SELECT fn_ingest_alarm('VF2-02', '254')", quiet=True).splitlines()[1])
         body = maintenance.WoDraftIn(equipment_id="VF2-02", title="알람 254 점검", symptom="과열", alarm_event_id=int(aid),
                                      steps=[maintenance.StepIn(step_text="팬 확인", source_section="DOC-03 §2.9")])
         self.denied(maintenance.wo_create, "U02", body=body)
@@ -132,8 +140,7 @@ class RouterFlows(unittest.TestCase):
         self.call(maintenance.wo_edit, "U07", wo_no=wo,
                   body=maintenance.EditIn(version=0, changes={"title": "알람 254 냉각 점검"}))
         # AI비서 초안은 사람이 열어 고치기 전에는 승인 안 됨
-        aid2 = self.db.scalar("alarms.ingest", equipment_id="VF2-01", alarm_code="994", occurred_at=None, lot_no=None,
-                              prev_alarm_event_id=None, is_injected=False, scenario_code=None)
+        aid2 = int(self.db._run("SET app.auto_work_order = 'off'; SELECT fn_ingest_alarm('VF2-01', '994')", quiet=True).splitlines()[1])
         ai = assistant.draft_work_order(maintenance.WoDraftIn(equipment_id="VF2-01", title="알람 994 점검", symptom="x",
                                                               alarm_event_id=int(aid2)), self.db)["wo_no"]
         self.assertEqual(self.call(maintenance.wo_get, "U10", wo_no=ai)["status"], "AI_DRAFT")
@@ -184,10 +191,17 @@ class RouterFlows(unittest.TestCase):
         # OPR은 정식 기록 목록을 못 봄 → 간이만
         rows = self.call(maintenance.wr_list, "U02", record_type=None, status=None, limit=100)
         self.assertTrue(all(r["record_type"] == "SIMPLE" for r in rows))
+        # 제때 실시율 (FR-MNT-04-07, 2026-10-20): 분모 = 기한이 온 항목 (안 한 채 기한 지난 것 포함), 맨 끝 줄 = 라인 합
+        on_time = self.call(maintenance.pm_schedule, "U07", equipment_id=None, frm=None, to=None)["on_time"]
+        self.assertIn(on_time[-1]["equipment_id"], (None, ""))      # 시험 DB(psql csv)는 NULL을 빈 글로 돌려줌
+        self.assertEqual(int(on_time[-1]["due_count"]), sum(int(r["due_count"]) for r in on_time[:-1]))
+        self.assertTrue(all(int(r["due_count"]) == int(r["done_count"]) + int(r["missed_count"]) for r in on_time))
 
     def test_035_lot_hold(self):
         t = self.call(production.trace, "U02", lot_no="LOT-2609-041-1")
         self.assertEqual(t["lot_no"], "LOT-2609-041-1")
+        self.assertTrue(t["suspect"] and all(x["kind"] == "ALARM" for x in t["suspect"]))     # 로트 추적의 의심 이유
+        self.assertIn("LOT-2609-041-1", [x["lot_no"] for x in self.call(production.suspect_lots, "U10", since=None)])
         body = production.HoldIn(trigger_type="AI_SUSPECT", reason="충돌 의심", alarm_event_id=3)
         self.denied(production.hold, "U02", lot_no="LOT-2609-041-1", body=body)    # 보류는 사람(SUP·MGR)만
         out = self.call(production.hold, "U10", lot_no="LOT-2609-041-1", body=body)
@@ -313,6 +327,17 @@ class RouterFlows(unittest.TestCase):
         self.assertIn(stops[0]["wo_status_at_report"], ("IN_PROGRESS", "DONE"))
         self.assertTrue(float(stops[0]["loss_qty"]) > 0)
         self.assertEqual([s["wo_no"] for s in d["stops"]], ["MW-0901"])                  # 일일 보고서도 같은 목록
+        # 보고서 원기록 칸 (2026-10-20 상 4번): 교대 = 로트·병목·정비·순간 정지, 일일 = + 손실 전체·교대 비교·알람·MTTR·재고
+        shift = self.call(documents.shift_report, "U10", shift_id="2026-09-15-D")
+        self.assertTrue({"lots", "bottleneck", "maintenance", "micro_stops"} <= set(shift))
+        self.assertIn("MW-0901", [m["wo_no"] for m in shift["maintenance"]])
+        self.assertIn("LOT-2609-041-1", [x["lot_no"] for x in shift["lots"] if x["made_here"] is True])
+        self.assertEqual([x["shift_id"] for x in d["shifts"]], ["2026-09-15-D", "2026-09-15-N"])
+        self.assertEqual(int(d["alarms"]["total"]), int(d["alarms"]["stop_count"]) + int(d["alarms"]["warn_count"])
+                         + int(d["alarms"]["guide_count"]))
+        self.assertEqual([x["kind"] for x in d["losses"]][:1], ["FAILURE"])
+        fg = d["inventory"]["finished"]
+        self.assertEqual(float(fg["end_qty"]), float(fg["start_qty"]) + float(fg["in_qty"]) - float(fg["ship_qty"]) + float(fg["adjust_qty"]))
 
     def test_07_notifications(self):
         mine = self.call(notifications.mine, "U07", sort="rank")
@@ -325,7 +350,10 @@ class RouterFlows(unittest.TestCase):
         self.assertTrue(all(n["delivery_kind"] in ("POPUP", "BUBBLE", "LIST") for n in mine["items"]))
         self.assertTrue(all(n["delivery_kind"] == "POPUP" for n in urgent))             # 긴급 = 팝업
         docs = self.call(notifications.mine, "U07", kind="doc")["items"]
-        self.assertTrue(all(n["delivery_kind"] == "BUBBLE" for n in docs))               # 문서 알림 칸 = 말풍선만
+        self.assertTrue(all(n["alert_kind"] == "DOC" for n in docs))                     # 문서 알림 칸 = 문서 알림 규칙 (2026-10-20 — 말풍선 없는 것 포함)
+        self.assertEqual(mine["badge"]["total"], sum(1 for n in mine["items"] if n["is_processed"] is False
+                                                     and n["alert_kind"] in ("FAULT", "DOC")))  # 아이콘 숫자 = ② + ③
+        self.assertIn("active", mine["flood"])                                           # 폭주 상태 (FR-AST-02-12)
         # 반장도 정지 알람 긴급 알림(팝업)을 받는다 (2026-10-11)
         stop_sup = [n for n in self.call(notifications.mine, "U10", status="all")["items"] if n["rule_code"] == "ALARM_STOP"]
         stop_mnt = [n for n in mine["items"] if n["rule_code"] == "ALARM_STOP"]
@@ -423,6 +451,19 @@ class RouterFlows(unittest.TestCase):
                        body=maintenance.QuickIn(equipment_id="VF2-01", action="칩 제거", alarm_event_id=1))["record_no"]
         mine = self.call(documents.revisions, "U02", doc_type="WORK_RECORD", doc_key=no)
         self.assertTrue(mine and all(r["author_user_id"] == "U02" for r in mine))
+        # 2026-10-20: 보충용 2점 잠금 알람(2075) 간이 기록은 화면이 False를 보내도 잠금·표지 9칸이 생긴다 (R-32·33)
+        a2075 = int(self.db._run("SELECT fn_ingest_alarm('VF2-02', '2075', '2026-09-15 12:10+09', 'LOT-2609-041-1')",
+                                 quiet=True).splitlines()[1])
+        loto_no = self.call(maintenance.quick_create, "U02",
+                            body=maintenance.QuickIn(equipment_id="VF2-02", action="축 윤활유 보충", alarm_event_id=a2075,
+                                                     safety_block_required=False))["record_no"]
+        self.assertEqual(self.db._run(f"SELECT safety_block_required::text || '/' || (SELECT count(*) FROM work_record_check c "
+                                      f"WHERE c.record_no = w.record_no AND c.check_kind = 'LOTO') FROM work_record w "
+                                      f"WHERE w.record_no = '{loto_no}'", quiet=True).splitlines()[1], "true/9")
+        # 2026-10-20: MNT 문서함 "내 할 일"에 초안(DRAFT) 예방 정비 기록이 나온다 (전에는 없는 상태 EDITING을 찾아 늘 비었음)
+        self.db._run("INSERT INTO pm_record (pm_task_id, due_date, done_at, done_by, recorded_by, result, status) "
+                     "VALUES ('PM-VF2-02-2.3-01', '2026-10-15', '2026-09-15 12:20+09', 'U07', 'U07', 'NORMAL', 'DRAFT')", quiet=True)
+        self.assertIn("PM_RECORD", [r["doc_type"] for r in self.call(documents.inbox, "U07", mine=True)])
         self.assertEqual(self.call(documents.revision, "U02", revision_id=int(mine[0]["revision_id"]))["doc_key"], no)
         other = self.call(documents.revisions, "U10", doc_type="SHIFT_REPORT", doc_key="2026-09-14-N")
         self.assertTrue(other)
@@ -565,6 +606,22 @@ class RouterFlows(unittest.TestCase):
         n = ingest.sensors(ingest.SensorsIn(equipment_id="VF2-01", rows=[
             ingest.SensorRow(sensor_code=sensor, sampled_at="2026-09-15T13:00:00+09:00", value=1.5)]), self.db)
         self.assertEqual(n["inserted"], 1)
+        # 시뮬레이터 시계 입구 (2026-10-20): 시연 모드가 아니면(공용 DB 서버) 409 — 시연 서버 DB 중계가 스스로 꺼진다
+        with self.assertRaises(AppError) as e:
+            ingest.clock(ingest.ClockIn(sim_at="2026-09-15T13:00:00+09:00", speed=60), self.db)
+        self.assertEqual((e.exception.status, e.exception.detail.get("reason")), (409, "NOT_DEMO_MODE"))
+
+    def test_099_pm_start_end(self):
+        # [정비 시작]·[정비 끝 · 실시 기록] (FR-MNT-04-10, 2026-10-20): MAINT 구간 = 두 버튼 사이. 시계를 앞으로 돌리므로 맨 끝에 둔다
+        self.db._run("SELECT fn_sim_set('SIM', '2026-09-15 16:00+09', 1, true)", quiet=True)
+        self.denied(maintenance.pm_start, "U02", pm_task_id="PM-VF2-02-2.3-01", body=None)
+        st = self.call(maintenance.pm_start, "U07", pm_task_id="PM-VF2-02-2.3-01", body=None)
+        self.assertEqual(st["maint"]["equipment_id"], "VF2-02")
+        self.db._run("SELECT fn_sim_set('SIM', '2026-09-15 17:30+09', 1, true)", quiet=True)
+        done = self.call(maintenance.pm_end, "U07", pm_record_id=st["pm_record_id"],
+                         body=maintenance.PmEndIn(result="REFILLED", measured_value=1.5, measured_unit="L"))
+        self.assertEqual((done["result"], done["status"]), ("REFILLED", "DRAFT"))
+        self.assertIsNone(self.db.one("maintenance.pm_open_maint", pm_record_id=st["pm_record_id"]))
 
 
 if __name__ == "__main__":

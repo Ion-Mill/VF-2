@@ -106,7 +106,7 @@
 ## 10. 테이블과 관계 (실제 DB에서 생성)
 
 <!-- BEGIN:schema -->
-<!-- tools/gen_schema_doc.py 가 실제 DB에서 만든 부분: 테이블 70개 (파티션 제외), 외래 키 165개, 뷰 18개, 업무 함수 59개 -->
+<!-- tools/gen_schema_doc.py 가 실제 DB에서 만든 부분: 테이블 72개 (파티션 제외), 외래 키 166개, 뷰 18개, 업무 함수 79개 -->
 
 ### 기준 정보 (`db/schema/10_master.sql`, 13개)
 
@@ -125,8 +125,8 @@ erDiagram
     inventory_item ||--o{ product : "material_item_no"
     app_user ||--o{ shift : "supervisor_user_id"
     work_day ||--o{ shift : "work_date"
-    process ||--o{ wip_buffer : "from_process_code"
     process ||--o{ wip_buffer : "to_process_code"
+    process ||--o{ wip_buffer : "from_process_code"
 ```
 
 | 테이블 | 설명 | 칼럼 | PK | 바깥 참조 (FK) | CHECK | UNIQUE·EXCLUDE | 트리거 |
@@ -160,7 +160,7 @@ erDiagram
 | `production_lot` | 생산 로트 (5.B.3) | 9 | lot_no | shift | 7 | 1 | 2 |
 | `production_order` | 생산 작업지시 (5.B.2) | 8 | order_no | product | 6 | 0 | 0 |
 | `raw_material_lot` | 원자재 로트 (5.B.1). AVAILABLE일 때만 생산 로트에 쓸 수 있다 (R-06a, 트리거) | 7 | material_lot_no | inventory_item | 3 | 0 | 1 |
-| `wip_log` | 재공 기록 (5.B.5) — L2 시계열 (1년 → 1시간 집계 wip_hourly) | 5 | buffer_code, logged_at | wip_buffer | 4 | 0 | 2 |
+| `wip_log` | 재공 기록 (5.B.5) — L2 시계열 (1년 → 1시간 집계 wip_hourly) | 5 | buffer_code, logged_at | wip_buffer | 4 | 0 | 3 |
 
 ### 설비·알람 (`db/schema/30_equipment_alarm.sql`, 7개)
 
@@ -178,7 +178,7 @@ erDiagram
 | `alarm_event` | 알람 이벤트 (5.C.3) — L3 (2년) | 10 | alarm_event_id | alarm_event, equipment, production_lot | 5 | 0 | 2 |
 | `alarm_master` | 알람 코드집 (5.C.1) — 내용(원문 이름·설명)은 생성기 기준 정보 CSV로 넣는다. | 15 | alarm_code | process | 3 | 0 | 0 |
 | `alarm_related_item` | 알람 ↔ 관련 재고 품목 (같은 원인 묶기). 예방 정비 항목은 pm_task.default_item_no로 이어진다 | 4 | alarm_code, item_no | inventory_item | 0 | 0 | 0 |
-| `bottleneck_log` | 병목 기록 (5.B.6) — 다음 행까지가 한 구간. interval_end_at·planned_qty는 v_bottleneck_interval | 9 | bottleneck_log_id | process | 2 | 1 | 2 |
+| `bottleneck_log` | 병목 기록 (5.B.6) — 다음 행까지가 한 구간. interval_end_at·planned_qty는 v_bottleneck_interval | 9 | bottleneck_log_id | process | 2 | 1 | 3 |
 | `downtime_reason` | 정지 사유 코드 (5.C.5, 6.5) | 7 | reason_code | — | 5 | 0 | 0 |
 | `sensor_item` | 센서 항목 (5.C.6) — 알람 기준값 칸은 두지 않는다 | 7 | sensor_code | — | 1 | 0 | 0 |
 | `sensor_sample` | OP-30 센서 값 (5.C.7). 1S = 알람·병목 앞뒤 30분, 1M = 평소 1분 평균. 30일 넘게 운영하면 월별 하위 파티션으로 나눈… · 파티션(1S·1M) | 5 | equipment_id, sensor_code, sampled_at, interval_type | equipment | 1 | 0 | 0 |
@@ -225,7 +225,7 @@ erDiagram
 | 테이블 | 설명 | 칼럼 | PK | 바깥 참조 (FK) | CHECK | UNIQUE·EXCLUDE | 트리거 |
 |---|---|---|---|---|---|---|---|
 | `equipment_state_log` | 설비 상태 기록 (5.C.4) — 구간. L3 (2년) | 17 | state_log_id | alarm_event, app_user, downtime_reason, equipment | 9 | 2 | 3 |
-| `inventory_txn` | 입출고 거래 (5.E.6) — 수불대장. 추가만 한다 (고치기·지우기 금지 트리거) | 17 | txn_id | app_user, inventory_item, production_lot, raw_material_lot, shipment_line, tool_change | 7 | 0 | 3 |
+| `inventory_txn` | 입출고 거래 (5.E.6) — 수불대장. 추가만 한다 (고치기·지우기 금지 트리거) | 17 | txn_id | app_user, inventory_item, production_lot, raw_material_lot, shipment_line, tool_change | 7 | 0 | 4 |
 | `maintenance_work_order` | 정비 작업지시서 (5.D.1) — OP-30만 (트리거) | 20 | wo_no | alarm_event, app_user, equipment, notification (지연), production_lot | 7 | 3 | 4 |
 | `pm_record` | 예방 정비 실시 기록 (5.D.8) — 수정 이력 대상 (PM_RECORD) | 13 | pm_record_id | app_user | 4 | 0 | 3 |
 | `pm_task` | 예방 정비 항목 (5.D.7) — next_due_date는 v_pm_task_due | 12 | pm_task_id | equipment, inventory_item | 5 | 0 | 0 |
@@ -254,9 +254,9 @@ erDiagram
 | `defect_record` | 불량 기록 (5.F.5) | 9 | defect_record_id | app_user, process, production_lot | 2 | 1 | 1 |
 | `inspection_item` | 검사 항목 (5.F.1) | 13 | product_code, item_seq | product | 6 | 0 | 0 |
 | `inspection_plan` | 검사 방식 (5.F.3) — 로트 1 : 1. planned_measure_qty는 v_production_lot | 8 | lot_no | lot_hold, production_lot | 7 | 0 | 0 |
-| `inspection_result` | 검사 결과 (5.F.4) — 측정한 부품만 (R-26). 측정값은 지우지 않는다 (R-75) | 26 | result_id | app_user, equipment, production_lot | 14 | 1 | 1 |
+| `inspection_result` | 검사 결과 (5.F.4) — 측정한 부품만 (R-26). 측정값은 지우지 않는다 (R-75) | 26 | result_id | app_user, equipment, production_lot | 14 | 1 | 2 |
 
-### 문서·보고서 (`db/schema/70_documents.sql`, 8개)
+### 문서·보고서 (`db/schema/70_documents.sql`, 9개)
 
 ```mermaid
 erDiagram
@@ -267,6 +267,7 @@ erDiagram
 
 | 테이블 | 설명 | 칼럼 | PK | 바깥 참조 (FK) | CHECK | UNIQUE·EXCLUDE | 트리거 |
 |---|---|---|---|---|---|---|---|
+| `alarm_check_step` | 알람 점검 순서 [물리 추가, 2026-10-20 — 작업지시서 초안 자동 생성 FR-MNT-03-01·05, 1018 §23 "점검 순서를 D… | 4 | alarm_code, seq | — | 2 | 0 | 0 |
 | `alarm_guide_map` | 알람-고장 대응 연결 (5.C.2) — 원문 출처 칸 없음 (R-85) | 4 | alarm_code, seq | alarm_master | 1 | 0 | 0 |
 | `chat_log` | 채팅 기록 (5.G.7). 본인 것만 보고 30일 보관 (6.53 #18, R-87). 밖으로 보내지 않음 | 9 | chat_id | app_user, chat_log | 4 | 0 | 0 |
 | `daily_report` | 일일 보고서 (5.G.2) — 생산일 다음 날 06:00 초안 (R-72). 확정 = MGR (트리거) | 13 | work_date | app_user, work_day | 8 | 0 | 3 |
@@ -276,7 +277,7 @@ erDiagram
 | `internal_doc` | 사내 문서 (5.G.5) — DOC-01~07 + 용어집 | 10 | doc_no | app_user | 6 | 0 | 1 |
 | `shift_report` | 교대 보고서 (5.G.1) — 교대 1 : 보고서 0..1. 확정자 = 그 교대 반장 (R-36, 트리거) | 11 | shift_id | app_user, shift | 7 | 0 | 3 |
 
-### 알림·사용자·권한 (`db/schema/80_notification_auth.sql`, 6개)
+### 알림·사용자·권한 (`db/schema/80_notification_auth.sql`, 7개)
 
 ```mermaid
 erDiagram
@@ -288,6 +289,7 @@ erDiagram
 | 테이블 | 설명 | 칼럼 | PK | 바깥 참조 (FK) | CHECK | UNIQUE·EXCLUDE | 트리거 |
 |---|---|---|---|---|---|---|---|
 | `access_log` | 물리 추가: 접속 기록 1년 보관 (6.53 ACCESS_LOG, 개인정보 안전성 확보조치 기준 제8조). 실제 시각(now) 기준 | 9 | access_log_id | app_user | 1 | 0 | 1 |
+| `briefing_check` | 물리 추가 (2026-10-20): 브리핑 먼저 챙길 일 체크 — 본인 것만, 시각은 시연 시계(app_now) | 4 | user_id, shift_id, item_key | app_user | 2 | 0 | 0 |
 | `notification` | 알림 (5.H.5) — L3 (2년). report_rank는 계산 (시간이 지나면 바뀌므로 저장하지 않음) | 30 | notification_id | alarm_event, app_user, bottleneck_log, cmm_import, document_revision, equipment, inspection_result, inventory_item, maintenance_work_order (지연), notification, pm_task, production_lot, shift, tool, wip_buffer | 12 | 0 | 1 |
 | `notification_pm_task` | 알림 ↔ 예방 정비 항목 [물리 추가, 2026-10-20 정비 탭 확인 요청 5] — 여러 항목을 1건으로 묶는 알림의 관련 항목 | 2 | notification_id, pm_task_id | pm_task | 0 | 0 | 0 |
 | `notification_recipient` |  | 4 | notification_id, user_id | app_user | 0 | 0 | 0 |
@@ -312,7 +314,7 @@ erDiagram
 
 ### 업무 함수 (여러 표를 함께 바꾸는 일 — db/functions/)
 
-`app_now`, `fn_add_tool_usage`, `fn_auto_process`, `fn_check_measurement`, `fn_check_repeat_alarm`, `fn_check_stock`, `fn_close_pm_due_soon`, `fn_confirm_shipment`, `fn_confirm_work_record`, `fn_create_daily_report_draft`, `fn_create_inspection_plan`, `fn_create_order`, `fn_create_shift_report_draft`, `fn_create_work_order_draft`, `fn_demo_reset`, `fn_demo_snapshot`, `fn_demo_tables`, `fn_doc_status`, `fn_ensure_work_day`, `fn_equipment_process`, `fn_failure_loss_qty`, `fn_import_cmm`, `fn_ingest_alarm`, `fn_issue_cmm_instruction`, `fn_lot_completed_qty`, `fn_lot_hold`, `fn_lot_judge`, `fn_lot_pass`, `fn_lot_release`, `fn_lot_scrap_approve`, `fn_lot_scrap_propose`, `fn_lot_to_inspection`, `fn_next_doc_no`, `fn_planned_parts`, `fn_process_notification`, `fn_purge_chat_log`, `fn_raise_notification`, `fn_raise_pm_due_soon`, `fn_record_cmm_failure`, `fn_refill_daily_report`, `fn_refresh_carry_over`, `fn_report_items_text`, `fn_report_production`, `fn_require_role`, `fn_retention_report`, `fn_run_time_rules`, `fn_save_revision`, `fn_seed_alarm_related_items`, `fn_shift_actual_qty`, `fn_ship_qr_unchecked`, `fn_sim_set`, `fn_speed_loss_qty`, `fn_split_memo`, `fn_start_lot`, `fn_state_change`, `fn_sync_after_load`, `fn_sync_doc_numbers`, `fn_tool_change`, `fn_user_role`
+`app_now`, `fn_add_tool_usage`, `fn_add_work_minutes`, `fn_auto_process`, `fn_auto_work_order_draft`, `fn_bottleneck_action_line`, `fn_bottleneck_cause_ko`, `fn_check_cpk`, `fn_check_measurement`, `fn_check_repeat_alarm`, `fn_check_stock`, `fn_close_pm_due_soon`, `fn_confirm_shipment`, `fn_confirm_work_record`, `fn_create_daily_report_draft`, `fn_create_inspection_plan`, `fn_create_order`, `fn_create_shift_report_draft`, `fn_create_work_order_draft`, `fn_daily_issues_text`, `fn_demo_reset`, `fn_demo_snapshot`, `fn_demo_tables`, `fn_doc_status`, `fn_ensure_work_day`, `fn_equipment_process`, `fn_failure_loss_qty`, `fn_flood_state`, `fn_import_cmm`, `fn_ingest_alarm`, `fn_interval_losses`, `fn_issue_cmm_instruction`, `fn_item_cpk`, `fn_lot_completed_qty`, `fn_lot_expected_complete`, `fn_lot_hold`, `fn_lot_judge`, `fn_lot_pass`, `fn_lot_release`, `fn_lot_scrap_approve`, `fn_lot_scrap_propose`, `fn_lot_to_inspection`, `fn_next_doc_no`, `fn_planned_parts`, `fn_pm_end`, `fn_pm_start`, `fn_process_notification`, `fn_purge_chat_log`, `fn_raise_lot_due_risk`, `fn_raise_notification`, `fn_raise_pm_due_soon`, `fn_raise_pm_record_check`, `fn_record_cmm_failure`, `fn_refill_daily_report`, `fn_refresh_carry_over`, `fn_report_item_line`, `fn_report_items_text`, `fn_report_production`, `fn_require_role`, `fn_resume_normal`, `fn_resume_sampling`, `fn_retention_report`, `fn_run_time_rules`, `fn_save_revision`, `fn_seed_alarm_related_items`, `fn_shift_actual_qty`, `fn_shift_break_start`, `fn_ship_qr_unchecked`, `fn_sim_set`, `fn_simple_record_needs_loto`, `fn_speed_loss_qty`, `fn_split_memo`, `fn_start_lot`, `fn_state_change`, `fn_sync_after_load`, `fn_sync_doc_numbers`, `fn_tool_change`, `fn_user_role`, `fn_work_minutes`
 <!-- END:schema -->
 
 

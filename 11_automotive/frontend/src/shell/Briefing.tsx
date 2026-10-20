@@ -39,7 +39,7 @@ const SUM_BOX = 'flex min-w-0 flex-col gap-0.5 rounded-2xl border border-[#e4def
 const SUM_LABEL = 'whitespace-nowrap text-[12.5px] font-bold text-[#6b6683]';
 const SUM_NOTE = 'text-[12.5px] leading-snug text-[#4b4766]';
 type CheckBase = { userId: string; shiftId: string; runId: number | null };
-function Board({ todos, sum, lockout, footSrc, onDone, onOpenLast, aiNote, check }: { todos: Todo[]; sum: Summary; lockout: string[]; footSrc: string; onDone?: () => void; onOpenLast?: () => void; aiNote?: React.ReactNode; check: CheckBase }) {
+function Board({ todos, sum, lockout, onOpenLast, aiNote, check }: { todos: Todo[]; sum: Summary; lockout: string[]; onOpenLast?: () => void; aiNote?: React.ReactNode; check: CheckBase }) {
   // 체크 저장 (2026-10-20): 이 브라우저(시연 회차별)에 늘 남기고, 백엔드가 있으면 같이 보낸다. 열 때 서버 값이 오면 서버 것을 따른다 (briefChecks.ts)
   const { userId, shiftId, runId } = check;
   const scope = checkScope(userId, shiftId);
@@ -103,8 +103,7 @@ function Board({ todos, sum, lockout, footSrc, onDone, onOpenLast, aiNote, check
           </div>
         );
       })}
-      <div className="flex flex-col gap-2.5 pt-1"><span className="px-1 text-[12.5px] text-[#6b6683]">{aiNote}근거 · {footSrc}{done.length ? ` · 체크 ${done.length}건 저장됨` : ''}</span>
-        {onDone && <button onClick={onDone} className="h-12 w-full rounded-full bg-[#26303a] text-[16px] font-extrabold text-white">확인했어요</button>}</div>
+      {aiNote && <div className="px-1 pt-1 text-[12.5px] text-[#6b6683]">{aiNote}</div>}
     </div>
   );
 }
@@ -118,7 +117,7 @@ const summaryOf = (twin: Twin, last: Record<string, any> | null, good: number | 
 });
 const doIt = (t: string) => (/[기다]$/.test(t) ? t : `${t}하기`); // 할 일은 동사로 끝나게
 
-export default function Briefing({ onDone }: { onDone?: () => void }) {
+export default function Briefing() {
   const { user, twin, alerts, openCard, go, shiftReports, pm } = useApp();
   if (!twin) return <p className="text-slate-500">데이터 없음 (연결 끊김) — 브리핑을 만들 수 없습니다.</p>;
   const last = lastShiftReport(shiftReports, twin);
@@ -139,23 +138,31 @@ export default function Briefing({ onDone }: { onDone?: () => void }) {
       ...tools.map((t, i): Todo => ({ key: `tool${i}`, text: `${t.tool_id} 공구 교체 준비하기`, sub: `수명 ${t.usage_pct}%`, tag: '▲ 공구', tone: 'amber', go: () => go('tools') })),
       ...pmTodos,
     ];
-    return <Board todos={todos} sum={summaryOf(twin, last, good, pmTodos.length)} lockout={lockout} footSrc={`교대 보고서 ${last?.shift_id ?? '없음'} · 예방 정비 일정 · 알람 기록`} onDone={onDone} onOpenLast={last ? () => go('shift', last.shift_id) : undefined} check={{ userId: user.id, shiftId: twin.shift.shift_id, runId: twin.run_id }} />;
+    return <Board todos={todos} sum={summaryOf(twin, last, good, pmTodos.length)} lockout={lockout} onOpenLast={last ? () => go('shift', last.shift_id) : undefined} check={{ userId: user.id, shiftId: twin.shift.shift_id, runId: twin.run_id }} />;
   }
 
-  return <FullBrief v={{ twin, last, open, lockout, p, pmTodos, good, alarmTodo }} onDone={onDone} />;
+  return <FullBrief v={{ twin, last, open, lockout, p, pmTodos, good, alarmTodo }} />;
 }
 
 type FullView = { twin: Twin; last: Record<string, any> | null; open: AlertRec[]; lockout: string[]; p: Twin['production']; pmTodos: Todo[]; good: number | null; alarmTodo: (a: AlertRec) => Todo };
 
 // 전체형 (SUP·MNT·MGR): 먼저 챙길 일 = 0 안전 → 순위대로 지금 알람·알림 + 인계 사항(지난 교대 보고서) → 예방 정비. 비서 정리 훅을 부르려고 따로 뺐다
-function FullBrief({ v, onDone }: { v: FullView; onDone?: () => void }) {
-  const { user, myNotices, go } = useApp();
+function FullBrief({ v }: { v: FullView }) {
+  const { user, myNotices, notices, go } = useApp();
   const { twin, last, open, lockout, pmTodos, good, alarmTodo } = v;
   const base = last ? parseHandover(last.handover_text) : [];
+  const shown = myNotices.filter((x) => !x.handled && x.delivery === 'LIST');
+  // 겹치는 줄 빼기 (2026-10-20): 인계 사항 중 ① 지금 알림으로 보이거나 이미 처리된 알림과 같은 줄 ② 기한이 지난 "기한 하루 전" 줄,
+  // 예방 정비 일정 중 ③ 지금 예방 정비 알림으로 보이는 항목. 같은 일이 알림·인계·일정으로 서너 번 나오던 것
+  const same = (t: string) => { const s = t.replace(/\s*\(24시간 넘게 처리 안 됨\)$/, '').trim(); return notices.some((n) => (n.handled || shown.includes(n)) && n.text.trim() === s); };
+  const today = simIso().slice(0, 10);
+  const staleSoon = (t: string) => { const m = t.match(/기한 하루 전 \(기한 (\d{2})\/(\d{2})\)/); return !!m && `${today.slice(0, 4)}-${m[1]}-${m[2]}` < today; };
+  const pmShown = new Set(shown.filter((n) => n.rule.startsWith('PM_')).flatMap((n) => n.keys ?? (n.rule === 'PM_OVERDUE' ? [n.id.slice('PM_OVERDUE:'.length)] : [])));
   const groups = RANK_ORDER.map((rank) => ({ rank,
     a: open.filter((x) => rankOfAlert(x) === rank),
-    n: myNotices.filter((x) => !x.handled && x.delivery === 'LIST' && rankOfNotice(x) === rank),
-    base: (base.find((g) => g.rank === rank)?.items ?? []).filter((t) => !t.startsWith('잠금·표지 중인 설비 없음')) }));
+    n: shown.filter((x) => rankOfNotice(x) === rank),
+    base: (base.find((g) => g.rank === rank)?.items ?? []).flatMap((t) => t.split(/ \/ (?=추가: )/)) // 맨 끝 "/ 추가: …"가 앞 줄에 붙어 오므로 떼어 따로 둔다
+      .filter((t) => !t.startsWith('잠금·표지 중인 설비 없음') && !same(t) && !staleSoon(t)) }));
   // 비서 정리: 순위 묶음별 항목 줄 (알람 → 알림 → 인계, 팀 원문 모양 그대로). 안전(순위 0)은 보내지 않는다
   const aiGroups = groups.filter((g) => g.rank !== '0').map((g) => ({ rank: g.rank, lines: [...g.a.map(aText), ...g.n.map(noticeLine), ...g.base] })).filter((g) => g.lines.length);
   const ai = useBriefingText(twin.shift.shift_id, aiGroups);
@@ -169,10 +176,10 @@ function FullBrief({ v, onDone }: { v: FullView; onDone?: () => void }) {
     ns.forEach((n, i) => todos.push({ key: n.id, text: pick(rank, as.length + i, noticeLine(n), n.text), sub: `${n.ruleName}${n.past ? ` · ${md(n.at)}` : ''}`, tag: n.level === '긴급' ? '긴급' : n.level === '주의' ? '▲ 주의' : '참고', tone: n.level === '긴급' ? 'red' : n.level === '주의' ? 'amber' : 'soon', go: () => (n.open ? go(n.open.screen as Parameters<typeof go>[0], n.open.key ?? null) : go('line')) }));
     bs.forEach((t, i) => todos.push({ key: `ho${rank}-${i}`, text: pick(rank, as.length + ns.length + i, t, t), sub: `인계 · ${RANK_NAME[rank]} · 교대 보고서 ${last?.shift_id ?? ''}`, tag: '인계', tone: 'soon', go: () => last && go('shift', last.shift_id) }));
   });
-  todos.push(...pmTodos);
+  todos.push(...pmTodos.filter((t) => !pmShown.has(t.key.slice('pm:'.length))));
   return (
-    <Board todos={todos} sum={summaryOf(twin, last, good, pmTodos.length)} lockout={lockout} footSrc={`교대 보고서 ${last?.shift_id ?? '없음'} · 알람·알림 기록 · 예방 정비 일정 (순서 = 2.5 보고 순위)`} onDone={onDone}
+    <Board todos={todos} sum={summaryOf(twin, last, good, pmTodos.length)} lockout={lockout}
       onOpenLast={last ? () => go('shift', last.shift_id) : undefined} check={{ userId: user.id, shiftId: twin.shift.shift_id, runId: twin.run_id }}
-      aiNote={hasAi && <><b>{raw ? '원문' : '비서 정리'}</b> <button onClick={() => setRaw((x) => !x)} title="프로그램 문구와 비서가 다듬은 문장을 바꿔 봅니다" className="underline">{raw ? '비서 정리 보기' : '원문 보기'}</button> · </>} />
+      aiNote={hasAi && <><b>{raw ? '원문' : '비서 정리'}</b> <button onClick={() => setRaw((x) => !x)} title="프로그램 문구와 비서가 다듬은 문장을 바꿔 봅니다" className="underline">{raw ? '비서 정리 보기' : '원문 보기'}</button></>} />
   );
 }

@@ -84,8 +84,8 @@ class TestRecords(DbCase):
             self.db.scalar("maintenance.wo_create_draft", equipment_id="VF2-02", title="x", symptom="x", alarm_event_id=None,
                            trigger_notification_id=None, pm_record_id=None, lot_no=None, steps=[], parts=[], author=None)
         self.assertIn("ck_wo_trigger", str(e.exception))
-        alarm = self.db.scalar("alarms.ingest", equipment_id="VF2-02", alarm_code="254", occurred_at=None, lot_no=None,
-                               prev_alarm_event_id=None, is_injected=False, scenario_code=None)
+        # 초안 저장 API 자체를 시험 — 정지 알람 자동 초안(2026-10-20)은 끄고 알람만 넣는다 (자동 초안은 db/tests/96d)
+        alarm = int(self.db._run("SET app.auto_work_order = 'off'; SELECT fn_ingest_alarm('VF2-02', '254')", quiet=True).splitlines()[1])
         wo = self.db.scalar("maintenance.wo_create_draft", equipment_id="VF2-02", title="알람 254 점검", symptom="과열",
                             alarm_event_id=alarm, trigger_notification_id=None, pm_record_id=None, lot_no=None,
                             steps=[{"step_text": "팬 확인", "source_section": "DOC-03 §2.9"},

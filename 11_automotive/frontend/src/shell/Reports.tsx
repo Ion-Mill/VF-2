@@ -212,6 +212,8 @@ export function DailyReportScreen() {
     const rec = (history?.work_records ?? []).find((x) => x.wo_no === pw.wo_no);
     return <>{stChip(EN_ST[pw.status] ?? pw.status)}{docBtn(pw.wo_no)}{rec && docBtn(rec.record_no)}</>;
   };
+  // 순위 0 안전(잠금·표지 중인 설비)은 맨 위, 접지 않음 (FR-AST-COM-21 — 2026-10-20, 전에는 빠져 안 보였다)
+  const safeItems = items.filter((x) => x.rank === '안전');
   const prodItems = items.filter((x) => x.rank === '생산');
   const urgItems = stops.length ? [] : items.filter((x) => x.rank === '긴급');
   const warnItems = items.filter((x) => x.rank === '주의'), refItems = items.filter((x) => x.rank === '참고');
@@ -256,6 +258,7 @@ export function DailyReportScreen() {
 
       <Sec title="오늘의 문제" right={<><Chip tone="crit">고장 손실 약 {r.failure_loss_qty}개</Chip><Chip tone="warn">속도 손실 약 {r.speed_loss_qty}개</Chip><Chip>추정</Chip></>}>
         <div className="hidden grid-cols-[76px_minmax(0,1fr)_84px_minmax(0,1.1fr)_40px] gap-3 pb-1 text-[12px] text-slate-500 md:grid"><span>문제</span><span /><span className="text-right">생산 피해</span><span>처리</span><span /></div>
+        {safeItems.map((x) => <div key={x.text} className={probGrid}><Chip tone="solid-crit">🔒 안전</Chip><span className="col-span-2 md:col-span-4"><ReportLine text={x.text} /></span></div>)}
         {[...stops].sort((a, b) => b.loss_qty - a.loss_qty).map((s, i) => (
           <div key={i} className={probGrid}>
             <Chip tone="solid-crit">⚠ 긴급</Chip>
@@ -266,7 +269,7 @@ export function DailyReportScreen() {
           </div>))}
         {urgItems.map((x) => <div key={x.text} className={probGrid}><Chip tone="solid-crit">⚠ 긴급</Chip><span className="col-span-2 md:col-span-4"><ReportLine text={x.text} /></span></div>)}
         {prodItems.map((x) => <div key={x.text} className={probGrid}><Chip tone="warn">▲ 생산</Chip><span className="col-span-2 md:col-span-4">{prodText(x.text)}</span></div>)}
-        {stops.length + urgItems.length + prodItems.length === 0 && <span className="text-[14px] text-slate-500">긴급 · 생산 문제 없음</span>}
+        {safeItems.length + stops.length + urgItems.length + prodItems.length === 0 && <span className="text-[14px] text-slate-500">긴급 · 생산 문제 없음</span>}
         {(warnItems.length > 0 || refItems.length > 0) && <div className="mt-2"><Fold summary={`주의 ${warnItems.length}건 · 참고 ${refItems.length}건`}>
           {warnItems.length > 0 && <RankRow left={<Chip>주의</Chip>}><div className="flex flex-col gap-1.5">{warnItems.map((x) => <ReportLine key={x.text} text={x.text} />)}</div></RankRow>}
           {refItems.length > 0 && <RankRow left={<Chip>참고</Chip>}><div className="flex flex-col gap-1.5">{refItems.map((x) => <ReportLine key={x.text} text={x.text} />)}</div></RankRow>}

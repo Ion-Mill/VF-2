@@ -7,14 +7,15 @@ import { createPortal } from 'react-dom';
 import { useApp } from './ctx';
 import { MACHINES } from './data';
 import { SIM, api, md, simIso, useLocal } from './live';
-import { askAssistant, backendChatEnabled, fetchChatLog } from './assistantApi';
+import { VOICE_OFF, VoiceFail, askAssistant, backendChatEnabled, fetchChatLog, fetchVoiceStatus, transcribeAudio, type VoiceStatus } from './assistantApi';
+import { micSupported, useMic, voiceMessage } from './voiceInput';
 import { LEVEL_VIEW, alarmTitle, hhmm, type AlertRec, type Level, type Notice } from './model';
 import { alarmSentence } from './alarmText';
 import { useAlarmText } from './assistText';
 import { rankOfAlert, rankOfNotice } from './Briefing';
 import RobotIcon from './RobotIcon';
 import EveThinking from './EveThinking';
-import { canStartNewChat, currentChat, lastChatId, makeNewChatMark, mergeServerLog, withNewChat } from './chatLog';
+import { canStartNewChat, currentChat, isFocusRow, lastChatId, makeNewChatMark, mergeServerLog, sessionOf, withNewChat, type FocusRef } from './chatLog';
 import { carryAlarm } from './carry';
 import { Bubble, HistoryItem, Spark, Typing, type ChatRow } from './ChatBubble';
 
@@ -65,7 +66,7 @@ export function Eve({ tab, onPick, onClose, badges, bubble, onBubble, brief, onN
   const [menu, setMenu] = useState(false);
   const [later, setLater] = useState<string | null>(null); // [나중에] 누른 말풍선 — 글이 바뀌면 다시 뜸
   const [gl, setGl] = useState(true);
-  const [focus, setFocus] = useState<string | null>(null);
+  const [focus, setFocus] = useState<FocusRef | null>(null);   // 채팅 기록에서 눌러 연 줄 — 그 줄이 속한 대화만 채팅 탭에 보인다
   const [slot, setSlot] = useState<HTMLElement | null>(null);   // 머리줄의 [새 채팅] 자리 — 상태를 가진 Chat이 여기에 버튼을 그린다 (createPortal)
   const closed = !tab && !menu;
   const toast = closed && bubble && bubble !== later ? bubble : null;
@@ -115,7 +116,7 @@ export function Eve({ tab, onPick, onClose, badges, bubble, onBubble, brief, onN
           </div>
           {tab === '채팅' ? <Chat focus={focus} headerSlot={slot} onNewChat={() => setFocus(null)} /> : (
             <div className="ma-body text-[14px] leading-relaxed" role="tabpanel">
-              {tab === '채팅 기록' ? <ChatLog onOpen={(at) => { setFocus(at); onPick('채팅'); }} /> : <div className="ma-pad">{tab === '브리핑' ? brief : <AlertsTab onNotice={onNotice} />}</div>}
+              {tab === '채팅 기록' ? <ChatLog onOpen={(r) => { setFocus({ at: r.at, q: r.q, ...(typeof r.chatId === 'number' ? { chatId: r.chatId } : {}) }); onPick('채팅'); }} /> : <div className="ma-pad">{tab === '브리핑' ? brief : <AlertsTab onNotice={onNotice} />}</div>}
             </div>
           )}
         </aside>
@@ -265,15 +266,39 @@ function useServerChat(userId: string, again: unknown): ChatRow[] {
   return rows;
 }
 
-function Chat({ focus, headerSlot, onNewChat }: { focus: string | null; headerSlot: HTMLElement | null; onNewChat: () => void }) {
+function Chat({ focus, headerSlot, onNewChat }: { focus: FocusRef | null; headerSlot: HTMLElement | null; onNewChat: () => void }) {
   const { user, role, screen, selected, openSource } = useApp();
   const [log, setLog] = useLocal<ChatRow[]>(`chat:${user.id}`, []);
   const [q, setQ] = useState('');
   const [busy, setBusy] = useState(false);
   const input = useRef<HTMLInputElement>(null);
-  const server = useServerChat(user.id, focus);   // 채팅 기록에서 연 대화가 다른 PC에서 물은 것일 수 있다
-  // 채팅 기록에서 열면 그 대화가 있는 날 대화 전부(서버 기록 포함), 아니면 지금 대화의 최근 12개
-  const today = focus ? mergeServerLog(log, server).filter((x) => md(x.at) === md(focus)) : currentChat(log).slice(-12);
+  // 마이크 (2026-10-20): 서버의 음성 스위치가 켜져 있을 때만 버튼이 보인다. 누르고 있는 동안 녹음 → 떼면 글자로 바꿔 입력창에 **채우기만** 한다 (보내는 것은 사용자가 글자를 보고 직접)
+  const [voice, setVoice] = useState<VoiceStatus>(VOICE_OFF);
+  const [micOk, setMicOk] = useState(false);          // 이 브라우저·주소에서 마이크를 쓸 수 있나 (https·localhost만) — 서버 렌더와 달라서 마운트 뒤에 정한다
+  const [voiceBusy, setVoiceBusy] = useState(false);   // 소리를 글자로 바꾸는 중
+  const [voiceNote, setVoiceNote] = useState('');      // 실패·안내 한 줄
+  useEffect(() => {
+    setMicOk(micSupported());
+    if (!backendChatEnabled()) return;
+    let live = true;
+    fetchVoiceStatus(user.id).then((v) => { if (live) setVoice(v); });
+    return () => { live = false; };
+  }, [user.id]);
+  const mic = useMic({
+    maxSeconds: voice.maxSeconds,
+    onError: (m) => setVoiceNote(m),
+    onAudio: async (blob) => {
+      setVoiceBusy(true); setVoiceNote('');
+      try {
+        const r = await transcribeAudio(user.id, blob);
+        if (r.text) { setQ((p) => (p.trim() ? `${p.trim()} ${r.text}` : r.text)); input.current?.focus(); } else setVoiceNote(voiceMessage(r.reason));
+      } catch (e) { setVoiceNote(voiceMessage(e instanceof VoiceFail ? e.reason : 'FAILED')); }
+      finally { setVoiceBusy(false); }
+    },
+  });
+  const server = useServerChat(user.id, focus ? (focus.chatId ?? focus.at) : null);   // 채팅 기록에서 연 대화가 다른 PC에서 물은 것일 수 있다
+  // 채팅 기록에서 열면 눌러 연 줄이 속한 대화만(서버 기록 포함, 앞 질문 번호로 이어진 덩어리), 아니면 지금 대화의 최근 12개
+  const today = focus ? sessionOf(mergeServerLog(log, server), log, focus) : currentChat(log).slice(-12);
   const send = async (text = q) => {
     if (!text.trim()) return;
     // 직전 알람 이어받기 신호 (carry.ts): 이 질문의 줄을 로그에 더하기 전의 지금 대화로 계산한다. 이어받을지는 서버가 정한다.
@@ -289,8 +314,8 @@ function Chat({ focus, headerSlot, onNewChat }: { focus: string | null; headerSl
       const r = backendChatEnabled()   // NEXT_PUBLIC_MOM_API가 있으면 백엔드의 비서(외부 LLM)로 — assistantApi.ts. 없으면 옛 길(시연 서버의 규칙 답)
         ? await askAssistant(text, user.id, screen, selected ? MACHINES[selected].eq : null, { alarmKey, newChat, prevChatId })
         : await api<{ answer: string; status: string; sources: ChatRow['sources']; series?: ChatRow['series'] }>('assistant/chat', { question: text, role, user_id: user.id, context: { screen, equipment_id: selected ? MACHINES[selected].eq : null } });
-      row = { at: simIso(), q: text, a: r.answer, status: r.status, sources: r.sources ?? [], series: r.series, ...('chatId' in r && typeof r.chatId === 'number' ? { chatId: r.chatId } : {}) };
-    } catch (e) { row = { at: simIso(), q: text, a: '비서 응답 없음 — ' + (e as Error).message, status: '응답 없음', sources: [] }; }
+      row = { at: simIso(), q: text, a: r.answer, status: r.status, sources: r.sources ?? [], series: r.series, ...('chatId' in r && typeof r.chatId === 'number' ? { chatId: r.chatId } : {}), ...(prevChatId !== null ? { prevChatId } : {}) };
+    } catch (e) { row = { at: simIso(), q: text, a: '비서 응답 없음 — ' + (e as Error).message, status: '응답 없음', sources: [], ...(prevChatId !== null ? { prevChatId } : {}) }; }
     // 채팅 기록 30일 (FR-MNT-01-01, NFR-DATA-13)
     setLog((l) => [...l.filter((x) => Date.parse(x.at) > SIM.now() - 30 * 864e5), row]);
     setBusy(false);
@@ -301,7 +326,7 @@ function Chat({ focus, headerSlot, onNewChat }: { focus: string | null; headerSl
   const ex = role === 'MNT' || role === 'MGR' ? ['VF2-01 MTTR 알려줘', 'VF2-01 센서 추세', '2075 알람 뭐야', '이 화면 설명해 줘'] : ['2075 알람 뭐야', '잠금 표지 순서', '이 화면 설명해 줘', '병목 원인'];
   const body = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    const el = focus && body.current?.querySelector(`[data-at="${focus}"]`);
+    const el = focus && body.current?.querySelector('[data-focus="1"]');
     if (el) el.scrollIntoView({ block: 'center' }); else if (body.current) body.current.scrollTop = body.current.scrollHeight;
   }, [log.length, busy, focus]);
   return (
@@ -314,15 +339,30 @@ function Chat({ focus, headerSlot, onNewChat }: { focus: string | null; headerSl
       <div ref={body} className="ma-body text-[14px]" role="tabpanel">
         <div className="ma-pad min-h-full" aria-live="polite">
           {today.length === 0 && !busy && <EveHello />}
-          {today.map((r, i) => <div key={i} data-at={r.at} className={r.at === focus ? 'rounded-lg ring-2 ring-[#B79CFF]' : ''}><Bubble r={r} meta={`${md(r.at)} ${hhmm(r.at)}`} openSource={openSource} role={role} /></div>)}
+          {today.map((r, i) => <div key={i} data-at={r.at} {...(isFocusRow(r, focus) ? { 'data-focus': '1' } : {})} className={isFocusRow(r, focus) ? 'rounded-lg ring-2 ring-[#B79CFF]' : ''}><Bubble r={r} meta={`${md(r.at)} ${hhmm(r.at)}`} openSource={openSource} role={role} /></div>)}
           {busy && <EveThinking />}
         </div>
       </div>
       <form className="ma-compose" onSubmit={(e) => { e.preventDefault(); if (!busy) send(); }}>
         <div className="mb-3 flex flex-wrap justify-center gap-1.5">{ex.map((x) => <button key={x} type="button" disabled={busy} onClick={() => send(x)} className="h-9 rounded-full border border-slate-300 bg-[#ffffff] px-3.5 text-[13px] font-bold hover:bg-[#f7f5fd]">{x}</button>)}</div>
+        {voice.enabled && (mic.state === 'recording' || voiceBusy || voiceNote !== '') && (
+          <div className="ma-voice-note" role="status">
+            {mic.state === 'recording' ? '듣고 있어요… 말이 끝나면 버튼에서 손을 떼세요.' : voiceBusy ? '글자로 바꾸는 중이에요 (몇 초 걸려요)…' : voiceNote}
+          </div>
+        )}
         <div className="ma-compose-box">
           <label className="ma-sr" htmlFor="ma-input">이브에게 질문</label>
           <input id="ma-input" ref={input} className="ma-input" autoFocus autoComplete="off" value={q} onChange={(e) => setQ(e.target.value)} placeholder="질문 (예: 992 알람 점검 순서)" />
+          {voice.enabled && (
+            <button type="button" className={`ma-mic${mic.state === 'recording' ? ' is-rec' : ''}`} disabled={busy || voiceBusy || !micOk}
+              aria-label="누르고 있는 동안 말하기" aria-pressed={mic.state === 'recording'}
+              title={micOk ? '버튼을 누른 채로 질문을 말하고, 끝나면 손을 떼세요. 글자로 바뀌어 입력창에 들어갑니다.' : '이 주소에서는 마이크를 쓸 수 없어요. localhost 또는 https 주소로 열어 주세요.'}
+              onPointerDown={(e) => { e.preventDefault(); setVoiceNote(''); mic.start(); }} onPointerUp={mic.stop} onPointerLeave={mic.stop} onPointerCancel={mic.stop} onBlur={mic.stop}
+              onKeyDown={(e) => { if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) { e.preventDefault(); setVoiceNote(''); mic.start(); } }}
+              onKeyUp={(e) => { if (e.key === ' ' || e.key === 'Enter') mic.stop(); }} onContextMenu={(e) => e.preventDefault()}>
+              <Icon d={['M12 3a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3z', 'M5 11a7 7 0 0 0 14 0', 'M12 18v3']} w={2.2} />
+            </button>
+          )}
           <button type="submit" className="ma-send" disabled={busy} aria-label="보내기"><Icon d={['M12 19V5M5 12l7-7 7 7']} w={2.4} /></button>
         </div>
       </form>
@@ -345,7 +385,7 @@ function EveHello() {
 }
 
 // 채팅 기록 = G안 (사용자 선택 2026-10-20): 날짜 묶음(오늘·어제) 아래 한 줄 = 질문 + 시각
-function ChatLog({ onOpen }: { onOpen: (at: string) => void }) {
+function ChatLog({ onOpen }: { onOpen: (r: ChatRow) => void }) {
   const { user } = useApp();
   const [log] = useLocal<ChatRow[]>(`chat:${user.id}`, []);
   const server = useServerChat(user.id, null);   // 탭을 열 때마다 받는다 — 다른 PC·브라우저에서 물은 것도 보인다 (FR-MNT-01-01)
@@ -354,11 +394,10 @@ function ChatLog({ onOpen }: { onOpen: (at: string) => void }) {
   const dayName = (d: string) => (d === today ? `오늘 · ${d}` : d === yday ? `어제 · ${d}` : d);
   return (
     <div className="ma-history gap-2">
-      <p className="m-0 px-1 pt-1 text-[13px] text-slate-500">내 질문만 보여요 · 30일이 지나면 지워져요</p>
       {keep.length === 0 ? <p className="ma-empty">저장된 대화가 없습니다.</p> : keep.map((r, i) => (
         <Fragment key={i}>
           {(i === 0 || md(keep[i - 1].at) !== md(r.at)) && <p className="ma-history-group">{dayName(md(r.at))}</p>}
-          <HistoryItem q={r.q} when={hhmm(r.at)} onOpen={() => onOpen(r.at)} />
+          <HistoryItem q={r.q} when={hhmm(r.at)} onOpen={() => onOpen(r)} />
         </Fragment>
       ))}
     </div>

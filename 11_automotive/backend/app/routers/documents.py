@@ -64,7 +64,7 @@ def shift_report(shift_id: str, _: Actor = Depends(require("SHIFT_REPORT", "VIEW
     """교대 보고서 (RPT-01): 생산(총 목표 = 목표 + 이월·실적·불량·가동률), 특이 사항, 인계 사항, 상태, 버전, 필수 정지 stops[]
     stops[] = 필수 정지마다 연결된 작업지시서 wo_no와 보고서 시점 상태 wo_status_at_report (2026-10-20, documents.sql report_stops)"""
     row = must(db.one("documents.shift_report", shift_id=shift_id), "교대 보고서")
-    return {**row, "stops": db.all("documents.report_stops", shift_id=shift_id, work_date=None)}
+    return {**row, **_report_sections(db, shift_id=shift_id, work_date=None)}
 
 
 @router.patch("/reports/shift/{shift_id}")
@@ -96,13 +96,34 @@ def shift_report_revise(shift_id: str, body: ReviseIn, actor: Actor = Depends(re
     return {"version_no": documents.edit_shift_report(db, shift_id, actor.user_id, body.changes, body.reason, body.version)}
 
 
+def _report_sections(db: Db, shift_id: str | None, work_date: date | None) -> dict:
+    """교대·일일 보고서의 원기록 칸 (2026-10-20): 필수 정지·순간 정지 한 줄·로트·병목·정비 (documents.sql report_*)"""
+    k = {"shift_id": shift_id, "work_date": work_date}
+    return {"stops": db.all("documents.report_stops", **k), "micro_stops": db.one("documents.report_micro_stops", **k),
+            "lots": db.all("documents.report_lots", **k), "bottleneck": db.all("documents.report_bottleneck", **k),
+            "maintenance": db.all("documents.report_maintenance", **k)}
+
+
 # ---------------- 일일 보고서 (RPT-05) ----------------
 @router.get("/reports/daily/{work_date}")
 def daily_report(work_date: date, _: Actor = Depends(require("DAILY_REPORT", "VIEW")), db: Db = Depends(get_db)):
     """일일 보고서 (RPT-05, 조회 S·M·G): 하루 생산(목표 180 고정·실적·부족 = 180 − 실적), 손실, OEE, 오늘의 문제, 관리자 메모, 필수 정지
     잠정 교대(provisional_shift_ids). memo = 관리자 메모, stops[] = 교대 보고서와 같은 필수 정지 목록 (2026-10-20)"""
     row = must(db.one("documents.daily_report", work_date=work_date), "일일 보고서")
-    return {**row, "stops": db.all("documents.report_stops", shift_id=None, work_date=work_date)}
+    out = {**row, **_report_sections(db, shift_id=None, work_date=work_date)}
+    # 손실 전체를 손실 수량 큰 순으로 (FR-PRD-04-03 — 고장 정지 + 병목 속도 손실, 모두 추정)
+    out["losses"] = sorted(
+        [{"kind": "FAILURE", "label": f"{x['equipment_id']} {x['reason_name'] or x['reason_code']}", "minutes": x["minutes"],
+          "loss_qty": x["loss_qty"]} for x in out["stops"]]
+        + [{"kind": "SPEED", "label": f"{x['process_code']} {x['cause_name']}", "minutes": x["minutes"], "loss_qty": x["speed_loss_qty"]}
+           for x in out["bottleneck"] if float(x["speed_loss_qty"] or 0) > 0],
+        key=lambda x: -float(x["loss_qty"] or 0))
+    out["shifts"] = db.all("documents.report_shift_compare", work_date=work_date)
+    out["alarms"] = db.one("documents.report_alarm_counts", shift_id=None, work_date=work_date)
+    out["mttr"] = db.one("documents.report_mttr", shift_id=None, work_date=work_date)
+    out["inventory"] = {"items": db.all("documents.report_inventory_usage", shift_id=None, work_date=work_date),
+                        "finished": db.one("documents.report_fg_line", shift_id=None, work_date=work_date)}
+    return out
 
 
 @router.patch("/reports/daily/{work_date}")

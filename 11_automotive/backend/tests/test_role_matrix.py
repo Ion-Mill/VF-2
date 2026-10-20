@@ -34,6 +34,7 @@ EXPECTED = {
     ("GET", "/api/assistant/briefing/checks"): ALL, ("POST", "/api/assistant/briefing/checks"): ALL,   # * 본인 체크만 (2026-10-20)
     ("POST", "/api/assistant/chat"): ALL,                           # * 답은 역할이 볼 수 있는 도구만 (MTTR·센서 = M·G)
     ("GET", "/api/assistant/chat"): ALL, ("GET", "/api/assistant/chat/{chat_id}"): ALL,   # * 본인 채팅 기록만 (30일)
+    ("POST", "/api/assistant/transcribe"): ALL, ("GET", "/api/assistant/voice"): ALL,     # 채팅 마이크 (2026-10-20 [제안]) — 채팅과 같은 권한
     # 정비 (MNT·PM)
     ("GET", "/api/maint/guide-card/{alarm_event_id}"): ALL,
     ("GET", "/api/maint/work-orders"): ALL, ("GET", "/api/maint/work-orders/{wo_no}"): ALL,
@@ -56,11 +57,15 @@ EXPECTED = {
     ("GET", "/api/maint/pm-records/{pm_record_id}"): ".MSM",         # 13.1 OPR —
     ("PATCH", "/api/maint/pm-records/{pm_record_id}"): ".M..",
     ("POST", "/api/maint/pm-records/{pm_record_id}/confirm"): ".M..",
+    ("POST", "/api/maint/pm-tasks/{pm_task_id}/start"): ".M..",        # [정비 시작]·[정비 끝] (FR-MNT-04-10, 2026-10-20)
+    ("POST", "/api/maint/pm-records/{pm_record_id}/end"): ".M..",
     # 로트·품질 (LOT·QLT)
     ("GET", "/api/lots"): ALL, ("GET", "/api/lots/{lot_no}"): ALL, ("GET", "/api/lots/{lot_no}/trace"): ALL,
+    ("GET", "/api/lots/suspects"): ALL,   # 의심 로트 제안 (2026-10-20, LOT_TRACE 보기 = 추적과 같음)
     ("GET", "/api/holds"): ALL, ("POST", "/api/lots/{lot_no}/judge"): "..S.",
     ("POST", "/api/lots/{lot_no}/hold"): "..SM", ("POST", "/api/lots/{lot_no}/release"): "..SM",
     ("POST", "/api/lots/{lot_no}/scrap"): "..S.", ("POST", "/api/lots/{lot_no}/scrap/approve"): "...M",
+    ("POST", "/api/holds/{hold_id}/resume-normal"): "..SM",          # R-29 (권한 = 보류와 같음, 확인자 SUP는 DB 트리거)
     ("GET", "/api/inspection/results"): ALL,
     ("POST", "/api/inspection/results"): "O.S.",                     # * O는 측정 담당(OP-50)만
     ("POST", "/api/inspection/results/{result_id}/select"): "..S.",
@@ -68,6 +73,7 @@ EXPECTED = {
     ("GET", "/api/inspection/instructions"): ALL, ("POST", "/api/inspection/instructions"): "O.S.",
     ("POST", "/api/inspection/instructions/{instruction_id}/start"): "O...",
     ("GET", "/api/quality/summary"): ALL, ("GET", "/api/quality/cpk"): ALL, ("GET", "/api/quality/defects"): ALL,
+    ("POST", "/api/quality/items/{product_code}/{item_seq}/resume-sampling"): "...M",   # 전수 → 보통 (DOC-06 §5.2)
     # 재고·출하·공구 (INV·TOOL)
     ("GET", "/api/inventory"): ALL, ("GET", "/api/inventory/{item_no}/txns"): ALL,
     ("POST", "/api/inventory/txns"): ".MS.",                         # * 그 품목 관리 역할 (소모품 M / 공구·원자재·완제품 S)

@@ -12,8 +12,10 @@
 
 -- 알림 1건 만들기. p_refs = {"alarm_event_id": 1, "equipment_id": "VF2-01", ...}
 -- 받는 사람: p_recipients가 비면 규칙의 recipient_roles 역할 사용자 전원
--- 묶기 (DOC-07 10.2): 같은 규칙·같은 설비·같은 알람 번호가 1분 안에 3번째부터는 새 알림 없이 repeat_count만 올린다
--- 폭주 (DOC-07 10.3): 최근 10분 긴급·주의 알림이 10건을 넘으면 is_flood
+-- 묶기 (DOC-07 10.2, FR-AST-02-11 "1분 안 3번 → 알림 1건"): 같은 규칙·같은 설비·같은 알람 번호가 첫 알림 뒤 1분 안에 또 나면
+--   새 알림 없이 그 첫 알림의 repeat_count만 올린다 (2026-10-20 — 전에는 3번째부터라 3번이 2건이었다. 알림은 바로 보내야 해서
+--   "3번째가 올지" 기다리지 않는다 [제안])
+-- 폭주 (DOC-07 10.3, FR-AST-02-12): 최근 10분 긴급·주의가 10건을 넘으면 켜지고 5건 아래로 내려가면 풀린다 (fn_flood_state)
 CREATE OR REPLACE FUNCTION fn_raise_notification(
     p_rule text, p_message text, p_refs jsonb DEFAULT '{}'::jsonb, p_at timestamptz DEFAULT NULL,
     p_related_info text DEFAULT NULL, p_message_source text DEFAULT 'DEFAULT',
@@ -31,32 +33,27 @@ BEGIN
     IF NOT FOUND THEN RAISE EXCEPTION '알림 규칙 % 없음', p_rule USING ERRCODE = '23503'; END IF;
     IF NOT r.is_enabled THEN RETURN NULL; END IF;
 
-    -- 묶기: 알람 알림만
+    -- 묶기: 알람 알림만 — 1분 안의 첫 알림(같은 설비·같은 알람 번호, 처리 전)에 횟수만 더한다
     IF p_rule IN ('ALARM_STOP','ALARM_WARN','ALARM_GUIDE') AND p_refs ? 'alarm_event_id' THEN
         SELECT alarm_code INTO v_alarm FROM alarm_event WHERE alarm_event_id = (p_refs->>'alarm_event_id')::bigint;
-        SELECT count(*) INTO v_same FROM alarm_event
-         WHERE equipment_id = p_refs->>'equipment_id' AND alarm_code = v_alarm
-           AND occurred_at > v_at - interval '1 minute' AND occurred_at <= v_at;
-        IF v_same >= 3 THEN
-            UPDATE notification n SET repeat_count = n.repeat_count + 1
-             WHERE n.notification_id = (
-                SELECT n2.notification_id FROM notification n2 JOIN alarm_event a USING (alarm_event_id)
-                 WHERE n2.rule_code = p_rule AND n2.equipment_id = p_refs->>'equipment_id' AND a.alarm_code = v_alarm
-                   AND n2.raised_at > v_at - interval '1 minute' AND NOT n2.is_processed
-                 ORDER BY n2.raised_at DESC LIMIT 1)
-            RETURNING n.notification_id INTO v_id;
-            IF v_id IS NOT NULL THEN RETURN v_id; END IF;
-        END IF;
+        UPDATE notification n SET repeat_count = n.repeat_count + 1
+         WHERE n.notification_id = (
+            SELECT n2.notification_id FROM notification n2 JOIN alarm_event a USING (alarm_event_id)
+             WHERE n2.rule_code = p_rule AND n2.equipment_id = p_refs->>'equipment_id' AND a.alarm_code = v_alarm
+               AND n2.raised_at > v_at - interval '1 minute' AND n2.raised_at <= v_at AND NOT n2.is_processed
+             ORDER BY n2.raised_at LIMIT 1)
+        RETURNING n.notification_id INTO v_id;
+        IF v_id IS NOT NULL THEN RETURN v_id; END IF;
     END IF;
 
-    SELECT count(*) INTO v_flood FROM notification
-     WHERE importance IN ('URGENT','CAUTION') AND raised_at > v_at - interval '10 minutes' AND raised_at <= v_at;
+    v_flood := (SELECT CASE WHEN f.active OR (r.importance IN ('URGENT','CAUTION') AND f.count_10min + 1 > 10) THEN 1 ELSE 0 END
+                  FROM fn_flood_state(v_at) f);
 
     INSERT INTO notification (rule_code, importance, raised_at, message, related_info, message_source, is_flood,
         alarm_event_id, equipment_id, lot_no, item_no, pm_task_id, tool_id, wo_no, bottleneck_log_id,
         revision_id, result_id, shift_id, buffer_code, cmm_import_id, prev_stage_notification_id,
         repeat_stage_status)
-    VALUES (p_rule, r.importance, v_at, p_message, p_related_info, p_message_source, v_flood >= 10,
+    VALUES (p_rule, r.importance, v_at, p_message, p_related_info, p_message_source, v_flood = 1,
         (p_refs->>'alarm_event_id')::bigint, p_refs->>'equipment_id', p_refs->>'lot_no', p_refs->>'item_no',
         p_refs->>'pm_task_id', p_refs->>'tool_id', p_refs->>'wo_no', (p_refs->>'bottleneck_log_id')::bigint,
         (p_refs->>'revision_id')::bigint, (p_refs->>'result_id')::bigint, p_refs->>'shift_id',
@@ -71,6 +68,16 @@ BEGIN
     ON CONFLICT DO NOTHING;
     RETURN v_id;
 END $$;
+
+-- 알림 폭주 상태 (DOC-07 10.3, FR-AST-02-12 — 2026-10-20): 최근 10분 긴급·주의 알림 수. 10건을 넘으면 켜지고, 켜진 뒤에는
+--   5건 아래로 내려갈 때까지 유지 (그 10분 안에 폭주 표시된 알림이 있으면 켜진 상태로 본다)
+CREATE OR REPLACE FUNCTION fn_flood_state(p_at timestamptz DEFAULT NULL, OUT active boolean, OUT count_10min int)
+LANGUAGE sql STABLE AS $$
+    WITH t AS (SELECT coalesce(p_at, app_now()) AS at),
+    c AS (SELECT count(*)::int AS n, bool_or(is_flood) AS any_flood FROM notification, t
+           WHERE importance IN ('URGENT','CAUTION') AND raised_at > t.at - interval '10 minutes' AND raised_at <= t.at)
+    SELECT c.n > 10 OR (c.n >= 5 AND coalesce(c.any_flood, false)), c.n FROM c;
+$$;
 
 -- 사람이 [처리] (6.36 "알림 종류별 처리" 표). 반복 알람 1단계는 조치 계획 한 줄 필수 → 1단계 닫힘
 CREATE OR REPLACE FUNCTION fn_process_notification(p_id bigint, p_actor text, p_memo text DEFAULT NULL,
@@ -240,7 +247,7 @@ BEGIN
     SELECT plan_mode INTO v_mode FROM inspection_plan WHERE lot_no = p_lot_no;
     IF FOUND THEN RETURN v_mode; END IF;
     SELECT h.hold_id INTO v_hold FROM lot_hold h
-     WHERE h.lot_no <> p_lot_no
+     WHERE h.lot_no <> p_lot_no AND h.normal_resumed_at IS NULL          -- 보통으로 돌아간 보류는 빼기 (R-29, 2026-10-20)
        AND (SELECT count(*) FROM inspection_plan p WHERE p.hold_id = h.hold_id AND p.enhance_reason = 'NEXT_LOT')
            < h.enhanced_next_lots
      ORDER BY h.held_at DESC LIMIT 1;
@@ -355,12 +362,16 @@ DECLARE v_at timestamptz := coalesce(p_at, app_now()); h lot_hold%ROWTYPE; v_fg 
 BEGIN
     SELECT * INTO h FROM lot_hold WHERE hold_id = p_hold_id FOR UPDATE;
     IF h.result <> 'IN_PROGRESS' THEN RAISE EXCEPTION '보류 %는 이미 끝남 (%)', p_hold_id, h.result USING ERRCODE = '23514'; END IF;
+    -- 폐기 제안이 있으면 관리자 승인 뒤에 해제 (1013 7장: 반장 폐기 제안 → 관리자 승인 → 반장 해제, 2026-10-20)
+    IF h.scrap_proposed_by IS NOT NULL AND h.scrap_approved_by IS NULL THEN
+        RAISE EXCEPTION '보류 %는 폐기 승인 대기 — 관리자가 폐기를 승인한 뒤 해제', p_hold_id USING ERRCODE = '23514';
+    END IF;
     -- [제안] 해제 = 전수 검사로 골라낸 합격품을 출하 가능으로 (6.8). 합격 0개면 해제가 아니라 폐기로 간다
     IF coalesce(p_pass_qty, 0) <= 0 THEN
         RAISE EXCEPTION '해제 합격 수량은 1개 이상 (로트 % 완료 수량 %) — 전부 불량이면 폐기, 생산 중이면 검사 뒤 해제',
             h.lot_no, fn_lot_completed_qty(h.lot_no) USING ERRCODE = '23514';
     END IF;
-    IF p_pass_qty > fn_lot_completed_qty(h.lot_no) THEN
+    IF p_pass_qty > fn_lot_completed_qty(h.lot_no) THEN   -- 완료 수량(GQ + RQ)은 폐기(SQ)를 이미 뺀 값
         RAISE EXCEPTION '해제 합격 수량 %가 로트 완료 수량보다 많음', p_pass_qty USING ERRCODE = '23514';
     END IF;
     UPDATE lot_hold SET result = 'RELEASED', released_by = p_actor, released_at = v_at, released_pass_qty = p_pass_qty
@@ -374,6 +385,8 @@ BEGIN
 END $$;
 
 -- 폐기: SUP 제안 → MGR 승인 (R-27, FR-PRD-05-08)
+--   일부 폐기(제안 수량 < 로트 투입 수량, 2026-10-20): 승인해도 보류는 열린 채 폐기 수량만 남기고, 반장이 나머지를 해제한다
+--   (1013 7장 — 9월 LOT-2609-056-2 등). 전부 폐기(제안 수량 ≥ 투입 수량 또는 비어 있음)면 보류·로트 모두 폐기로 닫는다
 CREATE OR REPLACE FUNCTION fn_lot_scrap_propose(p_hold_id bigint, p_actor text, p_qty int) RETURNS void
 LANGUAGE sql AS $$
     UPDATE lot_hold SET scrap_proposed_by = p_actor, scrap_proposed_qty = p_qty WHERE hold_id = p_hold_id AND result = 'IN_PROGRESS';
@@ -386,9 +399,14 @@ BEGIN
     IF h.result <> 'IN_PROGRESS' OR h.scrap_proposed_by IS NULL THEN
         RAISE EXCEPTION '폐기 승인은 반장의 폐기 제안이 있는 열린 보류만' USING ERRCODE = '23514';
     END IF;
-    UPDATE lot_hold SET result = 'SCRAPPED', scrap_approved_by = p_actor, scrap_approved_at = v_at WHERE hold_id = p_hold_id;
-    UPDATE production_lot SET status = 'SCRAPPED', scrap_qty = least(input_qty, coalesce(h.scrap_proposed_qty, input_qty))
-     WHERE lot_no = h.lot_no;
+    IF h.scrap_proposed_qty IS NOT NULL AND h.scrap_proposed_qty < (SELECT input_qty FROM production_lot WHERE lot_no = h.lot_no) THEN
+        UPDATE lot_hold SET scrap_approved_by = p_actor, scrap_approved_at = v_at WHERE hold_id = p_hold_id;
+        UPDATE production_lot SET scrap_qty = h.scrap_proposed_qty WHERE lot_no = h.lot_no;
+    ELSE
+        UPDATE lot_hold SET result = 'SCRAPPED', scrap_approved_by = p_actor, scrap_approved_at = v_at WHERE hold_id = p_hold_id;
+        UPDATE production_lot SET status = 'SCRAPPED', scrap_qty = least(input_qty, coalesce(h.scrap_proposed_qty, input_qty))
+         WHERE lot_no = h.lot_no;
+    END IF;
 END $$;
 
 -- 출하 확정 (R-67 합격 로트만, R-68 FIFO, 출하 출고 거래). 반환: 로트 줄 수
@@ -603,6 +621,18 @@ BEGIN
      ORDER BY n.raised_at DESC LIMIT 1;
     IF v_prev.notification_id IS NOT NULL THEN
         IF v_prev.repeat_stage_status IN ('S1_OPEN','S2_OPEN') THEN RETURN 'NONE'; END IF;
+        -- 조치 작업이 진행 중(같은 설비·같은 알람의 작업지시서가 끝나지 않았거나 작업기록서가 확정 전)일 때 난 알람은 재발로 세지 않는다
+        --   (FR-AST-02-18, R-70 — 2026-10-20: 전에는 1단계 셈에만 적용)
+        IF EXISTS (SELECT 1 FROM maintenance_work_order o
+                     LEFT JOIN notification tn ON tn.notification_id = o.trigger_notification_id
+                     JOIN alarm_event e ON e.alarm_event_id = coalesce(o.alarm_event_id, tn.alarm_event_id)
+                    WHERE e.equipment_id = a.equipment_id AND e.alarm_code = a.alarm_code AND e.alarm_event_id <> a.alarm_event_id
+                      AND o.status NOT IN ('DONE','CANCELLED'))
+           OR EXISTS (SELECT 1 FROM work_record w JOIN alarm_event e ON e.alarm_event_id = w.alarm_event_id
+                       WHERE e.equipment_id = a.equipment_id AND e.alarm_code = a.alarm_code AND e.alarm_event_id <> a.alarm_event_id
+                         AND w.status IN ('AI_DRAFT','EDITING')) THEN
+            RETURN 'NONE';
+        END IF;
         IF a.occurred_at <= v_prev.effect_check_due_at THEN
             UPDATE notification SET repeat_stage_status = 'ESCALATED' WHERE notification_id = v_prev.notification_id;
             v_id := fn_raise_notification('REPEAT_ALARM_2',
@@ -610,7 +640,10 @@ BEGIN
                 jsonb_build_object('alarm_event_id', a.alarm_event_id, 'equipment_id', a.equipment_id),
                 a.occurred_at, p_repeat_stage => 'S2_OPEN', p_prev_stage => v_prev.notification_id);
             v_proc := fn_equipment_process(a.equipment_id);
-            IF v_proc <> 'OP-30' THEN
+            IF v_proc = 'OP-30' THEN
+                -- OP-30 2단계 → 원인 점검 작업지시서 초안 자동 (FR-MNT-03-01 ②, 2026-10-20)
+                PERFORM fn_auto_work_order_draft(a.alarm_event_id, 'REPEAT_2', v_id);
+            ELSE
                 -- 다른 공정: 작업지시서 없이 MNT에게 원인 점검 요청 (R-71)
                 PERFORM fn_raise_notification('CAUSE_CHECK_REQUEST',
                     format('%s 알람 %s 원인 점검 요청', a.equipment_id, a.alarm_code),
@@ -691,10 +724,26 @@ LANGUAGE sql STABLE AS $$
 $$;
 
 -- 속도 손실 수량 (추정, R-47): [p_from, p_to) 안에서 바뀐 병목 구간의 속도 손실 합 (구간이 끝날 때 저장된 값)
+--   2026-10-20: 구간이 끝날 때 trg_bottleneck_live(views/30_live_rules.sql)가 값을 채운다 (전에는 채우는 곳이 없어 실시간은 늘 0).
+--   지금 열려 있는 구간(마지막 기록)은 그때까지를 바로 계산해 더한다 (fn_interval_losses, functions/35_live_calc.sql)
 CREATE OR REPLACE FUNCTION fn_speed_loss_qty(p_from timestamptz, p_to timestamptz) RETURNS numeric
-LANGUAGE sql STABLE AS $$
-    SELECT coalesce(sum(speed_loss_qty), 0) FROM bottleneck_log WHERE changed_at >= p_from AND changed_at < p_to;
-$$;
+LANGUAGE plpgsql STABLE AS $$
+DECLARE v_closed numeric; o bottleneck_log%ROWTYPE; v_open numeric := 0; v_end timestamptz := least(p_to, app_now());
+BEGIN
+    -- 닫힌 구간: 저장된 값. 저장 값이 없는 구간(생성기 적재 — 적재 중에는 트리거가 쉼)은 같은 식으로 계산 (보고서 병목 칸과 같은 값)
+    SELECT coalesce(sum(coalesce(b.speed_loss_qty,
+                                 CASE WHEN b.cause_code IN ('C1','C2','C3')
+                                      THEN (fn_interval_losses(b.changed_at, b.next_at, b.cause_code)).speed_loss_qty END)), 0)
+      INTO v_closed
+      FROM (SELECT x.*, (SELECT min(n.changed_at) FROM bottleneck_log n WHERE n.changed_at > x.changed_at) AS next_at
+              FROM bottleneck_log x WHERE x.changed_at >= p_from AND x.changed_at < p_to) b
+     WHERE b.next_at IS NOT NULL;
+    SELECT * INTO o FROM bottleneck_log WHERE changed_at <= app_now() ORDER BY changed_at DESC LIMIT 1;
+    IF FOUND AND o.cause_code IN ('C1','C2','C3') AND o.changed_at < p_to AND v_end > greatest(o.changed_at, p_from) THEN
+        v_open := (fn_interval_losses(greatest(o.changed_at, p_from), v_end, o.cause_code)).speed_loss_qty;
+    END IF;
+    RETURN v_closed + coalesce(v_open, 0);
+END $$;
 
 -- =====================================================================
 -- 7. 알람 관련 재고 품목 (alarm_related_item, 논리 ERD 5.C.8·R-89) — 보고 순위 같은 원인 묶기
@@ -763,4 +812,102 @@ BEGIN
      WHERE EXISTS (SELECT 1 FROM shift s WHERE s.work_date = w.work_date)
        AND NOT EXISTS (SELECT 1 FROM shift s JOIN shift_report r USING (shift_id) WHERE s.work_date = w.work_date);
     RETURN n;
+END $$;
+
+-- =====================================================================
+-- 2026-10-20 요구사항 대조 중 (구현_중_수정사항 1020 36장)
+-- =====================================================================
+
+-- [정비 시작] (FR-MNT-04-10, API-PM-02): 예방 정비 실시 기록(수정 중)을 만들고 그 설비에 MAINT 구간을 연다. 설비로 가는 명령이 아니라
+--   기록 버튼이다. 실시 결과는 [정비 끝]에서 적는다 — 그 전까지 결과 칸은 '정상'(NORMAL)으로 둔다 [제안]. 끝나기 전에는
+--   "실시 기록 확인" 문서 알림을 내지 않는다 (app.pm_starting). 반환: pm_record_id
+CREATE OR REPLACE FUNCTION fn_pm_start(p_pm_task_id text, p_actor text, p_due_date date DEFAULT NULL, p_at timestamptz DEFAULT NULL)
+RETURNS bigint LANGUAGE plpgsql AS $$
+DECLARE
+    v_at timestamptz := coalesce(p_at, app_now());
+    t pm_task%ROWTYPE; v_due date; v_id bigint; cur equipment_state_log%ROWTYPE;
+BEGIN
+    SELECT * INTO t FROM pm_task WHERE pm_task_id = p_pm_task_id;
+    IF NOT FOUND OR NOT t.is_active THEN
+        RAISE EXCEPTION '예방 정비 항목 %이 없거나 쓰지 않음', p_pm_task_id USING ERRCODE = '22023';
+    END IF;
+    SELECT * INTO cur FROM equipment_state_log WHERE equipment_id = t.equipment_id AND end_at IS NULL;
+    IF cur.state_code = 'MAINT' THEN
+        RAISE EXCEPTION 'FR-MNT-04-10: %는 이미 정비 중 (구간 %부터)', t.equipment_id, cur.start_at USING ERRCODE = '23514';
+    END IF;
+    IF cur.state_code = 'DOWN' THEN
+        RAISE EXCEPTION 'FR-MNT-04-10: %는 고장 정지 중 — 고장 수리는 작업지시서로', t.equipment_id USING ERRCODE = '23514';
+    END IF;
+    v_due := coalesce(p_due_date, (SELECT d.next_due_date FROM v_pm_task_due d WHERE d.pm_task_id = p_pm_task_id),
+                      (v_at AT TIME ZONE 'Asia/Seoul')::date);
+    PERFORM set_config('app.pm_starting', 'on', true);
+    INSERT INTO pm_record (pm_task_id, due_date, done_at, done_by, recorded_by, result, status, current_version)
+    VALUES (p_pm_task_id, v_due, v_at, p_actor, p_actor, 'NORMAL', 'DRAFT', 0)
+    RETURNING pm_record_id INTO v_id;
+    PERFORM set_config('app.pm_starting', 'off', true);
+    PERFORM fn_state_change(t.equipment_id, 'MAINT', v_at, p_pm_record_id => v_id);
+    RETURN v_id;
+END $$;
+
+-- [정비 끝 · 실시 기록] (FR-MNT-04-10): MAINT 구간을 닫고(다음 상태는 대기 IDLE — 설비 데이터가 오면 그 값으로 바뀐다),
+--   실시 시각(done_at) = 끝난 시각, 결과·측정값·메모를 적는다. 그 뒤 "실시 기록 확인" 문서 알림 (확정은 …/confirm). 반환: state_log_id
+CREATE OR REPLACE FUNCTION fn_pm_end(p_pm_record_id bigint, p_actor text, p_result text DEFAULT 'NORMAL',
+    p_measured_value numeric DEFAULT NULL, p_measured_unit text DEFAULT NULL, p_memo text DEFAULT NULL, p_at timestamptz DEFAULT NULL)
+RETURNS bigint LANGUAGE plpgsql AS $$
+DECLARE
+    v_at timestamptz := coalesce(p_at, app_now());
+    r pm_record%ROWTYPE; s equipment_state_log%ROWTYPE; v_id bigint;
+BEGIN
+    SELECT * INTO r FROM pm_record WHERE pm_record_id = p_pm_record_id FOR UPDATE;
+    IF NOT FOUND THEN RAISE EXCEPTION '예방 정비 기록 %이 없음', p_pm_record_id USING ERRCODE = '22023'; END IF;
+    SELECT * INTO s FROM equipment_state_log WHERE pm_record_id = p_pm_record_id AND state_code = 'MAINT' AND end_at IS NULL;
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'FR-MNT-04-10: 예방 정비 기록 %의 정비 구간이 열려 있지 않음 ([정비 시작] 먼저)', p_pm_record_id
+            USING ERRCODE = '23514';
+    END IF;
+    v_id := fn_state_change(s.equipment_id, 'IDLE', v_at);
+    UPDATE pm_record SET done_at = v_at, done_by = p_actor, recorded_by = p_actor, result = coalesce(p_result, 'NORMAL'),
+                         measured_value = p_measured_value, measured_unit = p_measured_unit, memo = p_memo
+     WHERE pm_record_id = p_pm_record_id;
+    PERFORM fn_raise_pm_record_check(r.pm_task_id);
+    RETURN v_id;
+END $$;
+
+-- 강화 → 보통 검사 복귀 (R-29, FR-QLT-01-07, DOC-06 3.3): 반장이 확인. 두 조건이 모두 맞을 때만
+--   ⓐ 원인 조치 완료: 보류 뒤 확정된 작업기록서(보류의 관련 알람, 또는 그 로트를 가공한 설비) 또는 공구 교체 기록(관련 공구, 또는 그 설비 공구)
+--   ⓑ 강화한 로트가 모두 합격: 보류 로트는 해제·폐기로 끝났고, 다음 로트 강화(NEXT_LOT)가 정한 수만큼 생겨 모두 합격
+--   보통으로 돌아가면 아직 안 만든 다음 로트는 강화하지 않는다 (fn_create_inspection_plan). 반환: 보류 번호
+CREATE OR REPLACE FUNCTION fn_resume_normal(p_hold_id bigint, p_actor text, p_at timestamptz DEFAULT NULL)
+RETURNS bigint LANGUAGE plpgsql AS $$
+DECLARE
+    v_at timestamptz := coalesce(p_at, app_now());
+    h lot_hold%ROWTYPE; v_eq text[]; v_plans int; v_pass int;
+BEGIN
+    SELECT * INTO h FROM lot_hold WHERE hold_id = p_hold_id FOR UPDATE;
+    IF NOT FOUND THEN RAISE EXCEPTION '보류 %이 없음', p_hold_id USING ERRCODE = '22023'; END IF;
+    IF h.normal_resumed_at IS NOT NULL THEN
+        RAISE EXCEPTION 'R-29: 보류 %은 이미 보통 검사로 돌아감 (%)', p_hold_id, h.normal_resumed_at USING ERRCODE = '23514';
+    END IF;
+    IF h.result = 'IN_PROGRESS' THEN
+        RAISE EXCEPTION 'R-29: 보류 로트 %의 해제·폐기가 먼저', h.lot_no USING ERRCODE = '23514';
+    END IF;
+    SELECT count(*), count(*) FILTER (WHERE judgement = 'PASS') INTO v_plans, v_pass
+      FROM inspection_plan WHERE hold_id = p_hold_id AND enhance_reason = 'NEXT_LOT';
+    IF v_plans < h.enhanced_next_lots OR v_pass < v_plans THEN
+        RAISE EXCEPTION 'R-29: 강화한 다음 로트가 모두 합격해야 함 (정한 %개 중 생김 %개, 합격 %개)', h.enhanced_next_lots, v_plans, v_pass
+            USING ERRCODE = '23514';
+    END IF;
+    v_eq := ARRAY(SELECT DISTINCT r.equipment_id FROM operation_report r WHERE r.lot_no = h.lot_no
+                  UNION SELECT a.equipment_id FROM alarm_event a WHERE a.alarm_event_id = h.related_alarm_event_id
+                  UNION SELECT t.equipment_id FROM tool t WHERE t.tool_id = h.related_tool_id);
+    IF NOT EXISTS (SELECT 1 FROM work_record w
+                    WHERE w.status IN ('CONFIRMED','CHECKED') AND w.confirmed_at >= h.held_at
+                      AND (w.alarm_event_id = h.related_alarm_event_id OR w.equipment_id = ANY (v_eq)))
+       AND NOT EXISTS (SELECT 1 FROM tool_change c JOIN tool t USING (tool_id)
+                        WHERE c.changed_at >= h.held_at AND (c.tool_id = h.related_tool_id OR t.equipment_id = ANY (v_eq))) THEN
+        RAISE EXCEPTION 'R-29: 원인 조치 기록(확정된 작업기록서 또는 공구 교체)이 보류 뒤에 있어야 함 (보류 %)', p_hold_id
+            USING ERRCODE = '23514';
+    END IF;
+    UPDATE lot_hold SET normal_resumed_by = p_actor, normal_resumed_at = v_at WHERE hold_id = p_hold_id;   -- SUP 확인은 트리거
+    RETURN p_hold_id;
 END $$;

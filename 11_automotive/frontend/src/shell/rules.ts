@@ -132,8 +132,9 @@ export function derive(c: RuleCtx): { add: Notice[]; resolve: string[] } {
   const soon = new Map<string, typeof pmTasks>();
   pmTasks.forEach((x) => {
     if (x.state === 'OVERDUE') {
-      if (!c.notices.some((n) => n.past && n.rule === 'PM_OVERDUE' && samePm(n, x)))
-        add.push(mk('PM_OVERDUE', x.pm_task_id, `${x.equipment_id} ${x.item_name} — 기한 ${md(x.next_due)} 넘김`, ['MNT', 'SUP'], { machine: ID_OF[x.equipment_id as Eq], open: { screen: 'pm' } }));
+      // 9월 알림이 늦게 들어오면(로그인 직후) 먼저 낸 것이 겹쳐 남으므로 풀어 둔다 (2026-10-20)
+      if (c.notices.some((n) => n.past && n.rule === 'PM_OVERDUE' && samePm(n, x))) resolve.push(`PM_OVERDUE:${x.pm_task_id}`);
+      else add.push(mk('PM_OVERDUE', x.pm_task_id, `${x.equipment_id} ${x.item_name} — 기한 ${md(x.next_due)} 넘김`, ['MNT', 'SUP'], { machine: ID_OF[x.equipment_id as Eq], open: { screen: 'pm' } }));
     }
     // 하루 전에만 (기한 당일 항목은 전날 08:00에 이미 알림)
     else if (x.state === 'DUE_SOON' && (x.next_due ?? '').slice(0, 10) > today && !pastKeys.has(x.pm_task_id)) {
@@ -185,8 +186,8 @@ export function derive(c: RuleCtx): { add: Notice[]; resolve: string[] } {
   });
   c.dailyReports?.forEach((r) => {
     if (r.status === 'CONFIRMED') { resolve.push(`DAILY_REPORT_PENDING:${r.work_date}`); c.notices.filter((n) => n.rule === 'DAILY_REPORT_PENDING' && n.open?.key === r.work_date).forEach((n) => resolve.push(n.id)); }
-    else if (!c.notices.some((n) => n.rule === 'DAILY_REPORT_PENDING' && n.open?.key === r.work_date && n.past))
-      add.push(mk('DAILY_REPORT_PENDING', r.work_date, `${md(r.work_date)} 일일 보고서를 확정해 주세요`, ['MGR'], { open: { screen: 'daily', key: r.work_date } }));
+    else if (c.notices.some((n) => n.rule === 'DAILY_REPORT_PENDING' && n.open?.key === r.work_date && n.past)) resolve.push(`DAILY_REPORT_PENDING:${r.work_date}`); // 9월 알림과 겹치면 풀어 둔다
+    else add.push(mk('DAILY_REPORT_PENDING', r.work_date, `${md(r.work_date)} 일일 보고서를 확정해 주세요`, ['MGR'], { open: { screen: 'daily', key: r.work_date } }));
   });
   // CMM 결과 파일 오류·판정 불일치
   c.cmm?.imports.forEach((x) => {
