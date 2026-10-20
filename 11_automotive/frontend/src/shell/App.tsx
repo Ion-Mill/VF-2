@@ -16,7 +16,6 @@ import { Eve, Robot, type EveTab } from './Eve';
 import Briefing from './Briefing';
 import CardScreen, { CardList } from './CardScreen';
 import DocBox from './DocBox';
-import FieldStrip from './FieldStrip';
 import Layout2D from './Layout2D';
 import Login from './Login';
 import Logo from './Logo';
@@ -387,7 +386,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
   if (settings.fontScale) { style['--fs-big'] = `${bigPx}px`; style['--fs-body'] = `${bodyPx}px`; }
   const show3D = screen === 'line' || screen === 'field'; // 다시 보기는 3D 대신 카드 라인 (2026-10-17)
   const fieldSel = screen === 'field' && (!!snapSel || !!zone); // 설비를 누르거나 공정 묶음 버튼을 누르면 아래 패널
-  const stagePos = screen === 'field' ? { left: 0, top: 0, right: 360, bottom: fieldSel ? 'var(--panelH)' : 0 } : { left: 220, top: screen === 'line' && eveCur ? 128 : 76, right: 12, bottom: 'calc(var(--panelH) + 24px)' }; // 홈: 알람이 있을 때만 이브 띠(76~120)를 3D 카드 바깥 위에 두고 카드는 그 아래부터 — 띠가 천장 표지판을 가리지 않게. 알람이 없으면 띠 없이 3D가 위까지 (2026-10-19)
+  const stagePos = screen === 'field' ? { left: 0, top: 0, right: 0, bottom: fieldSel ? 'var(--panelH)' : 0 } : { left: 220, top: screen === 'line' && eveCur ? 128 : 76, right: 12, bottom: 'calc(var(--panelH) + 24px)' }; // 홈: 알람이 있을 때만 이브 띠(76~120)를 3D 카드 바깥 위에 두고 카드는 그 아래부터 — 띠가 천장 표지판을 가리지 않게. 알람이 없으면 띠 없이 3D가 위까지 (2026-10-19)
 
 
   return (
@@ -511,10 +510,8 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
 
           {screen === 'layout2d' && <Layout2D />}
           {(screen === 'line' || screen === 'layout2d' || fieldSel) && (
-            <div className={screen === 'line' ? 'absolute bottom-3 left-[220px] right-3 h-[var(--panelH)]' : `absolute bottom-0 left-0 ${screen === 'field' ? 'right-[360px]' : 'right-0'} h-[var(--panelH)] border-t border-slate-300 bg-[#eef1f4]`}><Panels field={screen === 'field'} ids={screen === 'field' && zone && !snapSel ? ZONES.find((z) => z[0] === zone)?.[2] : undefined} /></div>
-          )}
-          {screen === 'field' && <div className="absolute bottom-0 right-0 top-0 w-[360px]"><FieldStrip onBriefing={() => { setSeenBrief((s) => ({ ...s, [user.id]: twin?.shift.shift_id ?? '' })); setSide('브리핑'); }} /></div>}
-          {screen === 'replay' && <ReplayScreen />}
+            <div className={screen === 'line' ? 'absolute bottom-3 left-[220px] right-3 h-[var(--panelH)]' : `absolute bottom-0 left-0 right-0 h-[var(--panelH)] border-t border-slate-300 bg-[#eef1f4]`}><Panels field={screen === 'field'} ids={screen === 'field' && zone && !snapSel ? ZONES.find((z) => z[0] === zone)?.[2] : undefined} /></div>
+          )}          {screen === 'replay' && <ReplayScreen />}
           {screen === 'cards' && <CardList />}
           {screen === 'card' && key && <CardScreen alertId={key} />}
           {(screen === 'docs' || DOC_OF[screen] || QUAL_OF[screen]) && (() => {
