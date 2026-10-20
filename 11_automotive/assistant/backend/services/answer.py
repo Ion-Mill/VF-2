@@ -1199,6 +1199,86 @@ def alarm_codes() -> dict[str, dict]:
     return {a["code"]: a for a in get_repo().master("alarm_master")}
 
 
+# 질문대로 답하기 1단계 (2026-10-21): "2075 …지난 두 번 조치가 뭐였어?"는 작업기록 규칙(`지난\s*조치`)에 걸리지 않아 알람 기본 카드가 나갔다.
+# "지난 N번/N건 조치"·"전에 조치"·"어떻게 고쳤어" 꼴을 읽어 N건(숫자가 없으면 2건)을 낸다. 알람 번호가 없어도 읽는다(그때는 설비·전체 기록).
+PAST_NUM_V22 = {"한": 1, "두": 2, "세": 3, "네": 4, "다섯": 5, "여섯": 6, "일곱": 7, "여덟": 8, "아홉": 9, "열": 10}
+PAST_ACTION_V22 = re.compile(
+    r"(?:지난|이전|저번|전에|전엔|예전|과거|앞선|직전)\s*(?:(한|두|세|네|다섯|여섯|일곱|여덟|아홉|열|\d{1,2})\s*)?(?:번|건|차례|회)?\s*(?:의\s*)?"
+    r"(?:조치|처리\s*내용|처리했|고쳤|해결했|수리했)"
+    r"|어떻게\s*(?:조치|처리|해결|대응|수리)\s*했|어떻게\s*고쳤")
+# 지난 조치만 묻는 질문에서 알람 카드를 내지 않는다 — 카드가 묻는 말(뜻·점검 순서·원인 …)이 같이 있으면 지금처럼 카드도 낸다
+CARD_ASK_V22 = re.compile(r"뭐야|뭔데|뭐예요|뭔가요|무슨\s*(?:알람|뜻)|뜻|의미|설명|점검|순서|뭐부터|먼저|원인|이유|절차|방법|뜨면|나오면|발생하면|심각도")
+MAX_PAST_V22 = 10
+
+
+def past_action_n_v22(question: str) -> int | None:
+    """지난 조치를 묻는 말이면 보여 줄 건수(1~10, 숫자가 없으면 2), 아니면 None."""
+    m = PAST_ACTION_V22.search(question)
+    if not m:
+        return None
+    tok = m.group(1)
+    if tok is None:
+        return 2
+    n = PAST_NUM_V22.get(tok) or int(tok)
+    return max(1, min(n, MAX_PAST_V22))
+
+
+def past_action_line_v22(w: dict) -> str:
+    """작업기록 한 건을 한 줄로 — 기록 번호·설비·확정일·(원인)·조치 원문·(수리 분). 조치 문장은 기록 원문 그대로다."""
+    action = str(w.get("action") or "").strip() or "조치 내용 없음"
+    cause = str(w.get("cause") or "").strip()
+    try:
+        tail = f" ({float(w['repair_min']):g}분)" if w.get("repair_min") not in (None, "") else ""
+    except (TypeError, ValueError):
+        tail = ""
+    return (f"{w.get('record_no') or w.get('work_record_id')} · {w.get('equipment_id') or '설비 미상'} · {str(w.get('start') or '')[:10]} · "
+            + (f"원인 {cause} · " if cause else "") + action + tail)
+
+
+# 질문대로 답하기 1단계: "축 윤활유 재고는 안전 재고보다 얼마나 부족해?"는 부족 품목 전체를 늘어놓았다. 질문에 품목이 있으면 그 품목만 읽고
+# 부족분(안전 재고 − 현재 재고)을 프로그램이 계산해 고정 문장으로 답한다 (LLM에 숫자를 맡기지 않는다).
+INV_ALIAS_V22 = {"CS-AFLT": ("공기필터",), "CS-CFLT": ("절삭유필터",), "CS-COOL": ("절삭유원액", "절삭유"), "CS-GRS": ("그리스",),
+                 "CS-SLUB": ("주축윤활유",), "CS-WLUB": ("축윤활유",), "RM-6061": ("봉재", "6061"), "FG-BRK-A100": ("완제품", "brk-a100"),
+                 "TL-BB45": ("보링바",), "TL-DR50": ("드릴",), "TL-EM10": ("엔드밀",), "TL-FM50": ("페이스밀",), "TL-TAP6": ("m6탭", "탭")}
+
+
+def inventory_items_asked_v22(question: str, rows: list[dict]) -> list[dict]:
+    """질문에 이름(또는 짧은 이름)이 든 재고 품목. 더 긴 이름 안에 든 짧은 이름은 뺀다 ("주축 윤활유" 안의 "축 윤활유"). 없으면 빈 목록."""
+    q = re.sub(r"\s+", "", question).lower()
+    spans: list[tuple[int, int, str]] = []
+    for x in rows:
+        names = {re.sub(r"\s+", "", str(x.get("name") or "")).lower(), *INV_ALIAS_V22.get(x.get("item_no"), ())}
+        for nm in filter(None, names):
+            spans += [(m.start(), m.end(), x["item_no"]) for m in re.finditer(re.escape(nm), q)]
+    keep = [s for s in spans if not any(o[0] <= s[0] and s[1] <= o[1] and (o[1] - o[0]) > (s[1] - s[0]) for o in spans)]
+    nos: list[str] = []
+    for s in sorted(keep):
+        if s[2] not in nos:
+            nos.append(s[2])
+    return [x for n in nos for x in rows if x["item_no"] == n]
+
+
+def _qty_v22(v: float, unit: str) -> str:
+    """수량 글자 — 영문 단위(L)는 띄우고(3.6 L) 한글 단위(개)는 붙인다(2개)."""
+    return f"{v:g} {unit}" if unit.isascii() and unit else f"{v:g}{unit}"
+
+
+def inventory_sentence_v22(x: dict) -> str:
+    unit = str(x.get("unit") or "")
+    on = float(x.get("on_hand") or 0)
+    name = x.get("name") or x.get("item_no")
+    if x.get("safety_stock") in (None, ""):
+        return f"{name} {_qty_v22(on, unit)} (안전 재고 기준이 없습니다)."
+    sf = float(x["safety_stock"])
+    diff = round(sf - on, 3)
+    base = f"{name} {_qty_v22(on, unit)}, 안전 재고 {_qty_v22(sf, unit)}"
+    if diff > 0:
+        return f"{base}보다 {_qty_v22(diff, unit)} 부족해요."
+    if diff == 0:
+        return f"{base} — 같아서 부족분은 0이에요 (재고 부족 기준은 안전 재고 이하)."
+    return f"{base}보다 {_qty_v22(-diff, unit)} 많아요."
+
+
 def parse(question: str) -> dict:
     q = question.strip()
     ql = q.lower()
@@ -1325,8 +1405,13 @@ def parse(question: str) -> dict:
                 alarms.append({"control": master[code]["control"], "axis": "", "code": code, "sub": ""})
             equipment = [e for e in equipment if e != "WSH-01"]
             intents = [i for i in intents if i != "equipment_status"]
+    past_n = past_action_n_v22(q)   # 질문대로 답하기 1단계: 정의 질문 판정이 의도를 지운 뒤에 붙인다 ("…조치가 뭐였어?"의 '뭐')
+    if past_n is not None and "work_records" not in intents:
+        intents.append("work_records")
     out = {"alarms": alarms, "equipment": equipment, "start": start, "end": end, "shift": shift, "intents": intents,
            "lot": lot.group(0).upper() if lot else None, "order": order.group(0).upper() if order else None}
+    if past_n is not None:
+        out["past_n"] = past_n
     if v4 and future:  # 기준 시각 뒤 날짜 — 날짜로 찾는 조회면 _answer가 "확인 필요"로 알린다 (한 달 전체로 넓히지 않음)
         out["future"] = True
     if outside:  # 데이터 기간 밖의 달 (PARSE_V5) — _answer가 "확인 필요"로 알린다
@@ -1854,7 +1939,19 @@ def ops_answer(role: str, p: dict, needs: list[str] | None = None,
             if rows_txt:   # 실적 줄은 한 줄씩 따로 문장이다 — 머리에 숫자를 넣지 않는다(숫자 대조가 맞게)
                 add("생산 실적", rows_txt, " ".join(rows_txt), r)
         elif intent == "inventory":
-            r = T.inventory(role, short_only="부족" in p.get("raw", ""))
+            r_all = T.inventory(role)
+            asked = inventory_items_asked_v22(p.get("raw", ""), r_all["rows"])
+            if asked:   # 질문대로 답하기 1단계: 질문에 품목이 있으면 그 품목만, 부족분은 프로그램이 계산
+                r = {**r_all, "rows": asked, "empty": False}
+                data.append(r)
+                sentences = [inventory_sentence_v22(x) for x in asked]
+                texts.append("재고: " + " ".join(sentences))
+                add("재고 확인", sentences, texts[-1], r)
+                continue
+            r = r_all
+            if "부족" in p.get("raw", ""):
+                r = {**r_all, "rows": [x for x in r_all["rows"] if x["short"] == "true"]}
+                r["empty"] = not r["rows"]
             data.append(r)
             short = [i for i in r["rows"] if i["short"] == "true"]
             items = [f"{i['name']} {float(i['on_hand']):g}{i['unit']} (안전 재고 {i['safety_stock']})" for i in short]
@@ -1916,6 +2013,18 @@ def ops_answer(role: str, p: dict, needs: list[str] | None = None,
             code = p["alarms"][0]["code"] if p["alarms"] else None
             r = T.work_records(role, eq, code)
             data.append(r)
+            if p.get("past_n") is not None:   # 질문대로 답하기 1단계: "지난 두 번 조치" — 최근 N건을 최근 것부터, 조치 문장은 기록 원문 그대로
+                last = list(reversed(r["rows"]))[:p["past_n"]]
+                scope = " ".join(x for x in (eq, f"알람 {code}" if code else None) if x) or "라인"
+                head = f"{scope} 지난 조치 (최근 {len(last)}건)"
+                if last:
+                    items = [past_action_line_v22(w) for w in last]
+                    texts.append(head + ": " + " / ".join(items))
+                    add(head, items, texts[-1], r)
+                else:
+                    texts.append(f"{scope} 지난 조치: 확정된 작업기록이 없습니다")
+                    add("", [], texts[-1], r)
+                continue
             recent = r["rows"][-RECENT_RECORDS:]
             more = f" (최근 {len(recent)}건, 전체 {len(r['rows'])}건)" if len(r["rows"]) > len(recent) else ""
             items = [f"{w['work_record_id']}({w['kind']}, {w['start'][:10]}{', 원인 ' + w['cause'] if w['cause'] else ''})" for w in recent]
@@ -3747,7 +3856,12 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
     traces: list[dict] = []
     retrieval = None
     parts, steps, evidence = [], [], []
-    for a in p["alarms"][:1]:  # 알람 답(의미·점검 순서)은 LLM에 보내지 않는다 — 사내 문서 그대로
+    # 질문대로 답하기 1단계: 알람 번호가 있어도 "지난 두 번 조치"만 물었으면 기본 카드(설명·점검 순서·횟수 줄)를 내지 않고 작업기록만 답한다.
+    # 카드가 묻는 말(뜻·점검 순서·원인 …)이 같이 있으면 지금처럼 카드도 낸다 (카드 전체를 없애는 일은 2·3단계)
+    skip_card = bool(p["alarms"]) and p.get("past_n") is not None and not CARD_ASK_V22.search(question)
+    if skip_card and SL.on():
+        SL.step("1 규칙 판정", 결과="지난 조치만 묻는 알람 질문 — 알람 카드 없이 작업기록만 답함", 건수=p["past_n"])
+    for a in (p["alarms"][:1] if not skip_card else []):  # 알람 답(의미·점검 순서)은 LLM에 보내지 않는다 — 사내 문서 그대로
         got = alarm_doc_answer(a, en=flow_on(s))   # 8차 FLOW_V9: 카드 이름에 영문명
         if got:
             c, steps, evidence = got
@@ -3847,6 +3961,8 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
     v4 = v3 and s.parse_v4
     if v3 and doc_cue(question, s):  # 운영 질문에 붙은 설명 요청 → 문서도 찾는다 (2026-10-10 2차)
         doc_like = True
+    if skip_card:   # 지난 조치만 물었으면 "어떻게 고쳤어"의 '어떻게'로 문서를 따로 찾아 붙이지 않는다
+        doc_like = False
     future_note = None
     if v4 and p.get("future") and any(i in DATED_INTENTS_V4 for i in p["intents"]):
         # 기준 시각 뒤 날짜의 정지·실적·지표·알람 횟수는 기록이 없다 — 날짜를 버리고 한 달 전체로 답하지 않는다 (2026-10-10 3차 a)
@@ -3912,7 +4028,7 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
     needs: list[str] = []
     ops_entries: list[dict] = []
     p_rel = p
-    split = alarm_ops_split_v10(question, p, s) if (flow10_on(s) and p["alarms"] and p["intents"]) else None
+    split = alarm_ops_split_v10(question, p, s) if (flow10_on(s) and p["alarms"] and p["intents"] and not skip_card) else None
     if split:   # 9차 I: 섞인 알람 질문은 운영 조회를 마디마다 (알람 마디 → 다른 마디 순서)
         ops_texts, data, ops_defs = [], [], []
         for sub in split:
@@ -3962,7 +4078,7 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
                "근거 안내이며 실행 지시가 아닙니다." if evidence else None)
     # 운영 답에 쓴 정의(정지 사유 그룹·필수 정지·손실식)의 사내 문서 출처를 붙인다. 주의 문구 판단에는 넣지 않는다
     evidence = evidence + [d for i, d in enumerate(ops_defs) if d["cite"] not in [e["cite"] for e in evidence + ops_defs[:i]]]
-    facts = {"draft_conclusion": " ".join(parts + ops_texts + tail), "draft_related": related_line(role, p_rel), "draft_caution": caution,
+    facts = {"draft_conclusion": " ".join(parts + ops_texts + tail), "draft_related": None if skip_card else related_line(role, p_rel), "draft_caution": caution,
              "steps": steps, "evidence": evidence, "data": data}
     if ops_texts and s.job("write"):  # LLM 다듬기는 운영 문장에만. 문서·알람 부분은 그대로 앞에 둔다 (8차 꼬리 안내는 운영 글 뒤)
         f_ops, mode, trace = write_answer({**facts, "draft_conclusion": " ".join(ops_texts)}, jobs.PhraseAdapter(), budget_s=s.budget_s)
