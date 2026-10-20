@@ -22,7 +22,25 @@ _AFTER = re.compile(r"푸는|풀 ?때|풀고|풀어|풀기|풀 ?뒤|풀린|해�
 _BEFORE = re.compile(r"거는|걸어|걸고|걸 ?때|걸기|걸기 ?전|작업 ?전|정비 ?전|하기 ?전|들어가기 ?전|들어가기전|잠글|잠그는|잠가야|잠그고|설치|뭐부터|6 ?단계|6\.[1-6]|저장 ?에너지|차단 ?확인|운전 ?정지")
 _BOTH = re.compile(r"푸는.{0,6}(?:까지|뒤까지)|걸고 ?(?:\S{0,4} )?푸|잠그고 ?푸|걸기 ?전부터|처음부터 ?끝|끝까지|모두|전체|둘 ?다|6 ?단계.{0,8}3 ?단계|잠금.{0,8}해제.{0,8}(?:모두|전체|다)|걸고 ?풀|잠금표지 ?걸기전부터")
 _PROC = re.compile(r"순서|단계|절차|방법|어떻게|뭐부터|먼저|뭘 ?해|하는 ?법|거는|푸는|풀 ?때|걸 ?때|뭐 ?해|뭘 ?봐|뭘 ?확인|뭘로|누구|알려|확인")
-_HV = re.compile(r"고전압|표시등|5 ?분|몇 ?분|잔류|충전|전원.{0,8}(?:내린|끈|끄고|차단).{0,10}(?:기다|대기|뒤|후)|제어반.{0,10}(?:열기|열고|열 ?때|작업).{0,10}(?:기다|대기|몇 ?분)|기다려")
+# 고전압 서식: 낱말 하나만으로 붙이지 않는다 (2026-10-21 — "정비 몇 분 남았어"에 붙던 오탐, 질문 은행 62건 중 57건이 무관)
+_HV_STRONG = re.compile(r"고전압|잔류 ?전압|전원.{0,8}(?:내린|끈|끄고|차단).{0,10}(?:기다|대기|뒤|후)|제어반.{0,10}(?:열기|열고|열 ?때|작업).{0,10}(?:기다|대기|몇 ?분)|표시등.{0,10}꺼.{0,12}(?:몇 ?분|5 ?분|기다|뒤|후|때까지)")
+_HV_WEAK = re.compile(r"표시등|충전|잔류|기다려|5 ?분|몇 ?분")                  # 흔한 낱말 — 전기 낱말이 함께 있어야 한다
+_HV_CTX = re.compile(r"전원|제어반|전압|전기|감전|방전|벡터|드라이브")
+_HV_TIME_ONLY = re.compile(r"5 ?분|몇 ?분")
+_HV_DURATION = re.compile(r"남았|남은|걸려|걸리|걸린|잡아|MTTR|MTBF|수리 ?시간", re.I)  # 시간만 있는 말에 이게 있으면 걸리는 시간·남은 시간 질문
+
+
+def _wants_high_voltage(q: str) -> bool:
+    if _HV_STRONG.search(q):
+        return True
+    if not _HV_CTX.search(q):
+        return False
+    hits = {m.group(0) for m in _HV_WEAK.finditer(q)}
+    if not hits:
+        return False
+    if all(_HV_TIME_ONLY.fullmatch(h) for h in hits) and _HV_DURATION.search(q):
+        return False
+    return True
 _PPE = re.compile(r"보호구|보안경|보안겅|안전화|장갑|귀마개|청력|방진|보호 ?안경|뭐 ?착용|착용해야|착용할|뭐 ?써야|뭐 ?껴|뭘 ?껴|뭘 ?써")
 _PPE_WEAR = re.compile(r"착용|써야|써도|껴야|끼면|끼고|끼는|끼라|입어|신어|뭐 ?써|뭘 ?써|어떤|필수|금지|면장갑|써|껴|껴도|써야돼|어디서 ?써")
 _NOT_PROC = re.compile(r"신청|지급|구매|청구|반납|재고|누구한테 ?신청|교체 ?주기|세탁")
@@ -48,7 +66,7 @@ def select(question: str) -> list[str]:
             out = ["before6"]                       # "작업 전 …"처럼 시점이 앞이면 작업 전 서식 (푸는 말이 함께 있어도)
         else:
             out = ["before6", "after3"]             # 어느 쪽인지 모르는 순서 질문
-    if len(out) < 2 and _HV.search(q) and not _NOT_PROC.search(q):
+    if len(out) < 2 and _wants_high_voltage(q) and not _NOT_PROC.search(q):
         out.append("high_voltage")
     if len(out) < 2 and _PPE.search(q) and _PPE_WEAR.search(q) and not _NOT_PROC.search(q):
         out.append("ppe")
