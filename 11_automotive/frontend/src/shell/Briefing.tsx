@@ -3,11 +3,13 @@
 // 지난 교대·인계 사항 = 지난 교대 보고서(생성기·서버), 먼저 챙길 일 = 인계 사항 + 지금 처리 안 된 알람·알림 (2.5 보고 순위).
 // 보고 항목은 프로그램 목록이다 (순서·건수는 프로그램 몫). 지난 교대 요약은 교대 보고서 문장을 그대로 쓰므로, 비서가 켜져 있으면 비서가 다듬은 문장이 보인다.
 // 먼저 챙길 일의 항목 문장은 비서가 다듬은 것이 준비되면 그것을 보이고(순위 묶음별, '비서 정리'), 준비 전·꺼짐·실패·탈락은 프로그램 문구 그대로다. [원문 보기]로 언제나 프로그램 문구를 본다 (팀 2026-10-19, 기본 꺼짐 NEXT_PUBLIC_MOM_BRIEFING_LLM=1). 4b 카드에 붙임 (2026-10-20)
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { backendChatEnabled, fetchBriefChecks, saveBriefCheck } from './assistantApi';
+import { checkScope, fromServerKeys, serverKey, serverShift, toggleKey } from './briefChecks';
 import { useBriefingText } from './assistText';
 import { useApp } from './ctx';
 import { MACHINES } from './data';
-import { SIM, hm, md, simIso, type Twin } from './live';
+import { SIM, hm, md, simIso, usePersist, type Twin } from './live';
 import { LEVEL_VIEW, RANK_NAME, RANK_ORDER, alarmTitle, hhmm, type AlertRec, type Notice } from './model';
 
 export const lastShiftReport = (reports: Record<string, any>[] | null, twin: Twin | null) =>
@@ -36,12 +38,33 @@ const TAG_COLOR: Record<Tone, string> = { red: 'text-[#b4282d]', amber: 'text-[#
 const SUM_BOX = 'flex min-w-0 flex-col gap-0.5 rounded-2xl border border-[#e4def8] bg-[#ffffff] px-3.5 py-2.5';
 const SUM_LABEL = 'whitespace-nowrap text-[12.5px] font-bold text-[#6b6683]';
 const SUM_NOTE = 'text-[12.5px] leading-snug text-[#4b4766]';
-function Board({ todos, sum, lockout, footSrc, onDone, onOpenLast, aiNote }: { todos: Todo[]; sum: Summary; lockout: string[]; footSrc: string; onDone?: () => void; onOpenLast?: () => void; aiNote?: React.ReactNode }) {
-  const [done, setDone] = useState<string[]>([]); // 이 창에서만 체크 (서버에 저장 안 함 — 저장할지는 팀 결정)
+type CheckBase = { userId: string; shiftId: string; runId: number | null };
+function Board({ todos, sum, lockout, footSrc, onDone, onOpenLast, aiNote, check }: { todos: Todo[]; sum: Summary; lockout: string[]; footSrc: string; onDone?: () => void; onOpenLast?: () => void; aiNote?: React.ReactNode; check: CheckBase }) {
+  // 체크 저장 (2026-10-20): 이 브라우저(시연 회차별)에 늘 남기고, 백엔드가 있으면 같이 보낸다. 열 때 서버 값이 오면 서버 것을 따른다 (briefChecks.ts)
+  const { userId, shiftId, runId } = check;
+  const scope = checkScope(userId, shiftId);
+  const [store, setStore] = usePersist<Record<string, string[]>>('briefChecks', {}, runId);
+  const done = store[scope] ?? [];
+  const touched = useRef(false); // 이 창에서 이미 눌렀으면 늦게 온 서버 값으로 덮지 않는다
+  useEffect(() => {
+    touched.current = false;
+    if (!backendChatEnabled() || runId === null) return;
+    let live = true;
+    fetchBriefChecks(userId, serverShift(runId, shiftId)).then((keys) => {
+      if (!live || touched.current || keys === null) return;
+      setStore((s) => ({ ...s, [scope]: fromServerKeys(runId, keys) }));
+    });
+    return () => { live = false; };
+  }, [userId, shiftId, runId]); // eslint-disable-line react-hooks/exhaustive-deps
   const isDone = (t: Todo) => done.includes(t.key);
   const open = todos.filter((t) => !isDone(t)), fin = todos.filter(isDone);
   const red = open.filter((t) => t.tone === 'red').length, amber = open.filter((t) => t.tone === 'amber').length;
-  const toggle = (k: string) => setDone((d) => (d.includes(k) ? d.filter((x) => x !== k) : [...d, k]));
+  const toggle = (k: string) => {
+    touched.current = true;
+    const turnOn = !done.includes(k);
+    setStore((s) => ({ ...s, [scope]: toggleKey(s[scope] ?? [], k) }));
+    void saveBriefCheck(userId, serverShift(runId, shiftId), serverKey(runId, k), turnOn); // 서버 저장은 실패해도 조용히 (브라우저에는 남음)
+  };
   return (
     <div className="flex flex-col gap-2.5 text-[#1f1b33]">
       <p className="m-0 px-0.5 text-[13.5px] text-[#6b6683]"><b className="text-[#1f1b33]">{sum.shift}</b> · <span className="font-mono">{sum.asOf}</span> 기준</p>
@@ -80,7 +103,7 @@ function Board({ todos, sum, lockout, footSrc, onDone, onOpenLast, aiNote }: { t
           </div>
         );
       })}
-      <div className="flex flex-col gap-2.5 pt-1"><span className="px-1 text-[12.5px] text-[#6b6683]">{aiNote}근거 · {footSrc}{done.length ? ` · 체크 ${done.length}건은 이 창에만 (저장 안 됨)` : ''}</span>
+      <div className="flex flex-col gap-2.5 pt-1"><span className="px-1 text-[12.5px] text-[#6b6683]">{aiNote}근거 · {footSrc}{done.length ? ` · 체크 ${done.length}건 저장됨` : ''}</span>
         {onDone && <button onClick={onDone} className="h-12 w-full rounded-full bg-[#26303a] text-[16px] font-extrabold text-white">확인했어요</button>}</div>
     </div>
   );
@@ -104,7 +127,7 @@ export default function Briefing({ onDone }: { onDone?: () => void }) {
   const p = twin.production;
   const pmToday = (pm?.tasks ?? []).filter((t) => t.state === 'OVERDUE' || t.state === 'DUE_SOON').filter((t) => t.cycle_code !== 'DAILY');
   const pmSorted = [...pmToday].sort((a, b) => (a.state === b.state ? 0 : a.state === 'OVERDUE' ? -1 : 1));
-  const pmTodos: Todo[] = pmSorted.map((t) => ({ key: `pm:${t.pm_task_id}`, text: doIt(t.item_name), sub: `${t.equipment_id} · 예방 정비`, tag: t.state === 'OVERDUE' ? '▲ 기한 넘김' : '임박', tone: t.state === 'OVERDUE' ? 'amber' : 'soon', go: () => go('pm', t.equipment_id) }));
+  const pmTodos: Todo[] = pmSorted.map((t, i) => ({ key: `pm:${t.pm_task_id ?? i}`, text: doIt(t.item_name), sub: `${t.equipment_id} · 예방 정비`, tag: t.state === 'OVERDUE' ? '▲ 기한 넘김' : '임박', tone: t.state === 'OVERDUE' ? 'amber' : 'soon', go: () => go('pm', t.equipment_id) }));
   const good = last ? Number(last.actual_qty) - Number(last.defect_qty) : null;
   const alarmTodo = (a: AlertRec): Todo => ({ key: a.id, text: `${a.alarm?.nameKo.replace(/\s*\([A-Z0-9 ._/-]+\)/, '') ?? a.code} 대응하기`, sub: `${MACHINES[a.machine].name} · 알람 ${a.code} · ${hhmm(a.time)}부터`, tag: a.level === '긴급' ? '긴급' : '▲ 주의', tone: a.level === '긴급' ? 'red' : 'amber', go: () => openCard(a.id) });
 
@@ -116,7 +139,7 @@ export default function Briefing({ onDone }: { onDone?: () => void }) {
       ...tools.map((t, i): Todo => ({ key: `tool${i}`, text: `${t.tool_id} 공구 교체 준비하기`, sub: `수명 ${t.usage_pct}%`, tag: '▲ 공구', tone: 'amber', go: () => go('tools') })),
       ...pmTodos,
     ];
-    return <Board todos={todos} sum={summaryOf(twin, last, good, pmTodos.length)} lockout={lockout} footSrc={`교대 보고서 ${last?.shift_id ?? '없음'} · 예방 정비 일정 · 알람 기록`} onDone={onDone} onOpenLast={last ? () => go('shift', last.shift_id) : undefined} />;
+    return <Board todos={todos} sum={summaryOf(twin, last, good, pmTodos.length)} lockout={lockout} footSrc={`교대 보고서 ${last?.shift_id ?? '없음'} · 예방 정비 일정 · 알람 기록`} onDone={onDone} onOpenLast={last ? () => go('shift', last.shift_id) : undefined} check={{ userId: user.id, shiftId: twin.shift.shift_id, runId: twin.run_id }} />;
   }
 
   return <FullBrief v={{ twin, last, open, lockout, p, pmTodos, good, alarmTodo }} onDone={onDone} />;
@@ -126,7 +149,7 @@ type FullView = { twin: Twin; last: Record<string, any> | null; open: AlertRec[]
 
 // 전체형 (SUP·MNT·MGR): 먼저 챙길 일 = 0 안전 → 순위대로 지금 알람·알림 + 인계 사항(지난 교대 보고서) → 예방 정비. 비서 정리 훅을 부르려고 따로 뺐다
 function FullBrief({ v, onDone }: { v: FullView; onDone?: () => void }) {
-  const { myNotices, notices, go } = useApp();
+  const { user, myNotices, notices, go } = useApp();
   const { twin, last, open, lockout, pmTodos, good, alarmTodo } = v;
   const base = last ? parseHandover(last.handover_text) : [];
   const shown = myNotices.filter((x) => !x.handled && x.delivery === 'LIST');
@@ -157,7 +180,7 @@ function FullBrief({ v, onDone }: { v: FullView; onDone?: () => void }) {
   todos.push(...pmTodos.filter((t) => !pmShown.has(t.key.slice('pm:'.length))));
   return (
     <Board todos={todos} sum={summaryOf(twin, last, good, pmTodos.length)} lockout={lockout} footSrc={`교대 보고서 ${last?.shift_id ?? '없음'} · 알람·알림 기록 · 예방 정비 일정 (순서 = 2.5 보고 순위)`} onDone={onDone}
-      onOpenLast={last ? () => go('shift', last.shift_id) : undefined}
+      onOpenLast={last ? () => go('shift', last.shift_id) : undefined} check={{ userId: user.id, shiftId: twin.shift.shift_id, runId: twin.run_id }}
       aiNote={hasAi && <><b>{raw ? '원문' : '비서 정리'}</b> <button onClick={() => setRaw((x) => !x)} title="프로그램 문구와 비서가 다듬은 문장을 바꿔 봅니다" className="underline">{raw ? '비서 정리 보기' : '원문 보기'}</button> · </>} />
   );
 }

@@ -40,6 +40,7 @@
 | `sensor_hourly`, `wip_hourly` | 보관 L2(6.53): 1년 지난 1분 값을 1시간 집계로 줄여 2년 |
 | `cmm_instruction` | 논리 ERD 11장 #20 "측정 지시를 엔터티로 둘지" → 둔다 [제안]. 결과 파일과 지시 대조(R-78), 결과 미수신의 시작 시각 |
 | `access_log` | 접속 기록 1년 (6.53 ACCESS_LOG). 실제 시각 `now()` |
+| `briefing_check` | 물리 추가: 브리핑 먼저 챙길 일 체크 (2026-10-20) — 사용자별·교대별·항목 글자별, 본인 것만, 개인 메모일 뿐 알림·알람 처리와 무관 | 4 | user_id, shift_id, item_key | app_user | 2 | 0 | 0 |
 
 (2026-10-08에 만든 알람 ↔ 재고 품목 연결 `alarm_related_item`은 논리 ERD 5.C.8 엔터티가 되어 `schema/30_equipment_alarm.sql`에 있다 — R-89)
 
