@@ -354,7 +354,6 @@ function ChatLog({ onOpen }: { onOpen: (at: string) => void }) {
   const dayName = (d: string) => (d === today ? `오늘 · ${d}` : d === yday ? `어제 · ${d}` : d);
   return (
     <div className="ma-history gap-2">
-      <p className="m-0 px-1 pt-1 text-[13px] text-slate-500">내 질문만 보여요 · 30일이 지나면 지워져요</p>
       {keep.length === 0 ? <p className="ma-empty">저장된 대화가 없습니다.</p> : keep.map((r, i) => (
         <Fragment key={i}>
           {(i === 0 || md(keep[i - 1].at) !== md(r.at)) && <p className="ma-history-group">{dayName(md(r.at))}</p>}
