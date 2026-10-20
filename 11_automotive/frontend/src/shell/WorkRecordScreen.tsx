@@ -1,15 +1,17 @@
 'use client';
 // SCR-12 작업기록서 — 작업지시서를 보고 실제로 한 일을 적는다. 확정 → 작업지시서 완료, 설비 복귀(시뮬레이터 confirm_work_record),
 // 사용 부품 재고 차감(서버 거래 기록), MTTR 다시 계산(서버가 시뮬레이터 상태 기록으로).
+// 2026-10-20부터 따로 된 화면이 아니라 작업지시서 화면 아래 칸(WorkRecordPanel)으로 보인다.
 import { useState } from 'react';
-import { BTN, CARD, DARK, PAGE, useApp } from './ctx';
+import { BTN, DARK, useApp } from './ctx';
 import { MACHINES } from './data';
 import { api, hm, md, simIso } from './live';
-import { machineLabel } from './model';
-import { ConfirmBox, LOCK, LockChecks } from './Safety';
+import { ALARMS } from './model';
+import { ConfirmBox, LOCK, LockChecks, LockHead } from './Safety';
 import { diff, rev, type WorkRecord } from './workflow';
+import { Acts, Band, Bar, Chip, DocHead, Fold, Kpi, RO, Sec, SrcFold, Steps } from './DocKit';
 
-const STATUS: [WorkRecord['state'], string][] = [['draft', '초안'], ['editing', '수정 중'], ['confirmed', '확정 (MNT)'], ['checked', '확인 (SUP)']];
+const STATUS: [WorkRecord['state'], string][] = [['draft', '초안'], ['editing', '수정 중'], ['confirmed', '확정 (보전)'], ['checked', '확인 (반장)']];
 
 // [비서로 정리] 대신 규칙 정리: 문장을 원인·조치로, 재고 품목 이름이 나오면 사용 부품으로 (LLM 연결 전)
 const organize = (memo: string, items: { item_no: string; item_name: string }[]) => {
@@ -21,14 +23,16 @@ const organize = (memo: string, items: { item_no: string; item_name: string }[])
   return { cause, action, parts };
 };
 
-export default function WorkRecordScreen({ woNo }: { woNo: string }) {
-  const { wos, wrs, putWr, putWo, user, role, back, inv, alerts, markAlert, restoreMachine, history, go, twin, toast, reloadInv } = useApp();
+// 작업지시서 화면 아래에 붙는 "작업 기록" 칸 (2026-10-20 팀 검토: 작업지시서 → 작업기록서를 한 화면으로). 데이터는 작업기록서 한 건으로 따로 남는다.
+// 승인 뒤 담당 보전 담당자가 [작업 시작]을 누르면 생긴다. 메뉴·알림에서 작업기록서를 열면 작업지시서 화면이 열리고 여기로 내려온다.
+export function WorkRecordPanel({ woNo }: { woNo: string }) {
+  const { wos, wrs, putWr, putWo, user, role, inv, alerts, markAlert, restoreMachine, history, go, twin, toast, reloadInv, openSource } = useApp();
   const wo = wos.find((w) => w.no === woNo), wr = wrs.find((r) => r.woNo === woNo);
   const alert = alerts.find((a) => a.id === wo?.alertId);
   const [v, setV] = useState<WorkRecord | null>(wr ? { ...wr, start: wr.start || (alert ? hm(alert.time) : ''), end: wr.end } : null);
   const [confirm, setConfirm] = useState(false);
   const [note, setNote] = useState('');
-  if (!wo || !wr || !v) return <div className={PAGE}><div className={CARD}>작업기록서가 없습니다 <button onClick={back} className={BTN}>닫기</button></div></div>;
+  if (!wo || !wr || !v) return null;
   const done = wr.state === 'confirmed' || wr.state === 'checked';
   const canEdit = role === 'MNT' && !done;
   const lockN = v.lock.filter(Boolean).length;
@@ -38,12 +42,17 @@ export default function WorkRecordScreen({ woNo }: { woNo: string }) {
   const eq = MACHINES[wo.machine].eq!;
   const same = (history?.work_records ?? []).filter((r) => r.equipment_id === eq && history?.alarms.find((x) => x.alarm_event_id === r.alarm_event_id)?.alarm_code === wo.code);
   const mttr = twin?.kpi.mttr_mtbf[eq];
-  const names = { memo: '작업자 메모', cause: '원인', action: '조치', parts: '사용 부품', start: '시작', end: '끝' };
-  const sec = (head: string, body: React.ReactNode) => (<section className="border-t border-slate-200 py-3"><h3 className="mb-1 text-[14px] font-bold text-slate-500">{head}</h3>{body}</section>);
+  const names = { memo: '작업자 메모', cause: '원인', action: '조치', parts: '사용 부품', stepChecks: '수행 단계', lock: '잠금·표지', start: '시작', end: '끝' };
+  // 수정 이력에 읽을 수 있는 값으로 (부품 = 이름 ×수량, 체크 = n/전체)
+  const cmp = (x: WorkRecord) => ({ ...x, parts: x.parts.map((p) => `${inv?.items.find((i) => i.item_no === p.item)?.item_name ?? p.item} ×${p.qty}`), lock: `${x.lock.filter(Boolean).length}/${LOCK.length}`, stepChecks: `${x.stepChecks.filter(Boolean).length}/${x.stepChecks.length}` }) as unknown as Record<string, unknown>;
+  const changes = diff(cmp(wr), cmp(v), names);
   const input = 'h-11 rounded-md border border-slate-300 px-3 text-[15px] disabled:bg-slate-50';
+  const lockAll = lockN >= LOCK.length;
+  const stepN = v.stepChecks.filter(Boolean).length;
+  const a = ALARMS[wo.code];
 
   const doConfirm = async () => {
-    const final: WorkRecord = { ...v, state: 'confirmed', confirmedAt: simIso(), end: v.end || hm(simIso()), revisions: rev(wr.revisions, '확정', user.name, role, diff(wr as unknown as Record<string, unknown>, v as unknown as Record<string, unknown>, names)) };
+    const final: WorkRecord = { ...v, state: 'confirmed', confirmedAt: simIso(), end: v.end || hm(simIso()), revisions: rev(wr.revisions, '확정', user.name, role, changes) };
     putWr(final); putWo({ ...wo, state: 'done' });
     // 사용 부품 → 재고 차감 (작업기록서 확정 순간, FR-MNT-05-09)
     const used: string[] = [];
@@ -53,59 +62,77 @@ export default function WorkRecordScreen({ woNo }: { woNo: string }) {
     }
     // 처리 = 작업기록서 확정 → 그 알람과 연쇄 알람 모두 처리됨
     let first = alert; while (first?.prevId) { const p = alerts.find((x) => x.eventId === first!.prevId); if (!p) break; first = p; }
-    const ids = alerts.filter((a) => a.machine === wo.machine && !a.handled && a.kind !== 'guide' && a.ts >= (first?.ts ?? 0)).map((a) => a.id);
+    const ids = alerts.filter((x) => x.machine === wo.machine && !x.handled && x.kind !== 'guide' && x.ts >= (first?.ts ?? 0)).map((x) => x.id);
     markAlert(ids, `${user.name} (작업기록서 ${wr.no})`);
     await restoreMachine(wo.machine);
     reloadInv();
     setNote(`확정 — MTTR 다시 계산 · 재고 ${used.length ? used.join(', ') : '차감 없음'} · ${MACHINES[wo.machine].name} 복귀`);
   };
+  // 바뀐 칸이 있을 때만 새 버전 (2026-10-20)
+  const save = () => {
+    if (!changes.length) { toast('바뀐 내용 없음'); return; }
+    putWr({ ...v, state: 'editing', revisions: rev(wr.revisions, wr.revisions.length ? '수정' : '처음 저장', user.name, role, changes) });
+  };
 
+  // 확정 조건 띠(잠금·표지 · 수행 단계 · 수리 시간) → 원인·조치·부품 → 수행 단계 체크 → 잠금·표지 체크(모두 체크)
   return (
-    <div className={PAGE}>
-      <div className={`${CARD} max-w-[920px]`}>
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-[19px] font-bold">작업기록서 {wr.no} <span className="text-[14px] font-normal text-slate-500">← 작업지시서 {wo.no}</span></h2>
-          <div className="flex gap-2"><button onClick={() => go('revs', `WR:${wr.no}`)} className={BTN}>수정 이력</button><button onClick={() => alert && go('replay', alert.time)} className={BTN}>다시 보기 (고장 직전)</button><button onClick={back} className={BTN}>닫기</button></div>
-        </div>
-        <div className="mt-3 flex flex-wrap gap-1 text-[14px]">{STATUS.map(([k, label], i) => <span key={k} className={`rounded-full px-3 py-1 ${i === idx ? 'bg-[#1c2530] font-bold text-white' : i < idx ? 'bg-slate-200' : 'border border-slate-300 text-slate-500'}`}>{label}</span>)}</div>
+    <div id="work-record" className="flex scroll-mt-4 flex-col gap-3 border-t-4 border-[#0d7a93] pt-4">
+      <DocHead title={<>작업 기록 <span className="font-mono">{wr.no}</span></>}
+        right={<><Steps list={STATUS.map(([, l]) => l)} cur={idx} /><button onClick={() => go('revs', `WR:${wr.no}`)} className={BTN}>수정 이력</button><button onClick={() => alert && go('replay', alert.time)} className={BTN}>▶ 다시 보기 (고장 직전)</button></>} />
 
-        {sec('자동 칸', <div className="text-[15px]">작업지시서 {wo.no} · 설비 {machineLabel(wo.machine)} · 알람 {wo.code} · 로트 {wo.lot ?? '—'} · 발생 {md(wo.created)} {hm(wo.created)}</div>)}
-        {sec('작업자 메모', (
-          <div className="flex flex-col gap-2">
-            <textarea disabled={!canEdit} value={v.memo} onChange={(e) => set('memo', e.target.value)} rows={3} placeholder="한 일을 대충 적어도 됩니다 (예: 서보 케이블 커넥터 느슨함 원인. 커넥터 다시 조임. 축 윤활유 보충)" className="w-full rounded-md border border-slate-300 px-3 py-2 text-[15px] disabled:bg-slate-50" />
-            <div><button disabled={!canEdit || !v.memo.trim()} onClick={() => { const o = organize(v.memo, inv?.items ?? []); setV((p) => p ? { ...p, cause: o.cause || p.cause, action: o.action || p.action, parts: o.parts.length ? o.parts : p.parts, aiFields: ['원인', '조치', '사용 부품'] } : p); }} className={BTN}>비서로 정리 (프로그램 정리 — 로컬 LLM 연결 전)</button></div>
-          </div>
-        ))}
-        {sec('원인 · 조치 · 사용 부품', (
-          <div className="flex flex-col gap-2">
-            <label className="text-[14px] font-semibold">원인 {v.aiFields?.includes('원인') && <span className="rounded bg-slate-100 px-1 text-[11px]">[프로그램 정리]</span>}<input disabled={!canEdit} value={v.cause} onChange={(e) => set('cause', e.target.value)} className={`mt-1 w-full ${input} font-normal`} /></label>
-            <label className="text-[14px] font-semibold">조치 {v.aiFields?.includes('조치') && <span className="rounded bg-slate-100 px-1 text-[11px]">[프로그램 정리]</span>}<input disabled={!canEdit} value={v.action} onChange={(e) => set('action', e.target.value)} className={`mt-1 w-full ${input} font-normal`} /></label>
-            <PartsPicker value={v.parts} onChange={(p) => set('parts', p)} disabled={!canEdit} />
-          </div>
-        ))}
-        {sec('수행 단계 체크 (작업지시서의 작업 순서)', <div className="flex flex-col">{wo.steps.map((s, i) => (
-          <label key={s} className="flex min-h-[44px] items-center gap-2 text-[14px]"><input type="checkbox" className="h-5 w-5" disabled={!canEdit} checked={!!v.stepChecks[i]} onChange={() => set('stepChecks', v.stepChecks.map((c, k) => (k === i ? !c : c)))} />{i + 1}. {s}</label>))}</div>)}
-        {sec('잠금·표지 체크', <LockChecks value={v.lock} onChange={(l) => set('lock', l)} disabled={!canEdit} />)}
-        {sec('시각 (시연 시계)', (
-          <div className="flex flex-wrap items-center gap-3 text-[14px]">시작 <input type="time" disabled={!canEdit} value={v.start} onChange={(e) => set('start', e.target.value)} className={input} />
-            끝 <input type="time" disabled={!canEdit} value={v.end} onChange={(e) => set('end', e.target.value)} className={input} />
-            {canEdit && <button onClick={() => set('end', hm(simIso()))} className={BTN}>지금</button>}
-            <span>수리 시간 {mins === null || mins < 0 ? '○○' : mins}분</span>
-            {mttr && <span className="text-slate-600">· {eq} MTTR(30일) {mttr.mttr_min ?? '—'}분{mttr.mttr_warn ? ' ▲' : ''} · 고장 {mttr.failures}건</span>}
-          </div>
-        ))}
-        {sec('같은 사례 (9월, 같은 설비·같은 알람)', same.length ? <ul className="text-[14px]">{same.map((r) => <li key={r.record_no}>{r.record_no} · {md(r.start_at)} · 원인 {r.cause} · 조치 {r.action} · {r.repair_min}분</li>)}</ul> : <span className="text-[14px] text-slate-600">같은 사례 없음</span>)}
-
-        <div className="flex flex-wrap items-center gap-2 border-t border-slate-300 pt-3">
-          {role === 'MNT' && !done && (<>
-            <button onClick={() => putWr({ ...v, state: 'editing', revisions: rev(wr.revisions, wr.revisions.length ? '수정' : '처음 저장', user.name, role, diff(wr as unknown as Record<string, unknown>, v as unknown as Record<string, unknown>, names)) })} className={BTN}>저장</button>
-            <button disabled={lockN < LOCK.length} onClick={() => setConfirm(true)} className={DARK}>확정{lockN < LOCK.length ? ` — 잠금·표지 ${LOCK.length}개 중 ${lockN}개` : ''}</button>
-          </>)}
-          {role === 'SUP' && wr.state === 'confirmed' && <button onClick={() => putWr({ ...wr, state: 'checked', revisions: rev(wr.revisions, '확인', user.name, role) })} className={DARK}>확인</button>}
-          {done && <span className="text-[14px] text-slate-600">🔒 확정됨 — 고치려면 새 버전 + 사유 (수정 이력)</span>}
+      <Band tone={done ? 'mute' : lockAll ? 'ok' : 'warn'} title={done ? `🔒 확정됨${wr.state === 'checked' ? ' · 반장 확인' : ''}` : lockAll ? '확정할 수 있어요' : '아직 확정할 수 없어요'}>
+        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
+          <div className="flex flex-col gap-1.5"><Kpi label="잠금·표지 (확정 조건)" value={lockN} unit={`/ ${LOCK.length}${lockAll ? ' ✓' : ''}`} tone={lockAll ? 'ok' : undefined} /><Bar pct={(lockN / LOCK.length) * 100} tone={lockAll ? 'ok' : undefined} /></div>
+          <div className="flex flex-col gap-1.5"><Kpi label="수행 단계" value={stepN} unit={`/ ${wo.steps.length}`} /><Bar pct={wo.steps.length ? (stepN / wo.steps.length) * 100 : 0} /></div>
+          <Kpi label="수리 시간" value={mins === null || mins < 0 ? '—' : mins} unit="분" sub={<>{v.start || '—'} ~ {v.end || '—'}{mttr ? ` · MTTR(30일) ${mttr.mttr_min ?? '—'}분${mttr.mttr_warn ? ' ▲' : ''}` : ''}</>} />
         </div>
-        {note && <p className="mt-3 rounded-md bg-[#e8f6fa] px-3 py-2 text-[14px] font-semibold">{note}</p>}
-      </div>
+      </Band>
+
+      <Sec title="원인 · 조치 · 사용 부품">
+        <div className="flex flex-col gap-2.5">
+          <label className="text-[13px] font-semibold text-slate-500">작업자 메모<textarea disabled={!canEdit} value={v.memo} onChange={(e) => set('memo', e.target.value)} rows={2} placeholder="예: 서보 케이블 커넥터 느슨함 원인. 커넥터 다시 조임. 축 윤활유 보충" className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-[15px] font-normal text-[#1c2530] disabled:bg-slate-50" /></label>
+          {canEdit && <div><button disabled={!v.memo.trim()} onClick={() => { const o = organize(v.memo, inv?.items ?? []); setV((p) => p ? { ...p, cause: o.cause || p.cause, action: o.action || p.action, parts: o.parts.length ? o.parts : p.parts, aiFields: ['원인', '조치', '사용 부품'] } : p); }} className={BTN}>메모로 원인·조치 채우기</button></div>}
+          <label className="text-[13px] font-semibold text-slate-500">원인<input disabled={!canEdit} value={v.cause} onChange={(e) => set('cause', e.target.value)} className={`mt-1 w-full ${input} font-normal text-[#1c2530]`} /></label>
+          <label className="text-[13px] font-semibold text-slate-500">조치<input disabled={!canEdit} value={v.action} onChange={(e) => set('action', e.target.value)} className={`mt-1 w-full ${input} font-normal text-[#1c2530]`} /></label>
+          <PartsPicker value={v.parts} onChange={(p) => set('parts', p)} disabled={!canEdit} />
+        </div>
+      </Sec>
+      <Sec title="수행 단계 체크" right={<Chip tone={stepN === wo.steps.length ? 'ok' : 'acc'}>{stepN} / {wo.steps.length}</Chip>}>
+        <div className="flex flex-col">{wo.steps.map((s, i) => (
+          <label key={s} className="grid min-h-[44px] grid-cols-[22px_28px_minmax(0,1fr)] items-center gap-2 rounded-lg px-1 text-[14px] hover:bg-slate-50">
+            <input type="checkbox" className="h-5 w-5 accent-[#0d7a93]" disabled={!canEdit} checked={!!v.stepChecks[i]} onChange={() => set('stepChecks', v.stepChecks.map((c, k) => (k === i ? !c : c)))} />
+            <span className="flex h-[26px] w-[26px] items-center justify-center rounded-full border border-slate-300 font-mono text-[13px] font-bold">{i + 1}</span>
+            <span className={v.stepChecks[i] ? 'text-slate-500 line-through' : ''}>{s}</span>
+          </label>))}</div>
+      </Sec>
+      <Sec title="잠금·표지 체크" right={<LockHead value={v.lock} onChange={(l) => set('lock', l)} disabled={!canEdit} />}>
+        <LockChecks value={v.lock} onChange={(l) => set('lock', l)} disabled={!canEdit} />
+      </Sec>
+      <Sec title="시각">
+        <div className="flex flex-wrap items-center gap-3 text-[14px]">시작 <input type="time" disabled={!canEdit} value={v.start} onChange={(e) => set('start', e.target.value)} className={input} />
+          끝 <input type="time" disabled={!canEdit} value={v.end} onChange={(e) => set('end', e.target.value)} className={input} />
+          {canEdit && <button onClick={() => set('end', hm(simIso()))} className={BTN}>지금</button>}
+          {mttr && <span className="text-slate-500">{eq} 고장 {mttr.failures}건 (30일)</span>}
+        </div>
+      </Sec>
+      <Fold summary={`같은 사례 — 9월 ${eq} · 알람 ${wo.code}`}>
+        {same.length ? <ul className="flex flex-col gap-1">{same.map((r) => <li key={r.record_no}><span className="font-mono">{r.record_no}</span> · {md(r.start_at)} · 원인 {r.cause} · 조치 {r.action} · {r.repair_min}분</li>)}</ul> : <span className="text-slate-500">없음</span>}
+      </Fold>
+      <SrcFold>
+        <li>수행 단계 — 작업지시서 {wo.no}{a ? ` (고장 대응 매뉴얼 ${a.doc03.join(' · ')})` : ''}</li>
+        <li>잠금·표지 — 안전 작업 기준서 <button onClick={() => openSource('DOC-05', '7')} className="underline">DOC-05 §7</button></li>
+      </SrcFold>
+
+      <Acts>
+        {role === 'MNT' && !done && (<>
+          <button onClick={save} className={BTN}>저장</button>
+          <button disabled={!lockAll} onClick={() => setConfirm(true)} className={DARK}>확정</button>
+        </>)}
+        {role === 'SUP' && !done && <><Chip tone="warn">확정 전</Chip><button disabled className={DARK}>확인</button></>}
+        {role === 'SUP' && wr.state === 'confirmed' && <button onClick={() => putWr({ ...wr, state: 'checked', revisions: rev(wr.revisions, '확인', user.name, role) })} className={DARK}>확인</button>}
+        {(role === 'OPR' || role === 'MGR' || (role === 'MNT' && done)) && RO}
+      </Acts>
+      {note && <p className="rounded-md bg-[#e8f6fa] px-3 py-2 text-[14px] font-semibold">{note}</p>}
       {confirm && <ConfirmBox title="작업기록서를 확정할까요?" okLabel="확정" body="확정하면 내용이 잠기고, 짝 작업지시서가 완료로 바뀌고, 설비가 복귀하고(시뮬레이터), 사용한 부품이 재고에서 빠집니다."
         onOk={() => { setConfirm(false); void doConfirm(); }} onCancel={() => setConfirm(false)} />}
     </div>
@@ -118,7 +145,7 @@ export function PartsPicker({ value, onChange, disabled }: { value: { item: stri
   const items = (inv?.items ?? []).filter((i) => i.category !== 'FG' && i.category !== 'RAW');
   return (
     <div className="text-[14px]">
-      <div className="mb-1 font-semibold">사용 부품·공구 <span className="font-normal text-slate-500">(재고 품목에서 고르기)</span></div>
+      <div className="mb-1 text-[13px] font-semibold text-slate-500">사용 부품·공구</div>
       {value.map((p, i) => (
         <div key={i} className="mb-1 flex items-center gap-2">
           <select disabled={disabled} value={p.item} onChange={(e) => onChange(value.map((x, k) => (k === i ? { ...x, item: e.target.value } : x)))} className="h-11 rounded-md border border-slate-300 px-2 disabled:bg-slate-50">

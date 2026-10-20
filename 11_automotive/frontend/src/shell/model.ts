@@ -47,6 +47,7 @@ export interface Notice {
   text: string; related?: string; machine?: MachineId; roles: Role[]; userIds?: string[]; delivery: 'LIST' | 'BUBBLE';
   handled: boolean; handledBy?: string; handledAt?: string; plan?: string; past?: boolean;
   open?: { screen: string; key?: string }; stage?: 1 | 2; count?: number;
+  keys?: string[]; // 묶음 알림의 항목 id (예방 정비 하루 전 = pm_task_id들, 2026-10-20)
 }
 
 export const whoText = (a: AlarmRec) => (a.responder === 'MNT' ? '보전 담당자 호출' : '작업자 조치 가능') + (a.note ? ` (${a.note})` : '');

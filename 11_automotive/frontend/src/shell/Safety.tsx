@@ -1,9 +1,12 @@
 'use client';
 // 안전 칸 공통 부품: DOC-05 §7 고정 서식 블록(6.5), 짧은 작업 줄(§2.4), 잠금·표지 체크 9칸, 확인 상자.
+// 고정 서식은 글자를 바꾸지 않고 묶음(작업 전·고전압 대기·보호구·작업 후)과 칩으로만 나눠 보인다.
+// 묶음 부제·근거·출처 줄은 화면 본문에서 빼고 출처 토글로 (원문 출처는 표시하지 않음 — FR-MNT-01-07, NFR-COPY-02).
 import type { ReactNode } from 'react';
 import type { MachineId } from '@/components/types';
 import { MACHINES } from './data';
 import { BLOCK, SAFETY, SHORT, type AlarmRec } from './model';
+import { Chip } from './DocKit';
 
 // 블록의 체크칸 9개 (6.1~6.6, 7.1~7.3) — KOSHA 원문 제목 그대로
 export const LOCK = BLOCK.filter((l) => /^\s*□ [67]\.\d/.test(l)).map((l) => l.replace(/^\s*□ /, '').trim());
@@ -13,50 +16,86 @@ export const shortRow = (a: AlarmRec) => SHORT[a.code.split('.')[0]];
 export const needsLock = (a: AlarmRec | null, m: MachineId) =>
   !!a && ((a.severity === 'STOP' && !!SAFETY[MACHINES[m].name]) || (a.severity === 'WARN' && !!shortRow(a)));
 
+// 블록 → 묶음 [{이름, 줄}] (부제·주석·근거 줄은 뺀다)
+function blockGroups(op30: boolean) {
+  const out: { name: string; items: string[] }[] = [];
+  BLOCK.forEach((line) => {
+    const t = line.trim();
+    if (t.startsWith('[')) out.push({ name: t.replace(/^\[([^\]]+)\].*$/, '$1'), items: [] });
+    else if (t.startsWith('□') && out.length) out[out.length - 1].items.push(t.replace(/^□\s*/, ''));
+  });
+  // OP-30 밖 설비는 고전압 대기 대신 저장 에너지 확인 (기존 규칙 그대로)
+  return op30 ? out : out.map((g) => (g.name === '고전압 대기' ? { name: '저장 에너지', items: ['§3 저장 에너지 확인'] } : g));
+}
+export const SafeTag = <Chip tone="warn">🔒 고정 서식</Chip>;
+
 export function SafetyBlock({ machine, alarm }: { machine: MachineId; alarm: AlarmRec }) {
   const name = MACHINES[machine].name, sf = SAFETY[name];
   if (alarm.severity === 'STOP' && sf) {
-    const op30 = MACHINES[machine].op === 'OP-30';
-    let text = BLOCK.join('\n')
-      .replace('{설비 ID}', name).replace('{§3 차단 지점 목록}', sf.points.join(' · ')).replace('{§3 저장 에너지 목록}', sf.energy.join(' · '));
-    if (!op30) text = text.replace(/\[고전압 대기\][^\n]*\n[^\n]*\n[^\n]*\n/, '[저장 에너지]\n □ §3 저장 에너지 확인\n');
+    const line = (k: string, v: ReactNode) => <div className="flex flex-wrap items-center gap-1.5 text-[13px]"><b className="min-w-[72px] font-semibold text-slate-500">{k}</b>{v}</div>;
     return (
-      <div>
-        <div className="mb-1 text-[12px] font-bold text-slate-600">🔒 고정 서식 · AI 작성 아님 · 지울 수 없음</div>
-        <pre className="max-w-full overflow-x-auto whitespace-pre-wrap rounded-md border border-slate-300 bg-slate-50 p-3 font-mono text-[12px] leading-relaxed">{text}</pre>
+      <div className="flex flex-col gap-2.5">
+        {line('설비', <Chip mono>{name}</Chip>)}
+        {line('차단 지점', sf.points.map((p) => <Chip key={p} mono>{p}</Chip>))}
+        {line('저장 에너지', sf.energy.map((p) => <Chip key={p}>{p}</Chip>))}
+        {/* 왼쪽 열 = 순서대로 하는 일(작업 전 → 작업 후), 오른쪽 열 = 조건이 맞을 때마다 지키는 일(고전압 대기·보호구) — 2026-10-20 팀 검토. 두 열 높이를 맞춘다(작은 카드가 늘어남) */}
+        {(() => {
+          const gs = blockGroups(MACHINES[machine].op === 'OP-30');
+          const card = (g: { name: string; items: string[] }) => (
+            <div key={g.name} className="flex-1 rounded-xl border border-slate-300 px-3 py-2.5">
+              <b className="text-[14px]">{g.name}</b>
+              <ul className="mt-1 flex flex-col gap-1">{g.items.map((x) => <li key={x} className="grid grid-cols-[14px_minmax(0,1fr)] gap-2 text-[13.5px] leading-snug"><span className="mt-[7px] h-1.5 w-1.5 rounded-full bg-slate-400" />{x}</li>)}</ul>
+            </div>
+          );
+          const seq = gs.filter((g) => g.name.startsWith('작업')), rest = gs.filter((g) => !g.name.startsWith('작업'));
+          return <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2"><div className="flex flex-col gap-2.5">{seq.map(card)}</div><div className="flex flex-col gap-2.5">{rest.map(card)}</div></div>;
+        })()}
       </div>
     );
   }
   if (alarm.severity === 'WARN') {
     const row = shortRow(alarm);
     return row ? (
-      <div className="rounded-md border border-slate-300 bg-slate-50 p-3 text-[13px]">
-        <div className="mb-1 text-[12px] font-bold text-slate-600">🔒 짧은 작업 판단 (DOC-05 §2.4 해당 줄 그대로 · AI 작성 아님)</div>
-        <div className="font-semibold">{row.work} — {row.judge}</div>
+      <div className="flex flex-col gap-1 text-[14px]">
+        <div className="flex flex-wrap items-center gap-1.5"><Chip tone="warn">{row.work}</Chip><b>{row.judge}</b></div>
         <div>{row.todo}</div>
       </div>
-    ) : <p className="text-[13px] text-slate-600">DOC-05 §2.4에 이 알람의 짧은 작업 줄이 없습니다 (§2 해당 없음)</p>;
+    ) : <Chip tone="ok">잠금·표지 필요 없음</Chip>;
   }
-  return <p className="text-[13px] text-slate-600">이 알람은 안전 작업 기준서 적용 대상이 아닙니다 (DOC-05 §1)</p>;
+  return <Chip>안전 작업 기준서 적용 대상 아님</Chip>;
+}
+// 출처 토글에 넣을 안전 줄 (사내 문서 이름·번호·§절만)
+export function safetySrc(machine: MachineId, alarm: AlarmRec, open: (doc: string, sec: string) => void): ReactNode {
+  const b = (doc: string, s: string) => <button onClick={() => open(doc, s)} className="underline">{doc} §{s}</button>;
+  if (alarm.severity === 'STOP' && SAFETY[MACHINES[machine].name]) {
+    return <li>안전 — 안전 작업 기준서 {b('DOC-05', '7')} 고정 서식{MACHINES[machine].op === 'OP-30' ? <> · 고전압 대기는 VF2-01·VF2-02 제어반 작업 때 ({b('DOC-05', '4.1')})</> : null}</li>;
+  }
+  if (alarm.severity === 'WARN') return <li>잠금·표지 판단 — 안전 작업 기준서 {b('DOC-05', '2.4')}{shortRow(alarm) ? '' : ' (이 알람의 짧은 작업 줄 없음)'}</li>;
+  return <li>안전 — 안전 작업 기준서 {b('DOC-05', '1')} (적용 대상 아님)</li>;
 }
 
-// 잠금·표지 체크 9칸 (눌리는 체크칸). 9개가 다 체크돼야 확정할 수 있다.
+// 잠금·표지 체크 9칸 (작업 전 6 / 작업 후 3). 9개가 다 체크돼야 확정할 수 있다.
 export function LockChecks({ value, onChange, disabled }: { value: boolean[]; onChange: (v: boolean[]) => void; disabled?: boolean }) {
-  const n = value.filter(Boolean).length;
-  return (
-    <div>
-      <div className="mb-1 text-[12px] font-bold text-slate-600">잠금·표지 체크 (DOC-05 §7 블록 그대로) — 9개 중 {n}개</div>
-      <div className="grid grid-cols-1 gap-x-4 gap-y-1 sm:grid-cols-3">
-        {LOCK.map((l, i) => (
-          <label key={l} className="flex min-h-[44px] items-center gap-2 text-[13px]">
-            <input type="checkbox" className="h-5 w-5" disabled={disabled} checked={!!value[i]}
-              onChange={() => onChange(value.map((v, k) => (k === i ? !v : v)))} />
-            {l}
-          </label>
-        ))}
-      </div>
+  const group = (name: string, pre: string) => (
+    <div className="flex flex-col gap-0.5">
+      <b className="px-1 text-[13px] text-slate-500">{name}</b>
+      {LOCK.map((l, i) => [l, i] as const).filter(([l]) => l.startsWith(pre)).map(([l, i]) => (
+        <label key={l} className="flex min-h-[44px] items-center gap-2 rounded-lg px-1 text-[14px] hover:bg-slate-50">
+          <input type="checkbox" className="h-5 w-5 accent-[#127a46]" disabled={disabled} checked={!!value[i]} onChange={() => onChange(value.map((v, k) => (k === i ? !v : v)))} />
+          <span className={value[i] ? 'text-slate-500' : ''}>{l}</span>
+        </label>
+      ))}
     </div>
   );
+  return <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">{group('작업 전', '6.')}{group('작업 후', '7.')}</div>;
+}
+// 잠금·표지 칸 제목 오른쪽: 체크 수 + [모두 체크] (시연용 — 한 번에 9칸)
+export function LockHead({ value, onChange, disabled }: { value: boolean[]; onChange: (v: boolean[]) => void; disabled?: boolean }) {
+  const n = value.filter(Boolean).length, all = n >= LOCK.length;
+  return (<>
+    <Chip tone={all ? 'ok' : 'warn'}>{n} / {LOCK.length}{all ? ' ✓' : ''}</Chip>
+    {!disabled && !all && <button onClick={() => onChange(LOCK.map(() => true))} className="h-9 rounded-md border border-slate-300 bg-white px-3 text-[13px] font-semibold hover:bg-slate-50">모두 체크</button>}
+  </>);
 }
 
 // 승인·확정·취소처럼 되돌리기 어려운 버튼은 확인 상자를 거친다 (2.4)
