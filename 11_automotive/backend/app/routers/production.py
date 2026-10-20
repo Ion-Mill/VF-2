@@ -143,6 +143,14 @@ def scrap_propose(lot_no: str, body: ScrapIn, actor: Actor = Depends(require("LO
     return {"lot": db.one("production.lot", lot_no=lot_no)}
 
 
+@router.post("/holds/{hold_id}/resume-normal")
+def resume_normal(hold_id: int, actor: Actor = Depends(require("LOT_HOLD", "INPUT")), db: Db = Depends(get_db)):
+    """강화 → 보통 검사 복귀 (R-29, FR-QLT-01-07, DOC-06 3.3 — 2026-10-20). 반장이 확인한다. ⓐ 보류 뒤 원인 조치 기록(확정된
+    작업기록서·공구 교체) ⓑ 보류 로트가 해제·폐기로 끝나고 강화한 다음 로트가 모두 합격 — 둘 다 맞아야 한다 (아니면 INVALID_STATE)"""
+    db.scalar("production.resume_normal", hold_id=hold_id, actor=actor.user_id)
+    return must(db.one("production.hold", hold_id=hold_id), "보류")
+
+
 @router.post("/lots/{lot_no}/scrap/approve")
 def scrap_approve(lot_no: str, actor: Actor = Depends(require("LOT_SCRAP", "APPROVE")), db: Db = Depends(get_db)):
     """폐기 승인 (LOT-03, MGR)"""

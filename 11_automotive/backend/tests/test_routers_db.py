@@ -187,9 +187,9 @@ class RouterFlows(unittest.TestCase):
         self.assertTrue(all(r["record_type"] == "SIMPLE" for r in rows))
         # 제때 실시율 (FR-MNT-04-07, 2026-10-20): 분모 = 기한이 온 항목 (안 한 채 기한 지난 것 포함), 맨 끝 줄 = 라인 합
         on_time = self.call(maintenance.pm_schedule, "U07", equipment_id=None, frm=None, to=None)["on_time"]
-        self.assertIsNone(on_time[-1]["equipment_id"])
-        self.assertEqual(on_time[-1]["due_count"], sum(r["due_count"] for r in on_time[:-1]))
-        self.assertTrue(all(r["due_count"] == r["done_count"] + r["missed_count"] for r in on_time))
+        self.assertIn(on_time[-1]["equipment_id"], (None, ""))      # 시험 DB(psql csv)는 NULL을 빈 글로 돌려줌
+        self.assertEqual(int(on_time[-1]["due_count"]), sum(int(r["due_count"]) for r in on_time[:-1]))
+        self.assertTrue(all(int(r["due_count"]) == int(r["done_count"]) + int(r["missed_count"]) for r in on_time))
 
     def test_035_lot_hold(self):
         t = self.call(production.trace, "U02", lot_no="LOT-2609-041-1")
@@ -582,3 +582,15 @@ class RouterFlows(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+    def test_099_pm_start_end(self):
+        # [정비 시작]·[정비 끝 · 실시 기록] (FR-MNT-04-10, 2026-10-20): MAINT 구간 = 두 버튼 사이. 시계를 앞으로 돌리므로 맨 끝에 둔다
+        self.db._run("SELECT fn_sim_set('SIM', '2026-09-15 16:00+09', 1, true)", quiet=True)
+        self.denied(maintenance.pm_start, "U02", pm_task_id="PM-VF2-02-2.3-01", body=None)
+        st = self.call(maintenance.pm_start, "U07", pm_task_id="PM-VF2-02-2.3-01", body=None)
+        self.assertEqual(st["maint"]["equipment_id"], "VF2-02")
+        self.db._run("SELECT fn_sim_set('SIM', '2026-09-15 17:30+09', 1, true)", quiet=True)
+        done = self.call(maintenance.pm_end, "U07", pm_record_id=st["pm_record_id"],
+                         body=maintenance.PmEndIn(result="REFILLED", measured_value=1.5, measured_unit="L"))
+        self.assertEqual((done["result"], done["status"]), ("REFILLED", "DRAFT"))
+        self.assertIsNone(self.db.one("maintenance.pm_open_maint", pm_record_id=st["pm_record_id"]))

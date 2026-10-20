@@ -191,3 +191,15 @@ done AS (
                                   WHERE n.pm_task_id = r.pm_task_id AND n.rule_code IN ('PM_DUE_SOON','PM_OVERDUE') AND NOT n.is_processed),
                            :actor) AS n)
 SELECT (SELECT count(*) FROM r) AS confirmed, (SELECT count(*) FROM use) AS stock_used, (SELECT n FROM done) AS processed;
+
+-- [정비 시작]·[정비 끝 · 실시 기록] (FR-MNT-04-10, API-PM-02 — 2026-10-20): MAINT 구간 = 기록 버튼 사이 (설비로 가는 명령 없음)
+-- name: pm_start
+SELECT fn_pm_start(:pm_task_id, :actor, CAST(:due_date AS date)) AS pm_record_id;
+
+-- name: pm_end
+SELECT fn_pm_end(:pm_record_id, :actor, coalesce(CAST(:result AS text), 'NORMAL'), CAST(:measured_value AS numeric),
+                 CAST(:measured_unit AS text), CAST(:memo AS text)) AS state_log_id;
+
+-- name: pm_open_maint
+SELECT s.state_log_id, s.equipment_id, s.start_at FROM equipment_state_log s
+ WHERE s.pm_record_id = :pm_record_id AND s.state_code = 'MAINT' AND s.end_at IS NULL;

@@ -134,3 +134,10 @@ SELECT x.* FROM (
      ORDER BY c.lot_no, c.kind, c.alarm_event_id, c.tool_id, c.prio
 ) x
  ORDER BY x.at DESC, x.lot_no;
+
+-- 강화 → 보통 검사 복귀 (R-29, FR-QLT-01-07 — 2026-10-20): 원인 조치 기록 + 강화한 로트 모두 합격일 때만 (DB가 확인), 반장
+-- name: resume_normal
+SELECT fn_resume_normal(:hold_id, :actor) AS hold_id;
+
+-- name: hold
+SELECT h.*, l.status AS lot_status FROM lot_hold h JOIN production_lot l USING (lot_no) WHERE h.hold_id = :hold_id;

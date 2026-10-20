@@ -182,6 +182,15 @@ def cpk(product_code: str, item_seq: int, equipment_id: str | None = None, _: Ac
     return db.one("quality.cpk", product_code=product_code, item_seq=item_seq, equipment_id=equipment_id)
 
 
+@router.post("/quality/items/{product_code}/{item_seq}/resume-sampling")
+def resume_sampling(product_code: str, item_seq: int, actor: Actor = Depends(require("SETTINGS", "SETTING")),
+                    db: Db = Depends(get_db)):
+    """전수 측정 → 보통(발췌) (DOC-06 §5.2 "다시 기준 이상 → 관리자 승인 후 보통", 2026-10-20). Cpk 기준 미달이면 교대 보고서 초안 때
+    DB가 그 특성을 전수 측정으로 바꾼다(is_full_check_by_cpk). 되돌리기는 MGR만(설정 권한), Cpk가 기준 이상일 때만 (DB가 확인)"""
+    return {"product_code": product_code, "item_seq": item_seq,
+            "cpk": db.scalar("quality.resume_sampling", product_code=product_code, item_seq=item_seq, actor=actor.user_id)}
+
+
 @router.get("/quality/defects")
 def defects(frm: datetime | None = Query(None, alias="from"), to: datetime | None = None,
             _: Actor = Depends(require("QUALITY", "VIEW")), db: Db = Depends(get_db)):

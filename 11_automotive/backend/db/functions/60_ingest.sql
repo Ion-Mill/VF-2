@@ -102,7 +102,11 @@ BEGIN
     PERFORM fn_create_inspection_plan(p_lot_no);
     SELECT * INTO p FROM inspection_plan WHERE lot_no = p_lot_no;
     v_kind := CASE WHEN p.plan_mode = 'ENHANCED' THEN 'ENHANCED' WHEN p_first THEN 'FIRST' ELSE 'SAMPLE' END;
-    IF v_kind = 'SAMPLE' AND NOT (p_part_seq = 1 OR p_part_seq % 5 = 0) THEN
+    -- Cpk 미달로 전수 측정 중인 특성이 있으면(DOC-06 §5.2, is_full_check_by_cpk — 2026-10-20) 발췌 로트도 모든 부품에 지시를 낸다
+    IF v_kind = 'SAMPLE' AND NOT (p_part_seq = 1 OR p_part_seq % 5 = 0)
+       AND NOT EXISTS (SELECT 1 FROM production_lot l JOIN production_order o USING (order_no)
+                         JOIN inspection_item i ON i.product_code = o.product_code
+                        WHERE l.lot_no = p_lot_no AND i.is_full_check_by_cpk) THEN
         RAISE EXCEPTION 'R-09: 발췌 로트의 측정 부품은 1번과 5의 배수 (요청 %)', p_part_seq USING ERRCODE = '23514';
     END IF;
     INSERT INTO cmm_instruction (lot_no, part_seq, insp_kind, enhance_reason, issued_at)

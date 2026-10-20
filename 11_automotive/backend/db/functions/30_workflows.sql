@@ -247,7 +247,7 @@ BEGIN
     SELECT plan_mode INTO v_mode FROM inspection_plan WHERE lot_no = p_lot_no;
     IF FOUND THEN RETURN v_mode; END IF;
     SELECT h.hold_id INTO v_hold FROM lot_hold h
-     WHERE h.lot_no <> p_lot_no
+     WHERE h.lot_no <> p_lot_no AND h.normal_resumed_at IS NULL          -- 보통으로 돌아간 보류는 빼기 (R-29, 2026-10-20)
        AND (SELECT count(*) FROM inspection_plan p WHERE p.hold_id = h.hold_id AND p.enhance_reason = 'NEXT_LOT')
            < h.enhanced_next_lots
      ORDER BY h.held_at DESC LIMIT 1;
@@ -807,4 +807,102 @@ BEGIN
      WHERE EXISTS (SELECT 1 FROM shift s WHERE s.work_date = w.work_date)
        AND NOT EXISTS (SELECT 1 FROM shift s JOIN shift_report r USING (shift_id) WHERE s.work_date = w.work_date);
     RETURN n;
+END $$;
+
+-- =====================================================================
+-- 2026-10-20 요구사항 대조 중 (구현_중_수정사항 1020 36장)
+-- =====================================================================
+
+-- [정비 시작] (FR-MNT-04-10, API-PM-02): 예방 정비 실시 기록(수정 중)을 만들고 그 설비에 MAINT 구간을 연다. 설비로 가는 명령이 아니라
+--   기록 버튼이다. 실시 결과는 [정비 끝]에서 적는다 — 그 전까지 결과 칸은 '정상'(NORMAL)으로 둔다 [제안]. 끝나기 전에는
+--   "실시 기록 확인" 문서 알림을 내지 않는다 (app.pm_starting). 반환: pm_record_id
+CREATE OR REPLACE FUNCTION fn_pm_start(p_pm_task_id text, p_actor text, p_due_date date DEFAULT NULL, p_at timestamptz DEFAULT NULL)
+RETURNS bigint LANGUAGE plpgsql AS $$
+DECLARE
+    v_at timestamptz := coalesce(p_at, app_now());
+    t pm_task%ROWTYPE; v_due date; v_id bigint; cur equipment_state_log%ROWTYPE;
+BEGIN
+    SELECT * INTO t FROM pm_task WHERE pm_task_id = p_pm_task_id;
+    IF NOT FOUND OR NOT t.is_active THEN
+        RAISE EXCEPTION '예방 정비 항목 %이 없거나 쓰지 않음', p_pm_task_id USING ERRCODE = '22023';
+    END IF;
+    SELECT * INTO cur FROM equipment_state_log WHERE equipment_id = t.equipment_id AND end_at IS NULL;
+    IF cur.state_code = 'MAINT' THEN
+        RAISE EXCEPTION 'FR-MNT-04-10: %는 이미 정비 중 (구간 %부터)', t.equipment_id, cur.start_at USING ERRCODE = '23514';
+    END IF;
+    IF cur.state_code = 'DOWN' THEN
+        RAISE EXCEPTION 'FR-MNT-04-10: %는 고장 정지 중 — 고장 수리는 작업지시서로', t.equipment_id USING ERRCODE = '23514';
+    END IF;
+    v_due := coalesce(p_due_date, (SELECT d.next_due_date FROM v_pm_task_due d WHERE d.pm_task_id = p_pm_task_id),
+                      (v_at AT TIME ZONE 'Asia/Seoul')::date);
+    PERFORM set_config('app.pm_starting', 'on', true);
+    INSERT INTO pm_record (pm_task_id, due_date, done_at, done_by, recorded_by, result, status, current_version)
+    VALUES (p_pm_task_id, v_due, v_at, p_actor, p_actor, 'NORMAL', 'DRAFT', 0)
+    RETURNING pm_record_id INTO v_id;
+    PERFORM set_config('app.pm_starting', 'off', true);
+    PERFORM fn_state_change(t.equipment_id, 'MAINT', v_at, p_pm_record_id => v_id);
+    RETURN v_id;
+END $$;
+
+-- [정비 끝 · 실시 기록] (FR-MNT-04-10): MAINT 구간을 닫고(다음 상태는 대기 IDLE — 설비 데이터가 오면 그 값으로 바뀐다),
+--   실시 시각(done_at) = 끝난 시각, 결과·측정값·메모를 적는다. 그 뒤 "실시 기록 확인" 문서 알림 (확정은 …/confirm). 반환: state_log_id
+CREATE OR REPLACE FUNCTION fn_pm_end(p_pm_record_id bigint, p_actor text, p_result text DEFAULT 'NORMAL',
+    p_measured_value numeric DEFAULT NULL, p_measured_unit text DEFAULT NULL, p_memo text DEFAULT NULL, p_at timestamptz DEFAULT NULL)
+RETURNS bigint LANGUAGE plpgsql AS $$
+DECLARE
+    v_at timestamptz := coalesce(p_at, app_now());
+    r pm_record%ROWTYPE; s equipment_state_log%ROWTYPE; v_id bigint;
+BEGIN
+    SELECT * INTO r FROM pm_record WHERE pm_record_id = p_pm_record_id FOR UPDATE;
+    IF NOT FOUND THEN RAISE EXCEPTION '예방 정비 기록 %이 없음', p_pm_record_id USING ERRCODE = '22023'; END IF;
+    SELECT * INTO s FROM equipment_state_log WHERE pm_record_id = p_pm_record_id AND state_code = 'MAINT' AND end_at IS NULL;
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'FR-MNT-04-10: 예방 정비 기록 %의 정비 구간이 열려 있지 않음 ([정비 시작] 먼저)', p_pm_record_id
+            USING ERRCODE = '23514';
+    END IF;
+    v_id := fn_state_change(s.equipment_id, 'IDLE', v_at);
+    UPDATE pm_record SET done_at = v_at, done_by = p_actor, recorded_by = p_actor, result = coalesce(p_result, 'NORMAL'),
+                         measured_value = p_measured_value, measured_unit = p_measured_unit, memo = p_memo
+     WHERE pm_record_id = p_pm_record_id;
+    PERFORM fn_raise_pm_record_check(r.pm_task_id);
+    RETURN v_id;
+END $$;
+
+-- 강화 → 보통 검사 복귀 (R-29, FR-QLT-01-07, DOC-06 3.3): 반장이 확인. 두 조건이 모두 맞을 때만
+--   ⓐ 원인 조치 완료: 보류 뒤 확정된 작업기록서(보류의 관련 알람, 또는 그 로트를 가공한 설비) 또는 공구 교체 기록(관련 공구, 또는 그 설비 공구)
+--   ⓑ 강화한 로트가 모두 합격: 보류 로트는 해제·폐기로 끝났고, 다음 로트 강화(NEXT_LOT)가 정한 수만큼 생겨 모두 합격
+--   보통으로 돌아가면 아직 안 만든 다음 로트는 강화하지 않는다 (fn_create_inspection_plan). 반환: 보류 번호
+CREATE OR REPLACE FUNCTION fn_resume_normal(p_hold_id bigint, p_actor text, p_at timestamptz DEFAULT NULL)
+RETURNS bigint LANGUAGE plpgsql AS $$
+DECLARE
+    v_at timestamptz := coalesce(p_at, app_now());
+    h lot_hold%ROWTYPE; v_eq text[]; v_plans int; v_pass int;
+BEGIN
+    SELECT * INTO h FROM lot_hold WHERE hold_id = p_hold_id FOR UPDATE;
+    IF NOT FOUND THEN RAISE EXCEPTION '보류 %이 없음', p_hold_id USING ERRCODE = '22023'; END IF;
+    IF h.normal_resumed_at IS NOT NULL THEN
+        RAISE EXCEPTION 'R-29: 보류 %은 이미 보통 검사로 돌아감 (%)', p_hold_id, h.normal_resumed_at USING ERRCODE = '23514';
+    END IF;
+    IF h.result = 'IN_PROGRESS' THEN
+        RAISE EXCEPTION 'R-29: 보류 로트 %의 해제·폐기가 먼저', h.lot_no USING ERRCODE = '23514';
+    END IF;
+    SELECT count(*), count(*) FILTER (WHERE judgement = 'PASS') INTO v_plans, v_pass
+      FROM inspection_plan WHERE hold_id = p_hold_id AND enhance_reason = 'NEXT_LOT';
+    IF v_plans < h.enhanced_next_lots OR v_pass < v_plans THEN
+        RAISE EXCEPTION 'R-29: 강화한 다음 로트가 모두 합격해야 함 (정한 %개 중 생김 %개, 합격 %개)', h.enhanced_next_lots, v_plans, v_pass
+            USING ERRCODE = '23514';
+    END IF;
+    v_eq := ARRAY(SELECT DISTINCT r.equipment_id FROM operation_report r WHERE r.lot_no = h.lot_no
+                  UNION SELECT a.equipment_id FROM alarm_event a WHERE a.alarm_event_id = h.related_alarm_event_id
+                  UNION SELECT t.equipment_id FROM tool t WHERE t.tool_id = h.related_tool_id);
+    IF NOT EXISTS (SELECT 1 FROM work_record w
+                    WHERE w.status IN ('CONFIRMED','CHECKED') AND w.confirmed_at >= h.held_at
+                      AND (w.alarm_event_id = h.related_alarm_event_id OR w.equipment_id = ANY (v_eq)))
+       AND NOT EXISTS (SELECT 1 FROM tool_change c JOIN tool t USING (tool_id)
+                        WHERE c.changed_at >= h.held_at AND (c.tool_id = h.related_tool_id OR t.equipment_id = ANY (v_eq))) THEN
+        RAISE EXCEPTION 'R-29: 원인 조치 기록(확정된 작업기록서 또는 공구 교체)이 보류 뒤에 있어야 함 (보류 %)', p_hold_id
+            USING ERRCODE = '23514';
+    END IF;
+    UPDATE lot_hold SET normal_resumed_by = p_actor, normal_resumed_at = v_at WHERE hold_id = p_hold_id;   -- SUP 확인은 트리거
+    RETURN p_hold_id;
 END $$;

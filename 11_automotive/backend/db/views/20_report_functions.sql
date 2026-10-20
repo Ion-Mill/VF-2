@@ -121,6 +121,7 @@ BEGIN
     SELECT coalesce(jsonb_object_agg(equipment_id, availability_pct), '{}'::jsonb) INTO v_avail
       FROM v_shift_equipment_kpi WHERE shift_id = p_shift_id AND process_code = 'OP-30';
     v_handover := fn_report_items_text();
+    PERFORM fn_check_cpk();      -- 교대마다 Cpk → 기준 미달 특성은 전수 측정 (DOC-06 §5.2, 2026-10-20)
     -- 생산 칸 목표 = 총 목표 (목표 + 이월, R-88 — FR-PRD-02-02)
     v_content := jsonb_build_object('target_qty', s.target_qty + s.carry_over_qty, 'shift_target_qty', s.target_qty,
                                     'carry_over_qty', s.carry_over_qty, 'actual_qty', v_actual, 'defect_qty', v_defect,
@@ -439,24 +440,33 @@ END $$;
 -- 예방 정비 실시 기록 알림 (PM_RECORD_CHECK, 참고·알림 탭만, MNT): 실시 기록이 초안으로 생기면 그 설비의 열린 알림 1건에
 --   항목을 더한다 (없으면 새로, "VF2-01 예방 정비 2건 끝남 — 실시 기록 확인"). 묶인 항목의 초안 기록이 모두 확정되면 자동 처리.
 --   확정되면 예방 정비 기한 하루 전 묶음도 다시 본다 (fn_close_pm_due_soon)
+-- 예방 정비 실시 기록 확인 문서 알림 (그 설비의 열린 알림에 항목을 더한다). 실시 기록이 생길 때와 [정비 끝] 때 (2026-10-20 함수로 뺌)
+CREATE OR REPLACE FUNCTION fn_raise_pm_record_check(p_pm_task_id text) RETURNS bigint LANGUAGE plpgsql AS $$
+DECLARE v_eq text; v_id bigint;
+BEGIN
+    SELECT equipment_id INTO v_eq FROM pm_task WHERE pm_task_id = p_pm_task_id;
+    SELECT notification_id INTO v_id FROM notification
+     WHERE rule_code = 'PM_RECORD_CHECK' AND equipment_id = v_eq AND NOT is_processed ORDER BY raised_at DESC LIMIT 1;
+    IF v_id IS NULL THEN
+        v_id := fn_raise_notification('PM_RECORD_CHECK', format('%s 예방 정비 1건 끝남 — 실시 기록 확인', v_eq),
+                                      jsonb_build_object('equipment_id', v_eq), NULL);
+        IF v_id IS NULL THEN RETURN NULL; END IF;    -- 규칙이 꺼져 있음
+    END IF;
+    INSERT INTO notification_pm_task (notification_id, pm_task_id) VALUES (v_id, p_pm_task_id) ON CONFLICT DO NOTHING;
+    UPDATE notification SET message = format('%s 예방 정비 %s건 끝남 — 실시 기록 확인', v_eq,
+                                             (SELECT count(*) FROM notification_pm_task WHERE notification_id = v_id))
+     WHERE notification_id = v_id;
+    RETURN v_id;
+END $$;
+
 CREATE OR REPLACE FUNCTION trg_pm_record_doc_alert() RETURNS trigger LANGUAGE plpgsql AS $$
-DECLARE v_eq text; v_id bigint; v_ids bigint[];
+DECLARE v_ids bigint[];
 BEGIN
     IF current_setting('app.loading', true) IS NOT DISTINCT FROM 'on' THEN RETURN NULL; END IF;
     IF TG_OP = 'INSERT' THEN
-        IF NEW.status <> 'DRAFT' THEN RETURN NULL; END IF;
-        SELECT equipment_id INTO v_eq FROM pm_task WHERE pm_task_id = NEW.pm_task_id;
-        SELECT notification_id INTO v_id FROM notification
-         WHERE rule_code = 'PM_RECORD_CHECK' AND equipment_id = v_eq AND NOT is_processed ORDER BY raised_at DESC LIMIT 1;
-        IF v_id IS NULL THEN
-            v_id := fn_raise_notification('PM_RECORD_CHECK', format('%s 예방 정비 1건 끝남 — 실시 기록 확인', v_eq),
-                                          jsonb_build_object('equipment_id', v_eq), NULL);
-            IF v_id IS NULL THEN RETURN NULL; END IF;    -- 규칙이 꺼져 있음
-        END IF;
-        INSERT INTO notification_pm_task (notification_id, pm_task_id) VALUES (v_id, NEW.pm_task_id) ON CONFLICT DO NOTHING;
-        UPDATE notification SET message = format('%s 예방 정비 %s건 끝남 — 실시 기록 확인', v_eq,
-                                                 (SELECT count(*) FROM notification_pm_task WHERE notification_id = v_id))
-         WHERE notification_id = v_id;
+        -- [정비 시작]이 만든 기록은 정비가 끝날 때(fn_pm_end) 알린다
+        IF NEW.status <> 'DRAFT' OR current_setting('app.pm_starting', true) IS NOT DISTINCT FROM 'on' THEN RETURN NULL; END IF;
+        PERFORM fn_raise_pm_record_check(NEW.pm_task_id);
     ELSIF NEW.status = 'CONFIRMED' AND OLD.status = 'DRAFT' THEN
         SELECT array_agg(n.notification_id) INTO v_ids FROM notification n
          WHERE n.rule_code = 'PM_RECORD_CHECK' AND NOT n.is_processed

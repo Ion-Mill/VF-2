@@ -60,7 +60,7 @@ WITH v AS (
      WHERE r.product_code = :product_code AND r.item_seq = :item_seq AND r.use_for_judgement AND r.measured_value IS NOT NULL
        AND (CAST(:equipment_id AS text) IS NULL OR r.machined_equipment_id = CAST(:equipment_id AS text))
 )
-SELECT i.item_seq, i.item_name, i.lsl, i.usl, i.cpk_min, count(v.x)::int AS n, avg(v.x) AS mean,
+SELECT i.item_seq, i.item_name, i.lsl, i.usl, i.cpk_min, i.is_full_check_by_cpk, count(v.x)::int AS n, avg(v.x) AS mean,
        avg(abs(v.mr)) / 1.128 AS sigma,
        CASE WHEN count(v.x) < 50 THEN NULL
             ELSE least(coalesce((i.usl - avg(v.x)), 'Infinity'::numeric), coalesce((avg(v.x) - i.lsl), 'Infinity'::numeric))
@@ -68,7 +68,7 @@ SELECT i.item_seq, i.item_name, i.lsl, i.usl, i.cpk_min, count(v.x)::int AS n, a
        count(v.x) < 50 AS is_calculating
   FROM inspection_item i LEFT JOIN v ON true
  WHERE i.product_code = :product_code AND i.item_seq = :item_seq
- GROUP BY i.item_seq, i.item_name, i.lsl, i.usl, i.cpk_min;
+ GROUP BY i.item_seq, i.item_name, i.lsl, i.usl, i.cpk_min, i.is_full_check_by_cpk;
 
 -- name: defects
 SELECT d.defect_code, c.defect_name, c.grade, sum(d.qty)::int AS qty, count(DISTINCT d.lot_no)::int AS lots
@@ -124,3 +124,7 @@ SELECT * FROM (
        AND r.measured_at >= CAST(:from AS timestamptz) AND r.measured_at < CAST(:to AS timestamptz)
      ORDER BY r.measured_at DESC, r.result_id DESC LIMIT CAST(:limit AS int)) z
  ORDER BY z.measured_at, z.result_id;
+
+-- 전수 측정 → 보통(발췌) 승인 (DOC-06 §5.2 — 2026-10-20). MGR, Cpk가 기준 이상일 때만 (DB가 확인)
+-- name: resume_sampling
+SELECT fn_resume_sampling(:product_code, :item_seq, :actor) AS cpk;

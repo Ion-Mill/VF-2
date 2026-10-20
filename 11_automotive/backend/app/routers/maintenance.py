@@ -328,6 +328,37 @@ def pm_record_create(body: PmRecordIn, actor: Actor = Depends(require("PM_RECORD
     return {"pm_record_id": records.create_pm_record(db, actor.user_id, **body.model_dump())}
 
 
+class PmStartIn(BaseModel):
+    due_date: date | None = None        # 비우면 그 항목의 다음 기한
+
+
+@router.post("/pm-tasks/{pm_task_id}/start")
+def pm_start(pm_task_id: str, body: PmStartIn | None = None, actor: Actor = Depends(require("PM_RECORD", "CREATE")),
+             db: Db = Depends(get_db)):
+    """[정비 시작] (FR-MNT-04-10, API-PM-02 — 2026-10-20): 실시 기록(수정 중)을 만들고 그 설비에 MAINT 구간을 연다.
+    설비를 켜고 끄는 명령이 아니라 기록이다. 이미 정비 중·고장 정지 중이면 INVALID_STATE (DB가 막음)"""
+    rid = db.scalar("maintenance.pm_start", pm_task_id=pm_task_id, actor=actor.user_id, due_date=body.due_date if body else None)
+    return {"pm_record_id": rid, "maint": db.one("maintenance.pm_open_maint", pm_record_id=rid)}
+
+
+class PmEndIn(BaseModel):
+    result: str = "NORMAL"
+    measured_value: Decimal | None = None
+    measured_unit: str | None = None
+    memo: str | None = None
+
+
+@router.post("/pm-records/{pm_record_id}/end")
+def pm_end(pm_record_id: int, body: PmEndIn, actor: Actor = Depends(require("PM_RECORD", "CREATE")), db: Db = Depends(get_db)):
+    """[정비 끝 · 실시 기록] (FR-MNT-04-10): MAINT 구간을 닫고 실시 시각 = 끝난 시각, 결과를 적는다 (v0). 확정은 …/confirm"""
+    db.scalar("maintenance.pm_end", pm_record_id=pm_record_id, actor=actor.user_id, result=body.result,
+              measured_value=body.measured_value, measured_unit=body.measured_unit, memo=body.memo)
+    db.scalar("documents.save_revision", doc_type="PM_RECORD", doc_key=str(pm_record_id), author_kind="HUMAN", author=actor.user_id,
+              reason=None, status_after="EDITING", content={"result": body.result, "measured_value": body.measured_value,
+                                                            "measured_unit": body.measured_unit, "memo": body.memo}, changes=[])
+    return must(db.one("documents.pm_record_get", pm_record_id=pm_record_id), "예방 정비 기록")
+
+
 @router.get("/pm-records/{pm_record_id}")
 def pm_record_get(pm_record_id: int, _: Actor = Depends(require("PM_RECORD", "VIEW")), db: Db = Depends(get_db)):
     """예방 정비 실시 기록 1건"""

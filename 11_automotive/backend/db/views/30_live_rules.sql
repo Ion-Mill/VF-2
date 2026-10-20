@@ -199,3 +199,52 @@ BEGIN
      WHERE wo_no = v_wo AND status = 'AI_DRAFT' AND v_mnt IS NOT NULL;
     RETURN v_wo;
 END $$;
+
+-- Cpk 특성 하나 (FR-QLT-01-08, DOC-06 §5.1 I-MR: σ = 평균 이동 범위 ÷ 1.128). 50개 미만이면 cpk NULL ("계산 중").
+--   app/sql/quality.sql cpk와 같은 식 (전체 값 — 설비별은 참고용)
+CREATE OR REPLACE FUNCTION fn_item_cpk(p_product_code text, p_item_seq int, OUT n int, OUT cpk numeric)
+LANGUAGE sql STABLE AS $$
+    WITH v AS (
+        SELECT r.measured_value AS x, r.measured_value - lag(r.measured_value) OVER (ORDER BY r.measured_at, r.result_id) AS mr
+          FROM v_inspection_result r
+         WHERE r.product_code = p_product_code AND r.item_seq = p_item_seq AND r.use_for_judgement AND r.measured_value IS NOT NULL
+    )
+    SELECT count(v.x)::int,
+           CASE WHEN count(v.x) < 50 THEN NULL
+                ELSE least(coalesce(i.usl - avg(v.x), 'Infinity'::numeric), coalesce(avg(v.x) - i.lsl, 'Infinity'::numeric))
+                     / nullif(3 * avg(abs(v.mr)) / 1.128, 0) END
+      FROM inspection_item i LEFT JOIN v ON true
+     WHERE i.product_code = p_product_code AND i.item_seq = p_item_seq
+     GROUP BY i.lsl, i.usl;
+$$;
+
+-- Cpk 기준 미달 → 그 특성 전수 측정 (DOC-06 §5.2 "기준을 다시 채울 때까지 유지", 표 540줄 "교대마다 계산"). 교대 보고서 초안 때 부른다.
+--   켜기만 한다 — 끄기(보통 발췌로)는 관리자 승인 (fn_resume_sampling). 반환: 새로 전수로 바뀐 특성 수
+CREATE OR REPLACE FUNCTION fn_check_cpk() RETURNS int LANGUAGE plpgsql AS $$
+DECLARE v_n int;
+BEGIN
+    UPDATE inspection_item i SET is_full_check_by_cpk = true
+     WHERE i.method = 'CMM' AND i.cpk_min IS NOT NULL AND NOT i.is_full_check_by_cpk
+       AND (fn_item_cpk(i.product_code, i.item_seq)).cpk < i.cpk_min;
+    GET DIAGNOSTICS v_n = ROW_COUNT;
+    RETURN v_n;
+END $$;
+
+-- 전수 측정 → 보통(발췌) (DOC-06 §5.2 "전수 측정 중 다시 기준 이상 → 관리자 승인 후 보통"). MGR만, Cpk가 기준 이상일 때만
+CREATE OR REPLACE FUNCTION fn_resume_sampling(p_product_code text, p_item_seq int, p_actor text) RETURNS numeric
+LANGUAGE plpgsql AS $$
+DECLARE i inspection_item%ROWTYPE; c record;
+BEGIN
+    PERFORM fn_require_role(p_actor, ARRAY['MGR'], '전수 측정 → 보통 검사 승인');
+    SELECT * INTO i FROM inspection_item WHERE product_code = p_product_code AND item_seq = p_item_seq FOR UPDATE;
+    IF NOT FOUND OR NOT i.is_full_check_by_cpk THEN
+        RAISE EXCEPTION 'DOC-06 §5.2: 특성 %·%는 전수 측정 중이 아님', p_product_code, p_item_seq USING ERRCODE = '23514';
+    END IF;
+    c := fn_item_cpk(p_product_code, p_item_seq);
+    IF c.cpk IS NULL OR c.cpk < i.cpk_min THEN
+        RAISE EXCEPTION 'DOC-06 §5.2: Cpk %가 기준 % 미만 (또는 50개 미만 — 측정 %개)', round(c.cpk, 2), i.cpk_min, c.n
+            USING ERRCODE = '23514';
+    END IF;
+    UPDATE inspection_item SET is_full_check_by_cpk = false WHERE product_code = p_product_code AND item_seq = p_item_seq;
+    RETURN round(c.cpk, 2);
+END $$;
