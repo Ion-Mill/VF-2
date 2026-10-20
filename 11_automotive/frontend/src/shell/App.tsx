@@ -8,10 +8,10 @@ import { ID_OF, LAYOUT, LEGEND, MACHINES, type Role } from './data';
 import { Ctx, DEFAULT_SETTINGS, type AppCtx, type History, type Inv, type Screen, type Settings } from './ctx';
 import { api, md, SIM, simIso, tsOf, useFetch, useLive, useLocal, usePersist, type SimEvent } from './live';
 import { askGuideCard } from './assistText';
-import { ALARMS, SHIFT_NAME, USERS, homeScreen, levelOfSev, type AlertRec, type Notice, type UserRec } from './model';
-import { derive, fromEvents, fromPast, repeatOf, type RuleCtx } from './rules';
+import { ALARMS, SHIFT_NAME, USERS, homeScreen, levelOfSev, type AlarmRec, type AlertRec, type Notice, type UserRec } from './model';
+import { derive, fromEvents, fromPast, groupPmPast, repeatOf, type RuleCtx } from './rules';
 import { LOCK } from './Safety';
-import { nextNo, pad, rev, type SimpleRecord, type StopReason, type WorkOrder, type WorkRecord } from './workflow';
+import { nextNo, pad, rev, type SimpleRecord, type WorkOrder, type WorkRecord } from './workflow';
 import { Eve, Robot, type EveTab } from './Eve';
 import Briefing from './Briefing';
 import CardScreen, { CardList } from './CardScreen';
@@ -24,9 +24,7 @@ import Panels from './Panels';
 import Popup from './Popup';
 import SimPanel from './SimPanel';
 import SimpleRecordScreen from './SimpleRecordScreen';
-import StopsScreen from './StopsScreen';
 import WorkOrderScreen from './WorkOrderScreen';
-import WorkRecordScreen from './WorkRecordScreen';
 import { ReplayScreen } from './ReplayScreen';
 import { DailyReportScreen, ShiftReportScreen } from './Reports';
 import { RevisionsScreen } from './Revisions';
@@ -34,7 +32,7 @@ import { LotScreen } from './LotScreen';
 import { QualityScreen } from './QualityScreen';
 import { InventoryScreen } from './InventoryScreen';
 import { ToolsScreen } from './ToolsScreen';
-import { EQS, PM_ALL, PmAll, PmScreen } from './PmScreen';
+import { PmPage } from './PmScreen';
 import { DocsScreen, SourcePopup } from './DocsScreen';
 import { SettingsScreen } from './SettingsScreen';
 
@@ -45,13 +43,13 @@ const FactoryDashboard: any = dynamic(() => import('@/components/FactoryDashboar
 
 const TITLE: Record<Screen, string> = {
   line: '3D 라인 뷰', layout2d: '3D 라인 뷰 · 2D 배치도', field: '현장 모니터', cards: '지침카드', card: '지침카드', wo: '정비 작업지시서', wr: '작업기록서', sr: '간이 작업기록',
-  stops: '정지 사유', docs: '문서함', replay: '다시 보기', shift: '교대 보고서', daily: '일일 보고서', revs: '수정 이력', lots: '로트 추적', quality: '검사 기록',
+  docs: '문서함', replay: '다시 보기', shift: '교대 보고서', daily: '일일 보고서', revs: '수정 이력', lots: '로트 추적', quality: '검사 기록', qcap: '공정 능력 · 불량',
   inventory: '재고', tools: '공구 수명', pm: '예방 정비 일정', idocs: '사내 문서', settings: '설정',
 };
 // 메뉴 (페이지구조 v3 5.1). 권한 없는 페이지는 흐리게 (N3) — 열 수 있는 역할 목록, 없으면 전원
 const MENU_V3: [string, Screen | 'home', Role[]?][] = [
-  ['홈', 'home'], ['지침카드', 'cards'], ['문서함', 'docs'], ['로트 추적', 'lots'], ['품질', 'quality', ['OPR', 'SUP', 'MGR']], ['재고', 'inventory'], ['공구 수명', 'tools'],
-  ['예방 정비', 'pm', ['MNT', 'SUP', 'MGR']], ['정지 사유', 'stops'], ['다시 보기', 'replay'], ['현장 모니터', 'field'], ['설정', 'settings', ['MGR']],
+  ['홈', 'home'], ['지침카드', 'cards'], ['문서함', 'docs'], ['로트 추적', 'lots'], ['품질', 'quality', ['OPR', 'SUP', 'MGR']], ['공정 능력 · 불량', 'qcap', ['SUP', 'MGR']], ['재고', 'inventory'], ['공구 수명', 'tools'],
+  ['예방 정비', 'pm', ['MNT', 'SUP', 'MGR']], ['다시 보기', 'replay'], ['현장 모니터', 'field'], ['설정', 'settings', ['MGR']],
 ];
 // 문서함 카테고리 (v3 문서함 8개) — 고르면 오른쪽에 그 화면. 문서 하나를 열어도 문서함 안에 보임
 const DOC_CATS: [string, Screen, string | null, Role[]?][] = [
@@ -61,9 +59,20 @@ const DOC_CATS: [string, Screen, string | null, Role[]?][] = [
 ];
 const DOC_OF: Partial<Record<Screen, string>> = { wo: '작업지시서', wr: '작업기록서', sr: '간이 작업기록', shift: '교대 보고서', daily: '일일 보고서', revs: '수정 이력', idocs: '사내 문서' };
 // 품질 카테고리 — 문서함과 같은 모양(왼쪽 목록 + 오른쪽 화면). 품질 화면이 늘면 여기에 한 줄씩 더한다
-const QUAL_CATS: [string, Screen, string | null][] = [['검사 기록', 'quality', null]];
-const QUAL_OF: Partial<Record<Screen, string>> = { quality: '검사 기록' };
-const SCREENS: Screen[] = ['line', 'layout2d', 'field', 'cards', 'card', 'wo', 'wr', 'sr', 'stops', 'docs', 'replay', 'shift', 'daily', 'revs', 'lots', 'quality', 'inventory', 'tools', 'pm', 'idocs', 'settings'];
+const QUAL_CATS: [string, Screen, string | null][] = [['검사 기록', 'quality', null], ['공정 능력 · 불량', 'qcap', null]];
+const QUAL_OF: Partial<Record<Screen, string>> = { quality: '검사 기록', qcap: '공정 능력 · 불량' };
+// 작업지시서 담당자 기본값 = 알람이 난 교대의 보전 담당자 (주간 08~17 / 야간). 반장은 필요할 때만 바꾸고 [승인]만 누른다 (2026-10-20 시안)
+const shiftMnt = (iso: string) => { const h = Number(iso.slice(11, 13)); const s = h >= 8 && h < 17 ? 'DAY' : 'NIGHT'; return USERS.find((u) => u.role === 'MNT' && u.shift === s)?.id ?? null; };
+// 작업지시서 작업 순서 (DOC-03 머리말 "점검 순서"): 정지 등급(OP-30) = 점검 순서 전체(★ 작업자 줄 + 보전 줄), 반복 알람 2단계 = 보전 줄 (9월 기록 MW-0903·0904와 같음).
+// "막힘 점검은 §2.1 점검 2~5와 같다"처럼 줄 전체가 다른 절을 가리키면 그 절의 해당 줄로 풀어 넣고 끝에 출처를 붙인다. 사내 문서 문장은 바꾸지 않는다 (2026-10-20)
+const fullOrder = (al: AlarmRec) => [...al.steps, ...al.maint];
+const expandRefs = (lines: string[]) => lines.flatMap((s) => {
+  const m = s.match(/§(\d+\.\d+) 점검 (\d+)~(\d+)와 같다$/);
+  const src = m && Object.values(ALARMS).find((x) => x.doc03.includes(`DOC-03 §${m[1]}`));
+  return m && src ? fullOrder(src).slice(+m[2] - 1, +m[3]).map((x, i) => `${x} (§${m[1]} 점검 ${+m[2] + i})`) : [s];
+});
+const woSteps = (al: AlarmRec, trigger: WorkOrder['trigger']) => expandRefs(trigger === 'REPEAT_2' ? (al.maint.length ? al.maint : al.steps) : fullOrder(al));
+const SCREENS: Screen[] = ['line', 'layout2d', 'field', 'cards', 'card', 'wo', 'wr', 'sr', 'docs', 'replay', 'shift', 'daily', 'revs', 'lots', 'quality', 'qcap', 'inventory', 'tools', 'pm', 'idocs', 'settings'];
 const urlOf = (s: Screen, k: string | null) => (s === 'line' ? '/' : `/${s}`) + (k ? `?k=${encodeURIComponent(k)}` : '');
 function screenFromUrl(role: Role): [Screen, string | null] {
   if (typeof window === 'undefined') return [homeScreen(role), null];
@@ -79,8 +88,8 @@ const ZONES: [string, string[], MachineId[]][] = [['1·2공정', ['OP-10', 'OP-2
 const GROUPS: { label: string; subs: [string, Screen, Role[]?, (string | null)?][]; related?: Screen[] }[] = [
   { label: '홈', subs: [['3D 라인', 'line']], related: ['layout2d'] },
   { label: '생산', subs: [['로트 추적', 'lots'], ['현장 모니터', 'field']] },
-  { label: '정비', subs: [['정지 사유', 'stops'], ['다시 보기', 'replay'], ['예방 정비', 'pm', ['MNT', 'SUP', 'MGR']]] },
-  { label: '품질', subs: [['검사 기록', 'quality', ['OPR', 'SUP', 'MGR']]] },
+  { label: '정비', subs: [['다시 보기', 'replay'], ['예방 정비', 'pm', ['MNT', 'SUP', 'MGR']]] },
+  { label: '품질', subs: [['검사 기록', 'quality', ['OPR', 'SUP', 'MGR']], ['공정 능력 · 불량', 'qcap', ['SUP', 'MGR']]] },
   { label: '재고', subs: [['재고', 'inventory'], ['공구 수명', 'tools']] },
   { label: '문서', subs: [...DOC_CATS.map(([n, s2, k2, roles]) => [n, s2, roles, k2] as [string, Screen, Role[]?, (string | null)?]), ['지침카드', 'cards']], related: ['docs', 'wo', 'wr', 'sr', 'shift', 'daily', 'revs', 'idocs', 'card'] }, // 지침카드는 정비에서 문서로 옮김 (사용자 요청 2026-10-20)
   { label: '설정', subs: [['설정', 'settings', ['MGR']]] },
@@ -108,7 +117,6 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
   const [notices, setNotices] = usePersist<Notice[]>('notices', [], runId);
   const [handledA, setHandledA] = usePersist<Record<string, { by: string; ts: number }>>('handled', {}, runId);
   const [acked, setAcked] = usePersist<Record<string, string[]>>('acked', {}, runId); // 사용자별 긴급 팝업 [확인]
-  const [stopReasons, setStopReasons] = usePersist<Record<string, StopReason>>('stops', {}, runId);
   const [settings, setSettings] = useLocal<Settings>('settings', DEFAULT_SETTINGS);
   const [seenBrief, setSeenBrief] = useLocal<Record<string, string>>('briefSeen', {});
 
@@ -139,7 +147,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
   // 새 알람 → OP-30 정지 등급이면 작업지시서 초안 + 문서 알림, 반복 알람 판단
   const seenAlarm = useRef<Set<number>>(new Set());
   const ruleCtx = (): RuleCtx => ({
-    twin, inv: invF.data, pm: pmF.data as RuleCtx['pm'], wos, shiftReports: shiftF.data?.reports as RuleCtx['shiftReports'] ?? null,
+    twin, inv: invF.data, pm: pmF.data as RuleCtx['pm'], wos, wrs, shiftReports: shiftF.data?.reports as RuleCtx['shiftReports'] ?? null,
     dailyReports: dailyF.data?.reports as RuleCtx['dailyReports'] ?? null, cmm: cmmF.data, quality: qualF.data, alerts,
     pastAlarms: (hist.data?.alarms ?? []).map((a) => ({ equipment_id: a.equipment_id, alarm_code: a.alarm_code, occurred_at: a.occurred_at })), notices, rules,
   });
@@ -170,6 +178,20 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
     addNotices(add);
   }, [alerts, hist.data]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // 작업 순서 규칙이 바뀌기 전에 만든 초안(사람이 아직 안 고친 v0)은 지금 규칙으로 다시 채운다 (시연 회차 기록에 남아 있던 것, 2026-10-20)
+  useEffect(() => {
+    setWos((l) => {
+      let ch = false;
+      const n = l.map((w) => {
+        const al = ALARMS[w.code];
+        if (w.state !== 'draft' || w.version !== 0 || !al) return w;
+        const s = woSteps(al, w.trigger);
+        if (JSON.stringify(s) === JSON.stringify(w.steps)) return w;
+        ch = true; return { ...w, steps: s };
+      });
+      return ch ? n : l;
+    });
+  }, [runId]); // eslint-disable-line react-hooks/exhaustive-deps
   const createWo = (a: AlertRec, trigger: WorkOrder['trigger']) => {
     const al = a.alarm!;
     setWos((w) => {
@@ -178,7 +200,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
       const wo: WorkOrder = {
         no, alertId: a.id, machine: a.machine, code: a.code, created: a.time, state: 'draft', version: 0, trigger, lot: a.lot,
         title: trigger === 'REPEAT_2' ? `${MACHINES[a.machine].name} 알람 ${a.code} 반복 — 원인 점검 (2단계)` : `${MACHINES[a.machine].name} 알람 ${a.code} (${al.nameKo.replace(/\(.*\)/, '')}) 점검`,
-        symptom: al.symptom + (al.chain ? ` — 연쇄 알람 ${al.chain}` : ''), steps: al.maint.length ? al.maint : al.steps, parts: expectedParts(a.code), assignee: null, edited: [],
+        symptom: al.symptom + (al.chain ? ` — 연쇄 알람 ${al.chain}` : ''), steps: woSteps(al, trigger), parts: expectedParts(a.code), assignee: shiftMnt(a.time), edited: [],
         revisions: rev([], '프로그램 초안', '프로그램', 'PROGRAM'),
       };
       addNotices([{ id: `WO_DRAFT_READY:${no}`, rule: 'WO_DRAFT_READY', ruleName: '작업지시서 초안 검토', level: '참고', rank: '4', at: a.time, ts: a.ts, text: '작업지시서 초안을 썼어요. 검토해 주세요', roles: ['MNT'], delivery: 'BUBBLE', handled: false, open: { screen: 'wo', key: no } }]);
@@ -217,7 +239,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
   // 사건 → 알림 (공구 수명 90%, 병목 발생·이동)
   useEffect(() => live.onEvents((evs: SimEvent[]) => addNotices(fromEvents(evs))), [live, addNotices]);
   // 9월 미처리 알림 → 10/1 시작 상태
-  useEffect(() => { if (pastOpen.data) addNotices(pastOpen.data.notifications.map(fromPast)); }, [pastOpen.data, addNotices]);
+  useEffect(() => { if (pastOpen.data) addNotices(groupPmPast(pastOpen.data.notifications.map(fromPast))); }, [pastOpen.data, addNotices]);
   // 상태로 판단하는 알림 (5초마다)
   useEffect(() => {
     if (!twin) return;
@@ -227,7 +249,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
       if (resolve.length) setNotices((l) => (l.some((x) => resolve.includes(x.id) && !x.handled) ? l.map((x) => (resolve.includes(x.id) && !x.handled ? { ...x, handled: true, handledBy: '조건 풀림 (자동)', handledAt: simIso() } : x)) : l));
     }, 300);
     return () => clearTimeout(t);
-  }, [twin?.clock.sim_at, invF.data, pmF.data, shiftF.data, dailyF.data, cmmF.data, qualF.data, wos]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [twin?.clock.sim_at, invF.data, pmF.data, shiftF.data, dailyF.data, cmmF.data, qualF.data, wos, wrs]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ---------- 3D ----------
   const [replayFrame, setReplay] = useState<unknown | null>(null);
@@ -287,13 +309,14 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
   // ---------- 문서 열기 ----------
   const openCard = (id: string) => { setAcked((s) => ({ ...s, [user.id]: [...(s[user.id] ?? []), id] })); go('card', id); };
   const openWo = (no: string) => { setNotices((l) => l.map((x) => ((x.rule === 'WO_ASSIGNED' || x.rule === 'WO_DRAFT_READY') && x.open?.key === no && x.roles.includes(role) && (!x.userIds || x.userIds.includes(user.id)) ? { ...x, handled: true, handledBy: user.name, handledAt: simIso() } : x))); go('wo', no); };
-  const openRecord = (woNo: string) => {
+  // 작업기록서 = 작업지시서 화면 아래 칸 (2026-10-20). nav=false면 만들기만 하고 화면은 그대로
+  const openRecord = (woNo: string, nav = true) => {
     const wo = wos.find((w) => w.no === woNo); if (!wo) return;
     if (!wrs.some((r) => r.woNo === woNo)) {
       const rec: WorkRecord = { no: nextNo('MR', wrs), woNo, state: 'draft', memo: '', cause: '', action: '', parts: [], stepChecks: wo.steps.map(() => false), lock: LOCK.map(() => false), start: '', end: '', revisions: [] };
       setWrs((l) => [...l, rec]); setWos((l) => l.map((x) => (x.no === woNo ? { ...x, recordNo: rec.no } : x)));
     }
-    go('wr', woNo);
+    if (nav) go('wr', woNo);
   };
   function openSimple(alertId: string, kind: 'alarm' | 'cause' = 'alarm', nav = true) {
     const al = alerts.find((x) => x.id === alertId); if (!al) return;
@@ -316,7 +339,6 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
   const ctx: AppCtx = {
     user, role, setUser, twin, connected, lastOk: live.lastOk, alerts, notices, myNotices, wos, wrs, srs,
     putWo: (w) => setWos((l) => l.map((x) => (x.no === w.no ? w : x))), putWr: (w) => setWrs((l) => l.map((x) => (x.no === w.no ? w : x))), putSr: (r) => setSrs((l) => l.map((x) => (x.no === r.no ? r : x))),
-    stopReasons, setStopReasons,
     addNotice: (n) => addNotices([n]),
     handleNotice: (id, plan) => setNotices((l) => l.map((x) => (x.id === id ? { ...x, handled: true, handledBy: user.name, handledAt: simIso(), plan } : x))),
     markAlert: (ids, by) => setHandledA((h) => ({ ...h, ...Object.fromEntries(ids.map((i) => [i, { by, ts: Date.now() }])) })),
@@ -327,6 +349,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
     inv: invF.data, reloadInv: invF.reload, history: hist.data, pm: pmF.data, reloadPm: pmF.reload,
     shiftReports: shiftF.data?.reports ?? null, dailyReports: dailyF.data?.reports ?? null, reloadReports: () => { shiftF.reload(); dailyF.reload(); },
     rules, restoreMachine, setReplay,
+    eve: !!side, // 이브 창이 열려 화면 폭이 좁아짐 — 재고·출하·공구·품질 화면이 배치를 바꾼다 (사용자 요청 2026-10-19)
   };
 
   // ---------- 긴급 팝업·말풍선 ----------
@@ -441,7 +464,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
         {/* 3D 실패·긴급 알림은 이브 말풍선으로, 연결 끊김은 화면 맨 위 띠로 옮김 (2026-10-19) */}
 
         <div className="flex min-h-0 flex-1 flex-col" style={{ paddingLeft: screen === 'line' || screen === 'replay' ? 0 : 216, paddingTop: screen === 'line' || screen === 'replay' ? 0 : 72 }}>
-        {screen !== 'line' && screen !== 'layout2d' && screen !== 'docs' && screen !== 'pm' && !DOC_OF[screen] && !QUAL_OF[screen] && <div className="flex h-11 shrink-0 items-center border-b border-slate-200 bg-white px-4 text-[17px] font-bold">{TITLE[screen]}</div>}
+        {screen !== 'line' && screen !== 'layout2d' && screen !== 'docs' && !DOC_OF[screen] && !QUAL_OF[screen] && <div className="flex h-11 shrink-0 items-center border-b border-slate-200 bg-white px-4 text-[17px] font-bold">{TITLE[screen]}</div>}
         <div className={`relative min-h-0 flex-1 overflow-hidden ${connected ? '' : 'grayscale-[0.6]'}`}>
           {screen === 'line' && show3D && eveCur && (
             <div className="eve-band absolute z-10 flex h-11 items-center gap-3 rounded-full border-[1.5px] pl-2 pr-1.5 backdrop-blur-sm"
@@ -494,38 +517,26 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
           {screen === 'replay' && <ReplayScreen />}
           {screen === 'cards' && <CardList />}
           {screen === 'card' && key && <CardScreen alertId={key} />}
-          {(screen === 'docs' || screen === 'pm' || DOC_OF[screen] || QUAL_OF[screen]) && (() => {
-            const isQ = !!QUAL_OF[screen], isPm = screen === 'pm';
-            // 예방 정비: 설비 고르기를 문서함 같은 왼쪽 목록으로 (사용자 요청 2026-10-16)
-            const cats: [string, Screen, string | null, Role[]?][] = isPm ? [PM_ALL, ...EQS].map((e) => [e, 'pm', e]) : isQ ? QUAL_CATS : DOC_CATS;
-            const cur = isPm ? (key && (key === PM_ALL || EQS.includes(key)) ? key : 'VF2-02') : isQ ? QUAL_OF[screen] : screen === 'docs' ? (key ?? '작업지시서') : DOC_OF[screen];
-            const pmBadge = (e: string) => { const ts = pmF.data?.tasks.filter((t) => e === PM_ALL || t.equipment_id === e) ?? [], over = ts.filter((t) => t.state === 'OVERDUE').length, soon = ts.filter((t) => t.state === 'DUE_SOON').length; return over || soon ? <span className="float-right text-[13px] font-normal">{over ? <span className="text-[#9a6200]">▲{over}</span> : null}{soon ? <span className="ml-1 text-slate-500">ⓘ{soon}</span> : null}</span> : null; };
+          {(screen === 'docs' || DOC_OF[screen] || QUAL_OF[screen]) && (() => {
+            // 문서·품질 하위 항목은 왼쪽 메뉴 묶음에 다 있어 화면 옆 목록은 없음. 예방 정비는 화면 위쪽 칩 탭 (PmScreen.tsx)
             return (
               <div className="absolute inset-0 flex bg-[#e9ecef]">
-                {isPm && <aside className="flex w-[200px] shrink-0 flex-col gap-1 overflow-y-auto border-r border-slate-300 bg-white p-2">
-                  <b className="px-2 py-2 text-[17px]">{isPm ? '예방 정비' : isQ ? '품질' : '문서함'}</b>
-                  {cats.map(([name, s2, k2, roles]) => {
-                    const ok = !roles || roles.includes(role);
-                    return <button key={name} disabled={!ok} onClick={() => go(s2, k2)} title={ok ? undefined : '이 계정은 볼 수 없습니다'}
-                      className={`h-11 rounded-lg px-3 text-left text-[15px] font-semibold disabled:cursor-not-allowed disabled:text-slate-300 ${cur === name ? 'bg-[#e8f6fa] text-[#5a3bc8]' : 'hover:bg-slate-100'}`}>{name}{isPm && pmBadge(name)}</button>;
-                  })}
-                </aside>}
                 <div className="relative min-w-0 flex-1">
                   {screen === 'docs' && <DocBox />}
                   {screen === 'wo' && key && <WorkOrderScreen no={key} />}
-                  {screen === 'wr' && key && <WorkRecordScreen woNo={key} />}
+                  {screen === 'wr' && key && <WorkOrderScreen key={`wr:${key}`} no={key} focusRecord />}
                   {screen === 'sr' && key && <SimpleRecordScreen no={key} />}
                   {screen === 'shift' && <ShiftReportScreen />}
                   {screen === 'daily' && <DailyReportScreen />}
                   {screen === 'quality' && <QualityScreen />}
+                  {screen === 'qcap' && <QualityScreen cap />}
                   {screen === 'revs' && <RevisionsScreen />}
                   {screen === 'idocs' && <DocsScreen />}
-                  {isPm && (key === PM_ALL ? <PmAll /> : <PmScreen />)}
                 </div>
               </div>
             );
           })()}
-          {screen === 'stops' && <StopsScreen />}
+          {screen === 'pm' && <PmPage />}
           {screen === 'lots' && <LotScreen />}
           {screen === 'inventory' && <InventoryScreen />}
           {screen === 'tools' && <ToolsScreen />}

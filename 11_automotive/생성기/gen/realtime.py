@@ -4,7 +4,7 @@
 - 사람이 하는 일은 시뮬레이터가 대신하지 않는다: 로트 보류·해제, 공구 교체 기록, 작업기록서 확정(고장 복귀).
   화면(서버)이 hold_lot · release_lot · record_tool_change · confirm_work_record 를 부른다.
 - 측정기(CMM-01)가 부품을 잴 때마다 결과 파일(CSV)을 공유 폴더 흉내 폴더에 떨어뜨린다 (설계서 5.15 [제안]).
-- 시계: 배속(180·60·10·1), 일시정지·다시 시작, 지금 → 17:00 넘기기, 처음으로 되돌리기. 사건 알람이 뜨면 ×10으로 감속.
+- 시계: 배속(180·60·10·1), 일시정지·다시 시작, 지금 → 17:00(주간 끝) 또는 20:00(야간 시작) 넘기기, 처음으로 되돌리기. 사건 알람이 뜨면 ×10으로 감속.
 - 서버·화면 연결 방식은 [선택 필요: 기술 회의]. tick()이 돌려주는 사건 = 실시간 사건(API-STR-01).
 - 같은 seed + 같은 조작 순서 = 같은 결과 (리허설용).
 """
@@ -189,12 +189,14 @@ class Realtime:
         self._op("resume")
 
     def skip(self, to: str = "TODAY_17:00"):
-        """지금 → 오늘 17:00 (주간 교대 끝) 또는 20:00 (교대 사이 정지 끝 = 야간 시작). 그 사이를 빠르게 만든다. 그 시각이 지났으면 아무것도 안 함."""
+        """지금 → 오늘 17:00(주간 끝) 또는 20:00(야간 시작). 그 사이를 빠르게 만든다. 그 시각이 지났으면 시계는 그대로."""
         if to not in self.rt["skip_targets"]:
             raise ValueError(f"넘기기는 {self.rt['skip_targets']}만")
+        hour = {"TODAY_17:00": 17, "TODAY_20:00": 20}.get(to)
+        if hour is None:
+            raise ValueError(f"넘기기는 {self.rt['skip_targets']}만")
         day = self.sim.cal.shift_or_near(self.m).work_date
-        hh, mm = map(int, to.split("_")[1].split(":"))
-        target = self.sim.cal.to_min(datetime(day.year, day.month, day.day, hh, mm, tzinfo=KST))
+        target = self.sim.cal.to_min(datetime(day.year, day.month, day.day, hour, 0, tzinfo=KST))
         start = self.now()
         out = []
         while self.m < min(target, self.end_m):

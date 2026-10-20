@@ -17,7 +17,7 @@ const reasonKo = (r: string) => (r === 'LIFE_90' ? '수명 90% 도달' : r.start
 const box = 'rounded-2xl border border-slate-300 bg-white p-5';
 
 export function ToolsScreen() {
-  const { key, twin, role, user, toast, alerts, reloadInv } = useApp();
+  const { key, twin, role, user, toast, alerts, reloadInv, eve } = useApp(); // eve: 이브 창 열림 — 공구 칸 넓히고 교체 이력 줄임
   const [eq, setEq] = useState<string>(key === 'VF2-01' || key === 'VF2-02' ? key : '전체');
   const [selId, setSelId] = useState<string | null>(null);
   const f = useFetch<{ tools: R[]; changes_today: R[]; past_changes: R[] }>('tools', 8000);
@@ -40,34 +40,43 @@ export function ToolsScreen() {
   const unitOf = (t: R) => (types.find((x) => x.item_no === t.item_no)?.usage_unit === 'HOLES' ? '구멍' : '분');
   const unit = sel ? unitOf(sel) : '분';
 
+  // 교체 이력 높이 = 왼쪽 공구 목록 끝까지. [contain:size]로 표가 칸을 늘리지 않고 안에서 스크롤 (사용자 요청 2026-10-19)
   const history = (
-    <section className={box}>
+    <section className={`${box} flex min-h-0 flex-1 flex-col`}>
       <h3 className="flex items-center gap-2 text-[17px] font-bold"><span className="h-2.5 w-2.5 rounded-full bg-[#6a43e0]" />교체 이력 — {sel ? `${sel.equipment_id}  ${sel.tool_no}` : EQS.join(' · ')}</h3>
       {changes.length === 0 ? <p className="mt-3 text-[14px] text-slate-500">교체 기록 없음</p> : (
-        <table className="mt-3 w-full text-left text-[15px]">
-          <thead className="border-y border-slate-200 text-[13px] text-slate-500"><tr>{['교체 시각', ...(sel ? [] : ['공구']), '교체 시 사용량 / 한도', '교체 사유', '교체자'].map((h) => <th key={h} className="py-2 pr-6 font-semibold">{h}</th>)}</tr></thead>
+        <div className="mt-2 min-h-[160px] flex-1 overflow-y-auto [contain:size]">{/* 이브 열림: 시각·공구·교체 사유만, 줄 간격 줄임 */}
+        <table className={`w-full text-left ${eve ? 'text-[14px]' : 'text-[15px]'}`}>
+          <thead className="sticky top-0 border-y border-slate-200 bg-white text-[13px] text-slate-500"><tr>{(eve ? ['교체 시각', ...(sel ? [] : ['공구']), '교체 사유'] : ['교체 시각', ...(sel ? [] : ['공구']), '교체 시 사용량 / 한도', '교체 사유', '교체자']).map((h) => <th key={h} className={`font-semibold ${eve ? 'py-1.5 pr-4' : 'py-2 pr-6'}`}>{h}</th>)}</tr></thead>
           <tbody className="divide-y divide-slate-100">{changes.map((c, i) => {
             const t = all.find((x) => x.tool_id === c.tool_id), lim = t?.limit, used = Math.round(Number(c.cum_before));
             const u = t ? unitOf(t) : '분';
             return (
+              eve ? (
+              <tr key={i}>
+                <td className="whitespace-nowrap py-1.5 pr-4 font-mono">{md(c.changed_at)} {hm(c.changed_at)}</td>
+                {!sel && <td className="whitespace-nowrap py-1.5 pr-4 font-mono font-semibold">{c.tool_id}</td>}
+                <td className="whitespace-nowrap py-1.5">{reasonKo(String(c.change_reason ?? ''))}</td>
+              </tr>) : (
               <tr key={i}>
                 <td className="py-2.5 pr-6 font-mono">{md(c.changed_at)} {hm(c.changed_at)}</td>
                 {!sel && <td className="py-2.5 pr-6 font-mono font-semibold">{c.tool_id}</td>}
                 <td className="py-2.5 pr-6"><b className="font-mono">{used} / {lim ?? '—'}</b> {u}{lim ? <span className="text-slate-500"> ({Math.round((used / lim) * 100)}%)</span> : null}</td>
                 <td className="py-2.5 pr-6">{reasonKo(String(c.change_reason ?? ''))}</td>
                 <td className="py-2.5 text-slate-600">{userName(c.changed_by)}</td>
-              </tr>);
+              </tr>));
           })}</tbody>
         </table>
+        </div>
       )}
     </section>
   );
 
   return (
     <div className={PAGE}>
-      <div className="mx-auto grid max-w-[1400px] grid-cols-[minmax(320px,0.9fr)_1.6fr] items-start gap-4">
+      <div className={`mx-auto grid max-w-[1400px] items-stretch gap-4 ${eve ? 'grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]' : 'grid-cols-[minmax(320px,0.9fr)_1.6fr]'}`}>
         {/* 왼쪽: 공구 목록 */}
-        <section className={box}>
+        <section className={`${box} self-start`}>
           <h2 className="flex items-center gap-2 text-[19px] font-bold"><span className="h-2.5 w-2.5 rounded-sm bg-[#6a43e0]" />공구 — OP-30 {EQS.join(' · ')}</h2>
           <div className="mt-4 grid grid-cols-3 gap-2">{['전체', ...EQS].map((e) => (
             <button key={e} onClick={() => pickEq(e)} className={`h-12 rounded-lg border text-[15px] font-bold ${eq === e ? 'border-[#6a43e0] bg-[#6a43e0] text-white shadow' : 'border-slate-300 bg-white text-[#6a43e0]'}`}>{e}{e === '전체' ? ` ${all.length}` : ''}</button>))}
@@ -98,16 +107,16 @@ export function ToolsScreen() {
             <section className={`${box} flex flex-wrap items-center gap-4`}>
               <div className="min-w-0">
                 <div className="flex items-center gap-2 text-[15px] font-bold">{sel.equipment_id}{st && <span style={{ color: st.color }}>{st.icon} {st.text}</span>}{al && <span className="text-[#c62a2f]">{al.code === '362' ? '⚠' : '▲'} 알람 {al.code}</span>}</div>
-                <div className="text-[30px] font-bold leading-tight">{sel.tool_no} {nameOf(sel)}</div>
+                <div className={`font-bold leading-tight ${eve ? 'text-[24px]' : 'text-[30px]'}`}>{sel.tool_no} {nameOf(sel)}</div>
               </div>
               {sel.warn && <span className="rounded-full border border-[#e0b000] bg-[#fff6d6] px-4 py-1.5 text-[16px] font-bold text-[#7a5600]">▲ 교체 준비</span>}
               {canChange && <button onClick={() => setConfirm(sel.tool_id)} className="ml-auto h-14 rounded-lg bg-[#6a43e0] px-8 text-[18px] font-bold text-white shadow">공구 교체</button>}
             </section>
-            <div className="grid grid-cols-[1fr_1.3fr] gap-4">
+            <div className={`grid gap-4 ${eve ? 'grid-cols-1' : 'grid-cols-[1fr_1.3fr]'}`}>
               <section className={`${box} flex items-center justify-center`}><Ring pct={sel.usage_pct} warn={sel.warn} /></section>
               <section className={`${box} flex flex-col justify-center`}>
                 <div className="text-[15px] text-slate-500">누적 / 한도</div>
-                <div className="mt-1 font-mono text-[44px] font-semibold">{Math.round(sel.cum)} <span className="mx-2">/</span> {sel.limit} <span className="font-sans text-[18px]">{unit}</span></div>
+                <div className={`mt-1 font-mono font-semibold ${eve ? 'text-[32px]' : 'text-[44px]'}`}>{Math.round(sel.cum)} <span className="mx-2">/</span> {sel.limit} <span className="font-sans text-[18px]">{unit}</span></div>
                 <div className="mt-2 text-[14px] text-slate-500">남은 수명 {Math.max(0, Math.round((100 - sel.usage_pct) * 10) / 10)}% · 부품 {sel.left_parts ?? '—'}개</div>
               </section>
             </div>

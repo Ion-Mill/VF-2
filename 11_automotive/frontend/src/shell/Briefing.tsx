@@ -126,7 +126,6 @@ export default function Briefing({ onDone }: { onDone?: () => void }) {
           <li>{liveOrders.map((o) => `${o.order_no}(${o.status === 'IN_PROGRESS' ? '진행 중' : '대기'}${o.delay ? ' ' + o.delay : ''})`).join(' · ') || '없음'}</li>
           {liveWos.length > 0 && <li>진행 중 작업지시서 {liveWos.map((w) => w.no).join(' · ')}</li>}
         </ul>
-        <button onClick={() => go('stops')} className="mt-2 h-9 rounded-full border border-[#ddd5f7] bg-[#f3f1fb] px-4 text-[13px] font-semibold">정지 사유 입력 화면</button>
       </Card>
     </Board>
   );

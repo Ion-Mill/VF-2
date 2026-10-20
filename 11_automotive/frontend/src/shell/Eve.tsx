@@ -8,12 +8,17 @@ import { useApp } from './ctx';
 import { MACHINES } from './data';
 import { SIM, api, md, simIso, useLocal } from './live';
 import { askAssistant, backendChatEnabled } from './assistantApi';
-import { LEVEL_VIEW, alarmTitle, hhmm, sevText, type AlertRec, type Level, type Notice } from './model';
+import { LEVEL_VIEW, alarmTitle, hhmm, type AlertRec, type Level, type Notice } from './model';
+import { alarmSentence } from './alarmText';
+import { useAlarmText } from './assistText';
 import { rankOfAlert, rankOfNotice } from './Briefing';
 import RobotIcon from './RobotIcon';
 import EveThinking from './EveThinking';
 import { canStartNewChat, currentChat, makeNewChatMark, realRows, withNewChat } from './chatLog';
 import { carryAlarm } from './carry';
+import { Bubble, HistoryItem, Spark, Typing, type ChatRow } from './ChatBubble';
+
+export { Spark };   // 옛 가져오기 경로 유지 (Spark는 ChatBubble.tsx로 옮겼다)
 
 export type EveTab = '브리핑' | '알림' | '채팅' | '채팅 기록';
 export const EVE_TABS: EveTab[] = ['브리핑', '알림', '채팅', '채팅 기록'];
@@ -129,6 +134,21 @@ type Item = { kind: 'a'; a: AlertRec; n: number } | { kind: 'n'; x: Notice };
 // 왼쪽 띠 색: 긴급 빨강 · 주의 주황 · 참고 회색 (Q7)
 const BAR: Record<Level, string> = { 긴급: '#E5484D', 주의: '#F5A524', 참고: '#8B98A5' };
 const idOf = (it: Item) => (it.kind === 'a' ? it.a.id : it.x.id);
+// 알람 상세 본문 한 문단. 프로그램 문장(alarmText.ts)을 보이다가, 비서가 다듬은 문장이 준비되면 그것으로 바꾸고 [원문 보기]로 프로그램 문장을 언제나 볼 수 있다 (2026-10-19).
+// 열린 알림 하나만 비서에게 묻는다. 꺼짐·실패·탈락이면 늘 프로그램 문장 그대로다. 훅은 여기서 부른다 — AlertsTab은 상세를 일찍 return 해서 거기서는 훅을 못 부른다.
+function AlarmBody({ a }: { a: AlertRec }) {
+  const base = alarmSentence({ name: MACHINES[a.machine].name, op: MACHINES[a.machine].op, code: a.code, severity: a.alarm?.severity ?? null, scenario: a.scenario, lot: a.lot, cleared: a.cleared ? hhmm(a.cleared) : null });
+  const ai = useAlarmText(a.id, base);
+  const [raw, setRaw] = useState(false);
+  const polished = !!ai && ai !== base;   // 비서가 원문 그대로 돌려줬으면 꼬리표·전환 버튼 없이 그대로 둔다
+  return (
+    <p className="mt-2">
+      {polished && !raw && <b className="mr-1 text-[12px] text-slate-500">비서 정리 ·</b>}
+      {polished && !raw ? ai : base}
+      {polished && <button onClick={() => setRaw((x) => !x)} title="프로그램이 만든 원래 문장과 비서가 다듬은 문장을 바꿔 봅니다" className="ml-2 text-[12px] font-semibold underline">{raw ? '비서 정리 보기' : '원문 보기'}</button>}
+    </p>
+  );
+}
 function AlertsTab({ onNotice }: { onNotice: (n: Notice) => void }) {
   const { alerts, myNotices, role, openCard, selectMachine, go, handleNotice, markAlert, openSource, user } = useApp();
   const [onlyOpen, setOnlyOpen] = useState(true);
@@ -158,12 +178,12 @@ function AlertsTab({ onNotice }: { onNotice: (n: Notice) => void }) {
     const lv = level(cur), done = handledOf(cur);
     return (
       <div className="flex flex-col gap-3">
-        <button onClick={() => { setOpenId(null); setPlan(''); }} className="w-fit text-[13px] font-semibold underline">← 목록</button>
+        <button onClick={() => { setOpenId(null); setPlan(''); }} className="w-fit text-[18px] font-semibold underline">← 목록</button>
         <div className="rounded-xl border-l-[6px] bg-white/5 p-3" style={{ borderColor: BAR[lv] }}>
           <div className="text-[12px] font-semibold" style={{ color: TONE[lv] }}>{LEVEL_VIEW[lv].icon} {lv} · {md(at(cur))} {hhmm(at(cur))} · {done ? '처리됨' : '처리 안 됨'}</div>
           <b className="mt-1 block text-[17px] leading-snug">{title(cur)}</b>
           {cur.kind === 'a' ? (<>
-            <p className="mt-2">{MACHINES[cur.a.machine].name}({MACHINES[cur.a.machine].op})에서 알람 {cur.a.code}{cur.a.alarm ? ` — ${sevText(cur.a.alarm)}` : ' — 알람 코드집에 없음, 보전 담당자 호출'}.{cur.a.scenario ? ` 사건 ${cur.a.scenario}.` : ''}{cur.a.lot ? ` 로트 ${cur.a.lot}.` : ''}{cur.a.cleared ? ` 설비 알람 ${hhmm(cur.a.cleared)} 해제.` : ''}</p>
+            <AlarmBody key={cur.a.id} a={cur.a} />
             {cur.a.alarm && <p className="mt-1 text-[12px] text-slate-500">관련: <button onClick={() => openSource('DOC-02', cur.a.alarm!.doc02.replace('DOC-02 ', ''))} className="underline">{cur.a.alarm.doc02}</button></p>}
           </>) : (<>
             <p className="mt-2">{cur.x.text}{cur.x.past && <span className="ml-1 text-[11px] text-slate-500">(9월 기록)</span>}</p>
@@ -209,7 +229,6 @@ function AlertsTab({ onNotice }: { onNotice: (n: Notice) => void }) {
 }
 
 // ---------- SCR-10 채팅 ----------
-interface ChatRow { at: string; q: string; a: string; status: string; sources: { doc_no: string; doc_name: string; rev: string; section: string }[]; series?: Record<string, Record<string, number[]>>; newChat?: boolean }   // newChat = "여기서부터 새 대화" 표지 줄 (질문·답 없음, chatLog.ts)
 function Chat({ focus, headerSlot, onNewChat }: { focus: string | null; headerSlot: HTMLElement | null; onNewChat: () => void }) {
   const { user, role, screen, selected, openSource } = useApp();
   const [log, setLog] = useLocal<ChatRow[]>(`chat:${user.id}`, []);
@@ -255,9 +274,8 @@ function Chat({ focus, headerSlot, onNewChat }: { focus: string | null; headerSl
         </button>, headerSlot)}
       <div ref={body} className="ma-body text-[14px]" role="tabpanel">
         <div className="ma-pad" aria-live="polite">
-          <p className="text-[11px] text-slate-500">{backendChatEnabled() ? '외부 LLM(Claude)이 사내 문서와 정해진 운영 조회 결과로 답합니다. 알람 카드·점검 순서 같은 안전 답은 채팅에서 AI가 쉽게 풀어 쓰며, 잠금·표지 순서처럼 정해진 고정 서식은 풀이 아래에 문서 그대로 함께 붙습니다(풀이가 어긋나면 풀이는 버리고 고정 서식만 보입니다). 알람 카드 화면에서는 문서 원문이 기준이고, 비서가 쉽게 풀어 쓴 문장이 카드 아래에 참고용으로 따로 붙을 수 있으며 그때 점검 순서 문장이 외부로 전송됩니다. 질문과 문서 조각이 외부로 전송됩니다(지금은 가상 데이터).' : '규칙 답 — 외부 LLM(비서) 연결을 켜지 않아 프로그램 숫자와 사내 문서 절을 그대로 보입니다.'} 지금 화면·고른 설비({selected ? MACHINES[selected].name : '없음'})가 질문 배경으로 갑니다.</p>
           {today.length === 0 && !busy && <p className="ma-empty">라인 상황, 알람, 사내 문서 등 무엇이든 물어보세요.</p>}
-          {today.map((r, i) => <div key={i} data-at={r.at} className={r.at === focus ? 'rounded-lg ring-2 ring-[#B79CFF]' : ''}><Bubble r={r} openSource={openSource} /></div>)}
+          {today.map((r, i) => <div key={i} data-at={r.at} className={r.at === focus ? 'rounded-lg ring-2 ring-[#B79CFF]' : ''}><Bubble r={r} meta={`${md(r.at)} ${hhmm(r.at)}`} openSource={openSource} role={role} /></div>)}
           {busy && <EveThinking />}
         </div>
       </div>
@@ -272,35 +290,17 @@ function Chat({ focus, headerSlot, onNewChat }: { focus: string | null; headerSl
     </>
   );
 }
-function Bubble({ r, openSource }: { r: ChatRow; openSource: (d: string, s: string) => void }) {
-  return (
-    <div className="flex flex-col gap-1">
-      <div className="ma-msg-user">{r.q}</div>
-      <div className="text-[12px] text-slate-500">{md(r.at)} {hhmm(r.at)} · 이브 · {r.status === 'ok' ? '규칙 답' : r.status}</div>
-      <p className="ma-msg-bot">{r.a}</p>
-      {r.series && Object.entries(r.series).map(([eq, s]) => <div key={eq} className="text-[12px]">{eq} 최근 60분: {Object.entries(s).slice(0, 3).map(([k, v]) => <span key={k} className="mr-2">{k} <Spark v={v} /></span>)}</div>)}
-      {r.sources.length > 0 && <div className="flex flex-wrap gap-1 text-[12px]">출처: {r.sources.map((s, i) => <button key={i} type="button" onClick={() => openSource(s.doc_no, s.section)} className="underline">{s.doc_name} {s.doc_no} {s.rev} §{s.section}</button>)}</div>}
-    </div>
-  );
-}
-export function Spark({ v, w = 80, h = 18 }: { v: number[]; w?: number; h?: number }) {
-  if (v.length < 2) return <span>—</span>;
-  const lo = Math.min(...v), hi = Math.max(...v), r = hi - lo || 1;
-  return <svg width={w} height={h} className="inline align-middle"><polyline fill="none" stroke="#7a52f0" strokeWidth="1.5" points={v.map((x, i) => `${(i / (v.length - 1)) * w},${h - 1 - ((x - lo) / r) * (h - 2)}`).join(' ')} /></svg>;
-}
+
 function ChatLog({ onOpen }: { onOpen: (at: string) => void }) {
   const { user } = useApp();
   const [log] = useLocal<ChatRow[]>(`chat:${user.id}`, []);
   const keep = realRows(log).filter((x) => Date.parse(x.at) > SIM.now() - 30 * 864e5).reverse();
   return (
-    <div className="ma-history">
-      <p className="ma-history-group">내 채팅 기록 — 30일 보관 · 누르면 채팅에서 다시 엶</p>
+    <div className="ma-history gap-2">
       {keep.length === 0 ? <p className="ma-empty">저장된 대화가 없습니다.</p> : keep.map((r, i) => (
         <Fragment key={i}>
           {(i === 0 || md(keep[i - 1].at) !== md(r.at)) && <p className="ma-history-group">{md(r.at)}</p>}
-          <button type="button" className="ma-history-item" onClick={() => onOpen(r.at)}>
-            <strong>{r.q}</strong><span>{md(r.at)} {hhmm(r.at)}</span>
-          </button>
+          <HistoryItem q={r.q} when={`${md(r.at)} ${hhmm(r.at)}`} onOpen={() => onOpen(r.at)} />
         </Fragment>
       ))}
     </div>

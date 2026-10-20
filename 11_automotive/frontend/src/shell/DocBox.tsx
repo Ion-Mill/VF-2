@@ -1,10 +1,10 @@
 'use client';
 // SCR-18 문서함 — 작업지시서·작업기록서·간이 작업기록·교대·일일 보고서를 한곳에서 (9월 기록 + 10/1 화면에서 만든 것).
 import { useState } from 'react';
-import { BTN, CARD, PAGE, useApp } from './ctx';
+import { CARD, PAGE, useApp } from './ctx';
+import { LOCK } from './Safety';
 import { MACHINES } from './data';
 import { SIM, md, tsOf } from './live';
-import { LOCK } from './Safety';
 import { WO_STEPS, minutesSince } from './workflow';
 
 type Tab = '작업지시서' | '작업기록서' | '간이 작업기록' | '교대 보고서' | '일일 보고서';
@@ -26,12 +26,13 @@ export default function DocBox() {
   const [text, setText] = useState('');
   const old = (iso?: string | null) => !!iso && SIM.now() - tsOf(iso) > 864e5;
 
-  // [1] 내 할 일 — 역할별
+  // [1] 내 할 일 — 역할별. 이브 알림 탭의 문서 알림과 같은 일을 "지금 남은 일"로 모아 본다.
+  // 토글로 접어 두고 머리에 개수 칩, ▲ 항목(2시간 넘은 승인 대기·기한 넘김)이 있으면 펼친 채로 시작 (2026-10-20 팀 검토)
   const todo: { text: string; go?: () => void; warn?: boolean }[] = [];
   if (role === 'MNT') {
-    wos.filter((w) => w.assignee === user.id && w.state === 'approved').forEach((w) => todo.push({ text: `▲ 승인됨 · 작업 시작 전 [${w.no}] ${MACHINES[w.machine].name} ${w.code}`, go: () => openWo(w.no), warn: true }));
+    wos.filter((w) => w.assignee === user.id && w.state === 'approved').forEach((w) => todo.push({ text: `승인됨 · 작업 시작 전 [${w.no}] ${MACHINES[w.machine].name} ${w.code}`, go: () => openWo(w.no) }));
     wrs.filter((r) => r.state === 'draft' || r.state === 'editing').forEach((r) => todo.push({ text: `ⓘ 작성 중 작업기록서 [${r.no}] 잠금·표지 ${LOCK.length}개 중 ${r.lock.filter(Boolean).length}개`, go: () => openRecord(r.woNo) }));
-    (pm?.tasks ?? []).filter((t) => t.state === 'OVERDUE' || t.state === 'DUE_SOON').slice(0, 5).forEach((t) => todo.push({ text: `${t.state === 'OVERDUE' ? '▲ 기한 넘김' : 'ⓘ 기한 임박'} 예방 정비 ${t.equipment_id} ${t.item_name} (${md(t.next_due)})`, go: () => go('pm'), warn: t.state === 'OVERDUE' }));
+    (pm?.tasks ?? []).filter((t) => t.state === 'OVERDUE' || t.state === 'DUE_SOON').sort((a, b) => Number(b.state === 'OVERDUE') - Number(a.state === 'OVERDUE')).slice(0, 5).forEach((t) => todo.push({ text: `${t.state === 'OVERDUE' ? '▲ 기한 넘김' : 'ⓘ 기한 임박'} 예방 정비 ${t.equipment_id} ${t.item_name} (${md(t.next_due)})`, go: () => go('pm'), warn: t.state === 'OVERDUE' }));
     (pm?.today_records ?? []).filter((r) => r.status === 'DRAFT').forEach((r) => todo.push({ text: `ⓘ 오늘 예방 정비 (끝남) ${r.pm_task_id} — 실시 기록 확인`, go: () => go('pm') }));
   }
   if (role === 'SUP') {
@@ -41,9 +42,8 @@ export default function DocBox() {
   }
   if (role === 'MGR') {
     (dailyReports ?? []).filter((r) => r.status !== 'CONFIRMED').forEach((r) => todo.push({ text: `ⓘ 미확정 일일 보고서 ${r.work_date}`, go: () => go('daily', r.work_date) }));
-    todo.push({ text: 'ⓘ 사내 문서 개정 승인 대기 — 없음' });
   }
-
+  const warnN = todo.filter((t) => t.warn).length;
   const has = (s: string) => !text || s.includes(text);
   const pastAl = (aid: string) => history?.alarms.find((a) => a.alarm_event_id === aid);
   type Row = { key: string; cells: React.ReactNode[]; go?: () => void; date: string; warn?: boolean };
@@ -94,17 +94,22 @@ export default function DocBox() {
   return (
     <div className={PAGE}>
       <div className="mx-auto flex max-w-[1100px] flex-col gap-3">
-        {/* [1] 내 할 일 — 따로 작은 카드 */}
-        <section className="rounded-2xl border border-slate-300 bg-white px-4 py-3">
-          <h3 className="text-[13px] font-bold text-slate-500">내 할 일</h3>
-          {todo.length === 0 ? <p className="mt-1 text-[14px] text-slate-500">오늘 할 일 없음</p> : (
-            <ul className="mt-2 flex flex-col gap-1.5">{todo.map((t) => (
-              <li key={t.text} className={`flex items-center gap-3 rounded-xl px-3 py-2 text-[14px] ${t.warn ? 'bg-[#fff6e0] font-semibold text-[#9a6200]' : 'bg-slate-50'}`}>
-                <span className="min-w-0 flex-1">{t.text}</span>
-                {t.go && <button onClick={t.go} className="h-8 shrink-0 rounded-full border border-slate-300 bg-white px-4 text-[13px] font-semibold">열기</button>}
-              </li>))}</ul>
-          )}
-        </section>
+        {/* [1] 내 할 일 — 토글 + 개수 칩 */}
+        <details open={warnN > 0} className="group rounded-2xl border border-slate-300 bg-white">
+          <summary className="flex min-h-[48px] cursor-pointer list-none items-center gap-2 px-4 text-[14px] font-bold">
+            <span className="text-slate-500 transition group-open:rotate-90">▸</span>내 할 일
+            <span className={`rounded-full px-2.5 py-0.5 text-[12.5px] ${warnN ? 'bg-[#fff1d1] text-[#8f5a00]' : 'bg-slate-100 text-slate-600'}`}>{todo.length}{warnN ? ` · ▲ ${warnN}` : ''}</span>
+          </summary>
+          <div className="px-4 pb-3">
+            {todo.length === 0 ? <p className="text-[14px] text-slate-500">없음</p> : (
+              <ul className="flex flex-col gap-1.5">{[...todo].sort((a, b) => Number(!!b.warn) - Number(!!a.warn)).map((t) => (
+                <li key={t.text} className={`flex items-center gap-3 rounded-xl px-3 py-2 text-[14px] ${t.warn ? 'bg-[#fff6e0] font-semibold text-[#9a6200]' : 'bg-slate-50'}`}>
+                  <span className="min-w-0 flex-1">{t.text}</span>
+                  {t.go && <button onClick={t.go} className="h-8 shrink-0 rounded-full border border-slate-300 bg-white px-4 text-[13px] font-semibold">열기</button>}
+                </li>))}</ul>
+            )}
+          </div>
+        </details>
 
         <div className={CARD.replace('mx-auto max-w-[1100px] ', '')}>
           <h2 className="text-[19px] font-bold">{tab}</h2>

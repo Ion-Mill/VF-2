@@ -6,13 +6,14 @@ import type { Eq, SimEvent, Twin } from './live';
 import { SIM, md, simIso, tsOf } from './live';
 import type { AlertRec, Level, Notice } from './model';
 import { USERS } from './model';
-import type { WorkOrder } from './workflow';
+import type { WorkOrder, WorkRecord } from './workflow';
 
 export const RULE_NAME: Record<string, string> = {
   REPEAT_ALARM: '반복 알람 (1단계)', REPEAT_ALARM_2: '반복 알람 2단계', CAUSE_CHECK_REQUEST: '원인 점검 요청', TARGET_RISK: '목표 미달 위험',
   BOTTLENECK_MOVE: '병목 발생·이동', WIP_WARN: '재공 경고', LOT_DUE_RISK: '로트 납기 지연 위험', STOCK_LOW: '재고 부족', PM_DUE_SOON: '예방 정비 기한 하루 전',
   PM_OVERDUE: '예방 정비 기한 넘김', TOOL_LIFE_90: '공구 수명', APPROVAL_WAIT_30M: '승인 대기', APPROVAL_WAIT_2H: '승인 대기 2시간', WO_ASSIGNED: '작업지시서 배정',
-  WO_DRAFT_READY: '작업지시서 초안 검토', DAILY_REPORT_PENDING: '일일 보고서 확정 요청', DOC_REVISED: '문서 수정', SPC_OUT: '관리도 이상',
+  WO_DRAFT_READY: '작업지시서 초안 검토', WO_APPROVAL_REQUEST: '작업지시서 승인 요청', WR_CONFIRM_PENDING: '작업기록서 확정 전', WR_CHECK_REQUEST: '작업기록서 확인 요청',
+  PM_RECORD_CHECK: '예방 정비 실시 기록 확인', DAILY_REPORT_PENDING: '일일 보고서 확정 요청', DOC_REVISED: '문서 수정', SPC_OUT: '관리도 이상',
   SHIFT_REPORT_PENDING: '교대 보고서 확정 요청', CMM_FILE_ERROR: 'CMM 결과 파일 오류', CMM_JUDGE_MISMATCH: 'CMM 판정 불일치', CMM_NO_RESULT: 'CMM 결과 미수신',
   ALARM_STOP: '알람 발생 (정지)', ALARM_WARN: '알람 발생 (주의)', ALARM_GUIDE: '알람 발생 (조작 안내)',
 };
@@ -20,7 +21,7 @@ export const RULE_NAME: Record<string, string> = {
 const RANK_OF: Record<string, string> = {
   TARGET_RISK: '2', BOTTLENECK_MOVE: '2', WIP_WARN: '2', LOT_DUE_RISK: '2', REPEAT_ALARM_2: '3', CAUSE_CHECK_REQUEST: '3', REPEAT_ALARM: '3',
   SPC_OUT: '3', TOOL_LIFE_90: '3', PM_OVERDUE: '3', STOCK_LOW: '3', APPROVAL_WAIT_2H: '3', CMM_FILE_ERROR: '3', CMM_JUDGE_MISMATCH: '3', CMM_NO_RESULT: '3',
-  ALARM_GUIDE: '4', PM_DUE_SOON: '4', APPROVAL_WAIT_30M: '4', WO_ASSIGNED: '4', WO_DRAFT_READY: '4', DAILY_REPORT_PENDING: '4', SHIFT_REPORT_PENDING: '4', DOC_REVISED: '4',
+  ALARM_GUIDE: '4', PM_DUE_SOON: '4', APPROVAL_WAIT_30M: '4', WO_ASSIGNED: '4', WO_DRAFT_READY: '4', WO_APPROVAL_REQUEST: '4', WR_CONFIRM_PENDING: '4', WR_CHECK_REQUEST: '4', PM_RECORD_CHECK: '4', DAILY_REPORT_PENDING: '4', SHIFT_REPORT_PENDING: '4', DOC_REVISED: '4',
 };
 const LEVEL_OF: Record<string, Level> = { URGENT: '긴급', CAUTION: '주의', INFO: '참고' };
 // 예방 정비 기한 알림은 주 1회 이상 주기 항목만 (매일·교대마다 하는 점검은 교대 점검표로 봄, 생성기 config notifications.pm_alert_cycles)
@@ -29,7 +30,7 @@ const levelRule = (r: string): Level => (RANK_OF[r] === '4' ? '참고' : '주의
 
 const mk = (rule: string, key: string, text: string, roles: Role[], extra: Partial<Notice> = {}): Notice => ({
   id: `${rule}:${key}`, rule, ruleName: RULE_NAME[rule] ?? rule, level: levelRule(rule), rank: RANK_OF[rule] ?? '3', at: simIso(), ts: SIM.now(),
-  text, roles, delivery: ['WO_ASSIGNED', 'WO_DRAFT_READY', 'APPROVAL_WAIT_30M', 'APPROVAL_WAIT_2H', 'SHIFT_REPORT_PENDING', 'DAILY_REPORT_PENDING', 'DOC_REVISED'].includes(rule) ? 'BUBBLE' : 'LIST',
+  text, roles, delivery: ['WO_ASSIGNED', 'WO_DRAFT_READY', 'WO_APPROVAL_REQUEST', 'WR_CHECK_REQUEST', 'APPROVAL_WAIT_30M', 'APPROVAL_WAIT_2H', 'SHIFT_REPORT_PENDING', 'DAILY_REPORT_PENDING', 'DOC_REVISED'].includes(rule) ? 'BUBBLE' : 'LIST',
   handled: false, ...extra,
 });
 
@@ -48,9 +49,24 @@ export const fromPast = (n: Record<string, string> & { to: string[] }): Notice =
     id: `past:${n.notification_id}`, rule, ruleName: RULE_NAME[rule] ?? rule, level, rank: rule === 'ALARM_STOP' ? '1' : RANK_OF[rule] ?? (level === '참고' ? '4' : '3'),
     at: n.raised_at, ts: tsOf(n.raised_at), text: n.message.replace(/^\[[^\]]+\]\s*/, ''), related: n.related_info || undefined,
     machine: eq ? ID_OF[eq] : undefined, roles: roles.length ? roles : ['SUP', 'MGR'], userIds: n.to, delivery: n.rule_code.match(/^(WO_|APPROVAL|DAILY|SHIFT|DOC_)/) ? 'BUBBLE' : 'LIST',
-    handled: false, past: true, count: Number(n.repeat_count) || undefined,
+    handled: false, past: true, count: Number(n.repeat_count) || undefined, keys: n.pm_task_id ? [n.pm_task_id] : undefined,
     open: rule === 'DAILY_REPORT_PENDING' ? { screen: 'daily', key: dailyKey(n) } : rule.startsWith('PM_') ? { screen: 'pm' } : rule === 'STOCK_LOW' ? { screen: 'inventory' } : rule === 'TOOL_LIFE_90' ? { screen: 'tools' } : undefined,
   };
+};
+
+// 9월 미처리 "예방 정비 기한 하루 전" 알림을 같은 기한 날짜끼리 1건으로 묶는다 (FR-AST-02-08, 2026-10-20)
+export const groupPmPast = (ns: Notice[]): Notice[] => {
+  const groups = new Map<string, Notice[]>();
+  const rest = ns.filter((n) => {
+    const due = n.rule === 'PM_DUE_SOON' ? n.text.match(/기한 (\d{2}\/\d{2})/)?.[1] : undefined;
+    if (!due) return true;
+    groups.set(due, [...(groups.get(due) ?? []), n]);
+    return false;
+  });
+  return [...rest, ...[...groups].map(([due, g]) => ({
+    ...g[0], id: `past:PM_DUE_SOON:${due}`, text: `기한 ${due} 예방 정비 ${g.length}건`, machine: undefined,
+    related: g.map((x) => x.text.replace(/\s*—\s*기한.*$/, '')).join(' · '), keys: g.flatMap((x) => x.keys ?? []),
+  }))];
 };
 
 // 사건(API-STR-01)으로 생기는 알림: 공구 수명 90%, 병목 발생·이동
@@ -70,8 +86,8 @@ export const fromEvents = (evs: SimEvent[]): Notice[] => {
 
 export interface RuleCtx {
   twin: Twin | null; inv: { items: { item_no: string; item_name: string; stock_qty: number; safety_stock: number; unit: string; owner_role: string; low: boolean; low_at_start?: boolean }[] } | null;
-  pm: { tasks: { pm_task_id: string; equipment_id: string; item_name: string; cycle_code: string; next_due: string | null; state: string | null }[] } | null;
-  wos: WorkOrder[]; shiftReports: { shift_id: string; status: string }[] | null; dailyReports: { work_date: string; status: string }[] | null;
+  pm: { tasks: { pm_task_id: string; equipment_id: string; item_name: string; cycle_code: string; next_due: string | null; state: string | null }[]; today_records?: { pm_record_id?: string; pm_task_id: string; status: string }[] } | null;
+  wos: WorkOrder[]; wrs: WorkRecord[]; shiftReports: { shift_id: string; status: string }[] | null; dailyReports: { work_date: string; status: string }[] | null;
   cmm: { imports: { cmm_import_id: number; status: string; error_text: string | null; file_name: string; received_at: string; lot_no: string }[] } | null;
   quality: { items: { item_seq: string; item_name: string; out?: number[]; n: number; values?: { at: string; v: number }[] }[]; live_from?: string } | null;
   alerts: AlertRec[]; pastAlarms: { equipment_id: string; alarm_code: string; occurred_at: string }[]; notices: Notice[];
@@ -108,28 +124,59 @@ export function derive(c: RuleCtx): { add: Notice[]; resolve: string[] } {
     else { resolve.push(id); c.notices.filter((n) => n.past && n.rule === 'STOCK_LOW' && !n.handled && n.text.includes(i.item_name)).forEach((n) => resolve.push(n.id)); }
   });
   // 예방 정비 기한 하루 전 / 넘김 (주 1회 이상 주기 항목만). 9월에 같은 항목으로 이미 알렸으면 다시 내지 않는다
+  // 하루 전은 같은 기한 날짜끼리 1건으로 묶는다 (FR-AST-02-08, 2026-10-20). 묶인 항목이 모두 끝나거나(OK) 기한을 넘기면 자동 처리
   const today = simIso().slice(0, 10);
   const samePm = (n: Notice, x: { equipment_id: string; item_name: string }) => n.machine === ID_OF[x.equipment_id as Eq] && n.text.includes(x.item_name);
-  c.pm?.tasks.filter((x) => PM_ALERT_CYCLES.includes(x.cycle_code)).forEach((x) => {
+  const pmTasks = c.pm?.tasks.filter((x) => PM_ALERT_CYCLES.includes(x.cycle_code)) ?? [];
+  const pastKeys = new Set(c.notices.filter((n) => n.past && n.rule === 'PM_DUE_SOON').flatMap((n) => n.keys ?? []));
+  const soon = new Map<string, typeof pmTasks>();
+  pmTasks.forEach((x) => {
     if (x.state === 'OVERDUE') {
       if (!c.notices.some((n) => n.past && n.rule === 'PM_OVERDUE' && samePm(n, x)))
         add.push(mk('PM_OVERDUE', x.pm_task_id, `${x.equipment_id} ${x.item_name} — 기한 ${md(x.next_due)} 넘김`, ['MNT', 'SUP'], { machine: ID_OF[x.equipment_id as Eq], open: { screen: 'pm' } }));
-      c.notices.filter((n) => n.rule === 'PM_DUE_SOON' && !n.handled && samePm(n, x)).forEach((n) => resolve.push(n.id)); // 기한을 넘기면 "하루 전"은 풀림
     }
     // 하루 전에만 (기한 당일 항목은 전날 08:00에 이미 알림)
-    else if (x.state === 'DUE_SOON' && (x.next_due ?? '').slice(0, 10) > today && !c.notices.some((n) => n.past && n.rule === 'PM_DUE_SOON' && samePm(n, x))) add.push(mk('PM_DUE_SOON', `${x.pm_task_id}:${x.next_due}`, `${x.equipment_id} ${x.item_name} — 기한 ${md(x.next_due)}`, ['MNT'], { machine: ID_OF[x.equipment_id as Eq], open: { screen: 'pm' } }));
+    else if (x.state === 'DUE_SOON' && (x.next_due ?? '').slice(0, 10) > today && !pastKeys.has(x.pm_task_id)) {
+      const d = (x.next_due ?? '').slice(0, 10);
+      soon.set(d, [...(soon.get(d) ?? []), x]);
+    }
     if (x.state === 'OK') {
       resolve.push(`PM_OVERDUE:${x.pm_task_id}`);
-      c.notices.filter((n) => n.past && n.rule.startsWith('PM_') && !n.handled && n.text.includes(x.item_name) && n.machine === ID_OF[x.equipment_id as Eq]).forEach((n) => resolve.push(n.id));
+      c.notices.filter((n) => n.past && n.rule === 'PM_OVERDUE' && !n.handled && n.text.includes(x.item_name) && n.machine === ID_OF[x.equipment_id as Eq]).forEach((n) => resolve.push(n.id));
     }
   });
+  soon.forEach((xs, d) => add.push(mk('PM_DUE_SOON', d, `기한 ${md(d)} (내일) 예방 정비 ${xs.length}건`, ['MNT'], { open: { screen: 'pm' }, keys: xs.map((x) => x.pm_task_id), related: xs.map((x) => `${x.equipment_id} ${x.item_name}`).join(' · ') })));
+  // 묶음(하루 전): 묶인 항목 중 아직 하루 전 상태인 것이 없으면 풀림
+  const stillSoon = new Set(pmTasks.filter((x) => x.state === 'DUE_SOON').map((x) => x.pm_task_id));
+  c.notices.filter((n) => n.rule === 'PM_DUE_SOON' && !n.handled && n.keys?.length && n.keys.every((k) => !stillSoon.has(k))).forEach((n) => resolve.push(n.id));
+  // 묶기 전(항목마다 1건) 방식으로 이미 쌓인 알림은 묶음 알림으로 바뀌었으므로 풀어 둔다 (시연 진행 중에 코드가 바뀐 경우)
+  c.notices.filter((n) => n.rule === 'PM_DUE_SOON' && !n.handled && (n.past ? !n.id.startsWith('past:PM_DUE_SOON:') : !n.keys)).forEach((n) => resolve.push(n.id));
+  // 예방 정비 실시 기록 확인 (오늘 끝난 정비의 실시 기록이 초안이면 → 보전). 설비마다 1건으로 묶고, 묶인 기록이 모두 확정되면 풀림
+  const recs = c.pm?.today_records ?? [], eqOf = (r: { pm_task_id: string }) => r.pm_task_id.match(/^PM-([A-Z0-9]+-\d{2})-/)?.[1] ?? r.pm_task_id;
+  const drafts = new Map<string, string[]>();
+  recs.filter((r) => r.status === 'DRAFT').forEach((r) => drafts.set(eqOf(r), [...(drafts.get(eqOf(r)) ?? []), r.pm_task_id]));
+  drafts.forEach((ids, eq) => add.push(mk('PM_RECORD_CHECK', `${eq}:${today}`, `${eq} 예방 정비 ${ids.length}건 끝남 — 실시 기록 확인`, ['MNT'], { machine: ID_OF[eq as Eq], open: { screen: 'pm' }, keys: ids })));
+  c.notices.filter((n) => n.rule === 'PM_RECORD_CHECK' && !n.handled && !drafts.has(n.id.split(':')[1])).forEach((n) => resolve.push(n.id));
   // 작업지시서 승인 대기 30분 ⓘ / 2시간 ▲ (SUP, 말풍선)
   c.wos.filter((w) => w.state === 'draft' || w.state === 'editing').forEach((w) => {
     const m = (now - tsOf(w.created)) / 60000;
     if (m >= 30) add.push(mk('APPROVAL_WAIT_30M', w.no, `작업지시서 ${w.no} 승인 대기 30분 넘음`, ['SUP'], { open: { screen: 'wo', key: w.no } }));
     if (m >= 120) add.push(mk('APPROVAL_WAIT_2H', w.no, `작업지시서 ${w.no} 승인 대기 2시간 넘음`, ['SUP', 'MGR'], { level: '주의', open: { screen: 'wo', key: w.no } }));
   });
-  c.wos.filter((w) => !(w.state === 'draft' || w.state === 'editing')).forEach((w) => { resolve.push(`APPROVAL_WAIT_30M:${w.no}`, `APPROVAL_WAIT_2H:${w.no}`); });
+  c.wos.filter((w) => !(w.state === 'draft' || w.state === 'editing')).forEach((w) => { resolve.push(`APPROVAL_WAIT_30M:${w.no}`, `APPROVAL_WAIT_2H:${w.no}`, `WO_APPROVAL_REQUEST:${w.no}`); });
+  // 작업지시서 승인 요청 (초안이 생기면 바로 SUP, 말풍선) — 승인 대기 30분이 뜨면 그쪽으로 넘어가 풀림 (2026-10-20)
+  c.wos.filter((w) => w.state === 'draft' || w.state === 'editing').forEach((w) => {
+    if ((now - tsOf(w.created)) / 60000 < 30) add.push(mk('WO_APPROVAL_REQUEST', w.no, `작업지시서 ${w.no} 승인해 주세요`, ['SUP'], { open: { screen: 'wo', key: w.no }, at: w.created, ts: tsOf(w.created) }));
+    else resolve.push(`WO_APPROVAL_REQUEST:${w.no}`);
+  });
+  // 작업기록서 확정 전 (담당 MNT, 알림 탭만) / 확인 요청 (SUP, 말풍선) — 확정·확인하면 풀림 (2026-10-20)
+  c.wrs.forEach((r) => {
+    const w = c.wos.find((x) => x.no === r.woNo);
+    if (r.state === 'draft' || r.state === 'editing') add.push(mk('WR_CONFIRM_PENDING', r.no, `작업기록서 ${r.no} 확정 전 (작업지시서 ${r.woNo})`, ['MNT'], { userIds: w?.assignee ? [w.assignee] : undefined, open: { screen: 'wr', key: r.woNo } }));
+    else resolve.push(`WR_CONFIRM_PENDING:${r.no}`);
+    if (r.state === 'confirmed') add.push(mk('WR_CHECK_REQUEST', r.no, `작업기록서 ${r.no} 확정됨 — 확인해 주세요`, ['SUP'], { open: { screen: 'wr', key: r.woNo } }));
+    if (r.state === 'checked') resolve.push(`WR_CHECK_REQUEST:${r.no}`);
+  });
   // 교대 보고서 확정 요청 (교대 끝 AI비서 초안 → 그 교대 SUP) / 일일 보고서 확정 요청 (MGR)
   c.shiftReports?.forEach((r) => {
     if (r.status === 'CONFIRMED') resolve.push(`SHIFT_REPORT_PENDING:${r.shift_id}`);

@@ -5,10 +5,10 @@ import type { MachineId } from '@/components/types';
 import type { Role } from './data';
 import type { Twin } from './live';
 import type { AlertRec, Notice, UserRec } from './model';
-import type { SimpleRecord, StopReason, WorkOrder, WorkRecord } from './workflow';
+import type { SimpleRecord, WorkOrder, WorkRecord } from './workflow';
 
-export type Screen = 'line' | 'layout2d' | 'field' | 'cards' | 'card' | 'wo' | 'wr' | 'sr' | 'stops' | 'docs' | 'replay' | 'shift' | 'daily' | 'revs'
-  | 'lots' | 'quality' | 'inventory' | 'tools' | 'pm' | 'idocs' | 'settings';
+export type Screen = 'line' | 'layout2d' | 'field' | 'cards' | 'card' | 'wo' | 'wr' | 'sr' | 'docs' | 'replay' | 'shift' | 'daily' | 'revs'
+  | 'lots' | 'quality' | 'qcap' | 'inventory' | 'tools' | 'pm' | 'idocs' | 'settings';
 
 export interface Settings { bloom: boolean; sound: boolean; cards: boolean; monitorInch: number; distanceM: number; fontScale: boolean; autoReturnSec: number }
 export const DEFAULT_SETTINGS: Settings = { bloom: true, sound: true, cards: false, monitorInch: 55, distanceM: 3, fontScale: false, autoReturnSec: 90 };
@@ -25,10 +25,9 @@ export interface AppCtx {
   alerts: AlertRec[]; notices: Notice[]; myNotices: Notice[];
   wos: WorkOrder[]; wrs: WorkRecord[]; srs: SimpleRecord[];
   putWo: (w: WorkOrder) => void; putWr: (w: WorkRecord) => void; putSr: (r: SimpleRecord) => void;
-  stopReasons: Record<string, StopReason>; setStopReasons: (f: (p: Record<string, StopReason>) => Record<string, StopReason>) => void;
   addNotice: (n: Notice) => void; handleNotice: (id: string, plan?: string) => void; markAlert: (ids: string[], by: string) => void;
   screen: Screen; key: string | null; go: (s: Screen, key?: string | null) => void; back: () => void;
-  openCard: (alertId: string) => void; openWo: (no: string) => void; openRecord: (woNo: string) => void; openSimple: (alertId: string, kind?: 'alarm' | 'cause') => void;
+  openCard: (alertId: string) => void; openWo: (no: string) => void; openRecord: (woNo: string, nav?: boolean) => void; openSimple: (alertId: string, kind?: 'alarm' | 'cause') => void;
   openSource: (doc: string, section: string) => void; openReplay: (atIso: string) => void;
   selectMachine: (m: MachineId | null) => void; selected: MachineId | null;
   toast: (msg: string) => void; settings: Settings; setSettings: (f: (s: Settings) => Settings) => void;
@@ -38,6 +37,7 @@ export interface AppCtx {
   rules: { repeat_days: number; repeat_count: number; target_risk_pct: number; repeat2_days: number; burst: string; flood: string };
   restoreMachine: (m: MachineId) => Promise<void>;
   setReplay: (frame: unknown | null) => void;
+  eve: boolean; // 이브 창 열림 (화면 폭 444px 줄어듦)
 }
 
 export const Ctx = createContext<AppCtx | null>(null);
