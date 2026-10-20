@@ -1263,6 +1263,30 @@ def inventory_items_asked_v22(question: str, rows: list[dict]) -> list[dict]:
     return [x for n in nos for x in rows if x["item_no"] == n]
 
 
+# 품목을 못 찾은 재고 질문 (2026-10-21 시연 테스트): "세척액 재고는 얼마나 부족해?"는 재고 품목에 "세척액"이 없어 부족 품목 목록으로 떨어졌다(질문과 다른 답).
+# "재고" 앞에 명사구가 있고 그것이 일반 말(현재·소모품 …)이나 꾸미는 말이 아니면 "재고로 관리하는 품목이 아니에요"라고 답한다. 아니면 지금처럼 부족 목록.
+INV_GENERIC_V22 = {"현재", "지금", "오늘", "어제", "전체", "모든", "전부", "이번", "최근", "우리", "라인", "공장", "그", "이", "저", "소모품", "정비용", "원자재", "완제품",
+                   "공구", "공구류", "자재", "부품", "재공", "안전", "부족", "부족한", "남은", "모자란", "있는", "없는", "필요한", "낮은", "적은", "얼마나", "몇", "해당", "다른",
+                   "그럼", "그리고", "또", "총", "각", "현"}
+
+
+def inventory_unknown_subject_v22(question: str) -> str | None:
+    """"재고" 바로 앞의 명사구(품목 이름 같은 말) — 일반 말·꾸미는 말(받침 ㄴ으로 끝남: 남은·필요한·들어온)·설비 이름·숫자는 뺀다. 없으면 None."""
+    if "재고" not in question:
+        return None
+    toks = [t for t in re.findall(r"[0-9A-Za-z가-힣·\-]+", question.split("재고")[0])]
+    out = []
+    for t in toks:
+        t = re.sub(r"의$", "", t)
+        if len(t) < 2 or not re.search(r"[가-힣]", t) or t in INV_GENERIC_V22 or EQUIP_RE_V5.search(t):
+            continue
+        last = t[-1]
+        if "가" <= last <= "힣" and (ord(last) - 0xAC00) % 28 == 4:   # 받침 ㄴ: 꾸미는 말(남은·들어온 …)일 가능성이 커서 품목 이름으로 보지 않는다
+            continue
+        out.append(t)
+    return " ".join(out[-2:]) or None
+
+
 def _qty_v22(v: float, unit: str) -> str:
     """수량 글자 — 영문 단위(L)는 띄우고(3.6 L) 한글 단위(개)는 붙인다(2개)."""
     return f"{v:g} {unit}" if unit.isascii() and unit else f"{v:g}{unit}"
@@ -1952,6 +1976,12 @@ def ops_answer(role: str, p: dict, needs: list[str] | None = None,
                 sentences = [inventory_sentence_v22(x) for x in asked]
                 texts.append("재고: " + " ".join(sentences))
                 add("재고 확인", sentences, texts[-1], r)
+                continue
+            unknown = inventory_unknown_subject_v22(p.get("raw", ""))
+            if unknown:   # 품목을 못 찾은 재고 질문: 질문과 다른 부족 목록 대신 품목이 아니라고 알리고 관리하는 품목을 보인다
+                data.append(r_all)
+                texts.append(f"'{unknown}'{josa_v8(unknown, '은', '는')} 재고로 관리하는 품목이 아니에요. 재고로 관리하는 품목: " + ", ".join(str(x.get("name")) for x in r_all["rows"]) + ".")
+                add("재고 확인", [], texts[-1], r_all)
                 continue
             r = r_all
             if "부족" in p.get("raw", ""):
