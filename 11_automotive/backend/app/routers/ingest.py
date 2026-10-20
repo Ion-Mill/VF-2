@@ -9,7 +9,9 @@ from datetime import datetime
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
 
+from ..config import get_settings
 from ..db import Db, get_db
+from ..errors import AppError
 from ..security import service_key
 from ..services import cmm
 from .common import changed
@@ -167,3 +169,20 @@ class CmmIn(BaseModel):
 def cmm_result(body: CmmIn, db: Db = Depends(get_db)):
     """CMM 결과 파일 내용 (공유 폴더 대신 API로 보낼 때)"""
     return cmm.import_text(db, body.file_name, body.content, body.file_ref)
+
+
+class ClockIn(BaseModel):
+    sim_at: datetime
+    speed: float = Field(gt=0, le=1000)
+    paused: bool = False
+
+
+@router.post("/clock")
+def clock(body: ClockIn, db: Db = Depends(get_db)):
+    """시연 시계를 시뮬레이터 시계에 맞춘다 (팀과 논의/비서_시뮬레이터_DB_연결_논의 3-1 "서비스 키로 부르는 시계 입구", 2026-10-20).
+    **시연 모드(MOM_DEMO_MODE=true — 로컬 Docker DB)에서만** 받는다. 공용 DB 서버는 시연 모드가 꺼져 있어 409 → 시연 서버의
+    DB 중계가 스스로 꺼진다 (공용 DB에 시연 사건이 섞이지 않게 하는 잠금)"""
+    if not get_settings().demo_mode:
+        raise AppError(409, "INVALID_STATE", "시연 모드가 아닌 서버 — 시뮬레이터 시계를 받지 않음 (공용 DB 보호)",
+                       {"reason": "NOT_DEMO_MODE"})
+    return db.one("common.sim_set", mode="SIM", sim_at=body.sim_at, speed=body.speed, paused=body.paused)

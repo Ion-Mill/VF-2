@@ -58,7 +58,7 @@ SELECT fn_demo_snapshot() AS tables;
 -- name: is_synthetic
 SELECT is_virtual FROM dataset_info WHERE id = 1;
 
--- 오늘(시연 시계, 한국 시간) 17:00 — 시연 넘기기 목표 (API-SIM-02)
--- name: today_1700
+-- 오늘(시연 시계, 한국 시간) HH:MM — 시연 넘기기 목표 TODAY_17:00·TODAY_20:00 (API-SIM-02, 2026-10-20 — 전 today_1700)
+-- name: today_at
 SELECT t.at, app_now() >= t.at AS past
-  FROM (SELECT (CAST(app_now() AT TIME ZONE 'Asia/Seoul' AS date) + time '17:00') AT TIME ZONE 'Asia/Seoul' AS at) t;
+  FROM (SELECT (CAST(app_now() AT TIME ZONE 'Asia/Seoul' AS date) + CAST(:hhmm AS time)) AT TIME ZONE 'Asia/Seoul' AS at) t;

@@ -53,22 +53,23 @@ def process_file(path: Path, processed_dir: Path, error_dir: Path, run_tx: RunTx
     raw = path.read_bytes()
     text, err = classify(raw)
     dest = free_path(error_dir if err else processed_dir, path.name)
+    # 보관 위치는 "/"로 적는다 (Windows도 읽음 — 운영체제마다 다르게 저장되지 않게, 2026-10-20)
     try:
-        result = run_tx(lambda db: cmm.record_failure(db, path.name, str(dest), err) if err
-                        else cmm.import_text(db, path.name, text or "", str(dest)))
+        result = run_tx(lambda db: cmm.record_failure(db, path.name, dest.as_posix(), err) if err
+                        else cmm.import_text(db, path.name, text or "", dest.as_posix()))
     except Exception:
         dest = free_path(error_dir, path.name)
         path.replace(dest)
         dest.with_suffix(dest.suffix + ".error.txt").write_text(traceback.format_exc(), encoding="utf-8")
         log.exception("CMM 파일 기록 실패 → %s", dest)
-        return {"file_name": path.name, "status": "DB_ERROR", "moved_to": str(dest)}
+        return {"file_name": path.name, "status": "DB_ERROR", "moved_to": dest.as_posix()}
     if result.get("status") == "FAILED" and dest.parent != error_dir:
         # 양식은 맞지만 DB가 기록을 거절한 경우(없는 로트·측정자 모름) → 오류 칸으로, 보관 위치도 고친다
         dest = free_path(error_dir, path.name)
-        run_tx(lambda db: {"n": db.exec("quality.import_set_ref", cmm_import_id=result["cmm_import_id"], file_ref=str(dest))})
+        run_tx(lambda db: {"n": db.exec("quality.import_set_ref", cmm_import_id=result["cmm_import_id"], file_ref=dest.as_posix())})
     path.replace(dest)
     log.info("CMM 파일 %s → %s (%s)", path.name, dest.parent.name, result.get("status"))
-    return {**result, "moved_to": str(dest)}
+    return {**result, "moved_to": dest.as_posix()}
 
 
 def scan_once(inbox: Path, processed_dir: Path, error_dir: Path, seen: dict[str, tuple[int, float]],

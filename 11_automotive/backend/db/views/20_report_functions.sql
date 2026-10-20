@@ -7,31 +7,100 @@
 --           06:00 (스케줄러가 부름) + MGR에게 일일 보고서 확정 요청(DAILY_REPORT_PENDING). 교대 보고서가 확정되면 칸을 다시 채운다
 -- =====================================================================
 
--- 보고 항목 목록 글 (6.43 순서, 개수 자르지 않음 — R-73, FR-AST-COM-21)
---   머리 "전체 N건 (안전 a · 긴급 b · 생산 c · 주의 d · 참고 e)" — N = 묶은 뒤 줄 수, 0-1 오래 방치는 주의에 셈
---   순위마다 한 칸. 빈 순위는 "-", 순위 0이 비면 "잠금·표지 중인 설비 없음" (DOC-01 §3.3, DOC-07 §10.5)
+-- 인계 사항 글 (6.43 순서, 개수 자르지 않음 — R-73, FR-AST-COM-21, FR-PRD-02-08). 생성기(gen/reports.py handover_text)·화면
+--   (Briefing.tsx parseHandover)과 같은 모양 (2026-10-20 — 전에는 머리 + 줄바꿈 목록이라 화면이 못 읽었다):
+--   "0 안전: … / 0-1 오래 방치: a; b / 1 긴급: - / 2 생산 위험: - / 3 주의: … / 4 참고: -"
+--   빈 순위는 "-", 순위 0이 비면 "잠금·표지 중인 설비 없음" (DOC-01 §3.3, DOC-07 §10.5). 머리 "전체 N건 (…)"은 화면이 줄 수로 센다
+--   (묶은 뒤 줄 = v_report_lines). 항목 글 속의 "; "·" / "는 칸 구분과 헷갈리지 않게 바꾼다
+CREATE OR REPLACE FUNCTION fn_report_item_line(p_title text, p_rank text, p_members int) RETURNS text
+LANGUAGE sql IMMUTABLE AS $$
+    SELECT replace(replace(regexp_replace(p_title, '^\[[^]]*\] ', ''), '; ', ', '), ' / ', ' · ')
+           || CASE WHEN p_rank = 'R0_1' THEN ' (24시간 넘게 처리 안 됨)' ELSE '' END
+           || CASE WHEN p_members > 1 THEN format(' (같은 원인 %s건 묶음)', p_members) ELSE '' END;
+$$;
+
 CREATE OR REPLACE FUNCTION fn_report_items_text() RETURNS text
 LANGUAGE sql STABLE AS $$
     WITH ranks(report_rank, rank_order, rank_name) AS (
         VALUES ('R0', 0, '0 안전'), ('R0_1', 1, '0-1 오래 방치'), ('R1', 2, '1 긴급'), ('R2', 3, '2 생산 위험'),
                ('R3', 4, '3 주의'), ('R4', 5, '4 참고')
     ), lines AS (SELECT * FROM v_report_lines)
-    SELECT format('전체 %s건 (안전 %s · 긴급 %s · 생산 %s · 주의 %s · 참고 %s)',
-                  (SELECT count(*) FROM lines),
-                  (SELECT count(*) FROM lines WHERE count_bucket = 'SAFETY'),
-                  (SELECT count(*) FROM lines WHERE count_bucket = 'URGENT'),
-                  (SELECT count(*) FROM lines WHERE count_bucket = 'PRODUCTION'),
-                  (SELECT count(*) FROM lines WHERE count_bucket = 'CAUTION'),
-                  (SELECT count(*) FROM lines WHERE count_bucket = 'INFO'))
-        || E'\n' || string_agg(
-            '[' || k.rank_name || '] ' ||
-            coalesce((SELECT string_agg(E'\n- ' || l.title
-                                        || CASE WHEN l.member_count > 1 THEN format(' (같은 원인 %s건 묶음)', l.member_count) ELSE '' END,
-                                        '' ORDER BY l.rank_group, l.sort_value DESC NULLS LAST, l.occurred_at)
+    SELECT string_agg(k.rank_name || ': ' ||
+            coalesce((SELECT string_agg(fn_report_item_line(l.title, l.report_rank, l.member_count), '; '
+                                        ORDER BY l.rank_group, l.sort_value DESC NULLS LAST, l.occurred_at)
                         FROM lines l WHERE l.report_rank = k.report_rank),
                      CASE WHEN k.report_rank = 'R0' THEN '잠금·표지 중인 설비 없음' ELSE '-' END),
-            E'\n' ORDER BY k.rank_order)
+            ' / ' ORDER BY k.rank_order)
       FROM ranks k;
+$$;
+
+-- 일일 보고서 "오늘의 문제 (전체 N건)" 글 (FR-PRD-04-08, FR-AST-COM-21 — 2026-10-20). 생성기(gen/reports.py issues_text)·화면
+--   (Reports.tsx splitIssues)·시연 서버(split_issues)와 같은 모양:
+--   "전체 N건 (안전 a · 긴급 b · 생산 c · 주의 d · 참고 e): 1) [긴급] … / 2) [생산] … / …" (없으면 "전체 0건")
+--   그날(그 생산일 교대 구간)에 생긴 문제를 순위 순으로 전부 모은다:
+--   [안전] 지금 잠금·표지 중인 설비 / [긴급] 정지 등급 알람이 있는 고장 그룹 5분 이상 정지 (긴 순) / [생산] 교대 실적이 목표 90% 아래,
+--   병목 원인 ①~③ / [주의] 그날 보류한 로트, 주의 등급 알람 수, 하루 끝에 남은 주의 일(0-1 포함, 위와 겹치면 뺌) / [참고] 조작 안내 알람 수
+CREATE OR REPLACE FUNCTION fn_daily_issues_text(p_work_date date) RETURNS text
+LANGUAGE sql STABLE AS $$
+    WITH w AS (SELECT min(start_at) AS f, max(end_at) AS t FROM shift WHERE work_date = p_work_date),
+    stops AS (
+        SELECT st.equipment_id, dr.reason_name, st.start_at,
+               round(extract(epoch FROM (least(coalesce(st.end_at, app_now()), w.t) - greatest(st.start_at, w.f))) / 60)::int AS minutes,
+               -- 손실 = 보고서 구간 안 정지 분 ÷ 기준 사이클 (report_stops와 같음 — 1020 33장 4번: 생성기는 구간 밖까지 세는 것이 틀림)
+               round((extract(epoch FROM (least(coalesce(st.end_at, app_now()), w.t) - greatest(st.start_at, w.f))) / 60
+                      / nullif(e.std_cycle_min, 0))::numeric, 1) AS loss
+          FROM equipment_state_log st CROSS JOIN w
+          JOIN equipment e USING (equipment_id)
+          JOIN downtime_reason dr ON dr.reason_code = coalesce(st.reason_code, st.reason_suggested_code)
+          JOIN alarm_event a ON a.alarm_event_id = st.alarm_event_id AND a.severity_at_event = 'STOP'
+         WHERE dr.reason_group = 'FAILURE' AND st.state_code <> 'RUN'
+           AND st.start_at < w.t AND coalesce(st.end_at, 'infinity'::timestamptz) > w.f
+           AND coalesce(st.end_at, app_now()) - st.start_at >= interval '5 minutes'
+    ), items(bucket, ord, sub, at, txt) AS (
+        SELECT '안전', 0, 0, l.occurred_at, fn_report_item_line(l.title, l.report_rank, l.member_count)
+          FROM v_report_lines l WHERE l.report_rank = 'R0'
+        UNION ALL
+        SELECT '긴급', 1, -s.minutes, s.start_at,
+               format('%s 고장 %s분 (%s, 고장 손실 약 %s개)', s.equipment_id, s.minutes, s.reason_name, s.loss::float8)
+          FROM stops s WHERE s.minutes > 0
+        UNION ALL
+        SELECT '생산', 2, 0, sh.start_at, format('%s 실적 %s개 — 목표 %s개의 90%% 아래', r.shift_id, r.actual_qty, r.target_qty)
+          FROM shift_report r JOIN shift sh USING (shift_id)
+         WHERE sh.work_date = p_work_date AND r.actual_qty < r.target_qty * 0.9
+        UNION ALL
+        SELECT '생산', 2, 1, b.changed_at,
+               format('%s 병목 %s — %s', to_char(b.changed_at AT TIME ZONE 'Asia/Seoul', 'HH24:MI'), b.new_process_code,
+                      fn_bottleneck_cause_ko(b.cause_code))
+          FROM bottleneck_log b CROSS JOIN w
+         WHERE b.changed_at >= w.f AND b.changed_at < w.t AND b.cause_code IN ('C1','C2','C3')
+        UNION ALL
+        SELECT '주의', 3, 0, h.held_at, format('로트 보류 %s — %s', h.lot_no, h.hold_reason)
+          FROM lot_hold h CROSS JOIN w WHERE h.held_at >= w.f AND h.held_at < w.t
+        UNION ALL
+        SELECT '주의', 3, 1, min(a.occurred_at),
+               format('주의 등급 알람 %s건 (%s)', count(*), string_agg(DISTINCT a.alarm_code, ', ' ORDER BY a.alarm_code))
+          FROM alarm_event a CROSS JOIN w
+         WHERE a.occurred_at >= w.f AND a.occurred_at < w.t AND a.severity_at_event = 'WARN'
+        HAVING count(*) > 0
+        UNION ALL
+        SELECT '주의', 3, 2, l.occurred_at, fn_report_item_line(l.title, l.report_rank, l.member_count)
+          FROM v_report_lines l
+         WHERE l.report_rank IN ('R0_1','R3')
+           AND NOT (l.item_kind = 'LOT' AND EXISTS (SELECT 1 FROM lot_hold h, w WHERE h.lot_no = l.lot_no
+                                                     AND h.held_at >= w.f AND h.held_at < w.t))
+        UNION ALL
+        SELECT '참고', 4, 0, min(a.occurred_at), format('조작 안내 알람 %s건', count(*))
+          FROM alarm_event a CROSS JOIN w
+         WHERE a.occurred_at >= w.f AND a.occurred_at < w.t AND a.severity_at_event = 'GUIDE'
+        HAVING count(*) > 0
+    ), n AS (SELECT i.*, row_number() OVER (ORDER BY ord, sub, at, txt) AS no FROM items i)
+    SELECT CASE WHEN count(*) = 0 THEN '전체 0건' ELSE
+           format('전체 %s건 (안전 %s · 긴급 %s · 생산 %s · 주의 %s · 참고 %s): ', count(*),
+                  count(*) FILTER (WHERE bucket = '안전'), count(*) FILTER (WHERE bucket = '긴급'),
+                  count(*) FILTER (WHERE bucket = '생산'), count(*) FILTER (WHERE bucket = '주의'),
+                  count(*) FILTER (WHERE bucket = '참고'))
+           || string_agg(format('%s) [%s] %s', no, bucket, replace(txt, ' / ', ' · ')), ' / ' ORDER BY no) END
+      FROM n;
 $$;
 
 -- 교대 보고서 초안. 이미 있으면 그대로 둔다. 반환: 'CREATED' / 'EXISTS'
@@ -54,6 +123,7 @@ BEGIN
     SELECT coalesce(jsonb_object_agg(equipment_id, availability_pct), '{}'::jsonb) INTO v_avail
       FROM v_shift_equipment_kpi WHERE shift_id = p_shift_id AND process_code = 'OP-30';
     v_handover := fn_report_items_text();
+    PERFORM fn_check_cpk();      -- 교대마다 Cpk → 기준 미달 특성은 전수 측정 (DOC-06 §5.2, 2026-10-20)
     -- 생산 칸 목표 = 총 목표 (목표 + 이월, R-88 — FR-PRD-02-02)
     v_content := jsonb_build_object('target_qty', s.target_qty + s.carry_over_qty, 'shift_target_qty', s.target_qty,
                                     'carry_over_qty', s.carry_over_qty, 'actual_qty', v_actual, 'defect_qty', v_defect,
@@ -113,7 +183,7 @@ BEGIN
     -- 고장 손실 = 고장 정지 손실 합, 속도 손실 = 병목 구간 속도 손실 합 (추정 — 일일 보고서는 따로 보인다)
     v_fail := fn_failure_loss_qty(v_start, v_end);
     v_speed := fn_speed_loss_qty(v_start, v_end);
-    v_issues := fn_report_items_text();
+    v_issues := fn_daily_issues_text(p_work_date);
     INSERT INTO daily_report (work_date, status, target_qty, actual_qty, defect_qty, oee_pct, failure_loss_qty, speed_loss_qty,
                               issues_summary, current_version)
     VALUES (p_work_date, 'AI_DRAFT', coalesce(d.daily_target_qty, 0), v_actual, v_defect, coalesce(v_oee, 0), v_fail, v_speed,
@@ -347,8 +417,13 @@ BEGIN
     IF v_id IS NULL THEN
         SELECT count(*), string_agg(equipment_id || ' ' || item_name, ' · ' ORDER BY equipment_id, pm_task_id) INTO v_cnt, v_items
           FROM pm_task WHERE pm_task_id = ANY (v_tasks);
+        -- 받는 사람 = MNT + 작업자 담당 항목(DOC-04 매일·매주 일부)이 있으면 그 설비 공정의 작업자 (1015 DOC-04, 2026-10-20)
         v_id := fn_raise_notification('PM_DUE_SOON', format('기한 %s (내일) 예방 정비 %s건', to_char(v_due, 'MM/DD'), v_cnt),
-                                      '{}'::jsonb, v_at, p_related_info => v_items);
+                                      '{}'::jsonb, v_at, p_related_info => v_items,
+                                      p_recipients => ARRAY(SELECT u.user_id FROM app_user u WHERE u.is_active AND (u.role_code = 'MNT'
+                                          OR (u.role_code = 'OPR' AND EXISTS (SELECT 1 FROM pm_task t WHERE t.pm_task_id = ANY (v_tasks)
+                                               AND t.default_role = 'OPR'
+                                               AND fn_equipment_process(t.equipment_id) IN (u.home_process_code, u.home_process_code_2))))));
         IF v_id IS NULL THEN RETURN 0; END IF;          -- 규칙이 꺼져 있음
         v_new := 1;
     END IF;
@@ -367,24 +442,33 @@ END $$;
 -- 예방 정비 실시 기록 알림 (PM_RECORD_CHECK, 참고·알림 탭만, MNT): 실시 기록이 초안으로 생기면 그 설비의 열린 알림 1건에
 --   항목을 더한다 (없으면 새로, "VF2-01 예방 정비 2건 끝남 — 실시 기록 확인"). 묶인 항목의 초안 기록이 모두 확정되면 자동 처리.
 --   확정되면 예방 정비 기한 하루 전 묶음도 다시 본다 (fn_close_pm_due_soon)
+-- 예방 정비 실시 기록 확인 문서 알림 (그 설비의 열린 알림에 항목을 더한다). 실시 기록이 생길 때와 [정비 끝] 때 (2026-10-20 함수로 뺌)
+CREATE OR REPLACE FUNCTION fn_raise_pm_record_check(p_pm_task_id text) RETURNS bigint LANGUAGE plpgsql AS $$
+DECLARE v_eq text; v_id bigint;
+BEGIN
+    SELECT equipment_id INTO v_eq FROM pm_task WHERE pm_task_id = p_pm_task_id;
+    SELECT notification_id INTO v_id FROM notification
+     WHERE rule_code = 'PM_RECORD_CHECK' AND equipment_id = v_eq AND NOT is_processed ORDER BY raised_at DESC LIMIT 1;
+    IF v_id IS NULL THEN
+        v_id := fn_raise_notification('PM_RECORD_CHECK', format('%s 예방 정비 1건 끝남 — 실시 기록 확인', v_eq),
+                                      jsonb_build_object('equipment_id', v_eq), NULL);
+        IF v_id IS NULL THEN RETURN NULL; END IF;    -- 규칙이 꺼져 있음
+    END IF;
+    INSERT INTO notification_pm_task (notification_id, pm_task_id) VALUES (v_id, p_pm_task_id) ON CONFLICT DO NOTHING;
+    UPDATE notification SET message = format('%s 예방 정비 %s건 끝남 — 실시 기록 확인', v_eq,
+                                             (SELECT count(*) FROM notification_pm_task WHERE notification_id = v_id))
+     WHERE notification_id = v_id;
+    RETURN v_id;
+END $$;
+
 CREATE OR REPLACE FUNCTION trg_pm_record_doc_alert() RETURNS trigger LANGUAGE plpgsql AS $$
-DECLARE v_eq text; v_id bigint; v_ids bigint[];
+DECLARE v_ids bigint[];
 BEGIN
     IF current_setting('app.loading', true) IS NOT DISTINCT FROM 'on' THEN RETURN NULL; END IF;
     IF TG_OP = 'INSERT' THEN
-        IF NEW.status <> 'DRAFT' THEN RETURN NULL; END IF;
-        SELECT equipment_id INTO v_eq FROM pm_task WHERE pm_task_id = NEW.pm_task_id;
-        SELECT notification_id INTO v_id FROM notification
-         WHERE rule_code = 'PM_RECORD_CHECK' AND equipment_id = v_eq AND NOT is_processed ORDER BY raised_at DESC LIMIT 1;
-        IF v_id IS NULL THEN
-            v_id := fn_raise_notification('PM_RECORD_CHECK', format('%s 예방 정비 1건 끝남 — 실시 기록 확인', v_eq),
-                                          jsonb_build_object('equipment_id', v_eq), NULL);
-            IF v_id IS NULL THEN RETURN NULL; END IF;    -- 규칙이 꺼져 있음
-        END IF;
-        INSERT INTO notification_pm_task (notification_id, pm_task_id) VALUES (v_id, NEW.pm_task_id) ON CONFLICT DO NOTHING;
-        UPDATE notification SET message = format('%s 예방 정비 %s건 끝남 — 실시 기록 확인', v_eq,
-                                                 (SELECT count(*) FROM notification_pm_task WHERE notification_id = v_id))
-         WHERE notification_id = v_id;
+        -- [정비 시작]이 만든 기록은 정비가 끝날 때(fn_pm_end) 알린다
+        IF NEW.status <> 'DRAFT' OR current_setting('app.pm_starting', true) IS NOT DISTINCT FROM 'on' THEN RETURN NULL; END IF;
+        PERFORM fn_raise_pm_record_check(NEW.pm_task_id);
     ELSIF NEW.status = 'CONFIRMED' AND OLD.status = 'DRAFT' THEN
         SELECT array_agg(n.notification_id) INTO v_ids FROM notification n
          WHERE n.rule_code = 'PM_RECORD_CHECK' AND NOT n.is_processed
@@ -441,6 +525,12 @@ BEGIN
             v_n := v_n + 1;
         END IF;
     END LOOP;
+    -- 반복 알람 효과 확인 (FR-AST-02-18·R-70, 2026-10-20): 조치 계획(1단계)·원인 점검 확정(2단계) 뒤 7일 동안 재발이 없으면
+    --   "효과 있음"으로 닫는다 (전에는 다음 알람이 와야만 바뀌었다)
+    UPDATE notification SET repeat_stage_status = 'EFFECTIVE'
+     WHERE repeat_stage_status IN ('S1_CLOSED','S2_CHECKED') AND effect_check_due_at IS NOT NULL AND effect_check_due_at <= v_at;
+    -- 로트 납기 지연 위험 (FR-AST-02-06, 2026-10-20 — views/30_live_rules.sql)
+    v_n := v_n + fn_raise_lot_due_risk(v_at);
     -- CMM 결과 미수신 (대기 시간은 [선택 필요: 기술 회의])
     FOR r IN SELECT instruction_id, lot_no, part_seq FROM cmm_instruction
               WHERE status = 'STARTED' AND started_at < v_at - make_interval(mins => p_cmm_wait_min) LOOP

@@ -64,6 +64,14 @@ def lots(status: str | None = None, order_no: str | None = None, limit: int = Qu
     return db.all("production.lots", status=status, order_no=order_no, limit=limit)
 
 
+@router.get("/lots/suspects")
+def suspect_lots(since: datetime | None = Query(None, description="이 시각 뒤 (비우면 7일)"),
+                 _: Actor = Depends(require("LOT_TRACE", "VIEW")), db: Db = Depends(get_db)):
+    """의심 로트 제안 목록 (API-LOT-01, FR-PRD-05-05, 2026-10-20): 정지 등급 알람 때 그 설비에서 가공 중이던 로트(연쇄 알람은 첫
+    알람부터)·공구 수명을 넘겨 가공한 로트. 제안만 — 알림을 만들지 않고 보류는 반장이 정한다"""
+    return db.all("production.suspect_lots", alarm_event_id=None, lot_no=None, since=since)
+
+
 @router.get("/lots/{lot_no}")
 def lot(lot_no: str, _: Actor = Depends(require("PRODUCTION", "VIEW")), db: Db = Depends(get_db)):
     """로트 1개 (완료 수량·검사 방식·출하 수량)"""
@@ -72,8 +80,9 @@ def lot(lot_no: str, _: Actor = Depends(require("PRODUCTION", "VIEW")), db: Db =
 
 @router.get("/lots/{lot_no}/trace")
 def trace(lot_no: str, _: Actor = Depends(require("LOT_TRACE", "VIEW")), db: Db = Depends(get_db)):
-    """로트 추적 (LOT-01, FR-PRD-05): 원자재 → 공정·설비·작업자 → 검사 → 보류 → 출하"""
-    return must(db.one("production.lot_trace", lot_no=lot_no), "로트")
+    """로트 추적 (LOT-01, FR-PRD-05): 원자재 → 공정·설비·작업자 → 검사 → 보류 → 출하 + 의심 로트 제안 이유(suspect, 2026-10-20)"""
+    row = must(db.one("production.lot_trace", lot_no=lot_no), "로트")
+    return {**row, "suspect": db.all("production.suspect_lots", alarm_event_id=None, lot_no=lot_no, since=None)}
 
 
 @router.post("/lots/{lot_no}/judge")
@@ -132,6 +141,14 @@ def scrap_propose(lot_no: str, body: ScrapIn, actor: Actor = Depends(require("LO
     """폐기 제안 (LOT-03, SUP) → 승인 (MGR)"""
     db.scalar("production.scrap_propose", hold_id=_open_hold(db, lot_no), actor=actor.user_id, qty=body.qty)
     return {"lot": db.one("production.lot", lot_no=lot_no)}
+
+
+@router.post("/holds/{hold_id}/resume-normal")
+def resume_normal(hold_id: int, actor: Actor = Depends(require("LOT_HOLD", "INPUT")), db: Db = Depends(get_db)):
+    """강화 → 보통 검사 복귀 (R-29, FR-QLT-01-07, DOC-06 3.3 — 2026-10-20). 반장이 확인한다. ⓐ 보류 뒤 원인 조치 기록(확정된
+    작업기록서·공구 교체) ⓑ 보류 로트가 해제·폐기로 끝나고 강화한 다음 로트가 모두 합격 — 둘 다 맞아야 한다 (아니면 INVALID_STATE)"""
+    db.scalar("production.resume_normal", hold_id=hold_id, actor=actor.user_id)
+    return must(db.one("production.hold", hold_id=hold_id), "보류")
 
 
 @router.post("/lots/{lot_no}/scrap/approve")

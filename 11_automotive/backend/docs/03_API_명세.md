@@ -87,7 +87,7 @@
 ## 4. 엔드포인트 목록
 
 <!-- BEGIN:api -->
-<!-- tools/gen_api_doc.py 가 만든 표 (137개). 가짜 fastapi로 import -->
+<!-- tools/gen_api_doc.py 가 만든 표 (145개). -->
 | 방법 | 경로 | 권한 (role_permission target·action) | 설명 |
 |---|---|---|---|
 | POST | `/api/auth/login` | 없음 | 아이디·비밀번호 로그인 → JWT. 실패도 접근 기록에 남는다 |
@@ -130,13 +130,15 @@
 | GET | `/api/kpi` | `KPI·VIEW` | 지표 (LINE-04): OEE·가동률·성능·양품률(교대별)과 주의 표시, MTTR·MTBF(설비별 30일, 주의 = MTTR 120분 초과). |
 | GET | `/api/kpi/stops` | `KPI·VIEW` | 정지 사유 순위 (손실 정지만, 계획 정지 제외). 3D 화면에서는 뺐고 교대 보고서 필수 정지 칸·비서 질문에 쓴다 |
 | GET | `/api/lots` | `PRODUCTION·VIEW` | 로트 목록 (LOT-01) — 작업지시·상태로 거르기 |
+| GET | `/api/lots/suspects` | `LOT_TRACE·VIEW` | 의심 로트 제안 목록 (API-LOT-01, FR-PRD-05-05, 2026-10-20): 정지 등급 알람 때 그 설비에서 가공 중이던 로트(연쇄 알람은 첫 |
 | GET | `/api/lots/{lot_no}` | `PRODUCTION·VIEW` | 로트 1개 (완료 수량·검사 방식·출하 수량) |
-| GET | `/api/lots/{lot_no}/trace` | `LOT_TRACE·VIEW` | 로트 추적 (LOT-01, FR-PRD-05): 원자재 → 공정·설비·작업자 → 검사 → 보류 → 출하 |
+| GET | `/api/lots/{lot_no}/trace` | `LOT_TRACE·VIEW` | 로트 추적 (LOT-01, FR-PRD-05): 원자재 → 공정·설비·작업자 → 검사 → 보류 → 출하 + 의심 로트 제안 이유(suspect, 2026-10-20) |
 | POST | `/api/lots/{lot_no}/judge` | `QUALITY·CHECK` | 로트 판정 다시 돌리기 (보통은 검사 결과가 들어올 때 DB가 부른다). PASS / HOLD_REVIEW / NOT_READY |
 | GET | `/api/holds` | `LOT_TRACE·VIEW` | 보류 목록 (열린 것만 기본) |
 | POST | `/api/lots/{lot_no}/hold` | `LOT_HOLD·INPUT` | 보류 (LOT-02, 사람만 — 비서는 제안만, R-51). 보류되면 측정은 강화 검사로 바뀐다. 로트 상태를 돌려준다 |
 | POST | `/api/lots/{lot_no}/release` | `LOT_HOLD·INPUT` | 보류 해제 (LOT-02, SUP·MGR) — 합격 수량을 정해 출하 가능으로 (합격 0개면 INVALID_STATE — 전부 불량은 폐기) |
 | POST | `/api/lots/{lot_no}/scrap` | `LOT_SCRAP·CREATE` | 폐기 제안 (LOT-03, SUP) → 승인 (MGR) |
+| POST | `/api/holds/{hold_id}/resume-normal` | `LOT_HOLD·INPUT` | 강화 → 보통 검사 복귀 (R-29, FR-QLT-01-07, DOC-06 3.3 — 2026-10-20). 반장이 확인한다. ⓐ 보류 뒤 원인 조치 기록(확정된 |
 | POST | `/api/lots/{lot_no}/scrap/approve` | `LOT_SCRAP·APPROVE` | 폐기 승인 (LOT-03, MGR) |
 | GET | `/api/maint/work-orders` | `WORK_ORDER·VIEW` | 작업지시서 목록 (MNT-02). mine = 내가 담당인 것만 |
 | GET | `/api/maint/work-orders/{wo_no}` | `WORK_ORDER·VIEW` | 작업지시서 (MNT-03): 계기·자동 칸·제목·증상·작업 순서·안전 블록 표시·예상 부품·담당·상태·승인 대기 시간. |
@@ -146,7 +148,7 @@
 | POST | `/api/maint/work-orders/{wo_no}/approve` | `WORK_ORDER·APPROVE` | 승인 (MNT-06, SUP — MGR 대리). 담당 없이·AI비서 초안 그대로는 INVALID_STATE (사람이 열어 수정 중이 되어야 함, 6.13) |
 | POST | `/api/maint/work-orders/{wo_no}/start` | `WORK_ORDER·EDIT` | 작업 시작 (MNT-07, 담당 MNT만): 승인됨 → 진행 중. 승인 전이면 INVALID_STATE (6.13), 담당이 아니면 FORBIDDEN |
 | POST | `/api/maint/work-orders/{wo_no}/cancel` | `WORK_ORDER·CANCEL` | 취소 (MNT-08, MGR — 사유 필수) |
-| GET | `/api/maint/work-records` | `WORK_RECORD·VIEW` 또는 `WORK_RECORD_SIMPLE·VIEW` | 작업기록 목록 (OPR은 간이 기록만) |
+| GET | `/api/maint/work-records` | `WORK_RECORD·VIEW` 또는 `WORK_RECORD_SIMPLE·VIEW` | 작업기록 목록 (OPR은 간이 기록만). 설비·알람 번호로 거르기 (같은 사례 찾기 — 2026-10-20) |
 | GET | `/api/maint/work-records/{record_no}` | `WORK_RECORD·VIEW` 또는 `WORK_RECORD_SIMPLE·VIEW` | 작업기록서 조회 (MNT-09): 칸 전부 + 체크 항목(잠금·표지 9칸·작업 순서) + 쓴 부품 |
 | POST | `/api/maint/work-records` | `WORK_RECORD·CREATE` | 정식 작업기록서 만들기 (작업지시서 1건 = 1건). 잠금·표지 9단계 + 작업 순서 체크칸이 함께 생긴다 |
 | PATCH | `/api/maint/work-records/{record_no}` | `WORK_RECORD·EDIT` 또는 `WORK_RECORD_SIMPLE·EDIT` | 작업기록서 수정 (MNT-09): 고친 칸(새 버전)·체크·사용 부품을 한 번에. 칸 전부를 돌려준다 |
@@ -159,6 +161,8 @@
 | POST | `/api/maint/quick-records/{record_no}/confirm` | `WORK_RECORD_SIMPLE·CONFIRM` | 간이 작업기록 확정 (MNT-12): 주의 등급은 OPR·MNT, 다른 공정 정지 등급·원인 점검은 MNT만 (DB가 다시 확인) |
 | GET | `/api/maint/pm-schedule` | `PM_SCHEDULE·VIEW` | 예방 정비 일정 (PM-01): 항목·주기·다음 기한·넘긴 날 수·잠금·표지 수준, 제때 실시율(기간, 기본 최근 30일 — 목표 90%) |
 | POST | `/api/maint/pm-records` | `PM_RECORD·CREATE` | 예방 정비 실시 기록 (PM-02) 저장 (v0). 확정하면 소모품 재고 차감 (…/confirm) |
+| POST | `/api/maint/pm-tasks/{pm_task_id}/start` | `PM_RECORD·CREATE` | [정비 시작] (FR-MNT-04-10, API-PM-02 — 2026-10-20): 실시 기록(수정 중)을 만들고 그 설비에 MAINT 구간을 연다. |
+| POST | `/api/maint/pm-records/{pm_record_id}/end` | `PM_RECORD·CREATE` | [정비 끝 · 실시 기록] (FR-MNT-04-10): MAINT 구간을 닫고 실시 시각 = 끝난 시각, 결과를 적는다 (v0). 확정은 …/confirm |
 | GET | `/api/maint/pm-records/{pm_record_id}` | `PM_RECORD·VIEW` | 예방 정비 실시 기록 1건 |
 | PATCH | `/api/maint/pm-records/{pm_record_id}` | `PM_RECORD·EDIT` | 예방 정비 기록 고치기 = 새 버전 |
 | POST | `/api/maint/pm-records/{pm_record_id}/confirm` | `PM_RECORD·CONFIRM` | 예방 정비 기록 확정 → 소모품 재고 차감·기한 알림 자동 처리 |
@@ -194,6 +198,7 @@
 | POST | `/api/inspection/instructions/{instruction_id}/start` | `QUALITY·INPUT` | 측정 시작 (측정 담당 작업자가 부품을 CMM에 올림). 이때부터 결과 미수신 시간을 잰다. |
 | GET | `/api/quality/summary` | `QUALITY·VIEW` | 불량 집계·관리도·Cpk (QLT-05, FR-QLT-01-08~13): 불량 코드별 수(기본 최근 7일), 기준값이 있는 항목마다 관리도 점(최근 |
 | GET | `/api/quality/cpk` | `QUALITY·VIEW` | Cpk (I-MR) 항목 하나. 50개 미만이면 '계산 중'. 설비별(가공 설비 — 05 결정기록 P-11)은 참고용 |
+| POST | `/api/quality/items/{product_code}/{item_seq}/resume-sampling` | `SETTINGS·SETTING` | 전수 측정 → 보통(발췌) (DOC-06 §5.2 "다시 기준 이상 → 관리자 승인 후 보통", 2026-10-20). Cpk 기준 미달이면 교대 보고서 초안 때 |
 | GET | `/api/quality/defects` | `QUALITY·VIEW` | 불량 코드별 수량 (기본 최근 7일) |
 | GET | `/api/reports/shift/{shift_id}` | `SHIFT_REPORT·VIEW` | 교대 보고서 (RPT-01): 생산(총 목표 = 목표 + 이월·실적·불량·가동률), 특이 사항, 인계 사항, 상태, 버전, 필수 정지 stops[] |
 | PATCH | `/api/reports/shift/{shift_id}` | `SHIFT_REPORT·EDIT` | 저장 (RPT-02, 그 교대 반장) = 새 버전. 확정 뒤에는 /revise |
@@ -229,6 +234,7 @@
 | POST | `/api/ingest/lots` | 서비스 키 `ingest` | 로트 투입 (OP-10 시작): 원자재 사용·검사 방식·작업지시 생산 중 (R-06a·R-08·R-28) |
 | POST | `/api/ingest/lots/{lot_no}/arrived` | 서비스 키 `ingest` | 로트가 OP-50에 도착 → 검사 대기 |
 | POST | `/api/ingest/cmm` | 서비스 키 `ingest` | CMM 결과 파일 내용 (공유 폴더 대신 API로 보낼 때) |
+| POST | `/api/ingest/clock` | 서비스 키 `ingest` | 시연 시계를 시뮬레이터 시계에 맞춘다 (팀과 논의/비서_시뮬레이터_DB_연결_논의 3-1 "서비스 키로 부르는 시계 입구", 2026-10-20). |
 <!-- END:api -->
 
 이 밖에 `GET /api/health` (DB 연결 확인, 권한 없음).

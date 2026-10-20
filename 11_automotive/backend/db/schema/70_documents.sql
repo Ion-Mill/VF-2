@@ -34,6 +34,18 @@ CREATE TABLE alarm_guide_map (
     PRIMARY KEY (alarm_code, seq)
 );
 
+-- 알람 점검 순서 [물리 추가, 2026-10-20 — 작업지시서 초안 자동 생성 FR-MNT-03-01·05, 1018 §23 "점검 순서를 DB로"]
+--   DOC-03 머리말 "점검 순서"를 줄마다: SYMPTOM 증상 첫 문장 / OPR ★ 작업자 줄 / MNT 보전 줄. 문서 문장 그대로.
+--   시드 db/seed/50_alarm_check_steps.sql (tools/gen_alarm_steps.py가 화면 도구 data.json에서 만듦). 알람 코드집은 시드보다
+--   늦게(생성기 적재) 들어오므로 외래 키를 걸지 않는다 — 알람 번호로 찾는 문서 기준 표
+CREATE TABLE alarm_check_step (
+    alarm_code  varchar(20) NOT NULL,
+    seq         smallint    NOT NULL CHECK (seq >= 0),
+    step_kind   varchar(7)  NOT NULL CHECK (step_kind IN ('SYMPTOM','OPR','MNT')),
+    step_text   text        NOT NULL,
+    PRIMARY KEY (alarm_code, seq)
+);
+
 -- ---------------------------------------------------------------------
 -- 사내 문서 조각 (5.G.6) — 검색용. 임베딩 칸은 모델을 고른 뒤 db/later/ 로 더한다
 -- ---------------------------------------------------------------------

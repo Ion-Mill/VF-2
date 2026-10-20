@@ -35,6 +35,7 @@ from server_assistant import answer  # noqa: E402
 from server_live import Live, iso  # noqa: E402
 from server_past import Past  # noqa: E402
 from llm_compose import Composer, sentences  # noqa: E402
+from db_relay import DbRelay  # noqa: E402
 
 PORT = 8765
 TICK_SEC = 0.25
@@ -72,7 +73,15 @@ class State:
                             "target_risk_pct": 90, "repeat2_days": 7}
         self.settings_log: list[dict] = []
         self.connected_at = time.time()
+        # 백엔드 DB 중계 (2026-10-20, 기본 꺼짐 — db_relay.py 머리 주석. 로컬 Docker 백엔드에서만 켜진다)
+        self.relay = DbRelay.from_env(self._relay_clock)
+        if self.relay and not self.relay.start():
+            self.relay = None
         self._push(self.rt.events)
+
+    def _relay_clock(self):
+        with self.lock:
+            return self.rt.clock()
 
     def _push(self, evs):
         for e in evs:
@@ -80,6 +89,8 @@ class State:
                 continue
             self.seq += 1
             self.buf.append({"seq": self.seq, **json.loads(json.dumps(e, ensure_ascii=False, default=str))})
+        if self.relay:
+            self.relay.feed(evs)
         if len(self.buf) > 5000:
             del self.buf[: len(self.buf) - 5000]
 
@@ -93,6 +104,8 @@ class State:
         with self.lock:
             n0 = len(self.rt.events)
             self.rt.reset()
+            if self.relay:
+                self.relay.reset()
             self.live = Live(self.rt, self.P)
             self.run_id += 1
             self.reports.clear()
