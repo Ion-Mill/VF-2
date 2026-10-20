@@ -152,3 +152,16 @@ def test_item_without_a_safety_stock(real_like):
 def test_without_an_item_the_short_list_is_as_before(real_like):
     t = to_answer_text(ask("재고 부족한 거 알려줘"))
     assert "공기 필터 2개" in t and "축 윤활유 3.6L" in t and "M6 탭 6개" in t and "주축 윤활유" not in t and "완제품" not in t
+
+
+def test_unknown_item_says_it_is_not_an_inventory_item_instead_of_the_short_list(real_like):
+    """2026-10-21 시연: "세척액 재고는 얼마나 부족해?"가 재고 품목에 없는 말인데 부족 품목 5개 목록으로 떨어졌다 → 품목이 아니라고 알리고 관리하는 품목을 보인다."""
+    t = to_answer_text(ask("세척액 재고는 얼마나 부족해?"))
+    assert "'세척액'은 재고로 관리하는 품목이 아니에요." in t and "축 윤활유" in t and "M6 탭" in t           # 관리하는 품목 이름을 보인다
+    assert "안전 재고" not in t and "부족해요" not in t                                                      # 질문과 다른 부족 목록·부족분 문장이 아니다
+
+
+@pytest.mark.parametrize("q", ["현재 재고는", "재고 부족한 거 알려줘", "소모품 재고 부족한 거", "지금 남은 재고 알려줘", "오늘 들어온 재고는"])
+def test_generic_inventory_questions_keep_the_short_list(real_like, q):
+    t = to_answer_text(ask(q))
+    assert "공기 필터 2개" in t and "품목이 아니에요" not in t
