@@ -205,3 +205,13 @@ SELECT fn_pm_end(:pm_record_id, :actor, coalesce(CAST(:result AS text), 'NORMAL'
 -- name: pm_open_maint
 SELECT s.state_log_id, s.equipment_id, s.start_at FROM equipment_state_log s
  WHERE s.pm_record_id = :pm_record_id AND s.state_code = 'MAINT' AND s.end_at IS NULL;
+
+-- 메모 정리(MNT-10)에 넘기는 재료 (2026-10-20): 그 기록의 알람 번호, 사용 부품을 고를 재고 품목(공구·소모품)
+-- name: wr_alarm_code
+SELECT a.alarm_code FROM work_record w
+  LEFT JOIN maintenance_work_order o ON o.wo_no = w.wo_no
+  JOIN alarm_event a ON a.alarm_event_id = coalesce(w.alarm_event_id, o.alarm_event_id)
+ WHERE w.record_no = :record_no;
+
+-- name: assist_items
+SELECT item_no, item_name FROM inventory_item WHERE category IN ('TOOL','CONSUMABLE') AND is_active ORDER BY item_no;

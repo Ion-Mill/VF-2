@@ -23,6 +23,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from backend import compose_service as CMPS
+from backend import work_record_service as WRS
 from backend import config as C
 from backend.chat_mapping import UnknownStatus, role_gate, to_backend
 from backend.llm import external as EXT
@@ -84,6 +85,12 @@ def _unauthorized(_, __):
 @app.exception_handler(Unavailable)
 def _unavailable(_, exc: Unavailable):
     log.warning("비서 응답 실패: %s", exc.why)
+    return JSONResponse(status_code=503, content={"code": "ASSISTANT_UNAVAILABLE", "message": UNAVAILABLE_MESSAGE, "detail": {"retryable": True}})
+
+
+@app.exception_handler(WRS.AssistUnavailable)
+def _assist_unavailable(_, exc: WRS.AssistUnavailable):
+    log.warning("메모 정리 입구 실패: %s", exc.why)
     return JSONResponse(status_code=503, content={"code": "ASSISTANT_UNAVAILABLE", "message": UNAVAILABLE_MESSAGE, "detail": {"retryable": True}})
 
 
@@ -175,6 +182,7 @@ def chat(req: ChatRequest) -> dict:
 
 
 app.include_router(CMPS.router, dependencies=[Depends(service_key)])     # POST /compose/{kind} — 기본 문장 줄 다듬기 (같은 서비스 키)
+app.include_router(WRS.router, dependencies=[Depends(service_key)])      # POST /work-record-assist — 작업기록서 메모 정리 (2026-10-20, API-MNT-10)
 
 
 @app.get("/health", dependencies=[Depends(service_key)])

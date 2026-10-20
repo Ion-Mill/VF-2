@@ -248,8 +248,11 @@ def wr_assist(record_no: str, body: AssistIn, actor: Actor = Depends(require("WO
     """메모를 비서로 정리 (MNT-10): AI 비서 서비스가 원인·조치 칸 AI비서 초안을 돌려준다 (저장하지 않음 — 보전 담당자가
     PATCH로 넣는다). 비서가 없거나 응답이 틀리면 ASSISTANT_UNAVAILABLE"""
     rec = _record_perm(db, actor, record_no, "EDIT")
+    # 알람 번호(근거 문서 찾기)·재고 품목(메모에 나온 사용 부품 고르기 — 비서는 지어내지 않고 이 목록에서만, 2026-10-20)
     out = client.call("/work-record-assist", {"record_no": record_no, "equipment_id": rec["equipment_id"],
-                                              "memo": body.memo, "user_id": actor.user_id})
+                                              "memo": body.memo, "user_id": actor.user_id,
+                                              "alarm_code": db.scalar("maintenance.wr_alarm_code", record_no=record_no),
+                                              "items": db.all("maintenance.assist_items")})
     return {"record_no": record_no, "author_kind": "AI",
             "cause": out.get("cause"), "action": out.get("action"), "sources": out.get("sources") or [],
             "parts": out.get("parts") or []}          # 사용 부품 제안 [{item_no, qty}] (FR-MNT-05-02, 2026-10-20 — 전에는 버렸다)

@@ -75,7 +75,8 @@ class Timeline:
                     if ov > 0:
                         out.append({"equipment_id": eq, "reason": st[1], "reason_name": self.reason_name[st[1]],
                                     "start": max(s, a), "end": min(e, b), "minutes": ov, "alarm_id": st[3],
-                                    "loss": round((e - s) / self.per_part[eq], 1)})
+                                    # 손실도 구간 안 분으로 (2026-10-20 — 전에는 정지 전체 길이라 9/14 VF2-02가 11.6개, 백엔드·시연 서버는 5.7개)
+                                    "loss": round(ov / self.per_part[eq], 1)})
         out.sort(key=lambda x: (-x["minutes"], -x["loss"], x["start"]))
         return out
 
