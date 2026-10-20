@@ -33,7 +33,7 @@ GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO mom_app;
 -- AI 비서 (읽기만)
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO mom_ai_ro;
 -- 채팅 기록(chat_log)은 본인만 보는 개인 기록이라 비서 읽기 계정도 직접 읽지 않는다 (서버 API로 본인 것만, 5.G.7)
-REVOKE SELECT ON app_user, access_log, chat_log FROM mom_ai_ro;
+REVOKE SELECT ON app_user, access_log, chat_log, briefing_check FROM mom_ai_ro;
 GRANT SELECT (user_id, user_name, role_code, home_shift_type, home_process_code, home_process_code_2, is_active)
     ON app_user TO mom_ai_ro;
 REVOKE EXECUTE ON ALL FUNCTIONS IN SCHEMA public FROM PUBLIC;

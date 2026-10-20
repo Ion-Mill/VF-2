@@ -121,6 +121,21 @@ CREATE TABLE notification_pm_task (
 CREATE INDEX ix_notification_pm_task_task ON notification_pm_task (pm_task_id);
 
 -- ---------------------------------------------------------------------
+-- 브리핑 "먼저 챙길 일" 체크 [물리 추가, 2026-10-20] — 이브 브리핑 탭에서 본인이 체크한 항목 (다시 열어도 남게)
+--   사용자별 · 교대별. item_key = 화면이 정한 항목 글자(시연 회차·종류·번호) — 서버는 뜻을 모르고 그대로 저장한다
+--   (항목이 알람·알림·예방 정비·인계 사항으로 서로 다른 표에서 오고 일부는 화면 계산이라 외래 키를 걸지 않는다)
+--   개인 메모일 뿐 알림·알람의 처리 상태에는 영향이 없다 (처리는 R-38 규칙이 한다)
+-- ---------------------------------------------------------------------
+CREATE TABLE briefing_check (
+    user_id     varchar(20) NOT NULL REFERENCES app_user,
+    shift_id    varchar(40) NOT NULL CHECK (btrim(shift_id) <> ''),
+    item_key    varchar(120) NOT NULL CHECK (btrim(item_key) <> ''),
+    checked_at  timestamptz NOT NULL,
+    PRIMARY KEY (user_id, shift_id, item_key)
+);
+COMMENT ON TABLE briefing_check IS '물리 추가 (2026-10-20): 브리핑 먼저 챙길 일 체크 — 본인 것만, 시각은 시연 시계(app_now)';
+
+-- ---------------------------------------------------------------------
 -- 접속 기록 [물리 추가] — 6.53 ACCESS_LOG (1년). 논리 ERD에 엔터티가 없어서 더함
 -- ---------------------------------------------------------------------
 CREATE TABLE access_log (

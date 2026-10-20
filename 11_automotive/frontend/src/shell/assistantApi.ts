@@ -12,6 +12,7 @@
 import { DEMO_PW } from './Login';
 import { buildAskContext } from './carry';
 import { STATUS_KO } from './assistantStatus';
+import { itemKeysOf } from './briefChecks';
 
 export { STATUS_KO };   // 상태 이름 표는 assistantStatus.ts 로 옮겼다 (carry.ts 가 읽는다). 가져다 쓰는 곳은 그대로 여기서 가져온다
 
@@ -36,9 +37,9 @@ const tokens = new Map<string, string>();          // 사용자 ID → 토큰 (�
 
 class Http extends Error { constructor(public status: number) { super(`HTTP ${status}`); } }
 
-async function post(path: string, body: unknown, token?: string): Promise<any> {
+async function post(path: string, body: unknown, token?: string, timeoutMs = ASK_TIMEOUT_MS): Promise<any> {
   const ctl = new AbortController();
-  const timer = setTimeout(() => ctl.abort(), ASK_TIMEOUT_MS);
+  const timer = setTimeout(() => ctl.abort(), timeoutMs);
   try {
     const r = await fetch(BASE + path, {
       method: 'POST', signal: ctl.signal, cache: 'no-store',
@@ -136,4 +137,40 @@ export async function fetchChatLog(userId: string): Promise<ServerChatRow[] | nu
   } catch {
     return null;
   }
+}
+
+// ---------------- 브리핑 "먼저 챙길 일" 체크 (2026-10-20) ----------------
+// 체크를 서버에도 남겨 다른 PC·브라우저에서도 보이게 한다 (GET·POST /api/assistant/briefing/checks, 본인 것만). 던지지 않는다 —
+// 백엔드가 꺼져 있거나 표가 아직 없으면(500) null·false를 돌려주고, 화면은 이 브라우저 저장만으로 계속 동작한다. 체크는 개인 메모일 뿐이라 알림·알람 처리와 무관하다.
+const CHECK_TIMEOUT_MS = 8_000;
+
+async function withToken<T>(userId: string, run: (token: string) => Promise<T>): Promise<T> {
+  try { return await run(await tokenFor(userId)); } catch (e) {
+    if (!(e instanceof Http) || e.status !== 401) throw e;              // 토큰 만료·무효 → 한 번만 다시 로그인해서 재시도
+    return await run(await tokenFor(userId, true));
+  }
+}
+
+/** 서버에 저장된 내 체크 항목 글자들 (shift = briefChecks.serverShift). 실패·모양 이상이면 null */
+export async function fetchBriefChecks(userId: string, shift: string): Promise<string[] | null> {
+  if (!backendChatEnabled()) return null;
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), CHECK_TIMEOUT_MS);
+  try {
+    const j = await withToken(userId, async (token) => {
+      const r = await fetch(`${BASE}/api/assistant/briefing/checks?shift_id=${encodeURIComponent(shift)}`, { cache: 'no-store', signal: ctl.signal, headers: { Authorization: `Bearer ${token}` } });
+      if (!r.ok) throw new Http(r.status);
+      return r.json();
+    });
+    return itemKeysOf(j);
+  } catch { return null; } finally { clearTimeout(timer); }
+}
+
+/** 체크 한 칸을 서버에 남긴다 (checked=false면 푼다). 성공 여부만 돌려준다 */
+export async function saveBriefCheck(userId: string, shift: string, itemKey: string, checked: boolean): Promise<boolean> {
+  if (!backendChatEnabled()) return false;
+  try {
+    await withToken(userId, (token) => post('/api/assistant/briefing/checks', { shift_id: shift, item_key: itemKey, checked }, token, CHECK_TIMEOUT_MS));
+    return true;
+  } catch { return false; }
 }
