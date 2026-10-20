@@ -152,6 +152,10 @@ OPS_INTENTS = [
 ]
 # 규칙 보강 (PARSE_V2=1, 2026-10-10 계획 3단계 A). 조정 세트 F·qa_route에서 찾은 낱말 오분류를 고친다:
 # "몇 개월" → 생산, "연차 며칠 남았는지" → 재고, "돌아가는 기계" → 설비 상태, "몇 번 멈췄어" → 알람 횟수(알람 없음)
+# 하는 일을 묻는 "지금 정비 중이야?"·"정비 몇 분 남았어?"도 설비 상태 질문이다 (2026-10-21 시연 #3). "정비 중에는 …"·"정비 중인 설비 …" 같은 문서 질문은 `중` 뒤가 달라 걸리지 않는다
+STATUS_WORK_RX = (r"|(?:정비|수리|셋업|점검)\s*중(?:이야|이에요|이예요|이죠|이지|인가요?|인지|이니|이냐|입니까)"
+                  r"|(?:정비|수리|셋업|점검)\s*중\s*[?？]|(?:정비|수리|셋업)\s*(?:몇\s*분\s*남|남은\s*시간|언제\s*끝|끝나려면|남았)")
+REMAIN_ASK = re.compile(r"남았|남은|언제\s*끝|끝나려면|끝나는")
 OPS_INTENTS_V2 = [
     ("stops", re.compile(r"멈췄|멈춘|정지|섰|서\s*있었|멈춰\s*있었|고장\s*났")),
     ("production", re.compile(r"실적|생산|만들었|몇\s*개\s*(?:만들|나왔|했)")),
@@ -163,7 +167,7 @@ OPS_INTENTS_V2 = [
     ("pm_due", re.compile(r"예방\s*정비|정비\s*기한|기한")),
     ("work_records", re.compile(r"작업기록|조치\s*기록|지난\s*조치|어떻게\s*고쳤")),
     ("alarm_count", re.compile(r"(?:알람|경보)\S*\s*(?:몇\s*번|자주)|몇\s*번\s*(?:났|떴|울렸|발생)|자주\s*(?:나|떠|뜨)|왜\s*자꾸|또\s*떠|또\s*떴")),
-    ("equipment_status", re.compile(r"지금\s*상태|상태\s*어때|돌아가(?:\?|$|요|나|니|고\s*있|는지)|가동\s*중|멈춰\s*있(?!었)")),
+    ("equipment_status", re.compile(r"지금\s*상태|상태\s*어때|돌아가(?:\?|$|요|나|니|고\s*있|는지)|가동\s*중|멈춰\s*있(?!었)" + STATUS_WORK_RX)),
 ]
 NIGHT_V2 = re.compile(r"야간|간밤|어젯밤|밤|새벽")
 DAY_V2 = re.compile(r"주간|낮(?!음|은|춰|추|아|게|다|으)")
@@ -184,7 +188,7 @@ OPS_INTENTS_V3 = [
     ("pm_due", re.compile(r"예방\s*정비|정비\s*기한|기한")),
     ("work_records", re.compile(r"작업기록|조치\s*기록|지난\s*조치|어떻게\s*고쳤")),
     ("alarm_count", re.compile(r"(?:알람|경보)\S*\s*(?:몇\s*번|자주)|몇\s*번\s*(?:이나\s*)?(?:났|떴|울렸|발생)|자주\s*(?:나|떠|뜨)|왜\s*자꾸|또\s*떠|또\s*떴")),
-    ("equipment_status", re.compile(r"지금\s*상태|상태\s*어때|돌아가(?:\?|$|요|나|니|고\s*있|는지)|가동\s*중|멈춰\s*있(?!었)")),
+    ("equipment_status", re.compile(r"지금\s*상태|상태\s*어때|돌아가(?:\?|$|요|나|니|고\s*있|는지)|가동\s*중|멈춰\s*있(?!었)" + STATUS_WORK_RX)),
 ]
 # 사내 문서의 복합어 가운데 의도 낱말("정지")이 든 것 — 의도를 볼 때 이 글자 범위를 뺀다 (긴 것 우선, spaCy EntityRuler 방식)
 COMPOUND_MASK_V3 = re.compile(r"통과\s*·?\s*정지\s*게이지|정지\s*게이지|비상\s*정지|과열\s*정지|정지\s*등급")
@@ -2049,6 +2053,8 @@ def ops_answer(role: str, p: dict, needs: list[str] | None = None,
             items = [f"{s['equipment_id']} {s['last_state']} ({(s.get('since') or '')[11:16]}부터 {s.get('minutes') or 0:g}분)"
                      + (f", 알람 {s['open_alarm_code']}" if s.get("open_alarm_code") else "") + (", 잠금" if s.get("is_locked") else "") for s in r["rows"]]
             texts.append("설비 상태: " + ", ".join(items))
+            if REMAIN_ASK.search(p.get("raw", "")):   # 도구는 상태가 시작된 뒤 지난 시간만 준다 — 끝나는 시각은 지어내지 않는다
+                texts[-1] += ". 끝나는 시각이나 남은 시간은 기록에 없습니다"
             add("설비 상태", items, texts[-1], r)
     return texts, data, defs
 
