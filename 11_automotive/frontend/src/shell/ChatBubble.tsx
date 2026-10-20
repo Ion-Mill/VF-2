@@ -3,7 +3,7 @@ import { AlarmAnswerCard } from './AlarmAnswerCard';
 import { parseAlarmAnswer } from './parseAlarmAnswer';
 import { ANSWER_BOX, HISTORY_BOX, QUESTION_BOX, WRAP } from './bubbleBox';
 
-export interface ChatRow { at: string; q: string; a: string; status: string; sources: { doc_no: string; doc_name: string; rev: string; section: string }[]; series?: Record<string, Record<string, number[]>>; newChat?: boolean }   // newChat = "여기서부터 새 대화" 표지 줄 (질문·답 없음, chatLog.ts)
+export interface ChatRow { at: string; q: string; a: string; status: string; sources: { doc_no: string; doc_name: string; rev: string; section: string }[]; series?: Record<string, Record<string, number[]>>; newChat?: boolean; chatId?: number }   // newChat = "여기서부터 새 대화" 표지 줄 (질문·답 없음, chatLog.ts). chatId = 서버 chat_log 번호 (백엔드 비서로 물은 줄만)
 
 /** 질문 박스 → 날짜·상태 줄 → 답 박스(알람 답이면 카드, 아니면 평문 박스) → 출처 줄. meta = "10/1 10:00" 같은 날짜 글자(부르는 쪽이 만든다) */
 export function Bubble({ r, meta, openSource, role }: { r: ChatRow; meta: string; openSource: (d: string, s: string) => void; role: string }) {

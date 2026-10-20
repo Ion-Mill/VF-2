@@ -16,7 +16,7 @@ import { STATUS_KO } from './assistantStatus';
 export { STATUS_KO };   // 상태 이름 표는 assistantStatus.ts 로 옮겼다 (carry.ts 가 읽는다). 가져다 쓰는 곳은 그대로 여기서 가져온다
 
 export interface AssistantSource { doc_no: string; doc_name: string; rev: string; section: string }
-export interface AssistantResult { answer: string; status: string; sources: AssistantSource[]; series?: undefined }   // series = 옛 규칙 답의 센서 그래프. 새 길에는 없다
+export interface AssistantResult { answer: string; status: string; sources: AssistantSource[]; series?: undefined; chatId?: number }   // series = 옛 규칙 답의 센서 그래프. 새 길에는 없다. chatId = 서버 chat_log 번호 (이어서 물을 때 prev_chat_id로 보낸다)
 
 const BASE = (process.env.NEXT_PUBLIC_MOM_API ?? '').trim().replace(/\/+$/, '');
 export const backendChatEnabled = () => BASE !== '';
@@ -63,30 +63,77 @@ export const forgetTokens = () => tokens.clear();
 
 const none = (): AssistantResult => ({ answer: NO_RESPONSE_TEXT, status: STATUS_KO.NO_RESPONSE, sources: [] });
 
+// 백엔드 답의 출처 줄을 화면 모양으로 (문서 번호·절이 없는 줄은 버린다)
+const toSources = (v: unknown): AssistantSource[] => Array.isArray(v)
+  ? v.filter((s: any) => s && typeof s.doc_no === 'string' && typeof s.section === 'string')
+      .map((s: any) => ({ doc_no: s.doc_no, doc_name: String(s.doc_name ?? ''), rev: String(s.rev ?? ''), section: s.section }))
+  : [];
+
 /**
  * 백엔드의 비서에게 묻는다. 던지지 않는다 — 어떤 실패든 "응답 없음" 결과로 돌려준다.
  * opts: 직전 알람 이어받기 신호(carry.ts) — alarmKey = 직전 알람 번호, newChat = 새 대화의 첫 질문. 이어받을지는 서버가 정한다.
+ *       prevChatId = 이어서 묻는 앞 질문의 chat_id (API-AST-02 prev_chat_id, 기획서 9장 MNT-01 "이어서 묻는다").
+ *       서버에 그 번호가 없으면(30일 지나 지워짐·DB 초기화) 404 → 앞 질문 없이 한 번 다시 묻는다.
  */
-export async function askAssistant(question: string, userId: string, screen: string | null | undefined, equipmentId?: string | null, opts?: { alarmKey?: string | null; newChat?: boolean }): Promise<AssistantResult> {
+export async function askAssistant(question: string, userId: string, screen: string | null | undefined, equipmentId?: string | null, opts?: { alarmKey?: string | null; newChat?: boolean; prevChatId?: number | null }): Promise<AssistantResult> {
   const context = buildAskContext({ screenCode: screen ? SCREEN_CODE[screen] : undefined, equipmentId, alarmKey: opts?.alarmKey, newChat: opts?.newChat });
-  const body = { question, context };
-  try {
-    let j: any;
+  const ask = async (body: unknown) => {
     try {
-      j = await post('/api/assistant/chat', body, await tokenFor(userId));
+      return await post('/api/assistant/chat', body, await tokenFor(userId));
     } catch (e) {
       if (!(e instanceof Http) || e.status !== 401) throw e;            // 토큰이 만료·무효 → 한 번만 다시 로그인해서 재시도
-      j = await post('/api/assistant/chat', body, await tokenFor(userId, true));
+      return await post('/api/assistant/chat', body, await tokenFor(userId, true));
     }
+  };
+  try {
+    const prev = opts?.prevChatId ?? null;
+    let j: any;
+    try {
+      j = await ask(prev === null ? { question, context } : { question, context, prev_chat_id: prev });
+    } catch (e) {
+      if (prev === null || !(e instanceof Http) || e.status !== 404) throw e;
+      j = await ask({ question, context });
+    }
+    const chatId = typeof j?.chat_id === 'number' ? j.chat_id : undefined;   // 답이 없어도(NO_RESPONSE) 질문은 서버 기록에 남는다
     const status = STATUS_KO[String(j?.status)] ?? STATUS_KO.NO_RESPONSE;
-    if (typeof j?.answer !== 'string' || !j.answer.trim()) return none();   // 비서가 못 답하면 백엔드는 200 + 답 없음(NO_RESPONSE)을 준다
-    if (status === STATUS_KO.NO_RESPONSE) return none();
-    const sources: AssistantSource[] = Array.isArray(j.sources)
-      ? j.sources.filter((s: any) => s && typeof s.doc_no === 'string' && typeof s.section === 'string')
-          .map((s: any) => ({ doc_no: s.doc_no, doc_name: String(s.doc_name ?? ''), rev: String(s.rev ?? ''), section: s.section }))
-      : [];
-    return { answer: j.answer, status, sources };
+    if (typeof j?.answer !== 'string' || !j.answer.trim()) return { ...none(), chatId };   // 비서가 못 답하면 백엔드는 200 + 답 없음(NO_RESPONSE)을 준다
+    if (status === STATUS_KO.NO_RESPONSE) return { ...none(), chatId };
+    return { answer: j.answer, status, sources: toSources(j.sources), chatId };
   } catch {
     return none();                                                     // 연결 안 됨·시간 초과·503·로그인 실패 — 이유를 화면에 내보내지 않는다
+  }
+}
+
+/** 서버에 저장된 내 채팅 기록 한 줄 (API-AST-02 GET → 채팅 기록 탭의 ChatRow 모양) */
+export interface ServerChatRow { at: string; q: string; a: string; status: string; sources: AssistantSource[]; chatId: number }
+
+const kst = (iso: string) => new Date(Date.parse(iso) + 9 * 3600e3).toISOString().slice(0, 19) + '+09:00';   // 화면 시각 글자와 같은 모양 (live.ts simIso)
+
+/**
+ * 내 채팅 기록을 서버에서 받는다 (GET /api/assistant/chat — 본인 것만, 30일 안). 오래된 것부터.
+ * 다른 PC·브라우저에서 물은 것도 여기서 보인다 (FR-MNT-01-01). 실패하면 null — 화면은 이 브라우저 기록만 보인다.
+ */
+export async function fetchChatLog(userId: string): Promise<ServerChatRow[] | null> {
+  const get = async (token: string) => {
+    const r = await fetch(BASE + '/api/assistant/chat?limit=500', { cache: 'no-store', headers: { Authorization: `Bearer ${token}` } });
+    if (!r.ok) throw new Http(r.status);
+    return r.json();
+  };
+  try {
+    let j: any;
+    try { j = await get(await tokenFor(userId)); } catch (e) {
+      if (!(e instanceof Http) || e.status !== 401) throw e;
+      j = await get(await tokenFor(userId, true));
+    }
+    if (!Array.isArray(j)) return null;
+    return j.filter((x: any) => typeof x?.chat_id === 'number' && typeof x.asked_at === 'string' && typeof x.question === 'string')
+      .map((x: any): ServerChatRow => {
+        const status = STATUS_KO[String(x.status)] ?? STATUS_KO.NO_RESPONSE;
+        const ok = typeof x.answer === 'string' && x.answer.trim() !== '' && status !== STATUS_KO.NO_RESPONSE;
+        return { at: kst(x.asked_at), q: x.question, a: ok ? x.answer : NO_RESPONSE_TEXT, status: ok ? status : STATUS_KO.NO_RESPONSE, sources: ok ? toSources(x.sources) : [], chatId: x.chat_id };
+      })
+      .reverse();
+  } catch {
+    return null;
   }
 }
