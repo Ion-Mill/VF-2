@@ -84,6 +84,42 @@ def test_out_of_role_question_never_reaches_answer(monkeypatch):
     assert j["status"] == "OUT_OF_ROLE" and not any(ch.isdigit() for ch in j["answer"])
 
 
+SENSOR_GATE = {"tool": "sensor_trend", "about": "센서 데이터", "roles": ["MNT", "MGR"]}
+MTTR_GATE = {"tool": "reliability", "about": "MTTR·MTBF", "roles": ["MNT", "MGR"]}
+
+
+@pytest.mark.parametrize("q", [
+    "고전압 대기는 몇 분 기다려야 해?", "고전압 대기 시간 알려줘", "전원 끈 뒤에 전압이 빠질 때까지 얼마나 기다려?"])
+def test_safety_question_is_not_stopped_by_the_sensor_gate(monkeypatch, q):
+    """2026-10-21 시연: `고전압`의 `전압`과 `몇 분`의 `몇`이 센서 값 질문으로 읽혀 반장·작업자의 안전 질문이 막혔다."""
+    seen = {}
+
+    def fake_answer(question, role, ctx, **k):
+        seen["q"] = question
+        return ok_answer()
+    monkeypatch.setattr(CS, "answer", fake_answer)
+    j = client.post("/chat", json=body(q, out_of_role=[MTTR_GATE, SENSOR_GATE]), headers=H).json()
+    assert j["status"] != "OUT_OF_ROLE" and seen["q"] == q          # 권한 문을 지나 answer()까지 갔다
+
+
+@pytest.mark.parametrize("q", [
+    "잠금 순서랑 VF2-01 센서 추세 보여줘", "고전압 대기랑 VF2-01 센서 값 알려줘", "VF2-01 센서 추세 보여줘", "VF2-01 모터 온도 지금 몇 도야?"])
+def test_a_sensor_value_request_is_still_stopped_even_with_a_safety_word(monkeypatch, q):
+    def boom(*a, **k):
+        raise AssertionError("센서 값 요청이 권한 문을 지나 answer()까지 갔다")
+    monkeypatch.setattr(CS, "answer", boom)
+    j = client.post("/chat", json=body(q, out_of_role=[MTTR_GATE, SENSOR_GATE]), headers=H).json()
+    assert j["status"] == "OUT_OF_ROLE" and not any(ch.isdigit() for ch in j["answer"])
+
+
+def test_the_mttr_gate_is_kept_for_a_safety_question_too(monkeypatch):
+    def boom(*a, **k):
+        raise AssertionError("MTTR 값 요청이 권한 문을 지났다")
+    monkeypatch.setattr(CS, "answer", boom)
+    j = client.post("/chat", json=body("고전압 대기 알려주고 VF2-01 MTTR 얼마야?", out_of_role=[MTTR_GATE, SENSOR_GATE]), headers=H).json()
+    assert j["status"] == "OUT_OF_ROLE"
+
+
 # ---------------------------------------------------------------- 실패는 모두 503, 안쪽 사정은 안 나간다
 def _assert_unavailable(r):
     assert r.status_code == 503

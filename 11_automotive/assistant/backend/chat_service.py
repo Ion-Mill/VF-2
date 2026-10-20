@@ -14,6 +14,7 @@ from __future__ import annotations
 import hmac
 import logging
 import os
+import re
 import threading
 import time
 from typing import Any, Literal
@@ -31,6 +32,7 @@ from backend.chat_mapping import UnknownStatus, role_gate, to_backend
 from backend.llm import external as EXT
 from backend.rag.chunker import CorpusError, load_corpus
 from backend.repositories import backend_tools as BT
+from backend.safety import fixed_block as FB
 from backend.services.answer import answer
 from backend.tools.query_tools import ToolInputError
 
@@ -151,9 +153,21 @@ def _provider() -> str | None:
     return "claude" if p == "claude" else None
 
 
+SENSOR_WORDS = re.compile(r"센서|추세")
+
+
+def _gate_list(question: str, out_of_role: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """권한 문에 넘길 목록. 안전 서식 질문(잠금·고전압·보호구)은 센서 문에서 뺀다 — "고전압 대기는 몇 분 기다려야 해?"의 `전압`·`몇`이
+    센서 값 질문으로 읽혀 반장·작업자의 안전 질문이 막혔다 (2026-10-21 시연). 센서·추세를 직접 말하면 빼지 않고, MTTR 문은 그대로다.
+    센서 값은 `allowed_tools`에서 한 번 더 막힌다 — 이 면제는 친절한 거절 문구만 건너뛴다."""
+    if FB.select(question) and not SENSOR_WORDS.search(question):
+        return [i for i in out_of_role if i.get("tool") != "sensor_trend"]
+    return out_of_role
+
+
 @app.post("/chat", dependencies=[Depends(service_key)])
 def chat(req: ChatRequest) -> dict:
-    gated = role_gate(req.question, req.out_of_role)        # 권한 밖 질문은 LLM·조회 없이 값 없는 답
+    gated = role_gate(req.question, _gate_list(req.question, req.out_of_role))        # 권한 밖 질문은 LLM·조회 없이 값 없는 답
     if gated is not None:
         return gated
     provider = _provider()
