@@ -99,12 +99,14 @@ def test_cause_words_all_trigger_the_section(tpl):
     assert SECTION in t and "월 1회 점검을 하지 않고 알람을 방치" in t
 
 
-def test_section_order_is_description_causes_steps():
+def test_numbered_cause_question_keeps_only_the_causes():
+    """처음부터 "2075 알람 원인은?"이라고 물어도 가능한 원인만. 안내 줄("기준으로 답해요")은 번호를 말했으므로 없다."""
     a = ask("2075 알람 원인은?")
     secs = [b["text"] for b in a["blocks"] if b.get("kind") == "section"]
-    assert secs[:3] == ["알람 설명", "가능한 원인 (사내 문서)", "점검 순서 (사내 문서)"], secs
+    assert secs == ["가능한 원인 (사내 문서)"], secs
     t = to_answer_text(a)
-    assert t.index("■ 알람 설명") < t.index(SECTION) < t.index("■ 점검 순서")
+    assert SECTION in t and "■ 알람 설명" not in t and "■ 점검 순서" not in t and "최근 7일" not in t
+    assert "알람 기준으로 답해요" not in t and "주의:" in t
 
 
 def test_causes_are_one_chunk_so_the_screen_card_reads_them_as_one_section():
@@ -117,6 +119,25 @@ def test_carry_over_cause_question_gets_the_section_and_the_note():
     a = ask("원인은?", {"alarm_key": "2075"})
     t = to_answer_text(a)
     assert t.startswith("2075 알람 기준으로 답해요.") and SECTION in t and "HALO 매니폴드나 압력 센서 앞의 이물" in t
+    assert "■ 알람 설명" not in t and "■ 점검 순서" not in t and "최근 7일" not in t   # 이어받기는 묻는 원인만
+    assert "주의:" in t and any(e["doc_id"] == "DOC-03" for e in a["evidence"])
+
+
+@pytest.mark.parametrize("q", ["누가 해야 돼?", "점검 순서 알려줘", "뭐부터 봐?"])
+def test_carry_over_who_or_steps_keeps_only_the_steps(q):
+    a = ask(q, {"alarm_key": "2075"})
+    t = to_answer_text(a)
+    assert t.startswith("2075 알람 기준으로 답해요.") and "■ 점검 순서 (사내 문서)" in t
+    assert "(작업자)" in t and "(보전)" in t
+    assert "■ 알람 설명" not in t and SECTION not in t and "최근 7일" not in t
+    assert "주의:" in t
+
+
+def test_carry_over_without_a_slice_keeps_the_whole_card():
+    """한 덩어리로 못 자르는 이어받기(심각도)는 알람 카드 전체다."""
+    t = to_answer_text(ask("심각도는?", {"alarm_key": "2075"}))
+    assert "■ 알람 설명" in t and "■ 점검 순서" in t and "최근 7일" in t
+    assert SECTION not in t
 
 
 def test_causes_carry_the_alarm_doc_as_the_line_source_and_keep_the_evidence():
@@ -135,12 +156,12 @@ def test_questions_without_cause_words_are_unchanged(q):
     assert not any(b.get("text") == "가능한 원인 (사내 문서)" for b in a["blocks"] if b.get("kind") == "section")
 
 
-def test_no_cause_words_means_the_answer_is_the_same_text_as_a_cause_question_without_the_cause_part():
-    """원인 질문의 답에서 원인 덩어리만 빼면 평소 답과 같은 글이다 (다른 곳이 안 바뀐다)."""
+def test_plain_alarm_question_keeps_the_card_the_cause_question_drops():
+    """"뭐야"는 설명·점검 순서 카드. 원인 질문은 그 카드를 빼고 원인만."""
     plain = to_answer_text(ask("2075 알람 뭐야"))
-    with_cause = to_answer_text(ask("2075 알람 원인은?"))
-    chunk = next(c for c in with_cause.split("\n\n") if c.startswith(SECTION))
-    assert with_cause.replace(chunk + "\n\n", "") == plain
+    cause = to_answer_text(ask("2075 알람 원인은?"))
+    assert "■ 알람 설명" in plain and "■ 점검 순서" in plain and SECTION not in plain
+    assert SECTION in cause and "■ 알람 설명" not in cause and "■ 점검 순서" not in cause
 
 
 # ---------------------------------------------------------------- 엉뚱한 알람 절이 섞이지 않는다
@@ -164,8 +185,8 @@ def test_without_blocks_the_cause_text_is_in_the_conclusion(monkeypatch):
     monkeypatch.setenv("BLOCKS_V2", "0")
     monkeypatch.setenv("BLOCKS_V3", "0")
     a = ask("2075 알람 원인은?")
-    assert A.CAUSE_HEAD + " / ".join(A.doc03_causes("DOC-03 §2.11")) in a["conclusion"]
-    assert "월 1회 점검을 하지 않고 알람을 방치" in to_answer_text(a)
+    for row in A.doc03_causes("DOC-03 §2.11"):
+        assert row in a["conclusion"] and row in to_answer_text(a)   # 덩어리 제목이 없어도 원인 글은 결론에 있다
 
 
 # ---------------------------------------------------------------- 해요체 다시 쓰기(CARD_REWRITE)는 원인 줄을 건드리지 않는다
@@ -198,9 +219,8 @@ def test_card_rewrite_leaves_the_cause_lines_as_the_document_wrote_them(monkeypa
             a = A.answer("2075 알람 원인은?", "OPR", {"new_chat": "1"})
     finally:
         CC.use_runner(None)
-    assert a["card_rewrite"]["applied"] is True
+    assert "card_rewrite" not in a and r.texts == []                       # 원인만 남기므로 설명·점검 순서를 다시 쓰지 않는다
     t = to_answer_text(a)
     for row in A.doc03_causes("DOC-03 §2.11"):
         assert row in t                                                    # 원인 줄은 원문 그대로
-    assert "어요" in a["conclusion"]                                        # 카드 문장은 해요체로 바뀌었다 (다시 쓰기가 실제로 돌았다)
-    assert all("월 1회 점검을 하지 않고" not in x for x in r.texts)         # 원인 줄은 Claude에 보내지도 않는다
+    assert "■ 알람 설명" not in t and "■ 점검 순서" not in t

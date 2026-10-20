@@ -3442,6 +3442,62 @@ def _ctx_use_v2(question: str, p: dict, s, memo: dict):
     return None
 
 
+CARRY_STEPS = re.compile(r"점검|순서|뭐부터|먼저|누가|누구")
+_CARRY_SECTION = {"cause": "가능한 원인 (사내 문서)", "steps": "점검 순서 (사내 문서)"}
+
+
+def carry_focus(question: str) -> str | None:
+    """대상 없는 이어받기에서 남길 덩어리. 원인·이유·왜·때문이 점검·누구보다 먼저다 ("원인부터").
+    어느 쪽도 아니면 None — 알람 카드 전체를 그대로 둔다 (심각도·재가동처럼 한 덩어리로 못 자르는 질문)."""
+    if cause_question(question):
+        return "cause"
+    if CARRY_STEPS.search(question):
+        return "steps"
+    return None
+
+
+def _slice_blocks(blocks: list, title: str) -> list | None:
+    """소제목 title부터 다음 소제목 전까지. 그 소제목이 없으면 None."""
+    start = next((i for i, b in enumerate(blocks) if isinstance(b, dict) and b.get("kind") == "section" and b.get("text") == title), None)
+    if start is None:
+        return None
+    kept = [blocks[start]]
+    for b in blocks[start + 1:]:
+        if isinstance(b, dict) and b.get("kind") == "section":
+            break
+        kept.append(b)
+    if not any(isinstance(b, dict) and b.get("kind") in ("line", "text", "steps") for b in kept):
+        return None
+    return kept
+
+
+def _narrow_carried_alarm(a: dict, focus: str, cause_lines: list | None = None) -> dict:
+    """묻는 덩어리만 남긴다. 안내 줄은 부른 쪽이 이 다음에 붙인다. 주의·출처는 그대로 두고, 최근 횟수(related)는 뺀다.
+    원인 질문은 원인 줄로 conclusion을 바꿔 BLOCKS_V3를 켜고 꺼도 결론이 같게 한다 (표시만 다른 계약)."""
+    if a.get("status") != "답변":
+        return a
+    lines = [x for x in (cause_lines or []) if x] if focus == "cause" else []
+    blocks = a.get("blocks") if isinstance(a.get("blocks"), list) else None
+    kept = _slice_blocks(blocks, _CARRY_SECTION[focus]) if blocks else None
+    if focus == "steps":
+        if not kept:
+            return a
+        lines = [b["text"] for b in kept if b.get("kind") in ("line", "text") and b.get("text")]
+        lines.extend(str(s) for s in (a.get("steps") or []) if s)
+    elif not lines:
+        return a
+    out = {**a, "conclusion": " ".join(lines), "related": None}
+    if kept:
+        out["blocks"] = kept
+    if focus == "cause":
+        out["steps"] = []
+        out.pop("steps_easy", None)
+    if not a.get("current_data"):
+        out["is_synthetic"] = False
+        out["data_label"] = None
+    return out
+
+
 def _with_ctx_note(a: dict, code: str) -> dict:
     """질문에 대상이 없어 직전 알람으로 이어받았으면, 어느 알람 기준인지 답 맨 앞에 밝힌다 (정상 답일 때만)."""
     if not isinstance(a, dict) or a.get("status") != "답변":
@@ -3465,8 +3521,19 @@ def answer(question: str, role: str, context: dict | None = None, prev: dict | N
     try:
         with answer_deadline(s0.budget_s):
             a = _answer(question, role, context, prev=prev, memo=memo)
-            if memo.get("alarm") and s0.card_rewrite and s0.job("write") and EXT.current() is not None:   # CARD_REWRITE: 채팅(외부 Claude 요청)의 알람 카드만
+            focus = carry_focus(question) if memo.get("ctx_alarm_note") else None
+            # 번호를 적은 원인 질문("2075 알람 원인은?")도 원인만 남긴다. 횟수까지 물은 질문(ops_texts)과 점검 순서를 같이 물은 질문은 카드 전체.
+            if (focus is None and memo.get("alarm") and cause_question(question)
+                    and not memo.get("ops_texts") and not CARRY_STEPS.search(question)):
+                focus = "cause"
+            # 원인만 남기면 설명·점검 순서를 화면에 안 보이므로 해요체 다시 쓰기를 건너뛴다 (원인 줄은 원문 그대로)
+            if memo.get("alarm") and s0.card_rewrite and s0.job("write") and EXT.current() is not None and focus != "cause":
                 a = _rewrite_alarm_card(a, memo)
+            if focus:
+                narrowed = _narrow_carried_alarm(a, focus, memo.get("cause_lines"))
+                if narrowed is not a:
+                    a = narrowed
+                    memo["alarm_card"] = ""   # 화면에 안 보인 설명으로 다음 "짧게"가 돌아가지 않게
             if memo.get("ctx_alarm_note"):   # CTX_NARROW: 대상 없는 질문을 직전 알람으로 이어받았으면 어느 알람 기준인지 밝힌다
                 a = _with_ctx_note(a, memo["ctx_alarm_note"])
         if settings().followup:
