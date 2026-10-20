@@ -1,7 +1,7 @@
 'use client';
 // UI설계서 2.1 [11] AI 비서 사이드바 · [15] 이브 아이콘 · [16] 이브 말풍선, SCR-07 알림 탭, SCR-10 채팅·채팅 기록.
 // 채팅 = API-AST-02. 외부 LLM(Claude) 연결을 켜지 않았으면 서버의 "규칙 답"(조회 도구 + 사내 문서 검색)을 쓰고, 답마다 "규칙 답" 표시.
-// 겉모양 = mom-assistant-widget (로봇 버튼 · 아이콘 메뉴 · 우측 어두운 창 · 알림 토스트). 위젯 JS는 innerHTML로 그려 React 탭을 못 담아서 CSS만 쓰고 틀을 여기로 옮김.
+// 겉모양 = mom-assistant-widget (로봇 버튼 · 아이콘 메뉴 · 우측 창 · 알림 토스트). 탭 내용 배치는 2026-10-20 사용자 선택: 브리핑·채팅 기록 G안, 알림 = 팀원 시안 C(시간 흐름), 채팅 첫 화면 = 팀원 새 채팅 시안(3D 이브). 위젯 JS는 innerHTML로 그려 React 탭을 못 담아서 CSS만 쓰고 틀을 여기로 옮김.
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useApp } from './ctx';
@@ -205,6 +205,19 @@ function AlertsTab({ onNotice }: { onNotice: (n: Notice) => void }) {
     );
   }
 
+  // 목록 = 팀원 알림 시안 C '시간 흐름' (사용자 선택 2026-10-20): 1시간 안 → 1~2시간 전 → 오늘 오후·오전 → 지난 날짜 묶음, 최신이 위.
+  // 왼쪽 시각 · 세로 선 위 점(긴급 빨강·주의 주황·참고 회색, BAR) · 오른쪽 카드(처리 안 된 긴급은 분홍). 누르면 위의 상세 그대로. 예전 목록은 구현_중_수정사항/백업_1020_이브패널/Eve.tsx
+  const nowMs = SIM.now(), today = md(simIso(nowMs));
+  const periodOf = (it: Item) => {
+    const ago = nowMs - tsOfI(it), t = at(it);
+    if (ago < 3600e3) return '1시간 안';
+    if (ago < 7200e3) return '1~2시간 전';
+    if (md(t) !== today) return md(t);
+    return Number(hhmm(t).slice(0, 2)) < 12 ? '오전' : '오후';
+  };
+  const groups: { name: string; rows: Item[] }[] = [];
+  items.slice(0, 150).forEach((it) => { const p = periodOf(it), g = groups[groups.length - 1]; if (g && g.name === p) g.rows.push(it); else groups.push({ name: p, rows: [it] }); });
+
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center gap-1">
@@ -212,18 +225,29 @@ function AlertsTab({ onNotice }: { onNotice: (n: Notice) => void }) {
         <button onClick={() => setOnlyOpen(false)} className={chip(!onlyOpen)}>전체</button>
       </div>
       {recent > 10 && <div className="rounded-md bg-[#fff1cc] p-2 text-[13px] font-semibold text-[#7a4b00]">▲ 알림 폭주 — 10분 안 알람 {recent}건</div>}
-      {items.length === 0 ? <p className="ma-empty">처리 안 된 알림이 없습니다.</p> : (
-        <ul className="flex flex-col gap-2">
-          {items.slice(0, 150).map((it) => (
-            <li key={idOf(it)}>
-              <button onClick={() => setOpenId(idOf(it))} className="flex w-full flex-col rounded-xl border-l-[6px] bg-white/5 px-3 py-2 text-left hover:bg-white/10" style={{ borderColor: BAR[level(it)] }}>
-                <span className="flex items-baseline justify-between gap-2"><b className="truncate">{title(it)}</b><span className="shrink-0 text-[12px] text-slate-500">{hhmm(at(it))}</span></span>
-                <span className="text-[12px] text-slate-500">{level(it)}{it.kind === 'n' ? ' · 문서·확인 알림' : ` · 알람 ${it.a.code}`}{handledOf(it) ? ' · 처리됨' : ''}</span>
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+      {items.length === 0 ? <p className="ma-empty">처리 안 된 알림이 없습니다.</p> : groups.map((g, gi) => (
+        <section key={`${g.name}-${gi}`} aria-label={g.name}>
+          <p className="m-0 px-0.5 pb-1 pt-2 text-[13px] font-bold text-slate-500">{g.name}</p>
+          <ul className="m-0 flex list-none flex-col p-0">
+            {g.rows.map((it, i) => {
+              const lv = level(it), done = handledOf(it), hot = lv === '긴급' && !done;
+              return (
+                <li key={idOf(it)} className="grid grid-cols-[46px_20px_minmax(0,1fr)]">
+                  <span className="pr-1 pt-[13px] text-right font-mono text-[13px] font-semibold text-[#4b4766]">{hhmm(at(it))}</span>
+                  <span className="relative flex justify-center" aria-hidden="true">
+                    {g.rows.length > 1 && <span className="absolute w-0.5 bg-[#ddd5f7]" style={{ top: i === 0 ? 18 : 0, bottom: i === g.rows.length - 1 ? 'calc(100% - 18px)' : 0 }} />}
+                    <span className="relative mt-[15px] h-3 w-3 rounded-full" style={{ background: BAR[lv], boxShadow: '0 0 0 3px #f3f1fb' }} />
+                  </span>
+                  <button onClick={() => setOpenId(idOf(it))} className={`my-1 flex w-full min-w-0 flex-col gap-0.5 rounded-xl border px-3 py-2 text-left ${hot ? 'border-[#f2c4c0] bg-[#fdeeee] hover:bg-[#fbe3e3]' : 'border-[#e4def8] bg-[#ffffff] hover:bg-[#f7f5fd]'}`}>
+                    <b className={`truncate text-[15px] ${hot ? 'text-[#c62a2f]' : ''} ${done ? 'font-semibold text-[#6b6683]' : ''}`}>{title(it)}</b>
+                    <span className="truncate text-[12.5px] text-slate-500">{lv}{it.kind === 'n' ? ' · 문서·확인 알림' : ` · 알람 ${it.a.code}`}{handledOf(it) ? ' · 처리됨' : ''}</span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ))}
     </div>
   );
 }
@@ -288,14 +312,14 @@ function Chat({ focus, headerSlot, onNewChat }: { focus: string | null; headerSl
           <Icon d={['M12 5v14M5 12h14']} size={15} w={2.4} />새 채팅
         </button>, headerSlot)}
       <div ref={body} className="ma-body text-[14px]" role="tabpanel">
-        <div className="ma-pad" aria-live="polite">
-          {today.length === 0 && !busy && <p className="ma-empty">라인 상황, 알람, 사내 문서 등 무엇이든 물어보세요.</p>}
+        <div className="ma-pad min-h-full" aria-live="polite">
+          {today.length === 0 && !busy && <EveHello />}
           {today.map((r, i) => <div key={i} data-at={r.at} className={r.at === focus ? 'rounded-lg ring-2 ring-[#B79CFF]' : ''}><Bubble r={r} meta={`${md(r.at)} ${hhmm(r.at)}`} openSource={openSource} role={role} /></div>)}
           {busy && <EveThinking />}
         </div>
       </div>
       <form className="ma-compose" onSubmit={(e) => { e.preventDefault(); if (!busy) send(); }}>
-        <div className="mb-2 flex flex-wrap gap-1">{ex.map((x) => <button key={x} type="button" disabled={busy} onClick={() => send(x)} className="h-9 rounded-full border border-slate-300 px-3 text-[12px]">{x}</button>)}</div>
+        <div className="mb-3 flex flex-wrap justify-center gap-1.5">{ex.map((x) => <button key={x} type="button" disabled={busy} onClick={() => send(x)} className="h-9 rounded-full border border-slate-300 bg-[#ffffff] px-3.5 text-[13px] font-bold hover:bg-[#f7f5fd]">{x}</button>)}</div>
         <div className="ma-compose-box">
           <label className="ma-sr" htmlFor="ma-input">이브에게 질문</label>
           <input id="ma-input" ref={input} className="ma-input" autoFocus autoComplete="off" value={q} onChange={(e) => setQ(e.target.value)} placeholder="질문 (예: 992 알람 점검 순서)" />
@@ -306,17 +330,35 @@ function Chat({ focus, headerSlot, onNewChat }: { focus: string | null; headerSl
   );
 }
 
+// 채팅 첫 화면 = 팀원 '새 채팅 시안' (사용자 선택 2026-10-20): 가운데 3D 이브(robot3d.js) + 안내 한 줄. WebGL이 안 되면 얼굴 그림
+function EveHello() {
+  const [gl, setGl] = useState(true);
+  return (
+    <div className="my-auto flex flex-col items-center gap-4 px-4 py-6 text-center">
+      <div className="relative flex h-[150px] w-[150px] items-end justify-center">
+        <span aria-hidden="true" className="absolute bottom-0 left-6 right-6 h-5 rounded-full" style={{ background: 'radial-gradient(closest-side, rgba(110,215,235,.5), rgba(110,215,235,0))' }} />
+        {gl ? <RobotIcon mode={0} size={150} onFail={() => setGl(false)} /> : <Robot face="happy" size={110} />}
+      </div>
+      <p className="m-0 text-[17px] font-extrabold leading-relaxed text-[#1f1b33]">라인 상황, 알람, 사내 문서 등<br />무엇이든 물어보세요.</p>
+    </div>
+  );
+}
+
+// 채팅 기록 = G안 (사용자 선택 2026-10-20): 날짜 묶음(오늘·어제) 아래 한 줄 = 질문 + 시각
 function ChatLog({ onOpen }: { onOpen: (at: string) => void }) {
   const { user } = useApp();
   const [log] = useLocal<ChatRow[]>(`chat:${user.id}`, []);
   const server = useServerChat(user.id, null);   // 탭을 열 때마다 받는다 — 다른 PC·브라우저에서 물은 것도 보인다 (FR-MNT-01-01)
   const keep = mergeServerLog(log, server).filter((x) => Date.parse(x.at) > SIM.now() - 30 * 864e5).reverse();
+  const today = md(simIso()), yday = md(simIso(SIM.now() - 864e5));
+  const dayName = (d: string) => (d === today ? `오늘 · ${d}` : d === yday ? `어제 · ${d}` : d);
   return (
     <div className="ma-history gap-2">
+      <p className="m-0 px-1 pt-1 text-[13px] text-slate-500">내 질문만 보여요 · 30일이 지나면 지워져요</p>
       {keep.length === 0 ? <p className="ma-empty">저장된 대화가 없습니다.</p> : keep.map((r, i) => (
         <Fragment key={i}>
-          {(i === 0 || md(keep[i - 1].at) !== md(r.at)) && <p className="ma-history-group">{md(r.at)}</p>}
-          <HistoryItem q={r.q} when={`${md(r.at)} ${hhmm(r.at)}`} onOpen={() => onOpen(r.at)} />
+          {(i === 0 || md(keep[i - 1].at) !== md(r.at)) && <p className="ma-history-group">{dayName(md(r.at))}</p>}
+          <HistoryItem q={r.q} when={hhmm(r.at)} onOpen={() => onOpen(r.at)} />
         </Fragment>
       ))}
     </div>
