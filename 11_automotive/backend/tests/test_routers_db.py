@@ -101,6 +101,8 @@ class RouterFlows(unittest.TestCase):
         card = self.call(alarms.guide_card, "U02", alarm_event_id=3)
         self.assertEqual(card["alarm_code"], "992")
         self.assertIn("same_cases", card)
+        # 의심 로트 제안 (FR-PRD-05-05 수용 기준: S1에서 LOT-2609-041-1, 2026-10-20) — 제안만, 상태는 그대로
+        self.assertIn("LOT-2609-041-1", [x["lot_no"] for x in card["suspect_lots"]])
         self.denied(alarms.downtime_patch, "U02", state_log_id=1, body=alarms.DowntimeIn(confirm=True))   # 확정은 SUP
         got = self.call(alarms.downtime_patch, "U02", state_log_id=4, body=alarms.DowntimeIn(reason_code="F01"))
         self.assertEqual(got["reason_status"], "ENTERED")
@@ -187,6 +189,8 @@ class RouterFlows(unittest.TestCase):
     def test_035_lot_hold(self):
         t = self.call(production.trace, "U02", lot_no="LOT-2609-041-1")
         self.assertEqual(t["lot_no"], "LOT-2609-041-1")
+        self.assertTrue(t["suspect"] and all(x["kind"] == "ALARM" for x in t["suspect"]))     # 로트 추적의 의심 이유
+        self.assertIn("LOT-2609-041-1", [x["lot_no"] for x in self.call(production.suspect_lots, "U10", since=None)])
         body = production.HoldIn(trigger_type="AI_SUSPECT", reason="충돌 의심", alarm_event_id=3)
         self.denied(production.hold, "U02", lot_no="LOT-2609-041-1", body=body)    # 보류는 사람(SUP·MGR)만
         out = self.call(production.hold, "U10", lot_no="LOT-2609-041-1", body=body)

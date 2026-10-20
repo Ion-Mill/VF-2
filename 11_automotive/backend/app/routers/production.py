@@ -64,6 +64,14 @@ def lots(status: str | None = None, order_no: str | None = None, limit: int = Qu
     return db.all("production.lots", status=status, order_no=order_no, limit=limit)
 
 
+@router.get("/lots/suspects")
+def suspect_lots(since: datetime | None = Query(None, description="이 시각 뒤 (비우면 7일)"),
+                 _: Actor = Depends(require("LOT_TRACE", "VIEW")), db: Db = Depends(get_db)):
+    """의심 로트 제안 목록 (API-LOT-01, FR-PRD-05-05, 2026-10-20): 정지 등급 알람 때 그 설비에서 가공 중이던 로트(연쇄 알람은 첫
+    알람부터)·공구 수명을 넘겨 가공한 로트. 제안만 — 알림을 만들지 않고 보류는 반장이 정한다"""
+    return db.all("production.suspect_lots", alarm_event_id=None, lot_no=None, since=since)
+
+
 @router.get("/lots/{lot_no}")
 def lot(lot_no: str, _: Actor = Depends(require("PRODUCTION", "VIEW")), db: Db = Depends(get_db)):
     """로트 1개 (완료 수량·검사 방식·출하 수량)"""
@@ -72,8 +80,9 @@ def lot(lot_no: str, _: Actor = Depends(require("PRODUCTION", "VIEW")), db: Db =
 
 @router.get("/lots/{lot_no}/trace")
 def trace(lot_no: str, _: Actor = Depends(require("LOT_TRACE", "VIEW")), db: Db = Depends(get_db)):
-    """로트 추적 (LOT-01, FR-PRD-05): 원자재 → 공정·설비·작업자 → 검사 → 보류 → 출하"""
-    return must(db.one("production.lot_trace", lot_no=lot_no), "로트")
+    """로트 추적 (LOT-01, FR-PRD-05): 원자재 → 공정·설비·작업자 → 검사 → 보류 → 출하 + 의심 로트 제안 이유(suspect, 2026-10-20)"""
+    row = must(db.one("production.lot_trace", lot_no=lot_no), "로트")
+    return {**row, "suspect": db.all("production.suspect_lots", alarm_event_id=None, lot_no=lot_no, since=None)}
 
 
 @router.post("/lots/{lot_no}/judge")

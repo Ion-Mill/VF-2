@@ -83,3 +83,54 @@ SELECT s.reason_code, r.reason_name, r.reason_group, count(*)::int AS times, rou
   FROM equipment_state_log s JOIN downtime_reason r USING (reason_code)
  WHERE s.start_at >= CAST(:from AS timestamptz) AND s.start_at < CAST(:to AS timestamptz) AND r.is_loss
  GROUP BY s.reason_code, r.reason_name, r.reason_group ORDER BY minutes DESC NULLS LAST;
+
+-- 의심 로트 제안 (2026-10-20 요구사항 대조 상 5번 — FR-PRD-05-05, API-LOT-01, UI SCR-09 [7]·SCR-19 [3], DOC-06 4.2).
+--   ① 정지 등급 알람 때 그 설비에서 가공 중이던 로트 (연쇄 알람이면 첫 알람부터 — 예: 108 → 994 → 992), 알람에 적힌 로트
+--   ② 공구 수명(한도)을 넘긴 공구로 가공한 로트
+--   제안만 한다 — 알림을 만들지 않고 상태도 바꾸지 않는다 (보류는 반장). 거르기: :alarm_event_id(지침카드), :lot_no(로트 추적),
+--   둘 다 비면 :since 뒤 (비우면 7일). 비서는 이 재료로 문장만 쓴다
+-- name: suspect_lots
+WITH RECURSIVE chain AS (
+    SELECT a.alarm_event_id AS root_id, a.alarm_event_id, a.prev_alarm_event_id, a.occurred_at, 0 AS depth
+      FROM alarm_event a
+     WHERE a.severity_at_event = 'STOP'
+       AND (CAST(:alarm_event_id AS bigint) IS NULL OR a.alarm_event_id = CAST(:alarm_event_id AS bigint))
+       AND (CAST(:alarm_event_id AS bigint) IS NOT NULL OR CAST(:lot_no AS text) IS NOT NULL
+            OR a.occurred_at >= coalesce(CAST(:since AS timestamptz), app_now() - interval '7 days'))
+    UNION ALL
+    SELECT c.root_id, p.alarm_event_id, p.prev_alarm_event_id, p.occurred_at, c.depth + 1
+      FROM chain c JOIN alarm_event p ON p.alarm_event_id = c.prev_alarm_event_id
+     WHERE c.depth < 5
+), alarm_win AS (
+    SELECT a.alarm_event_id, a.alarm_code, a.equipment_id, a.occurred_at, a.lot_no, min(c.occurred_at) AS from_at
+      FROM chain c JOIN alarm_event a ON a.alarm_event_id = c.root_id
+     GROUP BY a.alarm_event_id, a.alarm_code, a.equipment_id, a.occurred_at, a.lot_no
+), cand AS (
+    SELECT DISTINCT r.lot_no, 'ALARM' AS kind, w.alarm_event_id, NULL::text AS tool_id, w.occurred_at AS at, 1 AS prio,
+           format('정지 등급 알람 %s(%s %s) 때 이 설비에서 가공 중', w.alarm_code, w.equipment_id,
+                  to_char(w.occurred_at AT TIME ZONE 'Asia/Seoul', 'MM/DD HH24:MI')) AS reason
+      FROM alarm_win w JOIN operation_report r ON r.equipment_id = w.equipment_id
+       AND r.start_at <= w.occurred_at AND coalesce(r.end_at, 'infinity'::timestamptz) >= w.from_at
+    UNION
+    SELECT w.lot_no, 'ALARM', w.alarm_event_id, NULL, w.occurred_at, 2,
+           format('정지 등급 알람 %s(%s %s)에 적힌 로트', w.alarm_code, w.equipment_id,
+                  to_char(w.occurred_at AT TIME ZONE 'Asia/Seoul', 'MM/DD HH24:MI'))
+      FROM alarm_win w WHERE w.lot_no IS NOT NULL
+    UNION
+    SELECT r.lot_no, 'TOOL', NULL, u.tool_id, u.recorded_at, 1,
+           format('공구 %s 수명 %s%% (한도 %s) 넘어 가공', u.tool_id, round(100 * u.cum_after / tt.life_limit), tt.life_limit::float8)
+      FROM tool_usage u JOIN tool t USING (tool_id) JOIN tool_type tt ON tt.item_no = t.item_no
+      JOIN operation_report r ON r.op_report_id = u.op_report_id
+     WHERE u.cum_after > tt.life_limit AND CAST(:alarm_event_id AS bigint) IS NULL
+       AND (CAST(:lot_no AS text) IS NOT NULL OR u.recorded_at >= coalesce(CAST(:since AS timestamptz), app_now() - interval '7 days'))
+)
+SELECT x.* FROM (
+    -- 로트·알람(또는 공구)마다 한 줄: 가공 중이던 것이면 그 이유, 아니면 "알람에 적힌 로트"
+    SELECT DISTINCT ON (c.lot_no, c.kind, c.alarm_event_id, c.tool_id)
+           c.lot_no, c.kind, c.reason, c.alarm_event_id, c.tool_id, c.at, l.status AS lot_status,
+           l.status IN ('ON_HOLD','HOLD_REVIEW') AS is_held
+      FROM cand c JOIN production_lot l USING (lot_no)
+     WHERE CAST(:lot_no AS text) IS NULL OR c.lot_no = CAST(:lot_no AS text)
+     ORDER BY c.lot_no, c.kind, c.alarm_event_id, c.tool_id, c.prio
+) x
+ ORDER BY x.at DESC, x.lot_no;

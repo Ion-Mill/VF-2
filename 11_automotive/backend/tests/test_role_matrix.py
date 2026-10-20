@@ -57,6 +57,7 @@ EXPECTED = {
     ("POST", "/api/maint/pm-records/{pm_record_id}/confirm"): ".M..",
     # 로트·품질 (LOT·QLT)
     ("GET", "/api/lots"): ALL, ("GET", "/api/lots/{lot_no}"): ALL, ("GET", "/api/lots/{lot_no}/trace"): ALL,
+    ("GET", "/api/lots/suspects"): ALL,   # 의심 로트 제안 (2026-10-20, LOT_TRACE 보기 = 추적과 같음)
     ("GET", "/api/holds"): ALL, ("POST", "/api/lots/{lot_no}/judge"): "..S.",
     ("POST", "/api/lots/{lot_no}/hold"): "..SM", ("POST", "/api/lots/{lot_no}/release"): "..SM",
     ("POST", "/api/lots/{lot_no}/scrap"): "..S.", ("POST", "/api/lots/{lot_no}/scrap/approve"): "...M",
