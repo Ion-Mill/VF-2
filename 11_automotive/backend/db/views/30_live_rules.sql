@@ -21,13 +21,6 @@ LANGUAGE sql IMMUTABLE AS $$
       ELSE NULL END;
 $$;
 
-CREATE OR REPLACE FUNCTION fn_bottleneck_cause_ko(p_cause text) RETURNS text
-LANGUAGE sql IMMUTABLE AS $$
-    SELECT CASE p_cause WHEN 'C1' THEN '원인 ① 사이클 시간 증가 (공구 마모)' WHEN 'C2' THEN '원인 ② OP-30 1대만 가동'
-                        WHEN 'C3' THEN '원인 ③ 검사 강화' WHEN 'C4' THEN '원인 ④ 묶음 대기' WHEN 'FAILURE' THEN '고장'
-                        WHEN 'BASE' THEN '기준 병목' ELSE p_cause END;
-$$;
-
 -- 병목 기록이 생기면: ① 바로 앞 구간을 닫으며 실적·고장 손실·속도 손실을 채운다 (상 2번, R-47 — 전에는 실시간이 늘 0)
 --   ② 병목 발생·이동 알림 (반장, 주의). 원인 ④ 묶음 대기는 병목 판단에서 빠지므로 알림 없음 (DOC-07 §7.5)
 CREATE OR REPLACE FUNCTION trg_bottleneck_live() RETURNS trigger LANGUAGE plpgsql AS $$

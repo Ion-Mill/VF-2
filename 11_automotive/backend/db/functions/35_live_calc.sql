@@ -82,3 +82,11 @@ LANGUAGE sql STABLE AS $$
              WHERE r.process_code = 'OP-50' AND r.end_at >= p_from AND r.end_at < p_to) a,
            (SELECT fn_failure_loss_qty(p_from, p_to) AS v) f;
 $$;
+
+-- (functions 단계로 옮김 — views/20 오늘의 문제 글이 쓴다, 2026-10-20)
+CREATE OR REPLACE FUNCTION fn_bottleneck_cause_ko(p_cause text) RETURNS text
+LANGUAGE sql IMMUTABLE AS $$
+    SELECT CASE p_cause WHEN 'C1' THEN '원인 ① 사이클 시간 증가 (공구 마모)' WHEN 'C2' THEN '원인 ② OP-30 1대만 가동'
+                        WHEN 'C3' THEN '원인 ③ 검사 강화' WHEN 'C4' THEN '원인 ④ 묶음 대기' WHEN 'FAILURE' THEN '고장'
+                        WHEN 'BASE' THEN '기준 병목' ELSE p_cause END;
+$$;

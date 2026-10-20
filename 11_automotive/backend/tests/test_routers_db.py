@@ -185,6 +185,11 @@ class RouterFlows(unittest.TestCase):
         # OPR은 정식 기록 목록을 못 봄 → 간이만
         rows = self.call(maintenance.wr_list, "U02", record_type=None, status=None, limit=100)
         self.assertTrue(all(r["record_type"] == "SIMPLE" for r in rows))
+        # 제때 실시율 (FR-MNT-04-07, 2026-10-20): 분모 = 기한이 온 항목 (안 한 채 기한 지난 것 포함), 맨 끝 줄 = 라인 합
+        on_time = self.call(maintenance.pm_schedule, "U07", equipment_id=None, frm=None, to=None)["on_time"]
+        self.assertIsNone(on_time[-1]["equipment_id"])
+        self.assertEqual(on_time[-1]["due_count"], sum(r["due_count"] for r in on_time[:-1]))
+        self.assertTrue(all(r["due_count"] == r["done_count"] + r["missed_count"] for r in on_time))
 
     def test_035_lot_hold(self):
         t = self.call(production.trace, "U02", lot_no="LOT-2609-041-1")

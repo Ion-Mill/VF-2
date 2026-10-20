@@ -215,6 +215,12 @@ SELECT 'R3', 4, 30, 'LOT', NULL, NULL, NULL, l.lot_no, '강화 검사 로트: ' 
   LEFT JOIN lot_hold h ON h.hold_id = p.hold_id
  WHERE p.plan_mode = 'ENHANCED' AND p.enhance_reason = 'NEXT_LOT'
    AND l.status IN ('IN_PROCESS','WAIT_INSPECTION','WAIT_JUDGEMENT')
+UNION ALL
+-- 3 주의: 진행 중 작업지시서 (FR-PRD-02-08 "진행 중 작업지시", 2026-10-20 — 생성기 인계 사항과 같은 자리: 주의 칸 맨 뒤)
+SELECT 'R3', 4, 80, 'WO', NULL, NULL, m.equipment_id, NULL, format('진행 중 작업지시서 %s (%s)', m.wo_no, m.equipment_id),
+       m.created_at, NULL, NULL, NULL, NULL, NULL, NULL
+  FROM maintenance_work_order m
+ WHERE m.status NOT IN ('DONE','CANCELLED')
 )
 -- 같은 원인 (group_key): ① 알람이 있는 항목 = 설비|알람 번호 ② 예방 정비 알림 = 그 설비의 관련 알람 줄이 있으면 그 줄
 --   (alarm_related_item: 알람 ↔ 정비 항목의 기본 소모품), 없으면 설비|item:소모품 ③ 재고 부족 = 관련 알람 줄 → 같은 소모품의
@@ -232,6 +238,7 @@ SELECT b.report_rank, b.rank_order, b.rank_group, b.item_kind, b.notification_id
              (SELECT min(a.alarm_equipment || '|' || a.alarm_code) FROM base a
                 JOIN alarm_related_item r ON r.alarm_code = a.alarm_code WHERE r.item_no = b.stock_item),
              (SELECT min(x.pm_equipment || '|item:' || x.pm_item) FROM base x WHERE x.pm_item = b.stock_item))
+         WHEN b.item_kind = 'WO' THEN 'WO:' || b.title                 -- 작업지시서마다 한 줄 (같은 설비 여러 장도 따로)
        END AS group_key
   FROM base b;
 

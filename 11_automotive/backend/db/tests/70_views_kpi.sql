@@ -19,13 +19,13 @@ SELECT fn_raise_notification('ALARM_STOP', 'VF2-01 알람 992', '{"alarm_event_i
 SELECT fn_raise_notification('ALARM_WARN', 'VF2-01 알람 108', '{"alarm_event_id": 1, "equipment_id": "VF2-01"}', '2026-09-15 10:52+09');
 SELECT fn_raise_notification('WIP_WARN', 'WIP-20-30 재공 22개', '{"buffer_code": "WIP-20-30"}', '2026-09-15 16:00+09');
 SELECT fn_raise_notification('PM_DUE_SOON', '내일 예방 정비', '{"pm_task_id": "PM-VF2-02-2.3-01"}', '2026-09-15 16:10+09');
-SELECT t.eq((SELECT string_agg(report_rank, ',' ORDER BY rank_order, rank_group, occurred_at) FROM v_report_lines), 'R0,R1,R2,R3,R4',
-            '6.43 순서: 안전 → 긴급 → 생산 위험 → 주의 → 참고 (화면 줄)');
+SELECT t.eq((SELECT string_agg(report_rank, ',' ORDER BY rank_order, rank_group, occurred_at) FROM v_report_lines), 'R0,R1,R2,R3,R3,R4',
+            '6.43 순서: 안전 → 긴급 → 생산 위험 → 주의(알람 108, 진행 중 작업지시서 MW-0901 — 2026-10-20) → 참고 (화면 줄)');
 SELECT t.eq((SELECT title FROM v_report_lines ORDER BY rank_order LIMIT 1), '잠금·표지 중: VF2-01', '잠금 중 설비가 맨 위');
 -- 하루가 지나면 처리 안 된 주의 알림은 0-1로 올라감
 SELECT t.freeze('2026-09-16 12:00+09');
-SELECT t.eq((SELECT string_agg(report_rank, ',' ORDER BY rank_order, rank_group, occurred_at) FROM v_report_lines), 'R0,R0_1,R1,R2,R4',
-            '24시간 넘은 주의 알림(108, 25시간)만 0-1로, 재공 경고(20시간)는 그대로');
+SELECT t.eq((SELECT string_agg(report_rank, ',' ORDER BY rank_order, rank_group, occurred_at) FROM v_report_lines), 'R0,R0_1,R1,R2,R3,R4',
+            '24시간 넘은 주의 알림(108, 25시간)만 0-1로, 재공 경고(20시간)는 그대로 (R3 = 진행 중 작업지시서)');
 -- DOWN 설비와 그 정지 알람 알림은 한 줄 (FR-AST-COM-21 같은 설비·같은 원인 → 1건)
 SELECT t.eq((SELECT count(*) FROM v_report_lines WHERE equipment_id = 'VF2-01' AND report_rank = 'R1')::int, 1, '같은 설비 긴급은 한 줄');
 SELECT t.eq((SELECT member_count FROM v_report_lines WHERE equipment_id = 'VF2-01' AND report_rank = 'R1'), 2, '묶인 항목 2건 = 1줄');

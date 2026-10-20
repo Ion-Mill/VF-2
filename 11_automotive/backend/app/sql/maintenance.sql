@@ -141,18 +141,33 @@ SELECT d.pm_task_id, d.equipment_id, d.doc04_section, d.area, d.item_name, d.cyc
  WHERE d.is_active AND (CAST(:equipment_id AS text) IS NULL OR d.equipment_id = CAST(:equipment_id AS text))
  ORDER BY d.next_due_date NULLS LAST, d.pm_task_id;
 
--- 제때 실시율 (PM-01, DOC-04 실시율 목표 90%): 기간(기본 최근 30일) 안 확정된 실시 기록 중 기한 안에 한 것의 비율 (설비별)
+-- 제때 실시율 (PM-01, FR-MNT-04-07, DOC-04 실시율 목표 90%): 기간(기본 최근 30일) 안 기한이 온 항목 중 기한 안에 한 것의 비율 (설비별 + 라인 합)
 -- name: pm_on_time
-SELECT t.equipment_id, count(*)::int AS done_count,
-       count(*) FILTER (WHERE CAST(r.done_at AT TIME ZONE 'Asia/Seoul' AS date) <= r.due_date)::int AS on_time_count,
-       round(100.0 * count(*) FILTER (WHERE CAST(r.done_at AT TIME ZONE 'Asia/Seoul' AS date) <= r.due_date)
-             / nullif(count(*), 0), 1) AS on_time_pct
-  FROM pm_record r JOIN pm_task t USING (pm_task_id)
- WHERE r.status IN ('CONFIRMED','REVISED')
-   AND r.due_date BETWEEN coalesce(CAST(:from AS date), CAST(app_now() AT TIME ZONE 'Asia/Seoul' AS date) - 30)
-                      AND coalesce(CAST(:to AS date), CAST(app_now() AT TIME ZONE 'Asia/Seoul' AS date))
-   AND (CAST(:equipment_id AS text) IS NULL OR t.equipment_id = CAST(:equipment_id AS text))
- GROUP BY t.equipment_id ORDER BY t.equipment_id;
+-- 2026-10-20: 분모 = 기한이 온 항목 전부 (실시 기록 + 안 한 채 기한이 지난 항목 — 전에는 실시한 것만 세서 안 하면 100%가 됐다).
+--   안 한 항목 = 구간 안 기한(v_pm_task_due의 next_due_date)이 지났는데 그 기한 뒤 실시 기록이 없는 정비 항목. 맨 끝 줄 equipment_id NULL = 라인 합
+WITH d AS (
+    SELECT coalesce(CAST(:from AS date), CAST(app_now() AT TIME ZONE 'Asia/Seoul' AS date) - 30) AS f,
+           coalesce(CAST(:to AS date), CAST(app_now() AT TIME ZONE 'Asia/Seoul' AS date)) AS t,
+           CAST(app_now() AT TIME ZONE 'Asia/Seoul' AS date) AS today
+), x AS (
+    SELECT t.equipment_id, CAST(r.done_at AT TIME ZONE 'Asia/Seoul' AS date) <= r.due_date AS on_time, true AS done
+      FROM pm_record r JOIN pm_task t USING (pm_task_id), d
+     WHERE r.status IN ('CONFIRMED','REVISED') AND r.due_date BETWEEN d.f AND d.t
+    UNION ALL
+    SELECT v.equipment_id, false, false
+      FROM v_pm_task_due v, d
+     WHERE v.is_active AND v.next_due_date BETWEEN d.f AND least(d.t, d.today - 1)
+       AND NOT EXISTS (SELECT 1 FROM pm_record r WHERE r.pm_task_id = v.pm_task_id AND r.due_date = v.next_due_date
+                         AND r.status IN ('CONFIRMED','REVISED'))
+), g AS (
+    SELECT equipment_id, count(*) FILTER (WHERE done)::int AS done_count, count(*) FILTER (WHERE NOT done)::int AS missed_count,
+           count(*)::int AS due_count, count(*) FILTER (WHERE on_time)::int AS on_time_count
+      FROM x WHERE CAST(:equipment_id AS text) IS NULL OR equipment_id = CAST(:equipment_id AS text)
+     GROUP BY GROUPING SETS ((equipment_id), ())
+)
+SELECT equipment_id, done_count, missed_count, due_count, on_time_count,
+       round(100.0 * on_time_count / nullif(due_count, 0), 1) AS on_time_pct
+  FROM g ORDER BY equipment_id NULLS LAST;
 
 -- name: pm_record_create
 INSERT INTO pm_record (pm_task_id, due_date, done_at, done_by, recorded_by, result, measured_value, measured_unit, memo, status, current_version)

@@ -92,6 +92,6 @@ SELECT t.eq((SELECT version_no || '/' || author_kind FROM document_revision WHER
 UPDATE shift_report SET status = 'CONFIRMED', confirmed_by = 'U10', confirmed_at = app_now() WHERE shift_id = '2026-09-16-D';
 SELECT t.ok((SELECT is_processed FROM notification WHERE rule_code = 'SHIFT_REPORT_PENDING' AND shift_id = '2026-09-16-D'),
             '반장이 확정하면 확정 요청 알림 자동 처리');
-SELECT t.ok((SELECT handover_text LIKE '전체 %' FROM shift_report WHERE shift_id = '2026-09-16-D'), '인계 사항 = 전체 N건 + 순위 순 목록');
+SELECT t.ok((SELECT handover_text LIKE '0 안전: % / 4 참고: %' FROM shift_report WHERE shift_id = '2026-09-16-D'), '인계 사항 = 순위별 칸 (생성기 모양)');
 SELECT t.eq(fn_create_daily_report_draft('2026-09-16'), 0, '두 번 만들지 않음');
 ROLLBACK;
