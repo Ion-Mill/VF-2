@@ -154,7 +154,7 @@ async function withToken<T>(userId: string, run: (token: string) => Promise<T>):
 // ---------------- 채팅 음성 입력 (2026-10-20) ----------------
 // 마이크로 말한 소리를 백엔드(POST /api/assistant/transcribe)가 사내 서버의 비서에게 넘겨 글자로 바꾼다. 글자는 입력창에 채우기만 하고 보내는 것은 사용자가 한다.
 // 소리는 저장되지 않는다. 던지는 것은 VoiceFail 하나뿐 — reason 은 voiceInput.voiceMessage 가 쉬운 문장으로 바꾼다.
-const VOICE_TIMEOUT_MS = 25_000;      // 백엔드가 비서를 기다리는 20초 + 여유
+const VOICE_TIMEOUT_MS = 50_000;      // 백엔드가 비서를 기다리는 45초 + 여유 (녹음 최대 60초까지 늘릴 수 있어서, 2026-10-20)
 
 export interface VoiceStatus { enabled: boolean; maxSeconds: number }
 export const VOICE_OFF: VoiceStatus = { enabled: false, maxSeconds: 20 };
