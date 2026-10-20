@@ -8,7 +8,7 @@ import ts from 'typescript';
 
 const file = fileURLToPath(new URL('../src/shell/chatLog.ts', import.meta.url));
 const js = ts.transpileModule(readFileSync(file, 'utf8'), { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2020 } }).outputText;
-const { currentChat, realRows, canStartNewChat, withNewChat, makeNewChatMark, mergeServerLog, lastChatId } = await import('data:text/javascript;base64,' + Buffer.from(js).toString('base64'));
+const { currentChat, realRows, canStartNewChat, withNewChat, makeNewChatMark, mergeServerLog, lastChatId, sessionOf, isFocusRow } = await import('data:text/javascript;base64,' + Buffer.from(js).toString('base64'));
 
 const T = '2026-10-01T10:00:00+09:00';
 const row = (q, at = T) => ({ at, q, a: '답 ' + q, status: 'ok', sources: [] });
@@ -82,6 +82,68 @@ t('이어서 물을 번호 = 번호 있는 마지막 줄, 없으면 null', () =>
   assert.equal(lastChatId([srv('a', 3), srv('b', 4), row('c')]), 4);
   assert.equal(lastChatId([row('a')]), null);
   assert.equal(lastChatId([]), null);
+});
+
+// ---- 기록에서 한 줄을 눌러 열기: 그 줄이 속한 대화만 (sessionOf)
+// 10/18 사례를 줄인 것: 시계가 멈춰 모든 줄의 시각이 같다. 대화 셋 = {1,2} · {3,4,5} · {6}
+const sv = (q, chatId, prevChatId) => ({ ...srv(q, chatId), ...(prevChatId === undefined ? {} : { prevChatId }) });
+const day = [sv('2075 알람 뭐야', 1), sv('원인은?', 2, 1), sv('잠금·표지·순서', 3), sv('이 화면 설명해 줘', 4, 3), sv('자물쇠 제거', 5, 4), sv('원점 복귀', 6)];
+const focusOf = (r) => ({ at: r.at, q: r.q, chatId: r.chatId });
+t('한 줄을 누르면 그 줄이 속한 대화만 열린다 (같은 날 다른 대화는 안 섞인다)', () => {
+  assert.deepEqual(qs(sessionOf(day, [], focusOf(day[0]))), ['2075 알람 뭐야', '원인은?']);
+  assert.deepEqual(qs(sessionOf(day, [], focusOf(day[1]))), ['2075 알람 뭐야', '원인은?'], '대화 가운데 줄을 눌러도 같은 대화');
+  assert.deepEqual(qs(sessionOf(day, [], focusOf(day[4]))), ['잠금·표지·순서', '이 화면 설명해 줘', '자물쇠 제거']);
+  assert.deepEqual(qs(sessionOf(day, [], focusOf(day[5]))), ['원점 복귀'], '혼자인 질문은 그 줄만');
+});
+t('열린 줄 밖 질문이 함께 보이는 수 = 0 (모든 줄을 눌러 본다)', () => {
+  const groups = [[0, 1], [2, 3, 4], [5]];
+  let outside = 0;
+  day.forEach((r, i) => { const g = groups.find((x) => x.includes(i)); outside += sessionOf(day, [], focusOf(r)).filter((x) => !g.some((k) => day[k].chatId === x.chatId)).length; });
+  assert.equal(outside, 0);
+});
+t('시각이 모두 같아도 눌러 연 줄은 번호로 가려진다', () => {
+  assert.equal(new Set(day.map((r) => r.at)).size, 1);
+  assert.deepEqual(day.filter((r) => isFocusRow(r, focusOf(day[3]))).map((r) => r.chatId), [4]);
+});
+t('갈래: 한 질문에서 두 번 이어 물어도 한 대화다', () => {
+  const rows = [sv('a', 1), sv('b', 2, 1), sv('c', 3, 1), sv('d', 4, 3)];
+  assert.deepEqual(qs(sessionOf(rows, [], focusOf(rows[1]))), ['a', 'b', 'c', 'd']);
+});
+t('앞 질문이 30일이 지나 사라져도 남은 줄끼리 한 대화다', () => {
+  const rows = [sv('b', 20, 7), sv('c', 21, 20), sv('x', 30)];
+  assert.deepEqual(qs(sessionOf(rows, [], focusOf(rows[0]))), ['b', 'c']);
+});
+t('번호 없는 실패 줄도 앞 질문 번호가 있으면 그 대화에 든다', () => {
+  const fail = { ...row('실패한 질문'), prevChatId: 2 };
+  const rows = [sv('a', 1), sv('b', 2, 1), fail, sv('z', 9)];
+  assert.deepEqual(qs(sessionOf(rows, [], focusOf(rows[0]))), ['a', 'b', '실패한 질문']);
+  assert.deepEqual(qs(sessionOf(rows, [], { at: fail.at, q: fail.q })), ['a', 'b', '실패한 질문'], '실패한 줄을 눌러도 같은 대화');
+});
+t('번호가 하나도 없는 줄은 [새 채팅] 표지로 나뉜 구간이다', () => {
+  const local = [row('x1', '2026-10-01T10:00:00+09:00'), row('x2', '2026-10-01T10:01:00+09:00'), mark(), row('x3', '2026-10-01T10:02:00+09:00')];
+  const rows = realRows(local);
+  assert.deepEqual(qs(sessionOf(rows, local, { at: rows[0].at, q: 'x1' })), ['x1', 'x2']);
+  assert.deepEqual(qs(sessionOf(rows, local, { at: rows[2].at, q: 'x3' })), ['x3']);
+});
+t('눌러 연 줄을 못 찾으면 같은 날 줄들 (예전 동작)', () => {
+  const rows = [sv('a', 1), { ...sv('b', 2), at: '2026-10-02T09:00:00+09:00' }];
+  assert.deepEqual(qs(sessionOf(rows, [], { at: T, q: 'zzz', chatId: 99 })), ['a']);
+});
+t('이어서 물을 번호 = 열린 대화의 마지막 번호 줄', () => {
+  assert.equal(lastChatId(sessionOf(day, [], focusOf(day[2]))), 5);
+  assert.equal(lastChatId(sessionOf(day, [], focusOf(day[0]))), 2);
+});
+t('합칠 때 이 브라우저 줄에 없는 앞 질문 번호를 서버 줄에서 채운다 (있으면 그대로)', () => {
+  const local = [{ ...row('b'), chatId: 2 }, { ...row('c'), chatId: 3, prevChatId: 2 }];
+  const merged = mergeServerLog(local, [sv('b', 2, 1), sv('c', 3, 7)]);
+  assert.equal(merged.find((r) => r.chatId === 2).prevChatId, 1);
+  assert.equal(merged.find((r) => r.chatId === 3).prevChatId, 2, '이 브라우저에 있는 값은 덮지 않는다');
+  assert.equal(local[0].prevChatId, undefined, '원본은 바꾸지 않는다');
+});
+t('묶기는 원본 줄 목록을 바꾸지 않는다', () => {
+  const copy = JSON.stringify(day);
+  sessionOf(day, [], focusOf(day[2]));
+  assert.equal(JSON.stringify(day), copy);
 });
 
 console.log(fail ? `\n${fail}개 실패` : '\n전부 통과');

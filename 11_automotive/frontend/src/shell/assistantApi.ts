@@ -106,7 +106,7 @@ export async function askAssistant(question: string, userId: string, screen: str
 }
 
 /** 서버에 저장된 내 채팅 기록 한 줄 (API-AST-02 GET → 채팅 기록 탭의 ChatRow 모양) */
-export interface ServerChatRow { at: string; q: string; a: string; status: string; sources: AssistantSource[]; chatId: number }
+export interface ServerChatRow { at: string; q: string; a: string; status: string; sources: AssistantSource[]; chatId: number; prevChatId?: number }   // prevChatId = 이 질문이 이어 물은 앞 질문 번호 (chat_log.prev_chat_id, 없으면 새 대화의 첫 질문)
 
 const kst = (iso: string) => new Date(Date.parse(iso) + 9 * 3600e3).toISOString().slice(0, 19) + '+09:00';   // 화면 시각 글자와 같은 모양 (live.ts simIso)
 
@@ -131,7 +131,7 @@ export async function fetchChatLog(userId: string): Promise<ServerChatRow[] | nu
       .map((x: any): ServerChatRow => {
         const status = STATUS_KO[String(x.status)] ?? STATUS_KO.NO_RESPONSE;
         const ok = typeof x.answer === 'string' && x.answer.trim() !== '' && status !== STATUS_KO.NO_RESPONSE;
-        return { at: kst(x.asked_at), q: x.question, a: ok ? x.answer : NO_RESPONSE_TEXT, status: ok ? status : STATUS_KO.NO_RESPONSE, sources: ok ? toSources(x.sources) : [], chatId: x.chat_id };
+        return { at: kst(x.asked_at), q: x.question, a: ok ? x.answer : NO_RESPONSE_TEXT, status: ok ? status : STATUS_KO.NO_RESPONSE, sources: ok ? toSources(x.sources) : [], chatId: x.chat_id, ...(typeof x.prev_chat_id === 'number' ? { prevChatId: x.prev_chat_id } : {}) };
       })
       .reverse();
   } catch {
