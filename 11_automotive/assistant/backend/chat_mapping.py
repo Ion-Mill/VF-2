@@ -84,7 +84,10 @@ def blocks_to_text(a: dict) -> str | None:
             lines = [_block_text(b)]
         elif kind == "ops":
             items = [str(x).strip() for x in (b.get("items") or []) if str(x).strip()]
-            lines = [_block_text(b, "head")] + [f"{i}. {x}" for i, x in enumerate(items, 1)]
+            head = _block_text(b, "head")
+            if head and items and not (attach and groups):   # 목록이 딸린 조회 머리 줄은 소제목으로 — 이미 소제목 바로 뒤라면(알람 카드의 "■ 운영 기록") 일반 줄로 둔다. 한 덩어리에 "■"가 둘이면 카드 파서가 모르는 모양이라 평문으로 떨어진다
+                head = f"■ {head}"
+            lines = [head] + [f"{i}. {x}" for i, x in enumerate(items, 1)]
         elif kind == "steps":
             lines = list(steps)
             used_steps = used_steps or bool(steps)

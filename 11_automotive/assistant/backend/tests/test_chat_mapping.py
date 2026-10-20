@@ -106,8 +106,24 @@ def test_blocks_pure_layout_lead_sections_lists_and_closing_text():
 
 
 def test_blocks_ops_with_head_and_numbered_items():
+    """질문대로 답하기 1단계(2026-10-21): 목록이 딸린 조회 머리 줄이 혼자 서 있으면 "■ "를 붙여 화면이 소제목으로 그린다."""
     a = {"blocks": [{"kind": "ops", "head": "정지 전체 3번", "items": ["고장 2번", "준비 1번"], "source": None}]}
-    assert to_answer_text(a) == "정지 전체 3번\n1. 고장 2번\n2. 준비 1번"
+    assert to_answer_text(a) == "■ 정지 전체 3번\n1. 고장 2번\n2. 준비 1번"
+
+
+def test_blocks_ops_head_right_after_a_section_gets_no_second_marker():
+    """소제목 바로 뒤의 조회 머리 줄은 일반 줄 — 한 덩어리에 ■가 둘이면 알람 카드 파서가 모르는 모양이라 카드가 평문으로 떨어진다."""
+    a = {"blocks": [{"kind": "section", "text": "운영 기록 [가상]"},
+                    {"kind": "ops", "head": "2026-09-01 ~ 2026-09-30 알람 2075 발생", "items": ["VF2-01 3번"], "source": None}]}
+    t = to_answer_text(a)
+    assert t == "■ 운영 기록 [가상]\n2026-09-01 ~ 2026-09-30 알람 2075 발생\n1. VF2-01 3번"
+    assert t.count("■") == 1
+
+
+def test_blocks_ops_without_items_stays_a_plain_sentence():
+    """목록이 없는 조회 한 줄(예: OEE 한 문장)은 제목이 아니라 답 자체라 ■를 붙이지 않는다."""
+    a = {"blocks": [{"kind": "ops", "head": "VF2-01 OEE 68.4%", "items": [], "source": None}]}
+    assert to_answer_text(a) == "VF2-01 OEE 68.4%"
 
 
 def test_blocks_consecutive_lines_stay_together_and_unknown_kinds_are_skipped():
