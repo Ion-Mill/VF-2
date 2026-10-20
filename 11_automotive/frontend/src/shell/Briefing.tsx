@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { useBriefingText } from './assistText';
 import { useApp } from './ctx';
 import { MACHINES } from './data';
-import { SIM, md, type Twin } from './live';
+import { SIM, hm, md, simIso, type Twin } from './live';
 import { LEVEL_VIEW, RANK_NAME, RANK_ORDER, alarmTitle, hhmm, type AlertRec, type Notice } from './model';
 
 export const lastShiftReport = (reports: Record<string, any>[] | null, twin: Twin | null) =>
@@ -24,56 +24,75 @@ const aText = (a: AlertRec) => `${LEVEL_VIEW[a.level].icon} ${MACHINES[a.machine
 export const rankOfAlert = (a: AlertRec) => (a.level === '긴급' ? '1' : a.level === '주의' ? (SIM.now() - a.ts > 864e5 ? '0-1' : '3') : '4');
 export const rankOfNotice = (n: Notice) => (n.level === '주의' && SIM.now() - n.ts > 864e5 ? '0-1' : n.rank);
 
-// 시안 4b (사용자 선택 2026-10-20): 요약 칸 3개 → 바이올렛 '지금 할 일' 카드(완료했어요 · 방법 보기) → '그다음' 타임라인. 할 일 목록·순서는 전과 같음
+// 이브 브리핑 G안 (사용자 선택 2026-10-20, 캔버스 'MOM 비서AI 플로팅 시안' 7번 페이지): 맨 위 작게 = 이번 교대 목표 · 지난 교대, 나머지 = '먼저 챙길 일' 체크박스.
+// 할 일 목록·순서·비서 정리·바로가기는 전(시안 4b)과 같음. 4b 카드·타임라인 코드는 구현_중_수정사항/백업_1020_이브패널/Briefing.tsx
 type Tone = 'red' | 'amber' | 'soon';
 type Todo = { key: string; text: string; sub: string; tag: string; tone: Tone; go: () => void };
-const Stat = ({ k, v, tone }: { k: string; v: string; tone?: 'ok' | 'bad' }) => (
-  <div className={`flex min-w-0 flex-col gap-1 rounded-2xl px-3.5 py-2.5 ${tone === 'ok' ? 'bg-[#e6f6ec]' : tone === 'bad' ? 'bg-[#fdeeee]' : 'bg-white'}`}>
-    <span className={`text-[13px] ${tone === 'ok' ? 'text-[#1f7a45]' : tone === 'bad' ? 'text-[#b4282d]' : 'text-[#6b6683]'}`}>{k}</span>
-    <b className={`truncate text-[20px] leading-tight ${tone === 'ok' ? 'text-[#1f7a45]' : tone === 'bad' ? 'text-[#b4282d]' : 'font-mono text-[#1f1b33]'}`}>{v}</b>
-  </div>);
-const HERO_TAG: Record<Tone, string> = { red: 'rounded-full bg-[#ff5d5d] px-2.5 py-0.5 text-white', amber: 'text-[#ffc65c]', soon: 'text-white/70' };
-function Board({ todos, goal, lockout, footSrc, onDone, children, aiNote }: { todos: Todo[]; goal: number; lockout: string[]; footSrc: string; onDone?: () => void; children?: React.ReactNode; aiNote?: React.ReactNode }) {
-  const [done, setDone] = useState<string[]>([]); // 이 창에서만 '완료' 표시 (서버에 저장 안 함)
-  const left = todos.filter((t) => !done.includes(t.key)), hero = left[0], rest = left.slice(1);
-  const urgent = todos.filter((t) => t.tone === 'red').length;
+type Summary = {
+  shift: string; asOf: string; target: number; carry: number; orders: number; pm: number;
+  last: { label: string; good: number | null; target: number; defect: number; confirmed: boolean } | null;
+};
+const TAG_COLOR: Record<Tone, string> = { red: 'text-[#b4282d]', amber: 'text-[#9a5b00]', soon: 'text-[#6b6683]' };
+const SUM_BOX = 'flex min-w-0 flex-col gap-0.5 rounded-2xl border border-[#e4def8] bg-[#ffffff] px-3.5 py-2.5';
+const SUM_LABEL = 'whitespace-nowrap text-[12.5px] font-bold text-[#6b6683]';
+const SUM_NOTE = 'text-[12.5px] leading-snug text-[#4b4766]';
+function Board({ todos, sum, lockout, footSrc, onDone, onOpenLast, aiNote }: { todos: Todo[]; sum: Summary; lockout: string[]; footSrc: string; onDone?: () => void; onOpenLast?: () => void; aiNote?: React.ReactNode }) {
+  const [done, setDone] = useState<string[]>([]); // 이 창에서만 체크 (서버에 저장 안 함 — 저장할지는 팀 결정)
+  const isDone = (t: Todo) => done.includes(t.key);
+  const open = todos.filter((t) => !isDone(t)), fin = todos.filter(isDone);
+  const red = open.filter((t) => t.tone === 'red').length, amber = open.filter((t) => t.tone === 'amber').length;
+  const toggle = (k: string) => setDone((d) => (d.includes(k) ? d.filter((x) => x !== k) : [...d, k]));
   return (
-    <div className="flex flex-col gap-3 text-[#1f1b33]">
-      <div className="grid grid-cols-3 gap-2">
-        <Stat k="할 일" v={`${left.length}건`} />
-        <Stat k="목표" v={`${goal}개`} />
-        {lockout.length ? <Stat k="안전" v={`잠금 ${lockout.length}대`} tone="bad" /> : urgent ? <Stat k="안전" v={`긴급 ${urgent}건`} tone="bad" /> : <Stat k="안전" v="이상 없음" tone="ok" />}
+    <div className="flex flex-col gap-2.5 text-[#1f1b33]">
+      <p className="m-0 px-0.5 text-[13.5px] text-[#6b6683]"><b className="text-[#1f1b33]">{sum.shift}</b> · <span className="font-mono">{sum.asOf}</span> 기준</p>
+      <div className="grid grid-cols-2 gap-2">
+        <div className={SUM_BOX}>
+          <span className={SUM_LABEL}>이번 교대 목표</span>
+          <b className="font-mono text-[18px] leading-tight">{sum.target}개</b>
+          <span className={SUM_NOTE}>이월 {sum.carry} · 작업지시 {sum.orders}<br />예방 정비 {sum.pm}</span>
+        </div>
+        <div className={SUM_BOX}>
+          <span className={SUM_LABEL}>지난 교대{sum.last && ` · ${sum.last.label}`}</span>
+          {sum.last ? (<>
+            <span className="flex items-center gap-1.5"><b className="font-mono text-[18px] leading-tight">{sum.last.good ?? '—'} / {sum.last.target}</b><span className="whitespace-nowrap rounded-md bg-[#f0edf9] px-1.5 text-[11.5px] font-bold text-[#4b4766]">{sum.last.confirmed ? '확정' : '잠정'}</span></span>
+            <span className={SUM_NOTE}>양품 · 불량 {sum.last.defect}<br />{onOpenLast && <button onClick={onOpenLast} className="font-semibold text-[#5a3bc8] underline">보고서 열기</button>}</span>
+          </>) : <span className={SUM_NOTE}>보고서 없음</span>}
+        </div>
       </div>
       {lockout.length > 0 && <div className="rounded-2xl bg-[#fdecec] px-4 py-2.5 text-[14px] font-extrabold text-[#b4282d]">🔒 {lockout.join(' · ')} 잠금 중 — 전원을 넣지 마세요</div>}
-      {hero ? (
-        <div className="flex flex-col gap-3 rounded-3xl bg-gradient-to-br from-[#5b45d6] to-[#6d4aff] p-5 text-white shadow-[0_14px_30px_rgba(91,69,214,0.35)]">
-          <div className="flex items-center justify-between gap-2 text-[14px] font-bold"><span className="text-white/85">지금 할 일 · {todos.length - left.length + 1}/{todos.length}</span><span className={`whitespace-nowrap text-[13px] font-extrabold ${HERO_TAG[hero.tone]}`}>{hero.tag}</span></div>
-          <b className="text-[22px] font-extrabold leading-snug">{hero.text}</b>
-          <span className="text-[14px] text-white/80">{hero.sub}</span>
-          <div className="mt-1 flex gap-2">
-            <button onClick={() => setDone((d) => [...d, hero.key])} className="h-12 flex-1 rounded-2xl bg-white text-[16px] font-extrabold text-[#3d2a9e]">완료했어요</button>
-            <button onClick={hero.go} className="h-12 rounded-2xl bg-white/20 px-5 text-[15px] font-bold text-white hover:bg-white/30">방법 보기</button>
+      <div className="flex flex-wrap items-baseline gap-x-2 px-0.5 pt-1.5">
+        <h3 className="m-0 text-[19px] font-extrabold">먼저 챙길 일 {open.length}</h3>
+        <span className="text-[13.5px] text-[#6b6683]">긴급 {red} · 주의 {amber} · 끝낸 일 {fin.length}</span>
+      </div>
+      {todos.length === 0 && <div className="rounded-2xl bg-[#ffffff] px-5 py-6 text-center text-[15px] font-bold text-[#1f7a45]">✓ 오늘 챙길 일이 없어요</div>}
+      {[...open, ...fin].map((t) => {
+        const d = isDone(t);
+        return (
+          <div key={t.key} className={`flex items-center gap-2 rounded-2xl border border-[#e4def8] pr-2.5 ${d ? 'bg-[#efedf5]' : 'bg-[#ffffff]'}`}>
+            <label className="flex min-h-[64px] min-w-0 flex-1 cursor-pointer items-center gap-3.5 py-2 pl-3.5 pr-1">
+              <input type="checkbox" checked={d} onChange={() => toggle(t.key)} className="h-[26px] w-[26px] shrink-0 accent-[#26303a]" />
+              <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                <span className={`text-[16px] font-extrabold leading-snug ${d ? 'text-[#8a879a] line-through' : ''}`}>{t.text}</span>
+                <span className="text-[13px] leading-snug text-[#6b6683]"><b className={d ? '' : TAG_COLOR[t.tone]}>{t.tag}</b>{t.sub.startsWith(`${t.tag} · `) ? t.sub.slice(t.tag.length) : ` · ${t.sub}`}</span>
+              </span>
+            </label>
+            {!d && <button onClick={t.go} className="h-11 shrink-0 rounded-xl border border-[#26303a] bg-[#ffffff] px-3.5 text-[15px] font-extrabold text-[#1f1b33] hover:bg-[#f3f1fb]">보기</button>}
           </div>
-        </div>
-      ) : <div className="rounded-3xl bg-white px-5 py-6 text-center text-[15px] font-bold text-[#1f7a45]">✓ 오늘 챙길 일을 모두 마쳤어요</div>}
-      {rest.length > 0 && (<>
-        <div className="px-1 pt-1 text-[14px] font-bold text-[#4b4766]">그다음</div>
-        <ol className="relative m-0 flex list-none flex-col p-0 before:absolute before:bottom-3 before:left-[15px] before:top-3 before:w-px before:bg-[#c9bdf5]">
-          {rest.map((t, i) => (
-            <li key={t.key}><button onClick={t.go} className="relative grid w-full grid-cols-[32px_1fr_auto] items-center gap-3 rounded-xl py-1.5 pr-2 text-left hover:bg-white/70">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-[#9d85ff] bg-[#f3f1fb] font-mono text-[13px] font-bold text-[#3d2a9e]">{todos.length - left.length + i + 2}</span>
-              <span className="min-w-0 text-[15px] leading-snug">{t.text}</span>
-              {t.tone === 'red' && <span className="whitespace-nowrap text-[12px] font-extrabold text-[#d23a35]">{t.tag}</span>}{/* 시안처럼 목록은 글만, 긴급만 표시 */}
-            </button></li>))}
-        </ol>
-      </>)}
-      {children}
-      <div className="flex flex-col gap-2.5 pt-1"><span className="px-1 text-[12.5px] text-[#6b6683]">{aiNote}근거 · {footSrc}{done.length ? ` · 이 창에서 완료 ${done.length}건 (저장 안 됨)` : ''}</span>
+        );
+      })}
+      <div className="flex flex-col gap-2.5 pt-1"><span className="px-1 text-[12.5px] text-[#6b6683]">{aiNote}근거 · {footSrc}{done.length ? ` · 체크 ${done.length}건은 이 창에만 (저장 안 됨)` : ''}</span>
         {onDone && <button onClick={onDone} className="h-12 w-full rounded-full bg-[#26303a] text-[16px] font-extrabold text-white">확인했어요</button>}</div>
     </div>
   );
 }
-const Card = ({ t, children }: { t: React.ReactNode; children: React.ReactNode }) => <section className="rounded-2xl bg-white px-4 py-3 text-[14px]"><h4 className="m-0 mb-1 text-[14px] font-extrabold">{t}</h4>{children}</section>;
+const shiftName = (id: string) => `${md(id)} ${id.endsWith('-N') ? '야간' : '주간'}`;
+const summaryOf = (twin: Twin, last: Record<string, any> | null, good: number | null, pmCount: number): Summary => ({
+  shift: `${md(twin.shift.start_at)} ${twin.shift.shift_type === 'NIGHT' ? '야간' : '주간'} ${hm(twin.shift.start_at)}–${hm(twin.shift.end_at)}`,
+  asOf: hm(simIso()),
+  target: twin.production.total_target_qty, carry: twin.production.carry_over_qty,
+  orders: twin.orders.filter((o) => o.status !== 'COMPLETED').length, pm: pmCount,
+  last: last ? { label: shiftName(String(last.shift_id)), good, target: Number(last.target_qty), defect: Number(last.defect_qty), confirmed: last.status === 'CONFIRMED' } : null,
+});
 const doIt = (t: string) => (/[기다]$/.test(t) ? t : `${t}하기`); // 할 일은 동사로 끝나게
 
 export default function Briefing({ onDone }: { onDone?: () => void }) {
@@ -97,7 +116,7 @@ export default function Briefing({ onDone }: { onDone?: () => void }) {
       ...tools.map((t, i): Todo => ({ key: `tool${i}`, text: `${t.tool_id} 공구 교체 준비하기`, sub: `수명 ${t.usage_pct}%`, tag: '▲ 공구', tone: 'amber', go: () => go('tools') })),
       ...pmTodos,
     ];
-    return <Board todos={todos} goal={p.total_target_qty} lockout={lockout} footSrc={`교대 보고서 ${last?.shift_id ?? '없음'}${good == null ? '' : ` (지난 교대 양품 ${good}개)`} · 예방 정비 일정 · 알람 기록`} onDone={onDone} />;
+    return <Board todos={todos} sum={summaryOf(twin, last, good, pmTodos.length)} lockout={lockout} footSrc={`교대 보고서 ${last?.shift_id ?? '없음'} · 예방 정비 일정 · 알람 기록`} onDone={onDone} onOpenLast={last ? () => go('shift', last.shift_id) : undefined} />;
   }
 
   return <FullBrief v={{ twin, last, open, lockout, p, pmTodos, good, alarmTodo }} onDone={onDone} />;
@@ -107,8 +126,8 @@ type FullView = { twin: Twin; last: Record<string, any> | null; open: AlertRec[]
 
 // 전체형 (SUP·MNT·MGR): 먼저 챙길 일 = 0 안전 → 순위대로 지금 알람·알림 + 인계 사항(지난 교대 보고서) → 예방 정비. 비서 정리 훅을 부르려고 따로 뺐다
 function FullBrief({ v, onDone }: { v: FullView; onDone?: () => void }) {
-  const { myNotices, go, wos } = useApp();
-  const { twin, last, open, lockout, p, pmTodos, good, alarmTodo } = v;
+  const { myNotices, go } = useApp();
+  const { twin, last, open, lockout, pmTodos, good, alarmTodo } = v;
   const base = last ? parseHandover(last.handover_text) : [];
   const groups = RANK_ORDER.map((rank) => ({ rank,
     a: open.filter((x) => rankOfAlert(x) === rank),
@@ -128,27 +147,9 @@ function FullBrief({ v, onDone }: { v: FullView; onDone?: () => void }) {
     bs.forEach((t, i) => todos.push({ key: `ho${rank}-${i}`, text: pick(rank, as.length + ns.length + i, t, t), sub: `인계 · ${RANK_NAME[rank]} · 교대 보고서 ${last?.shift_id ?? ''}`, tag: '인계', tone: 'soon', go: () => last && go('shift', last.shift_id) }));
   });
   todos.push(...pmTodos);
-  const notable: string = last?.notable_text ?? '';
-  const sentences = notable.split(/(?<=\.)\s+/);
-  const liveOrders = twin.orders.filter((o) => o.status !== 'COMPLETED');
-  const liveWos = wos.filter((w) => w.state !== 'done' && w.state !== 'cancelled');
   return (
-    <Board todos={todos} goal={p.total_target_qty} lockout={lockout} footSrc={`교대 보고서 ${last?.shift_id ?? '없음'} · 알람·알림 기록 · 예방 정비 일정 (순서 = 2.5 보고 순위)`} onDone={onDone}
-      aiNote={hasAi && <><b>{raw ? '원문' : '비서 정리'}</b> <button onClick={() => setRaw((x) => !x)} title="프로그램 문구와 비서가 다듬은 문장을 바꿔 봅니다" className="underline">{raw ? '비서 정리 보기' : '원문 보기'}</button> · </>}>
-      <Card t={<>지난 교대 {last ? `(${last.shift_id})` : ''} {last && <button onClick={() => go('shift', last.shift_id)} className="ml-1 text-[13px] font-normal text-[#5a3bc8] underline">교대 보고서 열기</button>}</>}>
-        {!last ? <p className="m-0 text-[#6b6683]">없음</p> : (
-          <ul className="m-0 list-disc pl-4 text-[#3d3955]">
-            <li>양품 {good}개 · 불량 {last.defect_qty}개 · 총 목표 {last.target_qty}개 {last.status !== 'CONFIRMED' && <b className="text-[#9a6200]">ⓘ 잠정 (확정 전)</b>}</li>
-            <li>{sentences.slice(1, 3).join(' ')}</li>
-            <li>{sentences.slice(3).join(' ')}</li>
-          </ul>)}
-      </Card>
-      <Card t="이번 교대 작업지시">
-        <ul className="m-0 list-disc pl-4 text-[#3d3955]">
-          <li>{liveOrders.map((o) => `${o.order_no}(${o.status === 'IN_PROGRESS' ? '진행 중' : '대기'}${o.delay ? ' ' + o.delay : ''})`).join(' · ') || '없음'}</li>
-          {liveWos.length > 0 && <li>진행 중 작업지시서 {liveWos.map((w) => w.no).join(' · ')}</li>}
-        </ul>
-      </Card>
-    </Board>
+    <Board todos={todos} sum={summaryOf(twin, last, good, pmTodos.length)} lockout={lockout} footSrc={`교대 보고서 ${last?.shift_id ?? '없음'} · 알람·알림 기록 · 예방 정비 일정 (순서 = 2.5 보고 순위)`} onDone={onDone}
+      onOpenLast={last ? () => go('shift', last.shift_id) : undefined}
+      aiNote={hasAi && <><b>{raw ? '원문' : '비서 정리'}</b> <button onClick={() => setRaw((x) => !x)} title="프로그램 문구와 비서가 다듬은 문장을 바꿔 봅니다" className="underline">{raw ? '비서 정리 보기' : '원문 보기'}</button> · </>} />
   );
 }

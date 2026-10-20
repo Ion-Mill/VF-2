@@ -28,12 +28,12 @@ export function Typing() {
   return <div className={ANSWER_BOX}><p className="ma-msg-bot ma-typing">답변을 만드는 중…</p></div>;
 }
 
-/** 채팅 기록 탭의 한 줄 (눌러서 그 대화를 채팅에서 다시 연다 — 그래서 버튼) */
+/** 채팅 기록 탭의 한 줄 (눌러서 그 대화를 채팅에서 다시 연다 — 그래서 버튼). G안: 왼쪽 질문 · 오른쪽 시각 (2026-10-20) */
 export function HistoryItem({ q, when, onOpen }: { q: string; when: string; onOpen: () => void }) {
   return (
     <button type="button" className={HISTORY_BOX} onClick={onOpen}>
-      <strong className={`text-[15px] font-bold ${WRAP}`}>{q}</strong>
-      <span className="text-[12px] text-slate-600">{when}</span>
+      <strong className={`min-w-0 flex-1 text-[16px] font-bold leading-snug ${WRAP}`}>{q}</strong>
+      <span className="shrink-0 font-mono text-[14px] text-slate-600">{when}</span>
     </button>
   );
 }

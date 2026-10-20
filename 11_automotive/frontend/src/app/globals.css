@@ -127,3 +127,11 @@ nav .bg-\[\#1c2530\] span{display:none;}
 
 /* 네온 바이올렛 포인트 (사용자 선택 2026-10-19): 이브 위젯의 라임 자리를 보라로. 차콜·상태색은 그대로 */
 .ma-root{--ma-lime:#b79cff;--ma-lime-ring:#6a43e0}
+
+/* 이브 채팅 입력 = 팀원 '새 채팅 시안' (사용자 선택 2026-10-20): 흰 둥근 알약 입력창 · 동그란 보내기. 예전 모양은 구현_중_수정사항/백업_1020_이브패널/globals.css */
+.ma-panel .ma-compose{border-top:0;padding:6px 14px 16px}
+.ma-panel .ma-compose-box{border:0;border-radius:999px;background:#fff;box-shadow:0 4px 14px rgba(40,30,80,.12);padding:6px 6px 6px 18px}
+.ma-panel .ma-compose-box:focus-within{box-shadow:0 0 0 2px var(--ma-lime-ring),0 4px 14px rgba(40,30,80,.12)}
+.ma-panel .ma-input{height:44px;color:#1f1b33}
+.ma-panel .ma-input::placeholder{color:#8a879a}
+.ma-panel .ma-send{width:44px;height:44px;border-radius:50%;background:#26303a;color:#b79cff}

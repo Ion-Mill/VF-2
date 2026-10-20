@@ -7,4 +7,4 @@ export const ANSWER_BOX = 'rounded-3xl bg-white/80 p-5 text-[16px] leading-relax
 /** 사용자의 질문 — 같은 모양에 보라 톤 + 얇은 테두리, 오른쪽 정렬 (질문 줄은 세로 목록 안이라 self-end) */
 export const QUESTION_BOX = `self-end max-w-[82%] rounded-3xl border border-violet-200 bg-violet-100 px-5 py-3 text-[16px] leading-relaxed text-slate-900 shadow-sm whitespace-pre-wrap ${WRAP}`;
 /** 채팅 기록 탭의 한 줄 — 답 박스와 같은 흰 바탕, 눌러서 여는 버튼이라 hover·포커스 표시가 있다 */
-export const HISTORY_BOX = 'flex min-h-[56px] w-full flex-col justify-center gap-1 rounded-3xl bg-white/80 p-4 text-left text-slate-900 shadow-sm hover:bg-violet-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-600';
+export const HISTORY_BOX = 'flex min-h-[56px] w-full flex-row items-center justify-between gap-3 rounded-3xl bg-white/80 p-4 text-left text-slate-900 shadow-sm hover:bg-violet-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-600';
