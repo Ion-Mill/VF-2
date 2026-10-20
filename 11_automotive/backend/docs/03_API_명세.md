@@ -120,6 +120,8 @@
 | POST | `/api/notifications/{notification_id}/resolve` | `NOTIFICATION·VIEW` | 처리 (NTF-03). 처리할 수 있는 역할은 규칙의 processor_roles (DB가 확인, 자동 처리 규칙은 INVALID_STATE). |
 | POST | `/api/notifications/{notification_id}/ack` | `NOTIFICATION·VIEW` | 긴급 팝업 확인 (API-NTF-04): 소리 끔·읽음 표시. 처리는 아니다 — 긴급 팝업은 로그인한 전원이 받고(2026-10-13), |
 | GET | `/api/assistant/briefing` | `BRIEFING·VIEW` | 교대 시작 브리핑 재료 (AST-01, FR-AST-01-02~07, FR-AST-COM-21). 비서는 이 순서대로 문장만 쓴다. |
+| GET | `/api/assistant/briefing/checks` | `BRIEFING·VIEW` | 브리핑 "먼저 챙길 일"에서 본인이 체크한 항목 (2026-10-20). 다시 열어도 체크가 남게 한다 — 개인 메모일 뿐 |
+| POST | `/api/assistant/briefing/checks` | `BRIEFING·VIEW` | 체크하기·풀기 (checked = true / false). 같은 요청을 거듭 보내도 결과가 같다 (체크한 적 없는 걸 풀어도 오류 아님) |
 | GET | `/api/settings/notification-rules` | `SETTINGS·VIEW` | 알림 규칙 목록 (SET-01, 6.36) |
 | PATCH | `/api/settings/notification-rules` | `SETTINGS·SETTING` | 알림 규칙 켜기·끄기·설명 (SET-01, MGR — DB 트리거가 다시 확인). 기준 숫자 바꾸기는 [선택 필요: 기술 회의] |
 | GET | `/api/stream/events` | 로그인 (?token=) | 실시간 사건 (STR-01, SSE). 바뀐 것의 종류·번호만 보낸다 — 화면이 해당 API를 다시 부른다. ?token= (EventSource). |
@@ -272,7 +274,7 @@
 | LINE-07·08 | `GET /api/downtimes`, `PATCH /api/downtimes/{id}` | alarms.downtimes·downtime_patch | `{"reason_code"}` 입력(O·M) / `{"confirm":true}` 확정(S). SCR-14 필요 여부 판단 중 |
 | NTF-01~04 | `GET /api/notifications`, `POST …/{id}/read·resolve·ack` | notifications.mine·read·resolve·ack | 목록 = `{"counts","items"}`, resolve 반복 알람은 `action_plan` 필수, ack = 소리 끔 |
 | STR-01 | `GET /api/stream/events` | stream.stream | 사건 이름은 1장 |
-| AST-01·02 | `GET /api/assistant/briefing`, `POST /api/assistant/chat` | notifications.briefing, assistant.chat | chat은 AI 비서 서비스로 넘김 |
+| AST-01·02 | `GET /api/assistant/briefing`, `POST /api/assistant/chat` | notifications.briefing, assistant.chat | chat은 AI 비서 서비스로 넘김. 브리핑 "먼저 챙길 일" 체크 저장(2026-10-20)은 `GET·POST /api/assistant/briefing/checks` (notifications.briefing_checks, briefing_check) |
 | DOCS-01·02 | `GET /api/internal-docs/{doc_no}/sections/{section}`, `POST …/revisions/{rev}/approve` | documents.internal_doc_section·approve | 절 내용 = 현행판 문서 조각(doc_chunk). 승인하면 전원에게 문서 수정 알림 |
 | MNT-01 | `GET /api/maint/guide-card/{alarm_event_id}` | alarms.guide_card | |
 | MNT-02~08 | `/api/maint/work-orders…` (`assign {"mnt_user_id"}`, `approve {"version"}`, `start`, `cancel {"reason"}`) | maintenance.wo_* | `GET ?mine=true` = 내 담당 |

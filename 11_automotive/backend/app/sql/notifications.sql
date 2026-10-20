@@ -138,3 +138,17 @@ SELECT EXISTS (SELECT 1 FROM notification_recipient WHERE notification_id = :not
 -- 알림 폭주 상태 (FR-AST-02-12): 10분 10건 넘으면 켜짐, 5건 아래면 풀림
 -- name: flood_state
 SELECT active, count_10min FROM fn_flood_state(app_now());
+
+-- 브리핑 "먼저 챙길 일" 체크 (2026-10-20): 본인이 체크한 항목. 항목 글자(item_key)는 화면이 정한 대로 저장하고 서버는 뜻을 모른다
+-- name: briefing_checks
+SELECT item_key, checked_at FROM briefing_check
+ WHERE user_id = :user_id AND shift_id = :shift_id ORDER BY checked_at, item_key;
+
+-- 체크 (이미 체크했으면 그대로 — 거듭 보내도 같은 결과)
+-- name: briefing_check_set
+INSERT INTO briefing_check (user_id, shift_id, item_key, checked_at) VALUES (:user_id, :shift_id, :item_key, app_now())
+ON CONFLICT (user_id, shift_id, item_key) DO NOTHING;
+
+-- 체크 풀기 (체크한 적 없어도 오류 아님)
+-- name: briefing_check_unset
+DELETE FROM briefing_check WHERE user_id = :user_id AND shift_id = :shift_id AND item_key = :item_key;

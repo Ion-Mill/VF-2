@@ -68,6 +68,7 @@ uvicorn app.main:app --env-file .env.supabase                # → http://localh
 | 2026-10-20 정비 탭 확인 요청 반영 | Claude가 연결 도구(`apply_migration`, 이름 `check_request_1020`)로 `migrations/20261020000000_check_request_1020.sql`을 올림. 먼저 같은 상태의 로컬 DB(10/15 코드 + 9월 데이터 + 계정·잠그기)에 올려 새 `db/` 원본으로 만든 DB와 같음을 확인 | 알림 규칙 29, `daily_report.memo` 19건(복사본도), 새 표 `notification_pm_task` RLS·정책 2·권한, 트리거 2, 시연 되돌리기 목록에 새 표 |
 | 2026-10-20 시연 안전·버그 7가지 | 연결 도구(`apply_migration`, 이름 `safety_fixes_1020`)로 `migrations/20261020010000_safety_fixes_1020.sql`. 먼저 지금 main으로 만든 로컬 DB에 올려 새 원본 DB와 같음을 확인 | 함수 7개 바뀜(표 구조 그대로), 새 함수 `fn_simple_record_needs_loto` 앱 계정 실행 권한, 2075 = 잠금·표지 필요·108 = 아님 |
 | 2026-10-20 요구사항 대조 상·중 보강 | 연결 도구(`apply_migration`)로 `migrations/20261020020000_requirements_mid_high_1020.sql`을 13번에 나눠 올림 (이름 `requirements_mid_high_1020_p1a`~`p4` — 한 번에 보내면 연결이 끊김). 먼저 PR #86 상태로 만든 로컬 DB + 9월 데이터에 올려 새 원본 DB와 같음을 확인 | 새 표 `alarm_check_step`(134줄, RLS·권한), 새 트리거 4개, 함수 약 40개, `v_production_lot`·`v_report_items`, CMM 결과 파일 오류 처리 방식. 올린 뒤 바꾼 함수·뷰·트리거·규칙이 로컬과 같음 |
+| 2026-10-20 브리핑 체크 저장 (새 표 `briefing_check`) | `migrations/20261020030000_briefing_check.sql` — **저장소에만 있고 공용 mom-db에는 아직 적용하지 않음**(DB 담당이 올린다). 로컬에서 같은 상태 DB(`db/` 원본 + 계정 + 시연 기준점)에 올려 새로 만든 DB와 표 모양이 같고(RLS·정책만 잠그기 몫으로 더 붙음) `demo_snapshot.meta.tables`에 들어감을 확인 | 올리면 `briefing_check` RLS·정책 2·`mom_app` 쓰기, `mom_ai_ro` 읽기 권한 없음. 올리기 전에는 `/api/assistant/briefing/checks`만 오류 |
 
 **올리면서 걸린 것과 고친 것**
 

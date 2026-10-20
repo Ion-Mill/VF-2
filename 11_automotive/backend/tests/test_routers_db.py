@@ -382,6 +382,28 @@ class RouterFlows(unittest.TestCase):
         self.call(notifications.rule_update, "U12", body=notifications.RuleIn(rule_code="TOOL_LIFE_90", is_enabled=False))
         self.assertEqual(self.call(notifications.briefing, "U10", view="operator")["view"], "operator")
 
+    def test_074_briefing_checks(self):
+        """브리핑 "먼저 챙길 일" 체크 저장 (2026-10-20): 본인 것만, 거듭 보내도 같은 결과, 교대·사용자별로 따로, 풀기"""
+        BC, check, checks = notifications.BriefingCheckIn, notifications.briefing_check, notifications.briefing_checks
+        key = "r1/pm:PM-VF2-01-W-05"
+        self.assertEqual(self.call(checks, "U10", shift_id="r1/S1")["items"], [])                                # 처음엔 없음
+        self.assertEqual(self.call(check, "U10", body=BC(shift_id="r1/S1", item_key=key)),
+                         {"shift_id": "r1/S1", "item_key": key, "checked": True})
+        self.call(check, "U10", body=BC(shift_id="r1/S1", item_key=key))                                          # 거듭 보내도 1건
+        self.call(check, "U10", body=BC(shift_id="r1/S1", item_key="r1/lock", checked=True))
+        self.assertEqual([i["item_key"] for i in self.call(checks, "U10", shift_id="r1/S1")["items"]], ["r1/lock", key])   # 같은 시각이면 항목 글자 순
+        self.assertEqual(self.call(checks, "U10", shift_id="r1/S2")["items"], [])                                 # 다른 교대와 따로
+        self.assertEqual(self.call(checks, "U08", shift_id="r1/S1")["items"], [])                                 # 다른 사람은 못 봄
+        for uid in ("U02", "U08", "U10", "U12"):                                                                  # 역할 4개 모두 쓸 수 있음
+            self.call(check, uid, body=BC(shift_id="r1/S9", item_key="r1/x"))
+            self.assertEqual(len(self.call(checks, uid, shift_id="r1/S9")["items"]), 1)
+        self.call(check, "U10", body=BC(shift_id="r1/S1", item_key="r1/lock", checked=False))                     # 풀기
+        self.call(check, "U10", body=BC(shift_id="r1/S1", item_key="r1/없는-항목", checked=False))                 # 없는 걸 풀어도 오류 아님
+        self.assertEqual([i["item_key"] for i in self.call(checks, "U10", shift_id="r1/S1")["items"]], [key])
+        with self.assertRaises(AppError) as e:                                                                     # 공백뿐인 글자는 거절
+            self.call(check, "U10", body=BC(shift_id="r1/S1", item_key="   "))
+        self.assertEqual(e.exception.status, 422)
+
     def test_075_role_matrix(self):
         """역할 4개가 같은 화면·API에서 다르게 막히는지 (기획서 13장) — 대표 동작 몇 개를 실제 DB 권한표로"""
         self.assertIsInstance(self.call(maintenance.pm_schedule, "U02"), (list, dict))        # 일정은 전원 (PM-01)
