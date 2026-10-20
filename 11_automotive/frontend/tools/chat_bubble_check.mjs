@@ -116,6 +116,13 @@ t('"답변을 만드는 중…"도 같은 답 박스다', () => {
   assert.ok(h.includes(`<div class="${Box.ANSWER_BOX}">`) && h.includes('답변을 만드는 중…') && h.includes('ma-typing'));
 });
 
+// ---- 답이 아직 안 온 줄 (대기 줄)
+t('대기 줄은 질문 박스만 그린다 — 답 박스·상태 줄·출처가 없다', () => {
+  const h = render(React.createElement(Bubble, { r: { at: '2026-10-01T10:00:00+09:00', q: '아직 답 없는 질문', a: '', status: '', sources: [], pending: true, sentAt: 1 }, meta: '10/1 10:00', openSource: () => {}, role: 'MNT' }));
+  assert.ok(h.includes(`<div class="${Box.QUESTION_BOX}">아직 답 없는 질문</div>`), h);
+  assert.ok(!h.includes(Box.ANSWER_BOX) && !h.includes('ma-msg-bot') && !h.includes('출처') && !h.includes('10/1 10:00'), h);
+});
+
 // ---- 채팅 기록 탭 항목
 t('기록 항목은 박스 클래스를 가진 버튼이고 질문·시각이 그대로 보인다', () => {
   const h = render(React.createElement(HistoryItem, { q: '2075 알람 뭐야', when: '10/1 10:00', onOpen: () => {} }));

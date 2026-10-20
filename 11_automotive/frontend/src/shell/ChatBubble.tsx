@@ -3,10 +3,11 @@ import { AlarmAnswerCard } from './AlarmAnswerCard';
 import { parseAlarmAnswer } from './parseAlarmAnswer';
 import { ANSWER_BOX, HISTORY_BOX, QUESTION_BOX, WRAP } from './bubbleBox';
 
-export interface ChatRow { at: string; q: string; a: string; status: string; sources: { doc_no: string; doc_name: string; rev: string; section: string }[]; series?: Record<string, Record<string, number[]>>; newChat?: boolean; chatId?: number; prevChatId?: number | null }   // newChat = "여기서부터 새 대화" 표지 줄 (질문·답 없음, chatLog.ts). chatId = 서버 chat_log 번호 (백엔드 비서로 물은 줄만)
+export interface ChatRow { at: string; q: string; a: string; status: string; sources: { doc_no: string; doc_name: string; rev: string; section: string }[]; series?: Record<string, Record<string, number[]>>; newChat?: boolean; chatId?: number; prevChatId?: number | null; pending?: boolean; sentAt?: number }   // newChat = "여기서부터 새 대화" 표지 줄 (질문·답 없음, chatLog.ts). chatId = 서버 chat_log 번호 (백엔드 비서로 물은 줄만). pending = 보냈지만 답이 아직 안 온 줄(질문만 보임, sentAt = 보낸 시각 ms — 새로고침에 끊겨도 되살린다, chatLog.ts)
 
 /** 질문 박스 → 날짜·상태 줄 → 답 박스(알람 답이면 카드, 아니면 평문 박스) → 출처 줄. meta = "10/1 10:00" 같은 날짜 글자(부르는 쪽이 만든다) */
 export function Bubble({ r, meta, openSource, role }: { r: ChatRow; meta: string; openSource: (d: string, s: string) => void; role: string }) {
+  if (r.pending) return <div className="flex flex-col gap-2"><div className={QUESTION_BOX}>{r.q}</div></div>;   // 답이 아직 안 온 줄: 질문만 (아래에 "생각 중"이 이어진다)
   const card = parseAlarmAnswer(r.a, r.sources, openSource);   // 알람 답("■ 알람 설명"으로 시작)이고 글자가 하나도 어긋나지 않을 때만 카드, 아니면 null → 평문 (parseAlarmAnswer.ts)
   return (
     <div className="flex flex-col gap-2">

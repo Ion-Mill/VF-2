@@ -24,10 +24,26 @@ t('<Chat>을 감싼 div가 채팅일 때 contents, 아닐 때 hidden이다', () 
   const at = chatUses[0].n - 1;                       // 0부터 센 줄 번호 기준, 바로 앞 줄이 감싸는 div
   assert.match(lines[at - 1], /className=\{tab === '채팅' \? 'contents' : 'hidden'\}/);
 });
-t('채팅이 아닌 탭 내용은 채팅 탭일 때 그려지지 않는다', () => { assert.match(src, /\{tab !== '채팅' && \(/); });
+t('채팅이 아닌 탭 내용은 채팅 탭일 때 그려지지 않는다', () => { assert.match(src, /\{tab && tab !== '채팅' && \(/); });
 t('숨겨진 동안 끝난 녹음은 글자로 바꾸지 않고 버린다 (onAudio가 active를 본다)', () => { assert.match(src, /if \(!activeRef\.current\) return;/); });
 t('채팅 탭을 떠나면 녹음을 멈춘다', () => { assert.match(src, /if \(!active\) \{ mic\.stop\(\); return; \}/); });
-t('다시 보일 때 맨 아래로 내린다 (스크롤 효과가 active를 본다)', () => { assert.match(src, /\[log\.length, busy, focus, active\]/); });
+t('다시 보일 때 맨 아래로 내린다 (스크롤 효과가 active를 본다)', () => { assert.match(src, /\[log\.length, waiting, focus, active\]/); });
+
+// ---- 창을 닫았다 열어도, 새로고침해도 (2026-10-20 확장)
+t('이브 창(<aside>)은 tab에만 묶이지 않고 한 번 열린 뒤에는 계속 그려진다 (showPanel)', () => {
+  assert.match(src, /const showPanel = !!tab \|\| opened;/); assert.match(src, /\{showPanel && \(\s*<aside/);
+  assert.ok(!/\{tab && \(\s*<aside/.test(src));
+});
+t('닫혀 있을 때는 display: none으로 숨긴다 (CSS 클래스와 겹치지 않게 인라인 스타일)', () => { assert.match(src, /style=\{tab \? undefined : \{ display: 'none' \}\}/); });
+t('열린 적이 있다는 표시(opened)는 tab이 생길 때 켜진다', () => { assert.match(src, /if \(tab\) setOpened\(true\)/); });
+t('질문을 보내자마자 대기 줄로 저장하고 답이 오면 settlePending으로 그 자리에서 바꾼다', () => {
+  assert.match(src, /pending: true, sentAt/); assert.match(src, /settlePending\(keep30\(l\), sentAt, row\)/);
+});
+t('끊긴 대기 줄 되살리기(resolvePending)가 있고, 되살리는 동안(waiting) 새 질문을 막는다', () => {
+  assert.match(src, /resolvePending\(l, server, Date\.now\(\), inflight\.current/); assert.match(src, /const waiting = busy \|\| orphan;/);
+  assert.match(src, /disabled=\{waiting\} aria-label="보내기"/);
+});
+t('쓰다 만 글은 localStorage(useLocal)에 남긴다', () => { assert.match(src, /useLocal<string>\(`chatdraft:\$\{user\.id\}`, ''\)/); });
 
 console.log(fail ? `\n${fail}개 실패` : '\n전부 통과');
 process.exit(fail ? 1 : 0);
