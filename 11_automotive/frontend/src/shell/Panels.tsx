@@ -180,7 +180,7 @@ export default function Panels({ field = false, ids }: { field?: boolean; ids?: 
           <section className={sec}>
             <div className="mb-1"><b className="text-[17px]">생산현황 {shiftTag}</b></div>
             <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_170px] gap-4">
-              <div className="min-h-0 rounded-lg border border-slate-200 p-2"><Graph p={p} /></div>
+              <div className="min-h-0 rounded-lg border border-slate-200 p-2"><Graph p={p} noTargetText /></div>
               <div className="flex min-w-0 flex-col justify-center">{prodBtn}</div>
             </div>
             {whyBox(['p'])}
@@ -325,12 +325,13 @@ function OrderTr({ o, onClick }: { o: OrderRow; onClick: () => void }) {
 }
 
 // [7] 시간대별 실적 그래프 (총 목표선 · 실적 곡선 · 예측 점선 · 2시간 눈금) — 교대 9시간
-function Graph({ p }: { p: Production }) {
+// noTargetText: 이브 창이 열려 좁을 때 "총 목표 N" 글자를 뺀다 — 낮은 칸에서 실적 선·알약과 겹쳐서, 목표는 옆 "실적 / 목표"에 있음 (사용자 요청 2026-10-20)
+function Graph({ p, noTargetText = false }: { p: Production; noTargetText?: boolean }) {
   const [box, sz] = useSize<HTMLDivElement>();
   // 칸 크기 그대로 그린다 (전에는 최소 160×90이라 이브 창이 열려 칸이 작아지면 테두리 밖으로 튀어나갔음, 2026-10-20)
-  return <div ref={box} className="h-full w-full overflow-hidden">{sz.w > 0 && sz.h > 0 && <GraphSvg p={p} W={sz.w} H={sz.h} />}</div>;
+  return <div ref={box} className="h-full w-full overflow-hidden">{sz.w > 0 && sz.h > 0 && <GraphSvg p={p} W={sz.w} H={sz.h} noTargetText={noTargetText} />}</div>;
 }
-function GraphSvg({ p, W, H }: { p: Production; W: number; H: number }) {
+function GraphSvg({ p, W, H, noTargetText }: { p: Production; W: number; H: number; noTargetText: boolean }) {
   const L = 6, B = 22, t0 = Date.parse(p.start_at), t1 = Date.parse(p.end_at);
   // 1.15 = 위쪽 글자 여백
   const max = Math.max(p.total_target_qty, p.forecast_qty, p.actual_qty, 1) * 1.15;
@@ -350,7 +351,7 @@ function GraphSvg({ p, W, H }: { p: Production; W: number; H: number }) {
       {[0.25, 0.5, 0.75].map((f) => <line key={f} x1={L} x2={W - L} y1={(H - B) * f} y2={(H - B) * f} stroke="#eef1f4" />)}
       <line x1={L} x2={W - L} y1={y(p.total_target_qty)} y2={y(p.total_target_qty)} stroke="#56616c" strokeDasharray="2 3" />
       {/* 칸이 낮아 목표선이 위 끝에 붙으면 글자 윗부분이 잘려서 선 아래로 내린다 (2026-10-20) */}
-      <text x={L + 2} y={y(p.total_target_qty) - 5 < 13 ? y(p.total_target_qty) + 14 : y(p.total_target_qty) - 5} fontSize="13" fill="#56616c" stroke="#fff" strokeWidth="3" paintOrder="stroke">총 목표 {p.total_target_qty}</text>
+      {!noTargetText && <text x={L + 2} y={y(p.total_target_qty) - 5 < 13 ? y(p.total_target_qty) + 14 : y(p.total_target_qty) - 5} fontSize="13" fill="#56616c" stroke="#fff" strokeWidth="3" paintOrder="stroke">총 목표 {p.total_target_qty}</text>}
       {pts.length > 1 && <polygon points={`${pts[0].split(',')[0]},${H - B} ${pts.join(' ')} ${pts[pts.length - 1].split(',')[0]},${H - B}`} fill="#7a52f0" opacity="0.08" />}
       <polyline points={pts.join(' ')} fill="none" stroke="#7a52f0" strokeWidth="2.5" />
       {last && <line x1={x(Date.parse(last.at))} y1={y(last.cum)} x2={W - L} y2={y(p.forecast_qty)} stroke="#4b5a69" strokeDasharray="5 4" strokeWidth="2" />}

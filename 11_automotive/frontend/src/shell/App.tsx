@@ -482,7 +482,6 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
                     <button onClick={() => api3d()?.nav('zoom', 1.18)} className={sb} aria-label="축소">−</button>
                   </>); })()}
                 </div>
-                <div className="pointer-events-none absolute bottom-3 left-3 rounded-full border border-[#e6e3f0] bg-white/85 px-3 py-1.5 text-[12px] text-slate-600">설비 클릭(탭) = 확대 · 스크롤(두 손가락) = 확대/축소 · 끌기 = 각도 · 호버 = 반응 없음</div>
               </>
             )}
           </div>
@@ -537,7 +536,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
         </div>
         <footer className="mx-3 mb-3 flex h-[40px] shrink-0 items-center gap-4 overflow-x-auto rounded-2xl border border-slate-300 bg-white px-4 text-[13px]">
           <b>범례</b>
-          {LEGEND.map((l) => <span key={l.text} className="whitespace-nowrap"><span style={{ color: l.color }}>{l.icon}</span> {l.text}</span>)}
+          {LEGEND.map((l) => <span key={l.text} className="whitespace-nowrap">{l.text === '병목' ? <SnailBadge /> : <span style={{ color: l.color }}>{l.icon}</span>} {l.text}</span>)}
           <span className="ml-auto whitespace-nowrap text-slate-600">알림: <b className="text-[#c62a2f]">⚠ 긴급</b> │ <b className="text-[#9a6200]">▲ 주의</b> │ ⓘ 참고</span>
         </footer>
 
@@ -554,6 +553,17 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
       </div>
     </Ctx.Provider>
   );
+}
+
+// 범례의 병목 표시 = 3D 천장 표지판 모서리의 달팽이 배지와 같은 그림 (FactoryDashboard 병목 배지 경로 그대로)
+function SnailBadge() {
+  return (
+    <svg viewBox="-6.6 -6.2 37.2 37.2" width="17" height="17" className="inline-block align-[-3px]" aria-hidden="true">
+      <circle cx="12" cy="12.4" r="17.6" fill="#1c232b" stroke="#b9a8ff" strokeWidth="2" />
+      <g fill="none" stroke="#b9a8ff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+        {['M3 18h15.5a2.5 2.5 0 0 0 2.5-2.5V13', 'M16.5 12a5.5 5.5 0 1 1-11 0a5.5 5.5 0 1 1 11 0', 'M11 12a2.2 2.2 0 1 1 2.2-2.2', 'M19.5 13 18.5 8.5', 'M21 13l1.4-4.2'].map((d) => <path key={d} d={d} />)}
+      </g>
+    </svg>);
 }
 
 function SettingsPopover({ settings, setSettings, api3d, bigPx, bodyPx }: { settings: Settings; setSettings: (f: (s: Settings) => Settings) => void; api3d: () => any; bigPx: number; bodyPx: number }) {
