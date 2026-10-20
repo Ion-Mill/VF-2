@@ -106,7 +106,7 @@ export async function askAssistant(question: string, userId: string, screen: str
 }
 
 /** 서버에 저장된 내 채팅 기록 한 줄 (API-AST-02 GET → 채팅 기록 탭의 ChatRow 모양) */
-export interface ServerChatRow { at: string; q: string; a: string; status: string; sources: AssistantSource[]; chatId: number }
+export interface ServerChatRow { at: string; q: string; a: string; status: string; sources: AssistantSource[]; chatId: number; prevChatId?: number }   // prevChatId = 이 질문이 이어 물은 앞 질문 번호 (chat_log.prev_chat_id, 없으면 새 대화의 첫 질문)
 
 const kst = (iso: string) => new Date(Date.parse(iso) + 9 * 3600e3).toISOString().slice(0, 19) + '+09:00';   // 화면 시각 글자와 같은 모양 (live.ts simIso)
 
@@ -131,7 +131,7 @@ export async function fetchChatLog(userId: string): Promise<ServerChatRow[] | nu
       .map((x: any): ServerChatRow => {
         const status = STATUS_KO[String(x.status)] ?? STATUS_KO.NO_RESPONSE;
         const ok = typeof x.answer === 'string' && x.answer.trim() !== '' && status !== STATUS_KO.NO_RESPONSE;
-        return { at: kst(x.asked_at), q: x.question, a: ok ? x.answer : NO_RESPONSE_TEXT, status: ok ? status : STATUS_KO.NO_RESPONSE, sources: ok ? toSources(x.sources) : [], chatId: x.chat_id };
+        return { at: kst(x.asked_at), q: x.question, a: ok ? x.answer : NO_RESPONSE_TEXT, status: ok ? status : STATUS_KO.NO_RESPONSE, sources: ok ? toSources(x.sources) : [], chatId: x.chat_id, ...(typeof x.prev_chat_id === 'number' ? { prevChatId: x.prev_chat_id } : {}) };
       })
       .reverse();
   } catch {
@@ -149,6 +149,60 @@ async function withToken<T>(userId: string, run: (token: string) => Promise<T>):
     if (!(e instanceof Http) || e.status !== 401) throw e;              // 토큰 만료·무효 → 한 번만 다시 로그인해서 재시도
     return await run(await tokenFor(userId, true));
   }
+}
+
+// ---------------- 채팅 음성 입력 (2026-10-20) ----------------
+// 마이크로 말한 소리를 백엔드(POST /api/assistant/transcribe)가 사내 서버의 비서에게 넘겨 글자로 바꾼다. 글자는 입력창에 채우기만 하고 보내는 것은 사용자가 한다.
+// 소리는 저장되지 않는다. 던지는 것은 VoiceFail 하나뿐 — reason 은 voiceInput.voiceMessage 가 쉬운 문장으로 바꾼다.
+const VOICE_TIMEOUT_MS = 25_000;      // 백엔드가 비서를 기다리는 20초 + 여유
+
+export interface VoiceStatus { enabled: boolean; maxSeconds: number }
+export const VOICE_OFF: VoiceStatus = { enabled: false, maxSeconds: 20 };
+
+export class VoiceFail extends Error { constructor(public reason: string) { super(reason); } }
+
+/** 마이크 버튼을 보일지 (서버의 음성 스위치). 백엔드 비서가 꺼져 있거나 실패하면 꺼짐 — 버튼만 안 보인다 */
+export async function fetchVoiceStatus(userId: string): Promise<VoiceStatus> {
+  if (!backendChatEnabled()) return VOICE_OFF;
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), CHECK_TIMEOUT_MS);
+  try {
+    const j = await withToken(userId, async (token) => {
+      const r = await fetch(`${BASE}/api/assistant/voice`, { cache: 'no-store', signal: ctl.signal, headers: { Authorization: `Bearer ${token}` } });
+      if (!r.ok) throw new Http(r.status);
+      return r.json();
+    });
+    const max = Number(j?.max_seconds);
+    return { enabled: j?.enabled === true, maxSeconds: Number.isFinite(max) && max >= 3 ? max : VOICE_OFF.maxSeconds };
+  } catch { return VOICE_OFF; } finally { clearTimeout(timer); }
+}
+
+/** 녹음한 소리를 글자로. text 가 비면 reason(too_short·no_speech·…)이 까닭이다. 실패하면 VoiceFail */
+export async function transcribeAudio(userId: string, audio: Blob): Promise<{ text: string; reason: string | null }> {
+  if (!backendChatEnabled()) throw new VoiceFail('VOICE_OFF');
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), VOICE_TIMEOUT_MS);
+  try {
+    const j = await withToken(userId, async (token) => {
+      const r = await fetch(`${BASE}/api/assistant/transcribe`, {
+        method: 'POST', cache: 'no-store', signal: ctl.signal, body: audio,
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': audio.type || 'application/octet-stream' },
+      });
+      if (r.status === 401) throw new Http(401);
+      if (!r.ok) {
+        let reason = `HTTP_${r.status}`;
+        try { const b = await r.json(); reason = String(b?.detail?.reason ?? b?.code ?? reason); } catch { /* 본문 없음 */ }
+        throw new VoiceFail(reason);
+      }
+      return r.json();
+    });
+    if (typeof j?.text !== 'string') throw new VoiceFail('FORMAT');
+    return { text: j.text.trim(), reason: typeof j.reason === 'string' ? j.reason : null };
+  } catch (e) {
+    if (e instanceof VoiceFail) throw e;
+    if (e instanceof DOMException && e.name === 'AbortError') throw new VoiceFail('VOICE_TIMEOUT');
+    throw new VoiceFail('NETWORK');
+  } finally { clearTimeout(timer); }
 }
 
 /** 서버에 저장된 내 체크 항목 글자들 (shift = briefChecks.serverShift). 실패·모양 이상이면 null */

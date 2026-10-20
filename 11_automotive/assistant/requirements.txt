@@ -20,3 +20,21 @@ jiter==0.17.0
 sniffio==1.3.1
 truststore==0.10.5
 docstring_parser==0.18.0
+# 2026-10-20 추가 (채팅 마이크 음성 입력, 사용자 결정 "자체 서버 faster-whisper · CPU", 설치 승인 2026-10-20): 앱은 ASSISTANT_VOICE=1일 때만 import 한다(지연 import) — 스위치가 꺼져 있으면 없어도 돈다.
+# faster-whisper 1.2.1 (PyPI 업로드 2025-10-31, MIT) — 같이 깔린 것(OSV 공지 모두 0건): av 16.0.1(2025-10-13, BSD-3-Clause), ctranslate2 4.8.3(2026-10-13, MIT), onnxruntime 1.31.0(2026-10-09, MIT),
+# tokenizers 0.23.3(2026-10-09, Apache-2.0), huggingface_hub 2.2.0(2026-10-08, Apache-2.0), hf-xet 1.7.0(2026-10-06, Apache-2.0), tqdm 4.70.1(2026-09-11), fsspec 2026.9.0(2026-09-18, BSD-3-Clause),
+# filelock 4.2.4(2026-10-19, MIT — 배포 하루 된 판, 시험한 조합 그대로 고정. 문제가 생기면 낮춘다), protobuf 7.36.2(2026-09-17), PyYAML 6.0.3(2025-09-25), flatbuffers 25.12.19(2025-12-19).
+# av 는 **16.0.1로 고정**: 최신 19.0.1은 faster-whisper 1.2.1 과 맞지 않아 소리 읽기에서 TypeError(metadata_errors)가 난다(2026-10-20 실제 확인). 모델 파일(large-v3-turbo 약 1.6GB)은 첫 실행 때 내려받는다 — 실행_안내.md 6-4.
+faster-whisper==1.2.1
+av==16.0.1
+ctranslate2==4.8.3
+onnxruntime==1.31.0
+tokenizers==0.23.3
+huggingface_hub==2.2.0
+hf-xet==1.7.0
+tqdm==4.70.1
+fsspec==2026.9.0
+filelock==4.2.4
+protobuf==7.36.2
+PyYAML==6.0.3
+flatbuffers==25.12.19
