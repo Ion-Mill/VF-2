@@ -5,7 +5,7 @@ import { useState } from 'react';
 import type { MachineId } from '@/components/types';
 import { useApp } from './ctx';
 import { ID_OF, MACHINES, STATE_VIEW, stateOf } from './data';
-import { hm, md, useFetch, type Eq, type OrderRow, type Production } from './live';
+import { hm, md, type Eq, type OrderRow, type Production } from './live';
 import { alarmTitle, type AlertRec } from './model';
 
 const AMBER = '#9a6200';
@@ -17,10 +17,10 @@ function Bar({ pct, color = '#4b5a69' }: { pct: number; color?: string }) {
 }
 
 export default function Panels({ field = false, ids }: { field?: boolean; ids?: MachineId[] }) {
-  const { twin, alerts, wos, stopReasons, selected, go, openCard, openWo, user, connected, selectMachine, pm } = useApp();
+  const { twin, alerts, wos, selected, go, openCard, openWo, user, selectMachine, pm } = useApp();
   const [why, setWhy] = useState<string | null>(null);
   const [showDone, setShowDone] = useState(false); // 작업지시 완료 줄 접기 (훅이라 아래 return들보다 위)
-  const dt = useFetch<{ downtimes: { equipment_id: string; start_at: string; state_code: string; minutes: number }[] }>(connected ? 'downtimes' : null, 10000);
+  // "정지 사유 미입력" 줄은 뺐다 (2026-10-19 정지 사유 화면 삭제 — 사유는 시스템이 붙인다)
   if (!twin) return <div className="flex h-full items-center gap-3 bg-white p-4 text-[14px] text-slate-500"><div className="h-3 w-40 animate-pulse rounded bg-slate-200" />데이터를 기다리는 중 (연결 끊김이면 위 띠를 보세요)</div>;
   const p = twin.production, k = twin.kpi.by;
   // 처음 열면 SUP는 병목 공정, OPR은 담당 공정 (SCR-04 [6])
@@ -31,7 +31,6 @@ export default function Panels({ field = false, ids }: { field?: boolean; ids?: 
   const eq = MACHINES[selId].eq!, E = twin.equipment[eq], sv = STATE_VIEW[stateOf(E)];
   const isOp30 = MACHINES[selId].op === 'OP-30';
   const cur: AlertRec | undefined = [...alerts].reverse().find((a) => a.machine === selId && !a.handled);
-  const noReason = (dt.data?.downtimes ?? []).filter((d) => d.equipment_id === eq && !['RUN', 'BLOCKED', 'MAINT'].includes(d.state_code) && !stopReasons[`${d.equipment_id}|${d.start_at}`]?.reason).length;
   const kp = isOp30 && selected ? k[eq] : k.LINE;
   const wo = wos.find((w) => w.machine === selId && w.state !== 'done' && w.state !== 'cancelled');
   const proc = twin.process[E.process_code] ?? { pq: 0 };
@@ -45,7 +44,6 @@ export default function Panels({ field = false, ids }: { field?: boolean; ids?: 
     <dt className="text-slate-500">현재 로트</dt><dd>{E.lot_no ? <button onClick={() => go('lots', E.lot_no)} className="font-mono font-semibold text-[#0f6f86] underline">{E.lot_no}</button> : '—'}</dd>
     <dt className="text-slate-500">교대 실적/목표</dt><dd>{E.process_code} <b className={num}>{proc.pq}</b> / <b className={num}>{p.total_target_qty}</b> <span className="text-slate-500">{isOp30 ? `(2대 합, 이 설비 ${E.shift_actual_qty})` : ''}</span></dd>
     <dt className="text-slate-500">오늘 정지</dt><dd><b className={num}>{E.stop_min}</b>분 <span className="text-slate-500">대기·막힘·준비 포함 · 고장 손실 약 {E.loss_qty}개</span></dd>
-    <dt className="text-slate-500">정지 사유 미입력</dt><dd><b className={num} style={{ color: noReason ? AMBER : undefined }}>{noReason}</b>건 {noReason > 0 && !field && <button onClick={() => go('stops')} className="ml-1 text-[#0f6f86] underline">정지 사유 입력 →</button>}</dd>
     {isOp30 && (<>
       <dt className="text-slate-500">공구 수명</dt>
       <dd className="flex flex-wrap gap-x-3 gap-y-1">{E.tools.map((t) => (
@@ -66,28 +64,40 @@ export default function Panels({ field = false, ids }: { field?: boolean; ids?: 
     <div className="grid h-full grid-cols-2 gap-3 bg-[#eef1f4] p-3 text-[#26303a]">{ids.map((id) => {
       const q = MACHINES[id].eq!, Q = twin.equipment[q], v = STATE_VIEW[stateOf(Q)];
       const a = [...alerts].reverse().find((x) => x.machine === id && !x.handled);
-      const nr = (dt.data?.downtimes ?? []).filter((d) => d.equipment_id === q && !['RUN', 'BLOCKED', 'MAINT'].includes(d.state_code) && !stopReasons[`${d.equipment_id}|${d.start_at}`]?.reason).length;
       const pq = (twin.process[Q.process_code] ?? { pq: 0 }).pq;
+      const pct = Math.min(100, Math.round((pq / Math.max(1, p.total_target_qty)) * 100));
       const ring = !a ? 'border-slate-200' : a.level === '긴급' ? 'border-2 border-[#d23a35] shadow-[0_0_0_3px_rgba(229,72,77,.18)]' : 'border-2 border-[#e0a100] shadow-[0_0_0_3px_rgba(240,180,41,.2)]';
       return (
-        <section key={id} className={`flex min-h-0 min-w-0 flex-col gap-2 rounded-2xl border bg-white px-4 py-3 ${ring}`}>
-          <div className="flex flex-wrap items-center gap-2">
-            <button onClick={() => selectMachine(id)} className="font-mono text-[22px] font-bold hover:underline">{MACHINES[id].name}</button>
-            <span className="rounded bg-slate-100 px-2 py-0.5 font-mono text-[13px]">{MACHINES[id].op}</span>
-            <span className="rounded-full border border-slate-300 px-2.5 py-0.5 text-[15px] font-bold" style={{ color: v.color }}>{v.icon} {v.text} · {Q.minutes}분째</span>
+        <section key={id} className={`flex min-h-0 min-w-0 overflow-hidden rounded-2xl border bg-white ${ring}`}>
+          {/* 왼쪽 큰 상태 블록 — 멀리서 색 덩어리로 가동·정지를 먼저 읽게 (상태는 색 + 아이콘 + 글자) */}
+          <div className="flex w-[132px] shrink-0 flex-col items-center justify-center gap-1 px-2 text-center text-white" style={{ background: v.color }}>
+            <span className="text-[38px] leading-none">{v.icon}</span>
+            <span className="text-[24px] font-extrabold leading-tight">{v.text}</span>
+            <span className="font-mono text-[15px] font-semibold">{Q.minutes}분째</span>
           </div>
-          {a ? (
-            <div className={`flex items-center gap-2 rounded-xl px-3 py-2 ${a.level === '긴급' ? 'bg-[#fdeeee] text-[#b4282d]' : 'bg-[#fff8e6] text-[#7a4e00]'}`}>
-              <b className="min-w-0 flex-1 truncate text-[16px]">{mark(a)} {alarmTitle(a.alarm, a.code)}</b>
-              <button onClick={() => openCard(a.id)} className="h-9 shrink-0 rounded-full bg-[#1f2933] px-3 text-[14px] font-bold text-white">지침카드 →</button>
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col justify-between gap-1.5 px-4 py-2.5">
+            <div className="flex flex-wrap items-baseline gap-x-3">
+              <button onClick={() => selectMachine(id)} className="font-mono text-[24px] font-extrabold hover:underline">{MACHINES[id].name}</button>
+              <span className="font-mono text-[14px] text-slate-600">{MACHINES[id].op}{Q.lot_no ? <> · <button onClick={() => go('lots', Q.lot_no)} className="font-semibold text-[#0f6f86] underline">{Q.lot_no}</button></> : ''}</span>
             </div>
-          ) : <div className="rounded-xl bg-slate-50 px-3 py-2 text-[16px] font-semibold text-slate-500">지금 알람 없음</div>}
-          <dl className="grid grid-cols-[120px_1fr] gap-x-2 gap-y-1 text-[15px]">
-            <dt className="text-slate-500">현재 로트</dt><dd className="truncate">{Q.lot_no ? <button onClick={() => go('lots', Q.lot_no)} className="font-mono font-semibold text-[#0f6f86] underline">{Q.lot_no}</button> : '—'}</dd>
-            <dt className="text-slate-500">교대 실적/목표</dt><dd><b className={num}>{pq}</b> / <b className={num}>{p.total_target_qty}</b>{MACHINES[id].op === 'OP-30' && <span className="text-slate-500"> (2대 합, 이 설비 {Q.shift_actual_qty})</span>}</dd>
-            <dt className="text-slate-500">오늘 정지</dt><dd><b className={num}>{Q.stop_min}</b>분</dd>
-            <dt className="text-slate-500">정지 사유 미입력</dt><dd><b className={num} style={{ color: nr ? AMBER : undefined }}>{nr}</b>건</dd>
-          </dl>
+            {a ? (
+              <div className={`flex items-center gap-2 rounded-xl px-3 py-1.5 ${a.level === '긴급' ? 'bg-[#fdeeee] text-[#b4282d]' : 'bg-[#fff8e6] text-[#7a4e00]'}`}>
+                <b className="min-w-0 flex-1 truncate text-[18px]">{mark(a)} {alarmTitle(a.alarm, a.code)}</b>
+                <button onClick={() => openCard(a.id)} className="h-10 shrink-0 rounded-full bg-[#1f2933] px-4 text-[15px] font-bold text-white">지침카드 →</button>
+              </div>
+            ) : <div className="px-1 text-[17px] font-semibold text-slate-600">지금 알람 없음</div>}
+            {/* 교대 실적 / 목표 — 가장 큰 숫자 + 진행 막대 */}
+            <div className="flex items-baseline gap-2">
+              <span className={`${num} text-[50px] leading-none`}>{pq}</span>
+              <span className={`${num} text-[22px] text-slate-600`}>/ {p.total_target_qty}개</span>
+              <span className={`${num} ml-auto text-[20px]`}>{pct}%</span>
+            </div>
+            <div className="h-3 overflow-hidden rounded-full bg-slate-200"><div className="h-full rounded-full" style={{ width: `${pct}%`, background: pct >= 100 ? '#13994f' : '#4b5a69' }} /></div>
+            <div className="flex flex-wrap gap-x-5 text-[14px] text-slate-600">
+              <span>교대 실적{MACHINES[id].op === 'OP-30' ? ` · 2대 합, 이 설비 ${Q.shift_actual_qty}개` : ''}</span>
+              <span>오늘 정지 <b className={num}>{Q.stop_min}</b>분</span>
+            </div>
+          </div>
         </section>);
     })}</div>
   );

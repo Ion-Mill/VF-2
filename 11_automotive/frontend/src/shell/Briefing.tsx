@@ -172,7 +172,6 @@ function FullBrief({ v, onDone }: { v: FullView; onDone?: () => void }) {
           <li>{twin.orders.filter((o) => o.status !== 'COMPLETED').map((o) => `${o.order_no}(${o.status === 'IN_PROGRESS' ? '진행 중' : '대기'}${o.delay ? ' ' + o.delay : ''})`).join(' · ') || '없음'}</li>
           {wos.filter((w) => w.state !== 'done' && w.state !== 'cancelled').length > 0 && <li>진행 중 작업지시서 {wos.filter((w) => w.state !== 'done' && w.state !== 'cancelled').map((w) => w.no).join(' · ')}</li>}
         </ul>
-        <button onClick={() => go('stops')} className="mt-2 h-10 rounded-full border border-[#d3d7dc] bg-white px-4 text-[13px] font-semibold">정지 사유 입력 화면</button>
       </section>
       </div>
       <H t="예방 정비 · 급한 순서" n={`${pmCount}건`} />
