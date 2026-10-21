@@ -1908,8 +1908,12 @@ def stops_pieces(r: dict, rng: str, eq: str | None) -> tuple[str, list[str], lis
     cyc = r["cycle_min"]
     basis = ("기준 사이클 " + ", ".join(f"{k} {v:.1f}분" for k, v in cyc.items())) if cyc else "그 설비의 기준 사이클"
     if r.get("partial"):   # [11_automotive 이식 2026-10-16] 백엔드 조회 도구는 손실 정지만 준다 — "정지 전체"·필수 정지·순간 정지는 말하지 않는다
-        return (f"{rng} {eq or '라인 전체'} 손실 정지 {r['total_count']}번 {r['total_minutes']:g}분", groups,
-                [f"고장 손실 약 {r['loss_qty_est_total']}개(추정 = 정지 1건마다 정지 시간 ÷ {basis})"])
+        total_n = r["loss_qty_est_total"]
+        fail_n = r.get("loss_qty_failure_est", total_n)   # 고장 그룹 정지만의 손실 (2026-10-21) — "고장 0번"인데 자재·준비·조작 정지 몫이 "고장 손실"로 나오지 않게
+        report = [f"고장 손실 약 {fail_n}개(추정 = 정지 1건마다 정지 시간 ÷ {basis})"]
+        if total_n != fail_n:   # 전체와 같으면 한 줄만, 다르면 전체를 따로 밝힌다
+            report.append(f"손실 정지 전체(고장·자재·준비·조작) 손실 약 {total_n}개(추정)")
+        return (f"{rng} {eq or '라인 전체'} 손실 정지 {r['total_count']}번 {r['total_minutes']:g}분", groups, report)
     head = f"{rng} {eq or '라인 전체'} 정지 전체 {r['total_count']}번 {r['total_minutes']:g}분"
     report = [f"필수 정지(고장 5분 이상) {len(r['rows'])}번 {r['total_failure_min']:g}분",
               f"고장 손실 약 {r['loss_qty_est_total']}개(추정 = 정지 1건마다 정지 시간 ÷ {basis})",
@@ -3324,7 +3328,7 @@ def speed_loss_unread_v24(question: str, p: dict) -> bool:
 
 # 읽은 운영 답 뒤에 붙는 꼬리 (2026-10-21): "고장 손실 몇 개 / 속도 손실은?"처럼 한쪽은 읽고 속도 손실은 못 읽을 때. 읽은 고장 손실은 손실 정지 전체의 추정이라 보고서 [4]와 다를 수 있다
 SPEED_LOSS_TAIL_V26 = ("속도 손실(느려서 잃은 개수)은 이 채팅에서 아직 읽지 못해요. 교대 보고서(SCR-15)의 [5] 병목·속도 손실 칸에서 확인해 주세요. "
-                       "위 고장 손실은 손실 정지 전체의 추정이라 [4] 필수 정지 칸 숫자와 다를 수 있어요.")
+                       "위 고장 손실은 고장 그룹 정지의 추정이라 [4] 필수 정지(고장 5분 이상) 칸 숫자와 다를 수 있어요.")
 
 # 화면 값과 맞춰 보라는 말 (2026-10-21 시연 시험 #13 턴 3): 채팅은 화면에 보이는 숫자를 읽지 못한다. 화면·비교·숫자 말이 모두 있고 조회 의도·알람이 없을 때만 규칙이 알린다 (Claude 호출 없음)
 SCREEN_WORD_V26 = re.compile(r"화면|보고서|SCR-?\d+", re.I)

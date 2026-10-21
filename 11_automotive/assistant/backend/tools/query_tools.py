@@ -154,14 +154,21 @@ def stops(role, equipment_id=None, start=None, end=None, shift=None):
         mine = [m for m in out if (m["reason_group"] if m["reason_group"] in known else "UNKNOWN") == group]
         if group == "UNKNOWN" and not mine:
             continue
+        merged: dict[str, dict] = {}   # 라인 전체 질문은 설비마다 행이 있어 같은 사유가 여러 줄이 된다 — 사유 코드별로 합쳐 한 줄로 (표시용, 행 out은 그대로)
+        for m in mine:
+            r = merged.setdefault(m["reason_code"], {"code": m["reason_code"], "name": m["reason_name"], "count": 0, "minutes": 0.0})
+            r["count"] += m["times"]
+            r["minutes"] = round(r["minutes"] + m["minutes"], 1)
         by_group.append({"group": group, "group_ko": group_ko, "count": sum(m["times"] for m in mine),
                          "minutes": M.round_half_up(sum(m["minutes"] for m in mine), 1),
-                         "reasons": [{"code": m["reason_code"], "name": m["reason_name"], "count": m["times"], "minutes": m["minutes"]}
-                                     for m in sorted(mine, key=lambda m: -m["minutes"])]})
+                         "reasons": sorted(merged.values(), key=lambda r: -r["minutes"])})
     fail = next((g for g in by_group if g["group"] == "FAILURE"), None)
+    # 고장 그룹 정지만의 손실 수량 추정 — loss_qty_est_total은 손실 정지 전체(고장·자재·준비·조작)의 합이다
+    fail_loss = int(M.round_half_up(sum(m["loss_qty"] for m in out if m["reason_group"] == "FAILURE"), 0))
     return _result("지표·손실 조회 (정지)", out, _range(start, end, shift), as_of=now,
                    total_count=sum(m["times"] for m in out), total_minutes=M.round_half_up(sum(m["minutes"] for m in out), 1),
                    total_failure_min=fail["minutes"] if fail else 0.0, loss_qty_est_total=int(M.round_half_up(sum(m["loss_qty"] for m in out), 0)),
+                   loss_qty_failure_est=fail_loss,
                    by_group=by_group, cycle_min={}, all_empty=not out, partial=True,
                    note="손실 정지만 조회됩니다 (계획 정지·필수 정지·순간 정지는 아직 조회할 수 없음)")
 
