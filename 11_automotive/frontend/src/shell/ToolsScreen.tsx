@@ -4,6 +4,8 @@
 // 화면 구조 (사용자 시안 2026-10-16): 왼쪽 공구 목록(전체/VF2-01/VF2-02) · 오른쪽 고른 공구 상세(원 그래프·누적/한도·교체 이력). 전체 = 두 설비 교체 이력만.
 import { useState } from 'react';
 import { PAGE, useApp } from './ctx';
+import { Band, Tabs } from './ui';
+import { toolsBand } from './bands';
 import { MASTERS, STATE_VIEW, stateOf } from './data';
 import { api, hm, md, useFetch } from './live';
 import { userName } from './model';
@@ -14,7 +16,7 @@ const LIMIT_PCT = 90; // 공구 수명 한도 (교체 준비 기준)
 const EQS = ['VF2-01', 'VF2-02'] as const;
 // 교체 사유 코드 → 한글
 const reasonKo = (r: string) => (r === 'LIFE_90' ? '수명 90% 도달' : r.startsWith('ALARM_') ? `알람 ${r.slice(6)}` : r === 'OTHER' ? '기타' : r || '—');
-const box = 'rounded-2xl border border-slate-300 bg-white p-5';
+const box = 'rounded-card border border-line bg-white p-5';
 
 export function ToolsScreen() {
   const { key, twin, role, user, toast, alerts, reloadInv, eve } = useApp(); // eve: 이브 창 열림 — 공구 칸 넓히고 교체 이력 줄임
@@ -43,11 +45,11 @@ export function ToolsScreen() {
   // 교체 이력 높이 = 왼쪽 공구 목록 끝까지. [contain:size]로 표가 칸을 늘리지 않고 안에서 스크롤 (사용자 요청 2026-10-19)
   const history = (
     <section className={`${box} flex min-h-0 flex-1 flex-col`}>
-      <h3 className="flex items-center gap-2 text-[17px] font-bold"><span className="h-2.5 w-2.5 rounded-full bg-[#6a43e0]" />교체 이력 — {sel ? `${sel.equipment_id}  ${sel.tool_no}` : EQS.join(' · ')}</h3>
-      {changes.length === 0 ? <p className="mt-3 text-[14px] text-slate-500">교체 기록 없음</p> : (
+      <h3 className="flex items-center gap-2 text-card font-bold">교체 이력 — {sel ? `${sel.equipment_id}  ${sel.tool_no}` : EQS.join(' · ')}</h3>
+      {changes.length === 0 ? <p className="mt-3 text-body text-ink-2">교체 기록 없음</p> : (
         <div className="mt-2 min-h-[160px] flex-1 overflow-y-auto [contain:size]">{/* 이브 열림: 시각·공구·교체 사유만, 줄 간격 줄임 */}
-        <table className={`w-full text-left ${eve ? 'text-[14px]' : 'text-[15px]'}`}>
-          <thead className="sticky top-0 border-y border-slate-200 bg-white text-[13px] text-slate-500"><tr>{(eve ? ['교체 시각', ...(sel ? [] : ['공구']), '교체 사유'] : ['교체 시각', ...(sel ? [] : ['공구']), '교체 시 사용량 / 한도', '교체 사유', '교체자']).map((h) => <th key={h} className={`font-semibold ${eve ? 'py-1.5 pr-4' : 'py-2 pr-6'}`}>{h}</th>)}</tr></thead>
+        <table className={`w-full text-left ${eve ? 'text-body' : 'text-card'}`}>
+          <thead className="sticky top-0 border-y border-line-soft bg-white text-small text-ink-2"><tr>{(eve ? ['교체 시각', ...(sel ? [] : ['공구']), '교체 사유'] : ['교체 시각', ...(sel ? [] : ['공구']), '교체 시 사용량 / 한도', '교체 사유', '교체자']).map((h) => <th key={h} className={`font-semibold ${eve ? 'py-1.5 pr-4' : 'py-2 pr-6'}`}>{h}</th>)}</tr></thead>
           <tbody className="divide-y divide-slate-100">{changes.map((c, i) => {
             const t = all.find((x) => x.tool_id === c.tool_id), lim = t?.limit, used = Math.round(Number(c.cum_before));
             const u = t ? unitOf(t) : '분';
@@ -61,9 +63,9 @@ export function ToolsScreen() {
               <tr key={i}>
                 <td className="py-2.5 pr-6 font-mono">{md(c.changed_at)} {hm(c.changed_at)}</td>
                 {!sel && <td className="py-2.5 pr-6 font-mono font-semibold">{c.tool_id}</td>}
-                <td className="py-2.5 pr-6"><b className="font-mono">{used} / {lim ?? '—'}</b> {u}{lim ? <span className="text-slate-500"> ({Math.round((used / lim) * 100)}%)</span> : null}</td>
+                <td className="py-2.5 pr-6"><b className="font-mono">{used} / {lim ?? '—'}</b> {u}{lim ? <span className="text-ink-2"> ({Math.round((used / lim) * 100)}%)</span> : null}</td>
                 <td className="py-2.5 pr-6">{reasonKo(String(c.change_reason ?? ''))}</td>
-                <td className="py-2.5 text-slate-600">{userName(c.changed_by)}</td>
+                <td className="py-2.5 text-ink-2">{userName(c.changed_by)}</td>
               </tr>));
           })}</tbody>
         </table>
@@ -74,31 +76,31 @@ export function ToolsScreen() {
 
   return (
     <div className={PAGE}>
-      <div className={`mx-auto grid max-w-[1400px] items-stretch gap-4 ${eve ? 'grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]' : 'grid-cols-[minmax(320px,0.9fr)_1.6fr]'}`}>
+      {/* 디자인 통일 C안: 결론 띠 1개 (bands.ts toolsBand, 보기 전용이라 버튼 없음) */}
+      <div className="mx-auto mb-3 max-w-[1440px]"><Band spec={toolsBand(all.map((x) => ({ equipment_id: String(x.equipment_id), tool_no: String(x.tool_no), label: nameOf(x), usage_pct: Number(x.usage_pct), warn: !!x.warn })), LIMIT_PCT)} /></div>
+      <div className={`mx-auto grid max-w-[1440px] items-stretch gap-3 ${eve ? 'grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]' : 'grid-cols-[minmax(320px,0.9fr)_1.6fr]'}`}>
         {/* 왼쪽: 공구 목록 */}
         <section className={`${box} self-start`}>
-          <h2 className="flex items-center gap-2 text-[19px] font-bold"><span className="h-2.5 w-2.5 rounded-sm bg-[#6a43e0]" />공구 — OP-30 {EQS.join(' · ')}</h2>
-          <div className="mt-4 grid grid-cols-3 gap-2">{['전체', ...EQS].map((e) => (
-            <button key={e} onClick={() => pickEq(e)} className={`h-12 rounded-lg border text-[15px] font-bold ${eq === e ? 'border-[#6a43e0] bg-[#6a43e0] text-white shadow' : 'border-slate-300 bg-white text-[#6a43e0]'}`}>{e}{e === '전체' ? ` ${all.length}` : ''}</button>))}
-          </div>
-          <p className="mt-3 text-right text-[13px] text-slate-500"><span className="mr-1 inline-block h-3 w-[2px] translate-y-0.5 bg-[#26303a]" />교체 준비 기준 = 한도의 {LIMIT_PCT}%</p>
+          <h3 className="text-card font-bold">공구 — OP-30 {EQS.join(' · ')}</h3>
+          <div className="mt-3"><Tabs label="설비" value={eq} onChange={pickEq} items={['전체', ...EQS].map((e) => ({ key: e, label: e, count: e === '전체' ? all.length : undefined, warn: (e === '전체' ? all : toolsOf(e)).filter((x) => x.warn).length }))} /></div>
+          <p className="mt-3 text-right text-small text-ink-2"><span className="mr-1 inline-block h-3 w-[2px] translate-y-0.5 bg-ink" />교체 준비 기준 = 한도의 {LIMIT_PCT}%</p>
           <ul className="mt-2 flex flex-col gap-2">{list.map((t) => {
             const on = sel?.tool_id === t.tool_id;
             return (
               <li key={t.tool_id}>
-                <button onClick={() => { if (eq === '전체') setEq(t.equipment_id); setSelId(t.tool_id); }} className={`w-full rounded-lg border px-4 py-3 text-left ${on ? 'border-2 border-[#6a43e0] bg-[#f3f6ff]' : 'border-slate-200 bg-white'}`}>
-                  <div className="flex items-center gap-3 text-[15px]">
+                <button onClick={() => { if (eq === '전체') setEq(t.equipment_id); setSelId(t.tool_id); }} className={`w-full rounded-tile border px-4 py-3 text-left ${on ? 'border-2 border-brand bg-tile' : 'border-line-soft bg-white'}`}>
+                  <div className="flex items-center gap-3 text-card">
                     {t.warn && <span className="text-[#d39a00]">▲</span>}<b>{t.equipment_id}</b><span className="min-w-0 flex-1 truncate">{t.tool_no} {nameOf(t)}</span>
-                    {t.limit != null && <span className="shrink-0 whitespace-nowrap font-mono text-[13px] text-slate-500">{Math.round(t.cum)} / {t.limit}{unitOf(t)}</span>}<b className="font-mono">{t.usage_pct}%</b>
+                    {t.limit != null && <span className="shrink-0 whitespace-nowrap font-mono text-small text-ink-2">{Math.round(t.cum)} / {t.limit}{unitOf(t)}</span>}<b className="font-mono">{t.usage_pct}%</b>
                   </div>
-                  <div className="relative mt-2 h-2.5 rounded-full bg-slate-200">
+                  <div className="relative mt-2 h-2.5 rounded-full bg-track">
                     <div className="h-full rounded-full" style={{ width: `${Math.min(100, t.usage_pct)}%`, background: t.warn ? '#e0b000' : '#4b5a69' }} />
-                    <span className="absolute -top-1 flex h-[18px] w-[10px] -translate-x-1/2 cursor-help justify-center" style={{ left: `${LIMIT_PCT}%` }} title={t.limit != null ? `교체 준비 ${Math.round((t.limit * LIMIT_PCT) / 100)}${unitOf(t)} (한도의 ${LIMIT_PCT}%)` : undefined}><span className="h-full w-[2px] bg-[#26303a]" /></span>
+                    <span className="absolute -top-1 flex h-[18px] w-[10px] -translate-x-1/2 cursor-help justify-center" style={{ left: `${LIMIT_PCT}%` }} title={t.limit != null ? `교체 준비 ${Math.round((t.limit * LIMIT_PCT) / 100)}${unitOf(t)} (한도의 ${LIMIT_PCT}%)` : undefined}><span className="h-full w-[2px] bg-ink" /></span>
                   </div>
                 </button>
               </li>);
           })}</ul>
-          {!canChange && <p className="mt-3 text-[13px] text-slate-500">보기 전용 (공구 교체는 작업자·보전 담당자)</p>}
+          {!canChange && <p className="mt-3 text-small text-ink-2">보기 전용 (공구 교체는 작업자·보전 담당자)</p>}
         </section>
 
         {/* 오른쪽: 고른 공구 상세 — 전체일 때는 교체 이력만 */}
@@ -106,18 +108,18 @@ export function ToolsScreen() {
           {sel && (<>
             <section className={`${box} flex flex-wrap items-center gap-4`}>
               <div className="min-w-0">
-                <div className="flex items-center gap-2 text-[15px] font-bold">{sel.equipment_id}{st && <span style={{ color: st.color }}>{st.icon} {st.text}</span>}{al && <span className="text-[#c62a2f]">{al.code === '362' ? '⚠' : '▲'} 알람 {al.code}</span>}</div>
-                <div className={`font-bold leading-tight ${eve ? 'text-[24px]' : 'text-[30px]'}`}>{sel.tool_no} {nameOf(sel)}</div>
+                <div className="flex items-center gap-2 text-card font-bold">{sel.equipment_id}{st && <span style={{ color: st.color }}>{st.icon} {st.text}</span>}{al && <span className="text-crit">{al.code === '362' ? '⚠' : '▲'} 알람 {al.code}</span>}</div>
+                <div className={`font-bold leading-tight ${eve ? 'text-title' : 'text-num'}`}>{sel.tool_no} {nameOf(sel)}</div>
               </div>
-              {sel.warn && <span className="rounded-full border border-[#e0b000] bg-[#fff6d6] px-4 py-1.5 text-[16px] font-bold text-[#7a5600]">▲ 교체 준비</span>}
-              {canChange && <button onClick={() => setConfirm(sel.tool_id)} className="ml-auto h-14 rounded-lg bg-[#6a43e0] px-8 text-[18px] font-bold text-white shadow">공구 교체</button>}
+              {sel.warn && <span className="rounded-full border border-warn-mark bg-warn-bg px-4 py-1.5 text-card font-bold text-warn">▲ 교체 준비</span>}
+              {canChange && <button onClick={() => setConfirm(sel.tool_id)} className="ml-auto h-14 rounded-tile bg-brand px-8 text-band font-bold text-white shadow">공구 교체</button>}
             </section>
             <div className={`grid gap-4 ${eve ? 'grid-cols-1' : 'grid-cols-[1fr_1.3fr]'}`}>
               <section className={`${box} flex items-center justify-center`}><Ring pct={sel.usage_pct} warn={sel.warn} /></section>
               <section className={`${box} flex flex-col justify-center`}>
-                <div className="text-[15px] text-slate-500">누적 / 한도</div>
-                <div className={`mt-1 font-mono font-semibold ${eve ? 'text-[32px]' : 'text-[44px]'}`}>{Math.round(sel.cum)} <span className="mx-2">/</span> {sel.limit} <span className="font-sans text-[18px]">{unit}</span></div>
-                <div className="mt-2 text-[14px] text-slate-500">남은 수명 {Math.max(0, Math.round((100 - sel.usage_pct) * 10) / 10)}% · 부품 {sel.left_parts ?? '—'}개</div>
+                <div className="text-card text-ink-2">누적 / 한도</div>
+                <div className={`mt-1 font-mono font-semibold ${eve ? 'text-num' : 'text-tablet'}`}>{Math.round(sel.cum)} <span className="mx-2">/</span> {sel.limit} <span className="font-sans text-band">{unit}</span></div>
+                <div className="mt-2 text-body text-ink-2">남은 수명 {Math.max(0, Math.round((100 - sel.usage_pct) * 10) / 10)}% · 부품 {sel.left_parts ?? '—'}개</div>
               </section>
             </div>
           </>)}

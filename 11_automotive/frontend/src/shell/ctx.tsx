@@ -48,7 +48,8 @@ export const useApp = () => {
 };
 
 // 공통 버튼 모양 (터치 크기 44px 이상, 2.4)
-export const BTN = 'h-11 rounded-md border border-slate-300 bg-white px-4 text-[14px] font-semibold hover:bg-slate-50 disabled:cursor-not-allowed disabled:text-slate-400 disabled:hover:bg-white';
-export const DARK = 'h-11 rounded-md bg-[#1c2530] px-4 text-[14px] font-bold text-white disabled:cursor-not-allowed disabled:bg-slate-300';
-export const PAGE = 'absolute inset-0 overflow-y-auto bg-[#e9ecef] p-4';
-export const CARD = 'mx-auto max-w-[1100px] rounded-lg border border-slate-300 bg-white p-4';
+// 디자인 통일 C안 (2026-10-20): 값만 먼저 토큰으로 — 화면을 ui.tsx 부품(Btn·Page·Sec)으로 바꾸면서 지운다
+export const BTN = 'h-11 rounded-ctl border border-line bg-white px-4 text-body font-semibold text-ink hover:bg-tile disabled:cursor-not-allowed disabled:bg-track disabled:text-bar disabled:hover:bg-track';
+export const DARK = 'h-11 rounded-ctl bg-ink px-4 text-body font-semibold text-white hover:bg-black disabled:cursor-not-allowed disabled:bg-track disabled:text-bar';
+export const PAGE = 'absolute inset-0 overflow-y-auto bg-ground p-4';
+export const CARD = 'rounded-card border border-line bg-white p-4';

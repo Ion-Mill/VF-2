@@ -14,14 +14,14 @@
   --ma-panel-line: rgba(255, 255, 255, 0.1);
   --ma-panel-width: 420px;
   --ma-z: 9000;
-  font-family: 'Gothic A1', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  font-family: 'Noto Sans KR Variable', 'Noto Sans KR', sans-serif; /* 디자인 통일 C안 (2026-10-20) */
   font-size: 14px;
   color: var(--ma-ink);
 }
 .ma-root *, .ma-root *::before, .ma-root *::after { box-sizing: border-box; }
 .ma-root button { font: inherit; cursor: pointer; }
 .ma-root [hidden] { display: none !important; }
-.ma-mono { font-family: 'JetBrains Mono', ui-monospace, Consolas, monospace; }
+.ma-mono { font-family: 'Noto Sans KR Variable', 'Noto Sans KR', sans-serif; }
 .ma-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* ── 로봇 버튼 ── */

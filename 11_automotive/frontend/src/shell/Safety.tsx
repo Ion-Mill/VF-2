@@ -7,6 +7,7 @@ import type { MachineId } from '@/components/types';
 import { MACHINES } from './data';
 import { BLOCK, SAFETY, SHORT, type AlarmRec } from './model';
 import { Chip } from './DocKit';
+import { LockIcon } from './ui';
 
 // 블록의 체크칸 9개 (6.1~6.6, 7.1~7.3) — KOSHA 원문 제목 그대로
 export const LOCK = BLOCK.filter((l) => /^\s*□ [67]\.\d/.test(l)).map((l) => l.replace(/^\s*□ /, '').trim());
@@ -27,12 +28,12 @@ function blockGroups(op30: boolean) {
   // OP-30 밖 설비는 고전압 대기 대신 저장 에너지 확인 (기존 규칙 그대로)
   return op30 ? out : out.map((g) => (g.name === '고전압 대기' ? { name: '저장 에너지', items: ['§3 저장 에너지 확인'] } : g));
 }
-export const SafeTag = <Chip tone="warn">🔒 고정 서식</Chip>;
+export const SafeTag = <Chip tone="warn"><LockIcon /> 고정 서식</Chip>;
 
 export function SafetyBlock({ machine, alarm }: { machine: MachineId; alarm: AlarmRec }) {
   const name = MACHINES[machine].name, sf = SAFETY[name];
   if (alarm.severity === 'STOP' && sf) {
-    const line = (k: string, v: ReactNode) => <div className="flex flex-wrap items-center gap-1.5 text-[13px]"><b className="min-w-[72px] font-semibold text-slate-500">{k}</b>{v}</div>;
+    const line = (k: string, v: ReactNode) => <div className="flex flex-wrap items-center gap-1.5 text-small"><b className="min-w-[72px] font-semibold text-ink-2">{k}</b>{v}</div>;
     return (
       <div className="flex flex-col gap-2.5">
         {line('설비', <Chip mono>{name}</Chip>)}
@@ -42,9 +43,9 @@ export function SafetyBlock({ machine, alarm }: { machine: MachineId; alarm: Ala
         {(() => {
           const gs = blockGroups(MACHINES[machine].op === 'OP-30');
           const card = (g: { name: string; items: string[] }) => (
-            <div key={g.name} className="flex-1 rounded-xl border border-slate-300 px-3 py-2.5">
-              <b className="text-[14px]">{g.name}</b>
-              <ul className="mt-1 flex flex-col gap-1">{g.items.map((x) => <li key={x} className="grid grid-cols-[14px_minmax(0,1fr)] gap-2 text-[13.5px] leading-snug"><span className="mt-[7px] h-1.5 w-1.5 rounded-full bg-slate-400" />{x}</li>)}</ul>
+            <div key={g.name} className="flex-1 rounded-tile border border-line px-3 py-2.5">
+              <b className="text-body">{g.name}</b>
+              <ul className="mt-1 flex flex-col gap-1">{g.items.map((x) => <li key={x} className="grid grid-cols-[14px_minmax(0,1fr)] gap-2 text-body leading-snug"><span className="mt-[7px] h-1.5 w-1.5 rounded-full bg-slate-400" />{x}</li>)}</ul>
             </div>
           );
           const seq = gs.filter((g) => g.name.startsWith('작업')), rest = gs.filter((g) => !g.name.startsWith('작업'));
@@ -56,7 +57,7 @@ export function SafetyBlock({ machine, alarm }: { machine: MachineId; alarm: Ala
   if (alarm.severity === 'WARN') {
     const row = shortRow(alarm);
     return row ? (
-      <div className="flex flex-col gap-1 text-[14px]">
+      <div className="flex flex-col gap-1 text-body">
         <div className="flex flex-wrap items-center gap-1.5"><Chip tone="warn">{row.work}</Chip><b>{row.judge}</b></div>
         <div>{row.todo}</div>
       </div>
@@ -78,11 +79,11 @@ export function safetySrc(machine: MachineId, alarm: AlarmRec, open: (doc: strin
 export function LockChecks({ value, onChange, disabled }: { value: boolean[]; onChange: (v: boolean[]) => void; disabled?: boolean }) {
   const group = (name: string, pre: string) => (
     <div className="flex flex-col gap-0.5">
-      <b className="px-1 text-[13px] text-slate-500">{name}</b>
+      <b className="px-1 text-small text-ink-2">{name}</b>
       {LOCK.map((l, i) => [l, i] as const).filter(([l]) => l.startsWith(pre)).map(([l, i]) => (
-        <label key={l} className="flex min-h-[44px] items-center gap-2 rounded-lg px-1 text-[14px] hover:bg-slate-50">
-          <input type="checkbox" className="h-5 w-5 accent-[#127a46]" disabled={disabled} checked={!!value[i]} onChange={() => onChange(value.map((v, k) => (k === i ? !v : v)))} />
-          <span className={value[i] ? 'text-slate-500' : ''}>{l}</span>
+        <label key={l} className="flex min-h-[44px] items-center gap-2 rounded-tile px-1 text-body hover:bg-tile">
+          <input type="checkbox" className="h-5 w-5 accent-ok" disabled={disabled} checked={!!value[i]} onChange={() => onChange(value.map((v, k) => (k === i ? !v : v)))} />
+          <span className={value[i] ? 'text-ink-2' : ''}>{l}</span>
         </label>
       ))}
     </div>
@@ -94,7 +95,7 @@ export function LockHead({ value, onChange, disabled }: { value: boolean[]; onCh
   const n = value.filter(Boolean).length, all = n >= LOCK.length;
   return (<>
     <Chip tone={all ? 'ok' : 'warn'}>{n} / {LOCK.length}{all ? ' ✓' : ''}</Chip>
-    {!disabled && !all && <button onClick={() => onChange(LOCK.map(() => true))} className="h-9 rounded-md border border-slate-300 bg-white px-3 text-[13px] font-semibold hover:bg-slate-50">모두 체크</button>}
+    {!disabled && !all && <button onClick={() => onChange(LOCK.map(() => true))} className="h-9 rounded-ctl border border-line bg-white px-3 text-small font-semibold hover:bg-tile">모두 체크</button>}
   </>);
 }
 
@@ -102,12 +103,12 @@ export function LockHead({ value, onChange, disabled }: { value: boolean[]; onCh
 export function ConfirmBox({ title, body, okLabel, onOk, onCancel }: { title: string; body: ReactNode; okLabel: string; onOk: () => void; onCancel: () => void }) {
   return (
     <div role="dialog" aria-label={title} className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="w-full max-w-[420px] rounded-xl bg-white p-5 shadow-2xl">
-        <h3 className="text-[16px] font-bold">{title}</h3>
-        <div className="mt-2 text-[14px] text-slate-700">{body}</div>
+      <div className="w-full max-w-[420px] rounded-tile bg-white p-5 shadow-2xl">
+        <h3 className="text-card font-bold">{title}</h3>
+        <div className="mt-2 text-body text-ink">{body}</div>
         <div className="mt-4 flex justify-end gap-3">
-          <button onClick={onCancel} className="h-12 rounded-md border border-slate-300 px-5 font-semibold">돌아가기</button>
-          <button onClick={onOk} className="h-12 rounded-md bg-[#1c2530] px-5 font-bold text-white">{okLabel}</button>
+          <button onClick={onCancel} className="h-12 rounded-ctl border border-line px-5 font-semibold">돌아가기</button>
+          <button onClick={onOk} className="h-12 rounded-ctl bg-ink px-5 font-bold text-white">{okLabel}</button>
         </div>
       </div>
     </div>

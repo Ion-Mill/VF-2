@@ -275,7 +275,7 @@ export function createRobot(THREE, opts = {}) { // opts.bubble = false: 말풍�
     bctx.beginPath(); bctx.moveTo(400, 138); bctx.lineTo(470, 190); bctx.lineTo(450, 138); bctx.closePath(); bctx.fill();
     bctx.beginPath(); bctx.moveTo(400, 142); bctx.lineTo(470, 190); bctx.lineTo(450, 142); bctx.stroke();
     bctx.fillStyle = '#ffffff'; bctx.fillRect(396, 128, 58, 12);
-    bctx.fillStyle = '#1d1f23'; bctx.font = '700 54px system-ui, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif';
+    bctx.fillStyle = '#1d1f23'; bctx.font = '700 54px "Noto Sans KR Variable", sans-serif';
     bctx.textAlign = 'center'; bctx.textBaseline = 'middle'; bctx.fillText(text, 256, 79);
     bubbleTex.needsUpdate = true;
   };

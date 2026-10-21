@@ -1,6 +1,7 @@
 // @ts-nocheck
 'use client';
 // 이브가 답을 만드는 동안 (사용자 선택 2026-10-19): 책을 넘겨 읽고, 머리 위 생각 구름에서 지침카드·알람 코드집·정비 기록을 찾고(…), 찾으면 ✓.
+// ✓·초록 눈은 답이 왔을 때만 (found, 사용자 요청 2026-10-21) — 기다리는 동안 돌던 8초 한 바퀴에서는 뺐다
 // 로봇 = robot3d.js 그대로, 책·구름·눈 움직임만 덧붙임. 시안: claude.ai/artifact/L22vfMbqj8YsGCNa6u5BxD
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
@@ -36,20 +37,21 @@ function setup(cv) {
       else { const col = { card: '#6a43e0', code: '#c2570c', rec: '#2f9e5b' }[kind], lab = { card: '지침카드', code: '알람 코드집', rec: '정비 기록' }[kind];
         c.fillStyle = '#fff'; c.strokeStyle = col; c.lineWidth = 6; c.beginPath(); c.roundRect(125, 45, 70, 86, 8); c.fill(); c.stroke();
         c.fillStyle = col; c.fillRect(125, 45, 70, 18); c.fillStyle = '#c3cad2'; [80, 96, 112].forEach(y => c.fillRect(137, y, 46, 7));
-        c.fillStyle = '#26303a'; c.font = '800 26px "Malgun Gothic",sans-serif'; c.textAlign = 'center'; c.fillText(lab, 160, 168); }
+        c.fillStyle = '#26303a'; c.font = '800 26px "Noto Sans KR Variable", sans-serif'; c.textAlign = 'center'; c.fillText(lab, 160, 168); }
       ct.needsUpdate = true; };
     var cloud = new THREE.Sprite(new THREE.SpriteMaterial({ map: ct, depthTest: false })); cloud.scale.set(0.36, 0.29, 1); cloud.position.set(0.3, 0.86, 0.05); R.root.add(cloud);
     [-1, 1].forEach(s => { for (let k = 0; k < 5; k++) { const ln = new THREE.Mesh(new THREE.PlaneGeometry(0.085, 0.006), lineM); ln.rotation.x = -Math.PI / 2; ln.rotation.z = 0; ln.position.set(s * 0.062, 0.0135 + (s < 0 ? 0.002 : 0.002), -0.055 + k * 0.026); book.add(ln); } });
   }
   const cam = new THREE.PerspectiveCamera(30, 1, 0.05, 20); cam.position.set(cv.dataset.book ? 0.35 : 0, cv.dataset.book ? 0.85 : 0.62, cv.dataset.book ? 1.95 : 1.85); cam.lookAt(0, cv.dataset.book ? 0.56 : 0.43, 0);
-  let t = 0, last = performance.now(); // ?t= 로 특정 장면 확인
+  let t = 0, last = performance.now(), fAt = 0; // fAt = 답이 온(found) 시각
   const loop = (now) => { if (stop) return; requestAnimationFrame(loop); const dt = Math.max(0, Math.min(0.1, ((now || performance.now()) - last) / 1000)) || 0; last = now || performance.now(); t += dt;
     if (cv.dataset.nod) R.root.rotation.x = Math.sin(t * 3) * 0.06;
     if (cv.dataset.spin) R.root.rotation.y = Math.sin(t * 0.8) * 0.6;
     R.update(t, dt, cam);
     if (book) { // 8초 한 바퀴: 읽기 → 빠르게 넘겨 찾기 → 턱 괴고 생각(?) → 찾았다(!) 손가락으로 짚기 → 다시 읽기
       const T = t % 8, sm = (x) => x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x), seg = (a0, a1) => sm((T - a0) / (a1 - a0));
-      const chin = seg(3.4, 3.9) * (1 - seg(5.0, 5.4)), point = seg(5.2, 5.6) * (1 - seg(6.6, 7.0)), lean = 0.32 + point * 0.12;
+      const fnd = cv.dataset.found === '1'; if (fnd && !fAt) fAt = t; const found = fnd ? Math.min(1, (t - fAt) * 5) : 0; // 답이 오면 0→1로 번쩍
+      const chin = seg(3.4, 3.9) * (1 - seg(5.0, 5.4)) * (1 - found), point = Math.max(seg(5.2, 5.6) * (1 - seg(6.6, 7.0)), found), lean = 0.32 + point * 0.12;
       if (arms[0]) { arms[0].rotation.x = -1.05 + Math.sin(t * 1.3) * 0.03; arms[0].rotation.z = 0.32 + chin * 0.12; }
       if (arms[1]) { arms[1].rotation.x = -1.05 + chin * -1.45 + point * -0.35; arms[1].rotation.z = -0.32 + chin * 0.95 + point * 0.25; }
       if (headG) {
@@ -61,7 +63,7 @@ function setup(cv) {
       pages.forEach((pg, k) => { pg.rotation.z = flipAt(k) * Math.PI * 0.94; pg.visible = flipAt(k) > 0.01 && flipAt(k) < 0.99; });
       book.rotation.x = -0.75 + Math.sin(t * 1.3) * 0.03 - chin * 0.15; book.rotation.z = chin * 0.12;
       // 눈: 읽을 땐 가늘게 아래로·글줄 따라 좌우, 넘길 땐 빠르게 두리번, 생각할 땐 위로 치켜뜨고 한쪽만 찡그림, 찾으면 커지며 초록 반짝
-      const found = T > 5.0 && T < 6.2 ? Math.max(0, 1 - Math.abs(T - 5.25) * 2.2) : 0, flipping = T >= 2.4 && T < 3.4;
+      const flipping = !fnd && T >= 2.4 && T < 3.4;
       eyesG.forEach((e, i) => { if (!e) return; const b = eyeBase[i], s = i ? 1 : -1;
         const read = 1 - chin, dx = read * (flipping ? Math.sin(t * 14) * 0.009 : Math.sin(t * 1.8) * 0.007) + chin * 0.006;
         const dy = read * -0.012 + chin * 0.012;
@@ -73,7 +75,7 @@ function setup(cv) {
       if (headG && found > 0) headG.rotation.x = headG.rotation.x * (1 - found) - 0.12 * found; // 찾으면 고개 번쩍
       // 생각 구름: 찾는 동안 문서 아이콘이 넘어가고, 생각할 땐 …, 찾으면 ✓
       cloud.visible = true; cloud.position.y = 0.86 + Math.sin(t * 2) * 0.012; cloud.scale.set(0.36 + found * 0.04, 0.29 + found * 0.03, 1);
-      drawCloud(T > 5.0 && T < 6.6 ? 'check' : chin > 0.3 ? 'dots' + (((t * 3.3) | 0) % 3) : ['card', 'code', 'rec'][((Math.floor(t / 0.9) % 3) + 3) % 3]);
+      drawCloud(fnd ? 'check' : chin > 0.3 ? 'dots' + (((t * 3.3) | 0) % 3) : ['card', 'code', 'rec'][((Math.floor(t / 0.9) % 3) + 3) % 3]);
     }
     renderer.render(scene, cam); };
   requestAnimationFrame(loop);
@@ -81,13 +83,13 @@ function setup(cv) {
 }
 
 const STEPS = ['알람 코드집을 넘겨 보는 중…', '지침카드를 찾는 중…', '정비 기록을 확인하는 중…', '답을 정리하는 중…'];
-export default function EveThinking({ size = 220 }: { size?: number }) {
+export default function EveThinking({ size = 220, found = false }: { size?: number; found?: boolean }) {
   const ref = useRef<HTMLCanvasElement>(null), [i, setI] = useState(0);
   useEffect(() => { const cv = ref.current; if (!cv) return; return setup(cv); }, []);
   useEffect(() => { const id = setInterval(() => setI((x) => x + 1), 1600); return () => clearInterval(id); }, []);
   return (
     <div className="flex flex-col items-center gap-1 py-2" role="status" aria-label="답변을 만드는 중">
-      <canvas ref={ref} data-size={size} data-mode="0" data-book="1" aria-hidden="true" />
-      <span className="ma-typing text-[13px]">{STEPS[i % STEPS.length]}</span>
+      <canvas ref={ref} data-size={size} data-mode="0" data-book="1" data-found={found ? '1' : '0'} aria-hidden="true" />
+      <span className={found ? 'text-[13px] font-bold text-[#2f9e5b]' : 'ma-typing text-[13px]'}>{found ? '찾았어요! 답을 보여 드릴게요' : STEPS[i % STEPS.length]}</span>
     </div>);
 }
