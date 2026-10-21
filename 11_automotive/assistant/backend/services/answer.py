@@ -1947,12 +1947,28 @@ def stops_text(r: dict, rng: str, eq: str | None, narrow: bool = False) -> str:
     return head + " — " + " · ".join(groups) + ". 교대 보고서 기준: " + ", ".join(report)
 
 
+# "오늘 교대 / 이번 교대" (2026-10-21 사용자 시험): 규칙 파서는 시계가 없어 교대 하나가 아니라 그날 하루 전체로 조회됐다. 교대 인자를 쓰는 조회(정지·생산·지표)에서만, 교대·다른 날짜를
+# 말하지 않았으면 백엔드 업무 시각으로 가장 최근에 시작한 교대로 바꾼다 (시계를 못 얻으면 지금 동작 그대로)
+CUR_SHIFT_V28 = re.compile(r"(?:오늘|이번|지금|현재|현)\s*교대")
+SHIFT_INTENTS_V28 = ("stops", "production", "kpi")
+
+
+def current_shift_scope_v28(role: str, p: dict) -> dict:
+    if p.get("shift") or not CUR_SHIFT_V28.search(p.get("raw") or "") or not any(i in SHIFT_INTENTS_V28 for i in p["intents"]):
+        return p
+    if p["start"] is not None and not (p["start"] == p["end"] == REF_DATE):   # 다른 날짜를 말했으면 건드리지 않는다
+        return p
+    cur = T.current_shift(role)
+    return {**p, "start": cur[0], "end": cur[0], "shift": cur[1]} if cur else p
+
+
 def ops_answer(role: str, p: dict, needs: list[str] | None = None,
                entries: list[dict] | None = None) -> tuple[list[str], list[dict], list[dict]]:
     """운영 조회 답 문장·조회 결과·문장에 쓴 정의의 사내 문서 출처.
     needs를 주면(PARSE_V2) 조회에 필요한데 질문에 없는 항목(설비·로트 번호·알람 번호)을 모은다 — 예전에는 말없이 건너뛰었다.
     entries를 주면(8차 BLOCKS_V2) 답 문장마다 머리 + 항목 목록을 모은다 — 화면이 번호 목록으로 보인다. 문장 글자는 바꾸지 않는다."""
     texts, data, defs = [], [], []
+    p = current_shift_scope_v28(role, p)   # "오늘/이번 교대"는 현재 교대 하나로 (조회 범위와 답의 범위 글자가 같이 바뀐다)
     eq = p["equipment"][0] if p["equipment"] else None
     kw = dict(start=p["start"], end=p["end"], shift=p["shift"])
     rng = _range_text(p)

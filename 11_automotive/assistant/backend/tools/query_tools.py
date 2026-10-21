@@ -107,6 +107,22 @@ def equipment_status(role, equipment_id=None):
     return _result("설비 상태 조회", sorted(rows, key=lambda x: x["equipment_id"]), "지금", as_of=r.now)
 
 
+def current_shift(role) -> tuple[date, str] | None:
+    """백엔드 업무 시각(app_now)으로 가장 최근에 시작한 교대 (교대가 시작된 날짜, "D"|"N"). 시각을 못 얻으면 None.
+    20시 이후 = 그날 야간, 8~20시 = 그날 주간(17~20시는 방금 끝난 주간), 0~8시 = 전날 야간(5~8시는 방금 끝난 야간) — 교대 시간대는 `_windows`와 같다."""
+    try:
+        now = datetime.fromisoformat(str(equipment_status(role)["as_of"]))
+    except Exception:   # noqa: BLE001 — 시계를 못 얻으면 부른 쪽이 지금 동작(하루 전체) 그대로 간다
+        return None
+    if now.tzinfo is not None:
+        now = now.astimezone(KST)
+    if now.hour >= 20:
+        return now.date(), "N"
+    if now.hour >= 8:
+        return now.date(), "D"
+    return now.date() - timedelta(days=1), "N"
+
+
 # ---------------------------------------------------------------- 알람 (백엔드는 건별이 아니라 집계)
 def alarms(role, equipment_id=None, code=None, start=None, end=None, shift=None, unprocessed_only=False):
     """알람 횟수 — 설비·알람 번호별 집계(times·처음·마지막·정지 분). 건별 행과 처리 여부는 백엔드 도구에 없다(`partial`)."""
