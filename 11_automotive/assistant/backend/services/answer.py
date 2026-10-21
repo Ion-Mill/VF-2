@@ -455,7 +455,7 @@ LOSS_COUNT_V26 = (r"고장\s*손실\S{0,3}\s*(?:몇|얼마)|고장\s*손실.{0,1
                   r"|고장\s*(?:으로|때문에)\s*잃\S*\s*(?:개수|갯수|수량|몇\s*개|얼마)")
 OPS_INTENTS_V9 = [(n, re.compile(rx.pattern + r"|몇\s*건\s*씩\s*(?:찍혔|찍힌|떴|떠(?=요|\?|\s|$)|울렸|났|발생)")) if n == "alarm_count"
                   else (n, re.compile(rx.pattern + "|" + LOSS_COUNT_V26)) if n == "stops"
-                  else (n, re.compile(rx.pattern + r"|공구.{0,25}사용률(?!.{0,8}(?:계산|기준|정의|뜻|공식))|사용률.{0,10}공구")) if n == "tool_life"   # "362가 난 공구가 뭐야? 사용률은?" (2026-10-21 시연 362). "공구 사용률은 어떻게 계산해?" 같은 뜻 질문은 제외
+                  else (n, re.compile(rx.pattern + r"|공구.{0,25}사용률(?!.{0,8}(?:계산|기준|정의|뜻|공식))|사용률.{0,10}공구|\d{3}\S{0,2}\s*(?:난|뜬|걸린|나온|발생한)\s*공구")) if n == "tool_life"   # "362가 난 공구가 뭐야? 사용률은?" (2026-10-21 시연 362). "공구 사용률은 어떻게 계산해?" 같은 뜻 질문은 제외
                   else (n, rx) for n, rx in OPS_INTENTS_V5]
 # "N월"(날은 없음): 9월은 가상 데이터 기간 전체, 그 밖의 달은 기록이 없다 → "확인 필요" (한 달 전체·다른 달로 답하지 않음)
 MONTH_V5 = re.compile(r"(?<![\d.])(\d{1,2})\s*월(?!\s*\d)")
@@ -3388,6 +3388,49 @@ HISTORY_NOTE_V25 = ("확인 필요 — 정비·수리 이력을 날짜별로 찾
                     "작업기록서(SCR-12)나 예방 정비 일정(SCR-23)에서 확인해 주세요. 특정 알람의 지난 조치는 '2075 지난 조치는 뭐였어?'처럼 물으면 알려 드려요.")
 
 
+TOOL_ASK_V29 = re.compile(r"\d{3}\S{0,2}\s*(?:난|뜬|걸린|나온|발생한)\s*공구|공구.{0,25}사용률")
+
+# 일일 보고서에 들어가는지 (2026-10-21 시연 362 시험): "오늘 VF2-01 362는 9/30 일일 보고서에 있어?"가 문서 길에서 거절되어 알람 카드만 나왔다. 날짜 계산이라 프로그램이 문서의
+# 정의(DOC-01 §3 생산일·§3.3 일일 보고서 06:00)로 직접 답한다 (Claude 호출 없음). 사건 시각은 모르므로 조건으로 밝힌다. 요약·언제·몇 개 질문은 건드리지 않는다.
+DAILY_REPORT_Q_V29 = re.compile(r"일일\s?보고서")
+DAILY_REPORT_INCL_V29 = re.compile(r"(?:에|엔|에도)\s?(?:있|들어|포함|넣|나와|나오|빠)|들어가|포함\s?(?:돼|되|이)|빠져|빠지")
+DAILY_REPORT_NOT_V29 = re.compile(r"요약|언제|몇|누가|확정|만들어|생성|보여\s?줘|알려\s?줘")
+
+
+def daily_report_inclusion_v29(question: str, p: dict) -> bool:
+    return (bool(DAILY_REPORT_Q_V29.search(question)) and bool(DAILY_REPORT_INCL_V29.search(question))
+            and not DAILY_REPORT_NOT_V29.search(question) and not (p.get("lot") or p.get("order")))
+
+
+def daily_report_inclusion_answer_v29(base: dict, question: str) -> dict:
+    day = None
+    m = re.search(r"(\d{1,2})\s*/\s*(\d{1,2})", question)
+    if m:
+        try:
+            day = date(REF_DATE.year, int(m.group(1)), int(m.group(2)))
+        except ValueError:
+            day = None
+    if day is None and "어제" in question:
+        day = REF_DATE - timedelta(days=1)
+    today = f"{REF_DATE.month}/{REF_DATE.day}"
+    text = "일일 보고서의 날짜는 생산일(주간이 시작한 날)이고, 생산일은 그날 주간(08:00~17:00)과 그날 밤 야간(20:00~다음 날 05:00)이에요(팀이 정한 기준이에요)."
+    if day is not None:
+        d = f"{day.month}/{day.day}"
+        text += f" 그래서 {d} 일일 보고서에는 {d} 08:00부터 다음 날 05:00 사이에 일어난 일만 들어가요."
+        if day < REF_DATE:
+            text += (f" 오늘({today}) 08:00 이후에 난 일(예: 오늘 뜬 알람)은 {d} 보고서가 아니라 오늘 생산일 보고서에 들어가고, 오늘 보고서는 오늘 야간이 끝난 다음 날 06:00에 만들어져요."
+                     f" 다만 오늘 05:00 전에 난 일이면 {d} 보고서에 들어가요.")
+        elif day == REF_DATE:
+            text += " 오늘 보고서는 오늘 야간이 끝난 다음 날 06:00에 만들어져서 아직 없어요."
+        else:
+            text += " 그 날짜는 아직 오지 않았어요."
+    else:
+        text += (f" 오늘({today}) 08:00 이후에 난 일은 오늘 생산일 보고서에 들어가고, 그 보고서는 다음 날 06:00에 만들어져요. 어제 보고서에는 들어가지 않아요.")
+    ev = [_cite(c) for c in (_chunk("DOC-01", "3"), _chunk("DOC-01", "3.3")) if c]
+    return {**base, "status": "답변", "mode": "규칙 (일일 보고서 생산일 기준 — 문서 고정 문구)", "conclusion": text, "evidence": ev,
+            "caution": "근거 안내이며 실행 지시가 아닙니다.", "blocks": [{"kind": "text", "text": text}]}
+
+
 def history_unread_v25(question: str, p: dict) -> bool:
     """정비·수리·작업 이력을 날짜로 조회하는 말인가 — 규칙이 잡은 운영 조회가 없고 알람 번호도 없다."""
     return (not p["intents"] and not p["alarms"] and bool(p.get("start")) and bool(HISTORY_Q_V25.search(question))
@@ -4074,6 +4117,10 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
         if SL.on():
             SL.step("1 규칙 판정", 결과="속도 손실 개수 질문 — 채팅이 아직 못 읽음, 규칙이 안내 (Claude 호출 없음)")
         return {**base, "status": "확인 필요", "mode": "규칙", "conclusion": SPEED_LOSS_NOTE_V24}
+    if daily_report_inclusion_v29(question, p):   # 일일 보고서에 들어가는지 (2026-10-21): 날짜 계산이라 문서의 생산일 정의로 프로그램이 직접 답한다 (Claude 호출 없음)
+        if SL.on():
+            SL.step("1 규칙 판정", 결과="일일 보고서 포함 질문 — 규칙이 생산일 기준으로 답함 (Claude 호출 없음)")
+        return daily_report_inclusion_answer_v29(base, question)
     if history_unread_v25(question, p):   # 정비·수리 이력 조회 (2026-10-21): "문서에 없음" 대신 못 읽는다는 사실과 볼 화면을 알린다 (Claude 호출 없음)
         if SL.on():
             SL.step("1 규칙 판정", 결과="정비·수리 이력 날짜 조회 — 채팅이 아직 못 읽음, 규칙이 안내 (Claude 호출 없음)")
@@ -4131,6 +4178,8 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
         return alarm_askback_v23(base, p["alarms"][0])
     skip_card = bool(p["alarms"]) and p.get("past_n") is not None and not CARD_ASK_V22.search(question)
     if s.ask_only and p["alarms"] and p["intents"] and not CARD_ASK_V23.search(question):   # 횟수·지난 조치 같은 조회만 물었으면 카드 없이 조회만 (ASK_ONLY)
+        skip_card = True
+    if s.ask_only and p["alarms"] and "tool_life" in p["intents"] and TOOL_ASK_V29.search(question):   # "362가 난 공구가 뭐야? 사용률은?": 공구와 사용률만 묻는다 — "뭐야?"가 카드 요청으로 읽혀 카드·점검 순서까지 나오던 것을 뺀다 (2026-10-21 시험)
         skip_card = True
     if skip_card and SL.on():
         SL.step("1 규칙 판정", 결과="조회만 묻는 알람 질문 — 알람 카드 없이 조회만 답함", 지난조치건수=p.get("past_n"), 의도=p["intents"])
