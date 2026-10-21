@@ -3310,6 +3310,21 @@ SPEED_LOSS_NOTE_V24 = ("확인 필요 — 속도 손실(느려서 잃은 개수)
 def speed_loss_unread_v24(question: str, p: dict) -> bool:
     """속도 손실 개수를 묻는데 규칙이 잡은 운영 조회가 없나 — 문서에 없는 게 아니라 채팅이 아직 못 읽는 일이다."""
     return not p["intents"] and bool(SPEED_LOSS_Q_V24.search(question)) and bool(SPEED_LOSS_NUM_V24.search(question))
+
+
+# 정비·수리·작업 이력을 날짜로 묻는 질문 (2026-10-21 시연 2차): 운영 기록인데 규칙 낱말에 "이력"이 없어 문서 길로 가 "문서에 없음"이 나왔다. 작업기록 도구는 날짜 범위 없이
+# 확정된 최근 20건만 주므로 "지난주"를 지켜 답할 수 없다 → 거짓 "최근 20건"을 내지 않고 못 읽는다는 사실과 볼 화면을 알린다. 날짜 + 조회 말이 모두 있을 때만 건다
+# ("정비 이력은 어디에 남겨?" 같은 문서 질문과 운영 의도가 이미 잡힌 질문은 건드리지 않는다).
+HISTORY_Q_V25 = re.compile(r"(?:정비|수리|작업)\s*이력")
+HISTORY_ASK_V25 = re.compile(r"보여|알려|줘|있었|뭐였|어땠|확인|조회|몇\s*건")
+HISTORY_NOTE_V25 = ("확인 필요 — 정비·수리 이력을 날짜별로 찾는 일은 이 채팅에서 아직 하지 못해요. "
+                    "작업기록서(SCR-12)나 예방 정비 일정(SCR-23)에서 확인해 주세요. 특정 알람의 지난 조치는 '2075 지난 조치는 뭐였어?'처럼 물으면 알려 드려요.")
+
+
+def history_unread_v25(question: str, p: dict) -> bool:
+    """정비·수리·작업 이력을 날짜로 조회하는 말인가 — 규칙이 잡은 운영 조회가 없고 알람 번호도 없다."""
+    return (not p["intents"] and not p["alarms"] and bool(p.get("start")) and bool(HISTORY_Q_V25.search(question))
+            and bool(HISTORY_ASK_V25.search(question)))
 KPI_DATED_WORDS_V21 = re.compile(r"OEE|가동률|성능|양품|지표|효율|KPI", re.I)
 KPI_30D_ONLY_V21 = re.compile(r"MTTR|MTBF|평균\s*수리|평균\s*고장", re.I)
 NO_DATE_NOTE_V21 = "기간을 정하지 않아 9월 한 달(9/1~9/30) 값이에요. 날짜를 말씀해 주시면 그날 값을 드려요 (예: '어제', '오늘')."
@@ -3981,6 +3996,10 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
         if SL.on():
             SL.step("1 규칙 판정", 결과="속도 손실 개수 질문 — 채팅이 아직 못 읽음, 규칙이 안내 (Claude 호출 없음)")
         return {**base, "status": "확인 필요", "mode": "규칙", "conclusion": SPEED_LOSS_NOTE_V24}
+    if history_unread_v25(question, p):   # 정비·수리 이력 조회 (2026-10-21): "문서에 없음" 대신 못 읽는다는 사실과 볼 화면을 알린다 (Claude 호출 없음)
+        if SL.on():
+            SL.step("1 규칙 판정", 결과="정비·수리 이력 날짜 조회 — 채팅이 아직 못 읽음, 규칙이 안내 (Claude 호출 없음)")
+        return {**base, "status": "확인 필요", "mode": "규칙", "conclusion": HISTORY_NOTE_V25}
     if s.followup and not pure_drop:   # 설비 이름뿐인 글 (2026-10-20): 앞 답이 "설비를 알려 주세요"면 앞 질문과 이어 답한다
         merged = askback_merge_v21(question, p, prev)
         if merged:
