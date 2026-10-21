@@ -17,6 +17,7 @@ import RobotIcon from './RobotIcon';
 import EveThinking from './EveThinking';
 import { PENDING_GIVEUP_MS, canStartNewChat, currentChat, isFocusRow, lastChatId, makeNewChatMark, mergeServerLog, resolvePending, sessionOf, settlePending, withNewChat, type FocusRef } from './chatLog';
 import { carryAlarm } from './carry';
+import { suggestChips } from './chips';
 import { Bubble, HistoryItem, Spark, Typing, type ChatRow } from './ChatBubble';
 
 export { Spark };   // 옛 가져오기 경로 유지 (Spark는 ChatBubble.tsx로 옮겼다)
@@ -307,7 +308,8 @@ function useServerChat(userId: string, again: unknown): ChatRow[] {
 }
 
 function Chat({ active, focus, headerSlot, onNewChat, ask, onAsked }: { active: boolean; focus: FocusRef | null; headerSlot: HTMLElement | null; onNewChat: () => void; ask?: string | null; onAsked?: () => void }) {
-  const { user, role, screen, selected, openSource } = useApp();
+  const { user, role, screen, selected, openSource, key: screenKey, alerts } = useApp();
+  const cardCode = screen === 'card' && screenKey ? alerts.find((x) => x.id === screenKey)?.code ?? null : null;   // 지침카드를 열어 둔 채 채팅하면 그 카드의 알람 번호 (말풍선·alarm_key 에 쓴다)
   const [log, setLog] = useLocal<ChatRow[]>(`chat:${user.id}`, []);
   const [q, setQ] = useLocal<string>(`chatdraft:${user.id}`, '');   // 쓰다 만 글도 새로고침 뒤에 남긴다 (보내면 비운다)
   const [busy, setBusy] = useState(false);
@@ -354,7 +356,7 @@ function Chat({ active, focus, headerSlot, onNewChat, ask, onAsked }: { active: 
     // 직전 알람 이어받기 신호 (carry.ts): 이 질문의 줄을 로그에 더하기 전의 지금 대화로 계산한다. 이어받을지는 서버가 정한다.
     // 채팅 기록에서 열어 본 과거 대화를 보는 중이면 이어받지 않고 새 대화로 보낸다.
     const cur = currentChat(log);
-    const alarmKey = focus ? null : carryAlarm(cur);
+    const alarmKey = focus ? null : carryAlarm(cur) ?? cardCode;   // 대화에서 이어받을 번호가 없으면("992 원인은" 답엔 번호가 없다) 지금 열어 둔 지침카드의 알람
     const newChat = focus ? true : cur.length === 0;
     // 이어서 묻기 (API-AST-02 prev_chat_id): 보고 있는 대화의 마지막 질문에 잇는다. 새 대화의 첫 질문이면 없음
     const prevChatId = lastChatId(focus ? today : cur);
@@ -395,7 +397,7 @@ function Chat({ active, focus, headerSlot, onNewChat, ask, onAsked }: { active: 
   // [새 채팅]: 기록은 한 줄도 지우지 않고 "여기서부터 새 대화" 표지 줄만 더한다 → 채팅 탭은 표지 뒤 줄만 보이고, 이전 대화는 채팅 기록 탭에 그대로 있다 (chatLog.ts)
   const canNew = !waiting && canStartNewChat(log, !!focus);   // 답을 기다리는 중에는 끈다 (늦게 온 답이 새 대화에 끼지 않게)
   const startNew = () => { if (!canNew) return; const m = makeNewChatMark(simIso()); setLog((l) => withNewChat(l, m, !!focus)); setQ(''); onNewChat(); input.current?.focus(); };
-  const ex = role === 'MNT' || role === 'MGR' ? ['VF2-01 MTTR 알려줘', 'VF2-01 센서 추세', '2075 알람 뭐야', '이 화면 설명해 줘'] : ['2075 알람 뭐야', '잠금 표지 순서', '이 화면 설명해 줘', '병목 원인'];
+  const ex = suggestChips({ role, onCard: screen === 'card', alarmCode: cardCode });   // 지침카드를 열었으면 그 알람·내 역할에 맞는 질문, 아니면 예전 고정 말풍선 (chips.ts)
   const body = useRef<HTMLDivElement>(null);
   useEffect(() => { if (ask && !waiting) { onAsked?.(); send(ask); } }, [ask, waiting]); // eslint-disable-line react-hooks/exhaustive-deps -- 작은 채팅창의 질문을 한 번 보냄 (답을 기다리는 중이면 끝난 뒤)
   useEffect(() => {
