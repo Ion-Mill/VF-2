@@ -449,7 +449,12 @@ OPS_INTENTS_V5 = [(n, re.compile(rx.pattern + r"|몇\s*건\s*(?:이나\s*|정도
                   else (n, re.compile(rx.pattern + r"|몇\s*번\s*(?:이나\s*|정도\s*)?멈춰(?=\?|요|\s*$)")) if n == "stops"
                   else (n, rx) for n, rx in OPS_INTENTS_V4]
 # 8차 (PARSE_V9): "몇 건씩 찍혔는지"(E7-071 — "건"과 끝말 사이의 "씩"을 놓쳐 횟수 없이 알람 카드만 답함)
+# 고장 손실 개수 (2026-10-21 시연 시험 #13): "고장 손실 몇 개야?"·"고장으로 잃은 개수"를 정지 조회로 읽는다 (도구는 손실 정지의 고장 손실 추정 수량을 이미 계산해 준다).
+# 몇/얼마/개수를 묻는 꼴만 — "고장 손실이 뭐야?"·"고장 손실 계산식"은 문서 질문이라 조회로 바꾸지 않는다
+LOSS_COUNT_V26 = (r"고장\s*손실\S{0,3}\s*(?:몇|얼마)|고장\s*손실.{0,16}(?:개수|갯수|몇\s*개)"
+                  r"|고장\s*(?:으로|때문에)\s*잃\S*\s*(?:개수|갯수|수량|몇\s*개|얼마)")
 OPS_INTENTS_V9 = [(n, re.compile(rx.pattern + r"|몇\s*건\s*씩\s*(?:찍혔|찍힌|떴|떠(?=요|\?|\s|$)|울렸|났|발생)")) if n == "alarm_count"
+                  else (n, re.compile(rx.pattern + "|" + LOSS_COUNT_V26)) if n == "stops"
                   else (n, rx) for n, rx in OPS_INTENTS_V5]
 # "N월"(날은 없음): 9월은 가상 데이터 기간 전체, 그 밖의 달은 기록이 없다 → "확인 필요" (한 달 전체·다른 달로 답하지 않음)
 MONTH_V5 = re.compile(r"(?<![\d.])(\d{1,2})\s*월(?!\s*\d)")
@@ -3307,9 +3312,31 @@ SPEED_LOSS_NOTE_V24 = ("확인 필요 — 속도 손실(느려서 잃은 개수)
                        "고장으로 멈춰 잃은 개수는 [4] 필수 정지 칸에 있어 두 칸을 나란히 보면 비교돼요. 손실이 무엇인지는 문서로 설명해 드릴 수 있어요.")
 
 
+def speed_loss_count_ask_v26(question: str) -> bool:
+    """속도 손실 '개수'를 묻는 말인가 (뜻을 묻는 말은 아니다)."""
+    return bool(SPEED_LOSS_Q_V24.search(question)) and bool(SPEED_LOSS_NUM_V24.search(question))
+
+
 def speed_loss_unread_v24(question: str, p: dict) -> bool:
     """속도 손실 개수를 묻는데 규칙이 잡은 운영 조회가 없나 — 문서에 없는 게 아니라 채팅이 아직 못 읽는 일이다."""
-    return not p["intents"] and bool(SPEED_LOSS_Q_V24.search(question)) and bool(SPEED_LOSS_NUM_V24.search(question))
+    return not p["intents"] and speed_loss_count_ask_v26(question)
+
+
+# 읽은 운영 답 뒤에 붙는 꼬리 (2026-10-21): "고장 손실 몇 개 / 속도 손실은?"처럼 한쪽은 읽고 속도 손실은 못 읽을 때. 읽은 고장 손실은 손실 정지 전체의 추정이라 보고서 [4]와 다를 수 있다
+SPEED_LOSS_TAIL_V26 = ("속도 손실(느려서 잃은 개수)은 이 채팅에서 아직 읽지 못해요. 교대 보고서(SCR-15)의 [5] 병목·속도 손실 칸에서 확인해 주세요. "
+                       "위 고장 손실은 손실 정지 전체의 추정이라 [4] 필수 정지 칸 숫자와 다를 수 있어요.")
+
+# 화면 값과 맞춰 보라는 말 (2026-10-21 시연 시험 #13 턴 3): 채팅은 화면에 보이는 숫자를 읽지 못한다. 화면·비교·숫자 말이 모두 있고 조회 의도·알람이 없을 때만 규칙이 알린다 (Claude 호출 없음)
+SCREEN_WORD_V26 = re.compile(r"화면|보고서|SCR-?\d+", re.I)
+SCREEN_CMP_V26 = re.compile(r"같은지|같아(?:요)?(?=[\s?？.!]|$)|같나|같은가|맞는지|맞아(?:요)?\s*[?？]|맞나|일치|똑같|다른지|달라(?:요)?\s*[?？]|틀린지")
+SCREEN_NUM_V26 = re.compile(r"숫자|값|수치|개수|갯수|몇\s*개|%")
+SCREEN_COMPARE_NOTE_V26 = ("확인 필요 — 이 채팅은 화면에 보이는 숫자를 읽거나 맞춰 보지 못해요. 숫자는 해당 화면(예: 교대 보고서 SCR-15의 [4]·[5] 칸)에서 직접 비교해 주세요.")
+
+
+def screen_compare_unread_v26(question: str, p: dict) -> bool:
+    """화면(보고서) 숫자와 같은지 맞춰 보라는 말인가 — 규칙이 잡은 운영 조회·알람이 없을 때만 (있으면 그 조회 답이 먼저다)."""
+    return (not p["intents"] and not p["alarms"] and bool(SCREEN_WORD_V26.search(question))
+            and bool(SCREEN_CMP_V26.search(question)) and bool(SCREEN_NUM_V26.search(question)))
 
 
 # 정비·수리·작업 이력을 날짜로 묻는 질문 (2026-10-21 시연 2차): 운영 기록인데 규칙 낱말에 "이력"이 없어 문서 길로 가 "문서에 없음"이 나왔다. 작업기록 도구는 날짜 범위 없이
@@ -3984,6 +4011,10 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
             SL.step("1 규칙 판정", 이어묻기종류=kind, 화면알람지시=bool(screen_this), 앞답있음=prev is not None)
         if kind:
             return _followup_answer(kind, role, prev, base, s, memo)
+        if screen_compare_unread_v26(question, p):   # 화면 숫자와 맞춰 보라는 말 (2026-10-21): 못 하는 일을 약속하지 않고 규칙이 알린다 (Claude 호출 없음). "맞는지 확인해줘"가 일반 요청 거절에 먼저 걸리지 않게 그 앞에 둔다
+            if SL.on():
+                SL.step("1 규칙 판정", 결과="화면 숫자와 맞춰 보라는 말 — 채팅이 못 하는 일, 규칙이 안내 (Claude 호출 없음)")
+            return {**base, "status": "확인 필요", "mode": "규칙", "conclusion": SCREEN_COMPARE_NOTE_V26}
         guard = human_only(question)   # 이어 묻기가 아니면 일반 요청 꼴 거절을 지금 한다
         if guard:
             if SL.on():
@@ -4243,6 +4274,8 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
     if tail and not ops_texts:   # 운영 조회가 비었으면 "문서 쪽 못 찾음" 안내만 남기지 않는다 (아래 문서에 없음·확인 필요 길로)
         tail = []
     tail += period_notes_v21(question, p, ops_texts)   # 기간 안내 (2026-10-20): 날짜 없는 지표는 9월 한 달 값, 하루 값과 MTTR·MTBF(30일)가 한 줄이면 기간 차이
+    if ops_texts and speed_loss_count_ask_v26(question):   # 속도 손실 개수 (2026-10-21): 읽은 숫자 뒤에 속도 손실은 아직 못 읽는다는 사실과 볼 곳을 붙인다
+        tail.append(SPEED_LOSS_TAIL_V26)
     if (parts or ops_texts) and (unread := unread_note_v21(question)):   # 못 읽은 조각 안내 (2026-10-20): 센서·정비현황·브리핑은 아직 이 채팅이 답하지 못한다
         tail.append(unread)
     # 이어 묻기 기록: 운영 답의 프로그램 초안 글(다듬기 전), 절차 질문인가, 날짜 확인 안내가 있나 (2026-10-12)

@@ -34,10 +34,11 @@ def scope(question: str):
 
 DATE_ONLY = [
     "T05가 90%면 오늘 교체해야 해?",
-    "오늘 교대에서 고장으로 잃은 개수랑 느려서 잃은 개수를 비교해 줘.",
     "오늘 교대 속도 손실은 몇 개야?",
 ]
-WITH_INTENT = ["오늘 VF2-01 몇 번 멈췄어?", "어제 야간 VF2-01 몇 번 멈췄어?", "오늘 생산 몇 개야?", "2075 지난 조치는?"]
+# "고장으로 잃은 개수"는 2026-10-21부터 정지 조회로 읽힌다(test_loss_words_v26) — 더는 날짜뿐인 질문이 아니다
+WITH_INTENT = ["오늘 VF2-01 몇 번 멈췄어?", "어제 야간 VF2-01 몇 번 멈췄어?", "오늘 생산 몇 개야?", "2075 지난 조치는?",
+               "오늘 교대에서 고장으로 잃은 개수랑 느려서 잃은 개수를 비교해 줘."]
 
 
 @pytest.mark.parametrize("q", DATE_ONLY)
@@ -62,7 +63,7 @@ def test_with_intent_keeps_old_route(q):
 
 
 def test_speed_loss_unread_note():
-    for q in ("오늘 교대에서 고장으로 잃은 개수랑 느려서 잃은 개수를 비교해 줘.", "오늘 교대 속도 손실은 몇 개야?", "느려서 잃은 개수만 알려 줘"):
+    for q in ("오늘 교대 속도 손실은 몇 개야?", "느려서 잃은 개수만 알려 줘", "속도 손실 몇 개야?"):
         assert A.speed_loss_unread_v24(q, A.parse(q)), q
 
 
@@ -78,7 +79,7 @@ def test_speed_loss_with_ops_intent_not_caught():
 
 def test_speed_loss_answer_is_rule_note_without_claude(monkeypatch):
     monkeypatch.setenv("LLM_ENABLED", "0")
-    a = A.answer("오늘 교대에서 고장으로 잃은 개수랑 느려서 잃은 개수를 비교해 줘.", "MNT", {"screen": "SCR-04"})
+    a = A.answer("오늘 교대 속도 손실은 몇 개야?", "MNT", {"screen": "SCR-04"})
     assert a["status"] == "확인 필요" and a["mode"] == "규칙"
     assert "SCR-15" in a["conclusion"] and "문서에 없음" not in a["conclusion"]
 
