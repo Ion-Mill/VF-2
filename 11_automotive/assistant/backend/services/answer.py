@@ -3299,6 +3299,17 @@ ASKBACK_NEED_V21 = re.compile(r"알려 주세요: 설비 \(예: [^)]*\)\.?\s*$")
 EQUIP_ONLY_NOTE_V21 = "{names}에 대해 무엇을 볼까요? 예: '{e} OEE 어제값', '{e} 지금 상태 어때?', '{e} 정비 기한'"
 UNREAD_V21 = [(re.compile(r"센서"), "센서 값"), (re.compile(r"정비\s*현황"), "정비현황"), (re.compile(r"브리핑"), "브리핑")]   # 이 채팅이 아직 못 하는 일의 이름 (목록 밖의 말은 추측하지 않는다)
 UNREAD_NOTE_V21 = "이 채팅에서는 아직 {names}을 답하지 못했어요. 해당 화면에서 확인해 주세요."
+# 속도 손실 개수 (2026-10-21 시연 시험): 채팅 도구는 손실 정지(고장)만 읽고 속도 손실은 읽지 못한다. 손실이 무엇인지 묻는 말("속도 손실이 뭐야?")은 문서가 답하므로
+# 개수·비교를 묻는 말(몇 개·개수·수량·비교·얼마)이 함께 있을 때만 걸고, 운영 의도(정지·생산 …)가 이미 잡힌 질문은 건드리지 않는다.
+SPEED_LOSS_Q_V24 = re.compile(r"속도\s*손실|느려[서져]\w*\s*(?:잃|손실|생긴|난)")
+SPEED_LOSS_NUM_V24 = re.compile(r"몇\s*개|개수|갯수|수량|비교|얼마|몇\s*%")
+SPEED_LOSS_NOTE_V24 = ("확인 필요 — 속도 손실(느려서 잃은 개수)은 이 채팅에서 아직 읽지 못해요. 교대 보고서(SCR-15)의 [5] 병목·속도 손실 칸에서 확인해 주세요. "
+                       "고장으로 멈춰 잃은 개수는 [4] 필수 정지 칸에 있어 두 칸을 나란히 보면 비교돼요. 손실이 무엇인지는 문서로 설명해 드릴 수 있어요.")
+
+
+def speed_loss_unread_v24(question: str, p: dict) -> bool:
+    """속도 손실 개수를 묻는데 규칙이 잡은 운영 조회가 없나 — 문서에 없는 게 아니라 채팅이 아직 못 읽는 일이다."""
+    return not p["intents"] and bool(SPEED_LOSS_Q_V24.search(question)) and bool(SPEED_LOSS_NUM_V24.search(question))
 KPI_DATED_WORDS_V21 = re.compile(r"OEE|가동률|성능|양품|지표|효율|KPI", re.I)
 KPI_30D_ONLY_V21 = re.compile(r"MTTR|MTBF|평균\s*수리|평균\s*고장", re.I)
 NO_DATE_NOTE_V21 = "기간을 정하지 않아 9월 한 달(9/1~9/30) 값이에요. 날짜를 말씀해 주시면 그날 값을 드려요 (예: '어제', '오늘')."
@@ -3375,8 +3386,8 @@ def pure_scope_v19(p: dict, s, question: str = "") -> str | None:
         return None
     if not s.pure_keep_signals:
         return "신호 끔(PURE_KEEP_SIGNALS=0) — 알람 번호·날짜·설비·운영 낱말 길을 거치지 않고 순수 길로"
-    if PURE.has_signals(p):
-        only_equipment = bool(p.get("equipment")) and not (p.get("alarms") or p.get("intents") or p.get("start") or p.get("lot") or p.get("order"))
+    if PURE.has_signals(p) and not PURE.date_only(p, question):   # 날짜뿐인 질문은 신호 없는 질문과 같은 순수 길로 (아래 마지막 줄)
+        only_equipment =bool(p.get("equipment")) and not (p.get("alarms") or p.get("intents") or p.get("start") or p.get("lot") or p.get("order"))
         if s.pure_safety and question and only_equipment:
             if equipment_only_v21(question, p):   # "VF2-01)"·"1호기"·"2호기요": 설비 이름뿐인 글 — Claude를 부르지 않고 규칙이 안내한다 (_answer, 2026-10-20)
                 return None
@@ -3958,6 +3969,10 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
 
     # 순수 외부 LLM 연결 (PURE_EXTERNAL, 2026-10-15): 위 단계(권한·화면 설명·위험한 부탁 거절·불량 원인·이어 묻기)에서 걸러지지 않은 질문은
     # 알람 카드·운영 조회·LLM 질문 분류를 거치지 않고 "낱말 검색 상위 조각 + 질문 → 외부 Claude 1번 → 답 그대로"로 답한다.
+    if speed_loss_unread_v24(question, p):   # 속도 손실 개수 (2026-10-21): "문서에 없음" 대신 못 읽는다는 사실과 볼 곳을 알린다 (Claude 호출 없음)
+        if SL.on():
+            SL.step("1 규칙 판정", 결과="속도 손실 개수 질문 — 채팅이 아직 못 읽음, 규칙이 안내 (Claude 호출 없음)")
+        return {**base, "status": "확인 필요", "mode": "규칙", "conclusion": SPEED_LOSS_NOTE_V24}
     if s.followup and not pure_drop:   # 설비 이름뿐인 글 (2026-10-20): 앞 답이 "설비를 알려 주세요"면 앞 질문과 이어 답한다
         merged = askback_merge_v21(question, p, prev)
         if merged:
