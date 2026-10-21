@@ -7,7 +7,8 @@ import { createPortal } from 'react-dom';
 import { useApp } from './ctx';
 import { MACHINES } from './data';
 import { SIM, api, md, simIso, useLocal } from './live';
-import { VOICE_OFF, VoiceFail, askAssistant, backendChatEnabled, fetchChatLog, fetchVoiceStatus, transcribeAudio, type VoiceStatus } from './assistantApi';
+import { SCREEN_CODE, VOICE_OFF, VoiceFail, askAssistant, backendChatEnabled, fetchChatLog, fetchVoiceStatus, transcribeAudio, type VoiceStatus } from './assistantApi';
+import { collectScreenText, isScreenQuestion } from './screenText';
 import { micSupported, useMic, voiceMessage } from './voiceInput';
 import { LEVEL_VIEW, alarmTitle, hhmm, type AlertRec, type Level, type Notice } from './model';
 import { alarmSentence } from './alarmText';
@@ -370,8 +371,10 @@ function Chat({ active, focus, headerSlot, onNewChat, ask, onAsked }: { active: 
     setBusy(true); setQ('');
     let row: ChatRow;
     try {
+      const screenCode = screen ? SCREEN_CODE[screen] : undefined
+      const screenText = isScreenQuestion(text) && screenCode ? collectScreenText(screenCode) : undefined
       const r = backendChatEnabled()   // NEXT_PUBLIC_MOM_API가 있으면 백엔드의 비서(외부 LLM)로 — assistantApi.ts. 없으면 옛 길(시연 서버의 규칙 답)
-        ? await askAssistant(text, user.id, screen, selected ? MACHINES[selected].eq : null, { alarmKey, newChat, prevChatId })
+        ? await askAssistant(text, user.id, screen, selected ? MACHINES[selected].eq : null, { alarmKey, newChat, prevChatId, screenText })
         : await api<{ answer: string; status: string; sources: ChatRow['sources']; series?: ChatRow['series'] }>('assistant/chat', { question: text, role, user_id: user.id, context: { screen, equipment_id: selected ? MACHINES[selected].eq : null } });
       row = { at, q: text, a: r.answer, status: r.status, sources: r.sources ?? [], series: r.series, ...('chatId' in r && typeof r.chatId === 'number' ? { chatId: r.chatId } : {}), ...(prevChatId !== null ? { prevChatId } : {}) };
     } catch (e) { row = { at, q: text, a: '비서 응답 없음 — ' + (e as Error).message, status: '응답 없음', sources: [], ...(prevChatId !== null ? { prevChatId } : {}) }; }
@@ -399,7 +402,7 @@ function Chat({ active, focus, headerSlot, onNewChat, ask, onAsked }: { active: 
   // [새 채팅]: 기록은 한 줄도 지우지 않고 "여기서부터 새 대화" 표지 줄만 더한다 → 채팅 탭은 표지 뒤 줄만 보이고, 이전 대화는 채팅 기록 탭에 그대로 있다 (chatLog.ts)
   const canNew = !waiting && canStartNewChat(log, !!focus);   // 답을 기다리는 중에는 끈다 (늦게 온 답이 새 대화에 끼지 않게)
   const startNew = () => { if (!canNew) return; const m = makeNewChatMark(simIso()); setLog((l) => withNewChat(l, m, !!focus)); setQ(''); onNewChat(); input.current?.focus(); };
-  const ex = suggestChips({ role, onCard: screen === 'card' || screen === 'cards', alarmCode: cardCode ?? listCode });   // 지침카드를 열었으면 그 알람·내 역할에 맞는 질문, 아니면 예전 고정 말풍선 (chips.ts)
+  const ex = suggestChips({ role, onCard: screen === 'card' || screen === 'cards', alarmCode: cardCode ?? listCode, screen });   // 지침카드를 열었으면 그 알람·내 역할에 맞는 질문, 아니면 역할별 고정 말풍선. "이 화면 설명해 줘"는 정보판이 있는 화면만 (chips.ts)
   const body = useRef<HTMLDivElement>(null);
   useEffect(() => { if (ask && !waiting) { onAsked?.(); send(ask); } }, [ask, waiting]); // eslint-disable-line react-hooks/exhaustive-deps -- 작은 채팅창의 질문을 한 번 보냄 (답을 기다리는 중이면 끝난 뒤)
   useEffect(() => {

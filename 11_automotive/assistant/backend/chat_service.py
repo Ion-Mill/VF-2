@@ -65,6 +65,7 @@ class ChatRequest(BaseModel):
     out_of_role: list[dict[str, Any]] = Field(default_factory=list)
     history: list[dict[str, Any]] = Field(default_factory=list)     # 이어 묻기는 첫 판에서 쓰지 않는다 (FOLLOWUP=0)
     user: UserIn
+    screen_text: str | None = Field(None, max_length=8000, description="화면 정보판 글자. context에 넣지 않는다. 채팅 기록에도 저장하지 않는다.")
 
 
 def _env(name: str, default: str = "") -> str:
@@ -179,7 +180,7 @@ def chat(req: ChatRequest) -> dict:
             ctx = _context(req.context)
             keep_prev = C.settings().followup
             prev = _prev_take(req.user.user_id, ctx.get("new_chat") == "1") if keep_prev else None
-            a = answer(req.question, req.user.role_code, ctx, prev=prev)
+            a = answer(req.question, req.user.role_code, ctx, prev=prev, screen_text=req.screen_text)
             rec = a.pop("_followup", None)      # 화면·백엔드로 나가지 않는다
             if keep_prev:
                 _prev_keep(req.user.user_id, rec)

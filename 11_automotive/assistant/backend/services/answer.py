@@ -160,6 +160,10 @@ OPS_INTENTS = [
 # 하는 일을 묻는 "지금 정비 중이야?"·"정비 몇 분 남았어?"도 설비 상태 질문이다 (2026-10-21 시연 #3). "정비 중에는 …"·"정비 중인 설비 …" 같은 문서 질문은 `중` 뒤가 달라 걸리지 않는다
 STATUS_WORK_RX = (r"|(?:정비|수리|셋업|점검)\s*중(?:이야|이에요|이예요|이죠|이지|인가요?|인지|이니|이냐|입니까)"
                   r"|(?:정비|수리|셋업|점검)\s*중\s*[?？]|(?:정비|수리|셋업)\s*(?:몇\s*분\s*남|남은\s*시간|언제\s*끝|끝나려면|남았)")
+# "현재 vf2-01 상태는"·"VF2-01 상태는"도 지금 설비 상태다 (2026-10-22). 사이에 설비 이름이 끼어도 본다.
+# "정비 상태는?"·"어제 상태는?"·"재고/생산 상태는?"은 지금 설비 상태가 아니라 빼 둔다.
+_STATUS_NOT = "".join(rf"(?<!{w}\s)(?<!{w})" for w in ("정비", "수리", "점검", "셋업", "재고", "로트", "품질", "알람", "보고서", "어제", "지난", "생산", "실적"))
+CURRENT_STATUS_RX = r"|현재(?:\s+(?!정비|수리|점검|셋업)\S+){0,3}\s*상태|" + _STATUS_NOT + r"상태는"
 REMAIN_ASK = re.compile(r"남았|남은|언제\s*끝|끝나려면|끝나는")
 OPS_INTENTS_V2 = [
     ("stops", re.compile(r"멈췄|멈춘|정지|섰|서\s*있었|멈춰\s*있었|고장\s*났")),
@@ -172,7 +176,7 @@ OPS_INTENTS_V2 = [
     ("pm_due", re.compile(r"예방\s*정비|정비\s*기한|기한")),
     ("work_records", re.compile(r"작업기록|조치\s*기록|지난\s*조치|어떻게\s*고쳤")),
     ("alarm_count", re.compile(r"(?:알람|경보)\S*\s*(?:몇\s*번|자주)|몇\s*번\s*(?:났|떴|울렸|발생)|자주\s*(?:나|떠|뜨)|왜\s*자꾸|또\s*떠|또\s*떴")),
-    ("equipment_status", re.compile(r"지금\s*상태|상태\s*어때|돌아가(?:\?|$|요|나|니|고\s*있|는지)|가동\s*중|멈춰\s*있(?!었)" + STATUS_WORK_RX)),
+    ("equipment_status", re.compile(r"지금\s*상태|상태\s*어때|돌아가(?:\?|$|요|나|니|고\s*있|는지)|가동\s*중|멈춰\s*있(?!었)" + STATUS_WORK_RX + CURRENT_STATUS_RX)),
 ]
 NIGHT_V2 = re.compile(r"야간|간밤|어젯밤|밤|새벽")
 DAY_V2 = re.compile(r"주간|낮(?!음|은|춰|추|아|게|다|으)")
@@ -193,7 +197,7 @@ OPS_INTENTS_V3 = [
     ("pm_due", re.compile(r"예방\s*정비|정비\s*기한|기한")),
     ("work_records", re.compile(r"작업기록|조치\s*기록|지난\s*조치|어떻게\s*고쳤")),
     ("alarm_count", re.compile(r"(?:알람|경보)\S*\s*(?:몇\s*번|자주)|몇\s*번\s*(?:이나\s*)?(?:났|떴|울렸|발생)|자주\s*(?:나|떠|뜨)|왜\s*자꾸|또\s*떠|또\s*떴")),
-    ("equipment_status", re.compile(r"지금\s*상태|상태\s*어때|돌아가(?:\?|$|요|나|니|고\s*있|는지)|가동\s*중|멈춰\s*있(?!었)" + STATUS_WORK_RX)),
+    ("equipment_status", re.compile(r"지금\s*상태|상태\s*어때|돌아가(?:\?|$|요|나|니|고\s*있|는지)|가동\s*중|멈춰\s*있(?!었)" + STATUS_WORK_RX + CURRENT_STATUS_RX)),
 ]
 # 사내 문서의 복합어 가운데 의도 낱말("정지")이 든 것 — 의도를 볼 때 이 글자 범위를 뺀다 (긴 것 우선, spaCy EntityRuler 방식)
 COMPOUND_MASK_V3 = re.compile(r"통과\s*·?\s*정지\s*게이지|정지\s*게이지|비상\s*정지|과열\s*정지|정지\s*등급")
@@ -2142,6 +2146,8 @@ def ops_answer(role: str, p: dict, needs: list[str] | None = None,
             items = [f"{s['equipment_id']} {s['last_state']} ({(s.get('since') or '')[11:16]}부터 {s.get('minutes') or 0:g}분)"
                      + (f", 알람 {s['open_alarm_code']}" if s.get("open_alarm_code") else "") + (", 잠금" if s.get("is_locked") else "") for s in r["rows"]]
             texts.append("설비 상태: " + ", ".join(items))
+            if r.get("live"):   # SENSOR_LIVE: 값은 시연 서버의 지금 상태. 잠금은 그 응답에 없어 잠금이라고 말하지 않는다
+                texts[-1] += " (시연 화면 시계)"
             if REMAIN_ASK.search(p.get("raw", "")):   # 도구는 상태가 시작된 뒤 지난 시간만 준다 — 끝나는 시각은 지어내지 않는다
                 texts[-1] += ". 끝나는 시각이나 남은 시간은 기록에 없습니다"
             add("설비 상태", items, texts[-1], r)
@@ -4166,7 +4172,7 @@ def _with_ctx_note(a: dict, code: str) -> dict:
     return a
 
 
-def answer(question: str, role: str, context: dict | None = None, prev: dict | None = None) -> dict:
+def answer(question: str, role: str, context: dict | None = None, prev: dict | None = None, screen_text: str | None = None) -> dict:
     """질문 하나에 답한다. 한 답 전체의 LLM 시간 예산을 하나로 센다 (2026-10-10 계획 3단계 B).
     FOLLOWUP=1이면 prev(서버가 기억한 바로 앞 답의 기록)를 받아 이어 묻기에 쓰고, 답에 내부 칸 `_followup`(이 답의 기록)을 붙인다 —
     부른 쪽(app.py·평가)이 빼서 기억에 두고, 화면에는 보내지 않는다 (2026-10-12).
@@ -4177,7 +4183,7 @@ def answer(question: str, role: str, context: dict | None = None, prev: dict | N
                    context=context, has_prev=prev is not None) if s0.step_log else None
     try:
         with answer_deadline(s0.budget_s):
-            a = _answer(question, role, context, prev=prev, memo=memo)
+            a = _answer(question, role, context, prev=prev, memo=memo, screen_text=screen_text)
             focus = carry_focus(question) if memo.get("ctx_alarm_note") else None
             if focus is None and s0.alarm_chain and s0.ask_only and memo.get("ctx_alarm_note"):
                 focus = alarm_focus_v23(question)   # 이어받은 알람도 묻는 칸만 ("뭘해야해?"는 "해야"가 점검 순서를 묻는 말)
@@ -4254,7 +4260,7 @@ def _continue_answer_v22(question: str, role: str, context: dict | None, prev: d
     return out
 
 
-def _answer(question: str, role: str, context: dict | None = None, prev: dict | None = None, memo: dict | None = None) -> dict:
+def _answer(question: str, role: str, context: dict | None = None, prev: dict | None = None, memo: dict | None = None, screen_text: str | None = None) -> dict:
     memo = {} if memo is None else memo
     try:
         require(role, "chat")
@@ -4303,7 +4309,15 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
     if SL.on():   # STEP_LOG 1단계: 규칙이 질문에서 찾은 것 (알람·설비·날짜·로트·작업지시·조회 의도), 절차 질문인가
         SL.step("1 규칙", 파싱=base["parsed"], 절차질문=is_procedure(question), 화면알람=ctx_alarm or None)
 
-    if re.search(r"이 화면.*(설명|뭐)", question):
+    from backend.services import screen_summary as SS
+    screen_q = SS.is_screen_question(question) if s.pure_screen_summary else re.search(r"이 화면.*(설명|뭐)", question)
+    if screen_q:
+        panel = (screen_text or "").strip()
+        if s.pure_screen_summary and panel:
+            summary = SS.summarize(question, (context.get("screen") or "").upper(), panel, s)
+            if SL.on():
+                SL.step("1 규칙 판정", 결과="화면 설명 질문", 정보판요약=True)
+            return {**base, "status": "안내", "mode": "화면 요약 (순수 LLM)", "conclusion": summary}
         help_text = SCREEN_HELP.get((context.get("screen") or "").upper())
         if SL.on():
             SL.step("1 규칙 판정", 결과="화면 설명 질문", 안내문구있음=bool(help_text))
