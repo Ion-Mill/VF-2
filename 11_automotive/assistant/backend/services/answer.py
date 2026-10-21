@@ -1897,8 +1897,19 @@ def _range_text(p):
     return "2026-09-01 ~ 2026-09-30"
 
 
-def stops_pieces(r: dict, rng: str, eq: str | None) -> tuple[str, list[str], list[str]]:
-    """정지 답의 조각 (머리, 사유 그룹들, 교대 보고서 기준 세 줄) — stops_text와 줄 목록 칸(8차 BLOCKS_V2)이 같이 쓴다."""
+# 고장 손실만 묻는 말 (2026-10-21 사용자 시험): "고장 손실 몇 개야?"에 자재·준비·조작 그룹까지 길게 나왔다. 고장 손실 꼴(LOSS_COUNT_V26)이고 다른 그룹·건수·시간을 묻는 말이 없으면
+# 고장 그룹만 보이고 전체는 한 줄로 줄인다 ("몇 번 멈췄어?"·"정지 전체"처럼 물으면 지금처럼 전체 그룹)
+FAIL_ASK_V27 = re.compile(LOSS_COUNT_V26)
+FAIL_ASK_OTHER_V27 = re.compile(r"전체|모든|자재|준비|조작|흐름|계획|멈춘|멈췄|몇\s*번|몇\s*분|정지\s*(?:횟수|시간)")
+
+
+def failure_loss_ask_v27(question: str) -> bool:
+    return bool(FAIL_ASK_V27.search(question or "")) and not FAIL_ASK_OTHER_V27.search(question or "")
+
+
+def stops_pieces(r: dict, rng: str, eq: str | None, narrow: bool = False) -> tuple[str, list[str], list[str]]:
+    """정지 답의 조각 (머리, 사유 그룹들, 교대 보고서 기준 세 줄) — stops_text와 줄 목록 칸(8차 BLOCKS_V2)이 같이 쓴다.
+    narrow(고장 손실만 물음, 손실 정지 조회일 때만): 머리는 고장 정지 건수·분, 목록은 고장 사유, 전체는 추정 줄에 한 줄로."""
     groups = []
     for g in r["by_group"]:
         s = f"{g['group_ko']} {g['count']}번" + (f" {g['minutes']:g}분" if g["count"] else "")
@@ -1911,6 +1922,13 @@ def stops_pieces(r: dict, rng: str, eq: str | None) -> tuple[str, list[str], lis
         total_n = r["loss_qty_est_total"]
         fail_n = r.get("loss_qty_failure_est", total_n)   # 고장 그룹 정지만의 손실 (2026-10-21) — "고장 0번"인데 자재·준비·조작 정지 몫이 "고장 손실"로 나오지 않게
         report = [f"고장 손실 약 {fail_n}개(추정 = 정지 1건마다 정지 시간 ÷ {basis})"]
+        if narrow:
+            fail = next((g for g in r["by_group"] if g["group"] == "FAILURE"), None)
+            c = fail["count"] if fail else 0
+            if r["total_count"] != c:   # 다른 그룹은 목록 대신 전체 한 줄로 (건수·분·손실)
+                report.append(f"손실 정지 전체(고장·자재·준비·조작) {r['total_count']}번 {r['total_minutes']:g}분, 손실 약 {total_n}개(추정)")
+            head = f"{rng} {eq or '라인 전체'} 고장 정지 {c}번" + (f" {fail['minutes']:g}분" if c else "")
+            return head, [f"{x['name']} {x['count']}번 {x['minutes']:g}분" for x in (fail["reasons"] if fail else [])], report
         if total_n != fail_n:   # 전체와 같으면 한 줄만, 다르면 전체를 따로 밝힌다
             report.append(f"손실 정지 전체(고장·자재·준비·조작) 손실 약 {total_n}개(추정)")
         return (f"{rng} {eq or '라인 전체'} 손실 정지 {r['total_count']}번 {r['total_minutes']:g}분", groups, report)
@@ -1921,11 +1939,11 @@ def stops_pieces(r: dict, rng: str, eq: str | None) -> tuple[str, list[str], lis
     return head, groups, report
 
 
-def stops_text(r: dict, rng: str, eq: str | None) -> str:
+def stops_text(r: dict, rng: str, eq: str | None, narrow: bool = False) -> str:
     """정지 답: 멈춘 기록 전부를 사유 그룹별로 + 교대 보고서 기준(필수 정지·순간 정지) + 손실 계산식 (DOC-07 §5.1·§5.3·§5.4)."""
-    head, groups, report = stops_pieces(r, rng, eq)
+    head, groups, report = stops_pieces(r, rng, eq, narrow)
     if r.get("partial"):   # [11_automotive 이식 2026-10-16] "교대 보고서 기준"이 아니라 손실 추정 한 줄
-        return head + " — " + " · ".join(groups) + ". " + ", ".join(report)
+        return head + (" — " + " · ".join(groups) if groups else "") + ". " + ", ".join(report)
     return head + " — " + " · ".join(groups) + ". 교대 보고서 기준: " + ", ".join(report)
 
 
@@ -1954,8 +1972,9 @@ def ops_answer(role: str, p: dict, needs: list[str] | None = None,
                 texts.append(f"{rng} {eq or '라인'} 정지 기록: 데이터 없음")
                 add("", [], texts[-1], r)
             else:
-                texts.append(stops_text(r, rng, eq))
-                head, groups, report = stops_pieces(r, rng, eq)
+                narrow = bool(r.get("partial")) and failure_loss_ask_v27(p.get("raw") or "")   # 고장 손실만 물으면 고장 그룹만 (손실 정지 조회일 때만)
+                texts.append(stops_text(r, rng, eq, narrow))
+                head, groups, report = stops_pieces(r, rng, eq, narrow)
                 lead_ko = "손실 추정" if r.get("partial") else "교대 보고서 기준"   # [11_automotive 이식 2026-10-16]
                 if blocks3_on():   # 9차 F: 사유 그룹(번호 목록)과 교대 보고서 기준(작은 제목 + 따로 목록)을 나눈다
                     add(head, groups, texts[-1], r, notes=(lead_ko, report))
