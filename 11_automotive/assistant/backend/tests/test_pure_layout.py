@@ -253,7 +253,7 @@ def test_layout_on_sends_the_new_system_prompt_and_schema(monkeypatch, env):
     assert seen[0]["max_tokens"] == PURE.MAX_TOKENS_LAYOUT == 1800 and seen[0]["schema"] is PURE.SCHEMA_LAYOUT
     sy = call["system"]
     assert sy == PURE.SYSTEM_LAYOUT == PURE.system_for(settings())
-    for must in ("sections", "소제목", "한 문장", "섞지", "예시의 글자", "팀이 정한 가상 기준이에요", "문서에는 없지만 일반적으로는", "담당자가 확인해요", "cited",
+    for must in ("sections", "소제목", "한 문장", "섞지", "예시의 글자", "모두 가상 사내 문서", "문서에는 없지만 일반적으로는", "담당자가 확인해요", "cited",
                  "쓰지 않는다", "새 의무를 만들지 않는다", "해요체", "insufficient", "title", "text", "items", "옆자리 선배가 질문한 사람에게 직접 설명해 주듯이 말한다.",
                  "글 안에는 문서 이름, 문서 번호, 절 번호를 쓰지 않는다(프로그램이 붙인다).", "순서를 바꾸거나 단계를 빼거나 더하지 않는다."):
         assert must in sy, must

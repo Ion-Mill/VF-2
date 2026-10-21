@@ -3866,6 +3866,64 @@ def item_askback_v23(base: dict, topic: str) -> dict:
     return {**base, "status": "안내", "mode": "규칙 (품목 이름뿐인 질문 — 되묻기 고정 문구)", "conclusion": text, "blocks": [{"kind": "text", "text": text}]}
 
 
+# ALARM_CHAIN (2026-10-21, 992 시연 시험): 화면이 alarm_key를 안 보내면 "992 원인은" 다음 "뭘해야해?"·"먼저할일은"·"나는 뭘해야해?"가 알람 번호 신호 없이 순수 길로 가
+# 낱말 검색이 엉뚱한 조각(993)을 받고 "문서에 없음"이 되거나, 앞 답에 번호가 우연히 있을 때만 맞았다. 서버가 바로 앞 정상 답의 알람 번호를 기억해 두었다가 대상 없는 짧은 질문에만 잇는다.
+SELF_ASK_V31 = re.compile(r"(?<![가-힣])(?:나는|내가|제가|저는|난|전)(?![가-힣])")
+
+
+def prev_alarm_v31(prev: dict | None) -> str:
+    """바로 앞 정상 답이 한 알람 이야기였으면 그 번호. 앞 기록에 이어받은 번호(context.alarm_key)가 있거나, 앞 질문에서 알람 번호가 서로 다른 것 정확히 하나일 때만 (지금 질문에서 못 찾으면 "")."""
+    if not prev or prev.get("status") != "답변":
+        return ""
+    key = str((prev.get("context") or {}).get("alarm_key") or "").strip()
+    if key:
+        return key
+    codes = list(dict.fromkeys(a["code"] for a in parse(prev.get("question") or "")["alarms"]))
+    return codes[0] if len(codes) == 1 else ""
+
+
+def chain_alarm_v31(question: str, p: dict, prev: dict | None) -> str:
+    """이 질문이 알람 번호·설비·날짜가 없는 대상 없는 질문이고("뭘해야해?"), 이어 묻기("쉽게")가 아니면 앞 답의 알람 번호, 아니면 ""."""
+    code = prev_alarm_v31(prev)
+    if code and ctx_subjectless(question, p) and not followup_kind_v9(question, ""):
+        return code
+    return ""
+
+
+ROLE_KO_V31 = {"OPR": "작업자", "MNT": "보전 담당자", "SUP": "반장", "MGR": "관리자"}
+
+
+def own_role_steps_v31(a: dict, role: str, code: str) -> dict:
+    """"나는 뭘해야해?"처럼 내 몫을 묻는 알람 점검 순서 답에서, 내 역할의 단계만 남긴다 (역할 판단은 로그인 역할로 프로그램이 한다 — LLM이 아니다).
+    작업자는 '(작업자)' 단계, 보전 담당자는 '(보전)' 단계. 반장·관리자가 직접 하는 단계는 알람 문서에 따로 없으므로 지어내지 않고, 현장에서 먼저 하는 작업자 단계를 보이며 처리 책임자를 밝힌다.
+    남길 단계가 없으면 그대로 둔다."""
+    steps = [str(x) for x in (a.get("steps") or [])]
+    tag = "(보전)" if role == "MNT" else "(작업자)"
+    keep = [i for i, x in enumerate(steps) if tag in x]
+    if not keep or a.get("status") != "답변":
+        return a
+    who = (alarm_codes().get(code) or {}).get("who") or ""
+    role_ko = ROLE_KO_V31.get(role, role)
+    lead = (f"내 역할({role_ko})이 하는 단계만 골랐어요." if role in ("OPR", "MNT")
+            else f"{role_ko}가 직접 하는 단계는 이 알람 문서에 따로 없어요. 현장에서 먼저 하는 작업자 단계를 보여 드려요.")
+    if who:
+        lead += f" 이 알람의 처리 책임은 {who}예요."
+    mine = [steps[i] for i in keep]
+    out = {**a, "steps": mine, "conclusion": f"{lead} {' '.join(mine)}"}
+    easy = a.get("steps_easy")
+    if isinstance(easy, list) and len(easy) == len(steps):
+        out["steps_easy"] = [easy[i] for i in keep]
+    if isinstance(a.get("blocks"), list):
+        blocks, put = [], False
+        for b in a["blocks"]:
+            blocks.append(b)
+            if not put and isinstance(b, dict) and b.get("kind") == "section":
+                blocks.append({"kind": "text", "text": lead})
+                put = True
+        out["blocks"] = blocks
+    return out
+
+
 def carry_focus(question: str) -> str | None:
     """대상 없는 이어받기에서 남길 덩어리. 원인·이유·왜·때문이 점검·누구보다 먼저다 ("원인부터").
     어느 쪽도 아니면 None — 알람 카드 전체를 그대로 둔다 (심각도·재가동처럼 한 덩어리로 못 자르는 질문)."""
@@ -3962,6 +4020,8 @@ def answer(question: str, role: str, context: dict | None = None, prev: dict | N
         with answer_deadline(s0.budget_s):
             a = _answer(question, role, context, prev=prev, memo=memo)
             focus = carry_focus(question) if memo.get("ctx_alarm_note") else None
+            if focus is None and s0.alarm_chain and s0.ask_only and memo.get("ctx_alarm_note"):
+                focus = alarm_focus_v23(question)   # 이어받은 알람도 묻는 칸만 ("뭘해야해?"는 "해야"가 점검 순서를 묻는 말)
             # 번호를 적은 원인 질문("2075 알람 원인은?")도 원인만 남긴다. 횟수까지 물은 질문(ops_texts)과 점검 순서를 같이 물은 질문은 카드 전체.
             if (focus is None and memo.get("alarm") and cause_question(question)
                     and not memo.get("ops_texts") and not CARRY_STEPS.search(question)):
@@ -3977,6 +4037,9 @@ def answer(question: str, role: str, context: dict | None = None, prev: dict | N
                 if narrowed is not a:
                     a = narrowed
                     memo["alarm_card"] = ""   # 화면에 안 보인 설명으로 다음 "짧게"가 돌아가지 않게
+            if s0.alarm_chain and focus == "steps" and memo.get("alarm") and SELF_ASK_V31.search(question):   # "나는/내가 …": 점검 순서 중 내 역할 몫만
+                own = memo.get("ctx_alarm_note") or next((x["code"] for x in parse(question)["alarms"]), "")
+                a = own_role_steps_v31(a, role, own)
             if memo.get("ctx_alarm_note"):   # CTX_NARROW: 대상 없는 질문을 직전 알람으로 이어받았으면 어느 알람 기준인지 밝힌다
                 a = _with_ctx_note(a, memo["ctx_alarm_note"])
         if settings().followup:
@@ -4063,6 +4126,14 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
         ctx = parse(ctx_alarm)["alarms"][:1]
         if ctx and ctx[0]["code"] not in [a["code"] for a in p["alarms"]]:
             p["alarms"] = ctx + p["alarms"]
+    if s.alarm_chain and not pure_drop and not ctx_alarm and not p["alarms"] and s.parse_v2 and s.ctx_narrow:
+        chained = chain_alarm_v31(question, p, prev)   # ALARM_CHAIN: 화면이 번호를 안 보내도 바로 앞 답의 알람을 이어받는다 (대상 없는 짧은 질문만)
+        if chained:
+            p["alarms"] = parse(chained)["alarms"][:1]
+            if p["alarms"]:
+                memo["ctx_alarm_note"] = p["alarms"][0]["code"]
+                memo["record_context"] = {**context, "alarm_key": p["alarms"][0]["code"]}   # 기록에 남겨 다음 짧은 질문도 같은 알람으로 잇는다
+                memo["alarm_chain"] = True
     # is_synthetic (API명세서_v1 공통 규칙·NFR-DATA-08, 2026-10-11 P1): 답에 가상 운영 데이터(조회 결과·관련 기록)가 들어가면 True.
     # 사내 문서만 쓴 답은 False (사내 문서는 따로 "가상 사내 문서"로 표시한다)
     base = {"question": question, "steps": [], "evidence": [], "current_data": [], "related": None, "caution": None,
