@@ -10,6 +10,7 @@ SQL을 쓰지 않고, 입력(설비·기간)을 검증하고, 결과가 비어 �
 """
 from __future__ import annotations
 
+import re
 from datetime import date, datetime, timedelta, timezone
 
 from backend.config import DATA_LABEL, REFERENCE_AT
@@ -278,12 +279,21 @@ def work_orders(role, equipment_id=None, status=None):
     return _result("작업지시 조회", rows, "최근 20건", as_of=r.now)
 
 
+# 작업기록 원인·조치 글에 제조사 매뉴얼 문서 번호(ID0003 등)가 섞여 있으면 답 전체가 "원문 출처 표기가 섞여 내보내지 않았습니다"로 막힌다 (2026-10-21 시연 "992 지난 조치").
+# 조회 결과를 만들 때 그 번호만 뗀다("체크리스트(ID0003)를 쓴다" → "체크리스트를 쓴다"). 기록 원문은 DB에 그대로 두고 채팅이 보이는 글만 다룬다 (D-03). 데이터 쪽 정리는 DB·생성기 담당 몫.
+_MANUAL_ID = re.compile(r"\s*[(（]\s*(?:TG|RD|AD|ID|SA)\d{4}\s*[)）]|[,，]?\s*(?:서비스\s*알림\s*)?(?<![A-Za-z0-9])(?:TG|RD|AD|ID|SA)\d{4}(?![0-9])")
+
+
+def mask_manual_ids(text: str) -> str:
+    return re.sub(r"[ \t]{2,}", " ", _MANUAL_ID.sub("", text or "")).strip()
+
+
 def work_records(role, equipment_id=None, alarm_code=None):
     _check_equipment(equipment_id)
     r = _call("work_records", {"equipment_id": equipment_id, "alarm_code": alarm_code})
     rows = [{"work_record_id": x["record_no"], "record_no": x["record_no"], "kind": x.get("record_type"), "equipment_id": x.get("equipment_id"),
              "alarm_code": x.get("alarm_code") or "", "start": x.get("confirmed_at") or "", "repair_min": x.get("repair_min"),
-             "cause": x.get("cause") or "", "action": x.get("action") or "", "confirmed_at": x.get("confirmed_at")} for x in r.rows]
+             "cause": mask_manual_ids(x.get("cause") or ""), "action": mask_manual_ids(x.get("action") or ""), "confirmed_at": x.get("confirmed_at")} for x in r.rows]
     rows.sort(key=lambda x: x["start"])                    # 백엔드는 최근 순 20건 — 원본처럼 오래된 것부터
     return _result("작업기록 조회", rows, "확정된 최근 20건", as_of=r.now)
 

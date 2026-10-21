@@ -309,7 +309,9 @@ function useServerChat(userId: string, again: unknown): ChatRow[] {
 
 function Chat({ active, focus, headerSlot, onNewChat, ask, onAsked }: { active: boolean; focus: FocusRef | null; headerSlot: HTMLElement | null; onNewChat: () => void; ask?: string | null; onAsked?: () => void }) {
   const { user, role, screen, selected, openSource, key: screenKey, alerts } = useApp();
-  const cardCode = screen === 'card' && screenKey ? alerts.find((x) => x.id === screenKey)?.code ?? null : null;   // 지침카드를 열어 둔 채 채팅하면 그 카드의 알람 번호 (말풍선·alarm_key 에 쓴다)
+  const cardCode = screen === 'card' && screenKey ? alerts.find((x) => x.id === screenKey)?.code ?? null : null;
+  // 문서 > 지침카드로 들어온 목록 화면에는 고른 카드가 없다 — 말풍선만 목록 맨 위(처리 안 된 것 중 정지 등급 먼저, 오래된 것 먼저)의 알람으로 만든다. alarm_key 는 고른 카드에서만 보낸다
+  const listCode = screen === 'cards' ? alerts.filter((x) => x.kind !== 'guide' && !x.handled).sort((x, y) => Number(y.kind === 'alarm') - Number(x.kind === 'alarm') || x.ts - y.ts)[0]?.code ?? null : null;   // 지침카드를 열어 둔 채 채팅하면 그 카드의 알람 번호 (말풍선·alarm_key 에 쓴다)
   const [log, setLog] = useLocal<ChatRow[]>(`chat:${user.id}`, []);
   const [q, setQ] = useLocal<string>(`chatdraft:${user.id}`, '');   // 쓰다 만 글도 새로고침 뒤에 남긴다 (보내면 비운다)
   const [busy, setBusy] = useState(false);
@@ -397,7 +399,7 @@ function Chat({ active, focus, headerSlot, onNewChat, ask, onAsked }: { active: 
   // [새 채팅]: 기록은 한 줄도 지우지 않고 "여기서부터 새 대화" 표지 줄만 더한다 → 채팅 탭은 표지 뒤 줄만 보이고, 이전 대화는 채팅 기록 탭에 그대로 있다 (chatLog.ts)
   const canNew = !waiting && canStartNewChat(log, !!focus);   // 답을 기다리는 중에는 끈다 (늦게 온 답이 새 대화에 끼지 않게)
   const startNew = () => { if (!canNew) return; const m = makeNewChatMark(simIso()); setLog((l) => withNewChat(l, m, !!focus)); setQ(''); onNewChat(); input.current?.focus(); };
-  const ex = suggestChips({ role, onCard: screen === 'card', alarmCode: cardCode });   // 지침카드를 열었으면 그 알람·내 역할에 맞는 질문, 아니면 예전 고정 말풍선 (chips.ts)
+  const ex = suggestChips({ role, onCard: screen === 'card' || screen === 'cards', alarmCode: cardCode ?? listCode });   // 지침카드를 열었으면 그 알람·내 역할에 맞는 질문, 아니면 예전 고정 말풍선 (chips.ts)
   const body = useRef<HTMLDivElement>(null);
   useEffect(() => { if (ask && !waiting) { onAsked?.(); send(ask); } }, [ask, waiting]); // eslint-disable-line react-hooks/exhaustive-deps -- 작은 채팅창의 질문을 한 번 보냄 (답을 기다리는 중이면 끝난 뒤)
   useEffect(() => {
