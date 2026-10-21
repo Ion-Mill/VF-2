@@ -83,6 +83,8 @@ def reference_note(keys: list[str]) -> str | None:
         lines.append("작업 전 6단계: " + ", ".join(f"{c} {n}" for c, n in T.BEFORE))
     if "after3" in keys:
         lines.append("작업 후 3단계: " + ", ".join(f"{c} {n}" for c, n in T.AFTER))
+    if "before6" in keys or "after3" in keys:   # 소제목에 문서에 없는 번호 범위("작업 전 (1~3단계)")를 지어내던 것 (2026-10-21)
+        lines.append("묶음 소제목은 '작업 전 6단계'·'작업 후 3단계'처럼 쓰고, '1~3단계'·'4~6단계' 같은 새 번호 범위를 만들지 않는다. 단계를 가리킬 때는 위의 공식 번호(6.1~6.6·7.1~7.3)만 쓴다.")
     return "\n".join(lines)
 
 
@@ -115,6 +117,33 @@ def wants_full(question: str, keys: list[str]) -> bool:
 
 def expected_codes(keys: list[str]) -> list[str]:
     return ([c for c, _ in T.BEFORE] if "before6" in keys else []) + ([c for c, _ in T.AFTER] if "after3" in keys else [])
+
+
+_RANGE = re.compile(r"(?<![\d.])\d+\s*~\s*\d+\s*단계(?![\d.])")      # "1~3단계"(점 없는 숫자 범위). "6.1~6.3"·"3단계"는 걸리지 않는다
+_STEP_START = re.compile(r"(\d+\.\d+)\s")
+
+
+def fix_titles(sections: list[dict]) -> list[tuple[str, str]]:
+    """고정 서식 질문의 풀이에서 묶음 소제목에 지어낸 번호 범위("작업 전 (1~3단계)")가 있으면 고친다 — 그 묶음 항목이 모두 공식 단계 번호로 시작하면 범위를
+    첫~끝 번호("작업 전 (6.1~6.3)")로 바꾸고, 아니면 범위만 지운다. 소제목만 바꾸고 본문은 그대로다. 바꾼 (옛 소제목, 새 소제목) 목록을 돌려준다."""
+    changed: list[tuple[str, str]] = []
+    for sec in sections:
+        title = sec.get("title") or ""
+        if not _RANGE.search(title):
+            continue
+        items = sec.get("items") or []
+        codes = [m.group(1) for m in (_STEP_START.match(x) for x in items) if m]
+        if codes and len(codes) == len(items):
+            rng = codes[0] if len(codes) == 1 else f"{codes[0]}~{codes[-1]}"
+            new = _RANGE.sub(rng, title, count=1)
+        else:
+            new = _RANGE.sub("", title, count=1)
+        new = re.sub(r"\(\s*\)", "", new)
+        new = re.sub(r"\s{2,}", " ", new).strip()
+        if new and new != title:
+            sec["title"] = new
+            changed.append((title, new))
+    return changed
 
 
 def check_answer(text: str, keys: list[str], full: bool) -> str | None:
