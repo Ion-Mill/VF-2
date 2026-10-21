@@ -280,6 +280,26 @@ def _range(lo: float | None, hi: float | None, unit: str) -> str | None:
     return f"정상 범위 {fmt(lo)}~{fmt(hi)}{tail} [참고]"
 
 
+def _range_plain(lo: float | None, hi: float | None, unit: str) -> str:
+    """참고 범위 글 ("참고 범위 28~42℃") — 비정상으로 판정한 줄에서만 쓴다. psi는 bar를 함께."""
+    if unit == "psi":
+        return f"참고 범위 {fmt(lo)}~{fmt(hi)} psi(약 {bar(lo)}~{bar(hi)} bar)"
+    tail = unit if unit in ("%", "℃") else f" {unit}"
+    return f"참고 범위 {fmt(lo)}~{fmt(hi)}{tail}"
+
+
+def verdict(v: float | None, lo: float | None, hi: float | None, unit: str) -> tuple[str, str]:
+    """지금 값 하나의 판정 (프로그램이 숫자로 비교, 경계는 범위 안). (줄 끝 글, 상태) — 상태는 normal / high / low / none.
+    정상 범위는 선반 자료에서 빌린 참고 값이라 "정상 [참고]"처럼 참고 표시를 달고, 알람 판정이 아니다."""
+    if v is None or lo is None or hi is None:
+        return "판정 기준 없음", "none"
+    if v > hi:
+        return f"비정상(높음, {_range_plain(lo, hi, unit)}) [참고]", "high"
+    if v < lo:
+        return f"비정상(낮음, {_range_plain(lo, hi, unit)}) [참고]", "low"
+    return "정상 [참고]", "normal"
+
+
 def clock_text(r: dict) -> str:
     """기준 시각 문구. 도구가 준 기준 시각(공용 DB 시계)이 있으면 그것으로, 없으면 시각 없이 "기준 시각은 공용 DB 시계"만 (지어내지 않는다)."""
     t = r.get("as_of") if r.get("clock_known") else None
@@ -318,16 +338,16 @@ def render(eq: str, r: dict, wanted: list[str] | None = None) -> Part:
             unit = x.get("unit") or ""
             v, lo, hi = _num(x.get("last_value")), _num(x.get("normal_min")), _num(x.get("normal_max"))
             name = x.get("sensor_name") or x.get("sensor_code")
-            line = f"{name}: {_val(v, unit)}" if v is not None else f"{name}: 값 없음"
-            rng = _range(lo, hi, unit)
-            if rng:
-                line += f" ({rng})"
-            items.append(line)
-            if x.get("is_out_of_normal"):
+            if v is None:
+                items.append(f"{name}: 값 없음")
+                continue
+            tail, state = verdict(v, lo, hi, unit)
+            items.append(f"{name}: {_val(v, unit)} — {tail}")
+            if state in ("high", "low"):
                 out_of.append(name)
         head = f"{eq} 센서 ({clock} · 지금 값)"
-        closing = ("정상 범위 [참고] 밖 값이 있는 센서: " + (", ".join(out_of) if out_of else "없음")
-                   + ". 지난 시간의 변화(추세)는 공용 DB 시계가 시연 시계를 따라가지 않아 지금은 보여 드리지 못해요")
+        closing = ("비정상으로 표시된 센서: " + (", ".join(out_of) if out_of else "없음")
+                   + ". 참고 범위 기준 판정이며 알람 판정이 아니에요. 지난 시간의 변화(추세)는 공용 DB 시계가 시연 시계를 따라가지 않아 지금은 보여 드리지 못해요")
         return Part(text=head + "\n" + "\n".join("- " + it for it in items) + "\n" + closing, head=head, items=items, closing=closing)
     counts = {x.get("samples") for x in rows}
     lasts = {_hhmm(x.get("last_at")) for x in rows}
