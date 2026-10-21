@@ -382,6 +382,31 @@ def period_sections(question: str) -> list[str]:
     return [sec for sec, rx in PERIOD_RE.items() if rx.search(q)]
 
 
+# 손실 종류 질문 (2026-10-21, 시연 362 시험): "이 362는 고장으로 잃은 거야, 느려서 잃은 거야?"에 Claude가 DOC-07 §7.4(손실 분류 표)를 받지 못해 주의 등급 정지 조각을 이어 붙여
+# "고장 손실로 잡혀요"라고 틀리게 답했다 (§7.4는 공구 수명 80% 이상 = 속도 손실, 고장 손실은 설비 DOWN일 때만). 알람 → 손실 분류를 LLM이 추론하게 두지 않고, 손실 종류를 가르는 말이면
+# 정답이 든 조각(§7.4 병목 원인·§5.3 손실 계산식)을 항상 준다. 말은 LLM이 쓰되 근거는 프로그램이 보장한다 (PURE_EXPAND 안, guarantee_period와 같은 방식).
+LOSS_KIND_RE = re.compile(r"고장\S{0,4}\s?잃\S{0,3}\s?(?:거|것)[^?？]{0,12}느려서\s?잃|느려서\s?잃\S{0,3}\s?(?:거|것)|(?:고장|속도)\s?손실\S{0,3}\s?(?:이야|인가|이냐|이에요|일까|인지)")
+LOSS_KIND_SECTIONS = (("DOC-07", "7.4"), ("DOC-07", "5.3"))
+
+
+def loss_kind_question(question: str) -> bool:
+    """손실 종류(고장 손실인가 속도 손실인가)를 가르는 질문인가 — 낱말 꼴만 본다."""
+    return bool(LOSS_KIND_RE.search(question))
+
+
+def guarantee_sections(hits: list[tuple[float, Chunk]], sections) -> list[tuple[float, Chunk]]:
+    """주어진 (문서, 절) 조각 중 상위 조각에 없는 것을 맨 앞에 더한다 (점수 0.0 = 검색 점수가 아니라는 표시). 모두 있으면 목록을 그대로 돌려준다."""
+    corpus = load_corpus()
+    have = {c.chunk_id for _, c in hits}
+    add = []
+    for doc, sec in sections:
+        anchor = next((c for c in corpus if c.doc_id == doc and c.section == sec), None)
+        if anchor is not None and anchor.chunk_id not in have:
+            add.append((0.0, anchor))
+            have.add(anchor.chunk_id)
+    return add + list(hits) if add else hits
+
+
 def guarantee_period(question: str, hits: list[tuple[float, Chunk]]) -> list[tuple[float, Chunk]]:
     """질문의 기간에 해당하는 DOC-04 절 조각이 상위 조각에 없으면 맨 앞에 더한다 (점수 0.0 = 검색 점수가 아니라는 표시). 이미 있거나 기간이 없으면 목록을 그대로 돌려준다."""
     secs = period_sections(question)
@@ -665,6 +690,8 @@ def context(question: str, k: int, s: Settings) -> list[tuple[float, Chunk]]:
         hits = expand(hits, first=first)
         if s.pure_period:
             hits = guarantee_period(question, hits)
+        if loss_kind_question(question):   # 손실 종류 질문: DOC-07 §7.4·§5.3을 항상 (362 = 주의 등급, 공구 수명 = 속도 손실 쪽)
+            hits = guarantee_sections(hits, LOSS_KIND_SECTIONS)
     if s.pure_safety and is_safety(question):
         hits = add_safety_doc(hits)
     if getattr(s, "pure_faultdoc", False) and is_fault_text(question):   # PURE_FAULTDOC=1: 고장 낱말이 있으면 DOC-03을 통째로

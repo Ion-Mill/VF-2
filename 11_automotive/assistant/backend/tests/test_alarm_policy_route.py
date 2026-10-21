@@ -52,7 +52,7 @@ def test_tool_usage_wording_is_tool_life_lookup():
     assert "tool_life" not in A.parse("공구 사용률은 어떻게 계산해?")["intents"]   # 뜻·계산 질문은 지금처럼 문서 길
 
 
-def test_tool_usage_question_answers_tool_list_not_alarm_card(monkeypatch):
+def test_tool_usage_question_answers_tool_list(monkeypatch):
     monkeypatch.setenv("LLM_ENABLED", "0")
     a = A.answer("VF2-01에서 362가 난 공구가 뭐야? 사용률은?", "OPR", {"screen": "SCR-04"})
-    assert a["status"] == "답변" and "공구 수명" in a["conclusion"] and "알람 설명" not in a["conclusion"]
+    assert a["status"] == "답변" and "공구 수명" in a["conclusion"]   # 알람 카드가 빠졌는지는 화면 글로 봐야 한다 → test_362_fixups.test_tool_question_screen_text_has_tool_list_and_no_alarm_card
