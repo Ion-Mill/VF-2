@@ -455,6 +455,7 @@ LOSS_COUNT_V26 = (r"고장\s*손실\S{0,3}\s*(?:몇|얼마)|고장\s*손실.{0,1
                   r"|고장\s*(?:으로|때문에)\s*잃\S*\s*(?:개수|갯수|수량|몇\s*개|얼마)")
 OPS_INTENTS_V9 = [(n, re.compile(rx.pattern + r"|몇\s*건\s*씩\s*(?:찍혔|찍힌|떴|떠(?=요|\?|\s|$)|울렸|났|발생)")) if n == "alarm_count"
                   else (n, re.compile(rx.pattern + "|" + LOSS_COUNT_V26)) if n == "stops"
+                  else (n, re.compile(rx.pattern + r"|공구.{0,25}사용률(?!.{0,8}(?:계산|기준|정의|뜻|공식))|사용률.{0,10}공구")) if n == "tool_life"   # "362가 난 공구가 뭐야? 사용률은?" (2026-10-21 시연 362). "공구 사용률은 어떻게 계산해?" 같은 뜻 질문은 제외
                   else (n, rx) for n, rx in OPS_INTENTS_V5]
 # "N월"(날은 없음): 9월은 가상 데이터 기간 전체, 그 밖의 달은 기록이 없다 → "확인 필요" (한 달 전체·다른 달로 답하지 않음)
 MONTH_V5 = re.compile(r"(?<![\d.])(\d{1,2})\s*월(?!\s*\d)")
@@ -3481,6 +3482,8 @@ def pure_scope_v19(p: dict, s, question: str = "") -> str | None:
             return PURE.RULE_WHY
         if s.pure_fault and question and PURE.fault_question(question, p):   # "툴 수명 다 됐다고 뜨는데 예비 날이 없어. 어떻게 해?"·"멈췄어. 내가 다시 돌려도 돼?": 운영 낱말뿐인 고장 대응 절차 질문은 문서 길로 (문서에 없으면 원래 기존 길로 되돌린다)
             return PURE.FAULT_WHY
+        if s.pure_rule and question and PURE.alarm_policy_question(question, p):   # "이 362는 고장으로 잃은 거야, 느려서 잃은 거야?"·"362는 9/30 일일 보고서에 있어?"·"이 알람으로 수리 작업지시서를 써야 해?": 알람과 함께 묻는 정책·판단 질문은 문서 길로 (문서에 없으면 원래 길로 되돌린다)
+            return PURE.POLICY_WHY
         return None
     return "규칙이 알람 번호·설비·날짜·운영 낱말을 하나도 못 찾은 질문 (PURE_KEEP_SIGNALS=1)"
 
@@ -4098,7 +4101,7 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
     pure_why = pure_scope_v19(p, s, question)
     if pure_why:
         memo_before = dict(memo)
-        rule_route = pure_why in (PURE.RULE_WHY, PURE.FAULT_WHY)   # 규칙 질문·고장 대응 질문: 문서에 없음/호출 실패면 원래 기존 길로 되돌린다
+        rule_route = pure_why in (PURE.RULE_WHY, PURE.FAULT_WHY, PURE.POLICY_WHY)   # 규칙 질문·고장 대응 질문·알람 정책 질문:문서에 없음/호출 실패면 원래 기존 길로 되돌린다
         ext = EXT.current()
         failed_before = len(ext.failures) if ext is not None else 0
         try:
