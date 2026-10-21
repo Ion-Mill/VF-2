@@ -163,7 +163,9 @@ t('알람 답은 카드이고 답 박스는 하나뿐이다 (겹박스 없음), 
   assert.ok(h.includes('알람 설명') && h.includes('점검 순서 (사내 문서)'));
   assert.equal((h.match(new RegExp(esc(Box.ANSWER_BOX), 'g')) ?? []).length, 1);
   assert.ok(h.includes(`flex flex-col gap-4 ${Box.ANSWER_BOX}`));
-  assert.ok(!h.includes('출처:'), '카드는 출처를 알약으로 직접 그린다');
+  assert.ok(h.includes('aria-expanded="true"') && h.includes('gap-y-2') && h.includes('▾ 출처:'), '출처는 펼친 토글');
+  assert.ok(h.includes('>알람 코드집 DOC-02 Rev.1 (2026-10-07) §4.11</button>'), '출처 글자는 밑줄 버튼');
+  assert.ok(!h.includes('rounded-2xl bg-white px-4 py-2'), '출처 알약 없음');
 });
 t('역할: 작업자(OPR)는 작업자 단계가, 보전(MNT)은 보전 단계가 보라색 (230은 작업자 줄만 4개)', () => {
   const n = (role) => (bubble(row('230 알람 뭐야', A230), role).match(/bg-violet-600/g) ?? []).length;

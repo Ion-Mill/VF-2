@@ -172,7 +172,7 @@ t('다른 공정(§3) 원인 후보 한 줄도 [가상]·[참고] 꼬리표가 �
   assert.equal(words(cardPlainText(c.parts)).filter((w) => w === '참고').length, words(b).filter((w) => w === '참고').length);
 });
 
-// ---- 출처 알약
+// ---- 출처 (화면은 밑줄 버튼. 여기는 이름·번호·개정·절과 클릭만 본다)
 t('출처 알약: 이름·문서 번호·개정·절을 그대로, 누르면 openSource(문서 번호, 절)', () => {
   const c = parse(A2075);
   assert.equal(c.sources.length, 2);
