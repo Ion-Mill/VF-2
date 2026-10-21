@@ -3,6 +3,7 @@
 // 지난 교대·인계 사항 = 지난 교대 보고서(생성기·서버), 먼저 챙길 일 = 인계 사항 + 지금 처리 안 된 알람·알림 (2.5 보고 순위).
 // 보고 항목은 프로그램 목록이다 (순서·건수는 프로그램 몫). 지난 교대 요약은 교대 보고서 문장을 그대로 쓰므로, 비서가 켜져 있으면 비서가 다듬은 문장이 보인다.
 // 먼저 챙길 일의 항목 문장은 비서가 다듬은 것이 준비되면 그것을 보이고(순위 묶음별, '비서 정리'), 준비 전·꺼짐·실패·탈락은 프로그램 문구 그대로다. [원문 보기]로 언제나 프로그램 문구를 본다 (팀 2026-10-19, 기본 꺼짐 NEXT_PUBLIC_MOM_BRIEFING_LLM=1). 4b 카드에 붙임 (2026-10-20)
+import { LockIcon } from './ui';
 import { useEffect, useRef, useState } from 'react';
 import { backendChatEnabled, fetchBriefChecks, saveBriefCheck } from './assistantApi';
 import { checkScope, fromServerKeys, serverKey, serverShift, toggleKey } from './briefChecks';
@@ -82,7 +83,7 @@ function Board({ todos, sum, lockout, onOpenLast, aiNote, check }: { todos: Todo
           </>) : <span className={SUM_NOTE}>보고서 없음</span>}
         </div>
       </div>
-      {lockout.length > 0 && <div className="rounded-2xl bg-[#fdecec] px-4 py-2.5 text-[14px] font-extrabold text-[#b4282d]">🔒 {lockout.join(' · ')} 잠금 중 — 전원을 넣지 마세요</div>}
+      {lockout.length > 0 && <div className="rounded-2xl bg-[#fdecec] px-4 py-2.5 text-[14px] font-extrabold text-[#b4282d]"><LockIcon /> {lockout.join(' · ')} 잠금 중 — 전원을 넣지 마세요</div>}
       <div className="flex flex-wrap items-baseline gap-x-2 px-0.5 pt-1.5">
         <h3 className="m-0 text-[19px] font-extrabold">먼저 챙길 일 {open.length}</h3>
         <span className="text-[13.5px] text-[#6b6683]">긴급 {red} · 주의 {amber} · 끝낸 일 {fin.length}</span>
@@ -93,13 +94,13 @@ function Board({ todos, sum, lockout, onOpenLast, aiNote, check }: { todos: Todo
         return (
           <div key={t.key} className={`flex items-center gap-2 rounded-2xl border border-[#e4def8] pr-2.5 ${d ? 'bg-[#efedf5]' : 'bg-[#ffffff]'}`}>
             <label className="flex min-h-[64px] min-w-0 flex-1 cursor-pointer items-center gap-3.5 py-2 pl-3.5 pr-1">
-              <input type="checkbox" checked={d} onChange={() => toggle(t.key)} className="h-[26px] w-[26px] shrink-0 accent-[#26303a]" />
+              <input type="checkbox" checked={d} onChange={() => toggle(t.key)} className="ma-check h-[26px] w-[26px] shrink-0" />
               <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                 <span className={`text-[16px] font-extrabold leading-snug ${d ? 'text-[#8a879a] line-through' : ''}`}>{t.text}</span>
                 <span className="text-[13px] leading-snug text-[#6b6683]"><b className={d ? '' : TAG_COLOR[t.tone]}>{t.tag}</b>{t.sub.startsWith(`${t.tag} · `) ? t.sub.slice(t.tag.length) : ` · ${t.sub}`}</span>
               </span>
             </label>
-            {!d && <button onClick={t.go} className="h-11 shrink-0 rounded-xl border border-[#26303a] bg-[#ffffff] px-3.5 text-[15px] font-extrabold text-[#1f1b33] hover:bg-[#f3f1fb]">보기</button>}
+            {!d && <button onClick={t.go} className="h-11 shrink-0 rounded-xl border border-[#cfc2f7] bg-[#ffffff] px-3.5 text-[15px] font-extrabold text-[#1f1b33] hover:bg-[#f3f1fb]">보기</button>}
           </div>
         );
       })}

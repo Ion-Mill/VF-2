@@ -18,18 +18,18 @@ export default function Popup({ alert, others, big, onCard, onAck }: { alert: Al
 
   // 페이지구조 v3 4장: 화면 중앙, 내용은 한 줄 (설비 · 알람 이름 · 시각), [지침카드] [닫기]. 닫아도 알림 탭에 처리 안 됨으로 남는다
   const a = alert.alarm, m = MACHINES[alert.machine];
-  const t = big ? 'text-[30px]' : 'text-[18px]', bt = big ? 'h-[72px] px-10 text-[24px]' : 'h-12 px-6 text-[16px]';
+  const t = big ? 'text-num' : 'text-band', bt = big ? 'h-[72px] px-10 text-title' : 'h-12 px-6 text-card';
   return (
     <div role="alertdialog" aria-label="긴급 알림" className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 p-4">
-      <div className={`flex w-full flex-col gap-4 rounded-3xl border-4 border-[#c62a2f] bg-white p-6 shadow-2xl ${big ? 'max-w-[1000px]' : 'max-w-[520px]'}`}>
-        <b className={`${big ? 'text-[36px]' : 'text-[20px]'} text-[#c62a2f]`}>⚠ 긴급·정지 알림</b>
-        <div className={`rounded-2xl bg-[#fdeeee] px-5 py-4 font-bold ${t}`}>
+      <div className={`flex w-full flex-col gap-4 rounded-card border-4 border-crit bg-white p-6 shadow-2xl ${big ? 'max-w-[1000px]' : 'max-w-[520px]'}`}>
+        <b className={`${big ? 'text-tablet' : 'text-title'} text-crit`}>⚠ 긴급·정지 알림</b>
+        <div className={`rounded-card bg-crit-bg px-5 py-4 font-bold ${t}`}>
           {m.name} · {alert.code} {a ? a.nameKo : '(알람 코드집에 없음)'} · {hhmm(alert.time)}
-          {others > 0 && <div className="mt-1 text-[14px] font-semibold text-[#a01e23]">외 긴급 {others}건 — 이브 알림에 있습니다</div>}
+          {others > 0 && <div className="mt-1 text-body font-semibold text-[#a01e23]">외 긴급 {others}건 — 이브 알림에 있습니다</div>}
         </div>
         <div className="flex items-center justify-between gap-3">
-          <button onClick={onCard} className={`${bt} rounded-full bg-[#1c2530] font-bold text-white hover:bg-black`}>지침카드</button>
-          <button onClick={onAck} className={`${bt} rounded-full border-2 border-slate-400 font-bold hover:bg-slate-50`}>닫기</button>
+          <button onClick={onCard} className={`${bt} rounded-full bg-ink font-bold text-white hover:bg-black`}>지침카드</button>
+          <button onClick={onAck} className={`${bt} rounded-full border-2 border-line font-bold hover:bg-tile`}>닫기</button>
         </div>
       </div>
     </div>

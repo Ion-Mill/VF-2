@@ -238,10 +238,10 @@ export default class FactoryDashboard extends React.Component<any, any> {
     });
     const c = (o) => (o.x[0] + o.x[1]) / 2000;
     const w = { w1: c(O['WIP-1']), w2: c(O['WIP-2']), w3: c(O['WIP-3']), w4: c(O['WIP-4']) };
-    const op30 = [Math.min(D.vf1[0], O['WIP-2'].x[0]) - 300, Math.max(D.vf2[1], O['WIP-3'].x[1]) + 300, O['WIP-2'].y[0] - 300, Math.max(D.vf1[3], D.vf2[3]) + 300];
+    const op30 = [D.vf1[0] - 300, Math.max(D.vf2[1], O['WIP-3'].x[1]) + 300, O['WIP-2'].y[0] - 300, Math.max(D.vf1[3], D.vf2[3]) + 300];
     // 장식 곡선(투어·흐름선)용: 원본 X(mm) → 데이터 X(mm), 설비 가운데·재공 자리를 지나는 꺾은선
     const pts = [[0, 0], [2500, (D.inf[0] + D.inf[1]) / 2], [5400, (D.saw[0] + D.saw[1]) / 2], [6750, w.w1 * 1000], [8000, (D.mil[0] + D.mil[1]) / 2], [11330, (D.vf1[0] + D.vf1[1]) / 2],
-      [11900, w.w2 * 1000], [14300, w.w3 * 1000], [14730, (D.vf2[0] + D.vf2[1]) / 2], [18800, (D.wsh[0] + D.wsh[1]) / 2], [20800, w.w4 * 1000], [22700, (D.cmm[0] + D.cmm[1]) / 2], [24000, c(O['FG-01']) * 1000]];
+      [14300, w.w3 * 1000], [14730, (D.vf2[0] + D.vf2[1]) / 2], [18800, (D.wsh[0] + D.wsh[1]) / 2], [20800, w.w4 * 1000], [22700, (D.cmm[0] + D.cmm[1]) / 2], [24000, c(O['FG-01']) * 1000]];
     const mapX = (X) => { if (X <= 0) return X; for (let i = 1; i < pts.length; i++) if (X <= pts[i][0]) { const [a, A] = pts[i - 1], [b, B] = pts[i]; return A + (B - A) * (X - a) / (b - a); } return X + pts[pts.length - 1][1] - pts[pts.length - 1][0]; };
     this.LY = { P, wip: w, fg: c(O['FG-01']), soak: O['SOAK-01'], rack: O['RACK-01'], op30, mapX, plant: L.plant };
     return this.LY;
@@ -387,6 +387,8 @@ export default class FactoryDashboard extends React.Component<any, any> {
     const THREE: any = THREE_NS, OC: any = { OrbitControls }, RE: any = { RoomEnvironment };
     const RBG: any = RoundedBoxGeometry;
     const PP: any = [{ EffectComposer }, { RenderPass }, { UnrealBloomPass }, { OutputPass }];
+    // 표지판·재공 글자는 캔버스에 그려서, Noto Sans KR(한글은 조각 파일)을 먼저 읽고 그린다 (디자인 통일 C안, 2026-10-20). 늦어도 3초면 그냥 그림
+    try { await Promise.race([Promise.all(['400', '600', '700', '800'].map((w) => document.fonts.load(`${w} 40px "Noto Sans KR Variable"`, '가공대기준비정비고장막힘주의병목투입봉재랙세척측정 0123456789/·-ABCDEFGHIJKLMNOPQRSTUVWXYZ'))), new Promise((r) => setTimeout(r, 3000))]); } catch { /* 글꼴 못 읽으면 기본 글꼴로 */ }
     if (this.dead) return;
     this.T = THREE;
     const host = this.stageRef.current;
@@ -593,7 +595,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
       const lm = new THREE.MeshBasicMaterial({ color: 0x22d36b }); leds[id] = lm;
       box(x0 + 60, x1 - 60, 3786, 3800, top - 0.07, top - 0.035, lm, g).castShadow = false;
       const M0 = this.MACH[id];
-      const plate = cvTex(256, 72, (g2, ww, hh) => { g2.fillStyle = '#20272f'; g2.fillRect(0, 0, ww, hh); g2.fillStyle = '#0fb5d4'; g2.fillRect(0, 0, 6, hh); g2.fillStyle = '#ffffff'; g2.font = '700 30px JetBrains Mono, monospace'; g2.fillText(M0.name, 18, 34); g2.fillStyle = '#9fb1c2'; g2.font = '500 18px JetBrains Mono, monospace'; g2.fillText(M0.op + ' · BRK-A100', 18, 60); });
+      const plate = cvTex(256, 72, (g2, ww, hh) => { g2.fillStyle = '#20272f'; g2.fillRect(0, 0, ww, hh); g2.fillStyle = '#0fb5d4'; g2.fillRect(0, 0, 6, hh); g2.fillStyle = '#ffffff'; g2.font = '700 30px "Noto Sans KR Variable", sans-serif'; g2.fillText(M0.name, 18, 34); g2.fillStyle = '#9fb1c2'; g2.font = '500 18px "Noto Sans KR Variable", sans-serif'; g2.fillText(M0.op + ' · BRK-A100', 18, 60); });
       const pm = new THREE.Mesh(new THREE.PlaneGeometry(0.46, 0.13), new THREE.MeshStandardMaterial({ map: plate, roughness: 0.4, metalness: 0.2 }));
       const ph = Math.max(0.35, Math.min(top - 0.22, 1.85));
       pm.position.set(x0 / 1000 + 0.32, ph, -3.8 + 0.006); g.add(pm);
@@ -712,7 +714,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
         const l = new THREE.Line(g, new THREE.LineDashedMaterial({ color, dashSize: ds, gapSize: gs })); l.computeLineDistances(); scene.add(l); return l;
       };
       dashLine([[0, 3800], [28000, 3800]], 0x56616c, 0.2, 0.14);
-      // OP-30 구역 테두리 = VF2-01·02와 그 앞 WIP-2·3 (데이터 좌표). 시뮬레이터 병목이 OP-30이면 주황 (loop)
+      // OP-30 구역 테두리 = VF2-01·02와 그 앞 WIP-3 (WIP-2는 MIL-01·VF2-01 사이, 2026-10-20) (데이터 좌표). 시뮬레이터 병목이 OP-30이면 주황 (loop)
       { const R0 = this.LY ? this.LY.op30 : [9700, 16900, 1550, 5900];
         env.op30 = dashLine([[R0[0], R0[2]], [R0[1], R0[2]], [R0[1], R0[3]], [R0[0], R0[3]], [R0[0], R0[2]]], 0x3c4752, 0.3, 0.16, 0.02).material; }
 
@@ -1208,7 +1210,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
         const on = !!b.lot && cnt(b) > 0; b.tag.visible = on; if (!on) return;
         const key = b.lot + '|' + b.closed; if (key === b.tagKey) return; b.tagKey = key;
         const g = b.tc.getContext('2d'); g.clearRect(0, 0, 160, 48); g.fillStyle = b.closed ? '#ffe7a8' : '#ffffff'; g.beginPath(); g.roundRect(2, 2, 156, 44, 8); g.fill();
-        g.strokeStyle = '#5a3bc8'; g.lineWidth = 3; g.stroke(); g.fillStyle = '#26303a'; g.font = '700 22px JetBrains Mono, monospace'; g.textAlign = 'center';
+        g.strokeStyle = '#5a3bc8'; g.lineWidth = 3; g.stroke(); g.fillStyle = '#26303a'; g.font = '700 22px "Noto Sans KR Variable", sans-serif'; g.textAlign = 'center';
         g.fillText('LOT ' + String(b.lot).replace(/^LOT-\d+-/, ''), 80, 32); b.tt.needsUpdate = true;
       };
       // 지금 OP-30(VF2)이 깎는 LOT = WIP-3 로 나오는 부품의 LOT (데이터 lot_no)
@@ -1336,7 +1338,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
           s0.visible = pr >= 0; if (pr < 0) return;
           const p = Math.min(1, pr), txt = ph === 'wait' ? '세척 끝 · 배출 대기' : ph === 'in' ? '세척기 투입' : ph === 'wash' ? '세척 · 헹굼 · 건조' : '배출', key = txt + Math.round(p * 50); if (key === last) return; last = key;
           const g = cv.getContext('2d'); g.clearRect(0, 0, 320, 72); g.fillStyle = 'rgba(10,16,24,0.8)'; g.beginPath(); g.roundRect(4, 4, 312, 64, 14); g.fill();
-          g.fillStyle = '#ffffff'; g.font = '700 19px Pretendard, sans-serif'; g.textAlign = 'left'; g.fillText(txt, 18, 30); g.textAlign = 'right'; g.fillText(Math.round(p * 100) + '%', 302, 30);
+          g.fillStyle = '#ffffff'; g.font = '700 19px "Noto Sans KR Variable", sans-serif'; g.textAlign = 'left'; g.fillText(txt, 18, 30); g.textAlign = 'right'; g.fillText(Math.round(p * 100) + '%', 302, 30);
           g.fillStyle = 'rgba(255,255,255,0.15)'; g.fillRect(18, 42, 284, 12); g.fillStyle = '#5fb8ff'; g.fillRect(18, 42, 284 * p, 12); tx.needsUpdate = true;
         };
       })();
@@ -1367,21 +1369,21 @@ export default class FactoryDashboard extends React.Component<any, any> {
           const key = n + '|' + msg; if (key === last) return; last = key;
           const g = cv.getContext('2d'); g.clearRect(0, 0, 320, 112); g.fillStyle = 'rgba(10,16,24,0.78)'; g.beginPath(); g.roundRect(4, 4, 312, 104, 16); g.fill();
           g.strokeStyle = col; g.lineWidth = 2; g.stroke();
-          g.fillStyle = '#9fb1c2'; g.font = '600 17px JetBrains Mono, monospace'; g.fillText(msg || title, 18, 32);
-          g.fillStyle = '#ffffff'; g.font = '700 32px JetBrains Mono, monospace'; g.fillText(n + ' / ' + BCAP, 18, 70);
+          g.fillStyle = '#9fb1c2'; g.font = '600 17px "Noto Sans KR Variable", sans-serif'; g.fillText(msg || title, 18, 32);
+          g.fillStyle = '#ffffff'; g.font = '700 32px "Noto Sans KR Variable", sans-serif'; g.fillText(n + ' / ' + BCAP, 18, 70);
           g.fillStyle = 'rgba(255,255,255,0.14)'; g.fillRect(18, 84, 284, 10); g.fillStyle = col; g.fillRect(18, 84, 284 * Math.min(1, n / BCAP), 10);
           tx.needsUpdate = true;
         };
       };
       (this.floorWip || []).forEach(F => { if (F.key === 'w3') F.m.position.x = SB.S.x - 0.6; }); // 바닥 WIP-3 글자 = 바스켓 자리 앞
-      const gS = mkGauge(SB.S, 'WIP-3 · 세척 배치'), gW = mkGauge(SB.WO, 'WIP-4 · 측정 대기'), gF = mkGauge(SB.FG, 'FG-01 · 창고 입고 박스');
+      const gS = mkGauge(SB.S, 'WIP-3 · 세척 배치'), gW = mkGauge(SB.WO, 'WIP-4 · 측정 대기');
       // ===== AS/RS warehouse (x 26–33.6) =====
       let whStep = () => {};
       {
       const WG = new THREE.Group(); scene.add(WG);
       const RM = { up: M(0xaeb7bf, { metalness: 0.55, roughness: 0.4 }), beam: M(0x7b8a98, { metalness: 0.4, roughness: 0.45 }), wood: M(0xb08a5a, { roughness: 0.8 }), tote: M(0x5d7891, { roughness: 0.6 }), toteG: M(0x8a96a2, { roughness: 0.55 }), rail: M(0xb9c3cc, { metalness: 0.8, roughness: 0.25 }), crane: M(0xeef1f4, { roughness: 0.35, metalness: 0.3 }), dark: M(0x2a3138, { roughness: 0.6 }), floor: M(0xe6ebef, { roughness: 0.6, metalness: 0.05 }), strip: new THREE.MeshBasicMaterial({ color: 0xeaf6ff }) };
       const kraft = [0xb59a7a, 0xbea584, 0xac9172].map(c => M(c, { roughness: 0.9 }));
-      const mkLbl = (txt) => { const c = document.createElement('canvas'); c.width = 128; c.height = 64; const g = c.getContext('2d'); g.fillStyle = '#f4f4f0'; g.fillRect(0, 0, 128, 64); g.fillStyle = '#1b1f24'; for (let x = 10; x < 118; x += 2 + ((x * 7 + txt.length) % 4)) g.fillRect(x, 8, (x % 3) + 1, 30); g.font = '700 13px monospace'; g.fillText(txt, 12, 56); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return new THREE.MeshBasicMaterial({ map: t }); };
+      const mkLbl = (txt) => { const c = document.createElement('canvas'); c.width = 128; c.height = 64; const g = c.getContext('2d'); g.fillStyle = '#f4f4f0'; g.fillRect(0, 0, 128, 64); g.fillStyle = '#1b1f24'; for (let x = 10; x < 118; x += 2 + ((x * 7 + txt.length) % 4)) g.fillRect(x, 8, (x % 3) + 1, 30); g.font = '700 13px "Noto Sans KR Variable", sans-serif'; g.fillText(txt, 12, 56); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return new THREE.MeshBasicMaterial({ map: t }); };
       const lblMs = ['BIN-X-321', 'BIN-Y-456', 'BIN-4-321', 'BIN-Y-495'].map(mkLbl);
       const XO = this.LY ? this.LY.fg + 2.2 - 26.2 : 0; // 데이터적용본: 자동창고를 완성품 자리(FG-01) 동쪽으로
       { const fl = new THREE.Mesh(new THREE.PlaneGeometry(8.6, 16), RM.floor); fl.rotation.x = -Math.PI / 2; fl.position.set(29.6 + XO, 0.0015, -8.0); fl.receiveShadow = true; WG.add(fl);
@@ -1461,7 +1463,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
       const signTx = new THREE.CanvasTexture(signCv); signTx.colorSpace = THREE.SRGBColorSpace;
       const sign = new THREE.Sprite(new THREE.SpriteMaterial({ map: signTx, transparent: true, depthWrite: false })); sign.scale.set(2.6, 0.65, 1); sign.position.set(30.4 + XO, 4.75, -4.3); WG.add(sign);
       let signKey = '';
-      const drawSign = (stock, inCnt, msg) => { const k0 = stock + '|' + inCnt + '|' + msg; if (k0 === signKey) return; signKey = k0; const g = signCv.getContext('2d'); g.clearRect(0, 0, 512, 128); g.fillStyle = 'rgba(10,16,24,0.8)'; g.beginPath(); g.roundRect(4, 4, 504, 120, 18); g.fill(); g.strokeStyle = '#4fd2ea'; g.lineWidth = 2; g.stroke(); g.fillStyle = '#7fe3f5'; g.font = '700 22px JetBrains Mono, monospace'; g.fillText('AS/RS WAREHOUSE · 자동 창고', 22, 40); g.fillStyle = '#ffffff'; g.font = '700 34px JetBrains Mono, monospace'; g.fillText((1240 + stock) + ' / 2,000 SLOT', 22, 84); g.fillStyle = '#9fb1c2'; g.font = '600 18px JetBrains Mono, monospace'; g.fillText(msg || ('오늘 입고 ' + inCnt + ' 박스'), 22, 112); signTx.needsUpdate = true; };
+      const drawSign = (stock, inCnt, msg) => { const k0 = stock + '|' + inCnt + '|' + msg; if (k0 === signKey) return; signKey = k0; const g = signCv.getContext('2d'); g.clearRect(0, 0, 512, 128); g.fillStyle = 'rgba(10,16,24,0.8)'; g.beginPath(); g.roundRect(4, 4, 504, 120, 18); g.fill(); g.strokeStyle = '#4fd2ea'; g.lineWidth = 2; g.stroke(); g.fillStyle = '#7fe3f5'; g.font = '700 22px "Noto Sans KR Variable", sans-serif'; g.fillText('AS/RS WAREHOUSE · 자동 창고', 22, 40); g.fillStyle = '#ffffff'; g.font = '700 34px "Noto Sans KR Variable", sans-serif'; g.fillText((1240 + stock) + ' / 2,000 SLOT', 22, 84); g.fillStyle = '#9fb1c2'; g.font = '600 18px "Noto Sans KR Variable", sans-serif'; g.fillText(msg || ('오늘 입고 ' + inCnt + ' 박스'), 22, 112); signTx.needsUpdate = true; };
       whStep = (dt) => {
         const W0 = WHS;
         if (!W0.inb && SB.WH.box && !SB.WH.res) { const b = SB.WH.box; SB.WH.box = null; b.at = null; W0.inb = { b, ph: 'lift', t: 0 }; }
@@ -1699,7 +1701,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
           const wN = SB.WO.box ? cnt(SB.WO.box) : 0;
           gW(WSH.box ? cnt(WSH.box) : wN, WSH.ph === 'in' ? '세척기 투입' : WSH.ph === 'wash' ? '세척 · 헹굼 · 건조 중' : WSH.ph === 'out' ? '세척 완료 · 배출' : '', WSH.box ? '#5fb8ff' : '#4fd2ea');
           const fN = SB.FG.box ? cnt(SB.FG.box) : 0;
-          gF(fN, FGS.ph === 'hold' ? '만재 · 입고 대기' : FGS.ph === 'out' ? '완제품 입고 · 상자 빼기' : FGS.ph === 'in' ? '빈 상자 넣는 중' : !SB.FG.box ? '빈 박스 대기' : '', FGS.ph === 'fill' ? '#4fd2ea' : '#22d36b');
+          this.fgBoxN = fN; // 입고 박스 개수는 검은 3D 판 대신 바닥 FG-01 글자로 (사용자 요청 2026-10-20)
           FM.beacon.color.setHex(busy && Math.sin(performance.now() / (FL.rev ? 70 : 140)) > 0 ? 0xffd27a : 0xff9a1f);
         }
         inclines.forEach(I0 => { const run0 = !NOWORK.has(st0[Object.keys(MC).find(k => MC[k] === I0.id)]); if (run0) { let z0 = I0.cg.position.z + I0.dir * 0.6 * dt; z0 = ((z0 % CSP) + CSP) % CSP; I0.cg.position.z = z0; } });
@@ -1866,9 +1868,9 @@ export default class FactoryDashboard extends React.Component<any, any> {
         g.strokeStyle = 'rgba(79,210,234,0.55)'; g.lineWidth = 2; g.stroke();
         g.lineWidth = 9; g.strokeStyle = 'rgba(79,210,234,0.18)'; g.beginPath(); g.arc(64, 64, 36, 0, Math.PI * 2); g.stroke();
         g.strokeStyle = col; g.shadowColor = col; g.shadowBlur = 14; g.beginPath(); g.arc(64, 64, 36, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.max(0.02, load / 100)); g.stroke(); g.shadowBlur = 0;
-        g.fillStyle = '#eafcff'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = '700 22px JetBrains Mono, monospace'; g.fillText(load + '%', 64, 65);
-        g.textAlign = 'left'; g.font = '700 26px JetBrains Mono, monospace'; g.fillText(this.MACH[id].name, 118, 50);
-        g.font = '600 18px JetBrains Mono, monospace'; g.fillStyle = col; g.fillText((this.STAT[e0] || this.STAT.RUN).label + ' · ' + this.MACH[id].op, 118, 84);
+        g.fillStyle = '#eafcff'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = '700 22px "Noto Sans KR Variable", sans-serif'; g.fillText(load + '%', 64, 65);
+        g.textAlign = 'left'; g.font = '700 26px "Noto Sans KR Variable", sans-serif'; g.fillText(this.MACH[id].name, 118, 50);
+        g.font = '600 18px "Noto Sans KR Variable", sans-serif'; g.fillStyle = col; g.fillText((this.STAT[e0] || this.STAT.RUN).label + ' · ' + this.MACH[id].op, 118, 84);
         H.tex.needsUpdate = true; H.beam.material.color.set(col);
       });
     };
@@ -1923,15 +1925,15 @@ export default class FactoryDashboard extends React.Component<any, any> {
     const animate = (dt, t) => {
       (this.floorWip || []).forEach(F => { // 바닥 재공 글자: 값이 바뀔 때만 다시 그림
         if (!F.m.parent) scene.add(F.m); // 장면 정리 때 떨어져 나가면 다시 붙임
-        const n = Math.round(((this.state.wip || {})[F.key]) || 0), L0 = F.code && (this.state.wipLimits || {})[F.code], lim = L0 ? L0.limit : 30;
+        const n = F.key === 'fg' ? this.fgBoxN || 0 : Math.round(((this.state.wip || {})[F.key]) || 0), L0 = F.code && (this.state.wipLimits || {})[F.code], lim = L0 ? L0.limit : 30;
         const hot = !!(L0 && L0.warn && L0.warn_over != null && n > L0.warn_over), nd = this.liveT == null, k = `${n}|${lim}|${hot}|${nd}`;
         if (k === F.last) return; F.last = k;
         const c = F.cv.getContext('2d'); c.clearRect(0, 0, 512, 128);
         const col = F.code ? (hot ? '#c2570c' : '#2a323b') : '#1f7a45';
         c.globalAlpha = 1; c.fillStyle = col; c.textBaseline = 'alphabetic';
-        c.font = '800 34px "Pretendard","Malgun Gothic",sans-serif'; const lab = F.code ? F.name : `${F.name} 오늘`; c.fillText(lab, 12, 92); let x = 24 + c.measureText(lab).width;
-        c.font = '700 84px Consolas,monospace'; const num = nd ? '—' : String(n); c.fillText(num, x, 96); x += c.measureText(num).width + 8;
-        if (F.code && !nd) { c.globalAlpha = 0.75; c.font = '600 40px Consolas,monospace'; c.fillText(`/${lim}`, x, 96); }
+        c.font = '800 34px "Noto Sans KR Variable", sans-serif'; const lab = F.code ? F.name : `${F.name} 입고 박스`; c.fillText(lab, 12, 92); let x = 24 + c.measureText(lab).width;
+        c.font = '700 84px "Noto Sans KR Variable", sans-serif'; const num = nd ? '—' : String(n); c.fillText(num, x, 96); x += c.measureText(num).width + 8;
+        if (!nd) { c.globalAlpha = 0.75; c.font = '600 40px "Noto Sans KR Variable", sans-serif'; c.fillText(`/${lim}`, x, 96); }
         F.tex.needsUpdate = true;
       });
       const ph = (id) => this.phOf(id);
@@ -2121,8 +2123,8 @@ export default class FactoryDashboard extends React.Component<any, any> {
           if (!al && !wn) { c.fillStyle = e0 === 'INF' || e0 === 'RACK' ? '#8a97a4' : (this.STAT[e0] || this.STAT.NODATA).dot; c.fillRect(0, H0 - 24, W0, 24); }
           c.restore();
           c.textAlign = 'center'; c.textBaseline = 'alphabetic'; c.fillStyle = fg;
-          c.font = '800 118px "JetBrains Mono", Consolas, monospace'; c.fillText(S.id === 'rack' ? 'RACK-01' : this.MACH[S.id].name, W0 / 2, 134);
-          c.font = '700 70px "Pretendard Variable", Pretendard, "Malgun Gothic", sans-serif';
+          c.font = '800 118px "Noto Sans KR Variable", sans-serif'; c.fillText(S.id === 'rack' ? 'RACK-01' : this.MACH[S.id].name, W0 / 2, 134);
+          c.font = '700 70px "Noto Sans KR Variable", sans-serif';
           c.fillStyle = al || wn ? fg : LIGHT[e0] || '#c3cbd3';
           const st0 = e0 === 'INF' ? '투입 대' : e0 === 'RACK' ? '봉재 랙' : sv ? `${sv[0]} ${sv[1]}` : '';
           if (!bn) c.fillText(st0, W0 / 2, 230);
@@ -2708,7 +2710,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
     const v: any = this.renderVals();
     return (
       <>
-<div className={`relative w-full ${v.embedded ? 'h-full' : 'h-[100vh]'} min-h-[300px] overflow-hidden [font-family:'Pretendard_Variable',Pretendard,system-ui,sans-serif] text-[color:var(--t1)]`} ref={v.wrapRef} style={{ background: v.rootBg, '--ink': v.ink, '--ink2': v.ink2, '--bw': v.bandWip, '--bk': v.bandWork, '--glass': v.cv.glass, '--glass2': v.cv.glass2, '--gbd': v.cv.gbd, '--t1': v.cv.t1, '--t2': v.cv.t2, '--t3': v.cv.t3, '--chip': v.cv.chip, '--sep': v.cv.sep, '--albg': v.cv.albg, '--wnbg': v.cv.wnbg } as any}>
+<div className={`relative w-full ${v.embedded ? 'h-full' : 'h-[100vh]'} min-h-[300px] overflow-hidden [font-family:'Noto_Sans_KR_Variable',sans-serif] text-[color:var(--t1)]`} ref={v.wrapRef} style={{ background: v.rootBg, '--ink': v.ink, '--ink2': v.ink2, '--bw': v.bandWip, '--bk': v.bandWork, '--glass': v.cv.glass, '--glass2': v.cv.glass2, '--gbd': v.cv.gbd, '--t1': v.cv.t1, '--t2': v.cv.t2, '--t3': v.cv.t3, '--chip': v.cv.chip, '--sep': v.cv.sep, '--albg': v.cv.albg, '--wnbg': v.cv.wnbg } as any}>
   <div className="absolute inset-0 [cursor:grab]" ref={v.stageRef}></div>
   {v.showEdge && (<>
     <div className="absolute inset-0 pointer-events-none" style={{ animation: v.edgeAnim } as any}></div>
@@ -2716,10 +2718,10 @@ export default class FactoryDashboard extends React.Component<any, any> {
 
   <div className="absolute inset-0 pointer-events-none overflow-hidden" ref={v.ovRef}>
     {(v.xTicks || []).map((t: any, $index: number) => (<React.Fragment key={$index}>
-      <div className="absolute left-0 top-0 invisible [font:500_12px_'JetBrains_Mono',monospace] text-[color:var(--ink2)]" data-tier="axis" data-anchor={t.id} data-noscale="1" data-align="center">{t.label}</div>
+      <div className="absolute left-0 top-0 invisible [font:500_12px_'Noto_Sans_KR_Variable',sans-serif] text-[color:var(--ink2)]" data-tier="axis" data-anchor={t.id} data-noscale="1" data-align="center">{t.label}</div>
     </React.Fragment>))}
     {(v.yTicks || []).map((t: any, $index: number) => (<React.Fragment key={$index}>
-      <div className="absolute left-0 top-0 invisible [font:500_12px_'JetBrains_Mono',monospace] text-[color:var(--ink2)]" data-tier="axis" data-anchor={t.id} data-noscale="1" data-align="center">{t.label}</div>
+      <div className="absolute left-0 top-0 invisible [font:500_12px_'Noto_Sans_KR_Variable',sans-serif] text-[color:var(--ink2)]" data-tier="axis" data-anchor={t.id} data-noscale="1" data-align="center">{t.label}</div>
     </React.Fragment>))}
     <div className="absolute left-0 top-0 invisible text-[13px] font-medium text-[color:var(--ink2)] whitespace-nowrap" data-tier="axis" data-anchor="ax-x" data-noscale="1" data-align="center">X (mm) → 동쪽 · 공정 흐름</div>
     <div className="absolute left-0 top-0 invisible text-[13px] font-medium text-[color:var(--ink2)] whitespace-nowrap" data-tier="axis" data-anchor="ax-y" data-noscale="1" data-align="center">Y (mm) ↑ 북쪽</div>
@@ -2729,15 +2731,15 @@ export default class FactoryDashboard extends React.Component<any, any> {
     <div className="absolute left-0 top-0 invisible [transform-origin:50%_50%] text-[12px] font-semibold text-[color:var(--ink)] whitespace-nowrap" data-tier="zone" data-anchor="z-door" data-align="center">DOOR-1 반입문</div>
     <div className="absolute left-0 top-0 invisible [transform-origin:50%_50%] text-[12px] font-semibold text-[color:var(--bw)] whitespace-nowrap" data-tier="zone" data-anchor="z-wip" data-align="center">재공 띠</div>
     <div className="absolute left-0 top-0 invisible [transform-origin:50%_50%] text-[12px] font-semibold text-[color:var(--bk)] whitespace-nowrap" data-tier="zone" data-anchor="z-work" data-align="center">작업 띠</div>
-    <div className="absolute left-0 top-0 invisible [transform-origin:50%_50%] [font:500_11px_'JetBrains_Mono',monospace] text-[color:var(--ink2)] whitespace-nowrap" data-tier="zone" data-anchor="z-front" data-align="center">설비 앞면 선 Y 3,800</div>
+    <div className="absolute left-0 top-0 invisible [transform-origin:50%_50%] [font:500_11px_'Noto_Sans_KR_Variable',sans-serif] text-[color:var(--ink2)] whitespace-nowrap" data-tier="zone" data-anchor="z-front" data-align="center">설비 앞면 선 Y 3,800</div>
     {/* 병목 표시는 위에서 비추는 주황 조명으로 (2026-10-19) — 판·칩은 설비·이름표를 가려서 뺌 */}
 
     {(v.wips || []).map((w: any, $index: number) => (<React.Fragment key={$index}>
       <div className="absolute left-0 top-0 invisible [transform-origin:50%_100%]" data-tier="wip" data-alert={w.alert} data-anchor={w.id}>
         <div className="flex flex-col items-stretch gap-[3px] min-w-[78px] p-[5px_9px_6px] rounded-[7px] [box-shadow:0_4px_12px_rgba(120,70,20,0.12)] whitespace-nowrap" style={{ background: w.bg, border: `1px solid ${w.bd}` } as any}>
           <div className="flex justify-between items-baseline gap-[8px]">
-            <span className="[font:700_14px_'JetBrains_Mono',monospace]" style={{ color: w.fg } as any}>{w.name}</span>
-            <span className="[font:700_14px_'JetBrains_Mono',monospace]" style={{ color: w.orange ? '#b45309' : w.fg } as any}>{w.cnt}</span>
+            <span className="[font:700_14px_'Noto_Sans_KR_Variable',sans-serif]" style={{ color: w.fg } as any}>{w.name}</span>
+            <span className="[font:700_14px_'Noto_Sans_KR_Variable',sans-serif]" style={{ color: w.orange ? '#b45309' : w.fg } as any}>{w.cnt}</span>
           </div>
           <div className="h-[4px] rounded-[2px] bg-[var(--sep)] overflow-hidden"><div className="h-full rounded-[2px]" style={{ width: w.barW, background: w.bar } as any}></div></div>
           <span className="text-[12px] font-semibold" style={{ color: w.fg } as any}>{w.sub}</span>
@@ -2750,8 +2752,8 @@ export default class FactoryDashboard extends React.Component<any, any> {
         <div className="pointer-events-auto cursor-pointer flex items-center gap-[8px] h-[34px] pl-[0px] pr-[11px] rounded-[7px] whitespace-nowrap overflow-hidden [box-shadow:0_3px_0_rgba(70,76,86,0.35),0_9px_16px_rgba(28,45,62,0.28)]" onClick={g.onSelect}
           style={{ backgroundColor: g.tagBg || '#ffffff', backgroundImage: 'linear-gradient(112deg,rgba(255,255,255,0) 30%,rgba(255,255,255,.7) 44%,rgba(255,255,255,0) 58%),linear-gradient(180deg,rgba(255,255,255,.7),rgba(255,255,255,0) 52%,rgba(60,66,76,.12))', border: `${g.tagBdw || 1}px ${g.tagDash ? 'dashed' : 'solid'} ${g.tagBd || '#c3cbd3'}` } as any}>
           <span className="self-stretch w-[6px]" style={{ background: g.dot } as any}></span>
-          <span className={`${g.big ? 'text-[19px]' : 'text-[15px]'} font-bold text-[#1c2530] [font-family:'JetBrains_Mono',monospace]`}>{g.name}</span>
-          {g.op && (<span className="[font:600_12px_'JetBrains_Mono',monospace] text-[#5d6b79]">{g.op}</span>)}
+          <span className={`${g.big ? 'text-[19px]' : 'text-[15px]'} font-bold text-[#1c2530] [font-family:'Noto_Sans_KR_Variable',sans-serif]`}>{g.name}</span>
+          {g.op && (<span className="[font:600_12px_'Noto_Sans_KR_Variable',sans-serif] text-[#5d6b79]">{g.op}</span>)}
           {g.st && (<span data-detail className={`${g.big ? 'text-[22px] leading-none' : 'text-[13px]'} font-bold`} style={{ color: g.stFg } as any}>{g.st}</span>)}
           {g.bn && (<span data-detail className="text-[12px] font-bold p-[1px_6px] rounded-[4px] bg-[#fff1e0] text-[#b45309] [border:1.5px_solid_#e8954a]">▭ 병목</span>)}
         </div>
@@ -2766,22 +2768,22 @@ export default class FactoryDashboard extends React.Component<any, any> {
           <div className="pointer-events-auto cursor-pointer w-[178px] p-[10px_12px_12px] rounded-[11px] [backdrop-filter:blur(14px)_saturate(1.5)] [-webkit-backdrop-filter:blur(14px)_saturate(1.5)] [box-shadow:0_12px_30px_rgba(28,45,62,0.16),_inset_0_1px_0_rgba(255,255,255,0.95)] flex flex-col gap-[6px]" data-card="1" onClick={c.onSelect} style={{ animation: c.anim, background: c.bg, border: `1px solid ${c.bd}` } as any}>
             <div className="flex justify-between items-center gap-[8px] pb-[6px] [border-bottom:1px_solid_var(--sep)]">
               <span className="text-[14px] font-bold tracking-[-0.01em]">{c.name}</span>
-              <span className="[font:600_10px_'JetBrains_Mono',monospace] text-[color:var(--t3)] p-[2px_6px] rounded-[4px] bg-[var(--chip)] whitespace-nowrap" data-detail="1">{c.op}</span>
+              <span className="[font:600_10px_'Noto_Sans_KR_Variable',sans-serif] text-[color:var(--t3)] p-[2px_6px] rounded-[4px] bg-[var(--chip)] whitespace-nowrap" data-detail="1">{c.op}</span>
             </div>
             <div className="flex justify-between items-center text-[12px] text-[color:var(--t2)]">
               <span>Status</span>
-              <span className="flex items-center gap-[5px] [font:700_11px_'JetBrains_Mono',monospace]" style={{ color: c.stFg } as any}><span className="w-[6px] h-[6px] rounded-[50%] [animation:pulseDot_1.6s_ease-in-out_infinite]" style={{ background: c.stDot } as any}></span>{c.stText}</span>
+              <span className="flex items-center gap-[5px] [font:700_11px_'Noto_Sans_KR_Variable',sans-serif]" style={{ color: c.stFg } as any}><span className="w-[6px] h-[6px] rounded-[50%] [animation:pulseDot_1.6s_ease-in-out_infinite]" style={{ background: c.stDot } as any}></span>{c.stText}</span>
             </div>
             {c.hasMsg && (<>
               <div className="text-[11px] font-semibold p-[4px_7px] rounded-[5px] leading-[1.35]" style={{ color: c.msgFg, background: c.msgBg } as any}>{c.msg}</div>
             </>)}
             <div className="flex justify-between text-[12px] text-[color:var(--t2)]">
               <span>{c.loadLabel || 'Machine Load'}</span>
-              <span className="[font:600_12px_'JetBrains_Mono',monospace] text-[color:var(--t1)]">{c.load}{c.load === '—' ? '' : '%'}</span>
+              <span className="[font:600_12px_'Noto_Sans_KR_Variable',sans-serif] text-[color:var(--t1)]">{c.load}{c.load === '—' ? '' : '%'}</span>
             </div>
             <div className="flex justify-between text-[12px] text-[color:var(--t2)]" data-detail="1">
               <span>{c.lifeLabel}</span>
-              <span className="[font:600_12px_'JetBrains_Mono',monospace] text-[color:var(--t1)]">{c.tool}{c.tool === '—' ? '' : '%'}</span>
+              <span className="[font:600_12px_'Noto_Sans_KR_Variable',sans-serif] text-[color:var(--t1)]">{c.tool}{c.tool === '—' ? '' : '%'}</span>
             </div>
             <div className="h-[5px] rounded-[3px] bg-[var(--sep)] overflow-hidden" data-detail="1">
               <div className="h-full rounded-[3px]" style={{ width: c.toolW, background: c.bar } as any}></div>
@@ -2796,17 +2798,17 @@ export default class FactoryDashboard extends React.Component<any, any> {
         <div className="pointer-events-auto cursor-pointer w-[236px] p-[10px_12px_11px] rounded-[11px] bg-[var(--glass)] [backdrop-filter:blur(14px)_saturate(1.5)] [-webkit-backdrop-filter:blur(14px)_saturate(1.5)] [border:1px_solid_var(--gbd)] [box-shadow:0_12px_30px_rgba(28,45,62,0.16),_inset_0_1px_0_rgba(255,255,255,0.95)] flex flex-col gap-[7px]" data-card="1" onClick={v.selCmm}>
           <div className="flex justify-between items-center pb-[6px] [border-bottom:1px_solid_var(--sep)]">
             <span className="text-[14px] font-bold">CMM-01</span>
-            <span className="[font:600_10px_'JetBrains_Mono',monospace] text-[color:var(--t3)] p-[2px_6px] rounded-[4px] bg-[var(--chip)]" data-detail="1">OP-50 · 품질 측정</span>
+            <span className="[font:600_10px_'Noto_Sans_KR_Variable',sans-serif] text-[color:var(--t3)] p-[2px_6px] rounded-[4px] bg-[var(--chip)]" data-detail="1">OP-50 · 품질 측정</span>
           </div>
-          <div className="grid [grid-template-columns:1.1fr_1fr_1fr_auto] gap-x-[8px] gap-y-[4px] [font:500_11px_'JetBrains_Mono',monospace] text-[color:var(--t1)]" data-detail="1">
-            <span className="[font-family:'Pretendard_Variable',sans-serif] text-[color:var(--t3)]">항목</span><span className="text-[color:var(--t3)] text-right">도면</span><span className="text-[color:var(--t3)] text-right">측정</span><span className="text-[color:var(--t3)]">판정</span>
+          <div className="grid [grid-template-columns:1.1fr_1fr_1fr_auto] gap-x-[8px] gap-y-[4px] [font:500_11px_'Noto_Sans_KR_Variable',sans-serif] text-[color:var(--t1)]" data-detail="1">
+            <span className="[font-family:'Noto_Sans_KR_Variable',sans-serif] text-[color:var(--t3)]">항목</span><span className="text-[color:var(--t3)] text-right">도면</span><span className="text-[color:var(--t3)] text-right">측정</span><span className="text-[color:var(--t3)]">판정</span>
             {v.cmmRows.map((r: any, i: number) => (<React.Fragment key={i}>
-              <span className="[font-family:'Pretendard_Variable',sans-serif]">{r[0]}</span><span className="text-right">{r[1]}</span><span className="text-right">{r[2]}</span>
+              <span className="[font-family:'Noto_Sans_KR_Variable',sans-serif]">{r[0]}</span><span className="text-right">{r[1]}</span><span className="text-right">{r[2]}</span>
               <span className="font-bold" style={{ color: r[3] === '합격' ? '#13994f' : r[3] === '—' ? 'var(--t3)' : '#c62a2f' } as any}>{r[3]}</span>
             </React.Fragment>))}
           </div>
           <div className="flex flex-wrap gap-[4px_10px] justify-between pt-[6px] [border-top:1px_solid_var(--sep)] text-[11px] text-[color:var(--t2)]">
-            {v.cmmStats.map((s: any, i: number) => (<span key={i}>{s[0]} <b className="[font-family:'JetBrains_Mono',monospace]" style={{ color: s[2] || 'var(--t1)' } as any}>{s[1]}</b></span>))}
+            {v.cmmStats.map((s: any, i: number) => (<span key={i}>{s[0]} <b className="[font-family:'Noto_Sans_KR_Variable',sans-serif]" style={{ color: s[2] || 'var(--t1)' } as any}>{s[1]}</b></span>))}
           </div>
         </div>
         <div className="w-[1px] h-[20px] bg-[rgba(28,37,48,0.35)]"></div>
@@ -2817,7 +2819,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
       <div className="absolute left-0 top-0 invisible [transform-origin:50%_50%]" data-tier="fx" data-anchor={fx.id} data-mid={fx.mid} data-align="center">
         <div className="relative w-[34px] h-[34px]" style={{ animation: fx.bob } as any}>
           <span className="absolute inset-0 rounded-[50%]" style={{ border: `2px solid ${fx.ring}`, animation: fx.ringAnim } as any}></span>
-          <span className="absolute inset-0 rounded-[50%] flex items-center justify-center [font:800_19px_'JetBrains_Mono',monospace] text-[#ffffff]" style={{ background: fx.dot, boxShadow: `0 6px 16px ${fx.ring}` } as any}>{fx.sym}</span>
+          <span className="absolute inset-0 rounded-[50%] flex items-center justify-center [font:800_19px_'Noto_Sans_KR_Variable',sans-serif] text-[#ffffff]" style={{ background: fx.dot, boxShadow: `0 6px 16px ${fx.ring}` } as any}>{fx.sym}</span>
         </div>
       </div>
     </React.Fragment>))}
@@ -2829,28 +2831,28 @@ export default class FactoryDashboard extends React.Component<any, any> {
     <div className="flex gap-[10px] items-center text-[13px] text-[color:var(--ink2)] whitespace-nowrap" style={{ textShadow: `0 1px 6px ${v.subShadow}` } as any}>
       <span className="font-semibold text-[color:var(--ink)]">BRK-A100 라인 · 엔진 마운트 브래킷</span>
       <span className="w-[1px] h-[12px] bg-[#b7c0c9]"></span>
-      <span className="[font-family:'JetBrains_Mono',monospace]">OP-10 → OP-50</span>
+      <span className="[font-family:'Noto_Sans_KR_Variable',sans-serif]">OP-10 → OP-50</span>
       <span className="w-[1px] h-[12px] bg-[#b7c0c9]"></span>
       <span>단위 mm</span>
     </div>
     <div className="flex items-center gap-[6px] flex-nowrap">
       <div className="flex gap-[2px] p-[3px] rounded-[9px] bg-[var(--glass)] [backdrop-filter:blur(14px)] [-webkit-backdrop-filter:blur(14px)] [border:1px_solid_var(--gbd)] [box-shadow:0_6px_18px_rgba(28,45,62,0.08)]">
         {(v.views || []).map((v: any, $index: number) => (<React.Fragment key={$index}>
-          <button className="border-0 cursor-pointer p-[6px_13px] rounded-[7px] [font:600_12px_'Pretendard_Variable',sans-serif]" onClick={v.onClick} style={{ background: v.bg, color: v.fg } as any}>{v.label}</button>
+          <button className="border-0 cursor-pointer p-[6px_13px] rounded-[7px] [font:600_12px_'Noto_Sans_KR_Variable',sans-serif]" onClick={v.onClick} style={{ background: v.bg, color: v.fg } as any}>{v.label}</button>
         </React.Fragment>))}
       </div>
-      <button className="cursor-pointer h-[32px] rounded-[9px] [border:1px_solid_var(--gbd)] [backdrop-filter:blur(14px)] [-webkit-backdrop-filter:blur(14px)] [font:600_12px_'Pretendard_Variable',sans-serif] whitespace-nowrap w-[34px] p-[0] text-[15px]" onClick={v.toggleNav} title="이동 · 회전 · 줌 도구" style={{ background: v.navBg, color: v.navFg } as any}>✥</button>
+      <button className="cursor-pointer h-[32px] rounded-[9px] [border:1px_solid_var(--gbd)] [backdrop-filter:blur(14px)] [-webkit-backdrop-filter:blur(14px)] [font:600_12px_'Noto_Sans_KR_Variable',sans-serif] whitespace-nowrap w-[34px] p-[0] text-[15px]" onClick={v.toggleNav} title="이동 · 회전 · 줌 도구" style={{ background: v.navBg, color: v.navFg } as any}>✥</button>
       <div className="flex gap-[2px] p-[3px] rounded-[9px] bg-[var(--glass)] [backdrop-filter:blur(14px)] [-webkit-backdrop-filter:blur(14px)] [border:1px_solid_var(--gbd)]">
         {(v.details || []).map((dm: any, $index: number) => (<React.Fragment key={$index}>
-          <button className="border-0 cursor-pointer p-[6px_11px] rounded-[7px] [font:600_12px_'Pretendard_Variable',sans-serif] whitespace-nowrap" onClick={dm.onClick} style={{ background: dm.bg, color: dm.fg } as any}>{dm.label}</button>
+          <button className="border-0 cursor-pointer p-[6px_11px] rounded-[7px] [font:600_12px_'Noto_Sans_KR_Variable',sans-serif] whitespace-nowrap" onClick={dm.onClick} style={{ background: dm.bg, color: dm.fg } as any}>{dm.label}</button>
         </React.Fragment>))}
       </div>
       <div className="relative">
-        <button className="cursor-pointer flex items-center gap-[6px] h-[32px] p-[0_13px] rounded-[9px] border-0 bg-[#7a52f0] text-[#ffffff] [font:700_12px_'Pretendard_Variable',sans-serif] [box-shadow:0_6px_16px_rgba(122,82,240,0.35)] whitespace-nowrap" onClick={v.togglePresent}>발표 모드<span className="text-[9px]">▾</span></button>
+        <button className="cursor-pointer flex items-center gap-[6px] h-[32px] p-[0_13px] rounded-[9px] border-0 bg-[#7a52f0] text-[#ffffff] [font:700_12px_'Noto_Sans_KR_Variable',sans-serif] [box-shadow:0_6px_16px_rgba(122,82,240,0.35)] whitespace-nowrap" onClick={v.togglePresent}>발표 모드<span className="text-[9px]">▾</span></button>
         {v.presentOpen && (<>
           <div className="absolute left-0 top-[calc(100%_+_6px)] w-[220px] flex flex-col gap-[2px] p-[8px] rounded-[10px] bg-[var(--glass2)] [backdrop-filter:blur(16px)] [-webkit-backdrop-filter:blur(16px)] [border:1px_solid_var(--gbd)] [box-shadow:0_14px_34px_rgba(28,45,62,0.2)] z-[5]">
             {(v.presentItems || []).map((pi: any, $index: number) => (<React.Fragment key={$index}>
-              <button className="cursor-pointer flex flex-col items-start gap-[1px] p-[8px_10px] rounded-[7px] border-0 bg-[transparent] text-left [font-family:'Pretendard_Variable',sans-serif] hover:bg-[var(--chip)]" onClick={pi.onClick}>
+              <button className="cursor-pointer flex flex-col items-start gap-[1px] p-[8px_10px] rounded-[7px] border-0 bg-[transparent] text-left [font-family:'Noto_Sans_KR_Variable',sans-serif] hover:bg-[var(--chip)]" onClick={pi.onClick}>
                 <span className="text-[13px] font-semibold text-[color:var(--t1)]">{pi.label}</span>
                 <span className="text-[11px] text-[color:var(--t3)]">{pi.sub}</span>
               </button>
@@ -2858,7 +2860,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
           </div>
         </>)}
       </div>
-      <button className="cursor-pointer h-[32px] rounded-[9px] [border:1px_solid_var(--gbd)] [backdrop-filter:blur(14px)] [-webkit-backdrop-filter:blur(14px)] [font:600_12px_'Pretendard_Variable',sans-serif] whitespace-nowrap w-[34px] p-[0] text-[15px]" onClick={v.toggleNight} title={v.nightLabel} style={{ background: v.nightBg, color: v.nightFg } as any}>{v.nightIcon}</button>
+      <button className="cursor-pointer h-[32px] rounded-[9px] [border:1px_solid_var(--gbd)] [backdrop-filter:blur(14px)] [-webkit-backdrop-filter:blur(14px)] [font:600_12px_'Noto_Sans_KR_Variable',sans-serif] whitespace-nowrap w-[34px] p-[0] text-[15px]" onClick={v.toggleNight} title={v.nightLabel} style={{ background: v.nightBg, color: v.nightFg } as any}>{v.nightIcon}</button>
     </div>
     <div className="flex gap-[10px] text-[11px] text-[color:var(--ink2)] whitespace-nowrap" style={{ textShadow: `0 1px 6px ${v.subShadow}` } as any}>
       <span>좌클릭 드래그 · 회전</span><span>우클릭 드래그 · 이동</span><span>휠 · 커서 위치로 확대</span><span>더블클릭 · 그 지점으로 이동</span>
@@ -2875,34 +2877,34 @@ export default class FactoryDashboard extends React.Component<any, any> {
 
   <div className="absolute top-[22px] right-[24px] pointer-events-auto flex items-stretch rounded-[10px] bg-[var(--glass)] [backdrop-filter:blur(14px)] [-webkit-backdrop-filter:blur(14px)] [border:1px_solid_var(--gbd)] [box-shadow:0_8px_24px_rgba(28,45,62,0.1)]">
     <div className="flex flex-col gap-[3px] p-[10px_16px]">
-      <span className="flex items-center gap-[6px] [font:700_10px_'JetBrains_Mono',monospace] text-[#13994f] tracking-[0.08em]"><span className="w-[6px] h-[6px] rounded-[50%] bg-[#1fbf63] [animation:pulseDot_1.6s_ease-in-out_infinite]"></span>LIVE</span>
-      <span className="[font:600_16px_'JetBrains_Mono',monospace] whitespace-nowrap">{v.clock}</span>
+      <span className="flex items-center gap-[6px] [font:700_10px_'Noto_Sans_KR_Variable',sans-serif] text-[#13994f] tracking-[0.08em]"><span className="w-[6px] h-[6px] rounded-[50%] bg-[#1fbf63] [animation:pulseDot_1.6s_ease-in-out_infinite]"></span>LIVE</span>
+      <span className="[font:600_16px_'Noto_Sans_KR_Variable',sans-serif] whitespace-nowrap">{v.clock}</span>
     </div>
     <div className="w-[1px] bg-[var(--sep)]"></div>
     <div className="flex flex-col gap-[3px] p-[10px_16px]">
       <span className="text-[11px] text-[color:var(--t3)]">가동 설비</span>
-      <span className="[font:600_16px_'JetBrains_Mono',monospace]" style={{ color: v.runFg } as any}>{v.nRun} / 6</span>
+      <span className="[font:600_16px_'Noto_Sans_KR_Variable',sans-serif]" style={{ color: v.runFg } as any}>{v.nRun} / 6</span>
     </div>
     <div className="w-[1px] bg-[var(--sep)]"></div>
     <div className="flex flex-col gap-[3px] p-[10px_16px]">
       <span className="text-[11px] text-[color:var(--t3)]">알람</span>
-      <span className="[font:600_16px_'JetBrains_Mono',monospace] whitespace-nowrap" style={{ color: v.alarmFg } as any}>{v.nAlarm} <span className="text-[11px]" style={{ color: v.warnFg } as any}>주의 {v.nWarn}</span></span>
+      <span className="[font:600_16px_'Noto_Sans_KR_Variable',sans-serif] whitespace-nowrap" style={{ color: v.alarmFg } as any}>{v.nAlarm} <span className="text-[11px]" style={{ color: v.warnFg } as any}>주의 {v.nWarn}</span></span>
     </div>
     <div className="w-[1px] bg-[var(--sep)]"></div>
     <div className="flex flex-col gap-[3px] p-[10px_16px]">
       <span className="text-[11px] text-[color:var(--t3)]">시간당 생산</span>
-      <span className="flex items-center gap-[8px]"><span className="[font:600_16px_'JetBrains_Mono',monospace] whitespace-nowrap">{v.uph} <span className="text-[11px] text-[color:var(--t3)]">pcs</span></span><svg className="[overflow:visible]" width="52" height="18" viewBox="0 0 52 18" style={{ display: v.sparkDisp } as any}><polyline points={v.uphPts} fill="none" stroke="#7a52f0" strokeWidth="1.6" strokeLinejoin="round" strokeLinecap="round" /></svg></span>
+      <span className="flex items-center gap-[8px]"><span className="[font:600_16px_'Noto_Sans_KR_Variable',sans-serif] whitespace-nowrap">{v.uph} <span className="text-[11px] text-[color:var(--t3)]">pcs</span></span><svg className="[overflow:visible]" width="52" height="18" viewBox="0 0 52 18" style={{ display: v.sparkDisp } as any}><polyline points={v.uphPts} fill="none" stroke="#7a52f0" strokeWidth="1.6" strokeLinejoin="round" strokeLinecap="round" /></svg></span>
     </div>
     <div className="w-[1px] bg-[var(--sep)]"></div>
     <div className="flex flex-col gap-[3px] p-[10px_16px]">
       <span className="text-[11px] text-[color:var(--t3)]">재공 수량</span>
-      <span className="flex items-center gap-[8px]"><span className="[font:600_16px_'JetBrains_Mono',monospace] whitespace-nowrap">{v.wipTotal} <span className="text-[11px] text-[color:var(--t3)]">EA</span></span><svg className="[overflow:visible]" width="52" height="18" viewBox="0 0 52 18" style={{ display: v.sparkDisp } as any}><polyline points={v.wipPts} fill="none" stroke={v.wipStroke} strokeWidth="1.6" strokeLinejoin="round" strokeLinecap="round" /></svg></span>
+      <span className="flex items-center gap-[8px]"><span className="[font:600_16px_'Noto_Sans_KR_Variable',sans-serif] whitespace-nowrap">{v.wipTotal} <span className="text-[11px] text-[color:var(--t3)]">EA</span></span><svg className="[overflow:visible]" width="52" height="18" viewBox="0 0 52 18" style={{ display: v.sparkDisp } as any}><polyline points={v.wipPts} fill="none" stroke={v.wipStroke} strokeWidth="1.6" strokeLinejoin="round" strokeLinecap="round" /></svg></span>
     </div>
   </div>
 
   <div className="absolute top-[90px] right-[24px] pointer-events-auto flex flex-col items-end gap-[6px]">
     {(v.banners || []).map((is: any, $index: number) => (<React.Fragment key={$index}>
-      <button className="cursor-pointer flex items-center gap-[7px] h-[30px] p-[0_11px] rounded-[10px] [backdrop-filter:blur(12px)] [-webkit-backdrop-filter:blur(12px)] [box-shadow:0_8px_22px_rgba(28,45,62,0.14)] [font-family:'Pretendard_Variable',sans-serif] whitespace-nowrap" onClick={is.onClick} style={{ border: `1px solid ${is.bd}`, background: is.bg, color: is.fg, animation: is.banAnim } as any}>
+      <button className="cursor-pointer flex items-center gap-[7px] h-[30px] p-[0_11px] rounded-[10px] [backdrop-filter:blur(12px)] [-webkit-backdrop-filter:blur(12px)] [box-shadow:0_8px_22px_rgba(28,45,62,0.14)] [font-family:'Noto_Sans_KR_Variable',sans-serif] whitespace-nowrap" onClick={is.onClick} style={{ border: `1px solid ${is.bd}`, background: is.bg, color: is.fg, animation: is.banAnim } as any}>
         <span className="w-[8px] h-[8px] rounded-[50%] [animation:pulseDot_0.8s_ease-in-out_infinite]" style={{ background: is.dot } as any}></span>
         <span className="text-[12px] font-bold">{is.tag}</span>
         <span className="text-[12px] font-bold">{is.name}</span>
@@ -2915,33 +2917,33 @@ export default class FactoryDashboard extends React.Component<any, any> {
         <div className="absolute left-[24px] bottom-[72px] pointer-events-auto w-[320px] max-w-[calc(100%_-_48px)] z-[2] flex flex-col gap-[12px] p-[14px] rounded-[10px] bg-[var(--glass2)] [backdrop-filter:blur(16px)] [-webkit-backdrop-filter:blur(16px)] [border:1px_solid_var(--gbd)] [box-shadow:0_14px_34px_rgba(28,45,62,0.18)] text-[12px] text-[color:var(--t2)]">
           <div className="flex justify-between items-center">
             <span className="text-[14px] font-bold text-[color:var(--t1)]">알람 시연</span>
-            <span className="[font:700_11px_'JetBrains_Mono',monospace] whitespace-nowrap" style={{ color: v.demoStFg } as any}>{v.demoName} · {v.demoStText}</span>
+            <span className="[font:700_11px_'Noto_Sans_KR_Variable',sans-serif] whitespace-nowrap" style={{ color: v.demoStFg } as any}>{v.demoName} · {v.demoStText}</span>
           </div>
           <div className="flex flex-col gap-[6px]">
             <span className="text-[11px] font-bold tracking-[0.06em] text-[color:var(--t3)]">대상 설비</span>
             <div className="flex flex-wrap gap-[5px]">
               {(v.demoTargets || []).map((dt: any, $index: number) => (<React.Fragment key={$index}>
-                <button className="cursor-pointer flex items-center gap-[5px] p-[5px_9px] rounded-[7px] [font:600_12px_'Pretendard_Variable',sans-serif] whitespace-nowrap" onClick={dt.onClick} style={{ border: `1px solid ${dt.bd}`, background: dt.bg, color: dt.fg } as any}>
+                <button className="cursor-pointer flex items-center gap-[5px] p-[5px_9px] rounded-[7px] [font:600_12px_'Noto_Sans_KR_Variable',sans-serif] whitespace-nowrap" onClick={dt.onClick} style={{ border: `1px solid ${dt.bd}`, background: dt.bg, color: dt.fg } as any}>
                   <span className="w-[6px] h-[6px] rounded-[50%]" style={{ background: dt.dot } as any}></span>{dt.name}
                 </button>
               </React.Fragment>))}
             </div>
           </div>
           <div className="grid [grid-template-columns:1fr_1fr] gap-[6px]">
-            <button className="cursor-pointer flex flex-col items-start gap-[2px] p-[10px_11px] rounded-[9px] [border:1px_solid_#f0a500] bg-[#fff6de] text-[#7a4b00] [font-family:'Pretendard_Variable',sans-serif] text-left" onClick={v.doWarn}>
+            <button className="cursor-pointer flex flex-col items-start gap-[2px] p-[10px_11px] rounded-[9px] [border:1px_solid_#f0a500] bg-[#fff6de] text-[#7a4b00] [font-family:'Noto_Sans_KR_Variable',sans-serif] text-left" onClick={v.doWarn}>
               <span className="flex items-center gap-[6px] text-[13px] font-bold"><span className="w-[8px] h-[8px] rounded-[50%] bg-[#f0a500]"></span>주의 발생</span>
               <span className="text-[11px] font-medium">{v.demoWarnMsg}</span>
             </button>
-            <button className="cursor-pointer flex flex-col items-start gap-[2px] p-[10px_11px] rounded-[9px] [border:1px_solid_#e5484d] bg-[#ffe9e9] text-[#a01e23] [font-family:'Pretendard_Variable',sans-serif] text-left" onClick={v.doAlarm}>
+            <button className="cursor-pointer flex flex-col items-start gap-[2px] p-[10px_11px] rounded-[9px] [border:1px_solid_#e5484d] bg-[#ffe9e9] text-[#a01e23] [font-family:'Noto_Sans_KR_Variable',sans-serif] text-left" onClick={v.doAlarm}>
               <span className="flex items-center gap-[6px] text-[13px] font-bold"><span className="w-[8px] h-[8px] rounded-[50%] bg-[#e5484d]"></span>고장 발생</span>
               <span className="text-[11px] font-medium">{v.demoAlarmMsg}</span>
             </button>
           </div>
           <div className="grid [grid-template-columns:1fr_1fr] gap-[6px]">
-            <button className="cursor-pointer p-[8px_10px] rounded-[8px] border-0 bg-[#1c2530] text-[#ffffff] [font:700_12px_'Pretendard_Variable',sans-serif]" onClick={v.doFix}>선택 설비 복구</button>
-            <button className="cursor-pointer p-[8px_10px] rounded-[8px] [border:1px_solid_rgba(28,37,48,0.15)] bg-[#ffffff] text-[color:var(--t1)] [font:700_12px_'Pretendard_Variable',sans-serif]" onClick={v.doReset}>전체 정상화</button>
+            <button className="cursor-pointer p-[8px_10px] rounded-[8px] border-0 bg-[#1c2530] text-[#ffffff] [font:700_12px_'Noto_Sans_KR_Variable',sans-serif]" onClick={v.doFix}>선택 설비 복구</button>
+            <button className="cursor-pointer p-[8px_10px] rounded-[8px] [border:1px_solid_rgba(28,37,48,0.15)] bg-[#ffffff] text-[color:var(--t1)] [font:700_12px_'Noto_Sans_KR_Variable',sans-serif]" onClick={v.doReset}>전체 정상화</button>
           </div>
-          <button className="cursor-pointer flex items-center gap-[8px] p-[0] border-0 bg-[transparent] text-[color:var(--t2)] [font:500_12px_'Pretendard_Variable',sans-serif]" onClick={v.toggleFocus}>
+          <button className="cursor-pointer flex items-center gap-[8px] p-[0] border-0 bg-[transparent] text-[color:var(--t2)] [font:500_12px_'Noto_Sans_KR_Variable',sans-serif]" onClick={v.toggleFocus}>
             <span className="w-[16px] h-[16px] rounded-[4px] [border:1.5px_solid_#1c2530] text-[#ffffff] flex items-center justify-center text-[11px] font-bold" style={{ background: v.focusBg } as any}>{v.focusMark}</span>
             발생 시 카메라 자동 포커스 · 상세 패널 열기
           </button>
@@ -2953,7 +2955,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
       <span className="flex-none text-[11px] font-bold tracking-[0.06em] text-[color:var(--t3)] p-[0_8px_0_6px]">공정</span>
       {(v.stepper || []).map((s: any, $index: number) => (<React.Fragment key={$index}>
         <div className="flex-none flex items-center gap-[4px]">
-          <button className="cursor-pointer flex items-center gap-[5px] p-[5px_8px] rounded-[8px] [font-family:'Pretendard_Variable',sans-serif] whitespace-nowrap" onClick={s.onClick} style={{ border: `1px solid ${s.bd}`, background: s.bg, color: s.fg } as any}>
+          <button className="cursor-pointer flex items-center gap-[5px] p-[5px_8px] rounded-[8px] [font-family:'Noto_Sans_KR_Variable',sans-serif] whitespace-nowrap" onClick={s.onClick} style={{ border: `1px solid ${s.bd}`, background: s.bg, color: s.fg } as any}>
             <span className="w-[7px] h-[7px] rounded-[50%]" style={{ background: s.dot } as any}></span>
             <span className="text-[11px] font-bold">{s.label}</span>
           </button>
@@ -2964,15 +2966,15 @@ export default class FactoryDashboard extends React.Component<any, any> {
       </React.Fragment>))}
     </div>
     <div className="flex-none relative">
-      <button className="cursor-pointer h-[38px] p-[0_14px] flex items-center gap-[7px] rounded-[11px] [border:1px_solid_var(--gbd)] [backdrop-filter:blur(14px)] [-webkit-backdrop-filter:blur(14px)] [box-shadow:0_8px_22px_rgba(28,45,62,0.1)] [font:600_12px_'Pretendard_Variable',sans-serif] whitespace-nowrap" onClick={v.toggleDemo} style={{ background: v.demoBg, color: v.demoFg } as any}><span className="flex gap-[3px]"><span className="w-[7px] h-[7px] rounded-[50%] bg-[#f0a500]"></span><span className="w-[7px] h-[7px] rounded-[50%] bg-[#e5484d]"></span></span>알람 시연</button>
+      <button className="cursor-pointer h-[38px] p-[0_14px] flex items-center gap-[7px] rounded-[11px] [border:1px_solid_var(--gbd)] [backdrop-filter:blur(14px)] [-webkit-backdrop-filter:blur(14px)] [box-shadow:0_8px_22px_rgba(28,45,62,0.1)] [font:600_12px_'Noto_Sans_KR_Variable',sans-serif] whitespace-nowrap" onClick={v.toggleDemo} style={{ background: v.demoBg, color: v.demoFg } as any}><span className="flex gap-[3px]"><span className="w-[7px] h-[7px] rounded-[50%] bg-[#f0a500]"></span><span className="w-[7px] h-[7px] rounded-[50%] bg-[#e5484d]"></span></span>알람 시연</button>
     </div>
     <div className="flex-none relative">
-      <button className="cursor-pointer h-[38px] p-[0_14px] rounded-[11px] [border:1px_solid_var(--gbd)] [backdrop-filter:blur(14px)] [-webkit-backdrop-filter:blur(14px)] [box-shadow:0_8px_22px_rgba(28,45,62,0.1)] [font:600_12px_'Pretendard_Variable',sans-serif] whitespace-nowrap" onClick={v.toggleLayers} style={{ background: v.layersBg, color: v.layersFg } as any}>레이어</button>
+      <button className="cursor-pointer h-[38px] p-[0_14px] rounded-[11px] [border:1px_solid_var(--gbd)] [backdrop-filter:blur(14px)] [-webkit-backdrop-filter:blur(14px)] [box-shadow:0_8px_22px_rgba(28,45,62,0.1)] [font:600_12px_'Noto_Sans_KR_Variable',sans-serif] whitespace-nowrap" onClick={v.toggleLayers} style={{ background: v.layersBg, color: v.layersFg } as any}>레이어</button>
       {v.layersOpen && (<>
         <div className="absolute right-0 bottom-[calc(100%_+_8px)] w-[280px] flex flex-col gap-[4px] p-[12px] rounded-[10px] bg-[var(--glass2)] [backdrop-filter:blur(16px)] [-webkit-backdrop-filter:blur(16px)] [border:1px_solid_var(--gbd)] [box-shadow:0_14px_34px_rgba(28,45,62,0.18)]">
           <span className="text-[11px] font-bold tracking-[0.06em] text-[color:var(--t3)] p-[0_4px_4px]">시각화 레이어</span>
           {(v.layerItems || []).map((ly: any, $index: number) => (<React.Fragment key={$index}>
-            <button className="cursor-pointer flex items-center gap-[10px] p-[7px_6px] rounded-[8px] border-0 bg-[transparent] text-left [font-family:'Pretendard_Variable',sans-serif]" onClick={ly.onClick}>
+            <button className="cursor-pointer flex items-center gap-[10px] p-[7px_6px] rounded-[8px] border-0 bg-[transparent] text-left [font-family:'Noto_Sans_KR_Variable',sans-serif]" onClick={ly.onClick}>
               <span className="flex-none w-[18px] h-[18px] rounded-[5px] text-[#ffffff] flex items-center justify-center text-[11px] font-bold" style={{ border: `1.5px solid ${ly.boxBd}`, background: ly.boxBg } as any}>{ly.mark}</span>
               <span className="flex flex-col gap-[1px]">
                 <span className="text-[13px] font-semibold text-[color:var(--t1)]">{ly.label}</span>
@@ -2985,7 +2987,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
       </>)}
     </div>
     <div className="flex-none relative">
-      <button className="cursor-pointer h-[38px] p-[0_14px] rounded-[11px] [border:1px_solid_var(--gbd)] [backdrop-filter:blur(14px)] [-webkit-backdrop-filter:blur(14px)] [box-shadow:0_8px_22px_rgba(28,45,62,0.1)] [font:600_12px_'Pretendard_Variable',sans-serif] whitespace-nowrap" onClick={v.toggleLegend} style={{ background: v.legendBg, color: v.legendFg } as any}>범례 · 도움말</button>
+      <button className="cursor-pointer h-[38px] p-[0_14px] rounded-[11px] [border:1px_solid_var(--gbd)] [backdrop-filter:blur(14px)] [-webkit-backdrop-filter:blur(14px)] [box-shadow:0_8px_22px_rgba(28,45,62,0.1)] [font:600_12px_'Noto_Sans_KR_Variable',sans-serif] whitespace-nowrap" onClick={v.toggleLegend} style={{ background: v.legendBg, color: v.legendFg } as any}>범례 · 도움말</button>
       {v.legendOpen && (<>
         <div className="absolute right-0 bottom-[calc(100%_+_8px)] w-[300px] flex flex-col gap-[10px] p-[12px_14px] rounded-[10px] bg-[var(--glass2)] [backdrop-filter:blur(16px)] [-webkit-backdrop-filter:blur(16px)] [border:1px_solid_var(--gbd)] [box-shadow:0_14px_34px_rgba(28,45,62,0.16)] text-[12px] text-[color:var(--t2)]">
           <span className="text-[11px] font-bold tracking-[0.06em] text-[color:var(--t3)]">설비 상태</span>
@@ -3018,10 +3020,10 @@ export default class FactoryDashboard extends React.Component<any, any> {
       <div className="flex flex-col gap-[8px] p-[16px_18px_14px] [border-bottom:1px_solid_rgba(28,37,48,0.08)]">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-[8px]">
-            <span className="flex items-center gap-[5px] [font:700_11px_'JetBrains_Mono',monospace]" style={{ color: v.d.stFg } as any}><span className="w-[7px] h-[7px] rounded-[50%] [animation:pulseDot_1.6s_ease-in-out_infinite]" style={{ background: v.d.stDot } as any}></span>{v.d.stText}</span>
-            <span className="[font:600_10px_'JetBrains_Mono',monospace] text-[color:var(--t3)] p-[2px_6px] rounded-[4px] bg-[var(--chip)]">{v.d.op}</span>
+            <span className="flex items-center gap-[5px] [font:700_11px_'Noto_Sans_KR_Variable',sans-serif]" style={{ color: v.d.stFg } as any}><span className="w-[7px] h-[7px] rounded-[50%] [animation:pulseDot_1.6s_ease-in-out_infinite]" style={{ background: v.d.stDot } as any}></span>{v.d.stText}</span>
+            <span className="[font:600_10px_'Noto_Sans_KR_Variable',sans-serif] text-[color:var(--t3)] p-[2px_6px] rounded-[4px] bg-[var(--chip)]">{v.d.op}</span>
           </div>
-          <button className="cursor-pointer h-[28px] p-[0_10px] rounded-[7px] border-0 [font:600_12px_'Pretendard_Variable',sans-serif] whitespace-nowrap ml-auto mr-[6px]" onClick={v.toggleExplode} style={{ background: v.explodeBg, color: v.explodeFg } as any}>{v.explodeLabel}</button>
+          <button className="cursor-pointer h-[28px] p-[0_10px] rounded-[7px] border-0 [font:600_12px_'Noto_Sans_KR_Variable',sans-serif] whitespace-nowrap ml-auto mr-[6px]" onClick={v.toggleExplode} style={{ background: v.explodeBg, color: v.explodeFg } as any}>{v.explodeLabel}</button>
           <button className="cursor-pointer w-[28px] h-[28px] rounded-[7px] border-0 bg-[var(--chip)] text-[color:var(--t1)] text-[16px] leading-[1]" onClick={v.closeSel}>×</button>
         </div>
         <div className="flex items-baseline gap-[10px]">
@@ -3045,20 +3047,20 @@ export default class FactoryDashboard extends React.Component<any, any> {
                 <span className="text-[11px] font-bold text-[color:var(--t3)]">조치 가이드</span>
                 {(v.info.guide || []).map((gd: any, $index: number) => (<React.Fragment key={$index}>
                   <div className="flex items-center gap-[8px] text-[12px] text-[color:var(--t1)]">
-                    <span className="w-[18px] h-[18px] rounded-[50%] flex items-center justify-center [font:700_10px_'JetBrains_Mono',monospace] bg-[#ffffff]" style={{ color: v.info.fg, border: `1px solid ${v.info.bd}` } as any}>{gd.n}</span>{gd.t}
+                    <span className="w-[18px] h-[18px] rounded-[50%] flex items-center justify-center [font:700_10px_'Noto_Sans_KR_Variable',sans-serif] bg-[#ffffff]" style={{ color: v.info.fg, border: `1px solid ${v.info.bd}` } as any}>{gd.n}</span>{gd.t}
                   </div>
                 </React.Fragment>))}
               </div>
             </>)}
             {v.info.canRestart && (<>
-              <button className="cursor-pointer mt-[2px] p-[9px_12px] rounded-[8px] border-0 bg-[#1c2530] text-[#ffffff] [font:700_13px_'Pretendard_Variable',sans-serif]" onClick={v.restartSel}>{v.info.btnLabel}</button>
+              <button className="cursor-pointer mt-[2px] p-[9px_12px] rounded-[8px] border-0 bg-[#1c2530] text-[#ffffff] [font:700_13px_'Noto_Sans_KR_Variable',sans-serif]" onClick={v.restartSel}>{v.info.btnLabel}</button>
             </>)}
           </div>
         </>)}
         <div className="flex flex-col gap-[7px]">
           <div className="flex justify-between items-baseline">
             <span className="text-[11px] font-semibold tracking-[0.06em] text-[color:var(--t3)]">사이클 진행</span>
-            <span className="[font:600_12px_'JetBrains_Mono',monospace]">{v.d.elapsed}s / {v.d.T}s</span>
+            <span className="[font:600_12px_'Noto_Sans_KR_Variable',sans-serif]">{v.d.elapsed}s / {v.d.T}s</span>
           </div>
           <div className="h-[6px] rounded-[3px] bg-[var(--sep)] overflow-hidden">
             <div className="h-full rounded-[3px] [background:linear-gradient(90deg,#3a9fb0,#34c46e)]" style={{ width: v.d.progW } as any}></div>
@@ -3068,7 +3070,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
           <span className="text-[11px] font-semibold tracking-[0.06em] text-[color:var(--t3)] pb-[5px]">공정 단계</span>
           {(v.d.steps || []).map((st: any, $index: number) => (<React.Fragment key={$index}>
             <div className="grid [grid-template-columns:28px_minmax(0,1fr)] gap-[10px] [align-items:start] p-[7px_8px] rounded-[8px]" style={{ background: st.rowBg } as any}>
-              <span className="w-[26px] h-[22px] rounded-[6px] flex items-center justify-center [font:700_11px_'JetBrains_Mono',monospace]" style={{ background: st.numBg, color: st.numFg } as any}>{st.n}</span>
+              <span className="w-[26px] h-[22px] rounded-[6px] flex items-center justify-center [font:700_11px_'Noto_Sans_KR_Variable',sans-serif]" style={{ background: st.numBg, color: st.numFg } as any}>{st.n}</span>
               <div className="flex flex-col gap-[2px]">
                 <div className="flex items-center gap-[6px]">
                   <span className="text-[13px] font-semibold" style={{ color: st.tFg } as any}>{st.title}</span>
@@ -3087,7 +3089,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
             {(v.d.params || []).map((pm: any, $index: number) => (<React.Fragment key={$index}>
               <div className="flex flex-col gap-[2px] p-[8px_10px] rounded-[8px] bg-[var(--chip)]">
                 <span className="text-[11px] text-[color:var(--t3)]">{pm.k}</span>
-                <span className="[font:600_13px_'JetBrains_Mono',monospace] text-[color:var(--t1)]">{pm.v}</span>
+                <span className="[font:600_13px_'Noto_Sans_KR_Variable',sans-serif] text-[color:var(--t1)]">{pm.v}</span>
               </div>
             </React.Fragment>))}
           </div>
@@ -3111,15 +3113,15 @@ export default class FactoryDashboard extends React.Component<any, any> {
     {/* 투어 설명 = 화면 아래 한 줄 띠 (사용자 요청 2026-10-20 "최대한 한줄로 길게 … 화면을 최대한 안가리도록"). 설명이 넘치면 … (마우스를 올리면 전체) */}
     <div className={`absolute left-[12px] ${v.embedded ? 'right-[244px]' : 'right-[12px]'} bottom-[10px] flex flex-col overflow-hidden rounded-[10px] bg-[var(--glass2)] [backdrop-filter:blur(16px)_saturate(1.4)] [-webkit-backdrop-filter:blur(16px)_saturate(1.4)] [border:1px_solid_var(--gbd)] [box-shadow:0_8px_24px_rgba(10,20,30,0.18)]`}>{/* 앱 안에서는 오른쪽 아래 [2D][전체][위][+][−] 버튼 줄(App.tsx) 앞에서 멈춤 */}
       <div className="flex items-center gap-[12px] p-[6px_8px_6px_8px]">
-        <span className="flex-none [font:700_12px_'JetBrains_Mono',monospace] text-[#ffffff] bg-[#7a52f0] p-[4px_8px] rounded-[6px] whitespace-nowrap">{v.tStep}</span>
-        <span className="flex-none [font:700_11px_'JetBrains_Mono',monospace] tracking-[0.06em] text-[#5a3bc8] whitespace-nowrap">{v.tK}</span>
+        <span className="flex-none [font:700_12px_'Noto_Sans_KR_Variable',sans-serif] text-[#ffffff] bg-[#7a52f0] p-[4px_8px] rounded-[6px] whitespace-nowrap">{v.tStep}</span>
+        <span className="flex-none [font:700_11px_'Noto_Sans_KR_Variable',sans-serif] tracking-[0.06em] text-[#5a3bc8] whitespace-nowrap">{v.tK}</span>
         <span className="flex-none text-[16px] font-bold tracking-[-0.01em] text-[color:var(--t1)] whitespace-nowrap">{v.tT}</span>
         <span className="flex-1 min-w-0 truncate text-[13px] text-[color:var(--t2)]" title={v.tD}>{v.tD}</span>
         <div className="flex-none flex gap-[4px]">
           <button className="cursor-pointer w-[30px] h-[30px] rounded-[8px] border-0 bg-[var(--chip)] text-[color:var(--t1)] text-[12px]" onClick={v.tourPrev} title="이전 단계">◀◀</button>
           <button className="cursor-pointer w-[30px] h-[30px] rounded-[8px] border-0 bg-[#1c2530] text-[#ffffff] text-[12px]" onClick={v.tourToggle} title="일시정지 / 재생">{v.pauseLabel}</button>
           <button className="cursor-pointer w-[30px] h-[30px] rounded-[8px] border-0 bg-[var(--chip)] text-[color:var(--t1)] text-[12px]" onClick={v.tourNext} title="다음 단계">▶▶</button>
-          <button className="cursor-pointer h-[30px] p-[0_10px] rounded-[8px] border-0 bg-[var(--chip)] text-[color:var(--t1)] [font:600_12px_'Pretendard_Variable',sans-serif]" onClick={v.tourStop} title="투어 종료">종료</button>
+          <button className="cursor-pointer h-[30px] p-[0_10px] rounded-[8px] border-0 bg-[var(--chip)] text-[color:var(--t1)] [font:600_12px_'Noto_Sans_KR_Variable',sans-serif]" onClick={v.tourStop} title="투어 종료">종료</button>
         </div>
       </div>
       <div className="flex gap-[2px]">{/* 진행 막대 = 띠 아래 가장자리 */}
@@ -3133,7 +3135,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
   {v.introRun && (<>
     <div className="absolute inset-0 pointer-events-none flex items-center justify-center [animation:introTitle_6.4s_ease_forwards] [background:radial-gradient(ellipse_at_center,_rgba(5,8,12,0.6)_0%,_rgba(5,8,12,0)_62%)]">
       <div className="flex flex-col items-center gap-[14px] text-center text-[#ffffff] p-[0_24px]">
-        <span className="[font:600_12px_'JetBrains_Mono',monospace] tracking-[0.32em] text-[#7fe3f5]">BRK-A100 LINE · DIGITAL TWIN</span>
+        <span className="[font:600_12px_'Noto_Sans_KR_Variable',sans-serif] tracking-[0.32em] text-[#7fe3f5]">BRK-A100 LINE · DIGITAL TWIN</span>
         <span className="[font-size:clamp(28px,_4.6vw,_60px)] font-bold tracking-[-0.01em] leading-[1.05] [text-shadow:0_4px_30px_rgba(0,0,0,0.55)] text-balance max-w-[90vw]">3D FACTORY PROCESS VISUALIZATION</span>
         <span className="w-[140px] h-[2px] [background:linear-gradient(90deg,_rgba(79,210,234,0),_#4fd2ea,_rgba(79,210,234,0))]"></span>
         <span className="text-[14px] font-medium text-[#d6dee6] tracking-[0.04em]">엔진 마운트 브래킷 · OP-10 → OP-50 · 설비 6대 + 투입 대</span>
@@ -3141,7 +3143,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
     </div>
   </>)}
   {v.introOn && (<>
-    <button className="absolute right-[24px] bottom-[22px] cursor-pointer p-[9px_16px] rounded-[9px] [border:1px_solid_rgba(255,255,255,0.35)] bg-[rgba(10,14,20,0.5)] text-[#ffffff] [font:600_12px_'Pretendard_Variable',sans-serif] [backdrop-filter:blur(8px)] [-webkit-backdrop-filter:blur(8px)] whitespace-nowrap" onClick={v.skipIntro}>건너뛰기 →</button>
+    <button className="absolute right-[24px] bottom-[22px] cursor-pointer p-[9px_16px] rounded-[9px] [border:1px_solid_rgba(255,255,255,0.35)] bg-[rgba(10,14,20,0.5)] text-[#ffffff] [font:600_12px_'Noto_Sans_KR_Variable',sans-serif] [backdrop-filter:blur(8px)] [-webkit-backdrop-filter:blur(8px)] whitespace-nowrap" onClick={v.skipIntro}>건너뛰기 →</button>
   </>)}
 </div>
 </>

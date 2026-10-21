@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-html,body{margin:0;height:100%;background:#eef1f4;}
+html,body{margin:0;height:100%;background:#f2f3f5;}
 a{color:#5a3bc8;}
 a:hover{color:#43299e;}
 canvas{outline:none;display:block;}
@@ -44,7 +44,7 @@ canvas{outline:none;display:block;}
 }
 
 
-body{font-family:'Pretendard Variable',Pretendard,system-ui,sans-serif;}
+body{font-family:'Noto Sans KR Variable','Noto Sans KR',system-ui,sans-serif;}
 
 /* 데이터적용본: 화면 설정 "계산한 크기로 글자 키우기" (UI설계서 2.4 식) — 현장 보기 띠·3D 이름표 */
 .fs-scaled aside { font-size: var(--fs-body); }
@@ -53,8 +53,15 @@ body{font-family:'Pretendard Variable',Pretendard,system-ui,sans-serif;}
 /* 이브 = mom-assistant-widget 모양. 상단 바(52px)·범례(38px)는 가리지 않고, 긴급 팝업(z-40)·출처 창(z-50) 아래 */
 .ma-root { --ma-z: 25; font-family: inherit; }
 .ma-panel { top: 60px; bottom: 46px; }
-.ma-fab { bottom: 50px; }
-.ma-menu, .ma-toast { bottom: 126px; }
+.ma-fab { bottom: 70px; } /* 아래 범례 유리 줄(46px) 위 (시안 3a, 2026-10-20) */
+/* 이브 버튼 왼쪽 작은 채팅창 (사용자 요청 2026-10-20) — 이브 버튼(64px, 오른쪽 24px) 왼쪽에 붙은 흰 알약 */
+.ma-quick { position: fixed; right: 100px; bottom: 78px; z-index: calc(var(--ma-z) + 1); display: flex; align-items: center; gap: 6px; width: min(340px, calc(100vw - 140px)); height: 48px; padding: 0 5px 0 18px; border-radius: 9999px; background: rgba(255,255,255,.94); border: 1px solid #dcdde1; box-shadow: 0 8px 24px rgba(28,37,48,.16); backdrop-filter: blur(12px); }
+.ma-quick input { flex: 1; min-width: 0; border: 0; background: transparent; font-size: 15px; color: #26303a; outline: none; }
+.ma-quick input::placeholder { color: #8a94a3; }
+.ma-quick:focus-within { border-color: #6a43e0; box-shadow: 0 0 0 3px #f0ebff, 0 8px 24px rgba(28,37,48,.16); }
+.ma-quick button { display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; flex: none; border: 0; border-radius: 9999px; background: #6a43e0; color: #fff; cursor: pointer; }
+.ma-quick button:disabled { background: #e8eaed; color: #6b7380; cursor: default; }
+.ma-menu, .ma-toast { bottom: 146px; }
 /* 어두운 창 안의 기존 탭 내용 (밝은 화면용 Tailwind 색) */
 .ma-panel .text-slate-400, .ma-panel .text-slate-500 { color: var(--ma-panel-mute); }
 .ma-panel .text-slate-700 { color: var(--ma-panel-sub); }
@@ -68,32 +75,7 @@ body{font-family:'Pretendard Variable',Pretendard,system-ui,sans-serif;}
 * { scrollbar-width: thin; scrollbar-color: #c3cad3 transparent; }
 .ma-panel * { scrollbar-color: rgba(255, 255, 255, 0.25) transparent; }
 
-/* ===== 실버 필 테마 (2026-10-16 사용자 시안 3a) — 밝은 회색 바탕 · 실버 그라데이션 컨테이너 · 흰색 알약 선택. 3D 장면·이브(챗봇)는 그대로 ===== */
-html,body{background:#f2f3f5;}
-.bg-\[\#e9ecef\],.bg-\[\#eef1f4\]{background:transparent!important;}
-/* 컨테이너 = 실버 그라데이션 */
-.bg-white{background-color:#eeeff1!important;background-image:linear-gradient(180deg,#f8f8f9 0%,#ececee 55%,#e3e4e7 100%)!important;border-color:#dcdde1!important;}
-header.bg-white,nav.bg-white,footer.bg-white,.stage-card{box-shadow:0 1px 0 #fff inset,0 -1px 0 rgba(0,0,0,.04) inset,0 2px 8px rgba(60,60,70,.06)!important;}
-/* 내용 카드도 실버 그라데이션, 팝업은 흰색 */
-section.bg-white{background-image:linear-gradient(180deg,#fdfdfd 0%,#f1f2f4 100%)!important;box-shadow:0 1px 0 #fff inset,0 2px 8px rgba(60,60,70,.06)!important;}
-.rounded-xl.border.bg-white:not(section),.rounded-lg.border.bg-white:not(section){background-image:none!important;background-color:#ffffff!important;box-shadow:0 8px 24px rgba(60,60,70,.14)!important;}
-/* 버튼 = 실버 알약 */
-button.bg-white{background-image:linear-gradient(180deg,#fafafa,#e8e9ec)!important;border-color:#d8d9de!important;box-shadow:0 1px 0 #fff inset,0 1px 2px rgba(60,60,70,.1);}
-header button.bg-white{border-radius:9999px!important;}
-button.bg-white:hover{background-image:linear-gradient(180deg,#ffffff,#f1f2f4)!important;}
-/* 선택 = 흰색 알약 (왼쪽 메뉴) */
-nav .bg-\[\#1c2530\]{background:#ffffff!important;color:#1c2530!important;border-radius:9999px!important;box-shadow:0 2px 6px rgba(40,40,50,.14),0 1px 0 #fff inset!important;}
-nav .bg-\[\#1c2530\] span{display:none;}
-/* 그 밖의 진한 키 = 진회색 */
-.bg-\[\#1c2530\]{background:linear-gradient(180deg,#4a5260,#2b313b)!important;}
-/* 연한 선택색·알약 */
-.bg-\[\#e8f6fa\]{background:#ffffff!important;color:#1c2530!important;box-shadow:0 1px 4px rgba(40,40,50,.12);}
-.bg-\[\#e6f6fa\]{background:#f0ebff!important;color:#5a3bc8!important;}
-/* 수치 타일·입력 */
-.bg-slate-50,.bg-slate-100,.bg-\[\#f4f6f8\]{background:#f4f4f6!important;box-shadow:0 0 0 1px #e6e7ea inset;}
-.bg-slate-200{background:#e2e3e7!important;}
-.border-slate-300:not(.ma-panel *),.border-slate-200:not(.ma-panel *){border-color:#dcdde1!important;}
-
+/* 실버 필 테마(2026-10-16)는 디자인 통일 C안으로 걷어냄 (2026-10-20) — 흰 평면 카드 · 선 1px · 차콜 선택 */
 /* 다시 보기 카드: 가공 = 흐르는 빛 (2026-10-17) */
 @keyframes rpSheen{0%{transform:translateX(-150%) rotate(20deg)}100%{transform:translateX(450%) rotate(20deg)}}
 .rp-sheen{animation:rpSheen 3.2s ease-in-out infinite}
@@ -121,9 +103,10 @@ nav .bg-\[\#1c2530\] span{display:none;}
 /* 재공 판은 3D 바닥 글자로 바꿈 (2026-10-19) — 떠 있는 판 숨김 */
 [data-tier="wip"]{display:none!important}
 
-/* 이브 창 = 오른쪽 자리 차지 (팝업 아님, 2026-10-19) — 화면 전체 높이 */
-.ma-panel{top:12px!important;bottom:12px!important;right:12px!important}
-.ma-root.is-panel .ma-fab{display:none}
+/* 이브 창 = 화면 위에 뜨는 팝업 (사용자 요청 2026-10-20 "화면을 차지하는 게 아니라 화면 위에 팝업"). 이브 버튼 바로 위, 위 바(76px) 아래까지만 */
+.ma-panel{top:88px!important;right:24px!important;bottom:146px!important;height:auto!important} /* 위 바(아래 끝 76px) 바로 아래부터 이브 버튼 위까지 채움 (사용자 요청 2026-10-20) */
+.ma-panel.ma-side{animation:ma-rise .28s cubic-bezier(.2,.9,.25,1.15) both;transform-origin:bottom right} /* 팝업은 이브 버튼 쪽에서 떠오름 */
+.ma-root.is-panel .ma-fab{display:flex;right:24px} /* 팝업이 열려도 이브 버튼은 오른쪽 구석 그대로 (누르면 닫힘) */
 
 /* 네온 바이올렛 포인트 (사용자 선택 2026-10-19): 이브 위젯의 라임 자리를 보라로. 차콜·상태색은 그대로 */
 .ma-root{--ma-lime:#b79cff;--ma-lime-ring:#6a43e0}
@@ -142,3 +125,11 @@ nav .bg-\[\#1c2530\] span{display:none;}
 .ma-panel .ma-mic.is-rec{background:#c62a2f;color:#fff;box-shadow:0 0 0 4px rgba(198,42,47,.25)}
 .ma-panel .ma-mic:disabled{opacity:.4;cursor:not-allowed}
 .ma-panel .ma-voice-note{margin:0 6px 8px;text-align:center;font-size:12.5px;line-height:1.45;color:#4b4766}
+
+/* 이브 창 시안 2 · 보통 바이올렛 (사용자 선택 2026-10-21): 퓨어 실버 창 + 연보라 테두리. 보라는 링크·칩·선택 탭 점·체크 칸·[보기] 테두리에만 (위 시안 4b의 연보라 바탕을 덮음) */
+.ma-panel{background:linear-gradient(180deg,#fbfbfc 0%,#f1f2f5 100%)!important;border:2px solid #d9ccff;box-shadow:0 20px 50px rgba(28,37,48,.16);--ma-panel-line:#e3e4e8}
+.ma-panel .border-slate-200,.ma-panel .border-slate-300,.ma-panel .border-white\/25{border-color:#e3e4e8}
+.ma-panel .ma-tab[aria-selected="true"]::after{content:'';display:inline-block;width:6px;height:6px;margin-left:8px;border-radius:50%;background:#b79cff;vertical-align:middle}
+.ma-panel .ma-check{appearance:none;-webkit-appearance:none;margin:0;border:1.5px solid #cfc2f7;border-radius:8px;background:#fff;cursor:pointer}
+.ma-panel .ma-check:checked{border-color:#26303a;background:#26303a url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7'/%3E%3C/svg%3E") center/16px no-repeat}
+.ma-panel .ma-check:focus-visible{outline:2px solid #6a43e0;outline-offset:2px}

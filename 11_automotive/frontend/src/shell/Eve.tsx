@@ -18,6 +18,7 @@ import EveThinking from './EveThinking';
 import { canStartNewChat, currentChat, isFocusRow, lastChatId, makeNewChatMark, mergeServerLog, sessionOf, withNewChat, type FocusRef } from './chatLog';
 import { carryAlarm } from './carry';
 import { Bubble, HistoryItem, Spark, Typing, type ChatRow } from './ChatBubble';
+import { QUESTION_BOX } from './bubbleBox';
 
 export { Spark };   // 옛 가져오기 경로 유지 (Spark는 ChatBubble.tsx로 옮겼다)
 
@@ -59,15 +60,37 @@ export function Robot({ face = 'happy', size }: { face?: EveFace; size: number }
   );
 }
 
-export function Eve({ tab, onPick, onClose, badges, bubble, onBubble, brief, onNotice }: {
-  tab: EveTab | null; onPick: (t: EveTab) => void; onClose: () => void; badges: Partial<Record<EveTab, number>>;
-  bubble: string | null; onBubble: () => void; brief: React.ReactNode; onNotice: (n: Notice) => void;
+export function Eve({ tab, quick: showQuick, onPick, onClose, badges, bubble, bubbleKey, onBubble, brief, onNotice }: {
+  tab: EveTab | null; quick: boolean; onPick: (t: EveTab) => void; onClose: () => void; badges: Partial<Record<EveTab, number>>;
+  bubble: string | null; bubbleKey?: number; onBubble: () => void; brief: React.ReactNode; onNotice: (n: Notice) => void;
 }) {
   const [menu, setMenu] = useState(false);
   const [later, setLater] = useState<string | null>(null); // [나중에] 누른 말풍선 — 글이 바뀌면 다시 뜸
+  useEffect(() => { setLater(null); }, [bubbleKey]);   // 알림 미리보기를 다시 누르면 [나중에]로 숨긴 말풍선도 다시 뜬다
   const [gl, setGl] = useState(true);
   const [focus, setFocus] = useState<FocusRef | null>(null);   // 채팅 기록에서 눌러 연 줄 — 그 줄이 속한 대화만 채팅 탭에 보인다
   const [slot, setSlot] = useState<HTMLElement | null>(null);   // 머리줄의 [새 채팅] 자리 — 상태를 가진 Chat이 여기에 버튼을 그린다 (createPortal)
+  const [ask, setAsk] = useState<string | null>(null);          // 이브 버튼 옆 작은 채팅창에서 보낸 질문 — 채팅 탭이 열리면 바로 보낸다
+  const [quick, setQuick] = useState('');
+  // 이브 버튼 끌어 옮기기 (사용자 요청 2026-10-21): 버튼·작은 채팅창·메뉴·말풍선을 같이 옮긴다. 저장하지 않아 새로 열면 늘 오른쪽 아래 기본 자리
+  // shortcut: 창 크기를 줄이면 옮긴 버튼이 화면 밖에 남을 수 있음, 그런 일이 잦으면 resize 때 다시 가둘 것
+  const [off, setOff] = useState({ x: 0, y: 0 });
+  const drag = useRef<{ px: number; py: number; ox: number; oy: number; l: number; t: number; r: number; b: number; moved: boolean } | null>(null);
+  const moved = useRef(false);
+  const shift = { translate: `${off.x}px ${off.y}px` } as React.CSSProperties;
+  const onDown = (e: React.PointerEvent<HTMLButtonElement>) => {
+    const r = e.currentTarget.getBoundingClientRect(), m = 8;
+    drag.current = { px: e.clientX, py: e.clientY, ox: off.x, oy: off.y, l: m - r.left, t: m - r.top, r: innerWidth - m - r.right, b: innerHeight - m - r.bottom, moved: false };
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+  const onMove = (e: React.PointerEvent<HTMLButtonElement>) => {
+    const d = drag.current; if (!d) return;
+    const dx = e.clientX - d.px, dy = e.clientY - d.py;
+    if (!d.moved && Math.hypot(dx, dy) < 6) return;   // 6px 안쪽 흔들림은 그냥 누름
+    d.moved = true;
+    setOff({ x: d.ox + Math.min(d.r, Math.max(d.l, dx)), y: d.oy + Math.min(d.b, Math.max(d.t, dy)) });
+  };
+  const onUp = () => { moved.current = !!drag.current?.moved; drag.current = null; };
   const closed = !tab && !menu;
   const toast = closed && bubble && bubble !== later ? bubble : null;
   const total = badges['알림'] ?? 0;
@@ -82,7 +105,7 @@ export function Eve({ tab, onPick, onClose, badges, bubble, onBubble, brief, onN
   return (
     <div className={`ma-root${tab ? ' is-panel' : ''}`}>
       {toast && (
-        <div className="ma-toast ma-rise" role="status">
+        <div className="ma-toast ma-rise" role="status" style={shift}>
           <button type="button" className="ma-toast-main" onClick={onBubble}>
             <Robot face={toast.startsWith('⚠') ? 'alarm' : 'news'} size={36} />
             <span className="ma-toast-text"><span className="ma-toast-time ma-mono">이브</span><strong className="ma-toast-title">{toast}</strong></span>
@@ -94,7 +117,7 @@ export function Eve({ tab, onPick, onClose, badges, bubble, onBubble, brief, onN
         </div>
       )}
       {menu && !tab && (
-        <div className="ma-menu" role="menu" aria-label="이브 메뉴">
+        <div className="ma-menu" role="menu" aria-label="이브 메뉴" style={shift}>
           {EVE_TABS.map((t, i) => (
             <button key={t} type="button" role="menuitem" className="ma-menu-item ma-rise" style={{ animationDelay: `${i * 50}ms` }} onClick={() => pick(t)}>
               <span className="ma-menu-label">{t}</span>
@@ -114,14 +137,24 @@ export function Eve({ tab, onPick, onClose, badges, bubble, onBubble, brief, onN
           <div className="ma-tabs" role="tablist" aria-label="이브 메뉴">
             {EVE_TABS.map((t) => <button key={t} type="button" role="tab" className="ma-tab" aria-selected={tab === t} onClick={() => { setFocus(null); onPick(t); }}>{t}{badge(t, 'ma-tab-badge')}</button>)}
           </div>
-          {tab === '채팅' ? <Chat focus={focus} headerSlot={slot} onNewChat={() => setFocus(null)} /> : (
+          {tab === '채팅' ? <Chat focus={focus} headerSlot={slot} onNewChat={() => setFocus(null)} ask={ask} onAsked={() => setAsk(null)} /> : (
             <div className="ma-body text-[14px] leading-relaxed" role="tabpanel">
               {tab === '채팅 기록' ? <ChatLog onOpen={(r) => { setFocus({ at: r.at, q: r.q, ...(typeof r.chatId === 'number' ? { chatId: r.chatId } : {}) }); onPick('채팅'); }} /> : <div className="ma-pad">{tab === '브리핑' ? brief : <AlertsTab onNotice={onNotice} />}</div>}
             </div>
           )}
         </aside>
       )}
-      <button type="button" className="ma-fab" aria-expanded={!closed} onClick={() => (tab ? onClose() : setMenu((m) => !m))}
+      {/* 이브 버튼 왼쪽 작은 채팅창 (사용자 요청 2026-10-20): 늘 꺼내 두고 바로 묻는다. 보내면 이브 창 채팅 탭이 열리며 그 질문을 보냄. 홈에서만 (2026-10-21) */}
+      {closed && showQuick && (
+        <form className="ma-quick" style={shift} onSubmit={(e) => { e.preventDefault(); const v = quick.trim(); if (!v) return; setQuick(''); setFocus(null); setAsk(v); onPick('채팅'); }}>
+          <label htmlFor="ma-quick-in" className="sr-only">이브에게 묻기</label>
+          <input id="ma-quick-in" value={quick} onChange={(e) => setQuick(e.target.value)} placeholder="이브에게 물어보세요" autoComplete="off" />
+          <button type="submit" disabled={!quick.trim()} aria-label="보내기"><Icon d={['M12 19V5', 'M5 12l7-7 7 7']} size={18} w={2.6} /></button>
+        </form>
+      )}
+      <button type="button" className="ma-fab" aria-expanded={!closed} style={{ ...shift, touchAction: 'none' }} title="끌어서 옮길 수 있어요"
+        onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp}
+        onClick={() => { if (moved.current) { moved.current = false; return; } if (tab) onClose(); else setMenu((m) => !m); }}
         aria-label={closed ? `이브 메뉴 열기${total ? `, 새 소식 ${total}건` : ''}` : '이브 닫기'}>
         {gl ? <RobotIcon mode={toast ? 1 : 0} size={58} onFail={() => setGl(false)} /> : <Robot face={toast ? 'news' : 'happy'} size={44} />}
         {closed && total > 0 && <span className="ma-fab-badge" aria-hidden="true">{total}</span>}
@@ -266,11 +299,13 @@ function useServerChat(userId: string, again: unknown): ChatRow[] {
   return rows;
 }
 
-function Chat({ focus, headerSlot, onNewChat }: { focus: FocusRef | null; headerSlot: HTMLElement | null; onNewChat: () => void }) {
+function Chat({ focus, headerSlot, onNewChat, ask, onAsked }: { focus: FocusRef | null; headerSlot: HTMLElement | null; onNewChat: () => void; ask?: string | null; onAsked?: () => void }) {
   const { user, role, screen, selected, openSource } = useApp();
   const [log, setLog] = useLocal<ChatRow[]>(`chat:${user.id}`, []);
   const [q, setQ] = useState('');
   const [busy, setBusy] = useState(false);
+  const [pending, setPending] = useState<string | null>(null); // 답을 기다리는 질문 — 보내자마자 질문 박스로 보여 줌 (사용자 요청 2026-10-21)
+  const [found, setFound] = useState(false);                   // 답이 왔다 → 이브가 ✓ 를 띄운 뒤 답을 보여 줌
   const input = useRef<HTMLInputElement>(null);
   // 마이크 (2026-10-20): 서버의 음성 스위치가 켜져 있을 때만 버튼이 보인다. 누르고 있는 동안 녹음 → 떼면 글자로 바꿔 입력창에 **채우기만** 한다 (보내는 것은 사용자가 글자를 보고 직접)
   const [voice, setVoice] = useState<VoiceStatus>(VOICE_OFF);
@@ -308,7 +343,7 @@ function Chat({ focus, headerSlot, onNewChat }: { focus: FocusRef | null; header
     const newChat = focus ? true : cur.length === 0;
     // 이어서 묻기 (API-AST-02 prev_chat_id): 보고 있는 대화의 마지막 질문에 잇는다. 새 대화의 첫 질문이면 없음
     const prevChatId = lastChatId(focus ? today : cur);
-    setBusy(true); setQ('');
+    setBusy(true); setQ(''); setPending(text);
     let row: ChatRow;
     try {
       const r = backendChatEnabled()   // NEXT_PUBLIC_MOM_API가 있으면 백엔드의 비서(외부 LLM)로 — assistantApi.ts. 없으면 옛 길(시연 서버의 규칙 답)
@@ -316,15 +351,17 @@ function Chat({ focus, headerSlot, onNewChat }: { focus: FocusRef | null; header
         : await api<{ answer: string; status: string; sources: ChatRow['sources']; series?: ChatRow['series'] }>('assistant/chat', { question: text, role, user_id: user.id, context: { screen, equipment_id: selected ? MACHINES[selected].eq : null } });
       row = { at: simIso(), q: text, a: r.answer, status: r.status, sources: r.sources ?? [], series: r.series, ...('chatId' in r && typeof r.chatId === 'number' ? { chatId: r.chatId } : {}), ...(prevChatId !== null ? { prevChatId } : {}) };
     } catch (e) { row = { at: simIso(), q: text, a: '비서 응답 없음 — ' + (e as Error).message, status: '응답 없음', sources: [], ...(prevChatId !== null ? { prevChatId } : {}) }; }
+    setFound(true); await new Promise((r) => setTimeout(r, 1100)); // 답하기 직전 ✓ 를 잠깐 보여 줌
     // 채팅 기록 30일 (FR-MNT-01-01, NFR-DATA-13)
     setLog((l) => [...l.filter((x) => Date.parse(x.at) > SIM.now() - 30 * 864e5), row]);
-    setBusy(false);
+    setBusy(false); setPending(null); setFound(false);
   };
   // [새 채팅]: 기록은 한 줄도 지우지 않고 "여기서부터 새 대화" 표지 줄만 더한다 → 채팅 탭은 표지 뒤 줄만 보이고, 이전 대화는 채팅 기록 탭에 그대로 있다 (chatLog.ts)
   const canNew = !busy && canStartNewChat(log, !!focus);   // 답을 기다리는 중에는 끈다 (늦게 온 답이 새 대화에 끼지 않게)
   const startNew = () => { if (!canNew) return; const m = makeNewChatMark(simIso()); setLog((l) => withNewChat(l, m, !!focus)); setQ(''); onNewChat(); input.current?.focus(); };
   const ex = role === 'MNT' || role === 'MGR' ? ['VF2-01 MTTR 알려줘', 'VF2-01 센서 추세', '2075 알람 뭐야', '이 화면 설명해 줘'] : ['2075 알람 뭐야', '잠금 표지 순서', '이 화면 설명해 줘', '병목 원인'];
   const body = useRef<HTMLDivElement>(null);
+  useEffect(() => { if (ask && !busy) { onAsked?.(); send(ask); } }, [ask, busy]); // eslint-disable-line react-hooks/exhaustive-deps -- 작은 채팅창의 질문을 한 번 보냄 (답을 기다리는 중이면 끝난 뒤)
   useEffect(() => {
     const el = focus && body.current?.querySelector('[data-focus="1"]');
     if (el) el.scrollIntoView({ block: 'center' }); else if (body.current) body.current.scrollTop = body.current.scrollHeight;
@@ -340,7 +377,8 @@ function Chat({ focus, headerSlot, onNewChat }: { focus: FocusRef | null; header
         <div className="ma-pad min-h-full" aria-live="polite">
           {today.length === 0 && !busy && <EveHello />}
           {today.map((r, i) => <div key={i} data-at={r.at} {...(isFocusRow(r, focus) ? { 'data-focus': '1' } : {})} className={isFocusRow(r, focus) ? 'rounded-lg ring-2 ring-[#B79CFF]' : ''}><Bubble r={r} meta={`${md(r.at)} ${hhmm(r.at)}`} openSource={openSource} role={role} /></div>)}
-          {busy && <EveThinking />}
+          {busy && pending && <div className={`flex flex-col ${today.length ? 'mt-4' : ''}`}><div className={QUESTION_BOX}>{pending}</div></div>}
+          {busy && <EveThinking found={found} />}
         </div>
       </div>
       <form className="ma-compose" onSubmit={(e) => { e.preventDefault(); if (!busy) send(); }}>
