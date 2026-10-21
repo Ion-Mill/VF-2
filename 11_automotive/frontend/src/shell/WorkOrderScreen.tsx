@@ -3,6 +3,7 @@
 // 초안은 지침카드·DOC-03 점검 순서(보전 줄)·DOC-05에서 규칙으로 만든다 ("프로그램 초안"). 비서가 켜져 있으면 제목·증상을 비서가 다듬고 "AI비서 초안"으로 바뀐다.
 // 시안(2026-10-20): 진행 알약·승인 대기 → 결론 띠(제목·증상) → 담당자·승인 → 작업 순서 → 안전. 담당자는 그 교대 보전 담당자로 미리 채워져 있다(App createWo).
 // 승인 뒤 담당 보전 담당자가 [작업 시작]을 누르면 같은 화면 아래에 작업 기록 칸(WorkRecordPanel)이 열린다 — 작업기록서를 따로 여는 화면 이동을 줄임 (2026-10-20 팀 검토).
+import { LockIcon } from './ui';
 import { useEffect, useRef, useState } from 'react';
 import { BTN, CARD, DARK, PAGE, useApp } from './ctx';
 import { MACHINES } from './data';
@@ -61,7 +62,7 @@ export default function WorkOrderScreen({ no, focusRecord }: { no: string; focus
     setReviseOpen(false); setReason('');
   };
   const idx = WO_STEPS.findIndex(([k]) => k === wo.state);
-  const field = 'w-full rounded-md border border-slate-300 bg-white px-3 text-[15px] font-normal';
+  const field = 'w-full rounded-ctl border border-line bg-white px-3 text-card font-normal';
   const stepList = steps.split('\n').map((s) => s.trim()).filter(Boolean);
 
   return (
@@ -70,7 +71,7 @@ export default function WorkOrderScreen({ no, focusRecord }: { no: string; focus
         right={wo.state === 'cancelled' ? <Chip tone="crit">취소됨</Chip> : <Steps list={WO_STEPS.map(([k, label]) => (k === 'draft' ? `${label} v0` :k === 'editing' && k === wo.state ? `${label} v${wo.version}` : label))} cur={idx} />} />
       <InfoRow right={<><button onClick={() => go('revs', `WO:${wo.no}`)} className={BTN}>수정 이력 v{wo.version}</button><button onClick={() => window.print()} className={BTN}>인쇄</button><button onClick={back} className={BTN}>닫기</button></>}>
         {!locked && wo.state !== 'cancelled' && <Chip tone={wait >= 120 ? 'warn' : 'mute'}>{wait >= 120 ? '▲ ' : wait >= 30 ? 'ⓘ ' : ''}승인 대기 {wait}분</Chip>}
-        {locked && wo.state !== 'cancelled' && !reviseOpen && <Chip>🔒 잠김</Chip>}
+        {locked && wo.state !== 'cancelled' && !reviseOpen && <Chip><LockIcon /> 잠김</Chip>}
       </InfoRow>
 
       <Band tone={repeat ? 'warn' : 'crit'}
@@ -88,11 +89,11 @@ export default function WorkOrderScreen({ no, focusRecord }: { no: string; focus
       <Sec title="담당자 · 승인" right={wo.approvedBy ? <Chip tone="ok">승인 {wo.approvedBy} {hhmm(wo.approvedAt ?? '')}</Chip> : undefined}>
         <div className="flex flex-wrap items-center gap-2">
           {role === 'SUP' && !locked ? (<>
-            <select aria-label="담당 보전 담당자" value={wo.assignee ?? ''} onChange={(e) => putWo({ ...wo, assignee: e.target.value || null, revisions: rev(wo.revisions, '담당 지정', user.name, role, [{ field: '담당자', before: userName(wo.assignee), after: userName(e.target.value) }]) })} className="h-11 rounded-md border border-slate-300 px-3 text-[15px]">
+            <select aria-label="담당 보전 담당자" value={wo.assignee ?? ''} onChange={(e) => putWo({ ...wo, assignee: e.target.value || null, revisions: rev(wo.revisions, '담당 지정', user.name, role, [{ field: '담당자', before: userName(wo.assignee), after: userName(e.target.value) }]) })} className="h-11 rounded-ctl border border-line px-3 text-card">
               <option value="">보전 담당자 고르기</option>{mnts.map((u) => <option key={u.id} value={u.id}>{u.name} ({u.shift === 'DAY' ? '주간' : '야간'})</option>)}
             </select>
             <button disabled={!wo.assignee} onClick={() => setConfirm('approve')} className={DARK}>승인</button>
-          </>) : <span className="text-[15px] font-semibold">{wo.assignee ? userName(wo.assignee) : '아직 지정 안 됨'}</span>}
+          </>) : <span className="text-card font-semibold">{wo.assignee ? userName(wo.assignee) : '아직 지정 안 됨'}</span>}
           {role === 'MGR' && !locked && <><button disabled={!wo.assignee} onClick={() => setConfirm('approve')} className={DARK}>대리 승인</button><button onClick={() => setConfirm('cancel')} className={BTN}>취소</button></>}
           {role === 'MNT' && isAssignee && wo.state === 'approved' && <button onClick={() => { putWo({ ...wo, state: 'inprogress', revisions: rev(wo.revisions, '작업 시작', user.name, role) }); openRecord(wo.no, false); setScrollTo(true); }} className={DARK}>작업 시작</button>}
           {role === 'MNT' && isAssignee && wo.state === 'inprogress' && !wr && <button onClick={() => { openRecord(wo.no, false); setScrollTo(true); }} className={DARK}>작업 기록 열기</button>}
@@ -107,11 +108,11 @@ export default function WorkOrderScreen({ no, focusRecord }: { no: string; focus
       <Sec title="안전" right={a?.severity === 'STOP' ? SafeTag : undefined}>{a ? <SafetyBlock machine={wo.machine} alarm={a} /> : null}</Sec>
       <Sec title="예상 부품 · 공구">
         {wo.parts.length ? <div className="flex flex-wrap gap-1.5">{wo.parts.map((p) => { const s = stockOf(p); return <Chip key={p} tone={s?.low ? 'warn' : 'ok'}>{s?.item_name ?? p} · 재고 {s?.stock_qty ?? '—'}{s?.unit ?? ''} (안전 {s?.safety_stock ?? '—'}){s?.low ? ' ▲' : ''}</Chip>; })}</div>
-          : <span className="text-[14px] text-slate-500">없음</span>}
+          : <span className="text-body text-ink-2">없음</span>}
       </Sec>
       <Fold summary={`비슷한 과거 작업 — 9월 ${eq} · 알람 ${wo.code}`}>
         {similar.length ? <ul className="flex flex-col gap-1">{similar.map((w) => { const r = recOf(w.wo_no); return <li key={w.wo_no}><span className="font-mono">{w.wo_no}</span> · {md(w.created_at)} · {w.title}{r ? ` → ${r.record_no} 원인: ${r.cause} / 조치: ${r.action} (${r.repair_min}분)` : ''}</li>; })}</ul>
-          : <span className="text-slate-500">같은 설비·같은 알람 작업지시서 없음</span>}
+          : <span className="text-ink-2">같은 설비·같은 알람 작업지시서 없음</span>}
       </Fold>
       {a && <SrcFold>
         <li>증상 — 지침카드 · 알람 코드집 <button onClick={() => openSource('DOC-02', a.doc02.replace('DOC-02 ', ''))} className="underline">{a.doc02}</button></li>
@@ -121,7 +122,7 @@ export default function WorkOrderScreen({ no, focusRecord }: { no: string; focus
         {repeat && <li>계기 — <button onClick={() => openSource('DOC-03', '1.4')} className="underline">DOC-03 §1.4 반복 알람 2단계</button></li>}
       </SrcFold>}
 
-      {reviseOpen && <input value={reason} onChange={(e) => setReason(e.target.value)} placeholder="확정 후 수정 사유 (필수)" className="h-11 w-full rounded-md border border-[#e8954a] bg-white px-3" />}
+      {reviseOpen && <input value={reason} onChange={(e) => setReason(e.target.value)} placeholder="확정 후 수정 사유 (필수)" className="h-11 w-full rounded-ctl border border-[#e8954a] bg-white px-3" />}
       <Acts>
         {role === 'MNT' && !locked && <button onClick={() => save('수정')} className={DARK}>저장</button>}
         {locked && wo.state !== 'cancelled' && (role === 'MNT' || role === 'SUP') && !reviseOpen && <button onClick={() => setReviseOpen(true)} className={BTN}>확정 후 수정</button>}

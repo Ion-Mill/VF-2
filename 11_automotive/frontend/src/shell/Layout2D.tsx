@@ -15,12 +15,12 @@ export default function Layout2D() {
   const box = (x: number[], y: number[]) => ({ x: x[0], y: Y(y[1]), width: x[1] - x[0], height: y[1] - y[0] });
   const bn = twin?.bottleneck.process_code;
   const e1 = LAYOUT.equipment['VF2-01'], e2 = LAYOUT.equipment['VF2-02'];
-  const op30 = [Math.min(e1.center[0] - e1.size[0] / 2, O['WIP-2'].x[0]) - 300, Math.max(e2.center[0] + e2.size[0] / 2, O['WIP-3'].x[1]) + 300, O['WIP-2'].y[0] - 300, Math.max(e1.center[1] + e1.size[1] / 2, e2.center[1] + e2.size[1] / 2) + 300];
+  const op30 = [e1.center[0] - e1.size[0] / 2 - 300, Math.max(e2.center[0] + e2.size[0] / 2, O['WIP-3'].x[1]) + 300, O['WIP-2'].y[0] - 300, Math.max(e1.center[1] + e1.size[1] / 2, e2.center[1] + e2.size[1] / 2) + 300];
 
   return (
-    <div className="absolute inset-x-0 top-0 bottom-[var(--panelH)] bg-[#f4f6f8]">
-      <button onClick={() => go('line')} className="absolute left-3 top-3 z-10 h-11 rounded-md border border-slate-300 bg-white px-4 text-[14px] font-semibold hover:bg-slate-50">3D로</button>
-      <div className="absolute right-3 top-3 z-10 rounded-md bg-white/90 px-3 py-1 text-[12px] text-slate-600">공장 {W / 1000} × {D / 1000} m · 천장 {LAYOUT.plant.ceiling_z_mm / 1000} m · 실제 크기 (equipment.csv · layout_object.csv)</div>
+    <div className="absolute inset-x-0 top-0 bottom-[var(--panelH)] bg-tile">
+      <button onClick={() => go('line')} className="absolute left-3 top-3 z-10 h-11 rounded-ctl border border-line bg-white px-4 text-body font-semibold hover:bg-tile">3D로</button>
+      <div className="absolute right-3 top-3 z-10 rounded-ctl bg-white/90 px-3 py-1 text-small text-ink-2">공장 {W / 1000} × {D / 1000} m · 천장 {LAYOUT.plant.ceiling_z_mm / 1000} m · 실제 크기 (equipment.csv · layout_object.csv)</div>
       <svg viewBox={`-700 -900 ${W + 1400} ${D + 1800}`} className="h-full w-full" role="img" aria-label="2D 배치도">
         <defs>
           <pattern id="hatch" width="220" height="220" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="220" height="220" fill="#d5dbe0" /><line x1="0" y1="0" x2="0" y2="220" stroke="#4b5a69" strokeWidth="90" /></pattern>

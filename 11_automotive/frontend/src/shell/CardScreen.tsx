@@ -9,6 +9,8 @@ import { LEVEL_VIEW, alarmTitle, chainOf, hhmm, responsible, sevText } from './m
 import { SafeTag, SafetyBlock, safetySrc } from './Safety';
 import { Band, Chip, DocHead, DocPage, Fold, Kpi, NumList, Sec, SrcFold } from './DocKit';
 import { useGuideCardText } from './assistText';
+import { Band as CBand } from './ui';
+import { cardsBand } from './bands';
 
 const SEV_KO: Record<string, string> = { STOP: '정지', WARN: '주의', GUIDE: '조작 안내' };
 
@@ -58,36 +60,36 @@ export default function CardScreen({ alertId }: { alertId: string }) {
           {assisted ? (
             <div className="flex flex-col gap-2">
               <NumList items={assisted} big />
-              <p className="text-[12px] text-slate-500">비서(외부 LLM)가 쉬운 말로 다듬은 글입니다. 원문과 다르면 원문(DOC-03)을 따릅니다.</p>
-              <details className="text-[14px]"><summary className="cursor-pointer font-semibold text-slate-600">원문(DOC-03) 보기</summary><div className="mt-2 rounded-xl border border-slate-300 p-3"><NumList items={a.steps} /></div></details>
+              <p className="text-small text-ink-2">비서(외부 LLM)가 쉬운 말로 다듬은 글입니다. 원문과 다르면 원문(DOC-03)을 따릅니다.</p>
+              <details className="text-body"><summary className="cursor-pointer font-semibold text-ink-2">원문(DOC-03) 보기</summary><div className="mt-2 rounded-tile border border-line p-3"><NumList items={a.steps} /></div></details>
             </div>
-          ) : a.steps.length ? <NumList items={a.steps} big /> : <span className="text-[14px] text-slate-500">{a.doc03.join(' · ') || '해당 절 없음'}</span>}
+          ) : a.steps.length ? <NumList items={a.steps} big /> : <span className="text-body text-ink-2">{a.doc03.join(' · ') || '해당 절 없음'}</span>}
         </Sec>
         {a.maint.length > 0 && <Sec title="보전 담당자 단계" right={<Chip>보전 {a.maint.length}단계</Chip>}><NumList items={a.maint} start={a.steps.length + 1} /></Sec>}
         <Sec title="생산 영향" right={<Chip>추정</Chip>}>
           <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
             <Kpi label="정지" value={mins} unit={alert.cleared ? '분' : '분째'} sub={`${hhmm(alert.time)}부터`} />
             <Kpi label="손실 (추정)" value={`약 ${(mins / cyc).toFixed(1)}`} unit="개" sub={`${mins}분 ÷ 기준 사이클 ${cyc}분`} />
-            <Kpi label="가공 중이던 로트" value={<span className="text-[18px]">{alert.lot ?? '—'}</span>} sub={alert.kind === 'alarm' && alert.lot ? '의심 로트 제안' : undefined} />
+            <Kpi label="가공 중이던 로트" value={<span className="text-band">{alert.lot ?? '—'}</span>} sub={alert.kind === 'alarm' && alert.lot ? '의심 로트 제안' : undefined} />
           </div>
         </Sec>
         <Sec title="안전" right={a.severity === 'STOP' ? SafeTag : undefined}><SafetyBlock machine={alert.machine} alarm={a} /></Sec>
         <Fold summary={`지난 기록 — 9월 ${eq} · 알람 ${alert.code}`}>
           {past.length ? (
-            <div className="overflow-x-auto"><table className="w-full min-w-[620px] table-fixed text-left text-[13.5px]">
+            <div className="overflow-x-auto"><table className="w-full min-w-[620px] table-fixed text-left text-body">
               <colgroup><col className="w-[112px]" /><col className="w-[64px]" /><col className="w-[96px]" /><col /><col /><col className="w-[84px]" /></colgroup>
-              <thead className="text-[12px] text-slate-500"><tr>{['날짜·시각', '등급', '기록 번호', '원인', '조치', '수리 시간'].map((h) => <th key={h} className="border-b border-slate-300 px-2 py-1.5 font-semibold">{h}</th>)}</tr></thead>
+              <thead className="text-small text-ink-2"><tr>{['날짜·시각', '등급', '기록 번호', '원인', '조치', '수리 시간'].map((h) => <th key={h} className="border-b border-line px-2 py-1.5 font-semibold">{h}</th>)}</tr></thead>
               <tbody>{past.map((x) => { const r = recOf(x.alarm_event_id); const clamp = 'line-clamp-2'; return (
-                <tr key={x.alarm_event_id} className="border-b border-slate-100 align-top">
+                <tr key={x.alarm_event_id} className="border-b border-line-soft align-top">
                   <td className="whitespace-nowrap px-2 py-2 font-mono">{md(x.occurred_at)} {hhmm(x.occurred_at)}</td>
                   <td className="px-2 py-2">{SEV_KO[x.severity_at_event] ?? x.severity_at_event}</td>
                   <td className="px-2 py-2 font-mono">{r?.record_no ?? '—'}</td>
                   <td className="px-2 py-2"><span className={clamp} title={r?.cause}>{r?.cause || '—'}</span></td>
                   <td className="px-2 py-2"><span className={clamp} title={r?.action}>{r?.action || '—'}</span></td>
-                  <td className="px-2 py-2">{r?.repair_min ? <><b className="font-mono text-[18px]">{r.repair_min}</b><span className="ml-0.5 text-slate-500">분</span></> : '—'}</td>
+                  <td className="px-2 py-2">{r?.repair_min ? <><b className="font-mono text-band">{r.repair_min}</b><span className="ml-0.5 text-ink-2">분</span></> : '—'}</td>
                 </tr>); })}</tbody>
             </table></div>
-          ) : <span className="text-slate-500">없음</span>}
+          ) : <span className="text-ink-2">없음</span>}
         </Fold>
         <SrcFold>
           <li>알람·심각도·누가 — 알람 코드집 {src2(a.doc02)}</li>
@@ -105,7 +107,7 @@ export default function CardScreen({ alertId }: { alertId: string }) {
 // 연표 모양 (2026-10-20 팀 검토): 날짜 머리 → 왼쪽 세로선의 시각 점(등급 색) → 오른쪽 카드. 기본 = 처리 필요한 것만 · 최신순
 const WD = ['일', '월', '화', '수', '목', '금', '토'];
 export function CardList() {
-  const { alerts, go } = useApp();
+  const { alerts, go, openCard } = useApp();
   const [mach, setMach] = useState('');
   const [lv, setLv] = useState('');
   const [all, setAll] = useState(false);
@@ -115,30 +117,35 @@ export function CardList() {
   const days: [string, typeof list][] = [];
   list.forEach((a) => { const d = a.time.slice(0, 10); const g = days.find(([k]) => k === d); if (g) g[1].push(a); else days.push([d, [a]]); });
   const wd = (d: string) => WD[new Date(Date.UTC(+d.slice(0, 4), +d.slice(5, 7) - 1, +d.slice(8, 10))).getUTCDay()];
-  const sel = 'h-10 rounded-full border border-slate-300 bg-white px-3 text-[13px]';
-  const seg = (on: boolean) => `h-10 px-4 text-[13px] font-semibold ${on ? 'bg-[#1c2530] text-white' : 'bg-white'}`;
+  const sel = 'h-10 rounded-full border border-line bg-white px-3 text-small';
+  const seg = (on: boolean) => `h-10 px-4 text-small font-semibold ${on ? 'bg-ink text-white' : 'bg-white'}`;
   return (
-    <DocPage width={900}>
+    <DocPage width={1440}>
+      {(() => { // 디자인 통일 C안: 결론 띠 1개 (bands.ts cardsBand) — 처리 안 된 것 중 정지 등급 먼저
+        const cin = alerts.filter((a) => a.kind !== 'guide').map((a) => ({ id: a.id, machine: MACHINES[a.machine].name, code: a.code, name: (a.alarm?.nameKo ?? '').replace(/\s*\([A-Z0-9 ._/-]+\)/, ''), kind: a.kind, handled: a.handled, minutes: minsSince(a.time), responsible: a.alarm?.responder === 'MNT' ? '보전' : '작업자', first: a.alarm?.steps[0] }));
+        const top = cin.filter((x) => !x.handled).sort((x, y) => Number(y.kind === 'alarm') - Number(x.kind === 'alarm') || y.minutes - x.minutes)[0];
+        return <CBand spec={cardsBand(cin)} onAction={() => top && openCard(top.id)} />;
+      })()}
       <div className="flex flex-wrap items-center gap-2">
-        <div className="flex overflow-hidden rounded-full border border-slate-300"><button onClick={() => setAll(false)} className={seg(!all)}>처리 필요 {open}</button><button onClick={() => setAll(true)} className={seg(all)}>전체 {alerts.length}</button></div>
+        <div className="flex overflow-hidden rounded-full border border-line"><button onClick={() => setAll(false)} className={seg(!all)}>처리 필요 {open}</button><button onClick={() => setAll(true)} className={seg(all)}>전체 {alerts.length}</button></div>
         <button onClick={() => setAsc((v) => !v)} className={sel} aria-label="정렬 바꾸기">{asc ? '오래된순' : '최신순'} ⇅</button>
         <select aria-label="설비" value={mach} onChange={(e) => setMach(e.target.value)} className={sel}><option value="">설비 전체</option>{Object.entries(MACHINES).filter(([, m]) => m.eq).map(([k, m]) => <option key={k} value={k}>{m.name}</option>)}</select>
         <select aria-label="등급" value={lv} onChange={(e) => setLv(e.target.value)} className={sel}><option value="">등급 전체</option>{['긴급', '주의', '참고'].map((l) => <option key={l}>{l}</option>)}</select>
       </div>
-      {list.length === 0 ? <div className="flex min-h-[55vh] items-center justify-center"><div className="rounded-2xl border border-slate-300 bg-white px-8 py-6 text-[15px] text-slate-600">{all ? '지침카드가 없습니다' : '처리할 지침카드가 없습니다'}</div></div> : days.map(([d, as]) => (
+      {list.length === 0 ? <div className="flex min-h-[55vh] items-center justify-center"><div className="rounded-card border border-line bg-white px-8 py-6 text-card text-ink-2">{all ? '지침카드가 없습니다' : '처리할 지침카드가 없습니다'}</div></div> : days.map(([d, as]) => (
         <section key={d} className="flex flex-col gap-2">
-          <h3 className="text-[17px] font-bold">{md(d)} <span className="text-[14px] font-semibold text-slate-500">({wd(d)})</span></h3>
-          <ol className="relative ml-[58px] flex flex-col gap-2.5 border-l-2 border-slate-300 py-1 pl-5">
+          <h3 className="text-card font-bold">{md(d)} <span className="text-body font-semibold text-ink-2">({wd(d)})</span></h3>
+          <ol className="relative ml-[58px] flex flex-col gap-2.5 border-l-2 border-line py-1 pl-5">
             {as.map((a) => {
               const v = LEVEL_VIEW[a.level], who = a.alarm?.responder === 'MNT' ? '보전' : '작업자';
               const col = a.handled ? '#94a3b8' : v.color; // 처리됨 = 회색 줄 (2026-10-20)
               return (
                 <li key={a.id} className="relative">
-                  <span className="absolute -left-[88px] top-3 w-[48px] text-right font-mono text-[13px] text-slate-600">{hhmm(a.time)}</span>
+                  <span className="absolute -left-[88px] top-3 w-[48px] text-right font-mono text-small text-ink-2">{hhmm(a.time)}</span>
                   <span className="absolute -left-[28px] top-[14px] h-3.5 w-3.5 rounded-full border-2 border-white" style={{ background: col }} aria-hidden />
-                  <button onClick={() => go('card', a.id)} className={`flex w-full flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border px-3 py-2.5 text-left ${a.handled ? 'border-slate-200 bg-slate-100 text-slate-400 hover:bg-slate-200' : 'border-slate-300 bg-white hover:bg-slate-50'}`}>
-                    <b className="text-[15px]" style={{ color: col }}>{v.icon} {MACHINES[a.machine].name} · {a.code}</b>
-                    <span className="min-w-0 flex-1 truncate text-[15px] font-semibold">{a.alarm ? a.alarm.nameKo.replace(/\(.*\)/, '') : alarmTitle(a.alarm, a.code)}</span>
+                  <button onClick={() => go('card', a.id)} className={`flex w-full flex-wrap items-center gap-x-3 gap-y-1 rounded-tile border px-3 py-2.5 text-left ${a.handled ? 'border-line-soft bg-tile text-ink-3 hover:bg-track' : 'border-line bg-white hover:bg-tile'}`}>
+                    <b className="text-card" style={{ color: col }}>{v.icon} {MACHINES[a.machine].name} · {a.code}</b>
+                    <span className="min-w-0 flex-1 truncate text-card font-semibold">{a.alarm ? a.alarm.nameKo.replace(/\(.*\)/, '') : alarmTitle(a.alarm, a.code)}</span>
                     <span className="flex flex-wrap gap-1.5">
                       <Chip tone={a.handled ? 'mute' : a.level === '긴급' ? 'solid-crit' : a.level === '주의' ? 'warn' : 'mute'}>처리 책임: {who}</Chip>
                       {a.handled ? <Chip>✓ 처리됨</Chip> : <Chip mono>{minsSince(a.time)}분째</Chip>}

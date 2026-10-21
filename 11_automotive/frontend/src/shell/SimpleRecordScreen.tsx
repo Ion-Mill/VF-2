@@ -1,6 +1,7 @@
 'use client';
 // SCR-13 간이 작업기록 — 주의 등급 알람, OP-30 밖 정지 등급 알람의 짧은 기록. AI 초안이 없다: 사람이 조치를 고르고 확정한다.
 // kind 'cause' = 반복 알람 2단계의 원인 점검 기록 (다른 공정, DOC-03 §1.4).
+import { LockIcon } from './ui';
 import { useState } from 'react';
 import { BTN, CARD, DARK, PAGE, useApp } from './ctx';
 import { MACHINES } from './data';
@@ -63,15 +64,15 @@ export default function SimpleRecordScreen({ no }: { no: string }) {
         </>} />
       <Sec title={cause ? '한 일 고르기' : '한 조치 고르기'}>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">{options.map((o) => (
-          <label key={o} className={`flex min-h-[52px] items-center gap-3 rounded-xl border px-3 text-[15px] ${v.action === o ? 'border-[#0d7a93] bg-[#e3f3f7] font-semibold' : 'border-slate-300 bg-white'} ${canEdit ? 'cursor-pointer' : ''}`}>
-            <input type="radio" className="h-5 w-5 accent-[#0d7a93]" disabled={!canEdit} checked={v.action === o} onChange={() => setV((p) => (p ? { ...p, action: o } : p))} />{o}</label>))}</div>
+          <label key={o} className={`flex min-h-[52px] items-center gap-3 rounded-tile border px-3 text-card ${v.action === o ? 'border-ink bg-tile font-semibold' : 'border-line bg-white'} ${canEdit ? 'cursor-pointer' : ''}`}>
+            <input type="radio" className="h-5 w-5 accent-ink" disabled={!canEdit} checked={v.action === o} onChange={() => setV((p) => (p ? { ...p, action: o } : p))} />{o}</label>))}</div>
       </Sec>
       {!cause && a && <Sec title="안전" right={a.severity === 'STOP' ? SafeTag : undefined}><SafetyBlock machine={rec.machine} alarm={a} /></Sec>}
       {lockOn && <Sec title="잠금·표지 체크" right={<LockHead value={v.lock} onChange={setLock} disabled={!canEdit} />}><LockChecks value={v.lock} onChange={setLock} disabled={!canEdit} /></Sec>}
       <Sec title="사용 소모품 · 메모" right={<Chip>선택</Chip>}>
         <div className="flex flex-col gap-2.5">
           <PartsPicker value={v.parts} onChange={(p) => setV((x) => (x ? { ...x, parts: p } : x))} disabled={!canEdit} />
-          <label className="text-[13px] font-semibold text-slate-500">메모<textarea disabled={!canEdit} value={v.memo} onChange={(e) => setV((p) => (p ? { ...p, memo: e.target.value } : p))} rows={2} className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-[15px] font-normal text-[#1c2530] disabled:bg-slate-50" /></label>
+          <label className="text-small font-semibold text-ink-2">메모<textarea disabled={!canEdit} value={v.memo} onChange={(e) => setV((p) => (p ? { ...p, memo: e.target.value } : p))} rows={2} className="mt-1 w-full rounded-ctl border border-line px-3 py-2 text-card font-normal text-ink disabled:bg-tile" /></label>
         </div>
       </Sec>
       {a && <SrcFold>
@@ -83,10 +84,10 @@ export default function SimpleRecordScreen({ no }: { no: string }) {
         {canEdit && <button onClick={() => { if (!changes.length) { toast('바뀐 내용 없음'); return; } putSr({ ...v, savedBy: v.savedBy ?? user.name, revisions: rev(rec.revisions, rec.revisions.length ? '수정' : '처음 저장', user.name, role, changes) }); }} className={BTN}>저장</button>}
         {canEdit && who && <button disabled={!v.action || (lockOn && lockN < LOCK.length)} onClick={() => setConfirm(true)} className={DARK}>확정</button>}
         {canEdit && !who && <Chip>확정: 보전 담당자</Chip>}
-        {done && <Chip>🔒 확정 · {rec.by}</Chip>}
+        {done && <Chip><LockIcon /> 확정 · {rec.by}</Chip>}
         {!canEdit && !done && RO}
       </Acts>
-      {note && <p className="rounded-md bg-[#e8f6fa] px-3 py-2 text-[14px] font-semibold">{note}</p>}
+      {note && <p className="rounded-ctl bg-tile px-3 py-2 text-body font-semibold">{note}</p>}
       {confirm && <ConfirmBox title="간이 작업기록을 확정할까요?" okLabel="확정" body={`확정하면 이 알람이 처리됩니다. 사용한 소모품은 재고에서 빠집니다.`}
         onOk={() => { setConfirm(false); void doConfirm(); }} onCancel={() => setConfirm(false)} />}
     </DocPage>

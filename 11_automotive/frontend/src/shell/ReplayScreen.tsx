@@ -365,17 +365,17 @@ export function ReplayScreen() {
   const runNow = EQS.filter((eq) => segAt(eq, t)?.state_code === "RUN").length;
   const tone = stop ? "crit" : warn ? "warn" : "ok";
   const BAND: Record<string, string> = {
-    crit: "border-[#e7a3a3] bg-[#fdecec]",
-    warn: "border-[#ecd08f] bg-[#fff6e0]",
-    ok: "border-[#bfe0cb] bg-[#eef8f2]",
+    crit: "border-crit-line bg-crit-bg", // 디자인 통일 C안 결론 띠 색
+    warn: "border-warn-line bg-warn-bg",
+    ok: "border-ok-line bg-ok-bg",
   };
   const KEY: Record<string, string> = {
-    crit: "text-[#c62a2f]",
-    warn: "text-[#9a6200]",
-    ok: "text-[#13804a]",
+    crit: "text-crit",
+    warn: "text-warn",
+    ok: "text-ok",
   };
   const chip =
-    "inline-flex h-6 items-center whitespace-nowrap rounded-full px-2 text-[12px] font-semibold";
+    "inline-flex h-6 items-center whitespace-nowrap rounded-full px-2 text-small font-semibold";
 
   const pct = (ms: number) => ((ms - t0) / (t1 - t0)) * 100;
   const barRef = useRef<HTMLDivElement>(null);
@@ -388,20 +388,20 @@ export function ReplayScreen() {
     const step = t1 - t0 > 12 * 36e5 ? 2 * 36e5 : 36e5;
     for (let h = Math.ceil(t0 / step) * step; h <= t1; h += step) ticks.push(h);
   }
-  const box = "rounded-2xl border border-[#e6e3f0] bg-white";
+  const box = "rounded-card border border-line bg-white";
 
   return (
-    <div className="absolute bottom-3 left-[220px] right-3 top-[32px] flex flex-col gap-3 overflow-hidden text-[13px]">
+    <div className="absolute bottom-3 left-4 right-4 top-3 flex flex-col gap-3 overflow-hidden text-small">
       {/* 결론 띠: 시각 · 무슨 일 · 완제품 · 가동 */}
       <section
-        className={`grid shrink-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-6 gap-y-2 rounded-2xl border px-5 py-3 ${BAND[tone]}`}
+        className={`grid shrink-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-6 gap-y-2 rounded-card border px-5 py-3 ${BAND[tone]}`}
         aria-live="polite"
       >
-        <div className="font-mono text-[34px] font-bold leading-none">
-          {md(simIso(t))} · {hm(simIso(t))}
+        <div className="font-mono text-band font-bold">
+          {md(simIso(t))} {hm(simIso(t))}
         </div>
         <div className="min-w-0">
-          <div className="text-[20px] font-bold leading-snug">
+          <div className="text-band font-bold">
             {stop ? (
               <>
                 <span className={KEY.crit}>{stop.equipment_id}</span> 알람{" "}
@@ -437,23 +437,23 @@ export function ReplayScreen() {
             <div className="mt-1 flex flex-wrap gap-1.5">
               {stop && (
                 <>
-                  <span className={`${chip} bg-[#c62a2f] text-white`}>
+                  <span className={`${chip} bg-crit text-white`}>
                     ⚠ {alarmName(stop.alarm_code)}
                   </span>
                   {chainOf(stop).length > 1 && (
-                    <span className={`${chip} bg-white text-[#c62a2f]`}>
+                    <span className={`${chip} bg-white text-crit`}>
                       연쇄 {chainOf(stop).join(" → ")}
                     </span>
                   )}
                   {stop.lot_no && (
-                    <span className={`${chip} bg-white text-slate-600`}>
+                    <span className={`${chip} bg-white text-ink-2`}>
                       로트 {stop.lot_no}
                     </span>
                   )}
                 </>
               )}
               {!stop && warn && (
-                <span className={`${chip} bg-[#9a6200] text-white`}>
+                <span className={`${chip} bg-warn text-white`}>
                   ▲ {alarmName(warn.alarm_code)}
                 </span>
               )}
@@ -462,19 +462,19 @@ export function ReplayScreen() {
         </div>
         <div className="grid grid-cols-2 gap-x-12 pr-4">
           <div className="flex flex-col gap-1">
-            <span className="text-slate-500">완제품</span>
+            <span className="text-ink-2">완제품</span>
             <span>
-              <b className="font-mono text-[26px] leading-none">
+              <b className="font-mono text-num leading-tight">
                 {frame?.done_today ?? 0}
               </b>
-              <span className="ml-1.5 text-slate-500">개</span>
+              <span className="ml-1.5 text-ink-2">개</span>
             </span>
           </div>
           <div className="flex flex-col gap-1">
-            <span className="text-slate-500">가동</span>
+            <span className="text-ink-2">가동</span>
             <span>
-              <b className="font-mono text-[26px] leading-none">{runNow}</b>
-              <span className="ml-1.5 text-slate-500">/ {EQS.length}대</span>
+              <b className="font-mono text-num leading-tight">{runNow}</b>
+              <span className="ml-1.5 text-ink-2">/ {EQS.length}대</span>
             </span>
           </div>
         </div>
@@ -486,18 +486,18 @@ export function ReplayScreen() {
         <aside className={`${box} relative`} aria-label="사건 목록">
           <div className="absolute inset-0 flex flex-col">
             <div className="flex items-baseline gap-2 px-4 pb-2 pt-3">
-              <h3 className="text-[16px] font-bold">사건 목록</h3>
-              <span className="text-slate-500">{events.length}건</span>
+              <h3 className="text-card font-bold">사건 목록</h3>
+              <span className="text-ink-2">{events.length}건</span>
             </div>
             <ol
               ref={listRef}
-              className="relative min-h-0 flex-1 overflow-y-auto border-t border-slate-200 p-2"
+              className="relative min-h-0 flex-1 overflow-y-auto border-t border-line-soft p-2"
             >
               {!data && (
-                <li className="p-2 text-slate-500">기록 불러오는 중…</li>
+                <li className="p-2 text-ink-2">기록 불러오는 중…</li>
               )}
               {data && events.length === 0 && (
-                <li className="p-2 text-slate-500">
+                <li className="p-2 text-ink-2">
                   이 구간에는 알람·병목 변화가 없습니다
                 </li>
               )}
@@ -506,7 +506,7 @@ export function ReplayScreen() {
                   <button
                     onClick={() => jump(e.at)}
                     aria-current={i === curEv}
-                    className={`grid w-full grid-cols-[42px_minmax(0,1fr)] items-start gap-2 rounded-lg border p-2 text-left ${i === curEv ? "border-[#9fd3e0] bg-[#e8f6fa]" : "border-transparent hover:bg-slate-50"}`}
+                    className={`grid w-full grid-cols-[42px_minmax(0,1fr)] items-start gap-2 rounded-tile border p-2 text-left ${i === curEv ? "border-[#9fd3e0] bg-tile" : "border-transparent hover:bg-tile"}`}
                   >
                     <span className="font-mono font-semibold leading-5">
                       {hm(simIso(e.at))}
@@ -514,19 +514,19 @@ export function ReplayScreen() {
                     <span className="min-w-0">
                       <span className="flex items-center gap-1.5">
                         <span
-                          className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-white"
+                          className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-small font-bold text-white"
                           style={{ background: EV_VIEW[e.kind].color }}
                         >
                           {EV_VIEW[e.kind].icon}
                         </span>
                         <b
-                          className={`text-[14px] ${e.kind === "BN" ? "" : "font-mono"} ${e.at < t - 500 && i !== curEv ? "font-medium text-slate-500" : ""}`}
+                          className={`text-body ${e.kind === "BN" ? "" : "font-mono"} ${e.at < t - 500 && i !== curEv ? "font-normal text-ink-2" : ""}`}
                         >
                           {e.head}
                         </b>
                       </span>
                       <span
-                        className="mt-0.5 block truncate pl-[26px] text-[13px] font-medium text-slate-700"
+                        className="mt-0.5 block truncate pl-[26px] text-small font-normal text-ink"
                         title={e.sub}
                       >
                         {e.sub}
@@ -545,7 +545,7 @@ export function ReplayScreen() {
             className={`${box} shrink-0 px-5 pb-4 pt-3 [--g:10px] xl:[--g:24px]`}
             aria-label="그 시각 라인"
           >
-            <h3 className="text-[16px] font-bold">그 시각 라인</h3>
+            <h3 className="text-card font-bold">그 시각 라인</h3>
             <div className="mt-4 grid grid-cols-6 gap-[var(--g)]">
               {EQS.map((eq) => {
                 const s = segAt(eq, t),
@@ -569,23 +569,23 @@ export function ReplayScreen() {
                 return (
                   <div
                     key={eq}
-                    className={`relative flex min-h-[104px] w-full min-w-0 max-w-[100px] flex-col items-center justify-center justify-self-center gap-1.5 rounded-xl p-2.5 text-center ${down ? "-translate-y-1 border-2 border-[#c62a2f] bg-[#fdecec] shadow-lg" : wn ? "border-2 border-[#e0a100] bg-[#fff6e0]" : run ? "border border-slate-300 bg-white" : "border border-dashed border-slate-300 bg-slate-50"}`}
+                    className={`relative flex min-h-[104px] w-full min-w-0 max-w-[100px] flex-col items-center justify-center justify-self-center gap-1.5 rounded-tile p-2.5 text-center ${down ? "-translate-y-1 border-2 border-crit bg-crit-bg shadow-lg" : wn ? "border-2 border-warn-mark bg-warn-bg" : run ? "border border-line bg-white" : "border border-dashed border-line bg-tile"}`}
                   >
                     {(down || wn) && (
                       <span
-                        className={`absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-bold text-white ${down ? "bg-[#c62a2f]" : "bg-[#9a6200]"}`}
+                        className={`absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full px-2 py-0.5 text-small font-bold text-white ${down ? "bg-crit" : "bg-warn"}`}
                       >
                         {down ? "그 시각 알람" : "주의"}
                       </span>
                     )}
                     <b
-                      className={`max-w-full truncate font-mono text-[15px] ${run || down || wn ? "" : "text-slate-500"}`}
+                      className={`max-w-full truncate font-mono text-card ${run || down || wn ? "" : "text-ink-2"}`}
                     >
                       {eq}
                     </b>
                     <div>
                       <div
-                        className="whitespace-nowrap text-[17px] font-bold leading-tight xl:text-[19px]"
+                        className="whitespace-nowrap text-band font-bold leading-tight xl:text-band"
                         style={{
                           color: run || down || wn ? v.color : "#8a97a4",
                         }}
@@ -594,7 +594,7 @@ export function ReplayScreen() {
                       </div>
                       {al && (
                         <div
-                          className="font-mono text-[12px] font-semibold"
+                          className="font-mono text-small font-semibold"
                           style={{ color: v.color }}
                           title={alarmName(al.alarm_code)}
                         >
@@ -602,7 +602,7 @@ export function ReplayScreen() {
                         </div>
                       )}
                     </div>
-                    <div className="max-w-full truncate text-[11px] text-slate-500">
+                    <div className="max-w-full truncate text-small text-ink-2">
                       {s ? (
                         <>
                           이 상태{" "}
@@ -624,7 +624,7 @@ export function ReplayScreen() {
             </div>
             {/* 재공: 공정 사이 칩 (개수 / 한도) — 두 카드 사이 틈(--g)의 가운데 */}
             <div className="relative mt-3 h-11">
-              <div className="absolute inset-x-[4%] top-1/2 h-1 -translate-y-1/2 rounded-full bg-slate-200" />
+              <div className="absolute inset-x-[4%] top-1/2 h-1 -translate-y-1/2 rounded-full bg-track" />
               {WIPS.map(([k, col], i) => {
                 const n = Number(
                     frame?.wip?.[k as keyof typeof frame.wip] ?? 0,
@@ -638,22 +638,22 @@ export function ReplayScreen() {
                 return (
                   <div
                     key={k}
-                    className={`absolute top-0 -translate-x-1/2 rounded-lg border bg-white px-3 py-0.5 text-center ${over ? "border-[#c62a2f]" : warm ? "border-[#e0a100] bg-[#fffaf0]" : "border-slate-300"}`}
+                    className={`absolute top-0 -translate-x-1/2 rounded-tile border bg-white px-3 py-0.5 text-center ${over ? "border-crit" : warm ? "border-warn-mark bg-[#fffaf0]" : "border-line"}`}
                     style={{
                       left: `calc(${col} * (100% + var(--g)) / 6 - var(--g) / 2)`,
                     }}
                     title={`${LAYOUT.wip[k]?.from ?? ""} → ${LAYOUT.wip[k]?.to ?? ""} 사이 재공`}
                   >
                     <b
-                      className="font-mono text-[16px]"
+                      className="font-mono text-card"
                       style={{
                         color: over ? "#c62a2f" : warm ? "#9a6200" : undefined,
                       }}
                     >
                       {n}
                     </b>
-                    <span className="text-slate-400">/{L ?? "—"}</span>
-                    <div className="text-[11px] leading-tight text-slate-500">
+                    <span className="text-ink-3">/{L ?? "—"}</span>
+                    <div className="text-small leading-tight text-ink-2">
                       재공-{i + 1}
                     </div>
                   </div>
@@ -668,7 +668,7 @@ export function ReplayScreen() {
             aria-label="타임라인"
           >
             <div className="flex flex-wrap items-center gap-3">
-              <h3 className="text-[16px] font-bold">타임라인</h3>
+              <h3 className="text-card font-bold">타임라인</h3>
               {/* 시각으로 가기: 날짜·시각만 고른다. 불러오는 범위는 그 시각이 속한 교대 (shiftOf) */}
               <div className="relative">
                 <button
@@ -680,11 +680,11 @@ export function ReplayScreen() {
                   aria-expanded={jumpOpen}
                   aria-label={`시각으로 가기, 지금 ${hm(simIso(t))}`}
                   title="시각으로 가기"
-                  className="flex h-8 items-center gap-2 rounded-full border border-slate-300 bg-slate-50 px-3 text-[13px] font-semibold hover:border-[#7a52f0]"
+                  className="flex h-8 items-center gap-2 rounded-full border border-line bg-tile px-3 text-small font-semibold hover:border-brand"
                 >
                   <span aria-hidden>🕘</span>
                   <span className="font-mono">{hm(simIso(t))}</span>
-                  <span className="text-slate-400" aria-hidden>
+                  <span className="text-ink-3" aria-hidden>
                     ▾
                   </span>
                 </button>
@@ -695,7 +695,7 @@ export function ReplayScreen() {
                       goTo(Date.parse(`${draft.d}T${draft.tm}:00+09:00`));
                       setJumpOpen(false);
                     }}
-                    className="absolute left-0 top-10 z-20 flex w-[300px] flex-col gap-2.5 rounded-xl border border-slate-200 bg-white p-3.5 shadow-xl"
+                    className="absolute left-0 top-10 z-20 flex w-[300px] flex-col gap-2.5 rounded-tile border border-line-soft bg-white p-3.5 shadow-xl"
                     role="dialog"
                     aria-label="이동할 시각"
                   >
@@ -709,7 +709,7 @@ export function ReplayScreen() {
                         onChange={(e) =>
                           setDraft((x) => ({ ...x, d: e.target.value }))
                         }
-                        className="h-9 w-full rounded-md border border-slate-300 px-2"
+                        className="h-9 w-full rounded-ctl border border-line px-2"
                       />
                       <input
                         type="time"
@@ -718,10 +718,10 @@ export function ReplayScreen() {
                         onChange={(e) =>
                           setDraft((x) => ({ ...x, tm: e.target.value }))
                         }
-                        className="h-9 w-full rounded-md border border-slate-300 px-2"
+                        className="h-9 w-full rounded-ctl border border-line px-2"
                       />
                     </div>
-                    <span className="text-[12px] text-slate-500">
+                    <span className="text-small text-ink-2">
                       그 시각이 속한 교대(주간 08~17시 · 야간 17~05시) 기록을
                       불러옵니다
                     </span>
@@ -729,14 +729,14 @@ export function ReplayScreen() {
                       <button
                         type="button"
                         onClick={() => setJumpOpen(false)}
-                        className="h-8 rounded-md border border-slate-300 px-3"
+                        className="h-8 rounded-ctl border border-line px-3"
                       >
                         취소
                       </button>
                       <button
                         type="submit"
                         disabled={!draft.d || !draft.tm}
-                        className="h-8 rounded-md bg-[#1c2530] px-3 font-semibold text-white disabled:bg-slate-300"
+                        className="h-8 rounded-ctl bg-ink px-3 font-semibold text-white disabled:bg-line"
                       >
                         이동
                       </button>
@@ -750,17 +750,17 @@ export function ReplayScreen() {
                     if (t >= t1) setT(t0);
                     setPlay((p) => !p);
                   }}
-                  className="h-8 rounded-full border border-slate-300 bg-white px-3 font-bold"
+                  className="h-8 rounded-full border border-line bg-white px-3 font-bold"
                 >
                   {play ? "⏸ 멈춤" : "▶ 재생"}
                 </button>
                 {/* 배속: 한 묶음 안에 "1초에" + 1분 | 5분 | 15분 */}
                 <span
-                  className="flex h-8 items-center rounded-full border border-slate-300 bg-slate-50 p-0.5"
+                  className="flex h-8 items-center rounded-full border border-line bg-tile p-0.5"
                   role="group"
                   aria-label="재생 속도"
                 >
-                  <span className="px-2.5 text-[12px] text-slate-500">
+                  <span className="px-2.5 text-small text-ink-2">
                     1초에
                   </span>
                   {SPEEDS.map(([v, l]) => (
@@ -768,7 +768,7 @@ export function ReplayScreen() {
                       key={v}
                       onClick={() => setSpeed(v)}
                       aria-pressed={speed === v}
-                      className={`h-7 rounded-full px-3 text-[12px] ${speed === v ? "bg-[#1c2530] font-semibold text-white" : "text-slate-700 hover:bg-white"}`}
+                      className={`h-7 rounded-full px-3 text-small ${speed === v ? "bg-ink font-semibold text-white" : "text-ink hover:bg-white"}`}
                     >
                       {l}
                     </button>
@@ -776,9 +776,9 @@ export function ReplayScreen() {
                 </span>
               </span>
             </div>
-            {err && <p className="text-[#c62a2f]">{err}</p>}
+            {err && <p className="text-crit">{err}</p>}
             {!data ? (
-              <p className="mt-2 text-slate-500">기록 불러오는 중…</p>
+              <p className="mt-2 text-ink-2">기록 불러오는 중…</p>
             ) : (
               // 화면에 맞추기: 두 열은 같은 짜임(사건 줄 h-6 · 막대 6줄 · 시간 눈금 h-4)이라 줄어도 줄이 맞는다.
               // 막대는 LANE_PX가 최대이고, 세로 자리가 모자라면 같이 얇아진다(최소 6px) — 화면 전체 스크롤 없음
@@ -803,7 +803,7 @@ export function ReplayScreen() {
                   }
                 }}
               >
-                <div className="flex min-h-0 flex-col justify-center font-mono text-[12px]">
+                <div className="flex min-h-0 flex-col justify-center font-mono text-small">
                   <div className="h-6 shrink-0" />
                   <div className="flex min-h-0 flex-col gap-1.5">
                     {EQS.map((eq) => (
@@ -828,7 +828,7 @@ export function ReplayScreen() {
                           onClick={() => jump(e.at)}
                           title={`${hm(simIso(e.at))} ${e.head} · ${e.sub}`}
                           aria-label={`${hm(simIso(e.at))} ${e.head} ${e.sub}로 가기`}
-                          className={`absolute -translate-x-1/2 border-2 border-white text-[10px] font-bold text-white ${e.kind === "BN" ? "top-1 h-3.5 w-3.5 rotate-45 rounded-sm" : e.kind === "GUIDE" ? "top-1 h-3.5 w-3.5 rounded-full" : "top-0 h-5 w-5 rounded-full"}`}
+                          className={`absolute -translate-x-1/2 border-2 border-white text-small font-bold text-white ${e.kind === "BN" ? "top-1 h-3.5 w-3.5 rotate-45 rounded" : e.kind === "GUIDE" ? "top-1 h-3.5 w-3.5 rounded-full" : "top-0 h-5 w-5 rounded-full"}`}
                           style={{
                             left: `${pct(e.at)}%`,
                             background: EV_VIEW[e.kind].color,
@@ -854,7 +854,7 @@ export function ReplayScreen() {
                     {EQS.map((eq) => (
                       <div
                         key={eq}
-                        className="relative min-h-[6px] overflow-hidden rounded-sm bg-slate-100"
+                        className="relative min-h-[6px] overflow-hidden rounded bg-tile"
                         style={{ height: LANE_PX }}
                       >
                         {(data.states[eq] ?? []).map((r, i) => (
@@ -872,13 +872,13 @@ export function ReplayScreen() {
                       </div>
                     ))}
                     <div
-                      className="pointer-events-none absolute -top-7 bottom-0 w-[2px] -translate-x-1/2 bg-[#1c2530]"
+                      className="pointer-events-none absolute -top-7 bottom-0 w-[2px] -translate-x-1/2 bg-ink"
                       style={{ left: `${pct(t)}%` }}
                     >
-                      <span className="absolute -left-[5px] -top-1 h-3 w-3 rounded-full bg-[#1c2530]" />
+                      <span className="absolute -left-[5px] -top-1 h-3 w-3 rounded-full bg-ink" />
                     </div>
                   </div>
-                  <div className="relative h-4 shrink-0 font-mono text-[11px] text-slate-500">
+                  <div className="relative h-4 shrink-0 font-mono text-small text-ink-2">
                     {ticks.map((h) => (
                       <span
                         key={h}
@@ -892,11 +892,11 @@ export function ReplayScreen() {
                 </div>
               </div>
             )}
-            <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 pl-[72px] text-[12px] text-slate-600">
+            <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 pl-[72px] text-small text-ink-2">
               {LEG.map(([k, bg]) => (
                 <span key={k} className="flex items-center gap-1">
                   <i
-                    className="inline-block h-2.5 w-4 rounded-sm opacity-80"
+                    className="inline-block h-2.5 w-4 rounded opacity-80"
                     style={{ background: bg }}
                   />
                   {k}
