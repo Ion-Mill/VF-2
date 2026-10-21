@@ -50,7 +50,7 @@ export const fromPast = (n: Record<string, string> & { to: string[] }): Notice =
     at: n.raised_at, ts: tsOf(n.raised_at), text: n.message.replace(/^\[[^\]]+\]\s*/, ''), related: n.related_info || undefined,
     machine: eq ? ID_OF[eq] : undefined, roles: roles.length ? roles : ['SUP', 'MGR'], userIds: n.to, delivery: n.rule_code.match(/^(WO_|APPROVAL|DAILY|SHIFT|DOC_)/) ? 'BUBBLE' : 'LIST',
     handled: false, past: true, count: Number(n.repeat_count) || undefined, keys: n.pm_task_id ? [n.pm_task_id] : undefined,
-    open: rule === 'DAILY_REPORT_PENDING' ? { screen: 'daily', key: dailyKey(n) } : rule.startsWith('PM_') ? { screen: 'pm' } : rule === 'STOCK_LOW' ? { screen: 'inventory' } : rule === 'TOOL_LIFE_90' ? { screen: 'tools' } : undefined,
+    open: rule === 'DAILY_REPORT_PENDING' ? { screen: 'daily', key: dailyKey(n) } : rule.startsWith('PM_') ? { screen: 'pm' } : rule === 'STOCK_LOW' ? { screen: 'inventory', key: n.item_no || undefined } : rule === 'TOOL_LIFE_90' ? { screen: 'tools' } : undefined,
   };
 };
 
@@ -120,7 +120,7 @@ export function derive(c: RuleCtx): { add: Notice[]; resolve: string[] } {
   // 10/1 08:00에 이미 부족한 품목은 9월에 알렸으므로(미처리분은 fromPast) 다시 내지 않는다 — 새로 부족해질 때만 (gen/notify.py와 같음)
   c.inv?.items.forEach((i) => {
     const id = `STOCK_LOW:${i.item_no}`;
-    if (i.low && i.safety_stock > 0) { if (!i.low_at_start) add.push(mk('STOCK_LOW', i.item_no, `${i.item_name} 재고 ${i.stock_qty}${i.unit} — 안전 재고 ${i.safety_stock}${i.unit} 이하`, [i.owner_role as Role, 'MGR'], { open: { screen: 'inventory' } })); }
+    if (i.low && i.safety_stock > 0) { if (!i.low_at_start) add.push(mk('STOCK_LOW', i.item_no, `${i.item_name} 재고 ${i.stock_qty}${i.unit} — 안전 재고 ${i.safety_stock}${i.unit} 이하`, [i.owner_role as Role, 'MGR'], { open: { screen: 'inventory', key: i.item_no } })); }
     else { resolve.push(id); c.notices.filter((n) => n.past && n.rule === 'STOCK_LOW' && !n.handled && n.text.includes(i.item_name)).forEach((n) => resolve.push(n.id)); }
   });
   // 예방 정비 기한 하루 전 / 넘김 (주 1회 이상 주기 항목만). 9월에 같은 항목으로 이미 알렸으면 다시 내지 않는다
