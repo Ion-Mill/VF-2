@@ -11,21 +11,21 @@ const { suggestChips, defaultChips } = await import('data:text/javascript;base64
 let fail = 0;
 const t = (name, fn) => { try { fn(); console.log('통과  ' + name); } catch (e) { fail++; console.log('실패  ' + name + '\n      ' + String(e.message).split('\n')[0]); } };
 
-t('카드를 안 열었으면 역할별 고정 말풍선 6개 (작업자·반장 / 보전·관리자 두 가지)', () => {
+t('카드를 안 열었으면 역할별 고정 말풍선 (작업자·반장 / 보전·관리자 두 가지), 2075·잠금 표지 고정 문구는 없다', () => {
   assert.deepEqual(suggestChips({ role: 'OPR', onCard: false, alarmCode: '992' }), defaultChips('OPR'));
   assert.deepEqual(suggestChips({ role: 'MNT', onCard: false }), defaultChips('MNT'));
-  assert.equal(defaultChips('OPR').length, 6); assert.equal(defaultChips('MNT').length, 6); assert.deepEqual(defaultChips('SUP'), defaultChips('OPR'));
-  assert.equal(defaultChips('OPR')[0], '2075 알람 뭐야'); assert.ok(defaultChips('MGR').includes('확정 안 된 교대 보고서 있어?'));
+  assert.equal(defaultChips('OPR').length, 4); assert.equal(defaultChips('MNT').length, 4); assert.deepEqual(defaultChips('SUP'), defaultChips('OPR')); assert.ok(defaultChips('MGR').includes('확정 안 된 교대 보고서 있어?'));
+  for (const role of ['OPR', 'SUP', 'MNT', 'MGR']) for (const x of [...defaultChips(role), ...suggestChips({ role, onCard: true, alarmCode: '992' })]) assert.ok(!x.includes('2075') && x !== '잠금 표지 순서', role + ': ' + x);
 });
 t('카드를 열었어도 번호 모양이 아니면(코드집에 없음 등) 고정 말풍선', () => {
   assert.deepEqual(suggestChips({ role: 'OPR', onCard: true, alarmCode: '' }), defaultChips('OPR'));
   assert.deepEqual(suggestChips({ role: 'OPR', onCard: true, alarmCode: '알람 992' }), defaultChips('OPR'));
   assert.deepEqual(suggestChips({ role: 'OPR', onCard: true, alarmCode: null }), defaultChips('OPR'));
 });
-t('역할마다 6개씩, 중복 없음, 번호 질문은 모두 번호로 시작', () => {
+t('역할마다 5개 이하(최대 6), 중복 없음, 번호 질문은 모두 번호로 시작', () => {
   for (const role of ['OPR', 'SUP', 'MNT', 'MGR']) {
     const c = suggestChips({ role, onCard: true, alarmCode: '992' });
-    assert.equal(c.length, 6, role); assert.equal(new Set(c).size, 6, role); assert.equal(c[0], '992 원인은', role);
+    assert.ok(c.length >= 4 && c.length <= 6, role); assert.equal(new Set(c).size, c.length, role); assert.equal(c[0], '992 원인은', role);
   }
 });
 t('작업자는 지난 조치를 못 본다(정식 작업기록 권한) → 말풍선에 없다. 보전·반장·관리자는 있다', () => {
