@@ -3466,6 +3466,45 @@ def report_status_note_v32(question: str, p: dict) -> str:
 SHIFT_KO_V33 = {"D": "주간", "N": "야간"}
 
 
+# 확정 안 된 교대 보고서가 있는지 (2026-10-21 시연 "작성안된 교대 보고서있어?"): 문서 길로 가 거짓 "문서에 없음"이 나왔다. 기간 안 교대별 확정 여부(production 도구)를 프로그램이 훑어 목록으로 답한다.
+PENDING_REPORT_NEG_V34 = re.compile(r"(?:작성|확정)\s?(?:안\s?(?:된|됐|돼|한)|되지\s?않|못\s?(?:한|했|된))|미\s?(?:작성|확정)|(?:작성|확정)\s?전|아직\s?(?:안|못)|남은|밀린")
+PENDING_REPORT_ASK_V34 = re.compile(r"있|없|몇|어떤|뭐|목록|알려|보여|찾아")
+PENDING_REPORT_DOC_V34 = re.compile(r"언제|누가|누구|어떻게|왜|기준|규칙|절차|방법|흐름|요약")
+PENDING_DEFAULT_DAYS_V34 = 7
+
+
+def pending_reports_v34(question: str, p: dict) -> bool:
+    """확정(작성)되지 않은 교대 보고서가 있는지 묻는 말인가 — 교대 보고서 + 안 된/전/미 말 + 있나/목록 말, 문서 질문 낱말·조회 의도·알람·로트 없음. 일일 보고서는 아니다."""
+    return (bool(re.search(r"교대\s?보고서", question)) and bool(PENDING_REPORT_NEG_V34.search(question)) and bool(PENDING_REPORT_ASK_V34.search(question))
+            and not PENDING_REPORT_DOC_V34.search(question) and not (p["intents"] or p["alarms"] or p.get("lot") or p.get("order")))
+
+
+def pending_reports_answer_v34(base: dict, role: str, p: dict) -> dict:
+    """질문의 기간(없으면 시연 어제까지 최근 7일)의 끝난 교대 중 확정 안 된 교대 목록. 채팅은 '초안이 있나'와 '작성 전인가'를 구분해 읽지 못하므로 '확정 안 된'으로 말한다."""
+    end = min(p.get("end") or (REF_DATE - timedelta(days=1)), REF_DATE - timedelta(days=1))
+    start = p.get("start") or (end - timedelta(days=PENDING_DEFAULT_DAYS_V34 - 1))
+    if start > end:
+        text = "아직 끝나지 않은 날짜라 확정 여부를 볼 교대 보고서가 없어요. 교대 보고서 초안은 주간 17시, 야간 다음 날 05시에 만들어져요."
+        return {**base, "status": "답변", "mode": "규칙 (아직 끝나지 않은 날짜 — 고정 문구)", "conclusion": text, "blocks": [{"kind": "text", "text": text}]}
+    r = T.production(role, start, end, p.get("shift") if p.get("shift") in ("D", "N") else None)
+    rows = [x for x in r["rows"] if x["prod_date"] <= end.isoformat()]
+    open_ = [x for x in rows if x["status"] != "확정"]
+    span = f"{start.month}/{start.day}~{end.month}/{end.day}" if start != end else f"{start.month}/{start.day}"
+    meta = {"current_data": [{k: r[k] for k in ("tool", "range", "as_of", "label", "is_synthetic")}], "data_label": DATA_LABEL, "is_synthetic": True}
+    if not rows:
+        text = f"{span} 교대 기록을 찾지 못했어요. 기간을 다시 확인해 주세요."
+        return {**base, **meta, "status": "확인 필요", "mode": "규칙 (보고서 확정 여부 — 운영 조회)", "conclusion": text, "blocks": [{"kind": "text", "text": text}]}
+    if not open_:
+        text = f"{span} 교대 보고서 {len(rows)}개는 모두 확정됐어요."
+    else:
+        names = ", ".join(f"{date.fromisoformat(x['prod_date']).month}/{date.fromisoformat(x['prod_date']).day} {SHIFT_KO_V33[x['shift']]}" for x in open_)
+        text = (f"{span} 교대 보고서 {len(rows)}개 중 아직 확정되지 않은 것이 {len(open_)}개 있어요: {names}. "
+                "초안이 있는지, 아직 작성 전인지는 채팅이 구분해 읽지 못해요. 교대 보고서(SCR-15)에서 그 교대를 열어 확인해 주세요.")
+    return {**base, **meta, "status": "답변", "mode": "규칙 (보고서 확정 여부 목록 — 운영 조회, Claude 호출 없음)", "conclusion": text, "blocks": [{"kind": "text", "text": text}]}
+
+
+
+
 def report_status_answer_v33(base: dict, role: str, question: str, p: dict) -> dict:
     """보고서 작성·확정 여부 질문의 답 (2026-10-21). 교대 보고서는 기존 조회 도구 production(교대별 보고서 확정 여부, 백엔드 v_shift_progress)을 읽어 프로그램이 답한다 — 새 백엔드 도구 없음.
     날짜가 없으면 되묻고, 아직 끝나지 않은 날짜는 만들어지는 시각을 알리고, 일일 보고서는 읽는 도구가 없어 안내한다. 채팅은 '초안이 있나'와 '작성 전인가'를 구분해 읽지 못하므로 확정이 아니면 그렇게 밝힌다."""
@@ -4264,6 +4303,10 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
         if SL.on():
             SL.step("1 규칙 판정", 결과="정비·수리 이력 날짜 조회 — 채팅이 아직 못 읽음, 규칙이 안내 (Claude 호출 없음)")
         return {**base, "status": "확인 필요", "mode": "규칙", "conclusion": HISTORY_NOTE_V25}
+    if pending_reports_v34(question, p):   # 확정 안 된 교대 보고서 목록 (2026-10-21): DB 사실이라 프로그램이 훑어 답한다 (Claude 호출 없음)
+        if SL.on():
+            SL.step("1 규칙 판정", 결과="확정 안 된 교대 보고서 목록 질문 — 규칙이 production 확정 여부로 답함 (Claude 호출 없음)")
+        return pending_reports_answer_v34(base, role, p)
     if report_status_unread_v32(question, p):   # 보고서 작성·확정 여부 (2026-10-21): 교대 보고서는 production 도구의 확정 여부로 프로그램이 답하고, 그 밖(일일 보고서·날짜 없음)은 안내한다 (Claude 호출 없음)
         if SL.on():
             SL.step("1 규칙 판정", 결과="보고서 작성·확정 여부 질문 — 규칙이 production 확정 여부로 답하거나 안내 (Claude 호출 없음)")

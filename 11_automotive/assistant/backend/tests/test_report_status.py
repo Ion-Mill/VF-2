@@ -66,3 +66,22 @@ def test_no_date_is_asked_back_and_today_is_not_ended_yet():
 def test_daily_report_still_points_to_scr16_because_no_tool_reads_it():
     a = ask("일일 보고서 확정됐어?", "SUP")
     assert a["status"] == "확인 필요" and "SCR-16" in a["conclusion"] and "일일 보고서가 작성" in a["conclusion"]
+
+
+# ---- 확정 안 된 교대 보고서 목록 (2026-10-21 "작성안된 교대 보고서있어?")
+@pytest.mark.parametrize("q", ["작성안된 교대 보고서있어?", "확정 안 된 교대 보고서 있어?", "아직 확정 안 된 교대 보고서 알려줘", "미확정 교대 보고서 목록", "남은 교대 보고서 몇 개야?"])
+def test_pending_list_questions_are_caught(q):
+    p = A.parse(q)
+    assert A.pending_reports_v34(q, p), q
+
+
+@pytest.mark.parametrize("q", ["교대 보고서 언제 확정해?", "교대 보고서 누가 확정해?", "어제 주간 교대 보고서 작성됐어?", "일일 보고서 확정 안 된 거 있어?", "교대 보고서 요약해줘"])
+def test_other_report_questions_are_not_the_pending_list(q):
+    assert not A.pending_reports_v34(q, A.parse(q)), q
+
+
+def test_pending_list_names_the_unconfirmed_shifts_from_the_production_tool():
+    a = ask("작성안된 교대 보고서있어?")
+    assert a["status"] == "답변" and a["mode"].startswith("규칙") and a["is_synthetic"]
+    assert "아직 확정되지 않은 것이 1개" in a["conclusion"] and "9/29 야간" in a["conclusion"] and "SCR-15" in a["conclusion"]
+    assert "받은 조각" not in a["conclusion"]
