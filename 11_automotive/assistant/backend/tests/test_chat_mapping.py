@@ -149,3 +149,21 @@ def test_blocks_that_produce_no_text_fall_back_to_the_old_way(blocks):
 def test_to_backend_with_blocks_still_has_exactly_the_contract_fields():
     out = to_backend({"status": "답변", "conclusion": "x", "evidence": [], "blocks": [{"kind": "text", "text": "본문"}]})
     assert set(out) == {"answer", "sources", "related", "status"} and out["answer"] == "본문"
+
+
+def _ops(items):
+    return {"blocks": [{"kind": "section", "text": "작업 전 6단계 (걸기)"}, {"kind": "ops", "head": "", "items": items}]}
+
+
+def test_blocks_list_of_official_step_codes_is_not_numbered_twice():
+    """'1. 6.1 기기 등의 …'처럼 목록 번호와 문서 단계 번호가 겹치던 것 (2026-10-21) — 항목이 모두 단계 번호로 시작하면 목록 번호를 붙이지 않는다"""
+    t = blocks_to_text(_ops(["6.1 기기 등의 운전정지 준비: 표를 본다.", "6.2 기기 등의 운전정지: 멈춘다."]))
+    assert t == "■ 작업 전 6단계 (걸기)\n6.1 기기 등의 운전정지 준비: 표를 본다.\n6.2 기기 등의 운전정지: 멈춘다."
+    assert "1. 6.1" not in t and "2. 6.2" not in t
+
+
+def test_blocks_plain_list_keeps_list_numbers_and_mixed_list_too():
+    assert blocks_to_text(_ops(["압력이 떨어져요.", "저장소가 비었어요."])).endswith("1. 압력이 떨어져요.\n2. 저장소가 비었어요.")
+    t = blocks_to_text(_ops(["6.1 단계 글", "그냥 항목"]))                  # 섞이면 지금처럼 번호를 붙인다
+    assert t.endswith("1. 6.1 단계 글\n2. 그냥 항목")
+    assert blocks_to_text(_ops(["6.9bar 압력이 낮아요."])).endswith("1. 6.9bar 압력이 낮아요.")   # 소수 값(단위 붙음)은 단계 번호가 아니다
