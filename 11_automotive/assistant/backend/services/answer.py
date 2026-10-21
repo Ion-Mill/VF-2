@@ -3435,6 +3435,34 @@ def history_unread_v25(question: str, p: dict) -> bool:
     """정비·수리·작업 이력을 날짜로 조회하는 말인가 — 규칙이 잡은 운영 조회가 없고 알람 번호도 없다."""
     return (not p["intents"] and not p["alarms"] and bool(p.get("start")) and bool(HISTORY_Q_V25.search(question))
             and bool(HISTORY_ASK_V25.search(question)))
+# 보고서가 작성·확정됐는지 (2026-10-21 시연 시험 "어제 주간 교대 보고서 작성됐어?"): 작성 여부는 문서에 없는 DB 사실인데 문서 길이 "받은 조각에서는 못 찾았다 + 만들어지는 흐름"을 말하고,
+# 상대 날짜("어제")를 Claude가 실제 달력(10월 20일)으로 지어냈다. 채팅에는 보고서 상태를 읽는 조회 도구가 아직 없으므로(DB 담당 전달 문서 참고) 못 읽는다는 사실과 볼 화면을 규칙이 알린다
+# (Claude 호출 없음). 날짜는 규칙이 읽은 값(p)만 쓴다. "언제 만들어져?"·"누가 확정해?" 같은 문서 질문은 건드리지 않는다.
+REPORT_STATUS_Q_V32 = re.compile(r"(?:교대|일일|주간|야간)\s?보고서")
+REPORT_STATUS_ASK_V32 = re.compile(r"작성\s?(?:됐|돼|되었|이\s?됐)|작성\s?(?:했|완료)|확정\s?(?:됐|돼|되었|했|이\s?됐)|제출\s?(?:됐|돼|되었)|올라(?:왔|와)|만들어졌|나왔|끝났")
+REPORT_STATUS_DOC_V32 = re.compile(r"언제|누가|누구|어떻게|왜|무엇|뭘|뭐|기준|규칙|절차|방법|흐름|몇\s?시|몇\s?개|요약|보여\s?줘|알려\s?줘")
+
+
+def report_status_unread_v32(question: str, p: dict) -> bool:
+    """보고서가 작성·확정됐는지 묻는 말인가 — 보고서 이름 + 작성/확정됐나 말이 있고, 문서 질문 낱말·조회 의도·알람·로트가 없다. 일일 보고서 '포함' 질문은 앞선 규칙이 먼저 받는다."""
+    return (bool(REPORT_STATUS_Q_V32.search(question)) and bool(REPORT_STATUS_ASK_V32.search(question))
+            and not REPORT_STATUS_DOC_V32.search(question) and not (p["intents"] or p["alarms"] or p.get("lot") or p.get("order")))
+
+
+def report_status_note_v32(question: str, p: dict) -> str:
+    daily = bool(re.search(r"일일\s?보고서", question)) and not re.search(r"교대\s?보고서", question)
+    name, scr = ("일일 보고서", "SCR-16") if daily else ("교대 보고서", "SCR-15")
+    when = ""
+    if p.get("start"):
+        d = p["start"]
+        when = f"{d.month}/{d.day} "
+        if not daily and p.get("shift") in ("D", "N"):
+            when += "주간 " if p["shift"] == "D" else "야간 "
+    return (f"확인 필요 — {when}{name}가 작성·확정됐는지는 이 채팅에서 아직 읽지 못해요(문서에 없는 게 아니라 채팅이 아직 못 읽는 일이에요). "
+            f"{name}({scr})에서 그 {'날짜' if daily else '교대'}를 열어 상태를 확인해 주세요. "
+            f"보고서가 언제 만들어지고 누가 확정하는지는 문서로 설명해 드릴 수 있어요.")
+
+
 KPI_DATED_WORDS_V21 = re.compile(r"OEE|가동률|성능|양품|지표|효율|KPI", re.I)
 KPI_30D_ONLY_V21 = re.compile(r"MTTR|MTBF|평균\s*수리|평균\s*고장", re.I)
 NO_DATE_NOTE_V21 = "기간을 정하지 않아 9월 한 달(9/1~9/30) 값이에요. 날짜를 말씀해 주시면 그날 값을 드려요 (예: '어제', '오늘')."
@@ -4196,6 +4224,10 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
         if SL.on():
             SL.step("1 규칙 판정", 결과="정비·수리 이력 날짜 조회 — 채팅이 아직 못 읽음, 규칙이 안내 (Claude 호출 없음)")
         return {**base, "status": "확인 필요", "mode": "규칙", "conclusion": HISTORY_NOTE_V25}
+    if report_status_unread_v32(question, p):   # 보고서 작성·확정 여부 (2026-10-21): 읽는 도구가 아직 없다 — 지어내지 않고 규칙이 알린다 (Claude 호출 없음)
+        if SL.on():
+            SL.step("1 규칙 판정", 결과="보고서 작성·확정 여부 질문 — 채팅이 아직 못 읽음, 규칙이 안내 (Claude 호출 없음)")
+        return {**base, "status": "확인 필요", "mode": "규칙", "conclusion": report_status_note_v32(question, p)}
     if s.followup and not pure_drop:   # 설비 이름뿐인 글 (2026-10-20): 앞 답이 "설비를 알려 주세요"면 앞 질문과 이어 답한다
         merged = askback_merge_v21(question, p, prev)
         if merged:
