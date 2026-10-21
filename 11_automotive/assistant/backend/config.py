@@ -216,6 +216,10 @@ class Settings:
     # alarm_chain: 1이면 (2026-10-21, 992 시연 시험) 화면이 alarm_key를 안 보내도 서버가 바로 앞 답이 한 알람 이야기였으면 그 번호를 이어받는다 — "992 원인은" 다음 "뭘해야해?"가
     # 순수 길로 가 엉뚱한 993 조각을 받던 것을 막는다. 대상 없는 질문(ctx_subjectless)만, 이어받은 번호는 기록에 남겨 다음 질문도 잇는다. "나는/내가 …" 질문은 내 역할 단계만 보인다. 기본 꺼짐 = 지금 동작 그대로.
     alarm_chain: bool = False
+    # sensor_live: 1이면 (2026-10-21) 채팅의 센서 값을 공용 DB(시계가 10/1 08:00에 멈춤) 대신 시연 서버(sim_server)의 지금 값으로 답한다 — 화면에 보이는 값과 같게. 읽기 전용이고
+    # 시연 서버를 못 읽으면 공용 DB 값으로 답한다. 시연용 임시 방식이라 답에 "시연 화면 시계"라고 밝힌다. sim_server_url = 시연 서버 주소. 기본 꺼짐 = 지금 동작 그대로.
+    sensor_live: bool = False
+    sim_server_url: str = "http://127.0.0.1:8765"
     # pure_model: 비어 있지 않으면 **채팅(외부 Claude 요청)의 순수 길 본 답변**(작업 이름 pure_answer: 질문 + 조각 → Claude 1번, PURE_RETRY의 두 번째 호출 포함)만 이 모델로 부른다 (2026-10-19).
     # 판정·다시 쓰기·옛 길·compose 같은 나머지 호출은 늘 Sonnet 5.5다. 노력은 medium 그대로. 가격표에 없는 이름이면 빈 값(= Sonnet)으로 되돌린다.
     # settings()가 만드는 기본은 claude-haiku-5-5(PURE_MODEL 줄이 없을 때, 사용자 결정 2026-10-19), 줄을 비우면(PURE_MODEL=) Sonnet 5.5 = 예전 동작. 이 필드 자체의 기본값 ""는 Settings를 직접 만드는 코드(시험 등)가 예전 동작을 그대로 받게 하려는 것이다
@@ -382,6 +386,8 @@ def settings() -> Settings:
         continue_llm=get("CONTINUE_LLM", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
         ask_only=get("ASK_ONLY", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
         alarm_chain=get("ALARM_CHAIN", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
+        sensor_live=get("SENSOR_LIVE", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
+        sim_server_url=(get("SIM_SERVER_URL", "http://127.0.0.1:8765").strip() or "http://127.0.0.1:8765"),
         pure_model=_pure_model(get("PURE_MODEL", PURE_MODEL_DEFAULT)),   # 줄 없음 = Haiku(기본), 빈 줄·claude-sonnet-5-5·모르는 이름 = Sonnet(예전 동작). 앱 외부 요청에서만 쓰인다
         llm_provider=provider,
         claude_model="claude-sonnet-5-5" if claude_app else get("MOM_CLAUDE_MODEL", "claude-opus-5-5").strip(),   # 앱 스위치: Sonnet 5.5 medium, 구독 로그인(cli) 고정 (2026-10-15 사용자 결정). 2026-10-19: 순수 길 본 답변만 PURE_MODEL로 달라질 수 있다 — claude_client가 그 호출에서만 갈라 준다

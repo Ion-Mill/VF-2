@@ -628,7 +628,8 @@ def test_through_the_app_road_with_keep_signals_the_tool_is_called(fb, monkeypat
 
 def test_no_new_env_switch_was_added():
     text = (HERE.parent.parent / ".env.example").read_text(encoding="utf-8") if (HERE.parent.parent / ".env.example").exists() else ""
-    assert "SENSOR" not in text.upper().replace("SENSOR_TREND", "")
+    # 센서 값 조회 자체는 새 스위치가 없다. 2026-10-21 시연용 지금 값 읽기(SENSOR_LIVE)만 의도해서 더했다 — 그 밖의 센서 스위치는 없어야 한다
+    assert "SENSOR" not in text.upper().replace("SENSOR_TREND", "").replace("SENSOR_LIVE", "")
 
 
 # ================================================================ 2차 개선 (2026-10-19, 봉인 은행 범주 피드백)
