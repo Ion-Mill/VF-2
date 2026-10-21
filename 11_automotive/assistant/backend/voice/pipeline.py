@@ -30,11 +30,7 @@ class VoiceError(Exception):
 
 
 def make_engine(s: VoiceSettings) -> Any:
-    """설정(VOICE_ENGINE)에 따라 실행기 하나만 만든다. 두 실행기(ctranslate2 / torch)를 한 프로세스에 같이 올리지 않는다.
-    transformers 쪽은 여기서 import 해도 torch 는 모델을 올릴 때(load)까지 불러오지 않는다."""
-    if s.engine == "transformers":
-        from backend.voice.engine_transformers import TransformersWhisperEngine  # noqa: PLC0415
-        return TransformersWhisperEngine(s)
+    """faster-whisper 실행기만 만든다. 모델을 올릴 때까지 faster_whisper·ctranslate2 를 import 하지 않는다."""
     return FasterWhisperEngine(s)
 
 

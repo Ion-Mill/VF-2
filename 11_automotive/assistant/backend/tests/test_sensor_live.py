@@ -1,7 +1,7 @@
 """센서 값을 시연 서버의 지금 값으로 답하기 SENSOR_LIVE (2026-10-21) 최소 시험 — 진짜 Claude·네트워크·DB·시연 서버를 부르지 않는다 (가짜 백엔드·시연 서버 값은 바꿔치기).
 
 문제: 채팅의 센서 값은 공용 DB(시계 10/1 08:00 정지)라 화면(시연 서버)의 값과 달랐다 (주축 부하 1.1% ↔ 41.8%).
-지키는 것: 스위치 켬 + 시연 서버를 읽으면 그 지금 값과 "시연 화면 시계"로 답하고(정상 범위 [참고]·bar 그대로), 못 읽거나 스위치가 꺼져 있으면 공용 DB 값 그대로다.
+지키는 것: 스위치 켬 + 시연 서버를 읽으면 그 지금 값과 "시연 화면 시계"로 답하고(판정 줄·psi 옆 bar), 못 읽거나 스위치가 꺼져 있으면 공용 DB 값 그대로다.
 """
 import pytest
 
@@ -42,8 +42,8 @@ def test_live_answer_uses_the_demo_server_values_and_clock():
     a = ask("VF2-01 센서 추세")
     c = a["conclusion"]
     assert a["status"] == "답변" and "시연 화면 시계" in c and "지금 값" in c and "13:43" in c and "08:00" not in c
-    assert "주축 부하: 41.8% — 정상 [참고]" in c and "주축 모터 온도: 37.4℃ — 정상 [참고]" in c and "105" not in c and "104.3 psi(약 7.2 bar) — 정상 [참고]" in c
-    assert "정상 범위" not in c and "비정상으로 표시된 센서: 없음" in c and "알람 판정이 아니에요" in c        # 범위 대신 판정, 알람 판정이 아니라는 안내
+    assert "주축 부하: 41.8% — 정상" in c and "주축 모터 온도: 37.4℃ — 정상" in c and "105" not in c and "104.3 psi(약 7.2 bar) — 정상" in c
+    assert "정상 범위" not in c and "[참고]" not in c and "비정상으로 표시된 센서: 없음" in c and "알람 판정이 아니에요" in c        # 범위 대신 판정, 알람 판정이 아니라는 안내
     assert "추세" in c and a["current_data"][0]["as_of"].startswith("2026-10-01T13:43")
 
 
@@ -71,20 +71,20 @@ def _live(**over):
 def test_high_value_is_marked_abnormal_with_the_reference_range(monkeypatch):
     monkeypatch.setattr(sim_live, "fetch_sensors", lambda url, eq: sim_live.parse_twin(_live(SpindleMotorTemp=43.1), eq))
     c = ask("VF2-01 센서 추세")["conclusion"]
-    assert "주축 모터 온도: 43.1℃ — 비정상(높음, 참고 범위 28~42℃) [참고]" in c and "비정상으로 표시된 센서: 주축 모터 온도" in c
+    assert "주축 모터 온도: 43.1℃ — 비정상(높음, 참고 범위 28~42℃)" in c and "비정상으로 표시된 센서: 주축 모터 온도" in c
     assert c.count("비정상(") == 1
 
 
 def test_low_pressure_is_abnormal_low_with_bar_in_the_range(monkeypatch):
     monkeypatch.setattr(sim_live, "fetch_sensors", lambda url, eq: sim_live.parse_twin(_live(AirPressure=99.0), eq))
     c = ask("VF2-01 센서 추세")["conclusion"]
-    assert "공기 압력: 99 psi(약 6.8 bar) — 비정상(낮음, 참고 범위 100~110 psi(약 6.9~7.6 bar)) [참고]" in c
+    assert "공기 압력: 99 psi(약 6.8 bar) — 비정상(낮음, 참고 범위 100~110 psi(약 6.9~7.6 bar))" in c
 
 
 def test_the_edge_of_the_range_is_normal(monkeypatch):
     monkeypatch.setattr(sim_live, "fetch_sensors", lambda url, eq: sim_live.parse_twin(_live(SpindleMotorTemp=42.0, DcVolt=300.0), eq))
     c = ask("VF2-01 센서 추세")["conclusion"]
-    assert "주축 모터 온도: 42℃ — 정상 [참고]" in c and "직류 버스 전압: 300 V — 정상 [참고]" in c and "비정상으로 표시된 센서: 없음" in c
+    assert "주축 모터 온도: 42℃ — 정상" in c and "직류 버스 전압: 300 V — 정상" in c and "비정상으로 표시된 센서: 없음" in c
 
 
 def test_a_sensor_without_a_range_says_no_basis():
