@@ -290,14 +290,14 @@ def _range_plain(lo: float | None, hi: float | None, unit: str) -> str:
 
 def verdict(v: float | None, lo: float | None, hi: float | None, unit: str) -> tuple[str, str]:
     """지금 값 하나의 판정 (프로그램이 숫자로 비교, 경계는 범위 안). (줄 끝 글, 상태) — 상태는 normal / high / low / none.
-    정상 범위는 선반 자료에서 빌린 참고 값이라 "정상 [참고]"처럼 참고 표시를 달고, 알람 판정이 아니다."""
+    정상 범위는 선반 자료에서 빌린 참고 값이라 비정상 줄에는 "참고 범위"라고 쓰고 맺음 줄에 알람 판정이 아니라고 밝힌다 (줄마다 [참고] 꼬리표는 사용자 지시로 뺐다, 2026-10-21)."""
     if v is None or lo is None or hi is None:
         return "판정 기준 없음", "none"
     if v > hi:
-        return f"비정상(높음, {_range_plain(lo, hi, unit)}) [참고]", "high"
+        return f"비정상(높음, {_range_plain(lo, hi, unit)})", "high"
     if v < lo:
-        return f"비정상(낮음, {_range_plain(lo, hi, unit)}) [참고]", "low"
-    return "정상 [참고]", "normal"
+        return f"비정상(낮음, {_range_plain(lo, hi, unit)})", "low"
+    return "정상", "normal"
 
 
 def clock_text(r: dict) -> str:
