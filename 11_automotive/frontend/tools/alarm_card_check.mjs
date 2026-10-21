@@ -22,6 +22,9 @@ const CAUSE_CARRY = "2075 알람 기준으로 답해요.\n\n■ 알람 설명\n�
 const CAUSE_WSH = "■ 알람 설명\n알람 WSH-01 과열 정지(Overheat condition): 세척조가 과열돼 초음파가 멈췄다 (75 ℃에서 정지, 69 ℃로 내려가면 다시 가능). 세척액 수위를 확인한다. 심각도는 정지 [가상], 조치는 보전 담당자 [가상]입니다.\n\n■ 가능한 원인 (사내 문서)\n원인 후보: 과열 / 세척액 수위 낮음 [참고]\n\n■ 점검 순서 (사내 문서)\n★1 (작업자) 세척액 수위를 본다\n★2 (작업자) 식을 때까지 기다린다\n★3 (작업자) 보전 담당자를 부른다\n4 (보전) 과열 차단기가 있는 기종은 세척액이 식었고 수위가 맞는지 확인한 뒤 리셋 버튼을 누른다\n\n이 알람은 최근 7일 0번, 30일 0번 났습니다 [가상 운영 데이터]\n\n주의: 근거 안내이며 실행 지시가 아닙니다. 잠금·표지와 고전압 대기는 안전 작업 기준서 DOC-05 고정 서식을 따르고, 전기 측정·수리는 자격자/HFO 작업입니다. 현장 담당자 확인이 필요합니다.";   // 실제 답: WSH-01 알람 원인은?
 const SOURCES = [{"doc_name": "알람 코드집", "doc_no": "DOC-02", "rev": "Rev.1 (2026-10-07)", "section": "4.11"}, {"doc_name": "고장 대응 매뉴얼", "doc_no": "DOC-03", "rev": "Rev.1 (2026-10-07)", "section": "2.11"}];
 
+const STEPS992 = "■ 점검 순서 (사내 문서)\n★1 (작업자) 축을 움직이지 말고 알람 이력을 봐요. 바로 앞에 108·994(과부하)가 있으면 충돌 신호예요.\n★2 (작업자) 도어 밖에서 공구·고정구·공작물이 외함과 부딪혔는지 봐요.\n★3 (작업자) 외함·주축·공구·고정구에 손상이 있는지 봐요 (손상 = 충돌 징후).\n★4 (작업자) 공구가 무뎌지거나 부러졌는지, 프로그램의 속도·이송을 확인하고 보전 담당자를 불러요.\n5 (보전) 잠금·표지 후, 충돌 징후가 없으면 볼스크류와 리니어 가이드가 손으로 자유롭게 움직이거나 도는지 봐요.\n6 (보전) 충돌이 확인되면 볼스크류 커플링 정렬도 봐요 (§2.5 점검 8).\n7 (보전) 서보 모터 케이블이 오염·끼임 없는지, 모터 쪽 커넥터에 절삭유 오염이 없는지 보고 아래 표대로 저항을 재요.\n8 (보전) 이송을 낮춰 MDI로 해당 축을 움직이는 시험을 해요. 어떤 이송에서도 알람이 뜨면 서보 앰프 문제예요.\n\n주의: 근거 안내이며 실행 지시가 아닙니다. 잠금·표지와 고전압 대기는 안전 작업 기준서 DOC-05 고정 서식을 따르고, 전기 측정·수리는 자격자/HFO 작업입니다. 현장 담당자 확인이 필요합니다.";   // 실제 답: 992 뜨면 뭐부터 해? (질문대로 답하기 — 점검 순서만 남김, 2026-10-21 시연)
+const CAUSE_ONLY2075 = "■ 가능한 원인 (사내 문서)\n윤활유 저장소가 비어 있음\n윤활 라인에 공기가 들어감 (빈 저장소가 가장 흔한 공기 유입 원인)\n체크밸브가 걸려 오일을 많이 씀\nHALO 매니폴드나 압력 센서 앞의 이물\n매니폴드·윤활 라인 누설\n월 1회 점검을 하지 않고 알람을 방치 → 라인에 공기 유입\n\n주의: 근거 안내이며 실행 지시가 아닙니다.";   // 실제 답: 2075 원인은? (원인만 남김, 2026-10-21 시연)
+
 let opened = null;
 const open = (d, s) => { opened = [d, s]; };
 const parse = (a, src = SOURCES) => parseAlarmAnswer(a, src, open);
@@ -185,6 +188,25 @@ t('출처가 비어 있거나 없어도 된다', () => { assert.deepEqual(parse(
 t('알람 답 하나 읽는 데 1ms 안팎 (1000번 합쳐 1초 이내)', () => {
   const t0 = performance.now(); for (let i = 0; i < 1000; i++) parse(i % 2 ? A992DOC : A2075);
   const ms = performance.now() - t0; assert.ok(ms < 1000, `${ms.toFixed(0)}ms`);
+});
+
+// ---- 묻는 칸만 남긴 알람 답도 카드 (2026-10-21): 첫 덩어리가 "점검 순서"·"가능한 원인"이어도 카드로 읽는다
+t('점검 순서만 남긴 답(992 뭐부터)도 카드: 점검 순서 8줄(작업자 4·보전 4) + 주의, 낱말 열이 원래와 같다', () => {
+  const c = parse(STEPS992); assert.ok(c, '카드가 아님');
+  assert.equal(kinds(c), 'steps,caution');
+  const st = steps(c); assert.equal(st.length, 8);
+  assert.equal(st.filter((x) => x.role === 'operator').length, 4); assert.equal(st.filter((x) => x.role === 'maintenance').length, 4);
+  assert.deepEqual(words(cardPlainText(c.parts)), words(STEPS992));
+});
+t('원인만 남긴 답(2075 원인은?)도 카드: 가능한 원인 6줄 + 주의, 글자는 원문 그대로', () => {
+  const c = parse(CAUSE_ONLY2075); assert.ok(c, '카드가 아님');
+  assert.equal(kinds(c), 'section,caution');
+  assert.equal(c.parts[0].title, '가능한 원인 (사내 문서)'); assert.equal(c.parts[0].paras.length, 6);
+  assert.deepEqual(words(cardPlainText(c.parts)), words(CAUSE_ONLY2075));
+});
+t('점검 순서로 시작해도 알아볼 수 없는 줄이 하나라도 있으면 카드를 포기하고, 알람 전용이 아닌 소제목으로 시작하면 null', () => {
+  assert.equal(parse(STEPS992.replace('★2 (작업자) 도어 밖에서', '그냥 문장 도어 밖에서')), null);
+  assert.equal(parse('■ 90%의 뜻\n1. T05의 90%는 공구 수명 사용률이라, 남은 수명이 10%라는 뜻이에요.\n\n주의: 근거 안내이며 실행 지시가 아닙니다.'), null);
 });
 
 console.log(fail ? `\n실패 ${fail}개` : '\n모두 통과');

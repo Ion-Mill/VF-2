@@ -3692,9 +3692,9 @@ ALARM_BARE_STOP_V23 = {"알람", "경보", "번", "코드", "대해", "대해서
 
 
 def alarm_focus_v23(question: str) -> str | None:
-    """알람 질문이 묻는 칸: 뜻만 → 'desc', 대처·점검만 → 'steps', 둘 다이거나 어느 쪽도 아니면 None (카드 전체 — 지금 동작)."""
+    """알람 질문이 묻는 칸: 뜻만 → 'desc', 대처·점검만 → 'steps', 둘 다 → 'both'(설명+점검 순서 두 덩어리), 어느 쪽도 아니면 None (카드 전체 — 지금 동작)."""
     d, st = bool(DESC_ASK_V23.search(question)), bool(STEPS_ASK_V23.search(question))
-    return "desc" if d and not st else "steps" if st and not d else None
+    return "both" if d and st else "desc" if d else "steps" if st else None
 
 
 def alarm_bare_v23(question: str, p: dict) -> bool:
@@ -3767,8 +3767,16 @@ def _narrow_carried_alarm(a: dict, focus: str, cause_lines: list | None = None, 
         return a
     lines = [x for x in (cause_lines or []) if x] if focus == "cause" else []
     blocks = a.get("blocks") if isinstance(a.get("blocks"), list) else None
-    kept = _slice_blocks(blocks, _CARRY_SECTION[focus]) if blocks else None
-    if focus == "steps":
+    kept = _slice_blocks(blocks, _CARRY_SECTION[focus]) if blocks and focus in _CARRY_SECTION else None
+    if focus == "both":   # ASK_ONLY: 설명과 점검 순서를 둘 다 물었다 — 두 덩어리만 남기고 횟수·그 밖의 덩어리는 뺀다
+        kd = _slice_blocks(blocks, _CARRY_SECTION["desc"]) if blocks else None
+        ks = _slice_blocks(blocks, _CARRY_SECTION["steps"]) if blocks else None
+        if not kd or not ks:
+            return a
+        kept = kd + ks
+        lines = [b["text"] for b in kept if b.get("kind") in ("line", "text") and b.get("text")]
+        lines.extend(str(s) for s in (a.get("steps") or []) if s)
+    elif focus == "steps":
         if not kept:
             return a
         lines = [b["text"] for b in kept if b.get("kind") in ("line", "text") and b.get("text")]
@@ -4156,6 +4164,8 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
         # 카드가 이미 보인 줄(점검 순서 행 등)은 문서 쪽 후보에서 뺀다
         plan = alarm_doc_plan_v9(question, p["alarms"][:1], " ".join(parts + [str(x) for x in steps]))
         alarm_doc = alarm_doc or plan is not None
+        if s.ask_only and plan is None:   # ASK_ONLY: 카드가 다루는 말(순서·방법·설명 …)뿐이라 남는 주제 낱말·섞인 마디가 없으면 문서를 더 찾아 붙이지 않는다 ("2075 설명하고 점검 순서"에 반복 알람 문서 줄이 붙던 것)
+            alarm_doc = False
         if alarm_doc:
             doc_like = True
             exclude = alarm_own_sections_v9(p["alarms"][:1])
