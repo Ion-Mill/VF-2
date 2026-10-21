@@ -13,9 +13,10 @@ from __future__ import annotations
 import re
 from datetime import date, datetime, timedelta, timezone
 
-from backend.config import DATA_LABEL, REFERENCE_AT
+from backend.config import DATA_LABEL, REFERENCE_AT, settings
 from backend.repositories import backend_tools as BT
 from backend.services import metrics as M
+from backend.tools import sim_live
 
 EQUIPMENT = {"SAW-01", "MIL-01", "VF2-01", "VF2-02", "WSH-01", "CMM-01"}
 REF = datetime.fromisoformat(REFERENCE_AT[:19])
@@ -338,6 +339,22 @@ def sensor_trend(role, equipment_id, minutes=60, sensor_code=None):
     keys = ("equipment_id", "sensor_code", "sensor_name", "unit", "samples", "min_value", "avg_value", "max_value", "last_value", "last_at",
             "normal_min", "normal_max", "is_out_of_normal")
     rows = [{k: x.get(k) for k in keys} for x in r.rows]
+    cfg = settings()
+    if cfg.sensor_live and rows:      # SENSOR_LIVE: 권한·이름·단위·정상 범위는 위 공용 DB 조회 그대로 쓰고, 값만 시연 서버의 지금 값으로 바꾼다 (읽지 못하면 공용 DB 값 그대로)
+        got = sim_live.fetch_sensors(cfg.sim_server_url, equipment_id)
+        if got:
+            sim_at, vals = got
+            live = []
+            for x in rows:
+                v = vals.get(x.get("sensor_code"))
+                if v is None:
+                    continue
+                lo, hi = x.get("normal_min"), x.get("normal_max")
+                out = None if lo is None or hi is None else bool(v < float(lo) or v > float(hi))
+                live.append({**x, "samples": 1, "min_value": v, "avg_value": v, "max_value": v, "last_value": v, "last_at": sim_at, "is_out_of_normal": out})
+            if live:
+                return _result("센서 추세 조회", live, "지금 값 (시연 화면 시계)", as_of=sim_at, minutes=minutes, equipment_id=equipment_id,
+                               clock_known=True, live=True, rule="정상 범위는 [참고] — 알람 기준값이 아니다 (DOC-07 §3). 값은 시연 서버가 만든 가상 값")
     return _result("센서 추세 조회", rows, f"직전 {minutes}분 (공용 DB 시계)", as_of=r.now, minutes=minutes, equipment_id=equipment_id,
                    clock_known=bool(r.now), rule="정상 범위는 [참고] — 알람 기준값이 아니다 (DOC-07 §3)")
 

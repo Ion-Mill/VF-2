@@ -284,7 +284,7 @@ def clock_text(r: dict) -> str:
     """기준 시각 문구. 도구가 준 기준 시각(공용 DB 시계)이 있으면 그것으로, 없으면 시각 없이 "기준 시각은 공용 DB 시계"만 (지어내지 않는다)."""
     t = r.get("as_of") if r.get("clock_known") else None
     if isinstance(t, str) and len(t) >= 16 and t[4] == "-" and t[10] in "T ":
-        return f"{t[:10]} {t[11:16]} 기준, 공용 DB 시계"
+        return f"{t[:10]} {t[11:16]} 기준, " + ("시연 화면 시계" if r.get("live") else "공용 DB 시계")
     return "기준 시각은 공용 DB 시계"
 
 
@@ -312,6 +312,23 @@ def render(eq: str, r: dict, wanted: list[str] | None = None) -> Part:
         return Part(text=t, head="", items=[], closing="")
     order = {c: i for i, c in enumerate(ORDER)}
     rows = sorted(rows, key=lambda x: order.get(x.get("sensor_code"), len(order)))
+    if r.get("live"):      # SENSOR_LIVE: 시연 서버의 지금 값 하나씩 (최소·평균·최대가 따로 없다)
+        items, out_of = [], []
+        for x in rows:
+            unit = x.get("unit") or ""
+            v, lo, hi = _num(x.get("last_value")), _num(x.get("normal_min")), _num(x.get("normal_max"))
+            name = x.get("sensor_name") or x.get("sensor_code")
+            line = f"{name}: {_val(v, unit)}" if v is not None else f"{name}: 값 없음"
+            rng = _range(lo, hi, unit)
+            if rng:
+                line += f" ({rng})"
+            items.append(line)
+            if x.get("is_out_of_normal"):
+                out_of.append(name)
+        head = f"{eq} 센서 ({clock} · 지금 값)"
+        closing = ("정상 범위 [참고] 밖 값이 있는 센서: " + (", ".join(out_of) if out_of else "없음")
+                   + ". 지난 시간의 변화(추세)는 공용 DB 시계가 시연 시계를 따라가지 않아 지금은 보여 드리지 못해요")
+        return Part(text=head + "\n" + "\n".join("- " + it for it in items) + "\n" + closing, head=head, items=items, closing=closing)
     counts = {x.get("samples") for x in rows}
     lasts = {_hhmm(x.get("last_at")) for x in rows}
     shared_n = counts.pop() if len(counts) == 1 else None
@@ -357,6 +374,21 @@ def compare_text(results: dict[str, dict], wanted: list[str] | None = None) -> s
     eqs = [e for e in SENSOR_EQUIPMENT if e in results]
     if len(eqs) < 2:
         return None
+    if all(results[e].get("live") for e in eqs):      # SENSOR_LIVE: 지금 값 한 줄씩
+        by_live: dict[str, dict[str, dict]] = {}
+        for e in eqs:
+            for x in results[e].get("rows") or []:
+                if x.get("equipment_id", e) == e and (wanted is None or x.get("sensor_code") in wanted):
+                    by_live.setdefault(x.get("sensor_code"), {})[e] = x
+        order_l = {c: i for i, c in enumerate(ORDER)}
+        lines_l = []
+        for code in sorted(by_live, key=lambda c: order_l.get(c, len(order_l))):
+            got = by_live[code]
+            vals = [(e, _num(got[e].get("last_value"))) for e in eqs if e in got]
+            if len(vals) == len(eqs) and all(v is not None for _, v in vals):
+                unit = got[eqs[0]].get("unit") or ""
+                lines_l.append(f"{got[eqs[0]].get('sensor_name') or code} 비교 — 지금 " + " · ".join(f"{e} {_val(v, unit)}" for e, v in vals))
+        return ("두 설비 나란히 보기 (지금 값)\n" + "\n".join(lines_l)) if lines_l else None
     by: dict[str, dict[str, dict]] = {}
     for e in eqs:
         for x in results[e].get("rows") or []:
