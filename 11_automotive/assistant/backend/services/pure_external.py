@@ -274,6 +274,17 @@ def has_signals(p: dict) -> bool:
     return bool(p.get("alarms") or p.get("intents") or p.get("equipment") or p.get("start") or p.get("lot") or p.get("order"))
 
 
+# 날짜 + 기록 이름("지난주 정비 이력 보여줘")은 기록을 찾는 조회 꼴이라 옛 길이 맡는다 — 기존 시험(test_pure_fault)이 이 길을 지킨다
+LOOKUP_NOUN = re.compile(r"이력|기록|내역|목록|리스트|현황")
+
+
+def date_only(p: dict, question: str = "") -> bool:
+    """신호가 날짜(오늘·어제·9/30 …) 하나뿐인가. 날짜만으로는 운영 조회 질문이 아니다 — "T05가 90%면 오늘 교체해야 해?"의 "오늘"이 옛 문서 길(상위 3조각)로 보내
+    정답 조각(DOC-01 §7.2, 검색 6위)을 놓치게 했다 (2026-10-21 시연 시험). 순수 길 분류에서만 신호 없음으로 본다 — has_signals는 그대로 둔다(이어짐 판단·화면 알람 맥락이 쓴다)."""
+    return (bool(p.get("start")) and not (p.get("alarms") or p.get("intents") or p.get("equipment") or p.get("lot") or p.get("order"))
+            and not LOOKUP_NOUN.search(question))
+
+
 def retrieve(question: str, k: int) -> list[tuple[float, Chunk]]:
     """원래 질문 그대로 낱말 검색(BM25 + 용어집 동의어 확장 — rag/search.py)한 상위 k개 조각. 검색어 바꿔 쓰기·문턱·문지기·순위 바꾸기 없음.
     조각 글은 load_corpus()가 만든 것이라 이미 sanitize(원문 이름·번호 가림)를 거쳤다."""
