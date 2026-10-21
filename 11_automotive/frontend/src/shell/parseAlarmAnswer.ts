@@ -41,12 +41,17 @@ export function cardPlainText(parts: AlarmCardPart[]): string {
   return out.join('\n');
 }
 
+/** 카드로 읽을 수 있는 첫 소제목 — 알람 답만 이 글자를 쓴다(비서 blocks_v2 SECTION_V3·CAUSE_HEAD) */
+const CARD_FIRST_TITLES = ['■ 알람 설명', '■ 점검 순서 (사내 문서)', '■ 가능한 원인 (사내 문서)'];
+
 function readParts(a: string): AlarmCardPart[] | null {
   const chunks = a.replace(/\r\n?/g, '\n').split(/\n[ \t]*\n/).map((c) => c.split('\n').map((l) => l.trim()).filter(Boolean)).filter((l) => l.length > 0);
   // 알람 답의 첫 소제목 "■ 알람 설명"(blocks_v2 SECTION_V3["card"]) 앞에는 소제목 없는 안내 덩어리가 올 수 있다 — 직전 알람을 이어받으면 비서가
   // 맨 앞에 "N 알람 기준으로 답해요." 한 줄을 붙인다(answer.py _with_ctx_note). 그 앞 덩어리는 메모로 맨 앞에 남기고(지우지 않는다) 카드는 그대로 그린다.
+  // 2026-10-21 질문대로 답하기: 묻는 칸만 남긴 알람 답은 첫 덩어리가 "점검 순서"나 "가능한 원인"이다 — 알람 카드 전용 소제목이라 이것들도 카드로 읽는다
+  // (안 그러면 평문으로 떨어져 번호 동그라미·역할 알약·사용자별 강조가 빠졌다). 점검 순서 줄이 모르는 꼴이면 아래에서 그대로 포기하고, 끝의 낱말 열 검사도 그대로다.
   const first = chunks.findIndex((l) => l[0].startsWith('■'));
-  if (first < 0 || first > 2 || chunks[first][0] !== '■ 알람 설명') return null;
+  if (first < 0 || first > 2 || !CARD_FIRST_TITLES.includes(chunks[first][0])) return null;
   const parts: AlarmCardPart[] = [];
   const lead = chunks.slice(0, first);
   if (lead.length > 0) {

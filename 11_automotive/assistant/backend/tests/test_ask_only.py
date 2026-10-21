@@ -47,9 +47,17 @@ def test_what_to_do_only_keeps_the_steps_and_their_source(real_like):  # noqa: F
     assert {e["doc_id"] for e in a["evidence"]} == {"DOC-03"}
 
 
-def test_asking_both_keeps_the_whole_card(real_like):  # noqa: F811
-    _, t = ask("2075 알람 설명하고 점검 순서 알려줘")
+def test_asking_both_keeps_the_two_sections_without_the_extras(real_like):  # noqa: F811
+    """설명과 점검 순서를 둘 다 물으면 두 덩어리만 — 횟수 줄과 문서를 더 찾아 붙인 줄("순서"가 문서 검색 신호라 반복 알람 문서 줄이 붙던 것)은 없다."""
+    a, t = ask("2075 알람 설명하고 점검 순서 알려줘")
     assert {"■ 알람 설명", "■ 점검 순서"} <= secs(t)
+    assert "최근 7일" not in t and "문서에서 더 찾은 줄" not in t and a["related"] is None
+    assert {e["doc_id"] for e in a["evidence"]} <= {"DOC-02", "DOC-03"} and all(e.get("section") != "1.4" for e in a["evidence"])
+
+
+def test_asking_for_the_check_order_keeps_only_the_steps_even_with_the_word_order(real_like):  # noqa: F811
+    _, t = ask("2075 점검 순서 알려줘")
+    assert secs(t) == {"■ 점검 순서"} and "문서에서 더 찾은 줄" not in t
 
 
 def test_count_question_answers_the_lookup_without_the_card(real_like):  # noqa: F811
