@@ -3463,6 +3463,46 @@ def report_status_note_v32(question: str, p: dict) -> str:
             f"보고서가 언제 만들어지고 누가 확정하는지는 문서로 설명해 드릴 수 있어요.")
 
 
+SHIFT_KO_V33 = {"D": "주간", "N": "야간"}
+
+
+def report_status_answer_v33(base: dict, role: str, question: str, p: dict) -> dict:
+    """보고서 작성·확정 여부 질문의 답 (2026-10-21). 교대 보고서는 기존 조회 도구 production(교대별 보고서 확정 여부, 백엔드 v_shift_progress)을 읽어 프로그램이 답한다 — 새 백엔드 도구 없음.
+    날짜가 없으면 되묻고, 아직 끝나지 않은 날짜는 만들어지는 시각을 알리고, 일일 보고서는 읽는 도구가 없어 안내한다. 채팅은 '초안이 있나'와 '작성 전인가'를 구분해 읽지 못하므로 확정이 아니면 그렇게 밝힌다."""
+    daily = bool(re.search(r"일일\s?보고서", question)) and not re.search(r"교대\s?보고서", question)
+    if daily:
+        return {**base, "status": "확인 필요", "mode": "규칙", "conclusion": report_status_note_v32(question, p)}
+    day = p.get("start")
+    if not day:
+        text = "어느 날짜의 교대 보고서인지 알려 주세요. 예: '어제 주간 교대 보고서 확정됐어?', '9월 30일 야간 교대 보고서 작성됐어?'"
+        return {**base, "status": "안내", "mode": "규칙 (날짜 없는 보고서 질문 — 되묻기 고정 문구)", "conclusion": text, "blocks": [{"kind": "text", "text": text}]}
+    if day >= REF_DATE:
+        text = f"{day.month}/{day.day} 교대 보고서는 아직 없어요. 교대 보고서 초안은 주간 교대가 끝나는 17시, 야간 교대가 끝나는 다음 날 05시에 만들어지고, 반장이 확정해야 보고서가 확정돼요."
+        ev = [_cite(c) for c in (_chunk("DOC-01", "3.3"),) if c]
+        return {**base, "status": "답변", "mode": "규칙 (아직 끝나지 않은 교대 — 문서 고정 문구)", "conclusion": text, "evidence": ev,
+                "caution": "근거 안내이며 실행 지시가 아닙니다.", "blocks": [{"kind": "text", "text": text}]}
+    shift = p.get("shift") if p.get("shift") in ("D", "N") else None
+    r = T.production(role, day, day, shift)
+    rows = r["rows"]
+    meta = {"current_data": [{k: r[k] for k in ("tool", "range", "as_of", "label", "is_synthetic")}], "data_label": DATA_LABEL, "is_synthetic": True}
+    if not rows:
+        text = f"{day.month}/{day.day} 교대 기록을 찾지 못했어요. 날짜를 다시 확인해 주세요."
+        return {**base, **meta, "status": "확인 필요", "mode": "규칙 (보고서 확정 여부 — 운영 조회)", "conclusion": text, "blocks": [{"kind": "text", "text": text}]}
+    lines, unconfirmed = [], False
+    for x in rows:
+        d = date.fromisoformat(x["prod_date"])
+        name = f"{d.month}/{d.day} {SHIFT_KO_V33[x['shift']]} 교대 보고서"
+        if x["status"] == "확정":
+            lines.append(f"{name}는 확정됐어요.")
+        else:
+            unconfirmed = True
+            lines.append(f"{name}는 아직 확정되지 않았어요.")
+    if unconfirmed:
+        lines.append("초안이 있는지, 아직 작성 전인지는 채팅이 구분해 읽지 못해요. 교대 보고서(SCR-15)에서 그 교대를 열어 확인해 주세요.")
+    text = " ".join(lines)
+    return {**base, **meta, "status": "답변", "mode": "규칙 (보고서 확정 여부 — 운영 조회, Claude 호출 없음)", "conclusion": text, "blocks": [{"kind": "text", "text": text}]}
+
+
 KPI_DATED_WORDS_V21 = re.compile(r"OEE|가동률|성능|양품|지표|효율|KPI", re.I)
 KPI_30D_ONLY_V21 = re.compile(r"MTTR|MTBF|평균\s*수리|평균\s*고장", re.I)
 NO_DATE_NOTE_V21 = "기간을 정하지 않아 9월 한 달(9/1~9/30) 값이에요. 날짜를 말씀해 주시면 그날 값을 드려요 (예: '어제', '오늘')."
@@ -4224,10 +4264,10 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
         if SL.on():
             SL.step("1 규칙 판정", 결과="정비·수리 이력 날짜 조회 — 채팅이 아직 못 읽음, 규칙이 안내 (Claude 호출 없음)")
         return {**base, "status": "확인 필요", "mode": "규칙", "conclusion": HISTORY_NOTE_V25}
-    if report_status_unread_v32(question, p):   # 보고서 작성·확정 여부 (2026-10-21): 읽는 도구가 아직 없다 — 지어내지 않고 규칙이 알린다 (Claude 호출 없음)
+    if report_status_unread_v32(question, p):   # 보고서 작성·확정 여부 (2026-10-21): 교대 보고서는 production 도구의 확정 여부로 프로그램이 답하고, 그 밖(일일 보고서·날짜 없음)은 안내한다 (Claude 호출 없음)
         if SL.on():
-            SL.step("1 규칙 판정", 결과="보고서 작성·확정 여부 질문 — 채팅이 아직 못 읽음, 규칙이 안내 (Claude 호출 없음)")
-        return {**base, "status": "확인 필요", "mode": "규칙", "conclusion": report_status_note_v32(question, p)}
+            SL.step("1 규칙 판정", 결과="보고서 작성·확정 여부 질문 — 규칙이 production 확정 여부로 답하거나 안내 (Claude 호출 없음)")
+        return report_status_answer_v33(base, role, question, p)
     if s.followup and not pure_drop:   # 설비 이름뿐인 글 (2026-10-20): 앞 답이 "설비를 알려 주세요"면 앞 질문과 이어 답한다
         merged = askback_merge_v21(question, p, prev)
         if merged:

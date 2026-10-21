@@ -31,14 +31,38 @@ def test_document_questions_are_not_caught(q):
     assert not parsed(q)[1], q
 
 
-def test_answer_is_a_rule_note_with_the_date_the_rule_read():
-    a = A.answer("어제 주간 교대 보고서 작성됐어?", "OPR", {"new_chat": "1"})
+def ask(q, role="OPR"):
+    a = A.answer(q, role, {"new_chat": "1"})
     a.pop("_followup", None)
-    assert a["status"] == "확인 필요" and a["mode"] == "규칙"
-    assert "9/30 주간 교대 보고서" in a["conclusion"] and "SCR-15" in a["conclusion"] and "10월 20일" not in a["conclusion"]
+    return a
 
 
-def test_daily_report_points_to_scr16_and_no_date_is_not_invented():
-    a = A.answer("일일 보고서 확정됐어?", "SUP", {"new_chat": "1"})
-    a.pop("_followup", None)
+def test_confirmed_shift_report_is_answered_from_the_production_tool():
+    """교대 보고서는 production 도구의 확정 여부로 프로그램이 답한다 (가짜 백엔드는 날짜와 상관없이 같은 두 교대를 준다 — 주간 확정·야간 미확정)."""
+    a = ask("어제 주간 교대 보고서 작성됐어?")
+    assert a["status"] == "답변" and a["mode"].startswith("규칙") and "주간 교대 보고서는 확정됐어요" in a["conclusion"]
+    assert "10월 20일" not in a["conclusion"] and a["is_synthetic"] and a["current_data"][0]["tool"] == "생산 실적 조회"
+    assert "구분해 읽지 못해요" not in a["conclusion"]     # 확정이면 덧붙일 말이 없다
+
+
+def test_unconfirmed_shift_report_says_so_and_does_not_claim_it_is_missing():
+    a = ask("9월 30일 야간 교대보고서 작성됐어?")
+    assert a["status"] == "답변" and "야간 교대 보고서는 아직 확정되지 않았어요" in a["conclusion"]
+    assert "구분해 읽지 못해요" in a["conclusion"] and "SCR-15" in a["conclusion"]
+
+
+def test_both_shifts_of_a_day_are_listed():
+    c = ask("9월 30일 교대보고서 작성됐어?")["conclusion"]
+    assert "주간 교대 보고서는 확정됐어요" in c and "야간 교대 보고서는 아직 확정되지 않았어요" in c
+
+
+def test_no_date_is_asked_back_and_today_is_not_ended_yet():
+    a = ask("교대 보고서 작성됐어?")
+    assert a["status"] == "안내" and "어느 날짜" in a["conclusion"]
+    b = ask("오늘 주간 교대 보고서 확정됐어?")
+    assert b["status"] == "답변" and "아직 없어요" in b["conclusion"] and "17시" in b["conclusion"]
+
+
+def test_daily_report_still_points_to_scr16_because_no_tool_reads_it():
+    a = ask("일일 보고서 확정됐어?", "SUP")
     assert a["status"] == "확인 필요" and "SCR-16" in a["conclusion"] and "일일 보고서가 작성" in a["conclusion"]
