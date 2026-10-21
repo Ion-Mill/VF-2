@@ -10,7 +10,33 @@ from typing import Callable
 NOW = "2026-10-01T08:00:00+09:00"
 KEY = "test-service-key"
 
-DEFAULT_ROWS: dict[str, list[dict]] = {
+# 센서 7종 (생성기/masters/sensor_item.csv) — 정상 범위 [참고]. 값 (최소, 평균, 최대, 마지막)은 시험용 가짜다 (조사 노트 5장의 모양: 설비가 서 있는 시간이라 주축 부하 0 근처,
+# 주축 모터 온도는 정상 범위 아래라 `is_out_of_normal=True` 한 종류, 나머지는 범위 안).
+SENSORS = [  # (코드, 이름, 단위, 정상 최소, 정상 최대)
+    ("SpindleLoadPct", "주축 부하", "%", 0, 185), ("SpindleMotorTemp", "주축 모터 온도", "℃", 28, 42), ("AirPressure", "공기 압력", "psi", 100, 110),
+    ("Xload", "X축 부하", "%", 0, 65), ("Yload", "Y축 부하", "%", 0, 65), ("Zload", "Z축 부하", "%", 0, 65), ("DcVolt", "직류 버스 전압", "V", 300, 330)]
+SENSOR_VALUES = {
+    "VF2-01": {"SpindleLoadPct": (0, 0.86, 2.8, 1.1), "SpindleMotorTemp": (27.7, 28.1, 28.9, 28.4), "AirPressure": (102.8, 105.81, 109.1, 105),
+               "Xload": (0, 0.31, 1.2, 0.5), "Yload": (0, 0.22, 0.9, 0.4), "Zload": (0, 0.18, 0.7, 0.3), "DcVolt": (311.2, 317.3, 322.8, 318.1)},
+    "VF2-02": {"SpindleLoadPct": (0, 0.92, 3.1, 1.3), "SpindleMotorTemp": (27.8, 28.2, 29.0, 28.5), "AirPressure": (101.9, 105.2, 108.7, 104.6),
+               "Xload": (0, 0.28, 1.1, 0.4), "Yload": (0, 0.2, 0.8, 0.3), "Zload": (0, 0.15, 0.6, 0.2), "DcVolt": (310.4, 316.8, 321.9, 317.5)}}
+SENSOR_LAST_AT = "2026-10-01T07:59:00+09:00"      # DB 시계 08:00 바로 앞 한 분
+
+
+def sensor_trend_rows(args: dict) -> list[dict]:
+    """`sensor_trend` 도구 (assistant.sql) 흉내: 설비·센서로 거르고, 값 개수는 창 안의 1분 평균 수(N분 창이면 N-1개 — 시계 08:00 값은 아직 없다)."""
+    minutes = int(args.get("minutes") or 60)
+    out = []
+    for eq, vals in SENSOR_VALUES.items():
+        for code, name, unit, lo, hi in SENSORS:
+            mn, av, mx, last = vals[code]
+            out.append({"equipment_id": eq, "sensor_code": code, "sensor_name": name, "unit": unit, "samples": max(minutes - 1, 0), "min_value": mn,
+                        "avg_value": av, "max_value": mx, "last_value": last, "last_at": SENSOR_LAST_AT, "normal_min": lo, "normal_max": hi,
+                        "normal_range_tag": "REFERENCE", "is_out_of_normal": mn < lo or mx > hi})
+    return out
+
+
+DEFAULT_ROWS: dict[str, list[dict] | Callable[[dict], list[dict]]] = {
     "equipment_status": [
         {"equipment_id": "VF2-01", "process_code": "OP-30", "state_code": "RUN", "state_since": "2026-10-01T07:12:00+09:00", "state_minutes": 48.0,
          "warn_marker": None, "open_alarm_code": None, "open_alarm_severity": None, "is_locked": False, "current_lot_no": "LOT-2609-128-1"},
@@ -62,6 +88,12 @@ DEFAULT_ROWS: dict[str, list[dict]] = {
     "stop_reasons": [
         {"equipment_id": "VF2-01", "reason_code": "F01", "reason_name": "공구 파손", "reason_group": "FAILURE", "times": 2, "minutes": 70.0, "loss_qty": 10.0},
         {"equipment_id": "VF2-01", "reason_code": "S01", "reason_name": "단취 준비", "reason_group": "SETUP", "times": 1, "minutes": 20.0, "loss_qty": 3.0}],
+    "sensor_trend": sensor_trend_rows,      # 함수 — 인자(분·센서)로 거른 행을 만든다
+    "equipment_spec": [      # 비서는 아직 이 도구로 답 가지를 만들지 않는다 (가짜 행만)
+        {"equipment_id": "VF2-01", "process_code": "OP-30", "process_name": "머시닝", "model": "Haas VF-2", "controller": "Haas NGC", "std_cycle_min": 30.0,
+         "batch_qty": 6, "batch_time_min": 30.0, "size_x_mm": 2000, "size_y_mm": 2200, "size_z_mm": 2700, "size_source_tag": "REFERENCE", "ref_model": "VF-2", "has_sensor": True},
+        {"equipment_id": "VF2-02", "process_code": "OP-30", "process_name": "머시닝", "model": "Haas VF-2", "controller": "Haas NGC", "std_cycle_min": 30.0,
+         "batch_qty": 6, "batch_time_min": 30.0, "size_x_mm": 2000, "size_y_mm": 2200, "size_z_mm": 2700, "size_source_tag": "REFERENCE", "ref_model": "VF-2", "has_sensor": True}],
 }
 
 
@@ -92,7 +124,7 @@ class FakeBackend:
         args = payload.get("args", {})
         rows = self.rows.get(name, [])
         rows = rows(args) if isinstance(rows, Callable) else rows
-        for col in ("equipment_id", "alarm_code", "lot_no", "item_no"):      # 실제 SQL처럼 인자로 거른다 (비우면 전체)
+        for col in ("equipment_id", "alarm_code", "lot_no", "item_no", "sensor_code"):      # 실제 SQL처럼 인자로 거른다 (비우면 전체)
             if args.get(col) is not None:
                 rows = [r for r in rows if r.get(col) == args[col]]
         return {"tool": name, "rows": rows, "now": NOW}
