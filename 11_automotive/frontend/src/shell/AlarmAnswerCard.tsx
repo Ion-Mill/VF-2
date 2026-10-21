@@ -69,19 +69,23 @@ function Part({ p, id, viewerRole }: { p: AlarmCardPart; id: string; viewerRole:
   }
 }
 
-/** 출처 — 일반 답 말풍선과 같은 밑줄 버튼. 가로 간격은 그대로(gap-x-1), 줄이 바뀔 때만 조금 넓힌다(gap-y-2). "출처"를 누르면 접고 편다(처음에는 펼침). */
+/** 출처 — "출처"는 혼자 한 줄, 문서 밑줄 버튼은 그 다음 줄. 가로는 gap-x-1, 문서가 줄을 바꿀 때만 gap-y-2. 처음에는 접힘. */
 function Sources({ sources }: { sources: AlarmAnswerCardProps['sources'] }) {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   return (
-    <div className="flex flex-wrap items-baseline gap-x-1 gap-y-2 text-[12px]">
-      <button type="button" aria-expanded={open} onClick={() => setOpen((v) => !v)} className="underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-600">
+    <div className="flex flex-col gap-2 text-[12px]">
+      <button type="button" aria-expanded={open} onClick={() => setOpen((v) => !v)} className="w-fit underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-600">
         {open ? '▾ 출처:' : '▸ 출처'}
       </button>
-      {open && sources.map((s, i) => (
-        <button key={i} type="button" onClick={s.onClick} className="underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-600">
-          {s.label} {s.docNo}{s.rev ? ` ${s.rev}` : ''} §{s.section}
-        </button>
-      ))}
+      {open && (
+        <div className="flex flex-wrap gap-x-1 gap-y-2">
+          {sources.map((s, i) => (
+            <button key={i} type="button" onClick={s.onClick} className="underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-600">
+              {s.label} {s.docNo}{s.rev ? ` ${s.rev}` : ''} §{s.section}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
