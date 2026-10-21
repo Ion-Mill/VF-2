@@ -1,5 +1,5 @@
 // 채팅 탭의 말풍선(질문 박스 + 답 박스)·기다리는 글·채팅 기록 탭 항목. Eve.tsx에서 옮겨 왔다 — 훅·시계에 기대지 않아 서버 렌더로 시험할 수 있다 (tools/chat_bubble_check.mjs).
-import { useId } from 'react';
+import { useId, useState } from 'react';
 import { AlarmAnswerCard } from './AlarmAnswerCard';
 import { parseAlarmAnswer } from './parseAlarmAnswer';
 import { parsePlainAnswer, type PlainSection } from './parsePlainAnswer';
@@ -7,13 +7,40 @@ import { ANSWER_BOX, HEADING, HISTORY_BOX, QUESTION_BOX, WRAP } from './bubbleBo
 
 export interface ChatRow { at: string; q: string; a: string; status: string; sources: { doc_no: string; doc_name: string; rev: string; section: string }[]; series?: Record<string, Record<string, number[]>>; newChat?: boolean; chatId?: number; prevChatId?: number | null; pending?: boolean; sentAt?: number }   // newChat = "여기서부터 새 대화" 표지 줄 (질문·답 없음, chatLog.ts). chatId = 서버 chat_log 번호 (백엔드 비서로 물은 줄만). pending = 보냈지만 답이 아직 안 온 줄(질문만 보임, sentAt = 보낸 시각 ms — 새로고침에 끊겨도 되살린다, chatLog.ts)
 
-/** 일반 답의 "■ 제목" 덩어리 — 제목은 알람 카드와 같은 보라색 굵은 소제목(■ 기호는 그리지 않는다), 아래 글은 줄바꿈 그대로 */
+/** 채팅 답 아래에 프로그램이 그대로 붙이는 안전 고정 서식의 소제목 (비서 safety/templates.py TITLE). 이 덩어리는 처음에 접어 둔다 — 글자는 지우지 않고 제목 줄을 눌러 펼친다 */
+export const FIXED_TITLE = '안전 작업 (고정 서식';
+/** 접는 글 = 소제목 아래 첫 문단(서식 줄·근거·출처). 빈 줄 뒤의 글("주의: 근거 안내이며 실행 지시가 아닙니다 …")은 접지 않고 늘 보인다 */
+export function splitFixedBody(body: string): { fold: string; rest: string } {
+  const m = /\n[ \t]*\n/.exec(body);
+  return m ? { fold: body.slice(0, m.index), rest: body.slice(m.index + m[0].length) } : { fold: body, rest: '' };
+}
+
+/** 접는 안전 고정 서식 — 제목 줄(알람 카드·일반 답 소제목과 같은 보라색)이 버튼, ▸ 접힘 / ▾ 펼침. defaultOpen은 시험용 */
+export function FixedFold({ title, fold, rest, defaultOpen = false }: { title: string; fold: string; rest: string; defaultOpen?: boolean }) {
+  const uid = useId();
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <section aria-labelledby={`${uid}-h`} className="flex flex-col gap-2">
+      <h3 id={`${uid}-h`} className={HEADING}>
+        <button type="button" aria-expanded={open} aria-controls={`${uid}-b`} onClick={() => setOpen((v) => !v)} className="cursor-pointer text-left font-bold focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-600">
+          {open ? '▾ ' : '▸ '}{title}
+        </button>
+      </h3>
+      <div id={`${uid}-b`} hidden={!open} className="flex flex-col gap-2">{open && fold !== '' && <p className={`ma-msg-bot ${WRAP}`}>{fold}</p>}</div>
+      {rest !== '' && <p className={`ma-msg-bot ${WRAP}`}>{rest}</p>}
+    </section>
+  );
+}
+
+/** 일반 답의 "■ 제목" 덩어리 — 제목은 알람 카드와 같은 보라색 굵은 소제목(■ 기호는 그리지 않는다), 아래 글은 줄바꿈 그대로. 안전 고정 서식 덩어리는 접는다(FixedFold) */
 function PlainAnswer({ sections }: { sections: PlainSection[] }) {
   const uid = useId();
   return (
     <div className="flex flex-col gap-4">
       {sections.map((s, i) => s.title === null
         ? <p key={i} className={`ma-msg-bot ${WRAP}`}>{s.body}</p>
+        : s.title.startsWith(FIXED_TITLE)
+        ? <FixedFold key={i} title={s.title} {...splitFixedBody(s.body)} />
         : (
           <section key={i} aria-labelledby={`${uid}-${i}`} className="flex flex-col gap-2">
             <h3 id={`${uid}-${i}`} className={HEADING}>{s.title}</h3>
