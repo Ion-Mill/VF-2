@@ -106,6 +106,12 @@ def equipment_status(role, equipment_id=None):
              "since": x.get("state_since"), "minutes": x.get("state_minutes"), "open_alarm_code": x.get("open_alarm_code"),
              "open_alarm_severity": x.get("open_alarm_severity"), "is_locked": bool(x.get("is_locked")),
              "current_lot_no": x.get("current_lot_no")} for x in r.rows]
+    cfg = settings()
+    if cfg.sensor_live:   # SENSOR_LIVE: 권한 확인은 위 공용 DB 호출 그대로 쓰고, 지금 상태만 시연 서버 값으로 바꾼다 (읽지 못하면 공용 DB 값 그대로)
+        got = sim_live.fetch_states(cfg.sim_server_url, equipment_id)
+        if got:
+            sim_at, live_rows = got
+            return _result("설비 상태 조회", live_rows, "지금 (시연 화면 시계)", as_of=sim_at, live=True)
     return _result("설비 상태 조회", sorted(rows, key=lambda x: x["equipment_id"]), "지금", as_of=r.now)
 
 

@@ -24,7 +24,8 @@ def flags(monkeypatch):
 
 
 def test_the_chip_file_has_the_expected_number_questions():
-    assert {"원인은", "먼저 할 일", "내가 해야 할 일", "점검 순서", "지난 조치", "최근 몇 번 났어?"} <= set(TEMPLATES)
+    assert {"원인은", "먼저 할 일", "내가 해야 할 일", "점검 순서"} <= set(TEMPLATES)
+    assert "지난 조치" not in TEMPLATES and "최근 몇 번 났어?" not in TEMPLATES
 
 
 @pytest.mark.parametrize("role", ["OPR", "SUP", "MNT", "MGR"])

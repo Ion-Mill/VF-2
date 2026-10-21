@@ -15,7 +15,7 @@ from dataclasses import dataclass, field
 # 재료를 정하는 단계 — 외부 호출이 실패하면 오류(`EXTERNAL_LLM_UNAVAILABLE`)로 끝낸다 (최종기획서 4.3절, 사용자 결정 Q3).
 # 그 밖의 호출(새 글 쓰기·뜻 판정·다듬기 …)은 실패해도 이미 정해진 재료로 지금의 안전한 폴백(원문 줄·기본 문장)으로 답한다.
 # 2026-10-15 PURE_EXTERNAL: 순수 길의 외부 호출 "pure_answer"도 답 전체가 이 호출 하나라 실패하면 오류로 끝낸다(자동 대체 없음)
-MATERIAL_JOBS = frozenset({"route", "select", "verify", "pure_answer"})
+MATERIAL_JOBS = frozenset({"route", "select", "verify", "pure_answer", "screen_summary"})
 
 
 class ExternalLlmFailure(Exception):

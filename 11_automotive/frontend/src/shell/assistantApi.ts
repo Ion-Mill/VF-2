@@ -76,7 +76,7 @@ const toSources = (v: unknown): AssistantSource[] => Array.isArray(v)
  *       prevChatId = 이어서 묻는 앞 질문의 chat_id (API-AST-02 prev_chat_id, 기획서 9장 MNT-01 "이어서 묻는다").
  *       서버에 그 번호가 없으면(30일 지나 지워짐·DB 초기화) 404 → 앞 질문 없이 한 번 다시 묻는다.
  */
-export async function askAssistant(question: string, userId: string, screen: string | null | undefined, equipmentId?: string | null, opts?: { alarmKey?: string | null; newChat?: boolean; prevChatId?: number | null }): Promise<AssistantResult> {
+export async function askAssistant(question: string, userId: string, screen: string | null | undefined, equipmentId?: string | null, opts?: { alarmKey?: string | null; newChat?: boolean; prevChatId?: number | null; screenText?: string | null }): Promise<AssistantResult> {
   const context = buildAskContext({ screenCode: screen ? SCREEN_CODE[screen] : undefined, equipmentId, alarmKey: opts?.alarmKey, newChat: opts?.newChat });
   const ask = async (body: unknown) => {
     try {
@@ -88,12 +88,14 @@ export async function askAssistant(question: string, userId: string, screen: str
   };
   try {
     const prev = opts?.prevChatId ?? null;
+    const body: Record<string, unknown> = { question, context };
+    if (opts?.screenText) body.screen_text = opts.screenText;
     let j: any;
     try {
-      j = await ask(prev === null ? { question, context } : { question, context, prev_chat_id: prev });
+      j = await ask(prev === null ? body : { ...body, prev_chat_id: prev });
     } catch (e) {
       if (prev === null || !(e instanceof Http) || e.status !== 404) throw e;
-      j = await ask({ question, context });
+      j = await ask(body);
     }
     const chatId = typeof j?.chat_id === 'number' ? j.chat_id : undefined;   // 답이 없어도(NO_RESPONSE) 질문은 서버 기록에 남는다
     const status = STATUS_KO[String(j?.status)] ?? STATUS_KO.NO_RESPONSE;

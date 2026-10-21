@@ -213,10 +213,13 @@ class Settings:
     # ask_only: 1이면 "질문대로 답하기 2단계"(2026-10-21) — ① 알람 번호 질문은 묻는 칸만 답한다(뜻 → 설명만, 뭐부터·점검 → 점검 순서만, 횟수·지난 조치 → 조회만, 번호만 있으면 카드 대신 되묻기)
     # ② 재고 품목 이름뿐인 짧은 질문은 문서 개요 대신 되묻는다 ③ 외부 Claude 지시문에 "묻는 것에만 답하고 묶음은 3개 이내" 한 덩어리를 더한다. 기본 꺼짐 = 지금 동작 그대로(알람 기본 카드).
     ask_only: bool = False
+    # pure_screen_summary: 1이면 "이 화면 설명해 줘" 같은 말에, 화면이 보낸 정보판 글자를 Claude(Haiku)에 한 번 보내 그 문장을 그대로 보인다.
+    # 글자가 없거나 꺼져 있으면 지금 고정 문구. 기본 꺼짐 = 지금 동작 그대로 (2026-10-21).
+    pure_screen_summary: bool = False
     # alarm_chain: 1이면 (2026-10-21, 992 시연 시험) 화면이 alarm_key를 안 보내도 서버가 바로 앞 답이 한 알람 이야기였으면 그 번호를 이어받는다 — "992 원인은" 다음 "뭘해야해?"가
     # 순수 길로 가 엉뚱한 993 조각을 받던 것을 막는다. 대상 없는 질문(ctx_subjectless)만, 이어받은 번호는 기록에 남겨 다음 질문도 잇는다. "나는/내가 …" 질문은 내 역할 단계만 보인다. 기본 꺼짐 = 지금 동작 그대로.
     alarm_chain: bool = False
-    # sensor_live: 1이면 (2026-10-21) 채팅의 센서 값을 공용 DB(시계가 10/1 08:00에 멈춤) 대신 시연 서버(sim_server)의 지금 값으로 답한다 — 화면에 보이는 값과 같게. 읽기 전용이고
+    # sensor_live: 1이면 (2026-10-21, 설비 상태는 2026-10-22) 채팅의 센서 값과 설비 지금 상태를 공용 DB(시계가 10/1 08:00에 멈춤) 대신 시연 서버(sim_server)의 지금 값으로 답한다 — 화면에 보이는 값과 같게. 읽기 전용이고
     # 시연 서버를 못 읽으면 공용 DB 값으로 답한다. 시연용 임시 방식이라 답에 "시연 화면 시계"라고 밝힌다. sim_server_url = 시연 서버 주소. 기본 꺼짐 = 지금 동작 그대로.
     sensor_live: bool = False
     sim_server_url: str = "http://127.0.0.1:8765"
@@ -278,7 +281,7 @@ class Settings:
                 "safe_write_proc": self.safe_write_proc, "safe_write_words": self.safe_write_words,
                 "write_shots": self.write_shots, "write_titles": self.write_titles, "write_rules_v17": self.write_rules_v17,
                 "answer_gate_v17": self.answer_gate_v17, "table_fill_v18": self.table_fill_v18, "oblige_check": self.oblige_check,
-                "pure_external": self.pure_external, "pure_keep_signals": self.pure_keep_signals, "pure_topk": self.pure_topk, "pure_style": self.pure_style,
+                "pure_external": self.pure_external, "pure_keep_signals": self.pure_keep_signals, "pure_topk": self.pure_topk, "pure_style": self.pure_style, "pure_screen_summary": self.pure_screen_summary,
                 "pure_layout": self.pure_layout, "pure_expand": self.pure_expand, "pure_safety": self.pure_safety, "pure_period": self.pure_period, "pure_rule": self.pure_rule, "pure_retry": self.pure_retry, "pure_retry_topk": self.pure_retry_topk, "pure_fault": self.pure_fault, "pure_rule_wide": self.pure_rule_wide, "pure_faultdoc": self.pure_faultdoc, "pure_model": self.pure_model,
                 "llm_provider": self.llm_provider, "claude_via": self.claude_via, "claude_model": self.claude_model,
                 "claude_effort": self.claude_effort,
@@ -385,6 +388,7 @@ def settings() -> Settings:
         pure_follow_rewrite=get("PURE_FOLLOW_REWRITE", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
         continue_llm=get("CONTINUE_LLM", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
         ask_only=get("ASK_ONLY", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
+        pure_screen_summary=get("PURE_SCREEN_SUMMARY", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(고정 문구)
         alarm_chain=get("ALARM_CHAIN", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
         sensor_live=get("SENSOR_LIVE", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
         sim_server_url=(get("SIM_SERVER_URL", "http://127.0.0.1:8765").strip() or "http://127.0.0.1:8765"),

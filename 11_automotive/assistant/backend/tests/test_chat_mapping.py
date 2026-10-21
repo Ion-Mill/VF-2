@@ -15,6 +15,7 @@ SENSOR = {"tool": "sensor_trend", "about": "센서 데이터", "roles": ["MNT", 
     ({"status": "권한이 없습니다"}, "OUT_OF_ROLE"),
     ({"status": "안내", "mode": "규칙"}, "REFUSED"),                                  # 설비 조작·사람만 하는 일 거절 (human_only)
     ({"status": "안내", "mode": "화면 안내 (프로그램 고정 문구)"}, "OK"),               # 화면 설명은 거절이 아니다
+    ({"status": "안내", "mode": "화면 요약 (순수 LLM)"}, "OK"),                        # 정보판 요약도 거절이 아니다
 ])
 def test_status_table(bundle, backend):
     assert map_status(bundle) == backend
