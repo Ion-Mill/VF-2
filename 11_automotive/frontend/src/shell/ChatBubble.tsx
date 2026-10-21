@@ -51,7 +51,28 @@ function PlainAnswer({ sections }: { sections: PlainSection[] }) {
   );
 }
 
-/** 질문 박스 → 날짜·상태 줄 → 답 박스(알람 답이면 카드, "■ 제목"이 있으면 제목+글, 아니면 평문 박스) → 출처 줄. meta = "10/1 10:00" 같은 날짜 글자(부르는 쪽이 만든다) */
+/** 일반 답 출처 — "출처"는 혼자 한 줄, 문서 밑줄 버튼은 그 다음 줄. 가로는 gap-x-1, 문서가 줄을 바꿀 때만 gap-y-2. 처음에는 접힘. 알람 카드(AlarmAnswerCard)와 같은 모양 */
+function PlainSources({ sources, openSource }: { sources: ChatRow['sources']; openSource: (d: string, s: string) => void }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="flex flex-col gap-2 text-[12px]">
+      <button type="button" aria-expanded={open} onClick={() => setOpen((v) => !v)} className="w-fit underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-600">
+        {open ? '▾ 출처:' : '▸ 출처'}
+      </button>
+      {open && (
+        <div className="flex flex-wrap gap-x-1 gap-y-2">
+          {sources.map((s, i) => (
+            <button key={i} type="button" onClick={() => openSource(s.doc_no, s.section)} className="underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-600">
+              {s.doc_name} {s.doc_no} {s.rev} §{s.section}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** 질문 박스 → 날짜·상태 줄 → 답 박스(알람 답이면 카드, "■ 제목"이 있으면 제목+글, 아니면 평문 박스) → 접힌 출처. meta = "10/1 10:00" 같은 날짜 글자(부르는 쪽이 만든다) */
 export function Bubble({ r, meta, openSource, role }: { r: ChatRow; meta: string; openSource: (d: string, s: string) => void; role: string }) {
   if (r.pending) return <div className="flex flex-col gap-2"><div className={QUESTION_BOX}>{r.q}</div></div>;   // 답이 아직 안 온 줄: 질문만 (아래에 "생각 중"이 이어진다)
   const card = parseAlarmAnswer(r.a, r.sources, openSource);   // 알람 답("■ 알람 설명"으로 시작)이고 글자가 하나도 어긋나지 않을 때만 카드, 아니면 null → 평문 (parseAlarmAnswer.ts)
@@ -66,7 +87,7 @@ export function Bubble({ r, meta, openSource, role }: { r: ChatRow; meta: string
           {r.series && Object.entries(r.series).map(([eq, s]) => <div key={eq} className="mt-2 text-[12px]">{eq} 최근 60분: {Object.entries(s).slice(0, 3).map(([k, v]) => <span key={k} className="mr-2">{k} <Spark v={v} /></span>)}</div>)}
         </div>
       )}
-      {!card && r.sources.length > 0 && <div className="flex flex-wrap gap-1 text-[12px]">출처: {r.sources.map((s, i) => <button key={i} type="button" onClick={() => openSource(s.doc_no, s.section)} className="underline">{s.doc_name} {s.doc_no} {s.rev} §{s.section}</button>)}</div>}
+      {!card && r.sources.length > 0 && <PlainSources sources={r.sources} openSource={openSource} />}
     </div>
   );
 }

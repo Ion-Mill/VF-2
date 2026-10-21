@@ -81,19 +81,20 @@ t('알람이 아닌 답은 답 박스 안의 평문이고 박스는 하나', () 
   assert.equal((h.match(new RegExp(esc(`class="${Box.ANSWER_BOX}"`), 'g')) ?? []).length, 1);
   assert.match(h, new RegExp(`<div class="${esc(Box.ANSWER_BOX)}"><p class="ma-msg-bot ${esc(Box.WRAP)}">6\\.1`));
 });
-t('출처 줄은 답 박스 밖(아래)에 그대로 있다 (알약이 아닌 글자 "출처:")', () => {
+t('일반 답 출처는 답 박스 밖이고 처음에는 접힌다 (문서 버튼은 다음 줄, 아직 안 보임)', () => {
   const h = bubble(row('안전 작업 순서 알려줘', PLAIN, { sources: SOURCES }));
   const [s0, e0] = boxRange(h);
   assert.ok(h.slice(s0, e0).includes('6.1 ·'), '답 글자는 박스 안');
-  assert.ok(!h.slice(s0, e0).includes('출처:'), '출처 줄은 박스 안에 없다');
-  assert.ok(h.indexOf('출처:') >= e0, '출처 줄은 박스가 닫힌 뒤에 있다');
-  assert.match(h, /DOC-02[^<]*Rev\.1[^<]*§4\.11/);
+  assert.ok(!h.slice(s0, e0).includes('출처'), '출처는 박스 안에 없다');
+  assert.ok(h.indexOf('▸ 출처') >= e0, '접힌 출처는 박스가 닫힌 뒤에 있다');
+  assert.ok(h.includes('aria-expanded="false"') && h.includes('flex flex-col gap-2 text-[12px]') && !h.includes('▾ 출처:'), '처음에는 접힘');
+  assert.ok(!h.includes('DOC-02') && !h.includes('flex flex-wrap gap-1 text-[12px]'), '접히면 문서 버튼·옛 한 줄이 없다');
 });
 t('센서 시계열 줄(series)은 답 박스 안에 있다', () => {
   const h = bubble(row('VF2-01 센서 추세', '최근 60분 값입니다.', { series: { 'VF2-01': { 'load': [1, 2, 3, 2, 5] } }, sources: SOURCES }));
   const [s0, e0] = boxRange(h), box = h.slice(s0, e0);
   assert.ok(box.includes('<svg') && box.includes('VF2-01 최근 60분') && box.includes('최근 60분 값입니다.'), box);
-  assert.ok(h.indexOf('출처:') >= e0);
+  assert.ok(h.indexOf('▸ 출처') >= e0);
 });
 t('질문 → 날짜·상태 줄 → 답 순서 (날짜 글자는 부른 쪽이 준 것)', () => {
   const h = bubble(row('q1', '답1'));
@@ -119,7 +120,7 @@ t('T05 답: 머리 문단·번호 목록·주의 줄이 글자와 줄바꿈 그�
   assert.ok(box.indexOf('아니요, 90%가 뜨면') < box.indexOf('90%의 뜻'), '머리 문단은 첫 제목 앞');
   for (const s of ['1. T05의 90%는 공구 수명 사용률이라,', '3. 이 90% 기준은 팀이 정한 가상 기준이고,', '2. 교체 순서와 교체 기록은 작업자(OPR)가 해요.', '주의: 근거 안내이며 실행 지시가 아닙니다.']) assert.ok(box.includes(s.replace(/'/g, '&#x27;')) || box.includes(s), s);
   assert.ok(box.includes('1. 교체는 프로그램을 중단하지 않은 상태, 곧 사이클이 끝난 뒤에 해요.\n2. 교체 순서'), '줄바꿈 그대로');
-  assert.ok(h.indexOf('출처:') >= e0, '출처 줄은 박스 밖');
+  assert.ok(h.indexOf('▸ 출처') >= e0, '접힌 출처는 박스 밖');
 });
 t('T05 답: 보이는 글자의 낱말 열이 원래와 같다 (글자가 하나도 사라지지 않는다)', () => {
   const h = bubble(row('q', T05));
