@@ -3570,6 +3570,11 @@ def _pure_answer_v19(question: str, p: dict, base: dict, s, memo: dict, prev: di
     if cited:
         out["written"] = True   # 화면 꼬리표 "AI가 문서를 보고 쓴 답 · 원문 아래" + 원문 줄 접기
     if fixed_keys:   # FIXED_BLOCK: 고정 서식을 프로그램이 그대로 붙인다. 풀이가 순서 전체를 묻는 질문에서 단계를 빠뜨리거나 없는 번호를 쓰면 풀이를 버리고 서식만 보인다
+        if layout:   # 묶음 소제목에 지어낸 번호 범위("1~3단계")가 있으면 공식 번호로 고친다 (2026-10-21). 본문·서식은 그대로
+            for old_t, new_t in FB.fix_titles(got["sections"]):
+                got["answer"] = got["answer"].replace(old_t, new_t)
+                out["conclusion"] = out["conclusion"].replace(old_t, new_t)
+                out["blocks"] = [({**b, "text": new_t} if (isinstance(b, dict) and b.get("kind") == "section" and b.get("text") == old_t) else b) for b in out["blocks"]]
         bad = FB.check_answer(got["answer"], fixed_keys, FB.wants_full(question, fixed_keys))
         keep = [b for b in out["blocks"] if isinstance(b, dict) and b.get("orig")]   # 원문 줄(접어 두는 칸)은 그대로
         out["blocks"] = ([{"kind": "lead", "text": FB.FALLBACK_LEAD}] if bad else [b for b in out["blocks"] if not (isinstance(b, dict) and b.get("orig"))]) + FB.blocks(fixed_keys) + keep

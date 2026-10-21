@@ -196,3 +196,59 @@ def test_non_safety_question_never_gets_a_block(pure):
     a = ask("쿨런트가 뭐야?")
     assert "fixed_block" not in a
     assert re.search(r"고정 서식", to_answer_text(a)) is None
+
+
+# ---- 소제목의 지어낸 번호 범위 (2026-10-21, 기획 잠금순서_소제목_번호범위): "작업 전 (1~3단계)" 아래 항목이 6.1~6.3인 불일치
+def test_fix_titles_replaces_invented_range_with_the_official_codes():
+    secs = [{"title": "작업 전 (1~3단계)", "text": "", "items": ["6.1 기기 등의 운전정지 준비: 표를 본다.", "6.2 기기 등의 운전정지: 멈춘다.", "6.3 기기 등의 차단: 끈다."]},
+            {"title": "작업 전 (4~6단계)", "text": "", "items": ["6.4 잠금장치 또는 표지의 설치: 건다.", "6.5 저장 또는 축적된 에너지의 관리: 뺀다.", "6.6 차단 확인: 본다."]}]
+    changed = FB.fix_titles(secs)
+    assert [s["title"] for s in secs] == ["작업 전 (6.1~6.3)", "작업 전 (6.4~6.6)"]
+    assert changed == [("작업 전 (1~3단계)", "작업 전 (6.1~6.3)"), ("작업 전 (4~6단계)", "작업 전 (6.4~6.6)")]
+    assert secs[0]["items"][0].startswith("6.1 ")                                   # 본문은 그대로
+
+
+def test_fix_titles_leaves_counts_dotted_ranges_and_plain_titles_alone():
+    secs = [{"title": "작업 후 (3단계, 잠금 풀기)", "text": "", "items": ["7.1 점검", "7.2 확인", "7.3 제거"]},
+            {"title": "작업 전 6.1~6.3", "text": "", "items": ["6.1 a"]},
+            {"title": "이유", "text": "", "items": ["압력이 떨어져요."]}]
+    assert FB.fix_titles(secs) == []
+    assert [s["title"] for s in secs] == ["작업 후 (3단계, 잠금 풀기)", "작업 전 6.1~6.3", "이유"]
+    other = [{"title": "단계 (2~4단계)", "text": "", "items": ["첫째", "둘째"]}]       # 항목이 단계 번호로 시작하지 않으면 범위만 지운다
+    FB.fix_titles(other)
+    assert other[0]["title"] == "단계"
+
+
+def test_reference_note_forbids_invented_step_ranges_only_for_lock_formats():
+    assert "새 번호 범위를 만들지 않는다" in FB.reference_note(["before6"])
+    assert "새 번호 범위를 만들지 않는다" in FB.reference_note(["after3"])
+    assert "새 번호 범위를 만들지 않는다" not in FB.reference_note(["high_voltage"])
+
+
+class LayoutRunner(Runner):
+    """묶음 목록 형식(PURE_LAYOUT=1)의 답: structured_output = {sections, cited, insufficient}"""
+    def __init__(self, sections):
+        super().__init__("")
+        self.sections = sections
+
+    def __call__(self, cmd, stdin_text, timeout):
+        res = super().__call__(cmd, stdin_text, timeout)
+        d = json.loads(res.stdout)
+        d["structured_output"] = {"sections": self.sections, "cited": ["C1"], "insufficient": False}
+        return SimpleNamespace(returncode=0, stdout=json.dumps(d, ensure_ascii=False), stderr="")
+
+
+def test_end_to_end_invented_range_in_a_section_title_is_replaced_in_the_shown_answer(pure, monkeypatch):
+    monkeypatch.setenv("PURE_STYLE", "1")
+    monkeypatch.setenv("PURE_LAYOUT", "1")
+    items = [f"{c} {n}: 해요." for c, n in T.BEFORE]
+    r = LayoutRunner([{"title": "", "text": "잠금·표지는 작업 전 6단계 순서로 해요.", "items": []},
+                      {"title": "작업 전 (1~3단계)", "text": "", "items": items[:3]},
+                      {"title": "작업 전 (4~6단계)", "text": "", "items": items[3:]}])
+    CC.use_runner(r)
+    a = ask("작업 전에 잠그는 순서 알려줘")
+    text = to_answer_text(a)
+    assert "1~3단계" not in text and "4~6단계" not in text
+    assert "작업 전 (6.1~6.3)" in text and "작업 전 (6.4~6.6)" in text
+    assert a["fixed_block"]["fallback"] is None and T.TITLE in text            # 서식은 그대로 붙는다
+    assert "새 번호 범위를 만들지 않는다" in r.systems[0]                           # Claude에게 지시문이 갔다
