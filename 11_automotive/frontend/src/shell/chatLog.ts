@@ -125,3 +125,52 @@ export function sessionOf<T extends LoggedRow>(rows: readonly T[], local: readon
   const mine = find(at);
   return rows.filter((_, i) => find(i) === mine);
 }
+
+// ---------- 보냈지만 답이 아직 안 온 질문 ("대기 줄") — 새로고침에 끊겨도 되살린다 ----------
+// 질문을 보내자마자 대기 줄(pending, sentAt)을 기록에 저장한다. 답이 오면 settlePending이 그 자리에서 진짜 줄로 바꾼다.
+// 새로고침으로 요청이 끊기면 대기 줄만 남는다 — 이 화면이 지금 보내 둔 요청(live)에 없는 대기 줄을 resolvePending이 되살린다:
+//  - 서버 기록에서 같은 질문 글·같은 앞 질문 번호·아직 어느 줄도 안 쓴 새 번호의 줄을 찾으면 그 답을 붙인다 (시각은 믿지 않는다 — 시연 DB 시계가 제각각).
+//  - 못 찾고 giveUpMs가 지났으면 "끊겼다"는 줄로 바꾼다 (대기 줄이 영영 남지 않게).
+// 백엔드 서버는 손님이 끊겨도 답을 끝까지 기록에 남긴다 (backend routers/assistant.py chat_insert는 답이 끝난 뒤).
+
+export interface PendingFlag { pending?: boolean; sentAt?: number }
+export const PENDING_GIVEUP_MS = 150_000;   // 백엔드가 비서를 기다리는 130초 + 여유 (assistantApi.ts ASK_TIMEOUT_MS 140초와 같은 뜻)
+export const isPending = (r: PendingFlag): boolean => r.pending === true;
+
+/** 서버 기록 한 줄에서 되살리기에 쓰는 칸 (ServerChatRow가 이 모양을 포함한다) */
+export interface ServerAnswer { q: string; a: string; status: string; sources: unknown[]; chatId: number; prevChatId?: number }
+
+/** 대기 줄(sentAt)을 진짜 줄로 바꾼다 — 같은 자리에서. 대기 줄이 이미 없으면(기록 정리 등) 끝에 더한다. 원본은 바꾸지 않는다 */
+export function settlePending<T extends LoggedRow & PendingFlag>(log: readonly T[], sentAt: number, row: T): T[] {
+  const i = log.findIndex((r) => isPending(r) && r.sentAt === sentAt);
+  if (i < 0) return [...log, row];
+  const next = log.slice();
+  next[i] = row;
+  return next;
+}
+
+/**
+ * 끊긴 대기 줄을 되살린다. live = 이 화면이 지금 요청을 보내 둔 줄의 sentAt (그 줄은 답이 직접 오니 건드리지 않는다).
+ * server = 서버 기록(오래된 것부터), 못 받았으면 null. giveUpMs 이상 지났는데 못 찾으면 lost 문구로 바꾼다 (옛 길처럼 서버 기록이 없으면 0).
+ * 바뀐 줄이 없으면 같은 배열을 돌려준다. 원본은 바꾸지 않는다.
+ */
+export function resolvePending<T extends LoggedRow & PendingFlag & { status: string; sources: unknown[] }>(
+  log: readonly T[], server: readonly ServerAnswer[] | null, now: number, live: ReadonlySet<number>, giveUpMs: number, lost: { a: string; status: string },
+): T[] {
+  const claimed = new Set(log.flatMap((r) => (typeof r.chatId === 'number' ? [r.chatId] : [])));
+  const newest = claimed.size ? Math.max(...claimed) : -Infinity;   // 이 브라우저가 이미 아는 가장 큰 번호보다 큰 것만 새 답 후보 (오래전에 같은 질문을 한 서버 줄을 잘못 붙이지 않게)
+  let changed = false;
+  const out = log.map((r) => {
+    if (!isPending(r) || (r.sentAt !== undefined && live.has(r.sentAt))) return r;
+    const hit = server?.find((s) => s.q === r.q && !claimed.has(s.chatId) && s.chatId > newest && (s.prevChatId ?? null) === (r.prevChatId ?? null));
+    const { pending: _p, sentAt, ...rest } = r;
+    if (hit) {
+      claimed.add(hit.chatId);
+      changed = true;
+      return { ...rest, a: hit.a, status: hit.status, sources: hit.sources, chatId: hit.chatId, ...(hit.prevChatId !== undefined ? { prevChatId: hit.prevChatId } : {}) } as unknown as T;
+    }
+    if (now - (sentAt ?? 0) >= giveUpMs) { changed = true; return { ...rest, a: lost.a, status: lost.status, sources: [] } as unknown as T; }
+    return r;
+  });
+  return changed ? out : (log as T[]);
+}

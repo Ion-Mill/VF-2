@@ -107,6 +107,22 @@ def equipment_status(role, equipment_id=None):
     return _result("설비 상태 조회", sorted(rows, key=lambda x: x["equipment_id"]), "지금", as_of=r.now)
 
 
+def current_shift(role) -> tuple[date, str] | None:
+    """백엔드 업무 시각(app_now)으로 가장 최근에 시작한 교대 (교대가 시작된 날짜, "D"|"N"). 시각을 못 얻으면 None.
+    20시 이후 = 그날 야간, 8~20시 = 그날 주간(17~20시는 방금 끝난 주간), 0~8시 = 전날 야간(5~8시는 방금 끝난 야간) — 교대 시간대는 `_windows`와 같다."""
+    try:
+        now = datetime.fromisoformat(str(equipment_status(role)["as_of"]))
+    except Exception:   # noqa: BLE001 — 시계를 못 얻으면 부른 쪽이 지금 동작(하루 전체) 그대로 간다
+        return None
+    if now.tzinfo is not None:
+        now = now.astimezone(KST)
+    if now.hour >= 20:
+        return now.date(), "N"
+    if now.hour >= 8:
+        return now.date(), "D"
+    return now.date() - timedelta(days=1), "N"
+
+
 # ---------------------------------------------------------------- 알람 (백엔드는 건별이 아니라 집계)
 def alarms(role, equipment_id=None, code=None, start=None, end=None, shift=None, unprocessed_only=False):
     """알람 횟수 — 설비·알람 번호별 집계(times·처음·마지막·정지 분). 건별 행과 처리 여부는 백엔드 도구에 없다(`partial`)."""
@@ -154,14 +170,21 @@ def stops(role, equipment_id=None, start=None, end=None, shift=None):
         mine = [m for m in out if (m["reason_group"] if m["reason_group"] in known else "UNKNOWN") == group]
         if group == "UNKNOWN" and not mine:
             continue
+        merged: dict[str, dict] = {}   # 라인 전체 질문은 설비마다 행이 있어 같은 사유가 여러 줄이 된다 — 사유 코드별로 합쳐 한 줄로 (표시용, 행 out은 그대로)
+        for m in mine:
+            r = merged.setdefault(m["reason_code"], {"code": m["reason_code"], "name": m["reason_name"], "count": 0, "minutes": 0.0})
+            r["count"] += m["times"]
+            r["minutes"] = round(r["minutes"] + m["minutes"], 1)
         by_group.append({"group": group, "group_ko": group_ko, "count": sum(m["times"] for m in mine),
                          "minutes": M.round_half_up(sum(m["minutes"] for m in mine), 1),
-                         "reasons": [{"code": m["reason_code"], "name": m["reason_name"], "count": m["times"], "minutes": m["minutes"]}
-                                     for m in sorted(mine, key=lambda m: -m["minutes"])]})
+                         "reasons": sorted(merged.values(), key=lambda r: -r["minutes"])})
     fail = next((g for g in by_group if g["group"] == "FAILURE"), None)
+    # 고장 그룹 정지만의 손실 수량 추정 — loss_qty_est_total은 손실 정지 전체(고장·자재·준비·조작)의 합이다
+    fail_loss = int(M.round_half_up(sum(m["loss_qty"] for m in out if m["reason_group"] == "FAILURE"), 0))
     return _result("지표·손실 조회 (정지)", out, _range(start, end, shift), as_of=now,
                    total_count=sum(m["times"] for m in out), total_minutes=M.round_half_up(sum(m["minutes"] for m in out), 1),
                    total_failure_min=fail["minutes"] if fail else 0.0, loss_qty_est_total=int(M.round_half_up(sum(m["loss_qty"] for m in out), 0)),
+                   loss_qty_failure_est=fail_loss,
                    by_group=by_group, cycle_min={}, all_empty=not out, partial=True,
                    note="손실 정지만 조회됩니다 (계획 정지·필수 정지·순간 정지는 아직 조회할 수 없음)")
 

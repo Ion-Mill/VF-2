@@ -15,10 +15,9 @@ import { useAlarmText } from './assistText';
 import { rankOfAlert, rankOfNotice } from './Briefing';
 import RobotIcon from './RobotIcon';
 import EveThinking from './EveThinking';
-import { canStartNewChat, currentChat, isFocusRow, lastChatId, makeNewChatMark, mergeServerLog, sessionOf, withNewChat, type FocusRef } from './chatLog';
+import { PENDING_GIVEUP_MS, canStartNewChat, currentChat, isFocusRow, lastChatId, makeNewChatMark, mergeServerLog, resolvePending, sessionOf, settlePending, withNewChat, type FocusRef } from './chatLog';
 import { carryAlarm } from './carry';
 import { Bubble, HistoryItem, Spark, Typing, type ChatRow } from './ChatBubble';
-import { QUESTION_BOX } from './bubbleBox';
 
 export { Spark };   // 옛 가져오기 경로 유지 (Spark는 ChatBubble.tsx로 옮겼다)
 
@@ -92,6 +91,10 @@ export function Eve({ tab, quick: showQuick, onPick, onClose, badges, bubble, bu
   };
   const onUp = () => { moved.current = !!drag.current?.moved; drag.current = null; };
   const closed = !tab && !menu;
+  // 한 번 열린 창은 닫아도 지우지 않고 숨기기만 한다 — 그래야 질문을 보낸 뒤 창을 닫았다 열어도 질문·답이 이어진다 (2026-10-20). 처음 열기 전에는 그리지 않는다
+  const [opened, setOpened] = useState(false);
+  useEffect(() => { if (tab) setOpened(true); }, [tab]);
+  const showPanel = !!tab || opened;
   const toast = closed && bubble && bubble !== later ? bubble : null;
   const total = badges['알림'] ?? 0;
   const pick = (t: EveTab) => { setMenu(false); setFocus(null); onPick(t); };
@@ -126,8 +129,8 @@ export function Eve({ tab, quick: showQuick, onPick, onClose, badges, bubble, bu
           ))}
         </div>
       )}
-      {tab && (
-        <aside className="ma-panel ma-side" aria-label="이브">
+      {showPanel && (
+        <aside className="ma-panel ma-side" aria-label="이브" style={tab ? undefined : { display: 'none' }}>
           <header className="ma-panel-head">
             <Robot size={30} />
             <strong className="ma-panel-title">이브</strong>
@@ -137,7 +140,11 @@ export function Eve({ tab, quick: showQuick, onPick, onClose, badges, bubble, bu
           <div className="ma-tabs" role="tablist" aria-label="이브 메뉴">
             {EVE_TABS.map((t) => <button key={t} type="button" role="tab" className="ma-tab" aria-selected={tab === t} onClick={() => { setFocus(null); onPick(t); }}>{t}{badge(t, 'ma-tab-badge')}</button>)}
           </div>
-          {tab === '채팅' ? <Chat focus={focus} headerSlot={slot} onNewChat={() => setFocus(null)} ask={ask} onAsked={() => setAsk(null)} /> : (
+          {/* 채팅은 다른 탭으로 가도 지우지 않고 숨기기만 한다 — 보낸 질문·기다리는 답·입력 중인 글이 그대로 남는다 (2026-10-20). contents = 보일 때 모양은 그대로 */}
+          <div className={tab === '채팅' ? 'contents' : 'hidden'}>
+            <Chat active={tab === '채팅'} focus={focus} headerSlot={slot} onNewChat={() => setFocus(null)} ask={ask} onAsked={() => setAsk(null)} />
+          </div>
+          {tab && tab !== '채팅' && (
             <div className="ma-body text-[14px] leading-relaxed" role="tabpanel">
               {tab === '채팅 기록' ? <ChatLog onOpen={(r) => { setFocus({ at: r.at, q: r.q, ...(typeof r.chatId === 'number' ? { chatId: r.chatId } : {}) }); onPick('채팅'); }} /> : <div className="ma-pad">{tab === '브리핑' ? brief : <AlertsTab onNotice={onNotice} />}</div>}
             </div>
@@ -299,15 +306,15 @@ function useServerChat(userId: string, again: unknown): ChatRow[] {
   return rows;
 }
 
-function Chat({ focus, headerSlot, onNewChat, ask, onAsked }: { focus: FocusRef | null; headerSlot: HTMLElement | null; onNewChat: () => void; ask?: string | null; onAsked?: () => void }) {
+function Chat({ active, focus, headerSlot, onNewChat, ask, onAsked }: { active: boolean; focus: FocusRef | null; headerSlot: HTMLElement | null; onNewChat: () => void; ask?: string | null; onAsked?: () => void }) {
   const { user, role, screen, selected, openSource } = useApp();
   const [log, setLog] = useLocal<ChatRow[]>(`chat:${user.id}`, []);
-  const [q, setQ] = useState('');
+  const [q, setQ] = useLocal<string>(`chatdraft:${user.id}`, '');   // 쓰다 만 글도 새로고침 뒤에 남긴다 (보내면 비운다)
   const [busy, setBusy] = useState(false);
-  const [pending, setPending] = useState<string | null>(null); // 답을 기다리는 질문 — 보내자마자 질문 박스로 보여 줌 (사용자 요청 2026-10-21)
-  const [found, setFound] = useState(false);                   // 답이 왔다 → 이브가 ✓ 를 띄운 뒤 답을 보여 줌
+  const inflight = useRef(new Set<number>());   // 이 화면이 지금 요청을 보내 둔 질문의 sentAt — 새로고침으로 끊긴 대기 줄(여기 없는 것)과 구분한다
+  const [found, setFound] = useState(false);   // 답이 왔다 → 이브가 ✓ 를 띄운 뒤 답을 보여 줌 (사용자 요청 2026-10-21)
   const input = useRef<HTMLInputElement>(null);
-  // 마이크 (2026-10-20): 서버의 음성 스위치가 켜져 있을 때만 버튼이 보인다. 누르고 있는 동안 녹음 → 떼면 글자로 바꿔 입력창에 **채우기만** 한다 (보내는 것은 사용자가 글자를 보고 직접)
+  // 마이크 (2026-10-20): 서버의 음성 스위치가 켜져 있을 때만 버튼이 보인다. 한 번 누르면 녹음 시작 → 다시 누르면 끝나고 글자로 바꿔 입력창에 **채우기만** 한다 (보내는 것은 사용자가 글자를 보고 직접)
   const [voice, setVoice] = useState<VoiceStatus>(VOICE_OFF);
   const [micOk, setMicOk] = useState(false);          // 이 브라우저·주소에서 마이크를 쓸 수 있나 (https·localhost만) — 서버 렌더와 달라서 마운트 뒤에 정한다
   const [voiceBusy, setVoiceBusy] = useState(false);   // 소리를 글자로 바꾸는 중
@@ -319,10 +326,13 @@ function Chat({ focus, headerSlot, onNewChat, ask, onAsked }: { focus: FocusRef 
     fetchVoiceStatus(user.id).then((v) => { if (live) setVoice(v); });
     return () => { live = false; };
   }, [user.id]);
+  const activeRef = useRef(active);   // 채팅 탭을 떠난 뒤에 끝난 녹음은 글자로 바꾸지 않고 버린다
+  activeRef.current = active;
   const mic = useMic({
     maxSeconds: voice.maxSeconds,
     onError: (m) => setVoiceNote(m),
     onAudio: async (blob) => {
+      if (!activeRef.current) return;
       setVoiceBusy(true); setVoiceNote('');
       try {
         const r = await transcribeAudio(user.id, blob);
@@ -331,6 +341,11 @@ function Chat({ focus, headerSlot, onNewChat, ask, onAsked }: { focus: FocusRef 
       finally { setVoiceBusy(false); }
     },
   });
+  // 채팅 탭을 떠나면 숨겨진 채로 녹음이 이어지지 않게 멈추고, 돌아오면 안내 줄을 비우고 입력 칸에 초점을 준다 (예전에는 탭을 옮기면 Chat이 사라져 저절로 끊기고, 열릴 때 autoFocus가 했다)
+  useEffect(() => {
+    if (!active) { mic.stop(); return; }
+    setVoiceNote(''); input.current?.focus();
+  }, [active]); // eslint-disable-line react-hooks/exhaustive-deps
   const server = useServerChat(user.id, focus ? (focus.chatId ?? focus.at) : null);   // 채팅 기록에서 연 대화가 다른 PC에서 물은 것일 수 있다
   // 채팅 기록에서 열면 눌러 연 줄이 속한 대화만(서버 기록 포함, 앞 질문 번호로 이어진 덩어리), 아니면 지금 대화의 최근 12개
   const today = focus ? sessionOf(mergeServerLog(log, server), log, focus) : currentChat(log).slice(-12);
@@ -343,29 +358,50 @@ function Chat({ focus, headerSlot, onNewChat, ask, onAsked }: { focus: FocusRef 
     const newChat = focus ? true : cur.length === 0;
     // 이어서 묻기 (API-AST-02 prev_chat_id): 보고 있는 대화의 마지막 질문에 잇는다. 새 대화의 첫 질문이면 없음
     const prevChatId = lastChatId(focus ? today : cur);
-    setBusy(true); setQ(''); setPending(text);
+    // 질문을 보내자마자 대기 줄로 저장한다 — 새로고침해도 질문이 남고(되살리기는 아래 효과), 답이 오면 이 줄이 그 자리에서 진짜 줄로 바뀐다 (chatLog.ts)
+    const sentAt = Date.now(), at = simIso();
+    const keep30 = (l: ChatRow[]) => l.filter((x) => Date.parse(x.at) > SIM.now() - 30 * 864e5);   // 채팅 기록 30일 (FR-MNT-01-01, NFR-DATA-13)
+    inflight.current.add(sentAt);
+    setLog((l) => [...keep30(l), { at, q: text, a: '', status: '', sources: [], pending: true, sentAt, ...(prevChatId !== null ? { prevChatId } : {}) }]);
+    setBusy(true); setQ('');
     let row: ChatRow;
     try {
       const r = backendChatEnabled()   // NEXT_PUBLIC_MOM_API가 있으면 백엔드의 비서(외부 LLM)로 — assistantApi.ts. 없으면 옛 길(시연 서버의 규칙 답)
         ? await askAssistant(text, user.id, screen, selected ? MACHINES[selected].eq : null, { alarmKey, newChat, prevChatId })
         : await api<{ answer: string; status: string; sources: ChatRow['sources']; series?: ChatRow['series'] }>('assistant/chat', { question: text, role, user_id: user.id, context: { screen, equipment_id: selected ? MACHINES[selected].eq : null } });
-      row = { at: simIso(), q: text, a: r.answer, status: r.status, sources: r.sources ?? [], series: r.series, ...('chatId' in r && typeof r.chatId === 'number' ? { chatId: r.chatId } : {}), ...(prevChatId !== null ? { prevChatId } : {}) };
-    } catch (e) { row = { at: simIso(), q: text, a: '비서 응답 없음 — ' + (e as Error).message, status: '응답 없음', sources: [], ...(prevChatId !== null ? { prevChatId } : {}) }; }
-    setFound(true); await new Promise((r) => setTimeout(r, 1100)); // 답하기 직전 ✓ 를 잠깐 보여 줌
-    // 채팅 기록 30일 (FR-MNT-01-01, NFR-DATA-13)
-    setLog((l) => [...l.filter((x) => Date.parse(x.at) > SIM.now() - 30 * 864e5), row]);
-    setBusy(false); setPending(null); setFound(false);
+      row = { at, q: text, a: r.answer, status: r.status, sources: r.sources ?? [], series: r.series, ...('chatId' in r && typeof r.chatId === 'number' ? { chatId: r.chatId } : {}), ...(prevChatId !== null ? { prevChatId } : {}) };
+    } catch (e) { row = { at, q: text, a: '비서 응답 없음 — ' + (e as Error).message, status: '응답 없음', sources: [], ...(prevChatId !== null ? { prevChatId } : {}) }; }
+    setFound(true); await new Promise((r) => setTimeout(r, 1100));   // 답하기 직전 ✓ 를 잠깐 보여 줌 (그동안 대기 줄은 그대로 — 새로고침돼도 되살리기가 처리)
+    inflight.current.delete(sentAt);
+    setLog((l) => settlePending(keep30(l), sentAt, row));
+    setBusy(false); setFound(false);
   };
+  // 새로고침으로 요청이 끊긴 대기 줄 되살리기: 서버 기록(백엔드 서버는 손님이 끊겨도 답을 끝까지 기록에 남긴다)에서 같은 질문의 새 답을 찾아 붙이고, 150초가 지나도 없으면 끊겼다고 알린다.
+  // 백엔드를 안 쓰는 옛 길은 서버 기록이 없어 바로 알린다. 아래 waiting 동안 새 질문·[새 채팅]은 막는다
+  const orphan = log.some((r) => r.pending === true && !inflight.current.has(r.sentAt ?? -1));
+  useEffect(() => {
+    if (!orphan) return;
+    let live = true;
+    const via = backendChatEnabled();
+    const tick = async () => {
+      const server = via ? await fetchChatLog(user.id) : [];
+      if (live) setLog((l) => resolvePending(l, server, Date.now(), inflight.current, via ? PENDING_GIVEUP_MS : 0, { a: '연결이 끊겨 답을 받지 못했어요. 다시 질문해 주세요.', status: '응답 없음' }));
+    };
+    tick();
+    const t = setInterval(tick, 4000);
+    return () => { live = false; clearInterval(t); };
+  }, [orphan, user.id]); // eslint-disable-line react-hooks/exhaustive-deps
+  const waiting = busy || orphan;
   // [새 채팅]: 기록은 한 줄도 지우지 않고 "여기서부터 새 대화" 표지 줄만 더한다 → 채팅 탭은 표지 뒤 줄만 보이고, 이전 대화는 채팅 기록 탭에 그대로 있다 (chatLog.ts)
-  const canNew = !busy && canStartNewChat(log, !!focus);   // 답을 기다리는 중에는 끈다 (늦게 온 답이 새 대화에 끼지 않게)
+  const canNew = !waiting && canStartNewChat(log, !!focus);   // 답을 기다리는 중에는 끈다 (늦게 온 답이 새 대화에 끼지 않게)
   const startNew = () => { if (!canNew) return; const m = makeNewChatMark(simIso()); setLog((l) => withNewChat(l, m, !!focus)); setQ(''); onNewChat(); input.current?.focus(); };
   const ex = role === 'MNT' || role === 'MGR' ? ['VF2-01 MTTR 알려줘', 'VF2-01 센서 추세', '2075 알람 뭐야', '이 화면 설명해 줘'] : ['2075 알람 뭐야', '잠금 표지 순서', '이 화면 설명해 줘', '병목 원인'];
   const body = useRef<HTMLDivElement>(null);
-  useEffect(() => { if (ask && !busy) { onAsked?.(); send(ask); } }, [ask, busy]); // eslint-disable-line react-hooks/exhaustive-deps -- 작은 채팅창의 질문을 한 번 보냄 (답을 기다리는 중이면 끝난 뒤)
+  useEffect(() => { if (ask && !waiting) { onAsked?.(); send(ask); } }, [ask, waiting]); // eslint-disable-line react-hooks/exhaustive-deps -- 작은 채팅창의 질문을 한 번 보냄 (답을 기다리는 중이면 끝난 뒤)
   useEffect(() => {
     const el = focus && body.current?.querySelector('[data-focus="1"]');
     if (el) el.scrollIntoView({ block: 'center' }); else if (body.current) body.current.scrollTop = body.current.scrollHeight;
-  }, [log.length, busy, focus]);
+  }, [log.length, waiting, focus, active]);   // active: 숨겼다 다시 보일 때도 맨 아래(또는 눌러 연 줄)로
   return (
     <>
       {headerSlot && createPortal(
@@ -375,33 +411,30 @@ function Chat({ focus, headerSlot, onNewChat, ask, onAsked }: { focus: FocusRef 
         </button>, headerSlot)}
       <div ref={body} className="ma-body text-[14px]" role="tabpanel">
         <div className="ma-pad min-h-full" aria-live="polite">
-          {today.length === 0 && !busy && <EveHello />}
+          {today.length === 0 && !waiting && <EveHello />}
           {today.map((r, i) => <div key={i} data-at={r.at} {...(isFocusRow(r, focus) ? { 'data-focus': '1' } : {})} className={isFocusRow(r, focus) ? 'rounded-lg ring-2 ring-[#B79CFF]' : ''}><Bubble r={r} meta={`${md(r.at)} ${hhmm(r.at)}`} openSource={openSource} role={role} /></div>)}
-          {busy && pending && <div className={`flex flex-col ${today.length ? 'mt-4' : ''}`}><div className={QUESTION_BOX}>{pending}</div></div>}
-          {busy && <EveThinking found={found} />}
+          {waiting && <EveThinking found={found} />}
         </div>
       </div>
-      <form className="ma-compose" onSubmit={(e) => { e.preventDefault(); if (!busy) send(); }}>
-        <div className="mb-3 flex flex-wrap justify-center gap-1.5">{ex.map((x) => <button key={x} type="button" disabled={busy} onClick={() => send(x)} className="h-9 rounded-full border border-slate-300 bg-[#ffffff] px-3.5 text-[13px] font-bold hover:bg-[#f7f5fd]">{x}</button>)}</div>
+      <form className="ma-compose" onSubmit={(e) => { e.preventDefault(); if (!waiting) send(); }}>
+        <div className="mb-3 flex flex-wrap justify-center gap-1.5">{ex.map((x) => <button key={x} type="button" disabled={waiting} onClick={() => send(x)} className="h-9 rounded-full border border-slate-300 bg-[#ffffff] px-3.5 text-[13px] font-bold hover:bg-[#f7f5fd]">{x}</button>)}</div>
         {voice.enabled && (mic.state === 'recording' || voiceBusy || voiceNote !== '') && (
           <div className="ma-voice-note" role="status">
-            {mic.state === 'recording' ? '듣고 있어요… 말이 끝나면 버튼에서 손을 떼세요.' : voiceBusy ? '글자로 바꾸는 중이에요 (몇 초 걸려요)…' : voiceNote}
+            {mic.state === 'recording' ? `듣고 있어요… 말이 끝나면 마이크 버튼을 다시 누르세요 (최대 ${Math.round(voice.maxSeconds)}초).` : voiceBusy ? '글자로 바꾸는 중이에요 (길게 말했다면 더 걸려요)…' : voiceNote}
           </div>
         )}
         <div className="ma-compose-box">
           <label className="ma-sr" htmlFor="ma-input">이브에게 질문</label>
           <input id="ma-input" ref={input} className="ma-input" autoFocus autoComplete="off" value={q} onChange={(e) => setQ(e.target.value)} placeholder="질문 (예: 992 알람 점검 순서)" />
           {voice.enabled && (
-            <button type="button" className={`ma-mic${mic.state === 'recording' ? ' is-rec' : ''}`} disabled={busy || voiceBusy || !micOk}
-              aria-label="누르고 있는 동안 말하기" aria-pressed={mic.state === 'recording'}
-              title={micOk ? '버튼을 누른 채로 질문을 말하고, 끝나면 손을 떼세요. 글자로 바뀌어 입력창에 들어갑니다.' : '이 주소에서는 마이크를 쓸 수 없어요. localhost 또는 https 주소로 열어 주세요.'}
-              onPointerDown={(e) => { e.preventDefault(); setVoiceNote(''); mic.start(); }} onPointerUp={mic.stop} onPointerLeave={mic.stop} onPointerCancel={mic.stop} onBlur={mic.stop}
-              onKeyDown={(e) => { if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) { e.preventDefault(); setVoiceNote(''); mic.start(); } }}
-              onKeyUp={(e) => { if (e.key === ' ' || e.key === 'Enter') mic.stop(); }} onContextMenu={(e) => e.preventDefault()}>
+            <button type="button" className={`ma-mic${mic.state === 'recording' ? ' is-rec' : ''}`} disabled={waiting || voiceBusy || !micOk}
+              aria-label={mic.state === 'recording' ? '말하기 끝내기' : '말하기 시작'} aria-pressed={mic.state === 'recording'}
+              title={micOk ? (mic.state === 'recording' ? '다시 누르면 녹음이 끝나고 글자로 바뀌어 입력창에 들어갑니다.' : `한 번 누르면 녹음이 시작됩니다. 질문을 말하고 다시 누르면 끝나요 (최대 ${Math.round(voice.maxSeconds)}초).`) : '이 주소에서는 마이크를 쓸 수 없어요. localhost 또는 https 주소로 열어 주세요.'}
+              onClick={() => { if (mic.state === 'recording') mic.stop(); else { setVoiceNote(''); mic.start(); } }}>
               <Icon d={['M12 3a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V6a3 3 0 0 1 3-3z', 'M5 11a7 7 0 0 0 14 0', 'M12 18v3']} w={2.2} />
             </button>
           )}
-          <button type="submit" className="ma-send" disabled={busy} aria-label="보내기"><Icon d={['M12 19V5M5 12l7-7 7 7']} w={2.4} /></button>
+          <button type="submit" className="ma-send" disabled={waiting} aria-label="보내기"><Icon d={['M12 19V5M5 12l7-7 7 7']} w={2.4} /></button>
         </div>
       </form>
     </>

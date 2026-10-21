@@ -89,7 +89,7 @@
 | API-DOCS-02 | POST `/api/internal-docs/{doc_no}/revisions/{rev}/approve` | 사내 문서 개정 승인 | G | — | 새 현행판, 수정 알림 | SCR-24, FR-AST-03-09 |
 
 **API-AST-02 딸림 — 채팅 마이크 (2026-10-20 [제안], API 수 63개 그대로):** 이브 채팅 입력줄의 마이크 버튼이 쓰는 두 경로. 둘 다 API-AST-02와 같은 권한(로그인 전원, 권한 `ASSISTANT INPUT`)이다.
-- **POST `/api/assistant/transcribe`**: 본문 = 녹음된 소리 **원본 바이트**(`Content-Type`은 브라우저가 만든 `audio/webm;codecs=opus`·`audio/mp4` 등, 상한 약 1.5MB·20초). 백엔드가 사내 서버의 AI 비서(`POST /transcribe`)로 그대로 넘기고, 돌려받은 `{text, reason, seconds, ms}`를 준다. `text`가 비면 `reason`(`too_short`·`no_speech`·`hallucination`·`repeated`·`hint_echo`)이 까닭이다. 소리는 저장하지 않고, 접근 기록에는 길이·걸린 시간·글자 수만 남기며 글자는 남기지 않는다. 글자를 질문으로 보내는 것은 사용자가 입력창에서 확인한 뒤 API-AST-02 POST로 한다.
+- **POST `/api/assistant/transcribe`**: 본문 = 녹음된 소리 **원본 바이트**(`Content-Type`은 브라우저가 만든 `audio/webm;codecs=opus`·`audio/mp4` 등, 상한 약 1.5MB, 길이는 비서 설정 `VOICE_MAX_SECONDS`(기본·최대 60초)). 백엔드가 사내 서버의 AI 비서(`POST /transcribe`)로 그대로 넘기고, 돌려받은 `{text, reason, seconds, ms}`를 준다. `text`가 비면 `reason`(`too_short`·`no_speech`·`hallucination`·`repeated`·`hint_echo`)이 까닭이다. 소리는 저장하지 않고, 접근 기록에는 길이·걸린 시간·글자 수만 남기며 글자는 남기지 않는다. 글자를 질문으로 보내는 것은 사용자가 입력창에서 확인한 뒤 API-AST-02 POST로 한다.
 - **GET `/api/assistant/voice`**: `{enabled, ready, max_seconds}` — 마이크 버튼을 보일지. 비서가 없거나 음성 스위치가 꺼져 있으면 `enabled=false`(오류로 돌려주지 않는다).
 - 오류는 새 코드 없이 위 7개로: 음성 꺼짐 = `NOT_FOUND`, 소리가 비었거나 읽지 못함·너무 큼·너무 김 = `VALIDATION`, 인식이 바쁨·시간 초과·실패·비서 연결 안 됨 = `ASSISTANT_UNAVAILABLE`. 자세한 갈래는 `detail.reason`(`VOICE_OFF`·`BAD_AUDIO`·`AUDIO_TOO_LARGE`·`AUDIO_TOO_LONG`·`VOICE_BUSY`·`VOICE_TIMEOUT`·`VOICE_FAILED` 등).
 
@@ -266,3 +266,4 @@
 | v1 수정 | 2026-10-14 | 같은 날 3차 (`구현_중_수정사항/1014_수정간단내용.md` 4장, API 수 63개 그대로): 2.9 생성기 연결 표 — 사건 버튼 `inject`, 화면 조작(보류·해제·공구 교체·작업기록서 확정) 함수, 생성기 사건 ↔ 3장 사건, 측정 결과 파일 폴더 |
 | v1 수정 | 2026-10-17 | 비서 LLM = 외부 Claude 확정 (`팀과 논의/외부LLM_단일_전환_제안_20261017.md`, API 수 63개 그대로): 오류 코드 `ASSISTANT_UNAVAILABLE`의 예 칸을 "로컬 LLM이 멈춤" → "외부 LLM 호출 실패"로. 주소·값·권한은 그대로 |
 | v1 수정 | 2026-10-20 | 채팅 마이크 (`구현_중_수정사항/1020_수정간단내용.md` 45장, API 수 63개 그대로): 2.4 API-AST-02 아래에 딸림 설명 [제안] — POST `/api/assistant/transcribe`(소리 원본 → 글자)·GET `/api/assistant/voice`(마이크 버튼 표시 여부). 같은 권한, 새 오류 코드 없음(`detail.reason`에 `VOICE_*`) |
+| v1 수정 | 2026-10-20 | 채팅 마이크 녹음 길이 (`구현_중_수정사항/1020_수정간단내용.md` 67장, API 수 63개 그대로): API-AST-02 딸림 설명의 POST `/api/assistant/transcribe` 상한을 "약 1.5MB·20초"에서 "약 1.5MB, 길이는 서버 설정(기본·최대 60초)"으로. 백엔드는 비서를 최대 45초까지 기다림 |

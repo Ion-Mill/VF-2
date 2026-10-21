@@ -1,14 +1,14 @@
 // 알람 답 리치 카드 (채팅 탭 이브 말풍선) — 카드 안쪽은 Tailwind만 쓴다(.ma-* 변수 없음). 모양은 디자인 묶음 "알람 답변 리치 카드"(2026-10-19)를 따른다.
 // 글자는 parseAlarmAnswer가 읽은 덩어리 목록을 순서대로 그릴 뿐 더하거나 빼지 않는다(cardPlainText와 같은 순서·같은 글자).
 // 역할 알약 글자("작업자"/"보전")는 항상 그려서 색에만 기대지 않는다. "[가상]" 꼬리표는 지우지 않고 칩으로 그린다.
-import { Fragment, useId, type ReactNode } from 'react';
+import { Fragment, useId, useState, type ReactNode } from 'react';
 import type { AlarmAnswerCardProps, AlarmCardPart } from './parseAlarmAnswer';
-import { ANSWER_BOX, WRAP } from './bubbleBox';   // 말풍선 박스 클래스는 bubbleBox.ts 한 곳에서 정한다 (일반 답·질문·기록 항목과 같은 모양)
+import { ANSWER_BOX, HEADING, WRAP } from './bubbleBox';   // 말풍선 박스·소제목 클래스는 bubbleBox.ts 한 곳에서 정한다 (일반 답·질문·기록 항목과 같은 모양)
 
 const Chip = ({ children }: { children: ReactNode }) =>
   <span className="mx-0.5 inline-block whitespace-nowrap rounded-full bg-slate-100 px-2 py-px align-middle text-[12px] font-medium text-slate-600">{children}</span>;
 const H = ({ children, id }: { children: ReactNode; id: string }) =>
-  <h3 id={id} className="m-0 text-[15px] font-bold text-violet-600">{children}</h3>;
+  <h3 id={id} className={HEADING}>{children}</h3>;
 
 /** 글 속 "[가상]"·"[가상 운영 데이터]"를 칩으로 (나머지는 글자 그대로) */
 const TAG = /(\[가상(?: 운영 데이터)?\])/;
@@ -69,6 +69,27 @@ function Part({ p, id, viewerRole }: { p: AlarmCardPart; id: string; viewerRole:
   }
 }
 
+/** 출처 — "출처"는 혼자 한 줄, 문서 밑줄 버튼은 그 다음 줄. 가로는 gap-x-1, 문서가 줄을 바꿀 때만 gap-y-2. 처음에는 접힘. */
+function Sources({ sources }: { sources: AlarmAnswerCardProps['sources'] }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="flex flex-col gap-2 text-[12px]">
+      <button type="button" aria-expanded={open} onClick={() => setOpen((v) => !v)} className="w-fit underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-600">
+        {open ? '▾ 출처:' : '▸ 출처'}
+      </button>
+      {open && (
+        <div className="flex flex-wrap gap-x-1 gap-y-2">
+          {sources.map((s, i) => (
+            <button key={i} type="button" onClick={s.onClick} className="underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-600">
+              {s.label} {s.docNo}{s.rev ? ` ${s.rev}` : ''} §{s.section}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function AlarmAnswerCard({ parts, sources, viewerRole = 'operator' }: AlarmAnswerCardProps) {
   const uid = useId();   // 채팅에 알람 답이 여러 개 있어도 aria-labelledby id가 겹치지 않게
   return (
@@ -76,16 +97,7 @@ export function AlarmAnswerCard({ parts, sources, viewerRole = 'operator' }: Ala
       <div className={`flex flex-col gap-4 ${ANSWER_BOX}`}>
         {parts.map((p, i) => <Part key={i} p={p} id={`${uid}-${i}`} viewerRole={viewerRole} />)}
       </div>
-      {sources.length > 0 && (
-        <div className="flex flex-wrap items-center gap-2 text-[14px] text-slate-700">
-          <span>출처</span>
-          {sources.map((s, i) => (
-            <button key={i} type="button" onClick={s.onClick} className="rounded-2xl bg-white px-4 py-2 text-left text-slate-900 underline shadow-sm hover:bg-violet-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-600">
-              {s.label} {s.docNo}{s.rev ? ` ${s.rev}` : ''} §{s.section}
-            </button>
-          ))}
-        </div>
-      )}
+      {sources.length > 0 && <Sources sources={sources} />}
     </div>
   );
 }

@@ -56,6 +56,10 @@ def _block_text(b: dict, key: str = "text") -> str:
     return v.strip() if isinstance(v, str) else ""
 
 
+# 항목 글자가 이미 문서의 단계 번호로 시작하는 꼴 ("6.1 기기 등의 운전정지 준비: …", "7.3 …" — 안전 작업 기준서 KOSHA 단계 번호, 요구사항 FR-MNT-03-06이라 바꾸지 않는다)
+STEP_CODE = re.compile(r"\d+\.\d+\s")
+
+
 def blocks_to_text(a: dict) -> str | None:
     """원본의 화면 블록(section·lead·text·ops·steps·line)을 글자 하나로 푼다. 화면 말풍선은 블록을 그리지 못하므로(디자인은 안 바꾼다)
     소제목은 "■ 제목", 목록은 "1. …"로 글자에 담는다. 접어 두던 원문 줄(orig: true)은 글자로는 안 보낸다(출처 버튼은 그대로).
@@ -84,7 +88,13 @@ def blocks_to_text(a: dict) -> str | None:
             lines = [_block_text(b)]
         elif kind == "ops":
             items = [str(x).strip() for x in (b.get("items") or []) if str(x).strip()]
-            lines = [_block_text(b, "head")] + [f"{i}. {x}" for i, x in enumerate(items, 1)]
+            head = _block_text(b, "head")
+            if head and items and not (attach and groups):   # 목록이 딸린 조회 머리 줄은 소제목으로 — 이미 소제목 바로 뒤라면(알람 카드의 "■ 운영 기록") 일반 줄로 둔다. 한 덩어리에 "■"가 둘이면 카드 파서가 모르는 모양이라 평문으로 떨어진다
+                head = f"■ {head}"
+            notes = [str(x).strip() for x in (b.get("notes") or []) if str(x).strip()]   # 정지 답의 손실 추정 줄 (작은 제목 + 따로 목록) — 버리면 "고장 손실 약 N개"가 화면에 안 나온다
+            note_head = _block_text(b, "notes_head")
+            numbered = [x for x in items] if (items and all(STEP_CODE.match(x) for x in items)) else [f"{i}. {x}" for i, x in enumerate(items, 1)]   # 항목이 모두 공식 단계 번호("6.1 기기 등의 …")로 시작하면 목록 번호를 또 붙이지 않는다 ("1. 6.1 …" 중복, 2026-10-21)
+            lines = [head] + numbered + [f"{note_head} — {n}" if note_head else n for n in notes]
         elif kind == "steps":
             lines = list(steps)
             used_steps = used_steps or bool(steps)

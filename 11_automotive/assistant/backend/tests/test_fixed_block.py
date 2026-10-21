@@ -44,6 +44,23 @@ def test_unrelated_questions_get_no_block(q):
     assert FB.select(q) == [], q
 
 
+# 2026-10-21: 흔한 낱말(몇 분·5분·기다려·표시등·충전) 하나만으로 고전압 서식을 붙이지 않는다 (시연 #3 "정비 몇 분 남았어"에 붙던 오탐)
+@pytest.mark.parametrize("q", [
+    "고전압 대기 시간 알려줘", "전원 끈 뒤에 전압이 빠질 때까지 얼마나 기다려?", "제어반 열고 몇 분 기다려야 해?",
+    "공급 전원 끊으면 드라이브 표시등 다 꺼질 때까지 꽤 걸린다던데 얼마나 걸려요?", "잔류 전압은 몇 분이면 빠져?", "서보 앰프 전원 내리고 5분 뒤에 열어도 돼?",
+    "표시등 꺼지고 나서 몇 분 있어야 돼?"])
+def test_high_voltage_block_is_kept_for_real_electrical_questions(q):
+    assert "high_voltage" in FB.select(q), q
+
+
+@pytest.mark.parametrize("q", [
+    "VF2-02 지금 정비 중이야? 몇 분 남았어?", "VF2-02 정비 몇 분 남았어?", "1호기 MTTR 몇 분이야?", "작업지시 바뀌어서 셋업 들어가면 보통 몇 분 잡아요?",
+    "작업 표시등이 노란색으로 깜빡거리면 뭐가 문제야?", "AGV 배터리는 며칠에 한 번 충전해요?", "991 뜨면 앰프 식히는 데 몇 분 기다려야 돼?",
+    "병목은 최근 몇 분 데이터 보고 판단하는 거예요?", "CMM 결과 파일 안 들어오면 몇 분 지나서 미수신 알림이 떠요?"])
+def test_high_voltage_block_is_not_attached_by_a_common_word_alone(q):
+    assert "high_voltage" not in FB.select(q), q
+
+
 def test_at_most_two_blocks():
     assert len(FB.select("잠금 순서랑 고전압 대기랑 보호구 다 알려줘")) <= 2
 
@@ -167,8 +184,71 @@ def test_switch_off_changes_nothing(pure, monkeypatch):
     assert "6.1 " + T.BEFORE[0][1] not in r.systems[0]
 
 
+def test_how_long_is_the_maintenance_left_gets_no_high_voltage_block(pure):
+    CC.use_runner(Runner("VF2-02는 정비 중이에요."))
+    a = ask("VF2-02 지금 정비 중이야? 몇 분 남았어?")
+    assert "fixed_block" not in a
+    assert "고전압" not in to_answer_text(a)
+
+
 def test_non_safety_question_never_gets_a_block(pure):
     CC.use_runner(Runner("쿨런트는 절삭유예요."))
     a = ask("쿨런트가 뭐야?")
     assert "fixed_block" not in a
     assert re.search(r"고정 서식", to_answer_text(a)) is None
+
+
+# ---- 소제목의 지어낸 번호 범위 (2026-10-21, 기획 잠금순서_소제목_번호범위): "작업 전 (1~3단계)" 아래 항목이 6.1~6.3인 불일치
+def test_fix_titles_replaces_invented_range_with_the_official_codes():
+    secs = [{"title": "작업 전 (1~3단계)", "text": "", "items": ["6.1 기기 등의 운전정지 준비: 표를 본다.", "6.2 기기 등의 운전정지: 멈춘다.", "6.3 기기 등의 차단: 끈다."]},
+            {"title": "작업 전 (4~6단계)", "text": "", "items": ["6.4 잠금장치 또는 표지의 설치: 건다.", "6.5 저장 또는 축적된 에너지의 관리: 뺀다.", "6.6 차단 확인: 본다."]}]
+    changed = FB.fix_titles(secs)
+    assert [s["title"] for s in secs] == ["작업 전 (6.1~6.3)", "작업 전 (6.4~6.6)"]
+    assert changed == [("작업 전 (1~3단계)", "작업 전 (6.1~6.3)"), ("작업 전 (4~6단계)", "작업 전 (6.4~6.6)")]
+    assert secs[0]["items"][0].startswith("6.1 ")                                   # 본문은 그대로
+
+
+def test_fix_titles_leaves_counts_dotted_ranges_and_plain_titles_alone():
+    secs = [{"title": "작업 후 (3단계, 잠금 풀기)", "text": "", "items": ["7.1 점검", "7.2 확인", "7.3 제거"]},
+            {"title": "작업 전 6.1~6.3", "text": "", "items": ["6.1 a"]},
+            {"title": "이유", "text": "", "items": ["압력이 떨어져요."]}]
+    assert FB.fix_titles(secs) == []
+    assert [s["title"] for s in secs] == ["작업 후 (3단계, 잠금 풀기)", "작업 전 6.1~6.3", "이유"]
+    other = [{"title": "단계 (2~4단계)", "text": "", "items": ["첫째", "둘째"]}]       # 항목이 단계 번호로 시작하지 않으면 범위만 지운다
+    FB.fix_titles(other)
+    assert other[0]["title"] == "단계"
+
+
+def test_reference_note_forbids_invented_step_ranges_only_for_lock_formats():
+    assert "새 번호 범위를 만들지 않는다" in FB.reference_note(["before6"])
+    assert "새 번호 범위를 만들지 않는다" in FB.reference_note(["after3"])
+    assert "새 번호 범위를 만들지 않는다" not in FB.reference_note(["high_voltage"])
+
+
+class LayoutRunner(Runner):
+    """묶음 목록 형식(PURE_LAYOUT=1)의 답: structured_output = {sections, cited, insufficient}"""
+    def __init__(self, sections):
+        super().__init__("")
+        self.sections = sections
+
+    def __call__(self, cmd, stdin_text, timeout):
+        res = super().__call__(cmd, stdin_text, timeout)
+        d = json.loads(res.stdout)
+        d["structured_output"] = {"sections": self.sections, "cited": ["C1"], "insufficient": False}
+        return SimpleNamespace(returncode=0, stdout=json.dumps(d, ensure_ascii=False), stderr="")
+
+
+def test_end_to_end_invented_range_in_a_section_title_is_replaced_in_the_shown_answer(pure, monkeypatch):
+    monkeypatch.setenv("PURE_STYLE", "1")
+    monkeypatch.setenv("PURE_LAYOUT", "1")
+    items = [f"{c} {n}: 해요." for c, n in T.BEFORE]
+    r = LayoutRunner([{"title": "", "text": "잠금·표지는 작업 전 6단계 순서로 해요.", "items": []},
+                      {"title": "작업 전 (1~3단계)", "text": "", "items": items[:3]},
+                      {"title": "작업 전 (4~6단계)", "text": "", "items": items[3:]}])
+    CC.use_runner(r)
+    a = ask("작업 전에 잠그는 순서 알려줘")
+    text = to_answer_text(a)
+    assert "1~3단계" not in text and "4~6단계" not in text
+    assert "작업 전 (6.1~6.3)" in text and "작업 전 (6.4~6.6)" in text
+    assert a["fixed_block"]["fallback"] is None and T.TITLE in text            # 서식은 그대로 붙는다
+    assert "새 번호 범위를 만들지 않는다" in r.systems[0]                           # Claude에게 지시문이 갔다

@@ -23,6 +23,7 @@ from backend.rag.dense import dense_last_error, dense_search, rrf
 from backend.rag.search import search, synonyms, tokens
 from backend.repositories.csv_repo import get_repo
 from backend.services import blocks_v2 as BL2
+from backend.services import continuation as CONT   # 짧은 후속 질문의 이어짐 판단 (2026-10-21, CONTINUE_LLM)
 from backend.services import followup_v2 as FU2
 from backend.services import pure_external as PURE   # 순수 외부 LLM 연결 (2026-10-15, PURE_EXTERNAL — 시험용 복사본 전용)
 from backend.services import steplog as SL
@@ -152,6 +153,10 @@ OPS_INTENTS = [
 ]
 # 규칙 보강 (PARSE_V2=1, 2026-10-10 계획 3단계 A). 조정 세트 F·qa_route에서 찾은 낱말 오분류를 고친다:
 # "몇 개월" → 생산, "연차 며칠 남았는지" → 재고, "돌아가는 기계" → 설비 상태, "몇 번 멈췄어" → 알람 횟수(알람 없음)
+# 하는 일을 묻는 "지금 정비 중이야?"·"정비 몇 분 남았어?"도 설비 상태 질문이다 (2026-10-21 시연 #3). "정비 중에는 …"·"정비 중인 설비 …" 같은 문서 질문은 `중` 뒤가 달라 걸리지 않는다
+STATUS_WORK_RX = (r"|(?:정비|수리|셋업|점검)\s*중(?:이야|이에요|이예요|이죠|이지|인가요?|인지|이니|이냐|입니까)"
+                  r"|(?:정비|수리|셋업|점검)\s*중\s*[?？]|(?:정비|수리|셋업)\s*(?:몇\s*분\s*남|남은\s*시간|언제\s*끝|끝나려면|남았)")
+REMAIN_ASK = re.compile(r"남았|남은|언제\s*끝|끝나려면|끝나는")
 OPS_INTENTS_V2 = [
     ("stops", re.compile(r"멈췄|멈춘|정지|섰|서\s*있었|멈춰\s*있었|고장\s*났")),
     ("production", re.compile(r"실적|생산|만들었|몇\s*개\s*(?:만들|나왔|했)")),
@@ -163,7 +168,7 @@ OPS_INTENTS_V2 = [
     ("pm_due", re.compile(r"예방\s*정비|정비\s*기한|기한")),
     ("work_records", re.compile(r"작업기록|조치\s*기록|지난\s*조치|어떻게\s*고쳤")),
     ("alarm_count", re.compile(r"(?:알람|경보)\S*\s*(?:몇\s*번|자주)|몇\s*번\s*(?:났|떴|울렸|발생)|자주\s*(?:나|떠|뜨)|왜\s*자꾸|또\s*떠|또\s*떴")),
-    ("equipment_status", re.compile(r"지금\s*상태|상태\s*어때|돌아가(?:\?|$|요|나|니|고\s*있|는지)|가동\s*중|멈춰\s*있(?!었)")),
+    ("equipment_status", re.compile(r"지금\s*상태|상태\s*어때|돌아가(?:\?|$|요|나|니|고\s*있|는지)|가동\s*중|멈춰\s*있(?!었)" + STATUS_WORK_RX)),
 ]
 NIGHT_V2 = re.compile(r"야간|간밤|어젯밤|밤|새벽")
 DAY_V2 = re.compile(r"주간|낮(?!음|은|춰|추|아|게|다|으)")
@@ -184,7 +189,7 @@ OPS_INTENTS_V3 = [
     ("pm_due", re.compile(r"예방\s*정비|정비\s*기한|기한")),
     ("work_records", re.compile(r"작업기록|조치\s*기록|지난\s*조치|어떻게\s*고쳤")),
     ("alarm_count", re.compile(r"(?:알람|경보)\S*\s*(?:몇\s*번|자주)|몇\s*번\s*(?:이나\s*)?(?:났|떴|울렸|발생)|자주\s*(?:나|떠|뜨)|왜\s*자꾸|또\s*떠|또\s*떴")),
-    ("equipment_status", re.compile(r"지금\s*상태|상태\s*어때|돌아가(?:\?|$|요|나|니|고\s*있|는지)|가동\s*중|멈춰\s*있(?!었)")),
+    ("equipment_status", re.compile(r"지금\s*상태|상태\s*어때|돌아가(?:\?|$|요|나|니|고\s*있|는지)|가동\s*중|멈춰\s*있(?!었)" + STATUS_WORK_RX)),
 ]
 # 사내 문서의 복합어 가운데 의도 낱말("정지")이 든 것 — 의도를 볼 때 이 글자 범위를 뺀다 (긴 것 우선, spaCy EntityRuler 방식)
 COMPOUND_MASK_V3 = re.compile(r"통과\s*·?\s*정지\s*게이지|정지\s*게이지|비상\s*정지|과열\s*정지|정지\s*등급")
@@ -444,7 +449,12 @@ OPS_INTENTS_V5 = [(n, re.compile(rx.pattern + r"|몇\s*건\s*(?:이나\s*|정도
                   else (n, re.compile(rx.pattern + r"|몇\s*번\s*(?:이나\s*|정도\s*)?멈춰(?=\?|요|\s*$)")) if n == "stops"
                   else (n, rx) for n, rx in OPS_INTENTS_V4]
 # 8차 (PARSE_V9): "몇 건씩 찍혔는지"(E7-071 — "건"과 끝말 사이의 "씩"을 놓쳐 횟수 없이 알람 카드만 답함)
+# 고장 손실 개수 (2026-10-21 시연 시험 #13): "고장 손실 몇 개야?"·"고장으로 잃은 개수"를 정지 조회로 읽는다 (도구는 손실 정지의 고장 손실 추정 수량을 이미 계산해 준다).
+# 몇/얼마/개수를 묻는 꼴만 — "고장 손실이 뭐야?"·"고장 손실 계산식"은 문서 질문이라 조회로 바꾸지 않는다
+LOSS_COUNT_V26 = (r"고장\s*손실\S{0,3}\s*(?:몇|얼마)|고장\s*손실.{0,16}(?:개수|갯수|몇\s*개)"
+                  r"|고장\s*(?:으로|때문에)\s*잃\S*\s*(?:개수|갯수|수량|몇\s*개|얼마)")
 OPS_INTENTS_V9 = [(n, re.compile(rx.pattern + r"|몇\s*건\s*씩\s*(?:찍혔|찍힌|떴|떠(?=요|\?|\s|$)|울렸|났|발생)")) if n == "alarm_count"
+                  else (n, re.compile(rx.pattern + "|" + LOSS_COUNT_V26)) if n == "stops"
                   else (n, rx) for n, rx in OPS_INTENTS_V5]
 # "N월"(날은 없음): 9월은 가상 데이터 기간 전체, 그 밖의 달은 기록이 없다 → "확인 필요" (한 달 전체·다른 달로 답하지 않음)
 MONTH_V5 = re.compile(r"(?<![\d.])(\d{1,2})\s*월(?!\s*\d)")
@@ -1199,6 +1209,110 @@ def alarm_codes() -> dict[str, dict]:
     return {a["code"]: a for a in get_repo().master("alarm_master")}
 
 
+# 질문대로 답하기 1단계 (2026-10-21): "2075 …지난 두 번 조치가 뭐였어?"는 작업기록 규칙(`지난\s*조치`)에 걸리지 않아 알람 기본 카드가 나갔다.
+# "지난 N번/N건 조치"·"전에 조치"·"어떻게 고쳤어" 꼴을 읽어 N건(숫자가 없으면 2건)을 낸다. 알람 번호가 없어도 읽는다(그때는 설비·전체 기록).
+PAST_NUM_V22 = {"한": 1, "두": 2, "세": 3, "네": 4, "다섯": 5, "여섯": 6, "일곱": 7, "여덟": 8, "아홉": 9, "열": 10}
+PAST_ACTION_V22 = re.compile(
+    r"(?:지난|이전|저번|전에|전엔|예전|과거|앞선|직전)\s*(?:(한|두|세|네|다섯|여섯|일곱|여덟|아홉|열|\d{1,2})\s*)?(?:번|건|차례|회)?\s*(?:의\s*)?"
+    r"(?:조치|처리\s*내용|처리했|고쳤|해결했|수리했)"
+    r"|어떻게\s*(?:조치|처리|해결|대응|수리)\s*했|어떻게\s*고쳤")
+# 지난 조치만 묻는 질문에서 알람 카드를 내지 않는다 — 카드가 묻는 말(뜻·점검 순서·원인 …)이 같이 있으면 지금처럼 카드도 낸다
+CARD_ASK_V22 = re.compile(r"뭐야|뭔데|뭐예요|뭔가요|무슨\s*(?:알람|뜻)|뜻|의미|설명|점검|순서|뭐부터|먼저|원인|이유|절차|방법|뜨면|나오면|발생하면|심각도")
+MAX_PAST_V22 = 10
+
+
+def past_action_n_v22(question: str) -> int | None:
+    """지난 조치를 묻는 말이면 보여 줄 건수(1~10, 숫자가 없으면 2), 아니면 None."""
+    m = PAST_ACTION_V22.search(question)
+    if not m:
+        return None
+    tok = m.group(1)
+    if tok is None:
+        return 2
+    n = PAST_NUM_V22.get(tok) or int(tok)
+    return max(1, min(n, MAX_PAST_V22))
+
+
+def past_action_line_v22(w: dict) -> str:
+    """작업기록 한 건을 한 줄로 — 기록 번호·설비·확정일·(원인)·조치 원문·(수리 분). 조치 문장은 기록 원문 그대로다."""
+    action = str(w.get("action") or "").strip() or "조치 내용 없음"
+    cause = str(w.get("cause") or "").strip()
+    try:
+        tail = f" ({float(w['repair_min']):g}분)" if w.get("repair_min") not in (None, "") else ""
+    except (TypeError, ValueError):
+        tail = ""
+    return (f"{w.get('record_no') or w.get('work_record_id')} · {w.get('equipment_id') or '설비 미상'} · {str(w.get('start') or '')[:10]} · "
+            + (f"원인 {cause} · " if cause else "") + action + tail)
+
+
+# 질문대로 답하기 1단계: "축 윤활유 재고는 안전 재고보다 얼마나 부족해?"는 부족 품목 전체를 늘어놓았다. 질문에 품목이 있으면 그 품목만 읽고
+# 부족분(안전 재고 − 현재 재고)을 프로그램이 계산해 고정 문장으로 답한다 (LLM에 숫자를 맡기지 않는다).
+INV_ALIAS_V22 = {"CS-AFLT": ("공기필터",), "CS-CFLT": ("절삭유필터",), "CS-COOL": ("절삭유원액", "절삭유"), "CS-GRS": ("그리스",),
+                 "CS-SLUB": ("주축윤활유",), "CS-WLUB": ("축윤활유",), "RM-6061": ("봉재", "6061"), "FG-BRK-A100": ("완제품", "brk-a100"),
+                 "TL-BB45": ("보링바",), "TL-DR50": ("드릴",), "TL-EM10": ("엔드밀",), "TL-FM50": ("페이스밀",), "TL-TAP6": ("m6탭", "탭")}
+
+
+def inventory_items_asked_v22(question: str, rows: list[dict]) -> list[dict]:
+    """질문에 이름(또는 짧은 이름)이 든 재고 품목. 더 긴 이름 안에 든 짧은 이름은 뺀다 ("주축 윤활유" 안의 "축 윤활유"). 없으면 빈 목록."""
+    q = re.sub(r"\s+", "", question).lower()
+    spans: list[tuple[int, int, str]] = []
+    for x in rows:
+        names = {re.sub(r"\s+", "", str(x.get("name") or "")).lower(), *INV_ALIAS_V22.get(x.get("item_no"), ())}
+        for nm in filter(None, names):
+            spans += [(m.start(), m.end(), x["item_no"]) for m in re.finditer(re.escape(nm), q)]
+    keep = [s for s in spans if not any(o[0] <= s[0] and s[1] <= o[1] and (o[1] - o[0]) > (s[1] - s[0]) for o in spans)]
+    nos: list[str] = []
+    for s in sorted(keep):
+        if s[2] not in nos:
+            nos.append(s[2])
+    return [x for n in nos for x in rows if x["item_no"] == n]
+
+
+# 품목을 못 찾은 재고 질문 (2026-10-21 시연 테스트): "세척액 재고는 얼마나 부족해?"는 재고 품목에 "세척액"이 없어 부족 품목 목록으로 떨어졌다(질문과 다른 답).
+# "재고" 앞에 명사구가 있고 그것이 일반 말(현재·소모품 …)이나 꾸미는 말이 아니면 "재고로 관리하는 품목이 아니에요"라고 답한다. 아니면 지금처럼 부족 목록.
+INV_GENERIC_V22 = {"현재", "지금", "오늘", "어제", "전체", "모든", "전부", "이번", "최근", "우리", "라인", "공장", "그", "이", "저", "소모품", "정비용", "원자재", "완제품",
+                   "공구", "공구류", "자재", "부품", "재공", "안전", "부족", "부족한", "남은", "모자란", "있는", "없는", "필요한", "낮은", "적은", "얼마나", "몇", "해당", "다른",
+                   "그럼", "그리고", "또", "총", "각", "현"}
+
+
+def inventory_unknown_subject_v22(question: str) -> str | None:
+    """"재고" 바로 앞의 명사구(품목 이름 같은 말) — 일반 말·꾸미는 말(받침 ㄴ으로 끝남: 남은·필요한·들어온)·설비 이름·숫자는 뺀다. 없으면 None."""
+    if "재고" not in question:
+        return None
+    toks = [t for t in re.findall(r"[0-9A-Za-z가-힣·\-]+", question.split("재고")[0])]
+    out = []
+    for t in toks:
+        t = re.sub(r"의$", "", t)
+        if len(t) < 2 or not re.search(r"[가-힣]", t) or t in INV_GENERIC_V22 or EQUIP_RE_V5.search(t):
+            continue
+        last = t[-1]
+        if "가" <= last <= "힣" and (ord(last) - 0xAC00) % 28 == 4:   # 받침 ㄴ: 꾸미는 말(남은·들어온 …)일 가능성이 커서 품목 이름으로 보지 않는다
+            continue
+        out.append(t)
+    return " ".join(out[-2:]) or None
+
+
+def _qty_v22(v: float, unit: str) -> str:
+    """수량 글자 — 영문 단위(L)는 띄우고(3.6 L) 한글 단위(개)는 붙인다(2개)."""
+    return f"{v:g} {unit}" if unit.isascii() and unit else f"{v:g}{unit}"
+
+
+def inventory_sentence_v22(x: dict) -> str:
+    unit = str(x.get("unit") or "")
+    on = float(x.get("on_hand") or 0)
+    name = x.get("name") or x.get("item_no")
+    if x.get("safety_stock") in (None, ""):
+        return f"{name} {_qty_v22(on, unit)} (안전 재고 기준이 없습니다)."
+    sf = float(x["safety_stock"])
+    diff = round(sf - on, 3)
+    base = f"{name} {_qty_v22(on, unit)}, 안전 재고 {_qty_v22(sf, unit)}"
+    if diff > 0:
+        return f"{base}보다 {_qty_v22(diff, unit)} 부족해요."
+    if diff == 0:
+        return f"{base} — 같아서 부족분은 0이에요 (재고 부족 기준은 안전 재고 이하)."
+    return f"{base}보다 {_qty_v22(-diff, unit)} 많아요."
+
+
 def parse(question: str) -> dict:
     q = question.strip()
     ql = q.lower()
@@ -1325,8 +1439,13 @@ def parse(question: str) -> dict:
                 alarms.append({"control": master[code]["control"], "axis": "", "code": code, "sub": ""})
             equipment = [e for e in equipment if e != "WSH-01"]
             intents = [i for i in intents if i != "equipment_status"]
+    past_n = past_action_n_v22(q)   # 질문대로 답하기 1단계: 정의 질문 판정이 의도를 지운 뒤에 붙인다 ("…조치가 뭐였어?"의 '뭐')
+    if past_n is not None and "work_records" not in intents:
+        intents.append("work_records")
     out = {"alarms": alarms, "equipment": equipment, "start": start, "end": end, "shift": shift, "intents": intents,
            "lot": lot.group(0).upper() if lot else None, "order": order.group(0).upper() if order else None}
+    if past_n is not None:
+        out["past_n"] = past_n
     if v4 and future:  # 기준 시각 뒤 날짜 — 날짜로 찾는 조회면 _answer가 "확인 필요"로 알린다 (한 달 전체로 넓히지 않음)
         out["future"] = True
     if outside:  # 데이터 기간 밖의 달 (PARSE_V5) — _answer가 "확인 필요"로 알린다
@@ -1778,8 +1897,19 @@ def _range_text(p):
     return "2026-09-01 ~ 2026-09-30"
 
 
-def stops_pieces(r: dict, rng: str, eq: str | None) -> tuple[str, list[str], list[str]]:
-    """정지 답의 조각 (머리, 사유 그룹들, 교대 보고서 기준 세 줄) — stops_text와 줄 목록 칸(8차 BLOCKS_V2)이 같이 쓴다."""
+# 고장 손실만 묻는 말 (2026-10-21 사용자 시험): "고장 손실 몇 개야?"에 자재·준비·조작 그룹까지 길게 나왔다. 고장 손실 꼴(LOSS_COUNT_V26)이고 다른 그룹·건수·시간을 묻는 말이 없으면
+# 고장 그룹만 보이고 전체는 한 줄로 줄인다 ("몇 번 멈췄어?"·"정지 전체"처럼 물으면 지금처럼 전체 그룹)
+FAIL_ASK_V27 = re.compile(LOSS_COUNT_V26)
+FAIL_ASK_OTHER_V27 = re.compile(r"전체|모든|자재|준비|조작|흐름|계획|멈춘|멈췄|몇\s*번|몇\s*분|정지\s*(?:횟수|시간)")
+
+
+def failure_loss_ask_v27(question: str) -> bool:
+    return bool(FAIL_ASK_V27.search(question or "")) and not FAIL_ASK_OTHER_V27.search(question or "")
+
+
+def stops_pieces(r: dict, rng: str, eq: str | None, narrow: bool = False) -> tuple[str, list[str], list[str]]:
+    """정지 답의 조각 (머리, 사유 그룹들, 교대 보고서 기준 세 줄) — stops_text와 줄 목록 칸(8차 BLOCKS_V2)이 같이 쓴다.
+    narrow(고장 손실만 물음, 손실 정지 조회일 때만): 머리는 고장 정지 건수·분, 목록은 고장 사유, 전체는 추정 줄에 한 줄로."""
     groups = []
     for g in r["by_group"]:
         s = f"{g['group_ko']} {g['count']}번" + (f" {g['minutes']:g}분" if g["count"] else "")
@@ -1789,8 +1919,19 @@ def stops_pieces(r: dict, rng: str, eq: str | None) -> tuple[str, list[str], lis
     cyc = r["cycle_min"]
     basis = ("기준 사이클 " + ", ".join(f"{k} {v:.1f}분" for k, v in cyc.items())) if cyc else "그 설비의 기준 사이클"
     if r.get("partial"):   # [11_automotive 이식 2026-10-16] 백엔드 조회 도구는 손실 정지만 준다 — "정지 전체"·필수 정지·순간 정지는 말하지 않는다
-        return (f"{rng} {eq or '라인 전체'} 손실 정지 {r['total_count']}번 {r['total_minutes']:g}분", groups,
-                [f"고장 손실 약 {r['loss_qty_est_total']}개(추정 = 정지 1건마다 정지 시간 ÷ {basis})"])
+        total_n = r["loss_qty_est_total"]
+        fail_n = r.get("loss_qty_failure_est", total_n)   # 고장 그룹 정지만의 손실 (2026-10-21) — "고장 0번"인데 자재·준비·조작 정지 몫이 "고장 손실"로 나오지 않게
+        report = [f"고장 손실 약 {fail_n}개(추정 = 정지 1건마다 정지 시간 ÷ {basis})"]
+        if narrow:
+            fail = next((g for g in r["by_group"] if g["group"] == "FAILURE"), None)
+            c = fail["count"] if fail else 0
+            if r["total_count"] != c:   # 다른 그룹은 목록 대신 전체 한 줄로 (건수·분·손실)
+                report.append(f"손실 정지 전체(고장·자재·준비·조작) {r['total_count']}번 {r['total_minutes']:g}분, 손실 약 {total_n}개(추정)")
+            head = f"{rng} {eq or '라인 전체'} 고장 정지 {c}번" + (f" {fail['minutes']:g}분" if c else "")
+            return head, [f"{x['name']} {x['count']}번 {x['minutes']:g}분" for x in (fail["reasons"] if fail else [])], report
+        if total_n != fail_n:   # 전체와 같으면 한 줄만, 다르면 전체를 따로 밝힌다
+            report.append(f"손실 정지 전체(고장·자재·준비·조작) 손실 약 {total_n}개(추정)")
+        return (f"{rng} {eq or '라인 전체'} 손실 정지 {r['total_count']}번 {r['total_minutes']:g}분", groups, report)
     head = f"{rng} {eq or '라인 전체'} 정지 전체 {r['total_count']}번 {r['total_minutes']:g}분"
     report = [f"필수 정지(고장 5분 이상) {len(r['rows'])}번 {r['total_failure_min']:g}분",
               f"고장 손실 약 {r['loss_qty_est_total']}개(추정 = 정지 1건마다 정지 시간 ÷ {basis})",
@@ -1798,12 +1939,27 @@ def stops_pieces(r: dict, rng: str, eq: str | None) -> tuple[str, list[str], lis
     return head, groups, report
 
 
-def stops_text(r: dict, rng: str, eq: str | None) -> str:
+def stops_text(r: dict, rng: str, eq: str | None, narrow: bool = False) -> str:
     """정지 답: 멈춘 기록 전부를 사유 그룹별로 + 교대 보고서 기준(필수 정지·순간 정지) + 손실 계산식 (DOC-07 §5.1·§5.3·§5.4)."""
-    head, groups, report = stops_pieces(r, rng, eq)
+    head, groups, report = stops_pieces(r, rng, eq, narrow)
     if r.get("partial"):   # [11_automotive 이식 2026-10-16] "교대 보고서 기준"이 아니라 손실 추정 한 줄
-        return head + " — " + " · ".join(groups) + ". " + ", ".join(report)
+        return head + (" — " + " · ".join(groups) if groups else "") + ". " + ", ".join(report)
     return head + " — " + " · ".join(groups) + ". 교대 보고서 기준: " + ", ".join(report)
+
+
+# "오늘 교대 / 이번 교대" (2026-10-21 사용자 시험): 규칙 파서는 시계가 없어 교대 하나가 아니라 그날 하루 전체로 조회됐다. 교대 인자를 쓰는 조회(정지·생산·지표)에서만, 교대·다른 날짜를
+# 말하지 않았으면 백엔드 업무 시각으로 가장 최근에 시작한 교대로 바꾼다 (시계를 못 얻으면 지금 동작 그대로)
+CUR_SHIFT_V28 = re.compile(r"(?:오늘|이번|지금|현재|현)\s*교대")
+SHIFT_INTENTS_V28 = ("stops", "production", "kpi")
+
+
+def current_shift_scope_v28(role: str, p: dict) -> dict:
+    if p.get("shift") or not CUR_SHIFT_V28.search(p.get("raw") or "") or not any(i in SHIFT_INTENTS_V28 for i in p["intents"]):
+        return p
+    if p["start"] is not None and not (p["start"] == p["end"] == REF_DATE):   # 다른 날짜를 말했으면 건드리지 않는다
+        return p
+    cur = T.current_shift(role)
+    return {**p, "start": cur[0], "end": cur[0], "shift": cur[1]} if cur else p
 
 
 def ops_answer(role: str, p: dict, needs: list[str] | None = None,
@@ -1812,6 +1968,7 @@ def ops_answer(role: str, p: dict, needs: list[str] | None = None,
     needs를 주면(PARSE_V2) 조회에 필요한데 질문에 없는 항목(설비·로트 번호·알람 번호)을 모은다 — 예전에는 말없이 건너뛰었다.
     entries를 주면(8차 BLOCKS_V2) 답 문장마다 머리 + 항목 목록을 모은다 — 화면이 번호 목록으로 보인다. 문장 글자는 바꾸지 않는다."""
     texts, data, defs = [], [], []
+    p = current_shift_scope_v28(role, p)   # "오늘/이번 교대"는 현재 교대 하나로 (조회 범위와 답의 범위 글자가 같이 바뀐다)
     eq = p["equipment"][0] if p["equipment"] else None
     kw = dict(start=p["start"], end=p["end"], shift=p["shift"])
     rng = _range_text(p)
@@ -1831,8 +1988,9 @@ def ops_answer(role: str, p: dict, needs: list[str] | None = None,
                 texts.append(f"{rng} {eq or '라인'} 정지 기록: 데이터 없음")
                 add("", [], texts[-1], r)
             else:
-                texts.append(stops_text(r, rng, eq))
-                head, groups, report = stops_pieces(r, rng, eq)
+                narrow = bool(r.get("partial")) and failure_loss_ask_v27(p.get("raw") or "")   # 고장 손실만 물으면 고장 그룹만 (손실 정지 조회일 때만)
+                texts.append(stops_text(r, rng, eq, narrow))
+                head, groups, report = stops_pieces(r, rng, eq, narrow)
                 lead_ko = "손실 추정" if r.get("partial") else "교대 보고서 기준"   # [11_automotive 이식 2026-10-16]
                 if blocks3_on():   # 9차 F: 사유 그룹(번호 목록)과 교대 보고서 기준(작은 제목 + 따로 목록)을 나눈다
                     add(head, groups, texts[-1], r, notes=(lead_ko, report))
@@ -1854,7 +2012,25 @@ def ops_answer(role: str, p: dict, needs: list[str] | None = None,
             if rows_txt:   # 실적 줄은 한 줄씩 따로 문장이다 — 머리에 숫자를 넣지 않는다(숫자 대조가 맞게)
                 add("생산 실적", rows_txt, " ".join(rows_txt), r)
         elif intent == "inventory":
-            r = T.inventory(role, short_only="부족" in p.get("raw", ""))
+            r_all = T.inventory(role)
+            asked = inventory_items_asked_v22(p.get("raw", ""), r_all["rows"])
+            if asked:   # 질문대로 답하기 1단계: 질문에 품목이 있으면 그 품목만, 부족분은 프로그램이 계산
+                r = {**r_all, "rows": asked, "empty": False}
+                data.append(r)
+                sentences = [inventory_sentence_v22(x) for x in asked]
+                texts.append("재고: " + " ".join(sentences))
+                add("재고 확인", sentences, texts[-1], r)
+                continue
+            unknown = inventory_unknown_subject_v22(p.get("raw", ""))
+            if unknown:   # 품목을 못 찾은 재고 질문: 질문과 다른 부족 목록 대신 품목이 아니라고 알리고 관리하는 품목을 보인다
+                data.append(r_all)
+                texts.append(f"'{unknown}'{josa_v8(unknown, '은', '는')} 재고로 관리하는 품목이 아니에요. 재고로 관리하는 품목: " + ", ".join(str(x.get("name")) for x in r_all["rows"]) + ".")
+                add("재고 확인", [], texts[-1], r_all)
+                continue
+            r = r_all
+            if "부족" in p.get("raw", ""):
+                r = {**r_all, "rows": [x for x in r_all["rows"] if x["short"] == "true"]}
+                r["empty"] = not r["rows"]
             data.append(r)
             short = [i for i in r["rows"] if i["short"] == "true"]
             items = [f"{i['name']} {float(i['on_hand']):g}{i['unit']} (안전 재고 {i['safety_stock']})" for i in short]
@@ -1916,6 +2092,18 @@ def ops_answer(role: str, p: dict, needs: list[str] | None = None,
             code = p["alarms"][0]["code"] if p["alarms"] else None
             r = T.work_records(role, eq, code)
             data.append(r)
+            if p.get("past_n") is not None:   # 질문대로 답하기 1단계: "지난 두 번 조치" — 최근 N건을 최근 것부터, 조치 문장은 기록 원문 그대로
+                last = list(reversed(r["rows"]))[:p["past_n"]]
+                scope = " ".join(x for x in (eq, f"알람 {code}" if code else None) if x) or "라인"
+                head = f"{scope} 지난 조치 (최근 {len(last)}건)"
+                if last:
+                    items = [past_action_line_v22(w) for w in last]
+                    texts.append(head + ": " + " / ".join(items))
+                    add(head, items, texts[-1], r)
+                else:
+                    texts.append(f"{scope} 지난 조치: 확정된 작업기록이 없습니다")
+                    add("", [], texts[-1], r)
+                continue
             recent = r["rows"][-RECENT_RECORDS:]
             more = f" (최근 {len(recent)}건, 전체 {len(r['rows'])}건)" if len(r["rows"]) > len(recent) else ""
             items = [f"{w['work_record_id']}({w['kind']}, {w['start'][:10]}{', 원인 ' + w['cause'] if w['cause'] else ''})" for w in recent]
@@ -1940,6 +2128,8 @@ def ops_answer(role: str, p: dict, needs: list[str] | None = None,
             items = [f"{s['equipment_id']} {s['last_state']} ({(s.get('since') or '')[11:16]}부터 {s.get('minutes') or 0:g}분)"
                      + (f", 알람 {s['open_alarm_code']}" if s.get("open_alarm_code") else "") + (", 잠금" if s.get("is_locked") else "") for s in r["rows"]]
             texts.append("설비 상태: " + ", ".join(items))
+            if REMAIN_ASK.search(p.get("raw", "")):   # 도구는 상태가 시작된 뒤 지난 시간만 준다 — 끝나는 시각은 지어내지 않는다
+                texts[-1] += ". 끝나는 시각이나 남은 시간은 기록에 없습니다"
             add("설비 상태", items, texts[-1], r)
     return texts, data, defs
 
@@ -3144,6 +3334,131 @@ PURE_UNSURE_V19 = "자동으로 확인하지 못했습니다. 문서에 없다�
 PURE_UNSURE_CHAT_V19 = "자동으로 확인하지 못했어요. 문서에 없다는 뜻은 아니에요. 안전에 관한 질문이니 아래 안전 작업 기준서(DOC-05) 절을 직접 확인하거나 현장 담당자에게 확인해 주세요."
 
 
+# ---------------------------------------------------------------- 설비 이름만 든 글 · 되묻기 답 이어받기 · 못 읽은 조각 안내 · 기간 안내 (2026-10-20, 기획 설비이름_되묻기_안내)
+# 설비 이름만 있는 글("VF2-01)")을 안전 질문으로 보던 것을 고치고, "설비를 알려 주세요"에 설비 이름으로 답하면 앞 질문과 잇고,
+# 규칙이 못 읽은 조각(센서·정비현황·브리핑)과 기간이 다른 값을 말없이 넘기지 않는다. 새 스위치는 없다 (버그 수정 — 되돌릴 때는 git revert).
+EQUIP_DOC_WHY_V21 = "신호가 설비 이름뿐이고 안전 낱말이 없는 질문 — 문서 질문으로 보고 안전망 없이 순수 길로 (2026-10-20)"
+EQUIP_ONLY_END_V21 = re.compile(r"(?:이?요|이에요|예요|입니다|이야|야|은|는|이|가|을|를|도|만|에|의|로|으로)?")
+ASKBACK_NEED_V21 = re.compile(r"알려 주세요: 설비 \(예: [^)]*\)\.?\s*$")   # ops_answer가 설비 하나만 되물은 답 ("… 다음을 알려 주세요: 설비 (예: VF2-01).")
+EQUIP_ONLY_NOTE_V21 = "{names}에 대해 무엇을 볼까요? 예: '{e} OEE 어제값', '{e} 지금 상태 어때?', '{e} 정비 기한'"
+UNREAD_V21 = [(re.compile(r"센서"), "센서 값"), (re.compile(r"정비\s*현황"), "정비현황"), (re.compile(r"브리핑"), "브리핑")]   # 이 채팅이 아직 못 하는 일의 이름 (목록 밖의 말은 추측하지 않는다)
+UNREAD_NOTE_V21 = "이 채팅에서는 아직 {names}을 답하지 못했어요. 해당 화면에서 확인해 주세요."
+# 속도 손실 개수 (2026-10-21 시연 시험): 채팅 도구는 손실 정지(고장)만 읽고 속도 손실은 읽지 못한다. 손실이 무엇인지 묻는 말("속도 손실이 뭐야?")은 문서가 답하므로
+# 개수·비교를 묻는 말(몇 개·개수·수량·비교·얼마)이 함께 있을 때만 걸고, 운영 의도(정지·생산 …)가 이미 잡힌 질문은 건드리지 않는다.
+SPEED_LOSS_Q_V24 = re.compile(r"속도\s*손실|느려[서져]\w*\s*(?:잃|손실|생긴|난)")
+SPEED_LOSS_NUM_V24 = re.compile(r"몇\s*개|개수|갯수|수량|비교|얼마|몇\s*%")
+SPEED_LOSS_NOTE_V24 = ("확인 필요 — 속도 손실(느려서 잃은 개수)은 이 채팅에서 아직 읽지 못해요. 교대 보고서(SCR-15)의 [5] 병목·속도 손실 칸에서 확인해 주세요. "
+                       "고장으로 멈춰 잃은 개수는 [4] 필수 정지 칸에 있어 두 칸을 나란히 보면 비교돼요. 손실이 무엇인지는 문서로 설명해 드릴 수 있어요.")
+
+
+def speed_loss_count_ask_v26(question: str) -> bool:
+    """속도 손실 '개수'를 묻는 말인가 (뜻을 묻는 말은 아니다)."""
+    return bool(SPEED_LOSS_Q_V24.search(question)) and bool(SPEED_LOSS_NUM_V24.search(question))
+
+
+def speed_loss_unread_v24(question: str, p: dict) -> bool:
+    """속도 손실 개수를 묻는데 규칙이 잡은 운영 조회가 없나 — 문서에 없는 게 아니라 채팅이 아직 못 읽는 일이다."""
+    return not p["intents"] and speed_loss_count_ask_v26(question)
+
+
+# 읽은 운영 답 뒤에 붙는 꼬리 (2026-10-21): "고장 손실 몇 개 / 속도 손실은?"처럼 한쪽은 읽고 속도 손실은 못 읽을 때. 읽은 고장 손실은 손실 정지 전체의 추정이라 보고서 [4]와 다를 수 있다
+SPEED_LOSS_TAIL_V26 = ("속도 손실(느려서 잃은 개수)은 이 채팅에서 아직 읽지 못해요. 교대 보고서(SCR-15)의 [5] 병목·속도 손실 칸에서 확인해 주세요. "
+                       "위 고장 손실은 고장 그룹 정지의 추정이라 [4] 필수 정지(고장 5분 이상) 칸 숫자와 다를 수 있어요.")
+
+# 화면 값과 맞춰 보라는 말 (2026-10-21 시연 시험 #13 턴 3): 채팅은 화면에 보이는 숫자를 읽지 못한다. 화면·비교·숫자 말이 모두 있고 조회 의도·알람이 없을 때만 규칙이 알린다 (Claude 호출 없음)
+SCREEN_WORD_V26 = re.compile(r"화면|보고서|SCR-?\d+", re.I)
+SCREEN_CMP_V26 = re.compile(r"같은지|같아(?:요)?(?=[\s?？.!]|$)|같나|같은가|맞는지|맞아(?:요)?\s*[?？]|맞나|일치|똑같|다른지|달라(?:요)?\s*[?？]|틀린지")
+SCREEN_NUM_V26 = re.compile(r"숫자|값|수치|개수|갯수|몇\s*개|%")
+SCREEN_COMPARE_NOTE_V26 = ("확인 필요 — 이 채팅은 화면에 보이는 숫자를 읽거나 맞춰 보지 못해요. 숫자는 해당 화면(예: 교대 보고서 SCR-15의 [4]·[5] 칸)에서 직접 비교해 주세요.")
+
+
+def screen_compare_unread_v26(question: str, p: dict) -> bool:
+    """화면(보고서) 숫자와 같은지 맞춰 보라는 말인가 — 규칙이 잡은 운영 조회·알람이 없을 때만 (있으면 그 조회 답이 먼저다)."""
+    return (not p["intents"] and not p["alarms"] and bool(SCREEN_WORD_V26.search(question))
+            and bool(SCREEN_CMP_V26.search(question)) and bool(SCREEN_NUM_V26.search(question)))
+
+
+# 정비·수리·작업 이력을 날짜로 묻는 질문 (2026-10-21 시연 2차): 운영 기록인데 규칙 낱말에 "이력"이 없어 문서 길로 가 "문서에 없음"이 나왔다. 작업기록 도구는 날짜 범위 없이
+# 확정된 최근 20건만 주므로 "지난주"를 지켜 답할 수 없다 → 거짓 "최근 20건"을 내지 않고 못 읽는다는 사실과 볼 화면을 알린다. 날짜 + 조회 말이 모두 있을 때만 건다
+# ("정비 이력은 어디에 남겨?" 같은 문서 질문과 운영 의도가 이미 잡힌 질문은 건드리지 않는다).
+HISTORY_Q_V25 = re.compile(r"(?:정비|수리|작업)\s*이력")
+HISTORY_ASK_V25 = re.compile(r"보여|알려|줘|있었|뭐였|어땠|확인|조회|몇\s*건")
+HISTORY_NOTE_V25 = ("확인 필요 — 정비·수리 이력을 날짜별로 찾는 일은 이 채팅에서 아직 하지 못해요. "
+                    "작업기록서(SCR-12)나 예방 정비 일정(SCR-23)에서 확인해 주세요. 특정 알람의 지난 조치는 '2075 지난 조치는 뭐였어?'처럼 물으면 알려 드려요.")
+
+
+def history_unread_v25(question: str, p: dict) -> bool:
+    """정비·수리·작업 이력을 날짜로 조회하는 말인가 — 규칙이 잡은 운영 조회가 없고 알람 번호도 없다."""
+    return (not p["intents"] and not p["alarms"] and bool(p.get("start")) and bool(HISTORY_Q_V25.search(question))
+            and bool(HISTORY_ASK_V25.search(question)))
+KPI_DATED_WORDS_V21 = re.compile(r"OEE|가동률|성능|양품|지표|효율|KPI", re.I)
+KPI_30D_ONLY_V21 = re.compile(r"MTTR|MTBF|평균\s*수리|평균\s*고장", re.I)
+NO_DATE_NOTE_V21 = "기간을 정하지 않아 9월 한 달(9/1~9/30) 값이에요. 날짜를 말씀해 주시면 그날 값을 드려요 (예: '어제', '오늘')."
+MIXED_PERIOD_NOTE_V21 = "OEE·가동률은 {rng} 값이고, MTTR·MTBF는 최근 30일 값이에요."
+
+
+def equipment_only_v21(question: str, p: dict) -> bool:
+    """설비 이름·별명·기호·조사뿐인 글인가 ("VF2-01)"·"vf2-01"·"1호기"·"2호기요"·"VF2-01 이요"). 규칙이 설비를 읽었고, 알람·날짜·운영 낱말·로트가 없고, 안전 낱말이 없고,
+    이름을 지운 나머지가 조사뿐일 때만 참이다. 이름에 다른 말이 붙은 글("VF2-01 정비 상태는?")은 거짓."""
+    if not p.get("equipment") or p.get("alarms") or p.get("intents") or p.get("start") or p.get("lot") or p.get("order"):
+        return False
+    if PURE.is_safety(question):
+        return False
+    rest = EQUIP_RE_V5.sub(" ", question)
+    for rx, _ in EQUIP_ALIAS_V2 + EQUIP_ALIAS_V3:
+        rest = rx.sub(" ", rest)
+    return EQUIP_ONLY_END_V21.fullmatch(re.sub(r"[\W_]+", "", rest)) is not None
+
+
+def equipment_only_answer_v21(base: dict, p: dict) -> dict:
+    """설비 이름뿐인 글에 대한 안내 한 줄 (규칙 고정 문구 — Claude를 부르지 않는다)."""
+    eqs = list(dict.fromkeys(p["equipment"]))
+    text = EQUIP_ONLY_NOTE_V21.format(names="·".join(eqs), e=eqs[0])
+    return {**base, "status": "안내", "mode": "규칙 (설비 이름뿐인 글 — 안내 고정 문구)", "conclusion": text, "blocks": [{"kind": "text", "text": text}]}
+
+
+def askback_merge_v21(question: str, p: dict, prev: dict | None) -> tuple[str, str] | None:
+    """바로 앞 답이 "설비를 알려 주세요"(확인 필요)였고 이번 글이 설비 이름 하나뿐이면 (앞 질문, 설비). 아니면 None — 설비를 다음 질문들에 계속 가져가지 않고, 되묻기 직후 한 번만 잇는다
+    (이어받은 답은 상태가 '답변'이라 다음 글은 이 조건에 걸리지 않는다). 알람 번호·로트 번호를 되물은 답은 잇지 않는다."""
+    if not prev or prev.get("status") != "확인 필요" or not ASKBACK_NEED_V21.search(prev.get("conclusion") or ""):
+        return None
+    pq = (prev.get("question") or "").strip()
+    eqs = list(dict.fromkeys(p.get("equipment") or []))
+    if not pq or len(eqs) != 1 or not equipment_only_v21(question, p):
+        return None
+    return pq, eqs[0]
+
+
+def with_askback_note_v21(a: dict, prev_question: str, eq: str) -> dict:
+    """이어받아 답한 사실을 답 끝에 한 줄 밝힌다 (정상 답·안내일 때만 — 앞 질문을 설비와 합쳐 다시 풀었다는 것을 숨기지 않는다)."""
+    if not isinstance(a, dict) or a.get("status") not in ("답변", "안내"):
+        return a
+    pq = prev_question if len(prev_question) <= 40 else prev_question[:40] + "…"
+    note = f"앞서 물으신 '{pq}'을 {eq} 기준으로 답했어요."
+    a["conclusion"] = f"{a.get('conclusion') or ''} {note}".strip()
+    if isinstance(a.get("blocks"), list):
+        a["blocks"] = list(a["blocks"]) + [{"kind": "text", "text": note}]
+    return a
+
+
+def unread_note_v21(question: str) -> str | None:
+    """규칙 길 답이 읽지 못한 조각 중 알려진 못 하는 일(센서·정비현황·브리핑)이 질문에 보이면 그 이름을 든 한 줄. 목록 밖의 말은 보지 않는다."""
+    names = [label for rx, label in UNREAD_V21 if rx.search(question)]
+    return UNREAD_NOTE_V21.format(names="·".join(names)) if names else None
+
+
+def period_notes_v21(question: str, p: dict, ops_texts: list[str]) -> list[str]:
+    """기간 안내. ① 날짜를 정하지 않은 지표(OEE 등) 질문은 9월 한 달 값임을 ② 하루·며칠 값과 MTTR·MTBF(30일 고정)가 한 줄이면 기간 차이를 밝힌다 (MTTR이 보이지 않는 역할에는 붙이지 않는다)."""
+    if "kpi" not in p["intents"] or not p["equipment"] or not any("OEE" in x for x in ops_texts):
+        return []
+    if p["start"] is None:
+        return [] if (KPI_30D_ONLY_V21.search(question) and not KPI_DATED_WORDS_V21.search(question)) else [NO_DATE_NOTE_V21]
+    full_month = p["start"] == date(2026, 9, 1) and p["end"] == date(2026, 9, 30)
+    if not full_month and any("MTTR" in x for x in ops_texts):
+        return [MIXED_PERIOD_NOTE_V21.format(rng=_range_text(p))]
+    return []
+
+
 def pure_scope_v19(p: dict, s, question: str = "") -> str | None:
     """이 질문이 순수 외부 LLM 길로 가나 — 가는 까닭 글, 아니면 None. (권한·화면 설명·위험한 부탁·불량 원인·이어 묻기는 이 함수보다 앞에서 이미 처리됐다.)
     PURE_KEEP_SIGNALS=0(기본): 알람 번호·날짜·설비·운영 낱말 신호가 있어도 전부 순수 길.
@@ -3152,10 +3467,14 @@ def pure_scope_v19(p: dict, s, question: str = "") -> str | None:
         return None
     if not s.pure_keep_signals:
         return "신호 끔(PURE_KEEP_SIGNALS=0) — 알람 번호·날짜·설비·운영 낱말 길을 거치지 않고 순수 길로"
-    if PURE.has_signals(p):
-        only_equipment = bool(p.get("equipment")) and not (p.get("alarms") or p.get("intents") or p.get("start") or p.get("lot") or p.get("order"))
-        if s.pure_safety and question and only_equipment and PURE.is_safety(question):   # "VF2-01 차단 지점"·"SAW-01 정비 전에 어디를 차단해?": 운영 조회가 아니라 안전 문서 질문
-            return "신호가 설비 이름뿐인 안전 질문 — 문서 질문으로 보고 순수 길로 (PURE_SAFETY=1)"
+    if PURE.has_signals(p) and not PURE.date_only(p, question):   # 날짜뿐인 질문은 신호 없는 질문과 같은 순수 길로 (아래 마지막 줄)
+        only_equipment =bool(p.get("equipment")) and not (p.get("alarms") or p.get("intents") or p.get("start") or p.get("lot") or p.get("order"))
+        if s.pure_safety and question and only_equipment:
+            if equipment_only_v21(question, p):   # "VF2-01)"·"1호기"·"2호기요": 설비 이름뿐인 글 — Claude를 부르지 않고 규칙이 안내한다 (_answer, 2026-10-20)
+                return None
+            if PURE.is_safety(question):   # "VF2-01 차단 지점"·"SAW-01 정비 전에 어디를 차단해?": 운영 조회가 아니라 안전 문서 질문
+                return "신호가 설비 이름뿐인 안전 질문 — 문서 질문으로 보고 순수 길로 (PURE_SAFETY=1)"
+            return EQUIP_DOC_WHY_V21   # "VF2-01 정비 상태는?"·"2호기 정비 상태는?": 설비 이름에 다른 말이 붙었고 안전 낱말은 없다 — 문서 질문, 안전망은 켜지 않는다
         if s.pure_rule and question and PURE.rule_question(question, p):   # "소모품 재고는 누가 관리해?"·"홀드 걸린 로트도 내보낼 수 있어?": 운영 낱말뿐인 규칙 질문은 문서 길로 (문서에 없으면 아래에서 되돌린다)
             return PURE.RULE_WHY
         if getattr(s, "pure_rule_wide", False) and question and PURE.rule_question_wide(question, p):   # PURE_RULE_WIDE=1: 규칙 낱말이 없는 규칙 질문("출하 로트 확정은 반장이 해?")도 문서 길로 — 조회 말투는 거른다 (문서에 없으면 아래에서 되돌린다)
@@ -3286,6 +3605,11 @@ def _pure_answer_v19(question: str, p: dict, base: dict, s, memo: dict, prev: di
     if cited:
         out["written"] = True   # 화면 꼬리표 "AI가 문서를 보고 쓴 답 · 원문 아래" + 원문 줄 접기
     if fixed_keys:   # FIXED_BLOCK: 고정 서식을 프로그램이 그대로 붙인다. 풀이가 순서 전체를 묻는 질문에서 단계를 빠뜨리거나 없는 번호를 쓰면 풀이를 버리고 서식만 보인다
+        if layout:   # 묶음 소제목에 지어낸 번호 범위("1~3단계")가 있으면 공식 번호로 고친다 (2026-10-21). 본문·서식은 그대로
+            for old_t, new_t in FB.fix_titles(got["sections"]):
+                got["answer"] = got["answer"].replace(old_t, new_t)
+                out["conclusion"] = out["conclusion"].replace(old_t, new_t)
+                out["blocks"] = [({**b, "text": new_t} if (isinstance(b, dict) and b.get("kind") == "section" and b.get("text") == old_t) else b) for b in out["blocks"]]
         bad = FB.check_answer(got["answer"], fixed_keys, FB.wants_full(question, fixed_keys))
         keep = [b for b in out["blocks"] if isinstance(b, dict) and b.get("orig")]   # 원문 줄(접어 두는 칸)은 그대로
         out["blocks"] = ([{"kind": "lead", "text": FB.FALLBACK_LEAD}] if bad else [b for b in out["blocks"] if not (isinstance(b, dict) and b.get("orig"))]) + FB.blocks(fixed_keys) + keep
@@ -3443,7 +3767,57 @@ def _ctx_use_v2(question: str, p: dict, s, memo: dict):
 
 
 CARRY_STEPS = re.compile(r"점검|순서|뭐부터|먼저|누가|누구")
-_CARRY_SECTION = {"cause": "가능한 원인 (사내 문서)", "steps": "점검 순서 (사내 문서)"}
+_CARRY_SECTION = {"cause": "가능한 원인 (사내 문서)", "steps": "점검 순서 (사내 문서)", "desc": "알람 설명"}
+
+# 질문대로 답하기 2단계 (ASK_ONLY, 2026-10-21): 알람 번호 질문이 묻는 칸만 남긴다. 뜻을 묻는 말만 있으면 설명, 대처·점검을 묻는 말만 있으면 점검 순서, 둘 다면 카드 전체(None).
+DESC_ASK_V23 = re.compile(r"뭐야|뭔데|뭐예요|뭔가요|무슨\s*(?:알람|뜻|의미)|뜻|의미|설명|무엇")
+STEPS_ASK_V23 = re.compile(r"뭐부터|먼저|점검|순서|조치|대처|대응|해결|처리|방법|절차|뜨면|나오면|발생하면|뜰\s*때|어떻게|해야")
+# 지난 조치·횟수 같은 조회만 묻는 말이 아닌 경우를 가르는 카드 질문 말 (1단계 CARD_ASK_V22에 왜·어떻게·누가·언제·어디·해야를 더함)
+CARD_ASK_V23 = re.compile(CARD_ASK_V22.pattern + r"|왜|어떻게|누가|누구|언제|어디|해야")
+ALARM_BARE_STOP_V23 = {"알람", "경보", "번", "코드", "대해", "대해서", "좀", "그", "이거", "저", "거", "것", "알람이", "경보가"}
+
+
+def alarm_focus_v23(question: str) -> str | None:
+    """알람 질문이 묻는 칸: 뜻만 → 'desc', 대처·점검만 → 'steps', 둘 다 → 'both'(설명+점검 순서 두 덩어리), 어느 쪽도 아니면 None (카드 전체 — 지금 동작)."""
+    d, st = bool(DESC_ASK_V23.search(question)), bool(STEPS_ASK_V23.search(question))
+    return "both" if d and st else "desc" if d else "steps" if st else None
+
+
+def alarm_bare_v23(question: str, p: dict) -> bool:
+    """알람 번호뿐인 질문인가 — 번호·'알람/경보/번/코드'·조사 말고 남는 말이 없다 ("2075는?", "2075 알람"). 묻는 말이 있으면 False."""
+    q = question
+    for a in p["alarms"]:
+        q = q.replace(a["code"], " ")
+    q = re.sub(r"\d+(?:\.\d+)?", " ", q)
+    toks = [re.sub(r"(?:는|은|이|가|도|요|을|를|에|의|만)$", "", t) for t in re.findall(r"[가-힣A-Za-z]+", q)]
+    return not [t for t in toks if t and t not in ALARM_BARE_STOP_V23]
+
+
+def alarm_askback_v23(base: dict, a: dict) -> dict:
+    """번호뿐인 알람 질문의 되묻기 (고정 문구 — 기본 카드 대신, Claude를 부르지 않는다)."""
+    code = a["code"].split(".")[0]
+    name = re.sub(r"\([^)]*\)", "", (alarm_codes().get(a["code"]) or {}).get("name_ko") or "").strip()
+    text = (f"알람 {code}" + (f"({name})" if name else "") + f"에 대해 무엇이 궁금하세요? 예: '{code}가 뭐야?', '{code} 뜨면 뭐부터 해?', "
+            f"'{code} 원인은?', '{code} 최근 몇 번 났어?', '{code} 지난 조치'")
+    return {**base, "status": "안내", "mode": "규칙 (번호뿐인 알람 질문 — 되묻기 고정 문구)", "conclusion": text, "blocks": [{"kind": "text", "text": text}]}
+
+
+# 재고 품목 이름뿐인 짧은 질문("공기 필터는?")은 무엇이 궁금한지 모르는데 문서 개요를 길게 말하던 것을 되묻는다. 품목이 아닌 용어(OEE는?)는 문서 길 그대로.
+ITEM_TOPICS_V23 = {"공기 필터": ("공기필터",), "절삭유 필터": ("절삭유필터",), "절삭유 원액": ("절삭유원액", "절삭유"), "그리스": ("그리스",), "주축 윤활유": ("주축윤활유",),
+                   "축 윤활유": ("축윤활유",), "봉재": ("6061-t6봉재", "봉재", "6061"), "보링바 인서트": ("보링바인서트", "보링바"), "드릴": ("드릴",), "엔드밀": ("엔드밀",),
+                   "페이스밀 인서트": ("페이스밀인서트", "페이스밀"), "M6 탭": ("m6탭", "탭"), "완제품": ("완제품",)}
+
+
+def item_only_topic_v23(question: str) -> str | None:
+    """질문이 재고 품목 이름 하나뿐이면(조사·물음표만 붙음) 그 품목의 보이는 이름, 아니면 None."""
+    q = re.sub(r"[?？!.\s]+", "", question or "").lower()
+    q = re.sub(r"(?:은|는|이|가|도|만|요)$", "", q)
+    return next((disp for disp, al in ITEM_TOPICS_V23.items() if q in al), None)
+
+
+def item_askback_v23(base: dict, topic: str) -> dict:
+    text = f"{topic}의 무엇이 궁금하세요? 예: '{topic} 재고는?', '{topic} 교체 주기는?', '{topic} 교체 방법은?'"
+    return {**base, "status": "안내", "mode": "규칙 (품목 이름뿐인 질문 — 되묻기 고정 문구)", "conclusion": text, "blocks": [{"kind": "text", "text": text}]}
 
 
 def carry_focus(question: str) -> str | None:
@@ -3471,27 +3845,47 @@ def _slice_blocks(blocks: list, title: str) -> list | None:
     return kept
 
 
-def _narrow_carried_alarm(a: dict, focus: str, cause_lines: list | None = None) -> dict:
+def _narrow_carried_alarm(a: dict, focus: str, cause_lines: list | None = None, only_evidence: bool = False) -> dict:
     """묻는 덩어리만 남긴다. 안내 줄은 부른 쪽이 이 다음에 붙인다. 주의·출처는 그대로 두고, 최근 횟수(related)는 뺀다.
-    원인 질문은 원인 줄로 conclusion을 바꿔 BLOCKS_V3를 켜고 꺼도 결론이 같게 한다 (표시만 다른 계약)."""
+    원인 질문은 원인 줄로 conclusion을 바꿔 BLOCKS_V3를 켜고 꺼도 결론이 같게 한다 (표시만 다른 계약).
+    only_evidence(ASK_ONLY, 2026-10-21): 설명만 남기면 DOC-02 출처만, 점검 순서만 남기면 DOC-03 출처만 보인다 (끔이면 출처는 그대로 둔다 — 지금 동작)."""
     if a.get("status") != "답변":
         return a
     lines = [x for x in (cause_lines or []) if x] if focus == "cause" else []
     blocks = a.get("blocks") if isinstance(a.get("blocks"), list) else None
-    kept = _slice_blocks(blocks, _CARRY_SECTION[focus]) if blocks else None
-    if focus == "steps":
+    kept = _slice_blocks(blocks, _CARRY_SECTION[focus]) if blocks and focus in _CARRY_SECTION else None
+    if focus == "both":   # ASK_ONLY: 설명과 점검 순서를 둘 다 물었다 — 두 덩어리만 남기고 횟수·그 밖의 덩어리는 뺀다
+        kd = _slice_blocks(blocks, _CARRY_SECTION["desc"]) if blocks else None
+        ks = _slice_blocks(blocks, _CARRY_SECTION["steps"]) if blocks else None
+        if not kd or not ks:
+            return a
+        kept = kd + ks
+        lines = [b["text"] for b in kept if b.get("kind") in ("line", "text") and b.get("text")]
+        lines.extend(str(s) for s in (a.get("steps") or []) if s)
+    elif focus == "steps":
         if not kept:
             return a
         lines = [b["text"] for b in kept if b.get("kind") in ("line", "text") and b.get("text")]
         lines.extend(str(s) for s in (a.get("steps") or []) if s)
+    elif focus == "desc":
+        if not kept:
+            return a
+        lines = [b["text"] for b in kept if b.get("kind") in ("line", "text") and b.get("text")]
+        if not lines:
+            return a
     elif not lines:
         return a
     out = {**a, "conclusion": " ".join(lines), "related": None}
     if kept:
         out["blocks"] = kept
-    if focus == "cause":
+    if focus in ("cause", "desc"):
         out["steps"] = []
         out.pop("steps_easy", None)
+    if only_evidence and focus in ("desc", "steps"):
+        want = "DOC-02" if focus == "desc" else "DOC-03"
+        ev = [e for e in (a.get("evidence") or []) if e.get("doc_id") == want]
+        if ev:
+            out["evidence"] = ev
     if not a.get("current_data"):
         out["is_synthetic"] = False
         out["data_label"] = None
@@ -3526,11 +3920,14 @@ def answer(question: str, role: str, context: dict | None = None, prev: dict | N
             if (focus is None and memo.get("alarm") and cause_question(question)
                     and not memo.get("ops_texts") and not CARRY_STEPS.search(question)):
                 focus = "cause"
+            if (s0.ask_only and focus is None and memo.get("alarm") and not memo.get("ctx_alarm_note")
+                    and not memo.get("ops_texts") and not memo.get("doc_lines")):
+                focus = alarm_focus_v23(question)   # 질문대로 답하기 2단계 (ASK_ONLY): 뜻만 물었으면 설명, 대처·점검만 물었으면 점검 순서. 문서를 더 붙인 섞인 질문·조회를 같이 한 질문은 안 좁힌다
             # 원인만 남기면 설명·점검 순서를 화면에 안 보이므로 해요체 다시 쓰기를 건너뛴다 (원인 줄은 원문 그대로)
             if memo.get("alarm") and s0.card_rewrite and s0.job("write") and EXT.current() is not None and focus != "cause":
                 a = _rewrite_alarm_card(a, memo)
             if focus:
-                narrowed = _narrow_carried_alarm(a, focus, memo.get("cause_lines"))
+                narrowed = _narrow_carried_alarm(a, focus, memo.get("cause_lines"), only_evidence=s0.ask_only)
                 if narrowed is not a:
                     a = narrowed
                     memo["alarm_card"] = ""   # 화면에 안 보인 설명으로 다음 "짧게"가 돌아가지 않게
@@ -3550,6 +3947,43 @@ def answer(question: str, role: str, context: dict | None = None, prev: dict | N
         if SL.end(box, final=final):   # 실제로 파일에 쓴 줄만 번호를 알린다 (상한·쓰기 실패면 응답에 step_log_id가 없다)
             a["step_log_id"] = box.log_id
     return a
+
+
+def _drop_failures_v22(ext, start: int) -> None:
+    """이어짐 판단 때문에 생긴 외부 호출 실패 기록만 지운다 — 이 작업은 실패해도 지금 동작으로 가는 일이라 화면의 "외부 호출 실패" 표시에 섞이지 않게 한다."""
+    if ext is not None:
+        ext.failures[start:] = [f for f in ext.failures[start:] if f[0] != CONT.JOB]
+
+
+def _continue_answer_v22(question: str, role: str, context: dict | None, prev: dict, memo: dict) -> dict | None:
+    """이어짐 판단(Claude 1번) → 이어지면 완성된 질문으로 평소 규칙 길을 다시 풀어 답한다. 이어지지 않거나 실패하거나 풀린 답이 '답변'이 아니면 None
+    (부른 쪽이 지금 동작 그대로 간다). 답 끝에 어떻게 이어받았는지 한 줄 밝히고, 이어 묻기 기록의 질문은 완성된 질문으로 남긴다."""
+    ext = EXT.current()
+    n_fail = len(ext.failures) if ext is not None else 0
+    pq = (prev.get("question") or "").strip()
+    rewritten = CONT.judge(question, pq, settings())
+    _drop_failures_v22(ext, n_fail)
+    if SL.on():
+        SL.step("1 규칙 판정", 결과="이어짐 판단 (CONTINUE_LLM) — 짧은 후속 질문", 이어짐=bool(rewritten), 완성된질문=rewritten, 앞질문=pq)
+    if not rewritten:
+        return None
+    trial: dict = {}
+    n_fail = len(ext.failures) if ext is not None else 0
+    try:
+        out = _answer(rewritten, role, context, prev=None, memo=trial)
+    except Exception:   # noqa: BLE001 — 이어서 푸는 중 실패하면 원래 질문 그대로 지금 동작으로 간다 (이 시도 때문에 생긴 외부 호출 실패 기록은 지운다)
+        if ext is not None:
+            del ext.failures[n_fail:]
+        return None
+    if not isinstance(out, dict) or out.get("status") != "답변":
+        return None
+    memo.update(trial)
+    memo["record_question"] = rewritten
+    note = CONT.note(pq, rewritten)
+    out = {**out, "question": question, "conclusion": f"{out.get('conclusion') or ''} {note}".strip()}
+    if isinstance(out.get("blocks"), list):
+        out["blocks"] = list(out["blocks"]) + [{"kind": "text", "text": note}]
+    return out
 
 
 def _answer(question: str, role: str, context: dict | None = None, prev: dict | None = None, memo: dict | None = None) -> dict:
@@ -3621,6 +4055,10 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
             SL.step("1 규칙 판정", 이어묻기종류=kind, 화면알람지시=bool(screen_this), 앞답있음=prev is not None)
         if kind:
             return _followup_answer(kind, role, prev, base, s, memo)
+        if screen_compare_unread_v26(question, p):   # 화면 숫자와 맞춰 보라는 말 (2026-10-21): 못 하는 일을 약속하지 않고 규칙이 알린다 (Claude 호출 없음). "맞는지 확인해줘"가 일반 요청 거절에 먼저 걸리지 않게 그 앞에 둔다
+            if SL.on():
+                SL.step("1 규칙 판정", 결과="화면 숫자와 맞춰 보라는 말 — 채팅이 못 하는 일, 규칙이 안내 (Claude 호출 없음)")
+            return {**base, "status": "확인 필요", "mode": "규칙", "conclusion": SCREEN_COMPARE_NOTE_V26}
         guard = human_only(question)   # 이어 묻기가 아니면 일반 요청 꼴 거절을 지금 한다
         if guard:
             if SL.on():
@@ -3629,6 +4067,34 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
 
     # 순수 외부 LLM 연결 (PURE_EXTERNAL, 2026-10-15): 위 단계(권한·화면 설명·위험한 부탁 거절·불량 원인·이어 묻기)에서 걸러지지 않은 질문은
     # 알람 카드·운영 조회·LLM 질문 분류를 거치지 않고 "낱말 검색 상위 조각 + 질문 → 외부 Claude 1번 → 답 그대로"로 답한다.
+    if speed_loss_unread_v24(question, p):   # 속도 손실 개수 (2026-10-21): "문서에 없음" 대신 못 읽는다는 사실과 볼 곳을 알린다 (Claude 호출 없음)
+        if SL.on():
+            SL.step("1 규칙 판정", 결과="속도 손실 개수 질문 — 채팅이 아직 못 읽음, 규칙이 안내 (Claude 호출 없음)")
+        return {**base, "status": "확인 필요", "mode": "규칙", "conclusion": SPEED_LOSS_NOTE_V24}
+    if history_unread_v25(question, p):   # 정비·수리 이력 조회 (2026-10-21): "문서에 없음" 대신 못 읽는다는 사실과 볼 화면을 알린다 (Claude 호출 없음)
+        if SL.on():
+            SL.step("1 규칙 판정", 결과="정비·수리 이력 날짜 조회 — 채팅이 아직 못 읽음, 규칙이 안내 (Claude 호출 없음)")
+        return {**base, "status": "확인 필요", "mode": "규칙", "conclusion": HISTORY_NOTE_V25}
+    if s.followup and not pure_drop:   # 설비 이름뿐인 글 (2026-10-20): 앞 답이 "설비를 알려 주세요"면 앞 질문과 이어 답한다
+        merged = askback_merge_v21(question, p, prev)
+        if merged:
+            if SL.on():
+                SL.step("1 규칙 판정", 결과="되묻기 답 이어받기 — 앞 질문 + 설비로 다시 풀어 답함", 앞질문=merged[0], 설비=merged[1])
+            new_q = f"{merged[0]} {merged[1]}"
+            memo["record_question"] = new_q
+            return with_askback_note_v21({**_answer(new_q, role, context, prev=None, memo=memo), "question": question}, merged[0], merged[1])
+    if not pure_drop and equipment_only_v21(question, p):   # 아니면 무엇을 볼지 안내한다 (안전 안내도, 엉뚱한 문서 줄도 아니다)
+        if SL.on():
+            SL.step("1 규칙 판정", 결과="설비 이름뿐인 글 — 규칙이 안내 (Claude 호출 없음)", 설비=p["equipment"])
+        return equipment_only_answer_v21(base, p)
+    if s.followup and not pure_drop and CONT.candidate(question, p, prev, s):   # 짧은 후속 질문의 이어짐 판단 (CONTINUE_LLM, 2026-10-21): 앞 질문+새 글 두 줄만 Claude(Haiku)에게 묻는다
+        merged = _continue_answer_v22(question, role, context, prev, memo)
+        if merged is not None:
+            return merged
+    if s.ask_only and not pure_drop and not PURE.has_signals(p) and not CONT.blocked_by_safety(question) and (topic := item_only_topic_v23(question)):
+        if SL.on():   # 질문대로 답하기 2단계: 품목 이름뿐인 짧은 질문은 문서 개요 대신 되묻는다 (이어짐 판단이 이어받지 못한 경우)
+            SL.step("1 규칙 판정", 결과="품목 이름뿐인 질문 — 규칙이 되묻기 (ASK_ONLY, Claude 호출 없음)", 품목=topic)
+        return item_askback_v23(base, topic)
     pure_why = pure_scope_v19(p, s, question)
     if pure_why:
         memo_before = dict(memo)
@@ -3654,7 +4120,18 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
     traces: list[dict] = []
     retrieval = None
     parts, steps, evidence = [], [], []
-    for a in p["alarms"][:1]:  # 알람 답(의미·점검 순서)은 LLM에 보내지 않는다 — 사내 문서 그대로
+    # 질문대로 답하기 1단계: 알람 번호가 있어도 "지난 두 번 조치"만 물었으면 기본 카드(설명·점검 순서·횟수 줄)를 내지 않고 작업기록만 답한다.
+    # 카드가 묻는 말(뜻·점검 순서·원인 …)이 같이 있으면 지금처럼 카드도 낸다 (카드 전체를 없애는 일은 2·3단계)
+    if s.ask_only and p["alarms"] and not p["intents"] and alarm_bare_v23(question, p):   # 질문대로 답하기 2단계: 번호뿐인 알람 질문("2075는?")은 기본 카드 대신 되묻는다
+        if SL.on():
+            SL.step("1 규칙 판정", 결과="번호뿐인 알람 질문 — 규칙이 되묻기 (ASK_ONLY, 알람 카드 없음)", 알람=p["alarms"][0]["code"])
+        return alarm_askback_v23(base, p["alarms"][0])
+    skip_card = bool(p["alarms"]) and p.get("past_n") is not None and not CARD_ASK_V22.search(question)
+    if s.ask_only and p["alarms"] and p["intents"] and not CARD_ASK_V23.search(question):   # 횟수·지난 조치 같은 조회만 물었으면 카드 없이 조회만 (ASK_ONLY)
+        skip_card = True
+    if skip_card and SL.on():
+        SL.step("1 규칙 판정", 결과="조회만 묻는 알람 질문 — 알람 카드 없이 조회만 답함", 지난조치건수=p.get("past_n"), 의도=p["intents"])
+    for a in (p["alarms"][:1] if not skip_card else []):  # 알람 답(의미·점검 순서)은 LLM에 보내지 않는다 — 사내 문서 그대로
         got = alarm_doc_answer(a, en=flow_on(s))   # 8차 FLOW_V9: 카드 이름에 영문명
         if got:
             c, steps, evidence = got
@@ -3754,6 +4231,8 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
     v4 = v3 and s.parse_v4
     if v3 and doc_cue(question, s):  # 운영 질문에 붙은 설명 요청 → 문서도 찾는다 (2026-10-10 2차)
         doc_like = True
+    if skip_card:   # 지난 조치만 물었으면 "어떻게 고쳤어"의 '어떻게'로 문서를 따로 찾아 붙이지 않는다
+        doc_like = False
     future_note = None
     if v4 and p.get("future") and any(i in DATED_INTENTS_V4 for i in p["intents"]):
         # 기준 시각 뒤 날짜의 정지·실적·지표·알람 횟수는 기록이 없다 — 날짜를 버리고 한 달 전체로 답하지 않는다 (2026-10-10 3차 a)
@@ -3779,6 +4258,8 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
         # 카드가 이미 보인 줄(점검 순서 행 등)은 문서 쪽 후보에서 뺀다
         plan = alarm_doc_plan_v9(question, p["alarms"][:1], " ".join(parts + [str(x) for x in steps]))
         alarm_doc = alarm_doc or plan is not None
+        if s.ask_only and plan is None:   # ASK_ONLY: 카드가 다루는 말(순서·방법·설명 …)뿐이라 남는 주제 낱말·섞인 마디가 없으면 문서를 더 찾아 붙이지 않는다 ("2075 설명하고 점검 순서"에 반복 알람 문서 줄이 붙던 것)
+            alarm_doc = False
         if alarm_doc:
             doc_like = True
             exclude = alarm_own_sections_v9(p["alarms"][:1])
@@ -3819,7 +4300,7 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
     needs: list[str] = []
     ops_entries: list[dict] = []
     p_rel = p
-    split = alarm_ops_split_v10(question, p, s) if (flow10_on(s) and p["alarms"] and p["intents"]) else None
+    split = alarm_ops_split_v10(question, p, s) if (flow10_on(s) and p["alarms"] and p["intents"] and not skip_card) else None
     if split:   # 9차 I: 섞인 알람 질문은 운영 조회를 마디마다 (알람 마디 → 다른 마디 순서)
         ops_texts, data, ops_defs = [], [], []
         for sub in split:
@@ -3836,6 +4317,11 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
                 도구=[{k: d.get(k) for k in ("tool", "range", "as_of")} for d in data], 초안=SL.cut(" ".join(ops_texts), 300))
     if tail and not ops_texts:   # 운영 조회가 비었으면 "문서 쪽 못 찾음" 안내만 남기지 않는다 (아래 문서에 없음·확인 필요 길로)
         tail = []
+    tail += period_notes_v21(question, p, ops_texts)   # 기간 안내 (2026-10-20): 날짜 없는 지표는 9월 한 달 값, 하루 값과 MTTR·MTBF(30일)가 한 줄이면 기간 차이
+    if ops_texts and speed_loss_count_ask_v26(question):   # 속도 손실 개수 (2026-10-21): 읽은 숫자 뒤에 속도 손실은 아직 못 읽는다는 사실과 볼 곳을 붙인다
+        tail.append(SPEED_LOSS_TAIL_V26)
+    if (parts or ops_texts) and (unread := unread_note_v21(question)):   # 못 읽은 조각 안내 (2026-10-20): 센서·정비현황·브리핑은 아직 이 채팅이 답하지 못한다
+        tail.append(unread)
     # 이어 묻기 기록: 운영 답의 프로그램 초안 글(다듬기 전), 절차 질문인가, 날짜 확인 안내가 있나 (2026-10-12)
     memo.update(ops_texts=list(ops_texts), procedure=is_procedure(question), future=bool(future_note))
     if s.parse_v2 and not parts and not ops_texts and not searched and not evidence and not future_note:
@@ -3866,7 +4352,7 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
                "근거 안내이며 실행 지시가 아닙니다." if evidence else None)
     # 운영 답에 쓴 정의(정지 사유 그룹·필수 정지·손실식)의 사내 문서 출처를 붙인다. 주의 문구 판단에는 넣지 않는다
     evidence = evidence + [d for i, d in enumerate(ops_defs) if d["cite"] not in [e["cite"] for e in evidence + ops_defs[:i]]]
-    facts = {"draft_conclusion": " ".join(parts + ops_texts + tail), "draft_related": related_line(role, p_rel), "draft_caution": caution,
+    facts = {"draft_conclusion": " ".join(parts + ops_texts + tail), "draft_related": None if skip_card else related_line(role, p_rel), "draft_caution": caution,
              "steps": steps, "evidence": evidence, "data": data}
     if ops_texts and s.job("write"):  # LLM 다듬기는 운영 문장에만. 문서·알람 부분은 그대로 앞에 둔다 (8차 꼬리 안내는 운영 글 뒤)
         f_ops, mode, trace = write_answer({**facts, "draft_conclusion": " ".join(ops_texts)}, jobs.PhraseAdapter(), budget_s=s.budget_s)

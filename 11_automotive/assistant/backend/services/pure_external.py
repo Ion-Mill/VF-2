@@ -274,6 +274,17 @@ def has_signals(p: dict) -> bool:
     return bool(p.get("alarms") or p.get("intents") or p.get("equipment") or p.get("start") or p.get("lot") or p.get("order"))
 
 
+# 날짜 + 기록 이름("지난주 정비 이력 보여줘")은 기록을 찾는 조회 꼴이라 옛 길이 맡는다 — 기존 시험(test_pure_fault)이 이 길을 지킨다
+LOOKUP_NOUN = re.compile(r"이력|기록|내역|목록|리스트|현황")
+
+
+def date_only(p: dict, question: str = "") -> bool:
+    """신호가 날짜(오늘·어제·9/30 …) 하나뿐인가. 날짜만으로는 운영 조회 질문이 아니다 — "T05가 90%면 오늘 교체해야 해?"의 "오늘"이 옛 문서 길(상위 3조각)로 보내
+    정답 조각(DOC-01 §7.2, 검색 6위)을 놓치게 했다 (2026-10-21 시연 시험). 순수 길 분류에서만 신호 없음으로 본다 — has_signals는 그대로 둔다(이어짐 판단·화면 알람 맥락이 쓴다)."""
+    return (bool(p.get("start")) and not (p.get("alarms") or p.get("intents") or p.get("equipment") or p.get("lot") or p.get("order"))
+            and not LOOKUP_NOUN.search(question))
+
+
 def retrieve(question: str, k: int) -> list[tuple[float, Chunk]]:
     """원래 질문 그대로 낱말 검색(BM25 + 용어집 동의어 확장 — rag/search.py)한 상위 k개 조각. 검색어 바꿔 쓰기·문턱·문지기·순위 바꾸기 없음.
     조각 글은 load_corpus()가 만든 것이라 이미 sanitize(원문 이름·번호 가림)를 거쳤다."""
@@ -417,6 +428,14 @@ RULE_MARK_RE = re.compile(                                              # 규칙
     r"어느\s?(?:것|쪽)부터|어느\s?(?:공정|시점|단계|시간대|때)|안전\s?재고(?:는|가)?\s?(?:몇|얼마)|(?:로|으로)\s?관리해|관리\s?(?:하나|해야)|지나면|"
     r"(?:이면|하면|할\s?때|일\s?때|라면)[^?？]{0,25}?어떻게\s?(?:되|돼|처리|해)|정해\s?(?:뒀|놨|져|둔|두었)|정의|차이가\s?뭐|뭐가\s?달라")
 # 문서 길 지시문에만 더하는 한 줄: 운영 기록을 묻는 질문이 문서의 느슨한 조각으로 그럴듯하게 답되지 않고 "문서에 없음"(→ 기존 길로 되돌림)이 되게 한다
+# 질문대로 답하기 2단계 (ASK_ONLY, 2026-10-21): 문서 답이 질문에 직접 답한 뒤 교체 방법·잠금·다른 설비 이야기까지 덧붙이던 것을 줄인다. 묶음 목록 형식(PURE_LAYOUT)의 지시문 끝에만 더한다.
+# 2026-10-21 보강(시연 2차 결과): 첫 문장이 곧 답이게, 예/아니요 질문은 첫 문장과 뒷문장이 어긋나지 않게("네, … 다만 아니다" 금지), "뭐야?"는 뜻 한두 문장,
+# 계산식·예시·경우 나열은 묻지 않으면 안 쓴다. 안전 경고·[가상] 표시는 그대로 둔다.
+ASK_ONLY_NOTE = ("[답의 범위] 질문이 묻는 것에만 답한다. 첫 문장이 질문에 직접 답하게 쓴다. 예/아니요로 묻는 질문은 첫 문장의 답과 뒷문장이 어긋나지 않게 쓰고, "
+                 "조건이 붙으면 첫 문장에 담는다(예: '바로는 아니고 …때 …해요'). 첫 묶음의 결론 한 문장이 질문에 직접 답하면 그것으로 충분하다. "
+                 "'뭐야·무슨 뜻이야'는 뜻을 한두 문장으로 답하고, 계산식·예시·생기는 경우의 나열·원인 목록은 질문이 묻지 않으면 쓰지 않는다. "
+                 "묻지 않은 배경·부연·교체 방법·다른 설비나 다른 품목 이야기도 쓰지 않는다. 묶음은 질문에 꼭 필요한 만큼만, 많아도 3개 이내로 쓰고 목록 항목은 묶음마다 3개 이내로 쓴다. "
+                 "단, 질문과 직접 관련된 안전 경고와 [가상] 표시는 빼지 않는다.")
 RULE_OPS_NOTE = ("[추가 규칙] 이 질문이 지금·과거의 실제 운영 기록(재고 수량, 로트 상태, 알림 내역, 정지 횟수, 누가 했는지 등 일어난 일)을 묻는 것이면 "
                  "사내 문서로는 답할 수 없다. 규칙·기준·절차를 묻는 것이 아니면 insufficient를 true로 하고 answer에는 \"문서에 없음\"이라고만 쓴다.")
 
@@ -543,14 +562,15 @@ SAFETY_TERMS = ("잠금", "표지", "고전압", "전기", "저항", "차단", "
                 "보호구", "감전", "안전", "위험", "자물쇠", "잠그", "잠가", "잠궈", "차단기", "공압", "압축 공기", "절삭유", "알루미늄 칩", "칩 치",
                 "톱", "절단", "콜드쏘", "밀링", "머시닝", "세척", "측정기", "프로브", "바렐", "주축", "제어반", "트립", "에너지",
                 "정비 전", "정비할", "정비 시작", "수리 전", "전원", "전압", "도어", "협력업체")
-EQUIPMENT_RE = re.compile(r"(?<![A-Za-z0-9])(?:(?:SAW|MIL|VF2|WSH|CMM)-\d{2}|VF-2|CMM)(?![A-Za-z0-9])", re.I)     # 설비 이름 (한글이 바로 붙어도 잡는다)
 UNSURE_DEFAULT_SECTIONS = ("2", "3", "5")      # 가까운 절을 못 고를 때: 잠금·표지 절차 / 설비별 차단 지점 / 보호구
 
 
 def is_safety(question: str) -> bool:
-    """안전 질문인가 — 낱말만 본다 (대소문자 무시). 이 판정이 켜져야 DOC-05를 통째로 주고 "자동으로 확인하지 못함" 문구를 쓴다."""
+    """안전 질문인가 — 안전 낱말(SAFETY_TERMS)만 본다 (대소문자 무시). 이 판정이 켜져야 DOC-05를 통째로 주고 "자동으로 확인하지 못함" 문구를 쓴다.
+    설비 이름은 보지 않는다 (2026-10-20): 예전에는 설비 이름(EQUIPMENT_RE)만 있어도 참이라 "VF2-01)"이 안전 안내로, "VF2-01 정비 상태는?"이 안전 문구가 붙은 답으로 갔다.
+    안전 질문이 설비 이름 때문에만 걸리던 것이 있으면 EQUIPMENT_RE를 되살리지 말고 그 낱말을 SAFETY_TERMS에 더한다."""
     q = question.upper()
-    return any(w.upper() in q for w in SAFETY_TERMS) or bool(EQUIPMENT_RE.search(question))
+    return any(w.upper() in q for w in SAFETY_TERMS)
 
 
 def add_safety_doc(hits: list[tuple[float, Chunk]]) -> list[tuple[float, Chunk]]:
@@ -652,7 +672,8 @@ def ask(question: str, chunks: list[Chunk], prev: dict | None, s: Settings, ops_
     (opening·points·closing 키는 만들지 않는다. insufficient면 sections는 모든 묶음 text를 이은 한 묶음 — 글이 없으면 짧은 고정 문구)."""
     style = bool(s.pure_style)
     layout = style and bool(s.pure_layout)
-    messages = build_messages(question, chunks, prev, system_for(s) + ("\n\n" + RULE_OPS_NOTE if ops_note else "")   # ops_note: PURE_RULE로 문서 길에 온 질문에만
+    messages = build_messages(question, chunks, prev, system_for(s) + ("\n\n" + ASK_ONLY_NOTE if (s.ask_only and layout) else "")   # ASK_ONLY(2026-10-21): 묻는 것에만 답하고 묶음은 3개 이내
+                              + ("\n\n" + RULE_OPS_NOTE if ops_note else "")   # ops_note: PURE_RULE로 문서 길에 온 질문에만
                               + ("\n\n" + PARTIAL_NOTE if s.pure_retry else "") + ("\n\n" + RETRY_NOTE if retry_note else "") + ("\n\n" + fixed_note if fixed_note else ""))   # PURE_RETRY=1: 첫 호출에 한 줄, 넓게 다시 본 호출에 한 줄 더
     sent = sum(len(m["content"]) for m in messages)
     t0 = time.perf_counter()
