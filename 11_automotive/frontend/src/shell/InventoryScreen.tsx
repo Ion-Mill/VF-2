@@ -2,12 +2,12 @@
 // SCR-21 재고 — 13품목(공구 5·소모품 6·원자재 1·완제품 1), 관리 역할, 거래 기록, 입고·실사 조정(API-INV-02), 출하 등록(API-INV-04). 발주 버튼 없음.
 // 화면 구조 (사용자 시안 2026-10-16): [재고] [출하 등록] 탭. 출하 등록 = 이번 출하/지난 출하 · 단계(로트 고르기→수량→출하 전 확인→확정) · 합격 로트 카드(−/+) · 출하 요약
 import { LockIcon } from './ui';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { BTN, DARK, PAGE, useApp } from './ctx';
 import { Band, BandSkeleton, Skeleton, Tabs } from './ui';
 import { inventoryBand } from './bands';
 import { api, hm, md, useFetch, usePersist } from './live';
-import { userName } from './model';
+import { ROLE_NAME, userName } from './model';
 import { ConfirmBox } from './Safety';
 
 type R = Record<string, any>;
@@ -25,7 +25,7 @@ const tabBtn = (on: boolean) => `h-14 rounded-tile border px-7 text-band font-bo
 const todo = (on: boolean) => `h-11 rounded-tile border px-4 text-card font-bold disabled:text-ink-3 ${on ? 'border-ink bg-ink text-white' : 'border-line bg-white text-ink'}`;
 
 export function InventoryScreen() {
-  const { inv, reloadInv, role, user, back, go, toast, twin, eve } = useApp(); // eve: 이브 창이 열려 좁을 때 배치 바꿈
+  const { key, inv, reloadInv, role, user, back, go, toast, twin, eve } = useApp(); // eve: 이브 창이 열려 좁을 때 배치 바꿈 · key: 재고 부족 알림에서 온 품목 번호
   const [tab, setTab] = useState<'stock' | 'ship'>('stock');
   const [shipTab, setShipTab] = useState<'now' | 'past'>('now');
   const [cat, setCat] = useState('');
@@ -39,10 +39,30 @@ export function InventoryScreen() {
   const [pastSel, setPastSel] = useState<string | null>(null);
   const [inCheck, setInCheck] = usePersist<Record<string, boolean[]>>('invInCheck', {}, twin?.run_id ?? null);
   const [inDone, setInDone] = usePersist<Record<string, string>>('invInDone', {}, twin?.run_id ?? null);
+  const formRef = useRef<HTMLDivElement>(null), inRef = useRef<HTMLDivElement>(null);
+  // 입고 등록 열기 — 알림·결론 띠 [입고 등록]에서 와도 입력 칸이 아래에 있어 안 보이던 것 고침: 품목을 미리 고르고 입력 칸으로 내려감 (사용자 요청 2026-10-21)
+  const openIn = (itemNo?: string) => {
+    if (!inv) return;
+    const mine = inv.items.filter((i) => i.owner_role === role && !isFG(i));
+    const it = inv.items.find((i) => i.item_no === itemNo);
+    if (it && it.owner_role !== role) { toast(`${it.item_name} 입고 등록은 ${(ROLE_NAME as Record<string, string>)[it.owner_role] ?? it.owner_role} 담당이에요`); return; }
+    const low = [...mine].filter((i) => i.low).sort((a, b) => a.stock_qty / Math.max(1, a.safety_stock) - b.stock_qty / Math.max(1, b.safety_stock))[0];
+    const pick = it ?? low ?? mine[0];
+    if (!pick) { toast('이 역할이 입고 등록하는 품목이 없어요'); return; }
+    setTab('stock'); setForm({ item: pick.item_no, type: 'IN', qty: '', memo: '' });
+    setTimeout(() => formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 50);
+  };
+  const ready = !!inv;
+  useEffect(() => { if (ready && key && inv!.items.some((i) => i.item_no === key)) openIn(key); }, [key, ready]); // eslint-disable-line react-hooks/exhaustive-deps
   if (!inv) return <div className={PAGE}><div className="flex flex-col gap-3"><BandSkeleton /><Skeleton /></div></div>; // C안: 불러오는 중에 [닫기] 없음
 
   const lowN = inv.items.filter((i) => i.low).length;
-  const txns: R[] = [...inv.live_txns.map((t) => ({ ...t, live: true })), ...[...inv.past_txns].reverse()].slice(0, 60);
+  // 최신이 위 — 오늘 기록(live_txns)은 오래된 것부터 와서 거꾸로 보이고, 화면에서 넣은 기록은 끝에 붙던 것 고침 (사용자 요청 2026-10-21)
+  const txns: R[] = [...inv.live_txns.map((t) => ({ ...t, live: true }) as R), ...(inv.past_txns as R[])]
+    .sort((a, b) => String(b.txn_at).localeCompare(String(a.txn_at)) || Number(b.txn_id ?? 0) - Number(a.txn_id ?? 0)).slice(0, 60);
+  // 오늘(10/1 08:00 뒤) 품목별로 쓴 양 — 한눈에 보기에 지금 재고와 함께 보임 (사용자 요청 2026-10-21)
+  const usedToday: Record<string, number> = {};
+  inv.live_txns.forEach((t) => { const q = Number(t.qty_change); if (q < 0 && t.txn_type !== 'SHIP' && t.txn_type !== 'ADJUST') usedToday[String(t.item_no)] = (usedToday[String(t.item_no)] ?? 0) - q; });
   const name = (no: string) => inv.items.find((i) => i.item_no === no)?.item_name ?? no;
   const allLots = lots.data?.lots ?? [];
   const left = (l: R) => l.fg_qty - (l.shipped?.qty ?? 0);
@@ -79,7 +99,7 @@ export function InventoryScreen() {
       <div className="mx-auto flex max-w-[1440px] flex-col gap-3">
         {/* 디자인 통일 C안: 큰 갈래 = Tabs(차콜 선택) · 재고 탭은 결론 띠 1개 (bands.ts inventoryBand) */}
         <div><Tabs label="재고 화면" value={tab} onChange={(k) => setTab(k as 'stock' | 'ship')} items={[{ key: 'stock', label: '재고', warn: lowN }, { key: 'ship', label: chosen.length > 0 ? '출하 등록 · 작성 중' : '출하 등록' }]} /></div>
-        {tab === 'stock' && <Band spec={inventoryBand(inv.items, pendingIn.length)} onAction={() => { const low = [...inv.items].filter((i) => i.low).sort((a, b) => a.stock_qty / Math.max(1, a.safety_stock) - b.stock_qty / Math.max(1, b.safety_stock))[0] ?? inv.items[0]; setForm({ item: low.item_no, type: 'IN', qty: '', memo: '' }); }} />}
+        {tab === 'stock' && (() => { const spec = inventoryBand(inv.items, pendingIn.length); return <Band spec={spec} onAction={() => (spec.action === '입고 검사' ? inRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }) : openIn())} />; })()}
 
         {tab === 'stock' ? (<>
           {/* 한눈에 보기 */}
@@ -97,7 +117,8 @@ export function InventoryScreen() {
                       <div key={i.item_no} className={`grid grid-cols-[120px_1fr_auto] items-center gap-3 rounded-tile border px-3 py-2.5 ${i.low ? 'border-warn-line bg-warn-bg' : 'border-line-soft bg-white'}`}>
                         <span className="truncate text-body">{i.low && <span className="text-warn">▲ </span>}{i.item_name}</span>
                         <div className="relative h-2.5 rounded bg-tile"><div className="h-full rounded" style={{ width: `${(i.stock_qty / mx) * 100}%`, background: i.low ? '#e0b000' : '#4b5563' }} /><span className="absolute -top-1.5 h-[22px] w-[2px] bg-ink" style={{ left: `${(i.safety_stock / mx) * 100}%` }} /></div>
-                        <span className="whitespace-nowrap text-right"><b className="font-mono text-card">{Math.round(i.stock_qty * 10) / 10}</b> <span className="font-mono text-small text-ink-2">/ {i.safety_stock} {i.unit}</span></span>
+                        <span className="whitespace-nowrap text-right"><b className="font-mono text-card">{Math.round(i.stock_qty * 10) / 10}</b> <span className="font-mono text-small text-ink-2">/ {i.safety_stock} {i.unit}</span>
+                          {usedToday[i.item_no] ? <span className="block font-mono text-small text-ink-2">오늘 사용 −{Math.round(usedToday[i.item_no] * 100) / 100}</span> : null}</span>
                       </div>); })}</div>
                   </div>); })}
               </div>
@@ -131,19 +152,19 @@ export function InventoryScreen() {
               <h3 className="flex items-center gap-2 text-card font-bold">할 일</h3>
               {/* 누른 버튼(열린 입력 칸)만 파란색 — 출하 등록이 늘 파래서 눌린 것처럼 보이던 것을 고침 (사용자 요청 2026-10-20) */}
               <div className="mt-3 flex flex-wrap gap-2 border-b border-line-soft pb-4">
-                <button disabled={!myItems.length} onClick={() => setForm({ item: myItems[0]?.item_no ?? '', type: 'IN', qty: '', memo: '' })} className={todo(form?.type === 'IN')}>입고 등록</button>
+                <button disabled={!myItems.length} onClick={() => openIn()} className={todo(form?.type === 'IN')}>입고 등록</button>
                 <button disabled={!myItems.length} onClick={() => setForm({ item: myItems[0]?.item_no ?? '', type: 'ADJUST', qty: '', memo: '' })} className={todo(form?.type === 'ADJUST')}>실사·조정</button>
                 <button onClick={() => setTab('ship')} className={todo(false)}>출하 등록</button>
               </div>
               {form && (
-                <div className="mt-3 flex flex-col gap-2 rounded-tile border border-line p-3 text-body">
+                <div ref={formRef} className="mt-3 flex scroll-mt-24 flex-col gap-2 rounded-tile border border-line p-3 text-body">
                   <b>{form.type === 'IN' ? '입고 등록' : '실사·조정 (±)'}</b>
                   <select value={form.item} onChange={(e) => setForm({ ...form, item: e.target.value })} className="h-10 rounded-tile border border-line">{myItems.map((i) => <option key={i.item_no} value={i.item_no}>{i.item_name}</option>)}</select>
                   <input value={form.qty} onChange={(e) => setForm({ ...form, qty: e.target.value })} placeholder="수량" className="h-10 rounded-tile border border-line px-2" />
                   <input value={form.memo} onChange={(e) => setForm({ ...form, memo: e.target.value })} placeholder={form.type === 'ADJUST' ? '조정 사유 (필수)' : '원자재면 원자재 로트·성적서 번호'} className="h-10 rounded-tile border border-line px-2" />
                   <div className="flex gap-2"><button onClick={save} className={DARK}>저장</button><button onClick={() => setForm(null)} className={BTN}>취소</button></div>
                 </div>)}
-              <div className="mt-4 text-card font-bold">원자재 입고 검사</div>
+              <div ref={inRef} className="mt-4 text-card font-bold">원자재 입고 검사</div>
               {pendingIn.length === 0 ? <p className="mt-2 text-body text-ink-2">검사할 원자재 입고 없음</p> : (() => { const t = pendingIn[0], k = String(t.txn_id ?? t.txn_at), c = inCheck[k] ?? [];
                 return (<div className="mt-2">
                   <div className="text-body"><b className="font-mono">{String(t.memo || t.lot_no || '원자재 입고')}</b> · {Number(t.qty_change)}{rmItem?.unit ?? ''} · {hm(t.txn_at)}</div>
