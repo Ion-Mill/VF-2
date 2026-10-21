@@ -104,7 +104,7 @@ CASES = [
     {'id': 'G1-08', 'turns': ['2호기 정비 상태는?'], 'check': {'route_in': ['순수길']}},
     {'id': 'G1-09', 'turns': ['MIL-01 정비현황'], 'check': {'route_in': ['순수길']}},
     {'id': 'G1-10', 'turns': ['VF2-01 상태 알려줘'], 'check': {'route_in': ['순수길']}},
-    {'id': 'G1-11', 'turns': ['VF2-01 센서 주세요'], 'check': {'route_in': ['순수길']}},
+    {'id': 'G1-11', 'turns': ['VF2-01 센서 주세요'], 'check': {'route_in': ['규칙길']}},   # 2026-10-21 센서 값 조회 합침: 센서 값은 이제 규칙 길이 공용 DB 값으로 답한다 (전에는 순수길)
     {'id': 'G1-12', 'turns': ['VF2-01 지금 상태 어때?'], 'check': {'route_not_safety': True, 'contains': ['VF2-01']}},
     {'id': 'G1-13', 'turns': ['VF2-01 정비 기한 넘긴 거 있어?'], 'check': {'route_not_safety': True}},
     {'id': 'G1-14', 'turns': ['1호기'], 'check': {'route_in': ['규칙길'], 'contains': ['예:'], 'not_contains': ['순간 정지', 'DOC-05']}},
@@ -129,7 +129,7 @@ CASES = [
     {'id': 'M-07', 'turns': ['가동률 어제', 'VF2-01 이요'], 'check': {'contains': ['VF2-01'], 'not_contains': ['확인 필요']}},
     {'id': 'M-08', 'turns': ['OEE 오늘값', 'VF2-01'], 'check': {'contains': ['VF2-01', 'OEE'], 'not_contains': ['확인 필요', 'MTTR']}, 'role': 'OPR'},
     {'id': 'M-09', 'turns': ['양품률 오늘', 'VF2-02'], 'check': {'contains': ['VF2-02'], 'not_contains': ['확인 필요']}},
-    {'id': 'N-01', 'turns': ['OEE 오늘값', 'VF2-01 센서 추세'], 'check': {'route_in': ['순수길']}},
+    {'id': 'N-01', 'turns': ['OEE 오늘값', 'VF2-01 센서 추세'], 'check': {'route_in': ['규칙길']}},   # 2026-10-21 센서 값 조회 합침 (위와 같음)
     {'id': 'N-02', 'turns': ['VF2-01 OEE 어제값은', 'VF2-02'], 'check': {'route_in': ['규칙길'], 'contains': ['예:'], 'not_contains': ['OEE 6', 'OEE 5', 'OEE 7', '가동률 ', 'MTTR ']}},
     {'id': 'N-03', 'turns': ['OEE 오늘값', 'VF2-01 정비 전에 어디를 차단해?'], 'check': {'route_safety': True}},
     {'id': 'N-04', 'turns': ['OEE 오늘값', 'VF2-99'], 'check': {'route_in': ['순수길']}},
