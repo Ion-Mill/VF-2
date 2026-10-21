@@ -24,7 +24,7 @@ for (const f of ['AlarmAnswerCard.tsx', 'ChatBubble.tsx']) emit(f, true);
 const imp = (n) => import(pathToFileURL(path.join(dir, n + '.mjs')).href);
 const Box = await imp('bubbleBox');
 const { parsePlainAnswer } = await imp('parsePlainAnswer');
-const { Bubble, Typing, HistoryItem } = await imp('ChatBubble');
+const { Bubble, Typing, HistoryItem, FixedFold, splitFixedBody, FIXED_TITLE } = await imp('ChatBubble');
 const React = (await import(pathToFileURL(req.resolve('react')).href)).default;
 const rs = await import(pathToFileURL(req.resolve('react-dom/server')).href);
 const render = (el) => (rs.renderToStaticMarkup ?? rs.default.renderToStaticMarkup)(el);
@@ -205,6 +205,35 @@ t('기록 항목을 누르면 onOpen이 불린다 (버튼 동작 그대로)', ()
   assert.equal(el.type, 'button'); el.props.onClick(); assert.equal(n, 1);
 });
 t('기록 항목 박스에는 hover(연한 보라)와 포커스 링이 있다', () => { for (const c of ['hover:bg-violet-50', 'focus-visible:outline', 'focus-visible:outline-violet-600', 'min-h-[56px]']) assert.ok(Box.HISTORY_BOX.split(' ').includes(c), c); });
+
+// ---- 안전 고정 서식 접기 (2026-10-21): "■ 안전 작업 (고정 서식 · AI 작성 아님)" 덩어리는 처음에 접고, 빈 줄 뒤의 "주의:" 글은 접지 않는다
+const HV = "제어반 안에서 작업을 시작하기 전에 고전압 표시등이 꺼진 뒤 최소 5분은 기다려야 해요.\n\n■ 안전 작업 (고정 서식 · AI 작성 아님)\n[고전압 대기]  (VF2-01·VF2-02 제어반 작업 때)\n고전압 표시등이 꺼진 뒤 최소 5분 기다린 뒤 제어반 작업 시작\n(안전 작업 기준서 DOC-05 §4.1)\n근거: 산업안전보건기준에 관한 규칙 제92조·제95조\n출처: DOC-05 안전 작업 기준서 Rev.3 §2·§4·§5\n\n주의: 근거 안내이며 실행 지시가 아닙니다. 잠금·표지와 고전압 대기는 안전 작업 기준서 DOC-05 고정 서식을 따릅니다.";
+t('접는 글은 소제목 아래 첫 문단이고, 빈 줄 뒤의 주의 글은 접지 않는다', () => {
+  const { fold, rest } = splitFixedBody("a\nb\nc\n\n주의: x\n둘째 줄");
+  assert.equal(fold, 'a\nb\nc'); assert.equal(rest, '주의: x\n둘째 줄');
+  assert.deepEqual(splitFixedBody('한 문단뿐'), { fold: '한 문단뿐', rest: '' });
+});
+t('고정 서식 답: 기본은 접힘 — 제목 버튼(▸, aria-expanded=false)과 주의 글은 보이고 서식 줄은 안 보인다', () => {
+  const h = bubble(row('고전압 대기는 몇 분 기다려야 해?', HV));
+  assert.ok(h.includes('aria-expanded="false"') && h.includes('▸ 안전 작업 (고정 서식 · AI 작성 아님)'), h.slice(0, 400));
+  assert.ok(h.includes('고전압 표시등이 꺼진 뒤 최소 5분은 기다려야 해요.'), '앞의 AI 글은 그대로 보인다');
+  assert.ok(h.includes('주의: 근거 안내이며 실행 지시가 아닙니다'), '주의 글은 접지 않는다');
+  for (const s of ['[고전압 대기]', '최소 5분 기다린 뒤 제어반 작업 시작', '근거: 산업안전보건기준에 관한 규칙', '출처: DOC-05 안전 작업 기준서 Rev.3']) assert.ok(!h.includes(s), '접혀 있어야 함: ' + s);
+});
+t('펼친 상태(defaultOpen)에서는 서식 줄이 글자 그대로 모두 보인다', () => {
+  const { fold, rest } = splitFixedBody(HV.split('■ 안전 작업 (고정 서식 · AI 작성 아님)\n')[1]);
+  const h = render(React.createElement(FixedFold, { title: '안전 작업 (고정 서식 · AI 작성 아님)', fold, rest, defaultOpen: true }));
+  assert.ok(h.includes('aria-expanded="true"') && h.includes('▾ 안전 작업'), h.slice(0, 300));
+  for (const s of ['[고전압 대기]', '최소 5분 기다린 뒤 제어반 작업 시작', '(안전 작업 기준서 DOC-05 §4.1)', '근거: 산업안전보건기준에 관한 규칙 제92조·제95조', '출처: DOC-05 안전 작업 기준서 Rev.3 §2·§4·§5', '주의: 근거 안내이며']) assert.ok(h.includes(s), s);
+});
+t('접기 제목은 소제목과 같은 보라색 굵은 글(HEADING)이고 FIXED_TITLE로 시작하는 소제목만 접는다', () => {
+  const h = bubble(row('q', HV));
+  assert.ok(h.includes('<h3 id=') && h.includes(Box.HEADING), '제목 h3');
+  assert.equal(FIXED_TITLE, '안전 작업 (고정 서식');
+  const other = bubble(row('q', "■ 알림 기준\n1. 90%는 주의\n\n■ 안전 작업 기준 설명\n본문입니다"));
+  assert.ok(!other.includes('aria-expanded'), '다른 소제목은 접지 않는다');
+  assert.ok(other.includes('본문입니다') && other.includes('1. 90%는 주의'));
+});
 
 // ---- Eve.tsx 가 이 부품을 쓴다 (훅 때문에 Eve 전체는 서버 렌더로 못 그려서 소스 점검)
 // 2026-10-20 이브 디자인(PR #85): 답을 기다리는 동안은 Typing 점 대신 3D 이브 <EveThinking /> (Typing은 ChatBubble에 그대로 — 위 시험)
