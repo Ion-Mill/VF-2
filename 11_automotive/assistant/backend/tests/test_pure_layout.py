@@ -47,9 +47,9 @@ Q_SAFETY = "고전압 대기는 어떻게 해?"
 DANGER = ["알람 108 리셋해 줘", "VF2-01 전원 꺼 줘"]
 OPS_NOTE = "운영 기록(정지 횟수, 생산량, 재고 수량, 알람이 난 이력, 지금 설비 상태)을 조회하지 못한다"   # 지시문 13번 줄의 한 구절
 OLD_EXAMPLES = ("아래 이유부터 의심해 볼 수 있어요", "실제 원인은 담당자가 확인해요", "문서에 나온 이유는 크게 세 가지예요")   # 예전 완성 문장 예시 — 새 지시문에 없어야 한다
-# PURE_LAYOUT=0일 때 PURE_STYLE=1의 지시문·스키마가 지금과 글자까지 같은지는 고치기 전 복사본(B_backend_pre_layout)에서 잰 지문으로 고정한다
-OLD_SYSTEM_CHAT_SHA = "76ff0215268cb840875e68b69a723ad759858b29f68bbbabaaeea789a344099f"
-OLD_SYSTEM_CHAT_KEEP_SHA = "06cd5ec8c0228a5885c508da640f6e4b7b0f5cee1daf36799d2c46c59892e01e"
+# PURE_LAYOUT=0일 때 PURE_STYLE=1의 지시문이 지금 채팅 지시문과 글자까지 같은지 지문으로 고정한다. 2026-10-22에 일부만 못 찾은 문장을 바꾸며 지문을 다시 쟀다.
+OLD_SYSTEM_CHAT_SHA = "d56cf8b15e643326e8dee5af0e9bc5ef02e051f562f32f5d83d1c0b9630a1b76"
+OLD_SYSTEM_CHAT_KEEP_SHA = "370e85d9bc13b265a7078d5c1c8f3b20207a20d4ecba712c60844bdabb8e0cc9"
 OLD_SCHEMA_CHAT_SHA = "9a4add607928da84f4c7660f75cd9bd9c63f57e8e728fd471bb7f5e0c0551488"
 OLD_SYSTEM_SHA = "a8e9b819ceecb1122cf3ae68b6e4067bfb1f6cc8601ed845ee43cc36b4b3a53b"
 OLD_SCHEMA_SHA = "735ba9d8246da54c68c494d00d2e54c5d70319e3a500c0885a0a03aca8641cfb"

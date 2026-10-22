@@ -102,9 +102,9 @@
 | API-MNT-03 | GET `/api/maint/work-orders/{id}` | 작업지시서 | 전 | — | 계기, 자동 칸, 제목·증상, 작업 순서, 차단 지점, 안전 블록(읽기 전용), 비슷한 과거, 예상 부품, 담당, 상태, 승인 대기 시간, 출처 | SCR-11, FR-MNT-03-01~14 |
 | API-MNT-04 | PATCH `/api/maint/work-orders/{id}` | 내용 수정 | M | `version`, 고친 칸 | 새 버전 | SCR-11 |
 | API-MNT-05 | POST `.../work-orders/{id}/assign` | 담당 지정 | S | `mnt_user_id` | — | FR-MNT-03-14 |
-| API-MNT-06 | POST `.../work-orders/{id}/approve` | 승인 (MGR 대리 승인) | S·G | `version` | 상태 = 승인 (담당 없으면 `INVALID_STATE`). 승인되면 담당 MNT에게 "작업지시서 배정" 알림 (`WO_ASSIGNED`) | FR-MNT-03-13·14 |
+| API-MNT-06 | POST `.../work-orders/{id}/approve` | 승인 (반장만) | S | `version` | 상태 = 승인 (담당 없으면 `INVALID_STATE`). 관리자는 거절. 승인되면 담당 MNT에게 "작업지시서 배정" 알림 (`WO_ASSIGNED`). 응답 `proxy` 는 거짓 | FR-MNT-03-13·14 |
 | API-MNT-07 | POST `.../work-orders/{id}/start` | 작업 시작 | 담당 M | — | 상태 = 진행 중 (승인 전이면 거부) | FR-MNT-03-02 |
-| API-MNT-08 | POST `.../work-orders/{id}/cancel` | 취소 | G | `reason` | 상태 = 취소 | SCR-11 |
+| API-MNT-08 | POST `.../work-orders/{id}/cancel` | 취소 (권한 없음) | — | `reason` | 거절. 상태 칸은 남음 | SCR-11 |
 | API-MNT-09 | GET·PATCH `/api/maint/work-records/{id}` | 작업기록서 조회·수정 | 조회 전 / 수정 M | `version`, 고친 칸, 체크 9칸, 사용 부품 | 칸 전부 | SCR-12, FR-MNT-05-01~08 |
 | API-MNT-10 | POST `.../work-records/{id}/assist` | 메모를 비서로 정리 | M | `memo` | AI비서 초안 칸 | FR-MNT-05-02 |
 | API-MNT-11 | POST `.../work-records/{id}/confirm` | 확정 → 작업지시서 완료, 재고 차감, MTTR 다시 계산 | M | `version` | 확정, 바뀐 기록 번호 (체크 9칸 덜 차면 거부) | FR-MNT-05-05·09·10·14 |
@@ -267,3 +267,4 @@
 | v1 수정 | 2026-10-17 | 비서 LLM = 외부 Claude 확정 (`팀과 논의/외부LLM_단일_전환_제안_20261017.md`, API 수 63개 그대로): 오류 코드 `ASSISTANT_UNAVAILABLE`의 예 칸을 "로컬 LLM이 멈춤" → "외부 LLM 호출 실패"로. 주소·값·권한은 그대로 |
 | v1 수정 | 2026-10-20 | 채팅 마이크 (`구현_중_수정사항/1020_수정간단내용.md` 45장, API 수 63개 그대로): 2.4 API-AST-02 아래에 딸림 설명 [제안] — POST `/api/assistant/transcribe`(소리 원본 → 글자)·GET `/api/assistant/voice`(마이크 버튼 표시 여부). 같은 권한, 새 오류 코드 없음(`detail.reason`에 `VOICE_*`) |
 | v1 수정 | 2026-10-20 | 채팅 마이크 녹음 길이 (`구현_중_수정사항/1020_수정간단내용.md` 67장, API 수 63개 그대로): API-AST-02 딸림 설명의 POST `/api/assistant/transcribe` 상한을 "약 1.5MB·20초"에서 "약 1.5MB, 길이는 서버 설정(기본·최대 60초)"으로. 백엔드는 비서를 최대 45초까지 기다림 |
+| v1 수정 | 2026-10-22 | 작업지시서 승인은 반장만 (`구현_중_수정사항/1022_수정간단내용.md` 6장, API 수 63개 그대로): API-MNT-06 역할 S·G → S, 하는 일에서 관리자 대리 승인을 뺌. API-MNT-08 취소 역할 G → 권한 없음 |
