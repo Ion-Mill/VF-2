@@ -630,9 +630,9 @@ erDiagram
         longtext symptom "증상"
         code status "작업지시서 상태"
         text assignee_user_id FK "담당 보전 담당자"
-        text approved_by FK "승인 SUP 또는 MGR 대리"
+        text approved_by FK "승인 SUP"
         datetime approved_at "승인 시각"
-        text cancelled_by FK "취소 MGR"
+        text cancelled_by FK "취소 칸. 새 취소 없음"
         datetime cancelled_at "취소 시각"
         longtext cancel_reason "취소 사유"
         text safety_block_doc_rev "DOC-05 Rev.2"
@@ -1769,9 +1769,9 @@ erDiagram
 | symptom | 증상 | 긴 문자 | | ○ | 비서가 지침카드에서 씀 | FR-MNT-03-04 |
 | status | 상태 | 코드 | | ○ | 6.13 (AI비서 초안 → 수정 중 → 승인 → 진행 중 → 완료 / 취소). 과거 기록은 모두 완료 | 기획서 MNT-03, 설계서 5.11 |
 | assignee_user_id | 담당 보전 담당자 | 문자 | FK | 조건 | → app_user, MNT. **반장이 지정**. 비면 승인 안 됨 | FR-MNT-03-14 |
-| approved_by | 승인자 | 문자 | FK | 조건 | → app_user, SUP (MGR 대리 승인 가능). 비서는 안 됨 | 기획서 13.1, FR-MNT-03-14 |
+| approved_by | 승인자 | 문자 | FK | 조건 | → app_user, SUP만. 비서는 안 됨 | 기획서 13.1, FR-MNT-03-14 |
 | approved_at | 승인 시각 | 날짜시각 | | 조건 | 승인 대기 시간(30분 참고 / 2시간 주의 알림) 계산의 끝 | FR-AST-02-10 |
-| cancelled_by | 취소한 사람 | 문자 | FK | 조건 | → app_user, MGR | 기획서 13.1 |
+| cancelled_by | 취소한 사람 | 문자 | FK | 조건 | → app_user. 칸은 남김. 새 취소 권한은 없음 | 기획서 13.1 |
 | cancelled_at | 취소 시각 | 날짜시각 | | 조건 | — | 기획서 13.1 |
 | cancel_reason | 취소 사유 | 긴 문자 | | 조건 | 취소면 필수 [제안] | NFR-REL-03 |
 | safety_block_doc_rev | 안전 블록 문서·개정 | 문자 | | ○ | 예: "DOC-05 Rev.2". 6+3단계·보호구 고정 서식이 붙었다는 표시. 누구도 지울 수 없음 | DOC-05 §7, FR-MNT-03-07 |
@@ -2479,7 +2479,7 @@ erDiagram
 | role_code | 역할 | 코드 | PK, FK | ○ | → role | — |
 | target | 대상 | 코드 | PK | ○ | 문서 종류(6.17 + 지침카드) 또는 기능 (정지 사유, 로트 보류·해제, 재고 입고, 안전 재고 설정, 예방 정비 기록, 공구 교체, 설정 등) | 기획서 13.1·13.2 |
 | action | 동작 | 코드 | PK | ○ | 보기 / 작성 / 수정 / 확정 / 승인 / 확인 / 담당 지정 / 취소 / 입력 / 설정 | 기획서 13.1·13.2 |
-| scope | 범위 | 코드 | | ○ | 전체 / 자기 문서만 (OPR 수정 이력) / 요약만 (OPR 브리핑) / 대리 (MGR 승인) / **관리 품목만** (재고 입고·실사: MNT = 정비 소모품, SUP = 공구·원자재·완제품) | 기획서 13.1·13.2, D-13 |
+| scope | 범위 | 코드 | | ○ | 전체 / 자기 문서만 (OPR 수정 이력) / 요약만 (OPR 브리핑) / 대리 (범위 코드는 남음. 작업지시서 새 승인에는 쓰지 않음) / **관리 품목만** (재고 입고·실사: MNT = 정비 소모품, SUP = 공구·원자재·완제품) | 기획서 13.1·13.2, D-13 |
 
 - **MGR = 모든 기능·문서 "보기" 범위 전체** (D-11, R-76). 작성·수정·확정·승인 권한은 바꾸지 않는다. 처음 값에서 MGR의 (target, 보기) 행이 빠진 대상이 없어야 한다 (MNT-02 지침카드, MNT-04, ML-01 등 포함).
 - 출하 등록·확정은 SUP (target "출하", action 작성·확정). 재고 품목의 관리 역할 바꾸기는 MGR (target "설정").
@@ -2717,10 +2717,10 @@ erDiagram
 |---|---|---|---|---|
 | AI_DRAFT | AI비서 초안 | 시스템 (OP-30 정지 등급 알람, **OP-30 반복 알람 2단계**면 자동 — 계기 6.42) | 수정 중, 취소 | 기획서 MNT-03, FR-MNT-03-01 |
 | EDITING | 수정 중 | MNT | 승인, 취소 | 같음 |
-| APPROVED | 승인 | SUP (MGR 대리) — 담당자가 있어야 함 | 진행 중, 취소 | 같음, 기획서 13.1 |
+| APPROVED | 승인 | SUP — 담당자가 있어야 함 | 진행 중, 취소 | 같음, 기획서 13.1 |
 | IN_PROGRESS | 진행 중 | MNT ([작업 시작]) | 완료 | 같음, UI설계서 SCR-11 |
 | DONE | 완료 | 시스템 (짝 작업기록서 확정 때 자동) [제안] | — | 같음, UI설계서 9.3 #3 |
-| CANCELLED | 취소 | MGR | — | 기획서 13.1 |
+| CANCELLED | 취소 | — (새 취소 없음. 상태 코드는 남음) | — | 기획서 13.1 |
 
 - 승인 전에는 진행 중으로 바꿀 수 없다 (FR-MNT-03-02). **완료 계기 = 짝 작업기록서(work_record.wo_no) 확정** — [완료] 버튼은 없다 (작업지시서 1 : 작업기록서 1, FR-MNT-05-01, UI설계서 SCR-11 [1]).
 
@@ -3325,7 +3325,7 @@ erDiagram
 | 42 | 정비 중 이상의 작업지시서 | pm_record | maintenance_work_order (pm_record_id) | 0..1 : 0..1 | 결과 "이상 있음"인 OP-30 기록만 |
 | 43 | 작업지시서의 설비 | equipment | maintenance_work_order (equipment_id) | 1 : 0..N | VF2-01·02만 |
 | 44 | 작업지시서의 로트 | production_lot | maintenance_work_order (lot_no) | 0..1 : 0..N | — |
-| 45 | 작업지시서 담당·승인·취소 | app_user | maintenance_work_order (assignee_user_id, approved_by, cancelled_by) | 1 : 0..N (각 칸) | 담당 = MNT, 승인 = SUP·MGR, 취소 = MGR |
+| 45 | 작업지시서 담당·승인·취소 | app_user | maintenance_work_order (assignee_user_id, approved_by, cancelled_by) | 1 : 0..N (각 칸) | 담당 = MNT, 승인 = SUP. 취소 칸은 남고 새 취소는 없음 |
 | 46 | 작업지시서의 작업 순서 | maintenance_work_order | work_order_step (wo_no) | 1 : 1..N | 단계마다 DOC-03 출처 |
 | 47 | 작업지시서의 예상 부품 | maintenance_work_order | work_order_part (wo_no) | 1 : 0..N | — |
 | 48 | 예상 부품의 품목 | inventory_item | work_order_part (item_no) | 1 : 0..N | — |
@@ -3480,7 +3480,7 @@ erDiagram
 | R-32 | 작업기록서(그리고 다른 공정 정지 등급·"보충용 2점 잠금" 줄의 간이 기록)는 **잠금·표지 9개 체크가 모두 끝나야 확정**. 확정 = MNT (간이: 주의 등급 OPR·MNT, 다른 공정 정지 등급 MNT만), 확인 = SUP. 작업기록서가 확정되면 짝 작업지시서가 완료 (6.13) | work_record.safety_block_required·status·confirmed_by, work_record_check (LOTO 9행), maintenance_work_order.status | FR-MNT-05-05·09·13·15, FR-MNT-03-02, NFR-SAFE-03 |
 | R-33 | 정지 등급의 지침카드·작업지시서·(다른 공정) 간이 작업기록에는 DOC-05 §7 블록(6+3단계, 고전압 대기, 보호구)이 반드시 붙고 **누구도 지울 수 없다**. 고전압 대기 문구는 OP-30 설비만. 블록은 AI가 쓰거나 고치지 않는다 | maintenance_work_order.safety_block_doc_rev·has_high_voltage_notice, 6.19 | DOC-05 §7, FR-MNT-03-06~08, FR-AST-COM-13, NFR-SAFE-02 |
 | R-34 | 작업기록서 확정 → 사용 부품만큼 재고 사용 거래 생성, MTTR·정지 원인 다시 계산 | inventory_txn (WORK_RECORD), work_record.confirmed_at | FR-MNT-05-10, FR-PRD-01-26 |
-| R-31a | 작업지시서 상태는 6.13 순서로. 담당자가 비면 승인 안 됨. 승인 전 진행 중 불가. 승인은 SUP (MGR 대리), 비서는 지정·승인 안 함 | maintenance_work_order.status·assignee_user_id·approved_by | FR-MNT-03-02·14, FR-AST-COM-10 |
+| R-31a | 작업지시서 상태는 6.13 순서로. 담당자가 비면 승인 안 됨. 승인 전 진행 중 불가. 승인은 SUP만, 비서는 지정·승인 안 함 | maintenance_work_order.status·assignee_user_id·approved_by | FR-MNT-03-02·14, FR-AST-COM-10 |
 | R-43 | 예방 정비 다음 기한 = 실시일 + 주기. 기한 하루 전 참고, 넘기면 주의 알림. 제때 실시율 = 기한 안 실시 ÷ 기한이 온 항목 (목표 90%) | pm_task.next_due_date, pm_record.is_on_time | DOC-04 1장·5장, DOC-07 6.2 |
 | R-17 | VF-2 예방 정비 항목은 Haas 정비 일정(RD0080, 기본 사양 24항목)에 있는 것과 근거를 표시한 보충 2항목(DOC-04 2장)만. 다른 공정 항목은 [실제]/[참고]/[가상] 표시로 허용 | pm_task.source_tag | 설계서 9장, 요구사항정의서 12장 #3 |
 | R-53 | **잠금 중인 설비**: 어떤 작업기록서의 LOTO 6.4가 체크되고 7.3이 아직 체크되지 않았으면 그 설비는 잠금 중 → 교대 보고서 인계 사항 맨 위 | work_record_check | DOC-05 §2.3, FR-PRD-02-09 |
@@ -3784,6 +3784,7 @@ erDiagram
 | 최종본 수정 (작업지시서 비서 범위 맞춤, 2026-10-19) | 2026-10-19 | 엔터티·속성·관계 수 그대로 (글만 고침). 5.D.2 `work_order_step`·5.D.3 `work_order_part` 설명의 "비서가 정리/제안"을 구현에 맞춰 "프로그램이 옮김/담음"으로 고침 (요구사항정의서 FR-MNT-03-05·12와 같이, `구현_중_수정사항/1019_수정간단내용.md` 8장) | 비서(LLM) 담당 |
 | 최종본 수정 (교대 보고서 인계 사항 비서 범위 맞춤, 2026-10-19) | 2026-10-19 | 엔터티·속성·관계 수 그대로 (글만 고침). `shift_report` 설명의 "특이 사항·인계 문장은 비서"를 "특이 사항 문장은 비서(LLM), 인계 사항 문장은 프로그램"으로, `handover_text` 설명의 "비서는 순서를 바꾸거나 빼지 않는다"를 "프로그램이 항목·순서·문장을 만든다"로 고침 (요구사항정의서 FR-PRD-02-08과 같이, R-73 일반 원칙은 그대로, `구현_중_수정사항/1019_수정간단내용.md` 13장) | 비서(LLM) 담당 |
 | 최종본 수정 (재공 자리 WIP-2, 2026-10-20) | 2026-10-20 | 엔터티·속성·관계 수 그대로. `layout_object` WIP-2(OP-20→30)를 VF2-01·02 사이 앞(13,188~14,388)에서 MIL-01·VF2-01 사이 앞(10,040~11,240)으로 — 3D 화면에서 2공정·3공정 사이에 보이게 (사용자 요청) |
+| 최종본 수정 (작업지시서 승인은 반장만, 2026-10-22) | 2026-10-22 | 엔터티·속성·관계 수 그대로 (글만 고침). `maintenance_work_order.approved_by` 는 반장만. `cancelled_by`·`approved_as_proxy` 계산에 쓰는 역할 비교·상태 코드 CANCELLED 는 칸으로 남기고, 새 취소 권한은 없다. (`구현_중_수정사항/1022_수정간단내용.md` 6장) | 문서 담당 |
 
 **문서끼리 다르던 점과 이 문서의 선택**
 

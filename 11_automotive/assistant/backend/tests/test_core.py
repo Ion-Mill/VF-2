@@ -90,7 +90,7 @@ def test_bundle_one_minute():
 # ---------------------------------------------------------------- 권한·수정 이력
 def test_permissions():
     assert not can("OPR", "confirm_shift_report") and can("SUP", "confirm_shift_report")
-    assert can("MGR", "approve_work_order") and not can("MNT", "approve_work_order")
+    assert can("SUP", "approve_work_order") and not can("MGR", "approve_work_order") and not can("MNT", "approve_work_order")
     assert can("MON", "view_daily_report") and not can("MON", "chat")
     assert not can("OPR", "view_daily_report")
 
