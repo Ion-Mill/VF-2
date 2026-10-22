@@ -38,7 +38,7 @@ def post(q, role="MNT", user="U07", allowed=ALL, out_of_role=None, context=None)
     ("기한 넘긴 예방 정비 있어?", "pm_due", "가이드 레일 윤활"),
     ("VF2-01 작업지시서 보여줘", "work_orders", "WO-2609-0007"),
     ("9월 29일 생산 실적 알려줘", "production", "실적 84개 (목표 90개)"),
-    ("VF2-01 지금 상태", "equipment_status", "07:12부터 48분"),
+    ("VF2-01 돌아가?", "equipment_status", "07:12부터 48분"),
     ("VF2-01 정지 몇 번 했어", "stop_reasons", "손실 정지 3번 90분"),
 ])
 def test_operating_question_is_answered_from_backend_tools(fb, question, tool, expected):
