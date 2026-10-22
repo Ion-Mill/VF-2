@@ -474,16 +474,20 @@ class RouterFlows(unittest.TestCase):
         for user in ("U10", "U12"):
             self.denied(maintenance.wr_confirm, user, record_no=no, body=maintenance.VersionIn(version=0))
 
-    def test_093_proxy_approval(self):
+    def test_093_supervisor_approval_only(self):
+        """승인은 반장만. 관리자 승인·취소는 거절. 조회 칸 approved_as_proxy 는 남고, 반장 승인은 대리가 아니다."""
         aid = self.db.scalar("alarms.ingest", equipment_id="VF2-02", alarm_code="254", occurred_at=None, lot_no=None,
                              prev_alarm_event_id=None, is_injected=False, scenario_code=None)
         wo = self.call(maintenance.wo_create, "U07", body=maintenance.WoDraftIn(
-            equipment_id="VF2-02", title="대리 승인", symptom="x", alarm_event_id=int(aid)))["wo_no"]
-        self.call(maintenance.wo_edit, "U07", wo_no=wo, body=maintenance.EditIn(version=0, changes={"title": "대리 승인 시험"}))
+            equipment_id="VF2-02", title="반장 승인", symptom="x", alarm_event_id=int(aid)))["wo_no"]
+        self.call(maintenance.wo_edit, "U07", wo_no=wo, body=maintenance.EditIn(version=0, changes={"title": "반장 승인 시험"}))
         self.call(maintenance.wo_assign, "U10", wo_no=wo, body=maintenance.AssignIn(mnt_user_id="U07"))
-        out = self.call(maintenance.wo_approve, "U12", wo_no=wo, body=maintenance.VersionIn(version=1))
-        self.assertEqual((out["status"], out["proxy"]), ("APPROVED", True))
-        self.assertIs(self.call(maintenance.wo_get, "U10", wo_no=wo)["approved_as_proxy"], True)
+        self.denied(maintenance.wo_approve, "U12", wo_no=wo, body=maintenance.VersionIn(version=1))
+        self.denied(maintenance.wo_cancel, "U12", wo_no=wo, body=maintenance.CancelIn(reason="시험"))
+        self.denied(maintenance.wo_cancel, "U10", wo_no=wo, body=maintenance.CancelIn(reason="시험"))
+        out = self.call(maintenance.wo_approve, "U10", wo_no=wo, body=maintenance.VersionIn(version=1))
+        self.assertEqual((out["status"], out["proxy"]), ("APPROVED", False))
+        self.assertIs(self.call(maintenance.wo_get, "U10", wo_no=wo)["approved_as_proxy"], False)
 
     def test_094_qr(self):
         """QR (2026-10-13 가정 [제안]): 조회·입고·실사·출하 전 로트 확인·측정 시작 로트 확인, 찍은 기록"""

@@ -227,7 +227,9 @@ export function QualityScreen({ cap = false }: { cap?: boolean }) { // cap: 공�
             <div className="h-2.5 w-28 overflow-hidden rounded-full bg-track"><div className="h-full bg-brand" style={{ width: `${total ? (measured / total) * 100 : 0}%` }} /></div>
             <span className="text-body">합격 <b className="text-band">{passN}</b></span><span className="text-body text-crit">불합격 <b className="text-band">{failN}</b></span><span className="text-body">기록 없음 {noneN}</span><span className="text-body">남은 <b className="text-band">{Math.max(0, total - measured)}</b></span>
           </>}>한눈에 보기 — {lot || '로트를 고르세요'}</H3>
-          {!rows.length ? <p className="mt-4 text-body text-ink-2">측정 기록 없음{res.data ? '' : ' (불러오는 중)'}</p> : (
+          {/* 측정값이 아직 없어도 로트가 있으면 부품 지도를 보여 줌 — 처음 고른 로트(측정기 지시 로트)는 발췌 부품이 온도 맞춤 중이라 값이 없을 수 있음 (사용자 요청 2026-10-21) */}
+          {!rows.length && <p className="mt-4 text-body text-ink-2">{!res.data ? '불러오는 중' : total ? `아직 CMM 측정값 없음 — 발췌 부품은 세척 뒤 90분 온도 맞춤을 마치면 측정해요${L ? ` (OP-50 통과 ${L.process_done?.['OP-50'] ?? 0} / ${total})` : ''}` : '측정 기록 없음'}</p>}
+          {!total ? null : (
             <div className={`mt-4 grid gap-6 ${eve ? 'grid-cols-1' : 'grid-cols-[1fr_1fr]'}`}>
               {/* 왼쪽: 모식도(작게) + 공차 안 위치 3×2. 오른쪽: 부품 지도 15×4 (사용자 요청 2026-10-19) */}
               <div>
@@ -321,7 +323,11 @@ export function QualityScreen({ cap = false }: { cap?: boolean }) { // cap: 공�
 
         {/* 검사 강화 */}
         <section className={box}>
-          <H3>검사 강화 {enhPast && <span className="text-body font-normal text-ink-2">— 지금 강화 중인 로트 없음 · 최근 강화 기록 (시연 데이터 9월)</span>}</H3>
+          <H3>검사 강화 {enhPast && <span className="text-body font-normal text-ink-2">— 지금 강화 중인 로트 없음</span>}</H3>
+          {/* 고른 로트가 강화·보류와 상관없으면 그 로트 기준으로 먼저 말하고, 9월 보류 기록은 접어 둠 — 어느 로트를 쳐도 "보류"가 보이던 것 고침 (사용자 요청 2026-10-21) */}
+          {enhPast && <p className="mt-2 text-body"><b className="font-mono">{lot || '—'}</b> — 보통 검사 ({plan?.plan_mode === 'FULL' ? '전수' : '발췌'}) · 강화 · 보류 없음{L ? ` · ${STATUS[L.status] ?? L.status}` : ''}</p>}
+          <details open={!enhPast} className="mt-3">
+          {enhPast && <summary className="cursor-pointer text-body text-ink-2">참고: 최근 강화 기록 (시연 데이터 9월 · 이 로트와 별개)</summary>}
           <div className="mt-3 grid grid-cols-[1.6fr_1fr] gap-6">
             <table className="w-full text-left text-body">
               <thead className="bg-brand-tint text-small text-ink-2"><tr><th className="px-2 py-2">로트</th><th className="px-2">왜 강화</th><th className="px-2">상태</th><th className="px-2 text-right">측정한 부품 / 로트</th></tr></thead>
@@ -348,6 +354,7 @@ export function QualityScreen({ cap = false }: { cap?: boolean }) { // cap: 공�
               <div className="mt-1 text-small text-ink-2">조건 {Number(causeDone) + Number(allPass)} / 2</div></>)}
             </div>
           </div>
+          </details>
         </section>
 
       </div>

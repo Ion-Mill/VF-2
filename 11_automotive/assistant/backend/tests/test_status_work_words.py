@@ -31,6 +31,16 @@ def test_document_question_about_work_stays_a_document_question(v3, q):
     assert "equipment_status" not in A.parse(q)["intents"], q
 
 
+@pytest.mark.parametrize("q", ["현재 vf2-01 상태는", "현재 VF2-01 상태는", "VF2-01 상태는", "현재 상태는"])
+def test_current_status_wording_is_an_equipment_status_question(v3, q):
+    assert "equipment_status" in A.parse(q)["intents"], q
+
+
+@pytest.mark.parametrize("q", ["VF2-01 정비 상태는?", "2호기 정비 상태는?", "OEE라인 어제상태는?", "재고 상태는?", "생산 상태는?"])
+def test_other_status_words_are_not_the_live_equipment_status(v3, q):
+    assert "equipment_status" not in A.parse(q)["intents"], q
+
+
 def test_remaining_time_question_says_the_end_time_is_not_recorded(v3, monkeypatch):
     FakeBackend().install(monkeypatch)
     a = A.answer("VF2-02 지금 정비 중이야? 몇 분 남았어?", "MNT", {})

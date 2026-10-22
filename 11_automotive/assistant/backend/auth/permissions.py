@@ -12,7 +12,7 @@ PERMISSIONS: dict[str, set[str]] = {
     "view_docs": {"OPR", "MNT", "SUP", "MGR"},             # SCR-24 (전원 보기, MGR 개정 승인)
     "run_demo_scenario": {"OPR", "MNT", "SUP", "MGR"},     # 시연 모드 전용 사건 넣기 [제안] (설비 조작 아님)
     "write_work_order": {"MNT"},
-    "approve_work_order": {"SUP", "MGR"},  # MGR은 대리 승인
+    "approve_work_order": {"SUP"},  # 반장만 (DOC-03 §1.4, DOC-07 §10.4)
     "assign_work_order": {"SUP"},
     "confirm_work_record": {"MNT"},
     "confirm_simple_record_caution": {"OPR", "MNT"},

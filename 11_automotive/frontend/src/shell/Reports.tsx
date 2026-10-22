@@ -234,28 +234,31 @@ export function DailyReportScreen() {
         {!bothConf && prev && <button onClick={() => go('daily', prev)} className={BTN}>지난 확정본 ({md(prev)})</button>}
       </InfoRow>
 
-      <Sec title="하루 생산" right={<Chip tone={pct < 90 ? 'warn' : 'ok'}>목표 대비 {pct}%</Chip>}>
+      <div className="contents" data-summary-panel="SCR-16">
+      <Sec title="하루 생산" field="하루 생산" right={<Chip field="목표 대비" tone={pct < 90 ? 'warn' : 'ok'}>목표 대비 {pct}%</Chip>}>
         <div className="flex flex-col gap-3">
           {(() => {
             const dq = Number(day?.actual_qty ?? 0) || 0, nq = Number(night?.actual_qty ?? 0) || 0, sum = dq + nq;
+            const gap = actual >= target ? '초과' : '부족';
             return (
               <div className="grid grid-cols-2 gap-2.5 md:grid-cols-5">
-                <Kpi label="실적" value={actual} unit="개" sub={`목표 ${target}개`} tone="main" />
+                <Kpi field="실적" label="실적" value={actual} unit="개" sub={`목표 ${target}개`} tone="main" />
                 <div className="flex min-w-0 flex-col gap-1.5 rounded-tile border border-line bg-white px-3 py-2">
-                  <span className="text-small text-ink-2">주간 / 야간</span>
+                  <span data-summary-field="주간 / 야간" className="text-small text-ink-2">주간 / 야간</span>
                   {sum > 0 ? <div className="mt-auto flex h-8 overflow-hidden whitespace-nowrap rounded-tile text-small font-semibold" role="img" aria-label={`주간 ${dq}개, 야간 ${nq}개`}>
-                    <span className="flex min-w-0 items-center bg-brand px-2 text-white" style={{ width: `${(dq / sum) * 100}%` }}>주간 {dq}</span>
-                    <span className="flex min-w-0 items-center bg-tile px-2 text-ink" style={{ width: `${(nq / sum) * 100}%` }}>야간 {nq}{night?.status !== 'CONFIRMED' ? ' (잠정)' : ''}</span>
-                  </div> : <span className="text-body text-ink-2">—</span>}
+                    <span data-summary-field="주간" className="flex min-w-0 items-center bg-brand px-2 text-white" style={{ width: `${(dq / sum) * 100}%` }}>주간 {dq}</span>
+                    <span data-summary-field="야간" className="flex min-w-0 items-center bg-tile px-2 text-ink" style={{ width: `${(nq / sum) * 100}%` }}>야간 {nq}{night?.status !== 'CONFIRMED' ? ' (잠정)' : ''}</span>
+                  </div> : <span data-summary-field="주간 / 야간" className="text-body text-ink-2">—</span>}
                 </div>
-                <Kpi label={actual >= target ? '초과' : '부족'} value={Math.abs(target - actual)} unit="개" tone={actual >= target ? 'ok' : 'bad'} />
-                <Kpi label="불량" value={r.defect_qty} unit="개" />
-                <Kpi label="OEE (라인)" value={r.oee_pct} unit="%" />
+                <Kpi field={gap} label={gap} value={Math.abs(target - actual)} unit="개" tone={actual >= target ? 'ok' : 'bad'} />
+                <Kpi field="불량" label="불량" value={r.defect_qty} unit="개" />
+                <Kpi field="OEE (라인)" label="OEE (라인)" value={r.oee_pct} unit="%" />
               </div>
             );
           })()}
         </div>
       </Sec>
+      </div>
 
       <Sec title="오늘의 문제" right={<><Chip tone="crit">고장 손실 약 {r.failure_loss_qty}개</Chip><Chip tone="warn">속도 손실 약 {r.speed_loss_qty}개</Chip><Chip>추정</Chip></>}>
         <div className="hidden grid-cols-[76px_minmax(0,1fr)_84px_minmax(0,1.1fr)_40px] gap-3 pb-1 text-small text-ink-2 md:grid"><span>문제</span><span /><span className="text-right">생산 피해</span><span>처리</span><span /></div>

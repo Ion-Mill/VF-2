@@ -35,28 +35,39 @@ export default function CardScreen({ alertId }: { alertId: string }) {
   const tone = alert.level === '긴급' ? 'crit' : alert.level === '주의' ? 'warn' : 'mute';
   const assisted = a && a.steps.length ? guideText : null; // 비서 정리가 준비된 때만 본문으로 (줄 수가 원문과 같은 것만 훅이 돌려준다), 원문은 접어 둔다 (팀원 2026-10-19)
   const rule = a?.chain.match(/\(([^)]+)\)/)?.[1];
+  const who = mine ? '나' : (a?.responder === 'MNT' ? '보전 담당자' : '그 설비 작업자');
+  const respText = `처리 책임: ${who}`;
+  const chainText = chain.length > 1 ? `연쇄 ${chain.join(' → ')}${rule ? ` · ${rule}` : ''}` : '';
+  const lotText = alert.lot ? `로트 ${alert.lot}` : '';
+  const speedText = 'OP-30 1대 → 라인 속도 절반';
+  const clearedText = alert.cleared ? `설비 알람 ${hhmm(alert.cleared)} 해제` : '';
+  const woText = wo ? `작업지시서 ${wo.no} 보기 →` : '작업지시서 초안 만드는 중';
+  const simpleText = sr ? `간이 작업기록 ${sr.no} →` : '간이 작업기록 쓰기 →';
+  const replayText = '▶ 다시 보기 (발생 시각)';
 
   return (
     <DocPage width={900}>
       <DocHead title="지침카드" sub={`${md(alert.time)} ${hhmm(alert.time)} 발생${alert.scenario ? ` · 사건 ${alert.scenario}` : ''}`} right={<button onClick={back} className={BTN}>닫기</button>} />
       {!a ? <Band tone="crit" title={<>{alert.code} — 알람 코드집에 없음</>} chips={<Chip tone="solid-crit">보전 담당자 호출</Chip>} /> : (<>
+        <div className="contents" data-summary-panel="SCR-09">
         <Band tone={tone}
-          title={<><span style={{ color: lv.color }}>{lv.icon} {sevText(a)}</span> · {MACHINES[alert.machine].name} · 알람 <span className="font-mono" style={{ color: lv.color }}>{a.code}</span> {a.nameKo.replace(/\(.*\)/, '')} · <span className="font-mono">{mins}</span>분{alert.cleared ? '' : '째'}</>}
-          desc={a.easy}
+          title={<><span data-summary-field="지침카드" /><span data-summary-field="결론"><span style={{ color: lv.color }}>{lv.icon} {sevText(a)}</span> · {MACHINES[alert.machine].name} · 알람 <span className="font-mono" style={{ color: lv.color }}>{a.code}</span> {a.nameKo.replace(/\(.*\)/, '')} · <span className="font-mono">{mins}</span>{`분${alert.cleared ? '' : '째'}`}</span></>}
+          desc={<span data-summary-field="설명">{a.easy}</span>}
           chips={<>
-            <Chip tone={a.severity === 'STOP' ? 'solid-crit' : a.severity === 'WARN' ? 'solid-warn' : 'mute'}>{mine ? '처리 책임: 나' : `처리 책임: ${a.responder === 'MNT' ? '보전 담당자' : '그 설비 작업자'}`}</Chip>
-            {chain.length > 1 && <Chip tone="crit">연쇄 {chain.join(' → ')}{rule ? ` · ${rule}` : ''}</Chip>}
-            {alert.lot && <button onClick={() => go('lots', alert.lot)}><Chip mono>로트 {alert.lot}</Chip></button>}
-            {a.severity === 'STOP' && op30 && <Chip tone="warn">OP-30 1대 → 라인 속도 절반</Chip>}
-            {alert.cleared && <Chip tone="ok">설비 알람 {hhmm(alert.cleared)} 해제</Chip>}
+            <Chip field={respText} tone={a.severity === 'STOP' ? 'solid-crit' : a.severity === 'WARN' ? 'solid-warn' : 'mute'}>{respText}</Chip>
+            {chainText && <Chip field={chainText} tone="crit">{chainText}</Chip>}
+            {lotText && <button onClick={() => go('lots', alert.lot)}><Chip field={lotText} mono>{lotText}</Chip></button>}
+            {a.severity === 'STOP' && op30 && <Chip field="속도" tone="warn">{speedText}</Chip>}
+            {clearedText && <Chip field={clearedText} tone="ok">{clearedText}</Chip>}
           </>}>
           <div className="flex flex-wrap gap-2">
-            {a.severity === 'STOP' && op30 && <button onClick={() => wo && openWo(wo.no)} disabled={!wo} className={DARK}>{wo ? `작업지시서 ${wo.no} 보기 →` : '작업지시서 초안 만드는 중'}</button>}
-            {a.severity === 'STOP' && !op30 && <button onClick={() => openSimple(alert.id)} className={DARK}>{sr ? `간이 작업기록 ${sr.no} →` : '간이 작업기록 쓰기 →'}</button>}
-            {a.severity === 'WARN' && <button onClick={() => openSimple(alert.id)} className={DARK}>{sr ? `간이 작업기록 ${sr.no} →` : '간이 작업기록 쓰기 →'}</button>}
-            <button onClick={() => go('replay', alert.time)} className={BTN}>▶ 다시 보기 (발생 시각)</button>
+            {a.severity === 'STOP' && op30 && <button data-summary-field={woText} onClick={() => wo && openWo(wo.no)} disabled={!wo} className={DARK}>{woText}</button>}
+            {a.severity === 'STOP' && !op30 && <button data-summary-field={simpleText} onClick={() => openSimple(alert.id)} className={DARK}>{simpleText}</button>}
+            {a.severity === 'WARN' && <button data-summary-field={simpleText} onClick={() => openSimple(alert.id)} className={DARK}>{simpleText}</button>}
+            <button data-summary-field={replayText} onClick={() => go('replay', alert.time)} className={BTN}>{replayText}</button>
           </div>
         </Band>
+        </div>
         <Sec title="먼저 할 일" right={a.steps.length ? <>{assisted && <Chip tone="acc">비서 정리</Chip>}<Chip tone="acc">작업자 {a.steps.length}단계</Chip></> : undefined}>
           {assisted ? (
             <div className="flex flex-col gap-2">
@@ -67,14 +78,16 @@ export default function CardScreen({ alertId }: { alertId: string }) {
           ) : a.steps.length ? <NumList items={a.steps} big /> : <span className="text-body text-ink-2">{a.doc03.join(' · ') || '해당 절 없음'}</span>}
         </Sec>
         {a.maint.length > 0 && <Sec title="보전 담당자 단계" right={<Chip>보전 {a.maint.length}단계</Chip>}><NumList items={a.maint} start={a.steps.length + 1} /></Sec>}
-        <Sec title="생산 영향" right={<Chip>추정</Chip>}>
+        <div className="contents" data-summary-panel="SCR-09">
+        <Sec title="생산 영향" field="생산 영향" right={<Chip field="추정">추정</Chip>}>
           <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">
-            <Kpi label="정지" value={mins} unit={alert.cleared ? '분' : '분째'} sub={`${hhmm(alert.time)}부터`} />
-            <Kpi label="손실 (추정)" value={`약 ${(mins / cyc).toFixed(1)}`} unit="개" sub={`${mins}분 ÷ 기준 사이클 ${cyc}분`} />
-            <Kpi label="가공 중이던 로트" value={<span className="text-band">{alert.lot ?? '—'}</span>} sub={alert.kind === 'alarm' && alert.lot ? '의심 로트 제안' : undefined} />
+            <Kpi field="정지" label="정지" value={mins} unit={alert.cleared ? '분' : '분째'} sub={`${hhmm(alert.time)}부터`} />
+            <Kpi field="손실 (추정)" label="손실 (추정)" value={`약 ${(mins / cyc).toFixed(1)}`} unit="개" sub={`${mins}분 ÷ 기준 사이클 ${cyc}분`} />
+            <Kpi field="가공 중이던 로트" label="가공 중이던 로트" value={<span className="text-band">{alert.lot ?? '—'}</span>} sub={alert.kind === 'alarm' && alert.lot ? '의심 로트 제안' : undefined} />
           </div>
         </Sec>
-        <Sec title="안전" right={a.severity === 'STOP' ? SafeTag : undefined}><SafetyBlock machine={alert.machine} alarm={a} /></Sec>
+        </div>
+        <div className="contents" data-summary-skip><Sec title="안전" right={a.severity === 'STOP' ? SafeTag : undefined}><SafetyBlock machine={alert.machine} alarm={a} /></Sec></div>
         <Fold summary={`지난 기록 — 9월 ${eq} · 알람 ${alert.code}`}>
           {past.length ? (
             <div className="overflow-x-auto"><table className="w-full min-w-[620px] table-fixed text-left text-body">

@@ -1,4 +1,4 @@
-"""비서용 읽기 전용 조회 도구 11개 (FR-MNT-01-04, ai-operations-assistant 규칙 3.3).
+"""비서용 읽기 전용 조회 도구 12개 (FR-MNT-01-04, ai-operations-assistant 규칙 3.3; 센서 값 `sensor_trend`는 2026-10-19에 더했다).
 
 [11_automotive 이식 2026-10-16] 원본은 simulator/out CSV를 직접 읽었다. 여기서는 기존 백엔드의 비서 조회 도구(`/api/assistant/tools/{name}`, 14개)를
 `repositories/backend_tools.py`로 부르고, 결과를 **원본이 돌려주던 행 모양으로 번역**한다 — 3,000줄 넘는 `services/answer.py`가 읽는 칸 이름을 그대로 두기 위해서다.
@@ -10,11 +10,13 @@ SQL을 쓰지 않고, 입력(설비·기간)을 검증하고, 결과가 비어 �
 """
 from __future__ import annotations
 
+import re
 from datetime import date, datetime, timedelta, timezone
 
-from backend.config import DATA_LABEL, REFERENCE_AT
+from backend.config import DATA_LABEL, REFERENCE_AT, settings
 from backend.repositories import backend_tools as BT
 from backend.services import metrics as M
+from backend.tools import sim_live
 
 EQUIPMENT = {"SAW-01", "MIL-01", "VF2-01", "VF2-02", "WSH-01", "CMM-01"}
 REF = datetime.fromisoformat(REFERENCE_AT[:19])
@@ -104,6 +106,12 @@ def equipment_status(role, equipment_id=None):
              "since": x.get("state_since"), "minutes": x.get("state_minutes"), "open_alarm_code": x.get("open_alarm_code"),
              "open_alarm_severity": x.get("open_alarm_severity"), "is_locked": bool(x.get("is_locked")),
              "current_lot_no": x.get("current_lot_no")} for x in r.rows]
+    cfg = settings()
+    if cfg.sensor_live:   # SENSOR_LIVE: 권한 확인은 위 공용 DB 호출 그대로 쓰고, 지금 상태만 시연 서버 값으로 바꾼다 (읽지 못하면 공용 DB 값 그대로)
+        got = sim_live.fetch_states(cfg.sim_server_url, equipment_id)
+        if got:
+            sim_at, live_rows = got
+            return _result("설비 상태 조회", live_rows, "지금 (시연 화면 시계)", as_of=sim_at, live=True)
     return _result("설비 상태 조회", sorted(rows, key=lambda x: x["equipment_id"]), "지금", as_of=r.now)
 
 
@@ -278,12 +286,21 @@ def work_orders(role, equipment_id=None, status=None):
     return _result("작업지시 조회", rows, "최근 20건", as_of=r.now)
 
 
+# 작업기록 원인·조치 글에 제조사 매뉴얼 문서 번호(ID0003 등)가 섞여 있으면 답 전체가 "원문 출처 표기가 섞여 내보내지 않았습니다"로 막힌다 (2026-10-21 시연 "992 지난 조치").
+# 조회 결과를 만들 때 그 번호만 뗀다("체크리스트(ID0003)를 쓴다" → "체크리스트를 쓴다"). 기록 원문은 DB에 그대로 두고 채팅이 보이는 글만 다룬다 (D-03). 데이터 쪽 정리는 DB·생성기 담당 몫.
+_MANUAL_ID = re.compile(r"\s*[(（]\s*(?:TG|RD|AD|ID|SA)\d{4}\s*[)）]|[,，]?\s*(?:서비스\s*알림\s*)?(?<![A-Za-z0-9])(?:TG|RD|AD|ID|SA)\d{4}(?![0-9])")
+
+
+def mask_manual_ids(text: str) -> str:
+    return re.sub(r"[ \t]{2,}", " ", _MANUAL_ID.sub("", text or "")).strip()
+
+
 def work_records(role, equipment_id=None, alarm_code=None):
     _check_equipment(equipment_id)
     r = _call("work_records", {"equipment_id": equipment_id, "alarm_code": alarm_code})
     rows = [{"work_record_id": x["record_no"], "record_no": x["record_no"], "kind": x.get("record_type"), "equipment_id": x.get("equipment_id"),
              "alarm_code": x.get("alarm_code") or "", "start": x.get("confirmed_at") or "", "repair_min": x.get("repair_min"),
-             "cause": x.get("cause") or "", "action": x.get("action") or "", "confirmed_at": x.get("confirmed_at")} for x in r.rows]
+             "cause": mask_manual_ids(x.get("cause") or ""), "action": mask_manual_ids(x.get("action") or ""), "confirmed_at": x.get("confirmed_at")} for x in r.rows]
     rows.sort(key=lambda x: x["start"])                    # 백엔드는 최근 순 20건 — 원본처럼 오래된 것부터
     return _result("작업기록 조회", rows, "확정된 최근 20건", as_of=r.now)
 
@@ -311,6 +328,43 @@ def tool_life(role, equipment_id=None, min_pct=0):
     return _result("공구 수명 조회", rows, "지금", as_of=r.now, rule="공구 수명 90% 이상 = 교체 알림 (DOC-07 §9, 가상 규칙)")
 
 
+# ---------------------------------------------------------------- 센서 (OP-30 VF2-01·VF2-02만, 2026-10-19)
+MAX_SENSOR_MINUTES = 360            # 백엔드 도구의 기간 상한 (minutes 1~360)
+
+
+def sensor_trend(role, equipment_id, minutes=60, sensor_code=None):
+    """OP-30 설비의 센서별 최소·평균·최대·마지막 값과 정상 범위 [참고] — 공용 DB 시계 기준 최근 N분(1~360). 알람 기준값은 없다 (DOC-07 §3).
+    채팅 권한: MNT·MGR만 (허용 목록에 없으면 `_call`이 백엔드를 부르기 전에 ToolDenied). 도구가 기준 시각(`now`)을 주지 않으면 `clock_known`이 False —
+    답 문장은 시각을 지어내지 않는다."""
+    if not equipment_id:
+        raise ToolInputError("설비를 정해야 한다")
+    _check_equipment(equipment_id)
+    if isinstance(minutes, bool) or not isinstance(minutes, int) or not 1 <= minutes <= MAX_SENSOR_MINUTES:
+        raise ToolInputError(f"기간은 1~{MAX_SENSOR_MINUTES}분이어야 한다")
+    r = _call("sensor_trend", {"equipment_id": equipment_id, "minutes": minutes, "sensor_code": sensor_code})
+    keys = ("equipment_id", "sensor_code", "sensor_name", "unit", "samples", "min_value", "avg_value", "max_value", "last_value", "last_at",
+            "normal_min", "normal_max", "is_out_of_normal")
+    rows = [{k: x.get(k) for k in keys} for x in r.rows]
+    cfg = settings()
+    if cfg.sensor_live and rows:      # SENSOR_LIVE: 권한·이름·단위·정상 범위는 위 공용 DB 조회 그대로 쓰고, 값만 시연 서버의 지금 값으로 바꾼다 (읽지 못하면 공용 DB 값 그대로)
+        got = sim_live.fetch_sensors(cfg.sim_server_url, equipment_id)
+        if got:
+            sim_at, vals = got
+            live = []
+            for x in rows:
+                v = vals.get(x.get("sensor_code"))
+                if v is None:
+                    continue
+                lo, hi = x.get("normal_min"), x.get("normal_max")
+                out = None if lo is None or hi is None else bool(v < float(lo) or v > float(hi))
+                live.append({**x, "samples": 1, "min_value": v, "avg_value": v, "max_value": v, "last_value": v, "last_at": sim_at, "is_out_of_normal": out})
+            if live:
+                return _result("센서 추세 조회", live, "지금 값 (시연 화면 시계)", as_of=sim_at, minutes=minutes, equipment_id=equipment_id,
+                               clock_known=True, live=True, rule="정상 범위는 [참고] — 알람 기준값이 아니다 (DOC-07 §3). 값은 시연 서버가 만든 가상 값")
+    return _result("센서 추세 조회", rows, f"직전 {minutes}분 (공용 DB 시계)", as_of=r.now, minutes=minutes, equipment_id=equipment_id,
+                   clock_known=bool(r.now), rule="정상 범위는 [참고] — 알람 기준값이 아니다 (DOC-07 §3)")
+
+
 # ---------------------------------------------------------------- 재고
 def inventory(role, item_id=None, short_only=False):
     r = _call("inventory", {"item_no": item_id})
@@ -325,5 +379,5 @@ def inventory(role, item_id=None, short_only=False):
 TOOLS = {
     "equipment_status": equipment_status, "alarms": alarms, "stops": stops, "kpi": kpi, "production": production,
     "lots": lots, "work_orders": work_orders, "work_records": work_records, "pm_due": pm_due,
-    "tool_life": tool_life, "inventory": inventory,
+    "tool_life": tool_life, "inventory": inventory, "sensor_trend": sensor_trend,
 }

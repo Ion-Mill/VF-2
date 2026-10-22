@@ -118,6 +118,7 @@ class ChatIn(BaseModel):
     question: str = Field(min_length=1, max_length=2000)
     context: dict[str, Any] = Field(default_factory=dict, description="지금 화면·설비·알람 (예: {\"screen\": \"SCR-09\", \"alarm_event_id\": 3})")
     prev_chat_id: int | None = Field(None, description="이어서 물을 때 앞 질문의 chat_id (본인 것만) [제안]")
+    screen_text: str | None = Field(None, max_length=8000, description="화면 정보판 글자. 채팅 기록에는 저장하지 않는다.")
 
 
 HISTORY_TURNS = 5        # 이어서 물을 때 비서에게 넘기는 앞 질문·답 수 [제안]
@@ -141,11 +142,14 @@ def chat(body: ChatIn, request: Request, actor: Actor = Depends(require("ASSISTA
     allowed = sorted(_allowed(db, actor.user))
     history = _history(db, actor, body.prev_chat_id)
     try:
-        out = client.chat_answer(client.call("/chat", {
+        payload = {
             "question": body.question, "context": body.context, "allowed_tools": allowed,
             "out_of_role": _out_of_role(actor.user), "history": history,
             "user": {"user_id": actor.user_id, "role_code": actor.role, "home_process_code": actor.user.home_process_code,
-                     "home_process_code_2": actor.user.home_process_code_2}}))
+                     "home_process_code_2": actor.user.home_process_code_2}}
+        if body.screen_text:
+            payload["screen_text"] = body.screen_text
+        out = client.chat_answer(client.call("/chat", payload))
     except AppError as e:
         if e.code != "ASSISTANT_UNAVAILABLE":
             raise
@@ -154,8 +158,10 @@ def chat(body: ChatIn, request: Request, actor: Actor = Depends(require("ASSISTA
     chat_id = db.scalar("assistant.chat_insert", user_id=actor.user_id, screen_context=body.context or None,
                         question=body.question, answer=out["answer"], sources=out["sources"] or None,
                         status=out["status"], prev_chat_id=body.prev_chat_id)
-    log_access(actor.user_id, "API", "POST", "/api/assistant/chat", 200, request.client.host if request.client else None,
-               {"status": out["status"], "sources": len(out["sources"]), "chat_id": chat_id})
+    access = {"status": out["status"], "sources": len(out["sources"]), "chat_id": chat_id}
+    if body.screen_text:
+        access["screen_text_chars"] = len(body.screen_text)   # 글자는 남기지 않는다
+    log_access(actor.user_id, "API", "POST", "/api/assistant/chat", 200, request.client.host if request.client else None, access)
     return {"chat_id": chat_id, **out}
 
 

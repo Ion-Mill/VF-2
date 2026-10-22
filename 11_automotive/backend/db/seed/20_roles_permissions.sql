@@ -14,7 +14,7 @@ INSERT INTO role_permission (role_code, target, action, scope) VALUES
   ('OPR','WORK_ORDER','VIEW','ALL'),
   ('MNT','WORK_ORDER','VIEW','ALL'), ('MNT','WORK_ORDER','CREATE','ALL'), ('MNT','WORK_ORDER','EDIT','ALL'),
   ('SUP','WORK_ORDER','VIEW','ALL'), ('SUP','WORK_ORDER','ASSIGN','ALL'), ('SUP','WORK_ORDER','APPROVE','ALL'),
-  ('MGR','WORK_ORDER','APPROVE','PROXY'), ('MGR','WORK_ORDER','CANCEL','ALL'),
+  -- 작업지시서 승인은 반장만. 관리자 대리 승인·취소는 두지 않음. 보기는 아래 R-76 VIEW.
   -- 작업기록서 (정식)
   ('MNT','WORK_RECORD','VIEW','ALL'), ('MNT','WORK_RECORD','CREATE','ALL'), ('MNT','WORK_RECORD','EDIT','ALL'),
   ('MNT','WORK_RECORD','CONFIRM','ALL'),

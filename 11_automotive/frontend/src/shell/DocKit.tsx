@@ -10,8 +10,8 @@ const CHIP: Record<Tone, string> = {
   crit: 'bg-crit-bg text-crit', warn: 'bg-warn-bg text-warn', ok: 'bg-ok-bg text-ok', acc: 'bg-info-bg text-info',
   'solid-crit': 'bg-crit-bg text-crit', 'solid-warn': 'bg-warn-bg text-warn', mute: 'border border-line bg-white text-ink-2', // 채운 칩 쓰지 않음 (옅은 바탕 태그)
 };
-export function Chip({ tone = 'mute', mono, children }: { tone?: Tone; mono?: boolean; children: ReactNode }) {
-  return <span className={`inline-flex min-h-[26px] items-center gap-1 whitespace-nowrap rounded-[7px] px-2.5 text-small font-semibold ${CHIP[tone]} ${mono ? 'font-mono' : ''}`}>{children}</span>;
+export function Chip({ tone = 'mute', mono, field, children }: { tone?: Tone; mono?: boolean; field?: string; children: ReactNode }) {
+  return <span data-summary-field={field} className={`inline-flex min-h-[26px] items-center gap-1 whitespace-nowrap rounded-[7px] px-2.5 text-small font-semibold ${CHIP[tone]} ${mono ? 'font-mono' : ''}`}>{children}</span>;
 }
 export const RO = <Chip>보기 전용</Chip>;
 
@@ -53,10 +53,10 @@ export function Band({ tone, title, desc, chips, children }: { tone: keyof typeo
   );
 }
 // 칸 카드: 제목 + 오른쪽 칩 + 내용
-export function Sec({ title, right, children }: { title: ReactNode; right?: ReactNode; children?: ReactNode }) {
+export function Sec({ title, right, children, field }: { title: ReactNode; right?: ReactNode; children?: ReactNode; field?: string }) {
   return (
     <section className="rounded-card border border-line bg-white shadow-card">
-      <div className="flex flex-wrap items-center gap-2.5 px-5 py-4"><SecIcon title={title} /><h3 className="text-card font-bold">{title}</h3>{right && <div className="ml-auto flex flex-wrap items-center gap-1.5">{right}</div>}</div>
+      <div className="flex flex-wrap items-center gap-2.5 px-5 py-4"><SecIcon title={title} /><h3 className="text-card font-bold" data-summary-field={field}>{title}</h3>{right && <div className="ml-auto flex flex-wrap items-center gap-1.5">{right}</div>}</div>
       {children !== undefined && children !== null && children !== false && <div className="px-5 pb-5">{children}</div>}
     </section>
   );
@@ -69,9 +69,9 @@ export function Fold({ summary, children, open }: { summary: ReactNode; children
     </details>
   );
 }
-export function Kpi({ label, value, unit, sub, tone }: { label: ReactNode; value: ReactNode; unit?: ReactNode; sub?: ReactNode; tone?: 'main' | 'bad' | 'ok' }) {
+export function Kpi({ label, value, unit, sub, tone, field }: { label: ReactNode; value: ReactNode; unit?: ReactNode; sub?: ReactNode; tone?: 'main' | 'bad' | 'ok'; field?: string }) {
   return (
-    <div className="flex min-w-0 flex-col rounded-tile border border-line bg-white px-4 py-3">{/* 흰 칸 + 선 (main도 같은 칸, 강조는 결론 띠) */}
+    <div data-summary-field={field} className="flex min-w-0 flex-col rounded-tile border border-line bg-white px-4 py-3">{/* 흰 칸 + 선 (main도 같은 칸, 강조는 결론 띠) */}
       <span className="text-small text-ink-2">{label}</span>
       <span className={`font-mono text-num font-bold tabular-nums ${tone === 'bad' ? 'text-crit' : tone === 'ok' ? 'text-ok' : 'text-ink'}`}>{value}{unit && <small className="ml-1 font-sans text-body font-normal text-ink-2">{unit}</small>}</span>
       {sub && <span className="text-small text-ink-2">{sub}</span>}

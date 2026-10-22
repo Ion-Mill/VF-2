@@ -73,8 +73,8 @@ _CHAT_HEAD = """
 [근거]
 8. 사실은 조각에 있는 것만 쓴다. 숫자, 기준값, 부품번호, 차단기 번호는 조각에 적힌 그대로 쓰고 지어내거나 바꾸지 않는다.
 9. 조각의 [가상]·[참고]·[제안] 표시는 해당 문장에 말로 녹인다("팀이 정한 가상 기준이에요", "가상 데이터예요"). "표시가 붙은 내용이에요"처럼 표시 자체를 설명하지 않는다. 시연 시나리오 번호 같은 문서 속 내부 용어는 질문이 직접 묻지 않으면 쓰지 않는다.
-10. 조각에 없는 부분은 "문서에는 없어요"라고 구분해서 말한다. 일반 상식을 덧붙일 때는 closing에서 "문서에는 없지만 일반적으로는"으로 시작하는 한 문장까지만 쓴다. 숫자, 기준값, 부품, 작업 절차는 일반 상식으로도 말하지 않는다.
-11. 답의 일부만 조각에 있으면 있는 부분을 답하고 없는 부분을 closing에서 밝힌다. 답이 전혀 없으면 insufficient를 true로 하고 opening에 이유와 다음에 해 볼 일을 해요체 1~3문장으로 쓴다(points는 빈 배열, closing은 빈 문자열). "문서에 없음"이라고 시작하지 않아도 된다.
+10. 일부만 없을 때는 못 찾은 내용을 말하고 "찾지 못했어요"로 끝낸다. "문서에는 없어요", "받은 조각에서는", "받은 내용에서는", "검색 결과"는 쓰지 않는다. 일반 상식을 덧붙일 때는 closing에서 "문서에는 없지만 일반적으로는"으로 시작하는 한 문장까지만 쓴다. 숫자, 기준값, 부품, 작업 절차는 일반 상식으로도 말하지 않는다.
+11. 답의 일부만 조각에 있으면 있는 부분을 답하고 없는 부분을 closing에서 "찾지 못했어요"로 밝힌다. 답이 전혀 없으면 insufficient를 true로 하고 opening에 이유와 다음에 해 볼 일을 해요체 1~3문장으로 쓴다(points는 빈 배열, closing은 빈 문자열). "문서에 없음"이라고 시작하지 않아도 된다.
 """.strip()
 
 # 12번 줄은 PURE_KEEP_SIGNALS=0(운영 길이 꺼져 이 연결이 운영 기록을 못 조회하는 경우)일 때만 넣는다. =1이면 운영 질문은 기존 길로 가므로 이 줄이 필요 없다
@@ -140,9 +140,9 @@ _LAYOUT_HEAD = """
 
 [근거]
 9. 사실은 조각에 있는 것만 쓴다. 숫자, 기준값, 부품번호, 차단기 번호는 조각에 적힌 그대로 쓰고 지어내거나 바꾸지 않는다. 조각이 어떤 조건 아래에서만 하는 일이라고 말하면 그 조건을 빼지 않는다.
-10. 조각의 [가상]·[참고]·[제안] 표시는 해당 문장에 말로 반드시 녹인다. 조각에서 [가상]이 붙은 기준·규칙·값(기간, 횟수, 비율, 팀이 정한 절차 등)을 말할 때는 그 문장 안에서 "팀이 정한 가상 기준이에요"처럼 밝힌다. 표시가 소제목이나 줄 끝에 붙어 있으면 그 아래·그 줄의 내용 모두에 적용된다. "표시가 붙은 내용이에요"처럼 표시 자체를 설명하지 않는다. 시연 시나리오 번호 같은 문서 속 내부 용어는 질문이 직접 묻지 않으면 쓰지 않는다.
-11. 조각에 없는 부분은 "문서에는 없어요"라고 구분해서 말한다. 일반 상식을 덧붙일 때는 text만 있는 마지막 묶음에서 "문서에는 없지만 일반적으로는"으로 시작하는 한 문장까지만 쓴다. 숫자, 기준값, 부품, 작업 절차는 일반 상식으로도 말하지 않는다.
-12. 답의 일부만 조각에 있으면 있는 부분을 답하고 없는 부분을 text만 있는 묶음으로 밝힌다. 답이 전혀 없으면 insufficient를 true로 하고 첫 묶음 text에 이유와 다음에 해 볼 일을 해요체 1~3문장으로 쓴다(나머지 묶음은 쓰지 않는다). "문서에 없음"이라고 시작하지 않아도 된다.
+10. 조각의 [가상]·[참고]·[제안] 표시는 본문에 쓰지 않는다. "팀이 정한 가상 기준으로", "팀이 정한 가상 기준이에요", "가상 데이터예요" 같은 말도 쓰지 않는다 — 화면이 출처 칸에서 "모두 가상 사내 문서"라고 한 번 밝힌다. 다만 제조사 원문과 팀이 정한 값이 섞여 있어 구분하지 않으면 뜻이 달라질 때만 "제조사 원문은 …"처럼 짧게 구분한다. 시연 시나리오 번호 같은 문서 속 내부 용어는 질문이 직접 묻지 않으면 쓰지 않는다.
+11. 일부만 없을 때는 못 찾은 내용을 말하고 "찾지 못했어요"로 끝낸다. "문서에는 없어요", "받은 조각에서는", "받은 내용에서는", "검색 결과"는 쓰지 않는다. 일반 상식을 덧붙일 때는 text만 있는 마지막 묶음에서 "문서에는 없지만 일반적으로는"으로 시작하는 한 문장까지만 쓴다. 숫자, 기준값, 부품, 작업 절차는 일반 상식으로도 말하지 않는다.
+12. 답의 일부만 조각에 있으면 있는 부분을 답하고 없는 부분을 text만 있는 묶음으로 밝히고 "찾지 못했어요"로 끝낸다. 답이 전혀 없으면 insufficient를 true로 하고 첫 묶음 text에 이유와 다음에 해 볼 일을 해요체 1~3문장으로 쓴다(나머지 묶음은 쓰지 않는다). "문서에 없음"이라고 시작하지 않아도 된다.
 """.strip()
 
 # 13번 줄은 PURE_KEEP_SIGNALS=0(운영 길이 꺼져 이 연결이 운영 기록을 못 조회하는 경우)일 때만 넣는다. =1이면 운영 질문은 기존 길로 가므로 이 줄이 필요 없다 (번호는 다시 매기지 않는다)
@@ -203,15 +203,31 @@ def schema_for(s: Settings) -> dict:
     return SCHEMA_LAYOUT if s.pure_layout else SCHEMA_CHAT
 
 
+# 본문 속 문서 번호·가상 기준 꼬리표 지우기 (2026-10-21, 992 시연 시험): 지시문이 "글 안에는 문서 이름·번호·절 번호를 쓰지 않는다"고 하는데도 Claude가
+# "DOC-05의 잠금·표지 절차"·"(DOC-05 §2)"·"팀이 정한 가상 기준으로 …"를 쓰는 때가 있다 — 출처는 화면이 따로 보이므로 문장 속 군더더기만 기계적으로 뗀다.
+# 뗀 뒤에도 문장이 이어지는 꼴(관형격 "…의 ", 괄호 속 번호, 부사구 "…으로 ")만 다룬다. 그 밖의 말은 건드리지 않는다.
+_DOC_PAREN = re.compile(r"\s*\((?:[가-힣A-Za-z0-9·\s]{0,20})?DOC-\d+(?:\s*§?\s*[\d.]+)?[^()]{0,12}\)")
+_DOC_OF = re.compile(r"DOC-\d+(?:\s*§\s*[\d.]+)?의\s+")
+_VIRTUAL_PREFIX = re.compile(r"팀이 정한 가상 기준(?:으로|에 따르면|에서는|으로는)[,]?\s+")
+
+
+def scrub_labels(text: str) -> str:
+    """본문 속 "(DOC-05 §2)"·"DOC-05의 "·"팀이 정한 가상 기준으로 "를 뗀다. 안전 고정 서식 같은 프로그램 문구에는 쓰지 않는다 (Claude가 쓴 글에만)."""
+    out = _DOC_PAREN.sub("", text)
+    out = _DOC_OF.sub("", out)
+    out = _VIRTUAL_PREFIX.sub("", out)
+    return out
+
+
 def _tidy_text(x) -> str:
-    return x.strip() if isinstance(x, str) else ""
+    return scrub_labels(x.strip()).strip() if isinstance(x, str) else ""
 
 
 def _tidy_point(x) -> str:
     """항목 하나의 표시용 손질: 문자열이 아니면 버리고, 앞 번호 접두어를 지우고, 앞뒤 빈칸을 뺀다. 내용은 바꾸지 않는다."""
     if not isinstance(x, str):
         return ""
-    return _NUM_PREFIX.sub("", x.strip(), count=1).strip()
+    return scrub_labels(_NUM_PREFIX.sub("", x.strip(), count=1)).strip()
 
 
 def compose(raw: dict) -> dict:
@@ -382,6 +398,31 @@ def period_sections(question: str) -> list[str]:
     return [sec for sec, rx in PERIOD_RE.items() if rx.search(q)]
 
 
+# 손실 종류 질문 (2026-10-21, 시연 362 시험): "이 362는 고장으로 잃은 거야, 느려서 잃은 거야?"에 Claude가 DOC-07 §7.4(손실 분류 표)를 받지 못해 주의 등급 정지 조각을 이어 붙여
+# "고장 손실로 잡혀요"라고 틀리게 답했다 (§7.4는 공구 수명 80% 이상 = 속도 손실, 고장 손실은 설비 DOWN일 때만). 알람 → 손실 분류를 LLM이 추론하게 두지 않고, 손실 종류를 가르는 말이면
+# 정답이 든 조각(§7.4 병목 원인·§5.3 손실 계산식)을 항상 준다. 말은 LLM이 쓰되 근거는 프로그램이 보장한다 (PURE_EXPAND 안, guarantee_period와 같은 방식).
+LOSS_KIND_RE = re.compile(r"고장\S{0,4}\s?잃\S{0,3}\s?(?:거|것)[^?？]{0,12}느려서\s?잃|느려서\s?잃\S{0,3}\s?(?:거|것)|(?:고장|속도)\s?손실\S{0,3}\s?(?:이야|인가|이냐|이에요|일까|인지)")
+LOSS_KIND_SECTIONS = (("DOC-07", "7.4"), ("DOC-07", "5.3"))
+
+
+def loss_kind_question(question: str) -> bool:
+    """손실 종류(고장 손실인가 속도 손실인가)를 가르는 질문인가 — 낱말 꼴만 본다."""
+    return bool(LOSS_KIND_RE.search(question))
+
+
+def guarantee_sections(hits: list[tuple[float, Chunk]], sections) -> list[tuple[float, Chunk]]:
+    """주어진 (문서, 절) 조각 중 상위 조각에 없는 것을 맨 앞에 더한다 (점수 0.0 = 검색 점수가 아니라는 표시). 모두 있으면 목록을 그대로 돌려준다."""
+    corpus = load_corpus()
+    have = {c.chunk_id for _, c in hits}
+    add = []
+    for doc, sec in sections:
+        anchor = next((c for c in corpus if c.doc_id == doc and c.section == sec), None)
+        if anchor is not None and anchor.chunk_id not in have:
+            add.append((0.0, anchor))
+            have.add(anchor.chunk_id)
+    return add + list(hits) if add else hits
+
+
 def guarantee_period(question: str, hits: list[tuple[float, Chunk]]) -> list[tuple[float, Chunk]]:
     """질문의 기간에 해당하는 DOC-04 절 조각이 상위 조각에 없으면 맨 앞에 더한다 (점수 0.0 = 검색 점수가 아니라는 표시). 이미 있거나 기간이 없으면 목록을 그대로 돌려준다."""
     secs = period_sections(question)
@@ -475,10 +516,11 @@ def _last_sentence(q):
 
 # PURE_RETRY=1 (2026-10-18, 기획 못찾음_넓게다시보기): 정답 조각이 검색 9~50위라 상위 조각에 못 들면 Claude가 \"조각에 답이 없다\"(insufficient)고 하고, 비서는 그것을 \"문서에 없음\"으로 내보냈다
 # (못 찾음을 없음으로 말함). ① 첫 호출이 insufficient이면 상위 PURE_RETRY_TOPK개 조각으로 한 번 더 묻는다 — 그 두 번째 호출의 지시문에만 RETRY_NOTE를 더한다.
-# ② 첫 호출 지시문에는 PARTIAL_NOTE를 더한다 — 일부만 조각에 있을 때 없는 부분을 \"문서에 없다\"고 단정하지 않고 \"받은 조각에서는 찾지 못했다\"고 말하게 한다. 둘 다 지시문 한 줄이고 답 내용을 검사하지 않는다.
+# ② 첫 호출 지시문에는 PARTIAL_NOTE를 더한다 — 일부만 없을 때 못 찾은 내용을 \"찾지 못했어요\"로 말하고, \"문서에 없다\"고 단정하지 않는다. 둘 다 지시문 한 줄이고 답 내용을 검사하지 않는다.
 RETRY_NOTE = ("[넓게 다시 본 조각] 처음 받은 조각에서 답을 찾지 못해, 질문과 관련 있을 수 있는 조각을 더 넓게 가져왔다. 이 중에 답이 있으면 그 조각만 근거로 답하고 인용한다. "
               "이 조각들에서도 답이 없으면 insufficient를 true로 한다. 조각에 없는 내용은 지어내지 않는다.")
-PARTIAL_NOTE = ("[추가 규칙] 받은 조각에서 찾지 못한 부분을 밝힐 때는 \"문서에 없다\"고 단정하지 말고 \"받은 조각에서는 찾지 못했다\"고 쓴다.")
+PARTIAL_NOTE = ("[추가 규칙] 일부만 못 찾은 부분은 그 내용을 말하고 \"찾지 못했어요\"로 끝낸다. "
+                 "\"문서에 없다\"고 단정하지 않는다. \"문서에는 없어요\", \"받은 조각에서는\", \"받은 내용에서는\", \"검색 결과\"는 쓰지 않는다.")
 
 
 def rule_question(question: str, p: dict) -> bool:
@@ -532,6 +574,28 @@ def rule_question_wide(question: str, p: dict) -> bool:
     if RULE_WIDE_EXIST_RE.search(q) and not RULE_WIDE_FEATURE_RE.search(q):
         return False
     return True
+
+
+# 알람과 함께 묻는 정책·판단 질문 (2026-10-21, 시연 362 말풍선 12턴): "이 362는 고장으로 잃은 거야, 느려서 잃은 거야?"(손실 종류), "오늘 VF2-01 362는 9/30 일일 보고서에 있어?"(보고서 포함),
+# "이 알람으로 수리 작업지시서를 써야 해?"(작업지시서)는 문서 질문인데 알람 번호·설비·날짜·"이 알람"이 있어 규칙 질문 분류(rule_question)가 진짜 조회로 보고 거절했다.
+# 그래서 알람 카드나 작업지시 목록이 나왔다. 이 세 주제만 좁게 문서 길로 보낸다. 문서에 없음/호출 실패면 원래 길로 되돌아온다(RULE_WHY와 같은 장치). 지시문에는 RULE_OPS_NOTE를 붙이지 않는다 —
+# "이 362"는 한 건의 기록이 아니라 알람 종류에 대한 규칙 질문이라, 그 줄이 있으면 Claude가 기록 질문으로 보고 거절한다.
+POLICY_WHY = "알람과 함께 묻는 정책·판단 질문(손실 종류·보고서 포함·작업지시서 필요) — 문서 질문으로 보고 순수 길로 (PURE_RULE=1, 문서에 없으면 기존 길로 되돌림)"
+POLICY_TOPIC_RE = re.compile(
+    r"(?:고장|속도)\s?손실\S{0,3}\s?(?:이야|인가|이냐|이에요|일까|인지)|고장\S{0,4}\s?잃\S{0,3}\s?(?:거|것)[^?？]{0,12}느려서\s?잃|느려서\s?잃\S{0,3}\s?(?:거|것)|"      # 손실 종류를 가르는 말
+    r"보고서\S{0,2}\s?(?:에|엔|에도)\s?(?:있|들어|포함|넣|나와|나오|빠)|보고서(?:를|는)?\s?(?:지금\s?)?(?:다시\s?)?(?:써야|작성해야|고쳐야|만들어야)|"            # 보고서에 들어가는지·다시 써야 하는지
+    r"작업\s?지시서?(?:를|는)?\s?(?:써야|쓰는|작성해야|만들어야|필요|남겨야)")                                                                         # 작업지시서를 써야 하는지
+POLICY_DATA_RE = re.compile(r"몇\s?(?:번|건|개|회)|목록|리스트|현황|이력|내역|보여\s?줘|보여\s?주세요|조회|언제|지금까지|통계|추이")                               # 데이터를 묻는 말은 조회 길
+
+
+def alarm_policy_question(question: str, p: dict) -> bool:
+    """알람·설비·날짜가 든 정책·판단 질문인가 (손실 종류·보고서 포함·작업지시서 필요). 로트·작업지시 번호가 있거나 데이터를 묻는 말이 있으면 False."""
+    if p.get("lot") or p.get("order"):
+        return False
+    q = question.strip()
+    if len(re.sub(r"[\s?？!.~,]", "", q)) < RULE_MIN_LEN:
+        return False
+    return bool(POLICY_TOPIC_RE.search(q)) and not POLICY_DATA_RE.search(q)
 
 
 def fault_question(question: str, p: dict) -> bool:
@@ -643,6 +707,8 @@ def context(question: str, k: int, s: Settings) -> list[tuple[float, Chunk]]:
         hits = expand(hits, first=first)
         if s.pure_period:
             hits = guarantee_period(question, hits)
+        if loss_kind_question(question):   # 손실 종류 질문: DOC-07 §7.4·§5.3을 항상 (362 = 주의 등급, 공구 수명 = 속도 손실 쪽)
+            hits = guarantee_sections(hits, LOSS_KIND_SECTIONS)
     if s.pure_safety and is_safety(question):
         hits = add_safety_doc(hits)
     if getattr(s, "pure_faultdoc", False) and is_fault_text(question):   # PURE_FAULTDOC=1: 고장 낱말이 있으면 DOC-03을 통째로
