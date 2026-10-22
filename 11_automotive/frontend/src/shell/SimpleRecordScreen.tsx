@@ -29,6 +29,9 @@ export default function SimpleRecordScreen({ no }: { no: string }) {
   const lockOn = !cause && needsLock(a, rec.machine);
   const lockN = v.lock.filter(Boolean).length;
   const options = cause ? ['원인을 찾아 고침 (부품 교체·조임·청소)', '설정·조건을 바꿈 (재발 방지)', '원인 못 찾음 → 작업지시서 요청', '기타 → 메모'] : [...(a?.actions ?? []), '기타 → 메모'];
+  // 긴 조치 글 "이름: 순서 → 순서"(예: 6302.00 톱날 교체)는 칸엔 이름만, 고르면 아래에 번호 순서로 (사용자 요청 2026-10-22). 저장 값은 전체 글 그대로
+  const split = (o: string) => { const i = o.indexOf(':'); return i > 0 && o.includes('→') ? { name: o.slice(0, i), steps: o.slice(i + 1).split('→').map((s) => s.trim()) } : null; };
+  const picked = split(v.action);
   const lv = alert ? LEVEL_VIEW[alert.level] : LEVEL_VIEW['주의'];
   const names = { action: '조치', memo: '메모', parts: '사용 소모품', lock: '잠금·표지' };
   // 수정 이력에 읽을 수 있는 값으로 (소모품 = 이름 ×수량, 잠금·표지 = n/9). 바뀐 칸이 있을 때만 저장 (2026-10-20)
@@ -65,7 +68,15 @@ export default function SimpleRecordScreen({ no }: { no: string }) {
       <Sec title={cause ? '한 일 고르기' : '한 조치 고르기'}>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">{options.map((o) => (
           <label key={o} className={`flex min-h-[52px] items-center gap-3 rounded-tile border px-3 text-card ${v.action === o ? 'border-ink bg-tile font-semibold' : 'border-line bg-white'} ${canEdit ? 'cursor-pointer' : ''}`}>
-            <input type="radio" className="h-5 w-5 accent-ink" disabled={!canEdit} checked={v.action === o} onChange={() => setV((p) => (p ? { ...p, action: o } : p))} />{o}</label>))}</div>
+            <input type="radio" className="h-5 w-5 accent-ink" disabled={!canEdit} checked={v.action === o} onChange={() => setV((p) => (p ? { ...p, action: o } : p))} />{split(o)?.name ?? o}
+            {split(o) && <span className="ml-auto rounded-full bg-tile px-2.5 py-0.5 text-small font-semibold text-ink-2">{split(o)!.steps.length}단계</span>}</label>))}</div>
+        {picked && (
+          <div className="mt-3 rounded-tile border border-line px-4 py-3">
+            <div className="mb-2 text-small font-semibold text-ink-2">{picked.name} 순서</div>
+            <ol className="flex flex-col gap-2">{picked.steps.map((s, i) => (
+              <li key={i} className="flex items-start gap-2.5 text-card"><span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-tile text-small font-bold">{i + 1}</span>{s}</li>))}</ol>
+          </div>
+        )}
       </Sec>
       {!cause && a && <Sec title="안전" right={a.severity === 'STOP' ? SafeTag : undefined}><SafetyBlock machine={rec.machine} alarm={a} /></Sec>}
       {lockOn && <Sec title="잠금·표지 체크" right={<LockHead value={v.lock} onChange={setLock} disabled={!canEdit} />}><LockChecks value={v.lock} onChange={setLock} disabled={!canEdit} /></Sec>}

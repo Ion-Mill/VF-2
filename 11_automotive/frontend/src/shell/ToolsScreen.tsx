@@ -4,7 +4,7 @@
 // 화면 구조 (사용자 시안 2026-10-16): 왼쪽 공구 목록(전체/VF2-01/VF2-02) · 오른쪽 고른 공구 상세(원 그래프·누적/한도·교체 이력). 전체 = 두 설비 교체 이력만.
 import { useState } from 'react';
 import { PAGE, useApp } from './ctx';
-import { Band, Tabs } from './ui';
+import { Band, Tabs, SecIcon } from './ui';
 import { toolsBand } from './bands';
 import { MASTERS, STATE_VIEW, stateOf } from './data';
 import { api, hm, md, useFetch } from './live';
@@ -16,7 +16,7 @@ const LIMIT_PCT = 90; // 공구 수명 한도 (교체 준비 기준)
 const EQS = ['VF2-01', 'VF2-02'] as const;
 // 교체 사유 코드 → 한글
 const reasonKo = (r: string) => (r === 'LIFE_90' ? '수명 90% 도달' : r.startsWith('ALARM_') ? `알람 ${r.slice(6)}` : r === 'OTHER' ? '기타' : r || '—');
-const box = 'rounded-card border border-line bg-white p-5';
+const box = 'rounded-card border border-line bg-white p-5 shadow-card';
 
 export function ToolsScreen() {
   const { key, twin, role, user, toast, alerts, reloadInv, eve } = useApp(); // eve: 이브 창 열림 — 공구 칸 넓히고 교체 이력 줄임
@@ -45,7 +45,7 @@ export function ToolsScreen() {
   // 교체 이력 높이 = 왼쪽 공구 목록 끝까지. [contain:size]로 표가 칸을 늘리지 않고 안에서 스크롤 (사용자 요청 2026-10-19)
   const history = (
     <section className={`${box} flex min-h-0 flex-1 flex-col`}>
-      <h3 className="flex items-center gap-2 text-card font-bold">교체 이력 — {sel ? `${sel.equipment_id}  ${sel.tool_no}` : EQS.join(' · ')}</h3>
+      <h3 className="flex items-center gap-2 text-card font-bold"><SecIcon title="교체 이력 —" size={32} />교체 이력 — {sel ? `${sel.equipment_id}  ${sel.tool_no}` : EQS.join(' · ')}</h3>
       {changes.length === 0 ? <p className="mt-3 text-body text-ink-2">교체 기록 없음</p> : (
         <div className="mt-2 min-h-[160px] flex-1 overflow-y-auto [contain:size]">{/* 이브 열림: 시각·공구·교체 사유만, 줄 간격 줄임 */}
         <table className={`w-full text-left ${eve ? 'text-body' : 'text-card'}`}>
@@ -81,7 +81,7 @@ export function ToolsScreen() {
       <div className={`mx-auto grid max-w-[1440px] items-stretch gap-3 ${eve ? 'grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]' : 'grid-cols-[minmax(320px,0.9fr)_1.6fr]'}`}>
         {/* 왼쪽: 공구 목록 */}
         <section className={`${box} self-start`}>
-          <h3 className="text-card font-bold">공구 — OP-30 {EQS.join(' · ')}</h3>
+          <h3 className="flex items-center gap-2.5 text-card font-bold"><SecIcon title="공구 — OP-30" size={32} />공구 — OP-30 {EQS.join(' · ')}</h3>
           <div className="mt-3"><Tabs label="설비" value={eq} onChange={pickEq} items={['전체', ...EQS].map((e) => ({ key: e, label: e, count: e === '전체' ? all.length : undefined, warn: (e === '전체' ? all : toolsOf(e)).filter((x) => x.warn).length }))} /></div>
           <p className="mt-3 text-right text-small text-ink-2"><span className="mr-1 inline-block h-3 w-[2px] translate-y-0.5 bg-ink" />교체 준비 기준 = 한도의 {LIMIT_PCT}%</p>
           <ul className="mt-2 flex flex-col gap-2">{list.map((t) => {
@@ -94,7 +94,7 @@ export function ToolsScreen() {
                     {t.limit != null && <span className="shrink-0 whitespace-nowrap font-mono text-small text-ink-2">{Math.round(t.cum)} / {t.limit}{unitOf(t)}</span>}<b className="font-mono">{t.usage_pct}%</b>
                   </div>
                   <div className="relative mt-2 h-2.5 rounded-full bg-track">
-                    <div className="h-full rounded-full" style={{ width: `${Math.min(100, t.usage_pct)}%`, background: t.warn ? '#e0b000' : '#4b5a69' }} />
+                    <div className="h-full rounded-full" style={{ width: `${Math.min(100, t.usage_pct)}%`, background: t.warn ? '#f3c98a' : '#9dbcf4' }} />
                     <span className="absolute -top-1 flex h-[18px] w-[10px] -translate-x-1/2 cursor-help justify-center" style={{ left: `${LIMIT_PCT}%` }} title={t.limit != null ? `교체 준비 ${Math.round((t.limit * LIMIT_PCT) / 100)}${unitOf(t)} (한도의 ${LIMIT_PCT}%)` : undefined}><span className="h-full w-[2px] bg-ink" /></span>
                   </div>
                 </button>
@@ -138,11 +138,11 @@ function Ring({ pct, warn }: { pct: number; warn: boolean }) {
   const a = (LIMIT_PCT / 100) * 2 * Math.PI - Math.PI / 2, x1 = 110 + Math.cos(a) * 70, y1 = 110 + Math.sin(a) * 70, x2 = 110 + Math.cos(a) * 106, y2 = 110 + Math.sin(a) * 106;
   return (
     <svg viewBox="0 0 220 220" className="h-[220px] w-[220px]" role="img" aria-label={`공구 수명 ${pct}%`}>
-      <circle cx="110" cy="110" r={r} fill="none" stroke="#e5e8ee" strokeWidth="20" />
-      <circle cx="110" cy="110" r={r} fill="none" stroke={warn ? '#e0b000' : '#4b5a69'} strokeWidth="20" strokeDasharray={`${p * c} ${c}`} transform="rotate(-90 110 110)" />
-      <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#1c2530" strokeWidth="3" />
-      <text x="110" y="118" textAnchor="middle" fontSize="44" fontWeight="800" fill="#1c2530">{pct}%</text>
-      <text x="110" y="146" textAnchor="middle" fontSize="15" fill="#5d6b79">공구 수명</text>
+      <circle cx="110" cy="110" r={r} fill="none" stroke="#edf1f7" strokeWidth="20" />
+      <circle cx="110" cy="110" r={r} fill="none" stroke={warn ? '#f3c98a' : '#9dbcf4'} strokeWidth="20" strokeDasharray={`${p * c} ${c}`} transform="rotate(-90 110 110)" />
+      <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#1b2a41" strokeWidth="3" />
+      <text x="110" y="118" textAnchor="middle" fontSize="44" fontWeight="800" fill="#1b2a41">{pct}%</text>
+      <text x="110" y="146" textAnchor="middle" fontSize="15" fill="#56667d">공구 수명</text>
     </svg>
   );
 }

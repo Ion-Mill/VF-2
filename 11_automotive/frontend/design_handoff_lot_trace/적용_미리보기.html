@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>로트 추적 적용 미리보기</title>
+<!-- 핸드오프 6c "Sky Blue"를 우리 앱 틀(위 유리 바 · C안 글꼴 Noto Sans KR · C안 글자 크기)에 얹은 목업. 데이터는 핸드오프 예시값 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap">
+<style>
+:root{
+  --point:#5C7FFF; --point-ink:#3F5FE0; --point-deep:#2E48B8; --point-tint:rgba(92,127,255,.10); --tip:#CCD7FF;
+  --ink:#16181D; --dark:#26282F; --t2:#3A3E48; --t3:#6B7080; --t4:#8A8F9C; --ph:#A3A8B3; --sep:#B4B8C2;
+  --input:#F4F5F8; --panel:#F3F4F7;
+  --ok:#22B07D; --ok-t:#178A63; --warn:#F0A23B; --warn-t:#A86200; --warn-bg:#FFF7E8; --warn-line:#F2CB8C; --warn-ink:#7A4A00;
+  --crit:#c62a2f; --brand-mark:#b79cff;
+  --card-shadow:inset 0 1px 0 #fff,0 1px 2px rgba(16,24,40,.04),0 24px 48px -24px rgba(40,36,90,.18);
+  /* C안 글자 크기 (tailwind.config.ts) — 핸드오프 11~14px 글자는 small 15 / body 16으로 올림 */
+  --fs-title:22px; --fs-band:20px; --fs-card:17px; --fs-body:16px; --fs-small:15px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:#EEF1F8;color:var(--ink);font-family:"Noto Sans KR",system-ui,sans-serif;-webkit-font-smoothing:antialiased;word-break:keep-all}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--point);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+
+.page{min-height:100vh;background:linear-gradient(180deg,#FFFFFF 0%,#F2F4FA 55%,#EAEEF7 100%);padding:12px 16px 64px}
+
+/* 위 유리 바 — App.tsx 헤더 그대로 */
+.bar{position:sticky;top:12px;z-index:30;display:flex;align-items:center;gap:8px;height:64px;padding:0 12px 0 24px;border-radius:24px;border:1px solid rgba(255,255,255,.7);background:rgba(255,255,255,.86);box-shadow:0 10px 30px rgba(28,37,48,.13);backdrop-filter:blur(24px)}
+.bar nav{display:flex;gap:4px;margin-left:24px;overflow-x:auto;scrollbar-width:none}
+.nav{display:flex;align-items:center;gap:8px;height:44px;padding:0 14px;border:0;border-radius:12px;background:none;font-size:var(--fs-band);font-weight:600;color:#5f6b7a;white-space:nowrap;cursor:pointer}
+.nav svg{color:#8a94a3}
+.nav:hover{background:rgba(255,255,255,.7);color:#26303a}
+.nav[aria-current]{background:#26303a;color:#fff;font-weight:700}
+.nav[aria-current] svg{color:var(--brand-mark)}
+.nav small{font-size:var(--fs-small);color:#8a94a3}
+.nav[aria-current] small{color:rgba(255,255,255,.6)}
+.clock{margin-left:auto;display:flex;align-items:center;gap:10px;white-space:nowrap}
+.shift{padding:4px 10px;border-radius:12px;background:#fff6e0;color:#9a6200;font-size:var(--fs-card);font-weight:700}
+.clock b{font-size:var(--fs-title)}
+.tools{display:flex;gap:4px;margin-left:12px}
+.tools button{height:44px;padding:0 12px;border:0;border-radius:12px;background:none;font-size:var(--fs-card);font-weight:600;white-space:nowrap;cursor:pointer}
+.tools button:hover{background:rgba(255,255,255,.7)}
+
+/* 아래는 핸드오프 6c */
+main{max-width:1360px;margin:0 auto;padding:22px 16px 0;display:flex;flex-direction:column;gap:18px}
+.crumb{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:0 16px}
+.crumb nav{display:flex;align-items:center;gap:10px;font-size:var(--fs-body)}
+.crumb .sep{color:var(--sep)}
+.live{display:flex;align-items:center;gap:8px;font-size:var(--fs-small);color:var(--t3);padding:7px 14px;border-radius:999px;background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.9)}
+.dot{width:7px;height:7px;border-radius:50%;flex:none}
+
+.card{border-radius:24px;background:rgba(255,255,255,.92);border:1px solid rgba(255,255,255,.95);box-shadow:var(--card-shadow);padding:22px 24px}
+.card.head{padding:28px 32px 26px}
+.card h2{margin:0;font-size:var(--fs-card);font-weight:700;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.card h2 .num{font-size:var(--fs-small);font-weight:400;color:var(--t4)}
+
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex-wrap:wrap}
+.state{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.chip-live{display:inline-flex;align-items:center;gap:8px;padding:5px 14px 5px 11px;border-radius:999px;background:var(--point-tint);color:var(--point-ink);font-size:var(--fs-small);font-weight:600}
+.pulse{background:var(--point);animation:pulse 1.8s ease-out infinite}
+.op-count{font-size:var(--fs-small);color:var(--t3)}
+.op-count b{color:var(--ink);font-weight:600}
+h1{margin:14px 0 0;font-size:clamp(34px,4vw,46px);font-weight:800;line-height:1.05;letter-spacing:-.03em}
+h1 span{color:var(--point)}
+.tags{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.tag{padding:5px 10px;border-radius:8px;background:rgba(22,24,29,.05);color:var(--t2);font-size:var(--fs-small);font-weight:500}
+.lock{display:inline-flex;align-items:center;gap:8px;padding:13px 20px;border:0;border-radius:14px;background:var(--dark);color:#fff;font-size:var(--fs-card);font-weight:700;box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1px rgba(92,127,255,.35),0 12px 28px -10px rgba(92,127,255,.55);transition:transform .15s}
+.lock:hover{transform:translateY(-1px)}
+
+.steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-top:26px}
+.steps .track{height:5px;border-radius:4px;background:rgba(22,24,29,.08);overflow:hidden}
+.steps .fill{height:100%;border-radius:4px;background:var(--point)}
+.steps .going .fill{box-shadow:0 0 10px rgba(92,127,255,.8)}
+.steps .code{margin-top:10px;font-size:var(--fs-small);color:var(--t4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.steps .name{font-size:var(--fs-card);font-weight:600}
+.steps .name i{font-style:normal;color:var(--point);margin-left:4px}
+.steps .prog{display:block;font-size:var(--fs-small);font-weight:600;color:var(--point-ink)}
+
+.find{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.find label{font-size:var(--fs-card);font-weight:700}
+.search{position:relative;flex:0 1 360px;min-width:240px}
+.search svg{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:#9AA0AC;pointer-events:none}
+.search input{width:100%;height:48px;padding:0 14px 0 42px;border-radius:13px;background:var(--input);border:1px solid rgba(22,24,29,.06);font-size:var(--fs-body)}
+.search input::placeholder{color:var(--ph)}
+.btn-find{height:48px;padding:0 24px;border:0;border-radius:13px;background:var(--point-ink);color:#fff;font-size:var(--fs-body);font-weight:700;cursor:pointer}
+.btn-find:hover{background:var(--point-deep)}
+.ex{font-size:var(--fs-small);color:var(--t4);margin-left:4px}
+.ex-chip{height:38px;padding:0 13px;border-radius:999px;background:#fff;border:1px solid rgba(22,24,29,.08);font-size:var(--fs-small);cursor:pointer}
+.ex-chip:hover{border-color:rgba(92,127,255,.5);color:var(--point-ink)}
+
+.tree{margin-top:18px;border-radius:18px;background:var(--panel);padding:18px;display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+.mat{display:flex;align-items:center;flex:none}
+.mat-box{background:var(--dark);border-radius:13px;padding:10px 14px;color:#fff}
+.mat-box small{display:block;font-size:var(--fs-small);color:#A6A9B4}
+.mat-box b{font-size:var(--fs-body)}
+.link{width:28px;height:2px;background:var(--dark)}
+.mat-label{margin-left:10px;font-size:var(--fs-small);font-weight:600}
+.lots{display:flex;flex-wrap:wrap;gap:8px;flex:1;min-width:260px}
+.lot{display:flex;flex-direction:column;gap:3px;padding:9px 13px;border-radius:12px;background:#fff;border:1px solid rgba(22,24,29,.07);text-align:left;cursor:pointer;transition:transform .15s,box-shadow .15s}
+.lot:hover{transform:translateY(-1px);box-shadow:0 8px 18px -10px rgba(22,24,29,.35)}
+.lot b{font-size:var(--fs-body);font-weight:600}
+.lot span{display:flex;align-items:center;gap:6px;font-size:var(--fs-small);font-weight:600;color:var(--ok-t)}
+.lot .dot{width:6px;height:6px;background:var(--ok)}
+.lot.wait{background:var(--warn-bg);border-color:var(--warn-line)}
+.lot.wait b{color:var(--warn-ink)} .lot.wait span{color:var(--warn-t)} .lot.wait .dot{background:var(--warn)}
+.lot.cur{border:1.5px solid var(--point);box-shadow:0 10px 22px -12px rgba(92,127,255,.7)}
+.lot.cur b{font-weight:700} .lot.cur span{color:var(--point-ink)} .lot.cur .dot{background:var(--point);animation:pulse 1.8s ease-out infinite}
+.lot.other{background:rgba(255,255,255,.4);border:1px dashed rgba(22,24,29,.2)}
+.lot.other b{color:var(--t2)} .lot.other span{color:var(--t3)}
+.note{width:100%;font-size:var(--fs-small);color:var(--t4)}
+
+.meta{display:flex;align-items:center;gap:28px;flex-wrap:wrap;margin-top:18px}
+.meta .rule{width:1px;height:34px;background:rgba(22,24,29,.08)}
+.meta small{display:block;font-size:var(--fs-small);color:var(--t4)}
+.meta b{font-size:var(--fs-band);font-weight:700}
+.meta em{font-style:normal;font-size:var(--fs-small);color:var(--t3);margin-left:6px}
+.go{margin-left:auto;padding:9px 14px;border-radius:10px;background:rgba(92,127,255,.08);color:var(--point-ink);font-size:var(--fs-body);font-weight:600;text-decoration:none}
+.go:hover{color:var(--point-deep)}
+
+/* 우리 화면에만 있는 칸: 결정 필요 */
+.decide{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:18px;padding-top:18px;border-top:1px solid rgba(22,24,29,.06)}
+.decide > b{font-size:var(--fs-card)}
+.decide button{display:flex;align-items:center;gap:10px;padding:9px 14px;border-radius:12px;background:var(--warn-bg);border:1.5px solid var(--warn);color:var(--warn-ink);font-size:var(--fs-body);cursor:pointer}
+.decide button small{font-size:var(--fs-small);color:var(--t3)}
+
+/* 설비별 시간표 */
+.tl-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.legend{margin-left:auto;display:flex;gap:16px;flex-wrap:wrap;font-size:var(--fs-small);color:var(--t3)}
+.legend span{display:flex;align-items:center;gap:6px}
+.lg-bar{width:18px;height:9px;border-radius:3px;background:var(--point)}
+.lg-alarm{width:18px;height:11px;border-radius:3px;background:repeating-linear-gradient(135deg,rgba(240,82,82,.3) 0 3px,rgba(240,82,82,.1) 3px 6px);border:1px solid rgba(240,82,82,.4)}
+.lg-hold{width:0;height:14px;border-left:1.5px dashed #5F6472}
+.lg-now{width:2px;height:14px;background:var(--ink)}
+.scroll{overflow-x:auto;margin-top:14px}
+.grid{min-width:880px;display:grid;grid-template-columns:176px minmax(0,1fr)}
+.axis{position:relative;height:34px;font-size:var(--fs-small);color:var(--t4)}
+.axis span{position:absolute;top:6px;transform:translateX(-50%);white-space:nowrap}
+.axis span:first-child{transform:none}
+.eq{height:62px;display:flex;flex-direction:column;justify-content:center;padding-left:6px;border-bottom:1px solid rgba(22,24,29,.05)}
+.eq b{font-size:var(--fs-body);font-weight:700}
+.eq small{font-size:var(--fs-small);color:var(--t4)}
+.lane{position:relative;height:62px;border-bottom:1px solid rgba(22,24,29,.05)}
+.odd{background:rgba(244,245,248,.6)}
+.vline{position:absolute;top:0;bottom:0;width:1px;background:rgba(22,24,29,.055)}
+.job{position:absolute;top:50%;height:32px;margin-top:-16px;border-radius:9px;background:var(--point);color:#fff;font-size:var(--fs-small);font-weight:700;line-height:32px;padding:0 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 8px 18px -8px rgba(92,127,255,.75);transform-origin:left;animation:barIn .7s cubic-bezier(.2,.8,.2,1) both;z-index:1;cursor:default}
+.alarm{position:absolute;top:4px;bottom:4px;border-radius:6px;background:repeating-linear-gradient(135deg,rgba(240,82,82,.22) 0 4px,rgba(240,82,82,.08) 4px 8px);border:1px solid rgba(240,82,82,.35);z-index:0}
+.marks{position:absolute;inset:0 0 0 176px;pointer-events:none}
+.hold{position:absolute;top:34px;bottom:0;border-left:1.5px dashed #5F6472}
+.hold span{position:absolute;top:-30px;left:0;transform:translateX(-50%);padding:1px 8px;border-radius:6px;background:#fff;border:1px solid rgba(22,24,29,.1);font-size:var(--fs-small);font-weight:600;white-space:nowrap}
+.now{position:absolute;top:34px;bottom:0;width:2px;background:var(--ink)}
+.now span{position:absolute;top:-30px;left:1px;transform:translateX(-50%);padding:1px 10px;border-radius:999px;background:var(--ink);color:#fff;font-size:var(--fs-small);font-weight:700;white-space:nowrap}
+.tip{position:fixed;z-index:50;min-width:220px;padding:12px 14px;border-radius:12px;background:rgba(22,24,29,.94);color:#fff;font-size:var(--fs-small);line-height:1.55;pointer-events:none;transform:translate(-50%,calc(-100% - 10px))}
+.tip b{display:block;font-size:var(--fs-body)}
+.tip em{font-style:normal;color:var(--tip)}
+
+/* 우리 화면에만 있는 칸: 수량 | 보류·해제·폐기 */
+.two{display:grid;grid-template-columns:1.15fr 1fr;gap:18px}
+.qty{display:grid;grid-template-columns:120px 1fr 120px;align-items:center;gap:16px;margin-top:16px}
+.qty > b{font-size:var(--fs-card)}
+.qbar{display:flex;height:12px;border-radius:999px;background:rgba(22,24,29,.07);overflow:hidden}
+.qbar i{display:block;height:100%}
+.qty .r{text-align:right}
+.qty .r b{font-size:var(--fs-band)}
+.qty .r small{display:block;font-size:var(--fs-small);color:var(--t3)}
+.ghost{height:42px;padding:0 16px;border-radius:999px;border:1px solid rgba(22,24,29,.1);background:#fff;font-size:var(--fs-body);cursor:pointer}
+.ghost:hover{border-color:rgba(92,127,255,.5);color:var(--point-ink)}
+.hold-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;padding-bottom:16px;border-bottom:1px solid rgba(22,24,29,.06)}
+.hold-row input{height:46px;width:220px;padding:0 14px;border-radius:12px;background:var(--input);border:1px solid rgba(22,24,29,.06);font-size:var(--fs-body)}
+.hold-row button{height:46px;padding:0 18px;border-radius:12px;border:1px solid rgba(22,24,29,.1);background:#fff;font-size:var(--fs-card);font-weight:700;cursor:pointer}
+.hold-row button:disabled{color:var(--ph);cursor:not-allowed}
+.muted{font-size:var(--fs-body);color:var(--t3);margin:16px 0 0}
+
+/* 핸드오프와 다른 점 */
+.diff{border-radius:18px;border:1px dashed rgba(92,127,255,.45);background:rgba(255,255,255,.55);padding:18px 22px;font-size:var(--fs-body);color:var(--t2)}
+.diff b{color:var(--ink)}
+.diff ul{margin:8px 0 0;padding-left:20px;line-height:1.7}
+
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);padding:12px 18px;border-radius:12px;background:var(--ink);color:#fff;font-size:var(--fs-body);opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(92,127,255,.55)}70%{box-shadow:0 0 0 8px rgba(92,127,255,0)}100%{box-shadow:0 0 0 0 rgba(92,127,255,0)}}
+@keyframes barIn{from{transform:scaleX(0);opacity:0}to{transform:scaleX(1);opacity:1}}
+@media (prefers-reduced-motion:reduce){.pulse,.lot.cur .dot,.job{animation:none}}
+@media (max-width:1100px){.two{grid-template-columns:1fr}.clock b:first-of-type,.tools button:not(:last-child){display:none}}
+@media (max-width:700px){.steps{grid-template-columns:repeat(2,minmax(0,1fr))}.card.head{padding:22px 18px}.card{padding:18px 16px}main{padding:18px 0 0}.bar{padding-left:14px}.bar nav{margin-left:8px}.qty{grid-template-columns:90px 1fr 80px}}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="bar">
+    <svg height="26" width="108" viewBox="0 0 250 60" aria-label="이브테크 EVETECH" role="img" style="overflow:visible;flex:none">
+      <text x="0" y="46" font-weight="800" font-size="46" fill="#1c232b">e</text>
+      <path d="M30 14l11 30h8l11-30" fill="none" stroke="#1c232b" stroke-width="8" stroke-linejoin="round"/>
+      <text x="62" y="46" font-weight="800" font-size="46" fill="#1c232b">e</text>
+      <rect x="94" y="14" width="3.5" height="32" fill="#8f6bff"/>
+      <text x="105" y="46" font-weight="300" font-size="40" letter-spacing="3" fill="#5b6570">TECH</text>
+    </svg>
+    <nav aria-label="메뉴" id="menu"></nav>
+    <span class="clock"><span class="shift">주간</span><b class="num">10/02</b><b class="num">08:00</b></span>
+    <div class="tools"><button>라인 반장 ▾</button><button>시연</button><button>알림 미리보기</button><button aria-label="화면 설정">⚙</button></div>
+  </header>
+
+  <main>
+    <div class="crumb">
+      <nav aria-label="위치"><b>생산</b><span class="sep">/</span><span style="color:var(--t3)">로트 추적</span><span class="sep">/</span><span class="num">LOT-2610-003-1</span></nav>
+      <div class="live"><span class="dot" style="background:var(--ok)"></span><span class="num">실시간 · 10/2 08:00 기준</span></div>
+    </div>
+
+    <!-- ② 로트 요약 -->
+    <section class="card head" aria-labelledby="lotTitle">
+      <div class="top">
+        <div>
+          <div class="state">
+            <span class="chip-live"><span class="dot pulse"></span>생산 중</span>
+            <span class="op-count">OP-50 판정 <b class="num">9 / 24</b></span>
+          </div>
+          <h1 id="lotTitle" class="num">LOT-2610-<span>003-1</span></h1>
+          <div class="tags"><span class="tag num">PO-2610-003</span><span class="tag num">MAT-2609-11</span></div>
+        </div>
+        <button class="lock" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+          생산 중 · 출하 금지
+        </button>
+      </div>
+      <div class="steps" id="steps"></div>
+    </section>
+
+    <!-- ③ 검색 · 계보 -->
+    <section class="card" aria-label="번호로 찾기와 계보">
+      <form class="find" id="findForm">
+        <label for="q">번호로 찾기</label>
+        <div class="search">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="q" placeholder="LOT · MAT · SHP 번호" autocomplete="off">
+        </div>
+        <button class="btn-find" type="submit">찾기</button>
+        <span class="ex">예시</span>
+        <button type="button" class="ex-chip num">MAT-2609-11</button>
+        <button type="button" class="ex-chip num">SHP-2609-001</button>
+        <button type="button" class="ex-chip num">LOT-2609-001-1</button>
+      </form>
+
+      <div class="tree">
+        <div class="mat">
+          <div class="mat-box"><small>원자재</small><b class="num">MAT-2609-11</b></div>
+          <div class="link"></div>
+          <span class="mat-label">생산 로트</span>
+        </div>
+        <div class="lots" id="lots"></div>
+        <div class="note">원자재 1 : 생산 로트 7 (DOC-06 §7)</div>
+      </div>
+
+      <div class="meta">
+        <div><small>LOT</small><b class="num">LOT-2610-003-1</b></div>
+        <div class="rule"></div>
+        <div><small>작업지시</small><b class="num">PO-2610-003</b><em>10/01 야간</em></div>
+        <div class="rule"></div>
+        <div><small>원자재</small><b class="num">MAT-2609-11</b></div>
+        <a class="go" href="#" data-toast="검사 기록 화면으로 이동 (목업)">검사 발췌 · 검사 기록 →</a>
+      </div>
+
+      <div class="decide">
+        <b>결정 필요 1</b>
+        <button type="button" data-toast="LOT-2610-002-1 상세로 이동 (목업)"><b class="num">LOT-2610-002-1</b><b>판정 대기</b><small>발췌 검사 24 / 24 뒤 · 반장</small></button>
+      </div>
+    </section>
+
+    <!-- ④ 설비별 시간표 -->
+    <section class="card" aria-label="설비별 시간표">
+      <div class="tl-head">
+        <h2>설비별 시간표 <span class="num">LOT-2610-003-1</span></h2>
+        <div class="legend"><span><i class="lg-bar"></i>이 로트</span><span><i class="lg-alarm"></i>알람</span><span><i class="lg-hold"></i>보류</span><span><i class="lg-now"></i>지금</span></div>
+      </div>
+      <div class="scroll"><div style="position:relative;min-width:880px" id="tl"></div></div>
+    </section>
+
+    <!-- 우리 화면에만 있는 칸 -->
+    <div class="two">
+      <section class="card" aria-label="수량">
+        <div style="display:flex;justify-content:space-between;align-items:center"><h2>수량</h2><button class="ghost" data-toast="검사 기록 화면으로 이동 (목업)">검사 기록</button></div>
+        <div id="qty"></div>
+      </section>
+      <section class="card" aria-label="보류 해제 폐기">
+        <h2>보류 · 해제 · 폐기 <span class="num">LOT-2610-003-1</span></h2>
+        <div class="hold-row">
+          <input id="reason" placeholder="보류 사유 (필수)" aria-label="보류 사유">
+          <button id="holdBtn" disabled>보류 — 사유 필수</button>
+        </div>
+        <p class="muted">폐기할 불합격품 없음</p>
+      </section>
+    </div>
+
+    <aside class="diff">
+      <b>핸드오프 6c와 다르게 둔 곳</b>
+      <ul>
+        <li>글꼴: Pretendard·JetBrains Mono 대신 앱 C안의 Noto Sans KR 하나 (숫자는 같은 폭이라 줄이 맞음)</li>
+        <li>글자 크기: 11~14px 글자를 C안 최소 15px(보조)·16px(본문)으로 올림</li>
+        <li>머리말(로고·경로)은 앱의 위 유리 바가 맡고, 경로만 카드 위에 한 줄로 남김</li>
+        <li>우리 화면에만 있는 칸을 같은 카드 모양으로 더함: 결정 필요, 수량, 보류·해제·폐기</li>
+        <li>찾기 버튼은 흰 글자 명암 때문에 #5C7FFF 대신 진한 #3F5FE0 (C안 point-ink 규칙)</li>
+      </ul>
+    </aside>
+  </main>
+</div>
+<div class="tip" id="tip" hidden></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+// 위 메뉴 (App.tsx GROUPS · NAV_ICON 그대로)
+const NAV = [
+  ['홈','M3 10.5 12 3l9 7.5M5 9.5V21h14V9.5M10 21v-6h4v6',0],
+  ['생산','M2 20h20M4 20V9l5 3V9l5 3V5h6v15M8 16h1M13 16h1M17 16h1',1],
+  ['정비','M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94z',1],
+  ['품질','M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0zM8 12l3 3 5-6',1],
+  ['재고','M21 8 12 3 3 8v8l9 5 9-5zM3 8l9 5 9-5M12 13v8',1],
+  ['문서','M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8zM14 3v5h5M9 13h6M9 17h6',1],
+  ['설정','M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1 7 17M17 7l2.1-2.1',0],
+];
+document.getElementById('menu').innerHTML = NAV.map(([n, d, sub]) =>
+  `<button class="nav"${n === '생산' ? ' aria-current="page"' : ''}><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>${n}${sub ? '<small aria-hidden="true">▾</small>' : ''}</button>`).join('');
+
+// 공정 5단계
+const STEPS = [['OP-10','SAW-01','절단',24],['OP-20','MIL-01','황삭',24],['OP-30','VF2-01/02','정밀 가공',24],['OP-40','WSH-01','디버링·세척',24],['OP-50','CMM-01','측정',9]];
+document.getElementById('steps').innerHTML = STEPS.map(([op, eq, name, n]) => { const done = n >= 24;
+  return `<div class="${done ? '' : 'going'}"><div class="track"><div class="fill" style="width:${n / 24 * 100}%"></div></div><div class="code num">${op} · ${eq}</div><div class="name">${name}${done ? '<i>✓</i>' : '<span class="prog num">9 / 24 판정</span>'}</div></div>`; }).join('');
+
+// 같은 원자재의 생산 로트
+const LOTS = [['LOT-2609-128-3','pass'],['LOT-2609-129-1','pass'],['LOT-2610-001-1','pass'],['LOT-2610-001-2','pass'],['LOT-2610-002-1','wait'],['LOT-2610-003-1','cur'],['LOT-2610-004-1','other']];
+const LABEL = { pass: '합격', wait: '판정 대기', cur: '생산 중', other: '생산 중' };
+document.getElementById('lots').innerHTML = LOTS.map(([c, s]) =>
+  `<button type="button" class="lot ${s}"${s === 'cur' ? ' aria-current="true"' : ''} data-toast="${s === 'cur' ? '지금 보고 있는 로트' : c + ' 상세로 이동 (목업)'}"><b class="num">${c}</b><span>${s === 'other' ? '' : '<i class="dot"></i>'}${LABEL[s]}</span></button>`).join('');
+
+// 설비별 시간표 — 23:00(10/1) ~ 08:30(10/2) = 570분
+const T = 570, m = (hm) => { const [h, mi] = hm.split(':').map(Number); return ((h + 24 - 23) % 24) * 60 + mi; }, pct = (v) => `${v / T * 100}%`;
+const ROWS = [
+  ['SAW-01','OP-10 절단','00:00','02:12',24],
+  ['MIL-01','OP-20 황삭','01:27','03:01',24],
+  ['VF2-01','OP-30 정밀 가공','03:01','04:42',12,['03:46','04:04']],
+  ['VF2-02','OP-30 정밀 가공','03:15','04:44',10],
+  ['WSH-01','OP-40 디버링·세척','03:30','04:45',14],
+  ['CMM-01','OP-50 측정','03:54','04:48',9],
+];
+const hours = Array.from({ length: 10 }, (_, i) => i * 60);
+const grid = hours.map((v) => `<div class="vline" style="left:${pct(v)}"></div>`).join('');
+const axis = hours.map((v, i) => `<span class="num" style="left:${pct(v)}">${i === 0 ? '23:00' : i === 1 ? '10/2 00:00' : String(i - 1).padStart(2, '0') + ':00'}</span>`).join('');
+let html = `<div class="grid"><div></div><div class="axis">${axis}</div>`;
+ROWS.forEach(([eq, op, s, e, n, al], i) => {
+  const a = m(s), b = m(e), dur = b - a;
+  html += `<div class="eq ${i % 2 ? 'odd' : ''}"><b class="num">${eq}</b><small>${op}</small></div>
+  <div class="lane ${i % 2 ? 'odd' : ''}">${grid}${al ? `<div class="alarm" style="left:${pct(m(al[0]))};width:${pct(m(al[1]) - m(al[0]))}" title="알람 ${al[0]}–${al[1]} (예시)"></div>` : ''}
+  <div class="job num" tabindex="0" style="left:${pct(a)};width:${pct(dur)};animation-delay:${0.1 + i * 0.08}s" data-tip="<b>${eq} · ${op}</b>${s} → ${e} (<em>${Math.floor(dur / 60)}시간 ${dur % 60}분</em>)<br>수량 ${n}개">003-1 · ${n}개</div></div>`;
+});
+html += `</div><div class="marks"><div class="hold" style="left:${pct(m('04:48'))}"><span>보류 04:48</span></div><div class="now" style="left:${pct(m('08:00'))}"><span class="num">지금 08:00</span></div></div>`;
+document.getElementById('tl').innerHTML = html;
+
+const tip = document.getElementById('tip');
+const showTip = (el) => { const r = el.getBoundingClientRect(); tip.innerHTML = el.dataset.tip; tip.style.left = `${r.left + r.width / 2}px`; tip.style.top = `${r.top}px`; tip.hidden = false; };
+document.querySelectorAll('.job').forEach((el) => {
+  el.addEventListener('mouseenter', () => showTip(el)); el.addEventListener('focus', () => showTip(el));
+  el.addEventListener('mouseleave', () => (tip.hidden = true)); el.addEventListener('blur', () => (tip.hidden = true));
+});
+addEventListener('scroll', () => (tip.hidden = true), true);
+
+// 수량
+const QTY = [['투입', [[24, '#5C7FFF']], '24'], ['OP-50 판정', [[9, '#5C7FFF'], [0, '#c62a2f']], '9 / 24', '합격 9 · 불합격 0'], ['완제품 입고', [[0, '#5C7FFF']], '0'], ['출하', [[0, '#5C7FFF']], '0', '금지']];
+document.getElementById('qty').innerHTML = QTY.map(([l, segs, num, sub]) =>
+  `<div class="qty"><b>${l}</b><div class="qbar">${segs.map(([v, c]) => `<i style="width:${v / 24 * 100}%;background:${c}"></i>`).join('')}</div><div class="r"><b class="num">${num}</b>${sub ? `<small>${sub}</small>` : ''}</div></div>`).join('');
+
+// 찾기 · 예시 칩 · 보류 사유
+const toastEl = document.getElementById('toast'); let tt;
+const toast = (s) => { toastEl.textContent = s; toastEl.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => toastEl.classList.remove('on'), 1800); };
+const q = document.getElementById('q');
+document.querySelectorAll('.ex-chip').forEach((b) => b.addEventListener('click', () => { q.value = b.textContent; q.focus(); }));
+document.getElementById('findForm').addEventListener('submit', (e) => { e.preventDefault(); const v = q.value.trim().toUpperCase(); toast(v ? `${v} 찾기 — 실제 화면은 /api/lots 조회` : '번호를 넣어 주세요'); });
+document.addEventListener('click', (e) => { const t = e.target.closest('[data-toast]'); if (t) { e.preventDefault(); toast(t.dataset.toast); } });
+const reason = document.getElementById('reason'), holdBtn = document.getElementById('holdBtn');
+reason.addEventListener('input', () => { const ok = !!reason.value.trim(); holdBtn.disabled = !ok; holdBtn.textContent = ok ? '보류' : '보류 — 사유 필수'; });
+holdBtn.addEventListener('click', () => toast('보류하면 이 로트와 다음 1~2개 로트가 전수 검사로 바뀝니다 (목업)'));
+</script>
+</body>
+</html>

@@ -42,7 +42,7 @@ export default function Login({ onLogin }: { onLogin: (u: UserRec) => void }) {
         </div>
         <input type="password" value={pw} onChange={(e) => setPw(e.target.value)} placeholder="비밀번호" aria-label="비밀번호" className={field} />
         {fail && <p className="text-center text-small font-semibold text-crit">{fail}</p>}
-        <button type="submit" className="mx-auto mt-2 h-12 w-[160px] rounded-full bg-ink text-card font-bold text-white hover:bg-black">로그인</button>
+        <button type="submit" className="mx-auto mt-2 h-12 w-[160px] rounded-full bg-brand text-card font-bold text-white hover:bg-brand-ink">로그인</button>
       </form>
     </div>
   );

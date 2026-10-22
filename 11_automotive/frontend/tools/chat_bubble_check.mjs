@@ -169,16 +169,17 @@ t('알람 답은 카드이고 답 박스는 하나뿐이다 (겹박스 없음), 
   assert.ok(!h.includes('알람 코드집 DOC-02'), '접히면 문서 버튼이 없다');
   assert.ok(!h.includes('rounded-2xl bg-white px-4 py-2'), '출처 알약 없음');
 });
-t('역할: 작업자(OPR)는 작업자 단계가, 보전(MNT)은 보전 단계가 보라색 (230은 작업자 줄만 4개)', () => {
-  const n = (role) => (bubble(row('230 알람 뭐야', A230), role).match(/bg-violet-600/g) ?? []).length;
+// 역할 강조 색은 화이트 카드 · 파스텔 블루 테마(2026-10-21)에서 보라 → 파랑 (AlarmAnswerCard bg-blue-600)
+t('역할: 작업자(OPR)는 작업자 단계가, 보전(MNT)은 보전 단계가 파란색 (230은 작업자 줄만 4개)', () => {
+  const n = (role) => (bubble(row('230 알람 뭐야', A230), role).match(/bg-blue-600/g) ?? []).length;
   assert.equal(n('OPR'), 4); assert.equal(n('MNT'), 0);
 });
 
-t('점검 순서만 남긴 답도 카드이고 역할 강조가 간다: 작업자(OPR)는 작업자 단계 4개, 보전(MNT)은 보전 단계 4개가 보라색 (2026-10-21)', () => {
+t('점검 순서만 남긴 답도 카드이고 역할 강조가 간다: 작업자(OPR)는 작업자 단계 4개, 보전(MNT)은 보전 단계 4개가 파란색 (2026-10-21)', () => {
   const h = bubble(row('992 뜨면 뭐부터 해?', STEPS992, { sources: SOURCES }), 'OPR');
   assert.ok(h.includes('점검 순서 (사내 문서)'), '점검 순서 제목이 없다: ' + h.slice(0, 400));
   assert.ok(h.includes(`flex flex-col gap-4 ${Box.ANSWER_BOX}`), '카드 상자가 아니다(평문)');
-  const n = (role) => (bubble(row('992 뜨면 뭐부터 해?', STEPS992), role).match(/bg-violet-600/g) ?? []).length;
+  const n = (role) => (bubble(row('992 뜨면 뭐부터 해?', STEPS992), role).match(/bg-blue-600/g) ?? []).length;
   assert.equal(n('OPR'), 4); assert.equal(n('MNT'), 4);
 });
 
