@@ -360,7 +360,7 @@ def test_parse_of_every_evaluation_question_is_unchanged_by_the_sensor_step(mode
 
 @pytest.mark.parametrize("q,other", [("VF2-01 센서 추세랑 MTTR 알려줘", "reliability"), ("2075 알람 났을 때 센서 값도 보여줘", "alarms"),
                                      ("992 알람 이력이랑 VF2-01 축 부하 최근 1시간", "alarms"), ("LOT-2609-128-1 지금 어디까지 갔어? VF2-02 센서도 같이", "lot"),
-                                     ("VF2-01 지금 상태랑 센서", "equipment_status"), ("VF2-01 가동률이랑 센서 추세 같이", "kpi"),
+                                     ("VF2-01 돌아가? 센서도", "equipment_status"), ("VF2-01 가동률이랑 센서 추세 같이", "kpi"),
                                      ("VF2-01 정지 시간이랑 그동안 주축 부하", "stop_reasons"), ("VF2-01 정지 건수랑 축 부하 최근 1시간", "stop_reasons")])
 def test_overlap_the_existing_intent_wins_and_the_sensor_tool_is_not_called(fb, mode, q, other):
     assert "sensor_trend" not in A.parse(q)["intents"]

@@ -176,7 +176,7 @@ OPS_INTENTS_V2 = [
     ("pm_due", re.compile(r"예방\s*정비|정비\s*기한|기한")),
     ("work_records", re.compile(r"작업기록|조치\s*기록|지난\s*조치|어떻게\s*고쳤")),
     ("alarm_count", re.compile(r"(?:알람|경보)\S*\s*(?:몇\s*번|자주)|몇\s*번\s*(?:났|떴|울렸|발생)|자주\s*(?:나|떠|뜨)|왜\s*자꾸|또\s*떠|또\s*떴")),
-    ("equipment_status", re.compile(r"지금\s*상태|상태\s*어때|돌아가(?:\?|$|요|나|니|고\s*있|는지)|가동\s*중|멈춰\s*있(?!었)" + STATUS_WORK_RX + CURRENT_STATUS_RX)),
+    ("equipment_status", re.compile(r"지금\s*상태|상태\s*어때|돌아가(?:\?|$|요|나|니|고\s*있|는지)|가동\s*중|가동\s*상태|멈춰\s*있(?!었)" + STATUS_WORK_RX + CURRENT_STATUS_RX)),
 ]
 NIGHT_V2 = re.compile(r"야간|간밤|어젯밤|밤|새벽")
 DAY_V2 = re.compile(r"주간|낮(?!음|은|춰|추|아|게|다|으)")
@@ -197,7 +197,7 @@ OPS_INTENTS_V3 = [
     ("pm_due", re.compile(r"예방\s*정비|정비\s*기한|기한")),
     ("work_records", re.compile(r"작업기록|조치\s*기록|지난\s*조치|어떻게\s*고쳤")),
     ("alarm_count", re.compile(r"(?:알람|경보)\S*\s*(?:몇\s*번|자주)|몇\s*번\s*(?:이나\s*)?(?:났|떴|울렸|발생)|자주\s*(?:나|떠|뜨)|왜\s*자꾸|또\s*떠|또\s*떴")),
-    ("equipment_status", re.compile(r"지금\s*상태|상태\s*어때|돌아가(?:\?|$|요|나|니|고\s*있|는지)|가동\s*중|멈춰\s*있(?!었)" + STATUS_WORK_RX + CURRENT_STATUS_RX)),
+    ("equipment_status", re.compile(r"지금\s*상태|상태\s*어때|돌아가(?:\?|$|요|나|니|고\s*있|는지)|가동\s*중|가동\s*상태|멈춰\s*있(?!었)" + STATUS_WORK_RX + CURRENT_STATUS_RX)),
 ]
 # 사내 문서의 복합어 가운데 의도 낱말("정지")이 든 것 — 의도를 볼 때 이 글자 범위를 뺀다 (긴 것 우선, spaCy EntityRuler 방식)
 COMPOUND_MASK_V3 = re.compile(r"통과\s*·?\s*정지\s*게이지|정지\s*게이지|비상\s*정지|과열\s*정지|정지\s*등급")
@@ -2140,7 +2140,15 @@ def ops_answer(role: str, p: dict, needs: list[str] | None = None,
         elif intent == "alarm_count" and needs is not None:
             needs.append("알람 번호 (예: 2075)")
         elif intent == "equipment_status":
-            r = T.equipment_status(role, eq)
+            ids = p.get("status_ids")
+            if ids is None:
+                r = T.equipment_status(role, eq)
+            elif len(ids) == 1:
+                r = T.equipment_status(role, ids[0])
+            else:
+                r = T.equipment_status(role, None)
+                keep = set(ids)
+                r = {**r, "rows": [s for s in r["rows"] if s["equipment_id"] in keep]}
             data.append(r)
             # [11_automotive 이식 2026-10-16] 원본은 "마지막 상태 (HH:MM까지)" — 지금 상태 조회는 "상태 (HH:MM부터 N분)" + 열린 알람·잠금
             items = [f"{s['equipment_id']} {s['last_state']} ({(s.get('since') or '')[11:16]}부터 {s.get('minutes') or 0:g}분)"
@@ -3396,7 +3404,7 @@ PURE_UNSURE_CHAT_V19 = "자동으로 확인하지 못했어요. 문서에 없다
 EQUIP_DOC_WHY_V21 = "신호가 설비 이름뿐이고 안전 낱말이 없는 질문 — 문서 질문으로 보고 안전망 없이 순수 길로 (2026-10-20)"
 EQUIP_ONLY_END_V21 = re.compile(r"(?:이?요|이에요|예요|입니다|이야|야|은|는|이|가|을|를|도|만|에|의|로|으로)?")
 ASKBACK_NEED_V21 = re.compile(r"알려 주세요: 설비 \(예: [^)]*\)\.?\s*$")   # ops_answer가 설비 하나만 되물은 답 ("… 다음을 알려 주세요: 설비 (예: VF2-01).")
-EQUIP_ONLY_NOTE_V21 = "{names}에 대해 무엇을 볼까요? 예: '{e} OEE 어제값', '{e} 지금 상태 어때?', '{e} 정비 기한'"
+EQUIP_ONLY_NOTE_V21 = "{names}에 대해 무엇을 볼까요? 예: '{e} OEE 어제값', '{e} 가동 상태', '{e} 정비 기한'"
 UNREAD_V21 = [(re.compile(r"센서"), "센서 값"), (re.compile(r"정비\s*현황"), "정비현황"), (re.compile(r"브리핑"), "브리핑")]   # 이 채팅이 아직 못 하는 일의 이름 (목록 밖의 말은 추측하지 않는다)
 UNREAD_NOTE_V21 = "이 채팅에서는 아직 {names}을 답하지 못했어요. 해당 화면에서 확인해 주세요."
 # 속도 손실 개수 (2026-10-21 시연 시험): 채팅 도구는 손실 정지(고장)만 읽고 속도 손실은 읽지 못한다. 손실이 무엇인지 묻는 말("속도 손실이 뭐야?")은 문서가 답하므로
@@ -3621,6 +3629,166 @@ def equipment_only_answer_v21(base: dict, p: dict) -> dict:
     eqs = list(dict.fromkeys(p["equipment"]))
     text = EQUIP_ONLY_NOTE_V21.format(names="·".join(eqs), e=eqs[0])
     return {**base, "status": "안내", "mode": "규칙 (설비 이름뿐인 글 — 안내 고정 문구)", "conclusion": text, "blocks": [{"kind": "text", "text": text}]}
+
+
+# 상태 질문 되묻기 (2026-10-22). 설비(하나·모든 설비·공정)와 종류(가동·정비 기한·지금 하는 일) 중 빈 칸만 묻는다.
+# 현재·지금은 종류가 아니다. 재고·생산·로트·알람·품질은 이 되묻기에 넣지 않는다. 새 스위치는 없다.
+STATUS_EQ_ALL_V29 = ("SAW-01", "MIL-01", "VF2-01", "VF2-02", "WSH-01", "CMM-01")
+STATUS_PROCESS_V29 = {"OP-10": ("SAW-01",), "OP-20": ("MIL-01",), "OP-30": ("VF2-01", "VF2-02"),
+                      "OP-40": ("WSH-01",), "OP-50": ("CMM-01",)}
+_STATUS_RUN_V29 = re.compile(r"가동\s*상태|가동\s*중|돌아가|멈춰\s*있(?!었)")
+_STATUS_PM_V29 = re.compile(r"정비\s*상태|정비\s*기한")
+_STATUS_PM_ASK_V29 = re.compile(r"정비\s*상태|^\s*정비\s*기한\s*(?:은|는|이|가)?\s*[?？]*\s*$")
+_STATUS_NOW_V29 = re.compile(r"(?:정비|수리|셋업|점검)\s*중(?:이야|이에요|이예요|이죠|이지|인가요?|인지|이니|이냐|입니까)"
+                             r"|(?:정비|수리|셋업|점검)\s*중\s*[?？]|(?:정비|수리|셋업)\s*(?:몇\s*분\s*남|남은\s*시간|언제\s*끝|끝나려면|남았)")
+_STATUS_ALL_V29 = re.compile(r"모든\s*설비")
+_STATUS_LINE_V29 = re.compile(r"(?<![가-힣A-Za-z0-9])(?:라인|공장)")
+_STATUS_PROC_V29 = re.compile(r"(?<![A-Za-z0-9])OP-(\d+)")
+_STATUS_OUT_V29 = re.compile(r"(?:재고|생산|실적|로트|품질|알람|경보|보고서)\s*상태")
+_STATUS_ASK_EQUIP_V29 = re.compile(r"알려 주세요\. 예: VF2-0[12], 모든 설비\.\s*$")
+_STATUS_ASK_KIND_V29 = re.compile(r"가동 상태인지, 정비 기한인지 알려 주세요\.\s*$")
+_STATUS_ONLY_ALL_V29 = re.compile(r"^\s*모든\s*설비\s*(?:이?요|이에요|예요|입니다|이야|야)?\s*[.!?]*\s*$")
+_STATUS_ONLY_KIND_V29 = re.compile(r"^\s*(가동\s*상태|정비\s*기한)\s*(?:이?요|이에요|예요|입니다|이야|야|은|는)?\s*[.!?？?]*\s*$")
+
+
+def _status_kind_v29(question: str) -> str | None:
+    run = bool(_STATUS_RUN_V29.search(question))
+    pm = bool(_STATUS_PM_V29.search(question))
+    now = bool(_STATUS_NOW_V29.search(question))
+    if now and not pm:
+        return "now"
+    if pm and not run and not now:
+        return "pm"
+    if run and not pm and not now:
+        return "run"
+    if run and pm and not now:
+        return "both"
+    return None
+
+
+def _status_now_word_v29(question: str) -> str:
+    for word in ("정비", "수리", "셋업", "점검"):
+        if word in question:
+            return word
+    return "정비"
+
+
+def status_gap_v29(question: str, p: dict) -> dict | None:
+    """상태 질문의 빈 칸. None이면 이 되묻기 대상이 아니다.
+    ask가 있으면 그 문장으로 되묻고 도구를 부르지 않는다. drop_live면 지금 상태 조회를 빼 정비 기한·문서 길로 둔다.
+    ids가 있으면 그 설비의 지금 상태만 답한다."""
+    if _STATUS_OUT_V29.search(question):
+        return None
+    kind = _status_kind_v29(question)
+    bare = "equipment_status" in (p.get("intents") or [])
+    if kind is None and not bare:
+        return None
+    ids = list(dict.fromkeys(p.get("equipment") or []))
+    all_word = bool(_STATUS_ALL_V29.search(question))
+    proc_nos = list(dict.fromkeys(_STATUS_PROC_V29.findall(question)))
+    known: list[str] = []
+    unknown_proc = False
+    labels: list[str] = []
+    for no in proc_nos:
+        label = f"OP-{no}"
+        if label in STATUS_PROCESS_V29:
+            labels.append(label)
+            known.extend(STATUS_PROCESS_V29[label])
+        else:
+            unknown_proc = True
+    line = bool(_STATUS_LINE_V29.search(question))
+
+    def ask(text: str) -> dict:
+        return {"ask": text, "drop_live": False, "ids": None}
+
+    def live(rows: list[str] | tuple[str, ...]) -> dict:
+        return {"ask": None, "drop_live": False, "ids": list(rows)}
+
+    drop = {"ask": None, "drop_live": True, "ids": None}
+    if ids:
+        scope: list[str] | None = ids
+    elif all_word:
+        scope = list(STATUS_EQ_ALL_V29)
+    elif proc_nos:
+        if unknown_proc or not known:
+            return ask("확인 필요 — 그 공정의 설비를 찾지 못했습니다. 설비 이름을 알려 주세요. 예: VF2-01, 모든 설비.")
+        if kind is None:
+            return ask(f"확인 필요 — {'·'.join(labels)}은 {'·'.join(dict.fromkeys(known))}입니다. 가동 상태인지, 정비 기한인지 알려 주세요.")
+        scope = list(dict.fromkeys(known))
+    elif line and kind is None:
+        return ask("확인 필요 — 설비 여섯 대의 가동 상태인지, 라인의 생산·OEE인지 알려 주세요.")
+    elif line:
+        scope = list(STATUS_EQ_ALL_V29)
+    else:
+        scope = None
+    if scope is None and kind == "run":
+        return ask("확인 필요 — 어느 설비의 가동 상태인지 알려 주세요. 예: VF2-01, 모든 설비.")
+    if scope is None and kind == "now":
+        return ask(f"확인 필요 — 어느 설비가 지금 {_status_now_word_v29(question)} 중인지 알려 주세요. 예: VF2-02, 모든 설비.")
+    if scope is None and kind == "pm":
+        # "정비상태는?"만 되묻는다. "기한 넘긴 예방 정비 있어?"·"정비 기한이 지나면"은 원래 조회·문서 질문이다.
+        if _STATUS_PM_ASK_V29.search(question):
+            return ask("확인 필요 — 어느 설비의 정비 기한인지 알려 주세요. 예: VF2-02, 모든 설비.")
+        return None
+    if scope is None:
+        return ask("확인 필요 — 어느 설비인지, 가동 상태인지 정비 기한인지도 알려 주세요. 예: VF2-01 가동 상태, 모든 설비 가동 상태, VF2-02 정비 기한.")
+    if kind == "pm":
+        return drop
+    if kind == "both":
+        return {"ask": None, "drop_live": False, "ids": list(scope), "both": True}
+    if kind is None:
+        if len(scope) == len(STATUS_EQ_ALL_V29) and scope == list(STATUS_EQ_ALL_V29):
+            return ask("확인 필요 — 모든 설비의 가동 상태인지, 정비 기한인지 알려 주세요.")
+        return ask(f"확인 필요 — {'·'.join(scope)}의 가동 상태인지, 정비 기한인지 알려 주세요.")
+    return live(scope)
+
+
+def status_ask_answer_v29(base: dict, text: str) -> dict:
+    """상태 되묻기 한 줄. 화면으로 나가지 않는 `_status_ask`는 다음 글을 한 번 잇는 데 쓴다."""
+    return {**base, "status": "확인 필요", "mode": "규칙 (상태 질문 되묻기 — Claude 호출 없음)",
+            "conclusion": text, "blocks": [{"kind": "text", "text": text}],
+            "_status_ask": {"status": "확인 필요", "question": base.get("question") or "", "conclusion": text}}
+
+
+_STATUS_BOTH_REPLY_V29 = re.compile(r"^\s*(?:전부\s*다|전부다|모두|둘\s*다)\s*[.。!！?？]*\s*$")
+
+
+def _status_named_v29(text: str) -> list[str]:
+    return list(dict.fromkeys(m.group(1).upper() for m in EQUIP_RE_V5.finditer(text or "")))
+
+
+def status_follow_v29(question: str, p: dict, prev: dict | None) -> str | None:
+    """바로 앞 상태 되묻기에 한 번 붙이는 질문. 설비만 물은 답에는 설비 이름·모든 설비.
+    종류만 물은 답에는 가동 상태·정비 기한, 그 답에 적힌 설비 이름, 전부다.
+    둘 다 비었거나 라인·공장을 물은 답은 이름만으로 잇지 않는다. 답 문장은 쓰지 않는다."""
+    if not prev or prev.get("status") != "확인 필요":
+        return None
+    conc = (prev.get("conclusion") or "").strip()
+    pq = (prev.get("question") or "").strip()
+    if not pq:
+        return None
+    if _STATUS_ASK_EQUIP_V29.search(conc):
+        if _STATUS_ONLY_ALL_V29.search(question):
+            return f"{pq} 모든 설비"
+        eqs = list(dict.fromkeys(p.get("equipment") or []))
+        if len(eqs) == 1 and equipment_only_v21(question, p):
+            return f"{pq} {eqs[0]}"
+        return None
+    if _STATUS_ASK_KIND_V29.search(conc):
+        m = _STATUS_ONLY_KIND_V29.match(question.strip())
+        if m:
+            return f"{pq} {m.group(1)}"
+        named = _status_named_v29(conc)
+        if _STATUS_BOTH_REPLY_V29.match(question.strip()):
+            if len(named) >= 2:
+                return pq
+            if len(named) == 1:
+                return f"{named[0]} 가동 상태 정비 기한"
+            return None
+        eqs = list(dict.fromkeys(x.upper() for x in (p.get("equipment") or [])))
+        if len(eqs) == 1 and eqs[0] in named and equipment_only_v21(question, p):
+            return f"{eqs[0]} 상태는"
+    return None
 
 
 def askback_merge_v21(question: str, p: dict, prev: dict | None) -> tuple[str, str] | None:
@@ -4378,6 +4546,32 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
         if SL.on():
             SL.step("1 규칙 판정", 결과="보고서 작성·확정 여부 질문 — 규칙이 production 확정 여부로 답하거나 안내 (Claude 호출 없음)")
         return report_status_answer_v33(base, role, question, p)
+    followed = status_follow_v29(question, p, prev)   # 상태 되묻기 직후 한 번 (FOLLOWUP과 따로, 2026-10-22)
+    if followed:
+        if SL.on():
+            SL.step("1 규칙 판정", 결과="상태 되묻기 이어받기 — 앞 질문에 빠진 칸을 붙여 다시 답함", 이어받은질문=followed)
+        memo["record_question"] = followed
+        pq_text = (prev or {}).get("question") or ""
+        added = followed[len(pq_text):].strip() if followed.startswith(pq_text) else followed
+        added = added or followed
+        inner = _answer(followed, role, context, prev=None, memo=memo, screen_text=screen_text)
+        inner["question"] = question
+        return with_askback_note_v21(inner, (prev or {}).get("question") or "", added)
+    gap = status_gap_v29(question, p)
+    if gap is not None:
+        if gap.get("ask"):
+            if SL.on():
+                SL.step("1 규칙 판정", 결과="상태 질문 빈 칸 — 규칙이 되묻기 (Claude 호출 없음)")
+            return status_ask_answer_v29(base, gap["ask"])
+        if gap.get("drop_live"):
+            p["intents"] = [i for i in p["intents"] if i != "equipment_status"]
+        elif gap.get("both"):
+            p["status_ids"] = gap["ids"]
+            for name in ("equipment_status", "pm_due"):
+                if name not in p["intents"]:
+                    p["intents"].append(name)
+        elif gap.get("ids") is not None:
+            p["status_ids"] = gap["ids"]
     if s.followup and not pure_drop:   # 설비 이름뿐인 글 (2026-10-20): 앞 답이 "설비를 알려 주세요"면 앞 질문과 이어 답한다
         merged = askback_merge_v21(question, p, prev)
         if merged:
