@@ -3,6 +3,7 @@
 // 고정 서식은 글자를 바꾸지 않고 묶음(작업 전·고전압 대기·보호구·작업 후)과 칩으로만 나눠 보인다.
 // 묶음 부제·근거·출처 줄은 화면 본문에서 빼고 출처 토글로 (원문 출처는 표시하지 않음 — FR-MNT-01-07, NFR-COPY-02).
 import type { ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import type { MachineId } from '@/components/types';
 import { MACHINES } from './data';
 import { BLOCK, SAFETY, SHORT, type AlarmRec } from './model';
@@ -101,16 +102,18 @@ export function LockHead({ value, onChange, disabled }: { value: boolean[]; onCh
 
 // 승인·확정·취소처럼 되돌리기 어려운 버튼은 확인 상자를 거친다 (2.4)
 export function ConfirmBox({ title, body, okLabel, onOk, onCancel }: { title: string; body: ReactNode; okLabel: string; onOk: () => void; onCancel: () => void }) {
-  return (
+  // body로 빼서 띄운다 (2026-10-22): 유리 효과(backdrop-filter) 위 바 안의 [시연 ▾] 처음으로 등에서 fixed가 바 기준이 돼 위에 붙어 잘리던 것
+  return createPortal(
     <div role="dialog" aria-label={title} className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
       <div className="w-full max-w-[420px] rounded-tile bg-white p-5 shadow-2xl">
         <h3 className="text-card font-bold">{title}</h3>
         <div className="mt-2 text-body text-ink">{body}</div>
         <div className="mt-4 flex justify-end gap-3">
           <button onClick={onCancel} className="h-12 rounded-ctl border border-line px-5 font-semibold">돌아가기</button>
-          <button onClick={onOk} className="h-12 rounded-ctl bg-ink px-5 font-bold text-white">{okLabel}</button>
+          <button onClick={onOk} className="h-12 rounded-ctl bg-brand px-5 font-bold text-white hover:bg-brand-ink">{okLabel}</button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

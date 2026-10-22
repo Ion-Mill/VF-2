@@ -5,7 +5,7 @@ export default function Logo({ height = 28 }: { height?: number }) {
       <text x="0" y="46" fontWeight="800" fontSize="46" fill="#1c232b">e</text>
       <path d="M30 14l11 30h8l11-30" fill="none" stroke="#1c232b" strokeWidth="8" strokeLinejoin="round" />
       <text x="62" y="46" fontWeight="800" fontSize="46" fill="#1c232b">e</text>
-      <rect x="94" y="14" width="3.5" height="32" fill="#8f6bff" />
+      <rect x="94" y="14" width="3.5" height="32" fill="#5b8cf0" />
       <text x="105" y="46" fontWeight="300" fontSize="40" letterSpacing="3" fill="#5b6570">TECH</text>
     </svg>
   );

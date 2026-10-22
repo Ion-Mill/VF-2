@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>로트 추적 색감 시안</title>
+<!-- 지금 앱의 로트 추적 화면(LOT-2610-001-1) 배치 그대로, 색만 3가지로 바꾼 목업. 막대는 수량 카드 시안 A "빛나는 막대"(하늘색 #5C7FFF + 광택 + 끝점).
+     시간표 막대 시각은 모양 보기용 예시값 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap">
+<style>
+/* 시안 1 — 맑은 하늘: 은색 바탕 + 차콜 + 하늘색 */
+:root{
+  --bg:linear-gradient(180deg,#FFFFFF 0%,#F2F4FA 55%,#EAEEF7 100%);
+  --ink:#16181D; --t2:#3A3E48; --t3:#6B7080; --line:rgba(22,24,29,.07); --track:#EEF0F5;
+  --point:#5C7FFF; --point-ink:#3F5FE0; --point-tint:rgba(92,127,255,.10); --glow:rgba(92,127,255,.75);
+  --dark:#26282F; --dark-ico:#A9BCFF; --panel:#F3F4F7; --input:#F4F5F8;
+  --card:rgba(255,255,255,.94); --card-line:rgba(255,255,255,.95); --card-shadow:inset 0 1px 0 #fff,0 1px 2px rgba(16,24,40,.04),0 24px 48px -24px rgba(40,36,90,.18);
+  --glass:rgba(255,255,255,.86); --title-band:rgba(255,255,255,.7);
+  --ok:#127A46; --ok-bg:#E0F2E8; --ok-dot:#22B07D; --ok-pill:#127A46;
+  --warn:#9A6200; --warn-bg:#FFF6E0; --crit:#C62A2F;
+}
+/* 시안 2 — 네이비 + 하늘: 차콜 자리를 남색으로, 회색을 푸른 회색으로 */
+[data-v="2"]{
+  --bg:linear-gradient(180deg,#F8FAFF 0%,#EDF1FA 55%,#E2E8F5 100%);
+  --ink:#141B2D; --t2:#36405A; --t3:#5E6A85; --line:rgba(20,27,45,.08); --track:#E8EDF7;
+  --dark:#1D2B53; --dark-ico:#8FA8FF; --panel:#EEF2FA; --input:#F1F4FA;
+  --card-shadow:inset 0 1px 0 #fff,0 1px 2px rgba(20,27,45,.05),0 24px 48px -24px rgba(29,43,83,.22);
+  --ok-pill:#127A46;
+}
+/* 시안 3 — 하늘 유리: 바탕까지 하늘빛, 카드는 반투명 유리, 진한 칸도 파랑 */
+[data-v="3"]{
+  --bg:radial-gradient(70% 50% at 90% 0%,rgba(143,211,255,.55) 0%,transparent 70%),radial-gradient(60% 50% at 0% 100%,rgba(92,127,255,.25) 0%,transparent 70%),linear-gradient(165deg,#EEF4FF 0%,#DCE6FF 50%,#C9D7FF 100%);
+  --ink:#16203A; --t2:#34406A; --t3:#5A6690; --line:rgba(63,95,224,.10); --track:rgba(63,95,224,.10);
+  --dark:#2E48B8; --dark-ico:#CCD7FF; --panel:rgba(92,127,255,.07); --input:rgba(255,255,255,.7);
+  --card:rgba(255,255,255,.6); --card-line:rgba(255,255,255,.85); --card-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 24px 48px -24px rgba(46,72,184,.28);
+  --glass:rgba(255,255,255,.62); --title-band:transparent;
+  --ok-pill:#127A46; --panel-line:rgba(255,255,255,.7);
+}
+[data-v="3"] .tree,[data-v="3"] .tag{background:rgba(255,255,255,.55);box-shadow:inset 0 0 0 1px rgba(255,255,255,.8)}
+[data-v="3"] .lot{background:rgba(255,255,255,.8)}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Noto Sans KR",system-ui,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;word-break:keep-all;font-size:16px;background:#EEF1F8}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--point);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.page{min-height:100vh;background:var(--bg);background-attachment:fixed;padding:10px 0 110px}
+
+.bar{position:sticky;top:10px;z-index:30;margin:0 12px;display:flex;align-items:center;gap:6px;height:58px;padding:0 14px 0 22px;border-radius:22px;background:var(--glass);border:1px solid rgba(255,255,255,.8);box-shadow:0 10px 30px rgba(28,37,48,.12);backdrop-filter:blur(24px)}
+.bar nav{display:flex;gap:2px;margin-left:30px}
+.nav{display:flex;align-items:center;gap:7px;height:40px;padding:0 13px;border:0;border-radius:12px;background:none;font-size:17px;font-weight:600;color:var(--t3);white-space:nowrap}
+.nav svg{color:var(--t3)}
+.nav.on{background:var(--dark);color:#fff;font-weight:700;box-shadow:0 8px 18px -8px var(--glow)}
+.nav.on svg{color:var(--dark-ico)}
+.nav.off{opacity:.45}
+.nav small{font-size:12px;opacity:.7}
+.clock{margin-left:auto;display:flex;align-items:center;gap:10px;white-space:nowrap}
+.shift{padding:3px 9px;border-radius:10px;background:var(--warn-bg);color:var(--warn);font-size:15px;font-weight:700}
+.clock b{font-size:20px}
+.tools{display:flex;gap:2px;margin-left:18px;font-size:15px;font-weight:600}
+.tools span{padding:8px 11px;white-space:nowrap}
+
+.title{margin-top:14px;padding:12px 12px;background:var(--title-band);font-size:20px;font-weight:700}
+main{max-width:1300px;margin:16px auto 0;padding:0 16px;display:flex;flex-direction:column;gap:16px}
+.card{border-radius:24px;background:var(--card);border:1px solid var(--card-line);box-shadow:var(--card-shadow);padding:22px 24px;backdrop-filter:blur(18px);min-width:0}
+.head{padding:24px 24px 26px}
+
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap}
+.state{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:15px;color:var(--t2)}
+.pill{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 18px;border-radius:999px;background:var(--ok-pill);color:#fff;font-size:18px;font-weight:700;box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 8px 18px -8px rgba(18,122,70,.6)}
+.pill i{width:9px;height:9px;border-radius:50%;background:#7CF0B5}
+.right{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.ship{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 20px;border-radius:999px;background:var(--ok-bg);color:var(--ok);font-size:16px;font-weight:700}
+.ship i{width:10px;height:10px;border-radius:50%;background:var(--ok-dot)}
+.live{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--t3)}
+.live i{width:7px;height:7px;border-radius:50%;background:var(--ok-dot)}
+h1{margin:22px 0 0;font-size:46px;font-weight:800;line-height:1.05;letter-spacing:-.03em}
+h1 span{color:var(--point)}
+.tags{display:flex;gap:8px;margin-top:14px}
+.tag{padding:4px 10px;border-radius:8px;background:var(--panel);color:var(--t2);font-size:13px}
+
+/* 빛나는 막대 (수량 시안 A) — 하늘색 + 위 광택 + 아래 빛 + 끝점 */
+.gloss{position:relative;border-radius:999px;background:var(--point);box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 4px 12px -3px var(--glow);transform-origin:left;animation:grow 1s cubic-bezier(.2,.8,.2,1) both}
+.gloss.cap::after{content:"";position:absolute;right:2px;top:50%;width:var(--cap,6px);height:var(--cap,6px);margin-top:calc(var(--cap,6px) / -2);border-radius:50%;background:#fff}
+.track{position:relative;border-radius:999px;background:var(--track);box-shadow:inset 0 1px 2px rgba(22,24,29,.07)}
+
+.steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin-top:28px}
+.steps .track{height:8px}
+.steps .gloss{height:100%;--cap:4px}
+.steps .code{margin-top:10px;font-size:13px;color:var(--t3);white-space:nowrap}
+.steps .name{font-size:16px;font-weight:700}
+.steps .name em{font-style:normal;color:var(--point);margin-left:3px}
+
+.find{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.find b{font-size:16px}
+.search{position:relative;width:300px}
+.search svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--t3)}
+.search input{width:100%;height:44px;padding:0 12px 0 38px;border-radius:13px;border:1px solid var(--line);background:var(--input)}
+.search input::placeholder{color:var(--t3)}
+.btn{height:44px;padding:0 20px;border:0;border-radius:13px;background:var(--point-ink);color:#fff;font-weight:700;box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 8px 18px -8px var(--glow)}
+.ex{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--t3)}
+.chip{height:36px;padding:0 13px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.85);font-size:13px;color:var(--ink)}
+.tree{margin-top:18px;border-radius:18px;background:var(--panel);padding:16px 14px}
+.tree .row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.mat{border-radius:12px;background:var(--dark);color:#fff;padding:8px 14px;box-shadow:0 10px 22px -12px var(--glow)}
+.mat small{display:block;font-size:12px;opacity:.7}
+.mat b{font-size:15px}
+.ln{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--t3);margin:0 4px}
+.ln i{width:22px;height:2px;background:var(--dark);border-radius:2px}
+.lot{display:flex;align-items:center;gap:8px;height:38px;padding:0 12px;border-radius:12px;border:1px solid var(--line);background:#fff;font-size:14px;font-weight:700}
+.lot span{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:500;color:var(--ok)}
+.lot span i{width:7px;height:7px;border-radius:50%;background:var(--ok-dot)}
+.lot.sel{border:1.5px solid var(--point);background:#fff;box-shadow:0 10px 22px -12px var(--glow)}
+.lot.sel span{color:var(--point-ink)}
+.lot.live{border-style:dashed;background:rgba(255,255,255,.5)}
+.lot.live span{color:var(--t3)}
+.note{margin-top:10px;font-size:12px;color:var(--t3)}
+.meta{display:flex;align-items:center;gap:36px;margin-top:18px;padding-top:18px;border-top:1px solid var(--line);flex-wrap:wrap}
+.meta small{display:block;font-size:12px;color:var(--t3)}
+.meta b{font-size:18px}
+.meta em{font-style:normal;font-size:12px;color:var(--t3);margin-left:4px}
+.go{margin-left:auto;height:38px;padding:0 16px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.85);font-size:13px;display:flex;align-items:center;color:var(--point-ink);font-weight:600}
+
+.ch{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.ch h2{margin:0;font-size:16px}
+.ch span{font-size:12px;color:var(--t3)}
+.legend{margin-left:auto;display:flex;gap:14px;font-size:12px;color:var(--t3)}
+.legend span{display:flex;align-items:center;gap:5px}
+.legend i{display:inline-block;width:16px;height:8px;border-radius:4px}
+.tl{position:relative}
+.grid{display:grid;grid-template-columns:136px minmax(0,1fr)}
+.axis{position:relative;height:30px;font-size:12px;color:var(--t3)}
+.axis span{position:absolute;top:4px;transform:translateX(-50%);white-space:nowrap}
+.axis span:first-child{transform:none}
+.eq{height:50px;display:flex;flex-direction:column;justify-content:center;border-bottom:1px solid var(--line)}
+.eq b{font-size:14px} .eq small{font-size:12px;color:var(--t3)}
+.lane{position:relative;height:50px;border-bottom:1px solid var(--line)}
+.vl{position:absolute;top:0;bottom:0;width:1px;background:var(--line)}
+.job{position:absolute;top:11px;height:28px;border-radius:9px;color:#fff;font-size:12px;font-weight:700;line-height:28px;padding:0 9px;white-space:nowrap;overflow:hidden}
+.job.gloss{border-radius:9px;--cap:0px}
+.alarm{position:absolute;top:5px;bottom:5px;border-radius:6px;background:repeating-linear-gradient(135deg,rgba(240,82,82,.22) 0 4px,rgba(240,82,82,.08) 4px 8px);border:1px solid rgba(240,82,82,.35)}
+.now{position:absolute;top:30px;bottom:0;width:2px;background:var(--dark)}
+.now span{position:absolute;top:-28px;right:-2px;padding:1px 9px;border-radius:999px;background:var(--dark);color:#fff;font-size:12px;font-weight:700;white-space:nowrap}
+
+.two{display:grid;grid-template-columns:1.15fr 1fr;gap:16px}
+.q{display:grid;grid-template-columns:100px minmax(0,1fr) 96px;gap:14px;align-items:center;padding:10px 0}
+.q > b{font-size:15px}
+.q .track{height:12px}
+.q .gloss{height:100%;--cap:8px}
+.q .v{text-align:right}
+.q .v b{font-size:18px}
+.q .v small{display:block;font-size:12px;color:var(--t3)}
+.ghost{height:36px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.85);font-size:13px}
+.hold{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.hold input{height:42px;width:200px;padding:0 12px;border-radius:12px;border:1px solid var(--line);background:var(--input)}
+.hold button{height:42px;padding:0 16px;border-radius:12px;border:1px solid var(--line);background:#fff;font-weight:700;color:var(--t3)}
+.scrap{margin-top:14px;padding-top:14px;border-top:1px solid var(--line);display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+.dark-btn{height:46px;padding:0 18px;border:0;border-radius:13px;background:var(--dark);color:#fff;font-weight:700;box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 0 0 1px rgba(92,127,255,.3),0 12px 26px -12px var(--glow)}
+.muted{font-size:13px;color:var(--t3)}
+
+/* 시안 고르기 */
+.pick{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:50;display:flex;gap:4px;padding:5px;border-radius:999px;background:rgba(22,24,29,.88);box-shadow:0 16px 36px -12px rgba(0,0,0,.45)}
+.pick button{height:40px;padding:0 16px;border:0;border-radius:999px;background:none;color:#C9CCD6;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap}
+.pick button.sel{background:#fff;color:#16181D}
+.eve{position:fixed;right:22px;bottom:22px;z-index:40;width:58px;height:58px;border-radius:50%;background:#1E2230;color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 12px 26px -10px rgba(0,0,0,.5)}
+
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@media (prefers-reduced-motion:reduce){.gloss{animation:none}}
+@media (max-width:1100px){.two{grid-template-columns:minmax(0,1fr)}.tools,.bar nav small{display:none}.ex{margin-left:0}}
+@media (max-width:760px){.bar nav{overflow-x:auto;margin-left:8px}.clock b:first-of-type{display:none}.steps{grid-template-columns:repeat(2,minmax(0,1fr))}h1{font-size:34px}.tlwrap{overflow-x:auto}.tl{min-width:760px}.pick button{padding:0 10px;font-size:13px}}
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="bar">
+    <svg height="24" width="100" viewBox="0 0 250 60" aria-label="이브테크 EVETECH" role="img" style="overflow:visible;flex:none">
+      <text x="0" y="46" font-weight="800" font-size="46" fill="#1c232b">e</text>
+      <path d="M30 14l11 30h8l11-30" fill="none" stroke="#1c232b" stroke-width="8" stroke-linejoin="round"/>
+      <text x="62" y="46" font-weight="800" font-size="46" fill="#1c232b">e</text>
+      <rect x="94" y="14" width="3.5" height="32" fill="#5C7FFF"/>
+      <text x="105" y="46" font-weight="300" font-size="40" letter-spacing="3" fill="#5b6570">TECH</text>
+    </svg>
+    <nav aria-label="메뉴" id="menu"></nav>
+    <span class="clock"><span class="shift">야간</span><b class="num">10/2</b><b class="num">01:57</b></span>
+    <div class="tools"><span>작업자 주간 1 ▾</span><span>시연</span><span>알림 미리보기</span><span aria-hidden="true">⚙</span></div>
+  </header>
+  <div class="title">로트 추적</div>
+
+  <main>
+    <section class="card head">
+      <div class="top">
+        <div class="state"><span class="pill"><i></i>합격</span>OP-50 판정 24 / 24 · 불합격 1개 따로 폐기</div>
+        <div class="right"><span class="ship"><i></i>출하 가능</span><span class="live num"><i></i>실시간 · 10/2 01:57 기준</span></div>
+      </div>
+      <h1 class="num">LOT-2610-<span>001-1</span></h1>
+      <div class="tags"><span class="tag num">PO-2610-001</span><span class="tag num">MAT-2609-11</span></div>
+      <div class="steps" id="steps"></div>
+    </section>
+
+    <section class="card">
+      <div class="find">
+        <b>번호로 찾기</b>
+        <div class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input placeholder="LOT · MAT · SHP 번호" aria-label="번호"></div>
+        <button class="btn">찾기</button>
+        <div class="ex">예시 <button class="chip num">MAT-2609-11</button><button class="chip num">SHP-2609-001</button><button class="chip num">LOT-2609-001-1</button></div>
+      </div>
+      <div class="tree">
+        <div class="row">
+          <div class="mat"><small>원자재</small><b class="num">MAT-2609-11</b></div>
+          <span class="ln"><i></i>생산 로트</span>
+          <span class="lot num">LOT-2609-128-3 <span><i></i>합격</span></span>
+          <span class="lot num">LOT-2609-129-1 <span><i></i>합격</span></span>
+          <span class="lot sel num">LOT-2610-001-1 <span><i></i>합격</span></span>
+          <span class="lot num">LOT-2610-001-2 <span><i></i>합격</span></span>
+          <span class="lot live num">LOT-2610-002-1 <span>생산 중</span></span>
+        </div>
+        <div class="note">원자재 1 : 생산 로트 5 (DOC-06 §7)</div>
+      </div>
+      <div class="meta">
+        <div><small>LOT</small><b class="num">LOT-2610-001-1</b></div>
+        <div><small>작업지시</small><b class="num">PO-2610-001</b><em>10/01 주간</em></div>
+        <div><small>원자재</small><b class="num">MAT-2609-11</b></div>
+        <span class="go">검사 발췌 · 검사 기록 →</span>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="ch"><h2>설비별 시간표</h2><span class="num">LOT-2610-001-1</span>
+        <div class="legend"><span><i class="gloss" style="animation:none;width:16px;height:8px"></i>이 로트</span><span><i style="background:rgba(240,82,82,.2);border:1px solid rgba(240,82,82,.4)"></i>알람</span><span><i style="width:0;height:12px;border-left:1.5px dashed var(--t3);border-radius:0"></i>보류</span><span><i style="width:2px;height:12px;background:var(--dark);border-radius:0"></i>지금</span></div></div>
+      <div class="tlwrap"><div class="tl" id="tl"></div></div>
+    </section>
+
+    <div class="two">
+      <section class="card">
+        <div class="ch"><h2>수량</h2><button class="ghost" style="margin-left:auto">검사 기록</button></div>
+        <div id="qty"></div>
+      </section>
+      <section class="card">
+        <div class="ch"><h2>보류 · 해제 · 폐기</h2><span class="num">LOT-2610-001-1</span></div>
+        <div class="hold"><input placeholder="보류 사유 (필수)" aria-label="보류 사유"><button>보류 — 판정 끝난 로트</button></div>
+        <div class="scrap"><button class="dark-btn">폐기 결재 요청 (반장) — 불합격 1개</button><span class="muted">결재: 요청 — → 승인 —</span></div>
+      </section>
+    </div>
+  </main>
+</div>
+<div class="eve">이브</div>
+<div class="pick" role="group" aria-label="색감 시안">
+  <button data-v="1">1 · 맑은 하늘</button><button data-v="2">2 · 네이비 + 하늘</button><button data-v="3">3 · 하늘 유리</button>
+</div>
+
+<script>
+const NAV = [['홈', 'M3 10.5 12 3l9 7.5M5 9.5V21h14V9.5M10 21v-6h4v6', 0], ['생산', 'M2 20h20M4 20V9l5 3V9l5 3V5h6v15M8 16h1M13 16h1M17 16h1', 1], ['정비', 'M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94z', 1], ['품질', 'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0zM8 12l3 3 5-6', 1], ['재고', 'M21 8 12 3 3 8v8l9 5 9-5zM3 8l9 5 9-5M12 13v8', 1], ['문서', 'M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8zM14 3v5h5M9 13h6M9 17h6', 1], ['설정', 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1 7 17M17 7l2.1-2.1', 0]];
+document.getElementById('menu').innerHTML = NAV.map(([n, d, sub]) => `<button class="nav${n === '생산' ? ' on' : ''}${n === '설정' ? ' off' : ''}"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>${n}${sub ? '<small>▾</small>' : ''}</button>`).join('');
+
+document.getElementById('steps').innerHTML = [['OP-10 · SAW-01', '절단'], ['OP-20 · MIL-01', '황삭'], ['OP-30 · VF2-01/02', '정밀 가공'], ['OP-40 · WSH-01', '디버링·세척'], ['OP-50 · CMM-01', '측정']]
+  .map(([c, n], i) => `<div><div class="track"><div class="gloss cap" style="width:100%;animation-delay:${i * .08}s"></div></div><div class="code num">${c}</div><div class="name">${n}<em>✓</em></div></div>`).join('');
+
+// 시간표 10/1 15:00 ~ 10/2 02:00 (660분). shortcut: 막대 시각은 예시값, 실제 화면은 /api/lots 공정 실적
+const T0 = 15 * 60, TOT = 660, m = (hm) => { const [h, mi] = hm.split(':').map(Number); return (h * 60 + mi - T0 + 1440) % 1440; }, pct = (v) => `${v / TOT * 100}%`;
+const labels = ['10/1 15:00', '', '17:00', '', '19:00', '', '21:00', '', '23:00', '', '10/2 01:00'];
+const rows = [['SAW-01', 'OP-10 절단', [['15:20', '17:10', '001-1 · 24개']]], ['MIL-01', 'OP-20 황삭', [['16:10', '17:10', '001-1 · 15개'], ['17:10', '20:10', '001-1 · 9개']]], ['VF2-01', 'OP-30 정밀 가공', [['17:30', '21:20', '001-1 · 12개']], ['19:10', '19:40']], ['VF2-02', 'OP-30 정밀 가공', [['18:00', '21:40', '001-1 · 12개']]], ['WSH-01', 'OP-40 디버링·세척', [['19:00', '22:30', '001-1 · 24개']]], ['CMM-01', 'OP-50 측정', [['19:40', '23:10', '001-1 · 24개']]]];
+const vl = labels.map((_, i) => `<div class="vl" style="left:${pct(i * 60)}"></div>`).join('');
+let h = `<div class="grid"><div></div><div class="axis">${labels.map((l, i) => l ? `<span class="num" style="left:${pct(i * 60)}${i === labels.length - 1 ? ';transform:translateX(-100%)' : ''}">${l}</span>` : '').join('')}</div>`;
+rows.forEach(([eq, op, jobs, al], i) => {
+  h += `<div class="eq"><b class="num">${eq}</b><small>${op}</small></div><div class="lane">${vl}${al ? `<div class="alarm" style="left:${pct(m(al[0]))};width:${pct(m(al[1]) - m(al[0]))}"></div>` : ''}${jobs.map(([s, e, t], k) => `<div class="job gloss num" style="left:${pct(m(s))};width:calc(${pct(m(e) - m(s))} - 2px);animation-delay:${.1 + i * .07 + k * .05}s">${t}</div>`).join('')}</div>`;
+});
+h += `</div><div class="now" style="left:calc(136px + (100% - 136px) * ${m('01:57') / TOT})"><span class="num">지금 01:57</span></div>`;
+document.getElementById('tl').innerHTML = h;
+
+document.getElementById('qty').innerHTML = [['투입', 24, '24', ''], ['OP-50 판정', 24, '24 / 24', '<span style="color:var(--ok)">합격 23</span> · <span style="color:var(--crit)">불합격 1</span>'], ['완제품 입고', 23, '23', ''], ['출하', 0, '0', '가능']]
+  .map(([l, v, n, s], i) => `<div class="q"><b>${l}</b><div class="track">${v ? `<div class="gloss cap" style="width:${v / 24 * 100}%;animation-delay:${i * .1}s"></div>` : ''}</div><div class="v num"><b>${n}</b>${s ? `<small>${s}</small>` : ''}</div></div>`).join('');
+
+// 시안 고르기 — 주소 #1 · #2 · #3 으로도 열림
+const set = (v) => { document.documentElement.dataset.v = v; document.querySelectorAll('.pick button').forEach((b) => b.classList.toggle('sel', b.dataset.v === v)); history.replaceState(null, '', '#' + v);
+  document.querySelectorAll('.gloss').forEach((g) => { g.style.animationName = 'none'; void g.offsetWidth; g.style.animationName = ''; }); };
+document.querySelector('.pick').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) set(b.dataset.v); });
+set(['1', '2', '3'].includes(location.hash.slice(1)) ? location.hash.slice(1) : '1');
+</script>
+</body>
+</html>

@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import io
 import json
+import os
 import re
 import sys
 import threading
@@ -60,7 +61,7 @@ class State:
         print("실시간 모드 준비 중 (10/1 08:00, 약 2초) …")
         self.rt = Realtime(self.cfg, self.M, drop_dir=GEN / "out_live" / self.cfg["realtime"]["cmm_drop_dir"])   # git 제외 폴더
         self.live = Live(self.rt, self.P)
-        self.run_id = 1
+        self.run_id = int(time.time())           # 서버를 다시 켜도 회차가 겹치지 않게 (브라우저 저장이 회차별, 2026-10-21)
         self.seq = 0
         self.buf: list[dict] = []
         self.reports: dict[str, dict] = {}       # 교대 보고서 사람 수정·확정 (API-RPT-02·03·04)
@@ -196,6 +197,12 @@ def _route(method, p, q, body, rt, live, P):
         except ValueError as e:
             raise ApiError(409, "INVALID_STATE", str(e))
         return {"event": {k: v for k, v in ev.items() if k in ("code", "equipment_id", "start_m")}, "started_at": fmt_dt(rt.now())}
+    if key == "sim/fire" and method == "POST":
+        # 알림 미리보기 [상황 일으키기] — 주의·고장·정비·공기압 알람을 지금 진짜로 일으킨다 (시연 기록에 남음, 처음으로 되돌리면 사라짐)
+        try:
+            return rt.fire(body.get("kind", ""))
+        except ValueError as e:
+            raise ApiError(409, "INVALID_STATE", str(e))
     if key == "sim/reset" and method == "POST":
         S.reset()
         return {"run_id": S.run_id, **S.rt.clock()}
@@ -781,7 +788,12 @@ def main():
     global S
     S = State()
     threading.Thread(target=ticker, daemon=True).start()
-    srv = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
+    # Windows는 SO_REUSEADDR이면 같은 포트에 서버가 둘 떠서 요청이 엇갈린다 — 이미 떠 있으면 바로 멈춘다
+    ThreadingHTTPServer.allow_reuse_address = os.name != "nt"
+    try:
+        srv = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
+    except OSError:
+        sys.exit(f"포트 {PORT}에 시연 서버가 이미 떠 있습니다. 그 창을 끄거나 그대로 쓰세요.")
     print(f"준비 끝 — http://127.0.0.1:{PORT}  (시연 시각 {S.rt.clock()['sim_at']}, 배속 ×{S.rt.speed})  Ctrl+C로 끝")
     try:
         srv.serve_forever()

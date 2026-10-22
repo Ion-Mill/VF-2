@@ -12,7 +12,7 @@ import { ALARMS, ROLE_NAME, SHIFT_NAME, USERS, homeScreen, levelOfSev, type Alar
 import { derive, fromEvents, fromPast, groupPmPast, repeatOf, type RuleCtx } from './rules';
 import { LOCK } from './Safety';
 import { nextNo, pad, rev, type SimpleRecord, type WorkOrder, type WorkRecord } from './workflow';
-import { Eve, type EveTab } from './Eve';
+import { Eve, Robot, type EveTab } from './Eve';
 import Briefing from './Briefing';
 import CardScreen, { CardList } from './CardScreen';
 import DocBox from './DocBox';
@@ -24,7 +24,6 @@ import HomeHud, { GLASS } from './HomeHud';
 import { LockIcon, PageHead } from './ui';
 import Popup from './Popup';
 import SimPanel from './SimPanel';
-import PreviewBar, { NO_PREVIEW, PREVIEW_BUBBLE, previewAlert, type Preview } from './PreviewBar';
 import SimpleRecordScreen from './SimpleRecordScreen';
 import WorkOrderScreen from './WorkOrderScreen';
 import { ReplayScreen } from './ReplayScreen';
@@ -47,6 +46,13 @@ const TITLE: Record<Screen, string> = {
   line: '3D 라인 뷰', layout2d: '3D 라인 뷰 · 2D 배치도', field: '현장 모니터', cards: '지침카드', card: '지침카드', wo: '정비 작업지시서', wr: '작업기록서', sr: '간이 작업기록',
   docs: '문서함', replay: '다시 보기', shift: '교대 보고서', daily: '일일 보고서', revs: '수정 이력', lots: '로트 추적', quality: '검사 기록', qcap: '공정 능력 · 불량',
   inventory: '재고', tools: '공구 수명', pm: '예방 정비 일정', idocs: '사내 문서', settings: '설정',
+};
+// 제목 밑 한 줄 설명 (화이트 카드 · 파스텔 블루 목업, 2026-10-21) — 없는 화면은 제목만
+const SUB: Partial<Record<Screen, string>> = {
+  field: '설비를 누르면 3D 화면 아래에 설비 패널이 열립니다.', cards: '알람마다 나온 지침카드를 처리합니다.', docs: '작업지시서와 기록 문서를 찾아 확인합니다.',
+  lots: '원자재부터 출하까지 한 로트가 지나온 길을 봅니다.', quality: '로트별 측정 결과와 부품 지도를 봅니다.', qcap: '측정값 전체로 공정 능력과 불량을 봅니다.',
+  inventory: '공구 · 소모품 · 원자재 · 완제품 재고를 봅니다.', tools: '공구별 사용량과 교체 이력을 봅니다.', pm: '설비별 예방 정비 기한과 오늘 할 일을 봅니다.',
+  revs: '문서가 언제 누구에 의해 바뀌었는지 봅니다.', idocs: '사내 표준 문서를 찾아 봅니다.', settings: '알림 기준과 기준 값을 바꿉니다.',
 };
 // 메뉴 (페이지구조 v3 5.1). 권한 없는 페이지는 흐리게 (N3) — 열 수 있는 역할 목록, 없으면 전원
 const MENU_V3: [string, Screen | 'home', Role[]?][] = [
@@ -93,7 +99,7 @@ const GROUPS: { label: string; subs: [string, Screen, Role[]?, (string | null)?]
   { label: '정비', subs: [['다시 보기', 'replay'], ['예방 정비', 'pm', ['MNT', 'SUP', 'MGR']]] },
   { label: '품질', subs: [['검사 기록', 'quality', ['OPR', 'SUP', 'MGR']], ['공정 능력 · 불량', 'qcap', ['SUP', 'MGR']]] },
   { label: '재고', subs: [['재고', 'inventory'], ['공구 수명', 'tools']] },
-  { label: '문서', subs: [...DOC_CATS.map(([n, s2, k2, roles]) => [n, s2, roles, k2] as [string, Screen, Role[]?, (string | null)?]), ['지침카드', 'cards']], related: ['docs', 'wo', 'wr', 'sr', 'shift', 'daily', 'revs', 'idocs', 'card'] }, // 지침카드는 정비에서 문서로 옮김 (사용자 요청 2026-10-20)
+  { label: '문서', subs: [['지침카드', 'cards'], ...DOC_CATS.map(([n, s2, k2, roles]) => [n, s2, roles, k2] as [string, Screen, Role[]?, (string | null)?])], related: ['docs', 'wo', 'wr', 'sr', 'shift', 'daily', 'revs', 'idocs', 'card'] }, // 지침카드는 정비에서 문서로 옮김 (사용자 요청 2026-10-20), 문서 묶음 맨 위 (2026-10-22)
   { label: '설정', subs: [['설정', 'settings', ['MGR']]] },
 ];
 // 위 메뉴 아이콘 (상단바 시안 '아이콘 1', 사용자 선택 2026-10-21): 묶음 이름 → 24칸 선 그림
@@ -129,6 +135,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
   const [notices, setNotices] = usePersist<Notice[]>('notices', [], runId);
   const [handledA, setHandledA] = usePersist<Record<string, { by: string; ts: number }>>('handled', {}, runId);
   const [acked, setAcked] = usePersist<Record<string, string[]>>('acked', {}, runId); // 사용자별 긴급 팝업 [확인]
+  const [hushed, setHushed] = useState<string[]>([]); // 팝업을 닫을 때 이미 쌓여 있던 긴급 알람 — 다음 팝업으로 이어 떠도 소리는 안 냄 (사용자 요청 2026-10-22)
   const [settings, setSettings] = useLocal<Settings>('settings', DEFAULT_SETTINGS);
   const [seenBrief, setSeenBrief] = useLocal<Record<string, string>>('briefSeen', {});
 
@@ -176,10 +183,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
     const add: Notice[] = [];
     fresh.forEach((a) => {
       if (a.alarm?.steps.length && (a.kind === 'alarm' || a.kind === 'warn')) askGuideCard(a.code, a.alarm.steps).catch(() => undefined); // 카드가 열리기 전에 비서가 풀어 쓸 시간을 번다 (2026-10-17, 꺼져 있으면 아무 일도 없음)
-      if (a.kind === 'alarm' && MACHINES[a.machine].op === 'OP-30' && a.alarm && !wos.some((w) => w.alertId === a.id)
-        && !wos.some((w) => w.machine === a.machine && w.state !== 'done' && w.state !== 'cancelled')) {
-        createWo(a, 'STOP_ALARM');
-      }
+      if (a.kind === 'alarm' && MACHINES[a.machine].op === 'OP-30' && a.alarm) createWo(a, 'STOP_ALARM'); // 같은 설비 열린 작업지시서 검사는 createWo 안에서
       const r = repeatOf(a, ruleCtx());
       if (r) {
         add.push(r);
@@ -208,6 +212,9 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
     const al = a.alarm!;
     setWos((w) => {
       if (w.some((x) => x.alertId === a.id && x.trigger === trigger)) return w;
+      // 정지 알람: 같은 설비에 끝나지 않은 작업지시서가 있으면 새로 안 만든다 (연쇄 108 → 994 → 992는 한 건). 저장된 목록을 읽은 뒤의 값(w)으로 봐야
+      // 페이지를 새로 열 때 목록을 읽기 전에 검사해서 같은 사건 초안이 여러 개 생기지 않는다 (2026-10-22)
+      if (trigger === 'STOP_ALARM' && w.some((x) => x.machine === a.machine && x.state !== 'done' && x.state !== 'cancelled')) return w;
       const no = `MW-${pad(950 + w.length)}`;
       const wo: WorkOrder = {
         no, alertId: a.id, machine: a.machine, code: a.code, created: a.time, state: 'draft', version: 0, trigger, lot: a.lot,
@@ -305,11 +312,11 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
 
   const [menu, setMenu] = useState(false);
   const [demo, setDemo] = useState(false);
-  const [pvOpen, setPvOpen] = useState(false);               // [알림 미리보기] 바 (사용자 요청 2026-10-21)
-  const [pv, setPv] = useState<Preview>(NO_PREVIEW);
   const [setOpen, setSetOpen] = useState(false);
   const [acct, setAcct] = useState(false);
   const [side, setSide] = useState<EveTab | null>(null);
+  const [bandOff, setBandOff] = useState<string[]>([]); // 알림 띠에서 닫은 주의 알람 (사용자 요청 2026-10-22, 긴급은 못 닫음)
+  const [eveI, setEveI] = useState(0); // 홈 이브 알림 띠에서 보고 있는 알람 번호
   const [zone, setZone] = useState<string | null>(null);
   const curGroup = GROUPS.find((g) => g.subs.some(([, s2]) => s2 === screen) || g.related?.includes(screen));
   useEffect(() => { // 펼친 메뉴 바깥을 누르거나 Esc면 닫기
@@ -326,7 +333,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
   const toast = useCallback((m: string) => { setToast(m); setTimeout(() => setToast(''), 4500); }, []);
 
   // ---------- 문서 열기 ----------
-  const openCard = (id: string) => { setAcked((s) => ({ ...s, [user.id]: [...(s[user.id] ?? []), id] })); go('card', id); };
+  const openCard = (id: string) => { hushAll(); setAcked((s) => ({ ...s, [user.id]: [...(s[user.id] ?? []), id] })); go('card', id); };
   const openWo = (no: string) => { setNotices((l) => l.map((x) => ((x.rule === 'WO_ASSIGNED' || x.rule === 'WO_DRAFT_READY') && x.open?.key === no && x.roles.includes(role) && (!x.userIds || x.userIds.includes(user.id)) ? { ...x, handled: true, handledBy: user.name, handledAt: simIso() } : x))); go('wo', no); };
   // 작업기록서 = 작업지시서 화면 아래 칸 (2026-10-20). nav=false면 만들기만 하고 화면은 그대로
   const openRecord = (woNo: string, nav = true) => {
@@ -368,6 +375,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
     inv: invF.data, reloadInv: invF.reload, history: hist.data, pm: pmF.data, reloadPm: pmF.reload,
     shiftReports: shiftF.data?.reports ?? null, dailyReports: dailyF.data?.reports ?? null, reloadReports: () => { shiftF.reload(); dailyF.reload(); },
     rules, restoreMachine, setReplay,
+    bandOff,
     eve: !!side && screen !== 'line', // 이브 창이 열리면 홈 말고는 본문이 창 폭만큼 좁아짐 — 재고·공구·품질 화면이 좁은 배치로 (1안, 2026-10-20)
   };
 
@@ -375,16 +383,19 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
   const open = alerts.filter((a) => !a.handled);
   const myAck = new Set(acked[user.id] ?? []);
   const emergencies = open.filter((a) => a.level === '긴급' && !myAck.has(a.id));
+  const hushAll = () => setHushed((h) => [...h, ...emergencies.map((a) => a.id)]);
   const band = open.find((a) => a.level === '긴급');
   // 3D 카드 안 이브 띠 (사용자 요청 2026-10-18): 처리 안 된 긴급·주의를 긴급부터 — 문장은 알람 코드집(DOC-02·03)으로 만든 규칙 문장
   const eveList = open.filter((a) => a.level !== '참고').sort((a, b) => (a.level === b.level ? b.ts - a.ts : a.level === '긴급' ? -1 : 1));
-  const eveCur = eveList[0] ?? null; // 홈 3D 가장자리 빛 (알림 띠는 브리핑 카드가 대신함, 시안 3a)
-  const glowLevel = pv.glow ? (pv.glow === 'crit' ? '긴급' : '주의') : eveCur?.level;
+  const eveCur = eveList[0] ?? null; // 홈 3D 가장자리 빛
+  const bandList = eveList.filter((a) => !(a.level === '주의' && bandOff.includes(a.id)));
+  const bandCur = bandList.length ? bandList[eveI % bandList.length] : null; // 홈 이브 알림 띠 (2026-10-21 되살림, 처리 안 된 긴급·주의가 있을 때만)
+  const glowLevel = eveCur?.level;
   const eveRgb = !glowLevel ? null : glowLevel === '긴급' ? '229,72,77' : '240,180,41';
   const docBubbles = myNotices.filter((n) => n.delivery === 'BUBBLE' && !n.handled);
   const briefBubble = !!twin && seenBrief[user.id] !== twin.shift.shift_id; // 교대 시작 뒤 첫 로그인 때 (9.9)
   const sysBubble = band && screen !== 'line' ? `⚠ 긴급 · ${MACHINES[band.machine].name} ${band.alarm ? `${band.code} ${band.alarm.nameKo}` : band.code} · ${band.time.slice(11, 16)}` : fail3d ? `3D가 느려서 2D 배치도로 바꿨어요. 열기를 누르면 3D로 돌아가요` : null;
-  const bubbleText = side ? null : pv.bubble ? PREVIEW_BUBBLE[pv.bubble] : sysBubble ?? (docBubbles.length > 1 ? `확정·검토할 문서 ${docBubbles.length}건` : docBubbles[0]?.text ?? (briefBubble ? '이번 교대 브리핑이 준비됐어요' : null));
+  const bubbleText = side ? null : sysBubble ?? (docBubbles.length > 1 ? `확정·검토할 문서 ${docBubbles.length}건` : docBubbles[0]?.text ?? (briefBubble ? '이번 교대 브리핑이 준비됐어요' : null));
   const onBubble = () => {
     if (band && screen !== 'line') { openCard(band.id); return; }
     if (fail3d) { setFail3d(null); go('line'); return; }
@@ -415,7 +426,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
   return (
     <Ctx.Provider value={ctx}>
       <div className={`relative flex h-screen flex-col overflow-hidden bg-ground text-ink ${settings.fontScale ? 'fs-scaled' : ''}`} style={{ ...(style as React.CSSProperties), width: '100%', marginTop: connected ? 0 : 32, height: connected ? '100vh' : 'calc(100vh - 32px)' }}>
-        {/* 위 유리 바 (시안 3a, 2026-10-20 — 모든 화면): 로고 · 가로 메뉴(묶음은 눌러 펼침, 권한 없는 칸은 숨김) · 오른쪽 [주간][날짜][시각] [계정 ▾] [시연] [⚙] */}
+        {/* 위 유리 바 (시안 3a, 2026-10-20 — 모든 화면, 고른 메뉴 · 교대 칩 = 옅은 파랑 2026-10-22): 로고 · 가로 메뉴(묶음은 눌러 펼침, 권한 없는 칸은 숨김) · 오른쪽 [주간][날짜][시각] [계정 ▾] [시연] [⚙] */}
         <header className={`absolute left-4 right-4 top-3 z-30 flex h-16 items-center gap-2 rounded-stage pl-6 pr-3 ${GLASS}`}>
           <Logo height={26} />
           <nav className="ml-6 flex items-center gap-1 max-[1360px]:ml-2 max-[1360px]:gap-0" aria-label="메뉴" data-nav>
@@ -423,30 +434,30 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
               const subs = g.subs; // 모든 계정에 같은 메뉴 (사용자 요청 2026-10-21) — 권한 없는 칸은 흐리게 두고 눌러도 안 열림 (서버도 거부, NFR-SEC-04)
               const locked = (roles?: Role[]) => !!roles && !roles.includes(role), openSub = (roles: Role[] | undefined, s2: Screen, k2: string | null) => (locked(roles) ? toast(`이 계정(${ROLE_NAME[role]})은 열 수 없는 화면이에요 — ${roles!.map((r) => ROLE_NAME[r]).join('·')} 전용`) : go(s2, k2));
               const on = g === curGroup, curDoc = screen === 'docs' ? (key ?? '작업지시서') : DOC_OF[screen];
-              const top = `relative flex h-11 items-center gap-2 whitespace-nowrap rounded-tile px-3.5 text-band max-[1360px]:gap-1.5 max-[1360px]:px-2.5 max-[1360px]:text-card ${on ? 'bg-ink font-bold text-white' : 'font-semibold text-ink-2 hover:bg-white/70 hover:text-ink'}`;
-              const ico = <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className={`shrink-0 max-[1200px]:hidden ${on ? 'text-[#b79cff]' : 'text-ink-3'}`}><path d={NAV_ICON[g.label]} /></svg>;
+              const top = `relative flex h-11 items-center gap-2 whitespace-nowrap rounded-tile px-3.5 text-band max-[1360px]:gap-1.5 max-[1360px]:px-2.5 max-[1360px]:text-card ${on ? 'bg-brand-tint font-bold text-brand-ink' : 'font-semibold text-ink-2 hover:bg-white/70 hover:text-ink'}`;
+              const ico = <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className={`shrink-0 max-[1200px]:hidden ${on ? 'text-brand' : 'text-ink-3'}`}><path d={NAV_ICON[g.label]} /></svg>;
               if (subs.length === 1) return <button key={g.label} onClick={() => openSub(subs[0][2], subs[0][1], subs[0][3] ?? null)} className={`${top} ${locked(subs[0][2]) ? 'opacity-50' : ''}`} aria-current={on ? 'page' : undefined} aria-disabled={locked(subs[0][2]) || undefined}>{ico}{g.label}</button>;
               return (
                 <div key={g.label} className="relative">
-                  <button onClick={() => setNavOpen((o) => (o === g.label ? null : g.label))} aria-expanded={navOpen === g.label} className={top}>{ico}{g.label}<span className={`text-small ${on ? 'text-white/60' : 'text-ink-3'}`} aria-hidden="true">▾</span></button>
+                  <button onClick={() => setNavOpen((o) => (o === g.label ? null : g.label))} aria-expanded={navOpen === g.label} className={top}>{ico}{g.label}<span className={`text-small ${on ? 'text-brand' : 'text-ink-3'}`} aria-hidden="true">▾</span></button>
                   {navOpen === g.label && (
                     <div className="absolute left-0 top-[52px] z-40 flex min-w-[210px] flex-col gap-0.5 rounded-card border border-line bg-white p-2 shadow-[0_12px_30px_rgba(28,37,48,.16)]">
                       {subs.map(([name, s2, roles, k2]) => { const lk = locked(roles), sel = s2 === 'cards' ? screen === 'cards' || screen === 'card' : g.label === '문서' ? curDoc === name : screen === s2; return (
-                        <button key={name} onClick={() => openSub(roles, s2, k2 ?? null)} aria-disabled={lk || undefined} className={`flex h-11 items-center justify-between gap-3 rounded-tile px-4 text-left text-card ${sel ? 'bg-ink font-bold text-white' : lk ? 'text-ink-3 hover:bg-tile' : 'text-ink hover:bg-brand-tint'}`}>{name}{lk && <LockIcon />}</button>); })}
+                        <button key={name} onClick={() => openSub(roles, s2, k2 ?? null)} aria-disabled={lk || undefined} className={`flex h-11 items-center justify-between gap-3 rounded-tile px-4 text-left text-card ${sel ? 'bg-brand-tint font-bold text-brand-ink' : lk ? 'text-ink-3 hover:bg-tile' : 'text-ink hover:bg-brand-tint'}`}>{name}{lk && <LockIcon />}</button>); })}
                     </div>)}
                 </div>);
             })}
           </nav>
           <span className={`ml-auto flex items-center gap-2.5 whitespace-nowrap ${connected ? 'text-ink' : 'text-ink-3'}`}>
             {twin ? (<>
-              <span className="rounded-tile bg-warn-bg px-2.5 py-1 text-card font-bold text-warn">{twin.clock.sim_at >= twin.shift.end_at ? '휴무' : SHIFT_NAME[twin.shift.shift_type]}</span>
+              <span className="rounded-tile bg-brand-tint px-2.5 py-1 text-card font-bold text-brand-ink">{twin.clock.sim_at >= twin.shift.end_at ? '휴무' : SHIFT_NAME[twin.shift.shift_type]}</span>
               <b className="font-mono text-title font-semibold max-[1200px]:hidden">{md(twin.clock.sim_at)}</b>
               <b className="font-mono text-title">{twin.clock.sim_at.slice(11, 16)}</b>
             </>) : <b className="font-mono text-title">--:--</b>}
           </span>
           <div className="ml-3 flex items-center gap-1">{/* 계정·시연·설정 묶음 (시안 3a) */}
           <div className="relative">
-            <button onClick={() => { setAcct((o) => !o); setDemo(false); setSetOpen(false); }} className="flex h-11 items-center gap-1.5 rounded-tile px-3 text-card font-semibold hover:bg-white/70">
+            <button onClick={() => { setAcct((o) => !o); setDemo(false); setSetOpen(false); }} className="flex h-11 items-center gap-1.5 whitespace-nowrap rounded-tile px-3 text-card font-semibold hover:bg-white/70">
               {user.name} <span className="text-small text-ink-3" aria-hidden="true">▾</span>
             </button>
             {acct && (
@@ -457,10 +468,9 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
             )}
           </div>
           <div className="relative">
-            <button onClick={() => { setDemo((d) => !d); setSetOpen(false); setAcct(false); }} className="h-11 rounded-tile px-3 text-card font-semibold hover:bg-white/70">시연</button>
+            <button onClick={() => { setDemo((d) => !d); setSetOpen(false); setAcct(false); }} className="h-11 whitespace-nowrap rounded-tile px-3 text-card font-semibold hover:bg-white/70">시연</button>
             {demo && <SimPanel twin={twin} refresh={live.refresh} toast={toast} api3d={api3d} onClose={() => setDemo(false)} />}
           </div>
-          <button onClick={() => { setPvOpen((o) => !o); setDemo(false); setSetOpen(false); setAcct(false); }} aria-expanded={pvOpen} className={`h-11 whitespace-nowrap rounded-tile px-3 text-card font-semibold hover:bg-white/70 ${pvOpen ? 'bg-white/70' : ''}`}>알림 미리보기</button>
           <div className="relative">
             <button onClick={() => { setSetOpen((o) => !o); setDemo(false); setAcct(false); }} className="flex h-11 w-11 items-center justify-center rounded-tile hover:bg-white/70" aria-label="화면 설정" title="화면 설정">
               <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" /></svg>
@@ -469,7 +479,6 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
           </div>
           </div>
         </header>
-        {pvOpen && <PreviewBar pv={pv} setPv={setPv} glass={GLASS} onChange={(n) => { if (n.bubble) setSide(null); if (n.glow && screen !== 'line') go('line'); }} />}
 
         {!connected && (
           <div className="fixed inset-x-0 top-0 z-[60] flex h-8 items-center justify-center gap-2 bg-ink-2 px-4 text-body font-semibold text-white">
@@ -481,9 +490,9 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
         {/* 3D 실패·긴급 알림은 이브 말풍선으로, 연결 끊김은 화면 맨 위 띠로 옮김 (2026-10-19) */}
 
         {/* 이브 창(1안, 사용자 선택 2026-10-20): 창 모양·자리는 모든 화면 같음(오른쪽, 위 바 아래 ~ 이브 버튼 위). 홈은 3D 위에 뜨고, 다른 화면은 본문이 창 폭(420 + 오른쪽 24 + 간격 12)만큼 비켜 줌 */}
-        <div className="flex min-h-0 flex-1 flex-col" style={{ paddingTop: home ? 0 : 88, paddingBottom: screen === 'layout2d' ? 64 : screen === 'field' ? 70 : 0, paddingRight: side && !home ? 456 : 0, transition: 'padding-right .25s ease' }}>
+        <div className={`flex min-h-0 flex-1 flex-col ${curGroup?.label === '재고' || curGroup?.label === '문서' ? 'fs-up' : ''}`} style={{ paddingTop: home ? 0 : 88, paddingBottom: screen === 'layout2d' ? 64 : screen === 'field' ? 70 : 0, paddingRight: side && !home ? 456 : 0, transition: 'padding-right .25s ease' }}>
         {/* 화면 머리 (디자인 통일 C안 2장): 회색 제목 띠 대신 PageHead. 각 화면이 자기 머리를 갖기 전까지 App이 그림 — 홈·다시 보기는 무대라 없음 */}
-        {screen !== 'line' && screen !== 'layout2d' && screen !== 'replay' && <div className="shrink-0 bg-ground px-4 pt-3"><PageHead title={TITLE[screen]} /></div>}
+        {screen !== 'line' && screen !== 'layout2d' && screen !== 'replay' && <div className="shrink-0 bg-ground px-4 pt-3"><PageHead title={TITLE[screen]} sub={SUB[screen]} /></div>}
         <div className={`relative min-h-0 flex-1 overflow-hidden ${connected ? '' : 'grayscale-[0.6]'}`}>
           <div className="absolute overflow-hidden" style={{ ...stagePos, visibility: show3D ? 'visible' : 'hidden', opacity: show3D ? 1 : 0, pointerEvents: show3D ? 'auto' : 'none' }}>
             <FactoryDashboard embedded dataMode warnIds={[...new Set(open.filter((a) => a.level === '주의').map((a) => a.machine))]} layout={LAYOUT} quality="자동" introOnLoad={false} showCards={settings.cards} alarmText={alarmText} cardText={cardText}
@@ -492,19 +501,32 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
               onFail={(why: string) => { setFail3d(why); setScreen((s0) => (s0 === 'line' ? 'layout2d' : s0)); }} />
             {screen === 'line' && (<>
               {eveRgb && <div className="eve-glow pointer-events-none absolute inset-0 z-[5]" style={{ boxShadow: `inset 0 0 0 2px rgba(${eveRgb},.55), inset 0 60px 80px -40px rgba(${eveRgb},.35)` }} />}
+              {bandCur && (() => { const crit = bandCur.level === '긴급', a = bandCur.alarm; return (
+                // 이브 알림 띠 — 10/18 내용 그대로(알람 코드집 규칙 문장), 모양만 화이트 카드 테마 + 긴급 빨강 · 주의 노랑 테두리 (사용자 요청 2026-10-21)
+                <div className={`pointer-events-auto absolute left-[400px] right-5 top-[92px] z-10 flex h-14 items-center gap-2.5 rounded-card border-2 bg-white pl-3 pr-2 text-body shadow-card ${crit ? 'border-crit' : 'border-warn-mark'}`} role="status">
+                  <Robot size={34} />{/* 이브가 알려 주는 띠 — 얼굴은 이브 창 머리와 같은 그림 (사용자 요청 2026-10-22) */}
+                  <span className={`inline-flex h-8 shrink-0 items-center gap-1.5 rounded-ctl px-3 font-bold ${crit ? 'bg-crit-bg text-crit' : 'bg-warn-bg text-warn'}`}><i className="h-2 w-2 rounded-full bg-current" />{bandCur.level}</span>
+                  <span className="min-w-0 flex-1 truncate text-ink-2"><b className="font-bold text-ink">{MACHINES[bandCur.machine].name} {(a?.nameKo ?? '알람').replace(/\s*\([A-Z0-9 ._/-]+\)/, '')}({bandCur.code})</b> {Math.max(1, Math.round((SIM.now() - bandCur.ts) / 60000))}분째예요. {a?.steps[0] ? `먼저: ${a.steps[0]}` : a?.easy ?? '지침카드를 확인해 주세요.'}</span>
+                  <span className="inline-flex h-8 shrink-0 items-center whitespace-nowrap rounded-ctl border border-line px-2.5 text-small text-ink-2" title="알람 코드집으로 만든 문장">근거 · {a?.doc03[0] ?? 'DOC-02 알람 코드집'}</span>
+                  {bandList.length > 1 && <button onClick={() => setEveI((i) => i + 1)} className="shrink-0 px-1 text-small tabular-nums text-ink-3 hover:text-ink" aria-label="다음 알람">{(eveI % bandList.length) + 1} / {bandList.length} ›</button>}
+                  <button onClick={() => openCard(bandCur.id)} className="h-10 shrink-0 rounded-ctl bg-brand px-4 font-semibold text-white hover:bg-brand-ink">지침카드</button>
+                  <button onClick={() => setSide('채팅')} className="h-10 shrink-0 rounded-ctl border border-line bg-white px-4 font-semibold text-ink hover:bg-tile">이브에게 묻기</button>
+                  {!crit && <button onClick={() => setBandOff((s) => [...s, bandCur.id])} aria-label="주의 알림 닫기" title="닫기 (알람은 알림 탭에 남아요)" className="grid h-10 w-10 shrink-0 place-items-center rounded-ctl text-[18px] text-ink-2 hover:bg-tile hover:text-ink">✕</button>}
+                </div>
+              ); })()}
             </>)}
             {show3D && (
               <>
                 {screen === 'field' && (
                   <div className="pointer-events-auto absolute left-3 top-3 z-10 flex gap-1 rounded-full border border-line bg-white/90 p-1 shadow-md">
-                    {ZONES.map(([name, , ids]) => <button key={name} onClick={() => { setZone(name); setSnapSel(null); api3d()?.frameGroup(ids); }} className={`h-10 rounded-full px-4 text-card font-bold ${zone === name ? 'bg-ink text-white' : 'hover:bg-brand-tint'}`}>{name}</button>)}
-                    <button onClick={() => { setZone(null); setSnapSel(null); api3d()?.setView('front'); }} className={`h-10 rounded-full px-4 text-card font-bold ${zone === null ? 'bg-ink text-white' : 'hover:bg-brand-tint'}`}>전체</button>
+                    {ZONES.map(([name, , ids]) => <button key={name} onClick={() => { setZone(name); setSnapSel(null); api3d()?.frameGroup(ids); }} className={`h-10 rounded-full px-4 text-card font-bold ${zone === name ? 'bg-brand-tint text-brand-ink' : 'hover:bg-tile'}`}>{name}</button>)}
+                    <button onClick={() => { setZone(null); setSnapSel(null); api3d()?.setView('front'); }} className={`h-10 rounded-full px-4 text-card font-bold ${zone === null ? 'bg-brand-tint text-brand-ink' : 'hover:bg-tile'}`}>전체</button>
                   </div>
                 )}
                 {/* 3D 조작: 홈 = 왼쪽 세로 유리 줄 (시안 3a), 현장 모니터 = 오른쪽 아래 */}
-                <div className={`pointer-events-auto absolute flex gap-1 p-1.5 ${home ? `left-5 top-[92px] flex-row rounded-stage ${GLASS}` : 'bottom-3 right-3 rounded-full border border-line bg-white/90 shadow-md'}`}>{/* 홈: 왼쪽 위 가로 줄 (시안 C 확정, 2026-10-20) */}
-                  {(() => { const sb = home ? 'h-12 w-14 rounded-card text-card font-semibold text-ink hover:bg-white' : 'h-8 min-w-9 rounded-full px-3 text-small font-semibold hover:bg-brand-tint'; return (<>
-                    {home && <span className="flex h-12 w-14 items-center justify-center rounded-card bg-ink text-card font-bold text-white" aria-current="true">3D</span>}
+                <div className={`pointer-events-auto absolute flex gap-1 p-1.5 ${home ? 'left-5 top-[92px] flex-row rounded-stage border border-line bg-white shadow-card' : 'bottom-3 right-3 rounded-full border border-line bg-white/90 shadow-md'}`}>{/* 홈: 왼쪽 위 가로 줄 (시안 C 확정, 2026-10-20) */}
+                  {(() => { const sb = home ? 'h-12 w-14 rounded-card text-card font-semibold text-ink-2 hover:bg-tile' : 'h-8 min-w-9 rounded-full px-3 text-small font-semibold hover:bg-brand-tint'; return (<>
+                    {home && <span className="flex h-12 w-14 items-center justify-center rounded-card bg-brand-tint text-card font-bold text-brand-ink" aria-current="true">3D</span>}
                     <button onClick={() => go('layout2d')} className={sb}>2D</button>
                     <button onClick={() => { api3d()?.setView('front'); setSnapSel(null); }} className={sb}>전체</button>
                     {home && <button onClick={() => api3d()?.setView('top')} className={sb}>위</button>}
@@ -556,17 +578,13 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
           <span className="ml-auto whitespace-nowrap">알림 <b className="text-crit">⚠ 긴급</b> <b className="ml-2 text-warn">▲ 주의</b> <span className="ml-2">ⓘ 참고</span></span>
         </footer>}
 
-        <Eve tab={side} quick={home} onClose={closeSide} brief={<Briefing />} onNotice={openNotice} bubble={bubbleText} bubbleKey={pv.n} onBubble={onBubble}
+        <Eve tab={side} quick={home} onClose={closeSide} brief={<Briefing />} onNotice={openNotice} bubble={bubbleText} onBubble={onBubble}
           badges={{ 알림: open.length + myNotices.filter((n) => !n.handled).length, 브리핑: briefBubble ? 1 : 0 }}
           onPick={(t) => { if (t === '브리핑') setSeenBrief((s) => ({ ...s, [user.id]: twin?.shift.shift_id ?? '' })); setSide(t); }} />
 
-        {pv.popup && (
-          <Popup alert={previewAlert()} others={0} big={pv.popup === 'big'} sound
-            onCard={() => { setPv((p) => ({ ...p, popup: null })); toast('미리보기 — 지침카드는 열지 않습니다'); }} onAck={() => setPv((p) => ({ ...p, popup: null }))} />
-        )}
-        {!pv.popup && emergencies[0] && (
-          <Popup alert={emergencies[0]} others={emergencies.length - 1} big={screen === 'field'} sound
-            onCard={() => openCard(emergencies[0].id)} onAck={() => setAcked((s) => ({ ...s, [user.id]: [...(s[user.id] ?? []), emergencies[0].id] }))} />
+        {emergencies[0] && (
+          <Popup alert={emergencies[0]} others={emergencies.length - 1} big={screen === 'field'} sound={!hushed.includes(emergencies[0].id)}
+            onCard={() => openCard(emergencies[0].id)} onAck={() => { hushAll(); setAcked((s) => ({ ...s, [user.id]: [...(s[user.id] ?? []), emergencies[0].id] })); }} />
         )}
         {source && <SourcePopup doc={source[0]} section={source[1]} onClose={() => setSource(null)} />}
         {toastMsg && <div className="fixed bottom-[100px] left-1/2 z-50 -translate-x-1/2 rounded-tile bg-ink px-4 py-3 text-body font-semibold text-white shadow-lg">{toastMsg}</div>}

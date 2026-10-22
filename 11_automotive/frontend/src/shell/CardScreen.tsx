@@ -28,7 +28,8 @@ export default function CardScreen({ alertId }: { alertId: string }) {
   const mine = responsible(user, alert.machine);
   const past = (history?.alarms ?? []).filter((x) => x.equipment_id === eq && x.alarm_code === alert.code).slice(-5).reverse();
   const recOf = (aid: string) => history?.work_records.find((r) => r.alarm_event_id === aid);
-  const wo = wos.find((w) => w.alertId === alert.id);
+  // 같은 설비에 끝나지 않은 작업지시서가 있으면 새 초안을 안 만든다(App.tsx createWo 조건) — 그 작업지시서로 연결 (안 그러면 "만드는 중"에 영원히 멈춤, 2026-10-22)
+  const wo = wos.find((w) => w.alertId === alert.id) ?? wos.find((w) => w.machine === alert.machine && w.state !== 'done' && w.state !== 'cancelled');
   const sr = srs.find((r) => r.alertId === alert.id);
   const src2 = (d: string) => { const m = d.match(/(DOC-\d+|GLOSSARY)\s+§?([\d.]+)/); return m ? <button key={d} onClick={() => openSource(m[1], m[2])} className="underline">{d}</button> : <span key={d}>{d}</span>; };
   const tone = alert.level === '긴급' ? 'crit' : alert.level === '주의' ? 'warn' : 'mute';
@@ -90,7 +91,7 @@ export default function CardScreen({ alertId }: { alertId: string }) {
         <Fold summary={`지난 기록 — 9월 ${eq} · 알람 ${alert.code}`}>
           {past.length ? (
             <div className="overflow-x-auto"><table className="w-full min-w-[620px] table-fixed text-left text-body">
-              <colgroup><col className="w-[112px]" /><col className="w-[64px]" /><col className="w-[96px]" /><col /><col /><col className="w-[84px]" /></colgroup>
+              <colgroup><col className="w-[132px]" /><col className="w-[72px]" /><col className="w-[112px]" /><col /><col /><col className="w-[96px]" /></colgroup>{/* 폭 = 글자 한 단계 크게(.fs-up)에 맞춤 (2026-10-22) */}
               <thead className="text-small text-ink-2"><tr>{['날짜·시각', '등급', '기록 번호', '원인', '조치', '수리 시간'].map((h) => <th key={h} className="border-b border-line px-2 py-1.5 font-semibold">{h}</th>)}</tr></thead>
               <tbody>{past.map((x) => { const r = recOf(x.alarm_event_id); const clamp = 'line-clamp-2'; return (
                 <tr key={x.alarm_event_id} className="border-b border-line-soft align-top">
@@ -130,8 +131,9 @@ export function CardList() {
   const days: [string, typeof list][] = [];
   list.forEach((a) => { const d = a.time.slice(0, 10); const g = days.find(([k]) => k === d); if (g) g[1].push(a); else days.push([d, [a]]); });
   const wd = (d: string) => WD[new Date(Date.UTC(+d.slice(0, 4), +d.slice(5, 7) - 1, +d.slice(8, 10))).getUTCDay()];
-  const sel = 'h-10 rounded-full border border-line bg-white px-3 text-small';
-  const seg = (on: boolean) => `h-10 px-4 text-small font-semibold ${on ? 'bg-ink text-white' : 'bg-white'}`;
+  // 글자 한 단계 크게 = 문서 묶음 전체에 붙는 .fs-up (globals.css, 2026-10-22). 여기선 높이 · 여백만
+  const sel = 'h-11 rounded-full border border-line bg-white px-4 text-small';
+  const seg = (on: boolean) => `h-11 px-5 text-small font-semibold ${on ? 'bg-brand-tint text-brand-ink' : 'bg-white'}`;
   return (
     <DocPage width={1440}>
       {(() => { // 디자인 통일 C안: 결론 띠 1개 (bands.ts cardsBand) — 처리 안 된 것 중 정지 등급 먼저
@@ -148,18 +150,18 @@ export function CardList() {
       {list.length === 0 ? <div className="flex min-h-[55vh] items-center justify-center"><div className="rounded-card border border-line bg-white px-8 py-6 text-card text-ink-2">{all ? '지침카드가 없습니다' : '처리할 지침카드가 없습니다'}</div></div> : days.map(([d, as]) => (
         <section key={d} className="flex flex-col gap-2">
           <h3 className="text-card font-bold">{md(d)} <span className="text-body font-semibold text-ink-2">({wd(d)})</span></h3>
-          <ol className="relative ml-[58px] flex flex-col gap-2.5 border-l-2 border-line py-1 pl-5">
+          <ol className="relative ml-[72px] flex flex-col gap-3 border-l-2 border-line py-1 pl-5">
             {as.map((a) => {
               const v = LEVEL_VIEW[a.level], who = a.alarm?.responder === 'MNT' ? '보전' : '작업자';
               const col = a.handled ? '#94a3b8' : v.color; // 처리됨 = 회색 줄 (2026-10-20)
               return (
                 <li key={a.id} className="relative">
-                  <span className="absolute -left-[88px] top-3 w-[48px] text-right font-mono text-small text-ink-2">{hhmm(a.time)}</span>
-                  <span className="absolute -left-[28px] top-[14px] h-3.5 w-3.5 rounded-full border-2 border-white" style={{ background: col }} aria-hidden />
-                  <button onClick={() => go('card', a.id)} className={`flex w-full flex-wrap items-center gap-x-3 gap-y-1 rounded-tile border px-3 py-2.5 text-left ${a.handled ? 'border-line-soft bg-tile text-ink-3 hover:bg-track' : 'border-line bg-white hover:bg-tile'}`}>
+                  <span className="absolute -left-[102px] top-[17px] w-[62px] text-right font-mono text-small text-ink-2">{hhmm(a.time)}</span>
+                  <span className="absolute -left-[29px] top-[21px] h-4 w-4 rounded-full border-2 border-white" style={{ background: col }} aria-hidden />
+                  <button onClick={() => go('card', a.id)} className={`flex w-full flex-wrap items-center gap-x-4 gap-y-1.5 rounded-tile border px-5 py-3.5 text-left ${a.handled ? 'border-line-soft bg-tile text-ink-3 hover:bg-track' : 'border-line bg-white hover:bg-tile'}`}>
                     <b className="text-card" style={{ color: col }}>{v.icon} {MACHINES[a.machine].name} · {a.code}</b>
                     <span className="min-w-0 flex-1 truncate text-card font-semibold">{a.alarm ? a.alarm.nameKo.replace(/\(.*\)/, '') : alarmTitle(a.alarm, a.code)}</span>
-                    <span className="flex flex-wrap gap-1.5">
+                    <span className="flex flex-wrap gap-2 [&>span]:min-h-8 [&>span]:px-3">
                       <Chip tone={a.handled ? 'mute' : a.level === '긴급' ? 'solid-crit' : a.level === '주의' ? 'warn' : 'mute'}>처리 책임: {who}</Chip>
                       {a.handled ? <Chip>✓ 처리됨</Chip> : <Chip mono>{minsSince(a.time)}분째</Chip>}
                     </span>

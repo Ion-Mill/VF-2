@@ -35,7 +35,7 @@ export default function Layout2D() {
         <text x={(O['RACK-01'].x[0] + O['RACK-01'].x[1]) / 2} y={Y(O['RACK-01'].y[1]) - 120} fontSize="280" textAnchor="middle" fill="#26303a">RACK-01 봉재 랙</text>
         <rect {...box(O['INF-01'].x, O['INF-01'].y)} fill="#eef1f4" stroke="#8a97a4" strokeWidth="30" strokeDasharray="120 80" />
         <text x={(O['INF-01'].x[0] + O['INF-01'].x[1]) / 2} y={Y((O['INF-01'].y[0] + O['INF-01'].y[1]) / 2) + 100} fontSize="300" textAnchor="middle" fill="#56616c">INF-01 투입 대</text>
-        <rect {...box(O['SOAK-01'].x, O['SOAK-01'].y)} fill="#ece9f8" stroke="#8a84b8" strokeWidth="30" />
+        <rect {...box(O['SOAK-01'].x, O['SOAK-01'].y)} fill="#e9eff8" stroke="#8a84b8" strokeWidth="30" />
         <text x={(O['SOAK-01'].x[0] + O['SOAK-01'].x[1]) / 2} y={Y(O['SOAK-01'].y[0]) + 300} fontSize="230" textAnchor="middle" fill="#3d3770">SOAK-01 선반 {twin ? `${twin.soak_qty}개` : '—'}</text>
         <rect {...box(O['FG-01'].x, O['FG-01'].y)} fill="#e2f6ea" stroke="#4fb07a" strokeWidth="30" strokeDasharray="90 60" />
         <text x={(O['FG-01'].x[0] + O['FG-01'].x[1]) / 2} y={Y((O['FG-01'].y[0] + O['FG-01'].y[1]) / 2) + 90} fontSize="230" textAnchor="middle" fill="#155a33">FG-01 완성품{twin ? ` · 오늘 ${twin.done_today}` : ''}</text>
@@ -43,15 +43,15 @@ export default function Layout2D() {
         <text x={W - 150} y={Y(1300)} fontSize="240" textAnchor="end" fill="#26303a">DOOR-1 반입문 ▷</text>
 
         {/* OP-30 구역 테두리 — 병목이면 연보라 + "병목" (3D와 같은 색, 2026-10-20) */}
-        <rect x={op30[0]} y={Y(op30[3])} width={op30[1] - op30[0]} height={op30[3] - op30[2]} fill="none" stroke={bn === 'OP-30' ? '#a996ef' : '#3c4752'} strokeWidth="50" strokeDasharray="220 130" />
-        <text x={(op30[0] + op30[1]) / 2} y={Y(op30[2]) - 80} fontSize="300" fontWeight="700" textAnchor="middle" fill={bn === 'OP-30' ? '#6a43e0' : '#3c4752'}>OP-30 (2대 병렬){bn === 'OP-30' ? ` · 병목 (${CAUSE_KO[twin!.bottleneck.cause_code] ?? ''})` : ''}</text>
+        <rect x={op30[0]} y={Y(op30[3])} width={op30[1] - op30[0]} height={op30[3] - op30[2]} fill="none" stroke={bn === 'OP-30' ? '#9dbcf4' : '#3c4752'} strokeWidth="50" strokeDasharray="220 130" />
+        <text x={(op30[0] + op30[1]) / 2} y={Y(op30[2]) - 80} fontSize="300" fontWeight="700" textAnchor="middle" fill={bn === 'OP-30' ? '#3d6fe0' : '#3c4752'}>OP-30 (2대 병렬){bn === 'OP-30' ? ` · 병목 (${CAUSE_KO[twin!.bottleneck.cause_code] ?? ''})` : ''}</text>
 
         {EQS.map((eq) => {
           const e = LAYOUT.equipment[eq], id: MachineId = ID_OF[eq], x0 = e.center[0] - e.size[0] / 2, x1 = e.center[0] + e.size[0] / 2, y0 = e.center[1] - e.size[1] / 2, y1 = e.center[1] + e.size[1] / 2;
           const s = stateOf(twin?.equipment[eq]), v = STATE_VIEW[s], sel = selected === id, isBn = !!bn && bn !== 'OP-30' && e.process === bn;
           return (
             <g key={eq} onClick={() => selectMachine(id)} className="cursor-pointer" role="button" aria-label={`${eq} ${v.text}`}>
-              <rect x={x0} y={Y(y1)} width={x1 - x0} height={y1 - y0} fill={FILL[s]} stroke={sel ? '#7a52f0' : isBn ? '#a996ef' : EDGE[s]} strokeWidth={sel || isBn ? 90 : 50} strokeDasharray={s === 'NODATA' ? '120 80' : undefined} />
+              <rect x={x0} y={Y(y1)} width={x1 - x0} height={y1 - y0} fill={FILL[s]} stroke={sel ? '#3d6fe0' : isBn ? '#9dbcf4' : EDGE[s]} strokeWidth={sel || isBn ? 90 : 50} strokeDasharray={s === 'NODATA' ? '120 80' : undefined} />
               <text x={e.center[0]} y={Y(e.center[1]) - 120} fontSize="360" fontWeight="700" textAnchor="middle" fill="#26303a">{eq}</text>
               <text x={e.center[0]} y={Y(e.center[1]) + 320} fontSize="330" fontWeight="700" textAnchor="middle" fill={v.color}>{v.icon} {v.text}</text>
               <text x={e.center[0]} y={Y(y1) - 120} fontSize="240" textAnchor="middle" fill="#56616c">{e.process} · {(e.size[0] / 1000).toFixed(1)}×{(e.size[1] / 1000).toFixed(1)} m{isBn ? ' · 병목' : ''}</text>

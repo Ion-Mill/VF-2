@@ -103,11 +103,14 @@ class VersionIn(BaseModel):
 @router.post("/work-orders/{wo_no}/approve")
 def wo_approve(wo_no: str, body: VersionIn, actor: Actor = Depends(require("WORK_ORDER", "APPROVE")),
                db: Db = Depends(get_db)):
-    """승인 (MNT-06, SUP — MGR 대리). 담당 없이·AI비서 초안 그대로는 INVALID_STATE (사람이 열어 수정 중이 되어야 함, 6.13)"""
+    """승인 (MNT-06, 반장만). 관리자 대리 승인(범위 PROXY)은 거절.
+    담당 없이·AI비서 초안 그대로는 INVALID_STATE (사람이 열어 수정 중이 되어야 함, 6.13).
+    조회 칸 approved_as_proxy 는 그대로 두고, 새 승인 응답의 proxy 는 항상 거짓."""
+    if actor.role != "SUP" or actor.scope == "PROXY":
+        raise AppError(403, "FORBIDDEN", "작업지시서 승인은 반장만 함")
     check_version(db, "WORK_ORDER", wo_no, body.version)
     changed(db.exec("maintenance.wo_approve", wo_no=wo_no, actor=actor.user_id), "작업지시서 승인")
-    # MGR(범위 PROXY) 승인 = 대리 승인 (13.1 "승인(대리)") — 조회에서는 v_work_order.approved_as_proxy
-    return {"status": "APPROVED", "proxy": actor.scope == "PROXY"}
+    return {"status": "APPROVED", "proxy": False}
 
 
 @router.post("/work-orders/{wo_no}/start")
@@ -126,10 +129,10 @@ class CancelIn(BaseModel):
 
 
 @router.post("/work-orders/{wo_no}/cancel")
-def wo_cancel(wo_no: str, body: CancelIn, actor: Actor = Depends(require("WORK_ORDER", "CANCEL")), db: Db = Depends(get_db)):
-    """취소 (MNT-08, MGR — 사유 필수)"""
-    changed(db.exec("maintenance.wo_cancel", wo_no=wo_no, actor=actor.user_id, reason=body.reason), "작업지시서 취소")
-    return {"status": "CANCELLED"}
+def wo_cancel(wo_no: str, body: CancelIn, actor: Actor = Depends(require("WORK_ORDER", "CANCEL"))):
+    """취소 API는 주소를 남긴다. 관리자 취소를 뺐고 반장에게 새로 주지 않아 누가 불러도 거절한다."""
+    raise AppError(403, "FORBIDDEN", f"{actor.role} 역할은 작업지시서 취소 권한이 없음",
+                   {"wo_no": wo_no, "reason": "NO_CANCEL"})
 
 
 # ---------------- 작업기록서 (정식 FULL, MNT-09~11) / 간이 작업기록 (SIMPLE, MNT-12) ----------------

@@ -36,7 +36,7 @@ export default function WorkOrderScreen({ no, focusRecord }: { no: string; focus
     if (wo.title !== synced.current.title) { const before = synced.current.title, next = wo.title; setTitle((t) => (t === before ? next : t)); synced.current.title = next; }
     if (wo.symptom !== synced.current.symptom) { const before = synced.current.symptom, next = wo.symptom; setSymptom((s) => (s === before ? next : s)); synced.current.symptom = next; }
   }, [wo?.title, wo?.symptom]); // eslint-disable-line react-hooks/exhaustive-deps
-  const [confirm, setConfirm] = useState<'approve' | 'cancel' | 'revise' | null>(null);
+  const [confirm, setConfirm] = useState<'approve' | 'revise' | null>(null);
   const [reason, setReason] = useState('');
   const [reviseOpen, setReviseOpen] = useState(false);
   if (!wo) return <div className={PAGE}><div className={CARD}>작업지시서가 없습니다 <button onClick={back} className={BTN}>닫기</button></div></div>;
@@ -94,7 +94,6 @@ export default function WorkOrderScreen({ no, focusRecord }: { no: string; focus
             </select>
             <button disabled={!wo.assignee} onClick={() => setConfirm('approve')} className={DARK}>승인</button>
           </>) : <span className="text-card font-semibold">{wo.assignee ? userName(wo.assignee) : '아직 지정 안 됨'}</span>}
-          {role === 'MGR' && !locked && <><button disabled={!wo.assignee} onClick={() => setConfirm('approve')} className={DARK}>대리 승인</button><button onClick={() => setConfirm('cancel')} className={BTN}>취소</button></>}
           {role === 'MNT' && isAssignee && wo.state === 'approved' && <button onClick={() => { putWo({ ...wo, state: 'inprogress', revisions: rev(wo.revisions, '작업 시작', user.name, role) }); openRecord(wo.no, false); setScrollTo(true); }} className={DARK}>작업 시작</button>}
           {role === 'MNT' && isAssignee && wo.state === 'inprogress' && !wr && <button onClick={() => { openRecord(wo.no, false); setScrollTo(true); }} className={DARK}>작업 기록 열기</button>}
           {wr && <button onClick={() => setScrollTo(true)} className={BTN}>작업 기록 {wr.no} ↓</button>}
@@ -130,15 +129,14 @@ export default function WorkOrderScreen({ no, focusRecord }: { no: string; focus
         {(role === 'OPR' || (role === 'SUP' && locked && !reviseOpen) || (role === 'MGR' && locked)) && RO}
       </Acts>
       {confirm && (
-        <ConfirmBox title={confirm === 'approve' ? '작업지시서를 승인할까요?' : confirm === 'cancel' ? '작업지시서를 취소할까요?' : '확정 후 수정을 저장할까요?'}
-          body={confirm === 'approve' ? `승인하면 내용이 잠기고 ${userName(wo.assignee)}에게 "작업지시서 배정" 알림이 갑니다.` : confirm === 'cancel' ? '취소하면 되돌릴 수 없습니다.' : `새 버전 v${wo.version + 1}이 생기고 관리자에게 수정 알림이 갑니다. 사유: ${reason}`}
-          okLabel={confirm === 'approve' ? '승인' : confirm === 'cancel' ? '취소하기' : '저장'}
+        <ConfirmBox title={confirm === 'approve' ? '작업지시서를 승인할까요?' : '확정 후 수정을 저장할까요?'}
+          body={confirm === 'approve' ? `승인하면 내용이 잠기고 ${userName(wo.assignee)}에게 "작업지시서 배정" 알림이 갑니다.` : `새 버전 v${wo.version + 1}이 생기고 관리자에게 수정 알림이 갑니다. 사유: ${reason}`}
+          okLabel={confirm === 'approve' ? '승인' : '저장'}
           onOk={() => {
             if (confirm === 'approve') {
-              putWo({ ...wo, state: 'approved', approvedBy: user.name, approvedAt: simIso(), revisions: rev(wo.revisions, role === 'MGR' ? '대리 승인' : '승인', user.name, role) });
+              putWo({ ...wo, state: 'approved', approvedBy: user.name, approvedAt: simIso(), revisions: rev(wo.revisions, '승인', user.name, role) });
               if (wo.assignee) addNotice({ id: `WO_ASSIGNED:${wo.no}`, rule: 'WO_ASSIGNED', ruleName: '작업지시서 배정', level: '참고', rank: '4', at: simIso(), ts: Date.now(), text: `작업지시서 ${wo.no}가 배정됐어요`, roles: ['MNT'], userIds: [wo.assignee], delivery: 'BUBBLE', handled: false, open: { screen: 'wo', key: wo.no } });
-            } else if (confirm === 'cancel') putWo({ ...wo, state: 'cancelled', revisions: rev(wo.revisions, '취소', user.name, role) });
-            else save('확정 후 수정', reason);
+            } else save('확정 후 수정', reason);
             setConfirm(null);
           }} onCancel={() => setConfirm(null)} />
       )}

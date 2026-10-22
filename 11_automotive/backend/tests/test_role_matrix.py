@@ -40,9 +40,9 @@ EXPECTED = {
     ("GET", "/api/maint/work-orders"): ALL, ("GET", "/api/maint/work-orders/{wo_no}"): ALL,
     ("POST", "/api/maint/work-orders"): ".M..", ("PATCH", "/api/maint/work-orders/{wo_no}"): ".M..",
     ("POST", "/api/maint/work-orders/{wo_no}/assign"): "..S.",
-    ("POST", "/api/maint/work-orders/{wo_no}/approve"): "..SM",      # * MGR = 대리 (PROXY)
+    ("POST", "/api/maint/work-orders/{wo_no}/approve"): "..S.",      # 반장만
     ("POST", "/api/maint/work-orders/{wo_no}/start"): ".M..",        # * 담당 M만
-    ("POST", "/api/maint/work-orders/{wo_no}/cancel"): "...M",
+    ("POST", "/api/maint/work-orders/{wo_no}/cancel"): "....",       # 취소 권한 없음
     ("GET", "/api/maint/work-records"): ALL, ("GET", "/api/maint/work-records/{record_no}"): ALL,   # * OPR은 간이만
     ("POST", "/api/maint/work-records"): ".M..",
     ("PATCH", "/api/maint/work-records/{record_no}"): "OM..",        # * 정식은 M만 (MNT-09), 간이는 O·M
@@ -134,7 +134,10 @@ class TestRoleMatrix(unittest.TestCase):
         t = self.table
         self.assertEqual(t.scope("OPR", "BRIEFING", "VIEW"), "SUMMARY")
         self.assertEqual(t.scope("OPR", "REVISION_HISTORY", "VIEW"), "OWN")
-        self.assertEqual(t.scope("MGR", "WORK_ORDER", "APPROVE"), "PROXY")
+        self.assertEqual(t.scope("SUP", "WORK_ORDER", "APPROVE"), "ALL")
+        self.assertIsNone(t.scope("MGR", "WORK_ORDER", "APPROVE"))
+        self.assertIsNone(t.scope("MGR", "WORK_ORDER", "CANCEL"))
+        self.assertIsNone(t.scope("SUP", "WORK_ORDER", "CANCEL"))
         self.assertEqual({t.scope("MNT", "INV_RECEIPT", "INPUT"), t.scope("SUP", "INV_RECEIPT", "INPUT")}, {"OWNED_ITEMS"})
         targets = {tg for (_r, tg, _a) in t._grants}
         self.assertEqual([tg for tg in sorted(targets) if not t.allows("MGR", tg, "VIEW")], [], "MGR은 모든 조회 (D-11)")

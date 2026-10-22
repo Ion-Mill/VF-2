@@ -12,7 +12,7 @@ import { WO_STEPS, minutesSince } from './workflow';
 type Tab = '작업지시서' | '작업기록서' | '간이 작업기록' | '교대 보고서' | '일일 보고서';
 // 9월 기록의 영어 상태 → 한글
 const EN_ST: Record<string, string> = { DONE: '완료', COMPLETED: '완료', IN_PROGRESS: '진행 중', OPEN: '대기', CANCELLED: '취소됨', CONFIRMED: '확정', CHECKED: '확인됨' };
-const stTone = (st: string) => (/초안/.test(st) ? 'bg-[#f3e8ff] text-[#7e22ce]' : /완료|확정|확인됨/.test(st) ? 'bg-ok-bg text-ok' : /진행|수정|작성|승인/.test(st) ? 'bg-[#e6ebff] text-[#3a4ec4]' : /취소/.test(st) ? 'bg-tile text-ink-3' : 'bg-tile text-ink-2');
+const stTone = (st: string) => (/초안/.test(st) ? 'bg-[#e5effe] text-[#2a55b8]' : /완료|확정|확인됨/.test(st) ? 'bg-ok-bg text-ok' : /진행|수정|작성|승인/.test(st) ? 'bg-[#e6ebff] text-[#3a4ec4]' : /취소/.test(st) ? 'bg-tile text-ink-3' : 'bg-tile text-ink-2');
 function Sum({ a, b }: { a: string; b?: string }) {
   return <div className="min-w-0"><div className="truncate font-semibold text-ink">{a}</div>{b && <div className="truncate text-small text-ink-2">{b}</div>}</div>;
 }
@@ -80,12 +80,13 @@ export default function DocBox() {
   const pill = 'h-9 rounded-full border border-line bg-white px-3 text-small text-ink';
   const table = (list: Row[]) => (
     <table className="mt-2 w-full table-fixed text-left text-body">
-      <colgroup><col className="w-[120px]" /><col className="w-[90px]" /><col className="w-[64px]" /><col className="w-[64px]" /><col className="w-[110px]" /><col /></colgroup>
+      {/* 칸 폭: 글자 한 단계 크게(.fs-up)에 맞춤 — 알람 64px에 "5303.00" 같은 코드가 넘쳐 옆 칸으로 밀렸다 (2026-10-22). 그래도 긴 것은 … */}
+      <colgroup><col className="w-[156px]" /><col className="w-[100px]" /><col className="w-[112px]" /><col className="w-[76px]" /><col className="w-[132px]" /><col /></colgroup>
       <thead className="text-small text-ink-2"><tr>{['번호', '설비', '알람', '날짜', '상태', '요약'].map((h) => <th key={h} className="px-3 py-2 font-semibold">{h}</th>)}</tr></thead>
       <tbody>{list.slice(0, 120).map((r, n) => (
         <tr key={r.key} onClick={r.go} className={`${n % 2 ? 'bg-[#f8f9fd]' : ''} ${r.go ? 'cursor-pointer hover:bg-brand-tint' : ''}`}>
           {r.cells.map((c, i) => (
-            <td key={i} className={`px-3 py-2.5 align-top ${i === 0 || i === 2 || i === 3 ? 'font-mono tabular-nums' : ''} ${i === 0 ? 'font-semibold' : ''} ${i === 5 ? 'min-w-0' : 'whitespace-nowrap'}`}>
+            <td key={i} title={i < 4 && typeof c === 'string' ? c : undefined} className={`px-3 py-2.5 align-top ${i === 0 || i === 2 || i === 3 ? 'font-mono tabular-nums' : ''} ${i === 0 ? 'font-semibold' : ''} ${i === 5 ? 'min-w-0 break-words' : i === 4 ? '' : 'overflow-hidden text-ellipsis whitespace-nowrap'}`}>
               {i === 4 ? <span className={`inline-block rounded-full px-2.5 py-0.5 text-small font-bold ${r.warn ? 'bg-warn-bg text-warn' : stTone(String(c))}`}>{r.warn ? '▲ ' : ''}{c}</span>
                 : i === 5 && typeof c === 'string' ? <Sum a={c} /> : c}
             </td>))}
@@ -119,8 +120,8 @@ export default function DocBox() {
           <h2 className="text-band font-bold">{tab}</h2>
           {/* [2] 필터 — 한 줄 도구 막대 */}
           <div className="mt-3 flex flex-wrap items-center gap-2">
-            {stateOpts.length > 0 && <select aria-label="상태" value={state} onChange={(e) => setState(e.target.value)} className={pill}><option value="">상태: 전체</option>{stateOpts.map((x) => <option key={x}>{x}</option>)}</select>}
-            <select aria-label="설비" value={machine} onChange={(e) => setMachine(e.target.value)} className={pill}><option value="">설비: 전체</option>{['SAW-01', 'MIL-01', 'VF2-01', 'VF2-02', 'WSH-01', 'CMM-01'].map((m) => <option key={m}>{m}</option>)}</select>
+            {stateOpts.length > 0 && <label className="flex items-center gap-1.5 text-body font-semibold text-ink-2">상태:<select value={state} onChange={(e) => setState(e.target.value)} className={pill}><option value="">전체</option>{stateOpts.map((x) => <option key={x}>{x}</option>)}</select></label>}
+            <label className="flex items-center gap-1.5 text-body font-semibold text-ink-2">설비:<select value={machine} onChange={(e) => setMachine(e.target.value)} className={pill}><option value="">전체</option>{['SAW-01', 'MIL-01', 'VF2-01', 'VF2-02', 'WSH-01', 'CMM-01'].map((m) => <option key={m}>{m}</option>)}</select></label>
             <input aria-label="알람 번호" value={code} onChange={(e) => setCode(e.target.value)} placeholder="알람 번호 (예: 992)" className={`${pill} w-[150px]`} />
             <input aria-label="비슷한 문장 찾기" value={text} onChange={(e) => setText(e.target.value)} placeholder="비슷한 문장 찾기 (예: 케이블)" className={`${pill} w-[220px]`} />
             <span className="ml-auto text-small font-semibold text-ink-2">{rows.length}건</span>

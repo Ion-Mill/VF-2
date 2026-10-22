@@ -1,7 +1,7 @@
 'use client';
 // SCR-21 재고 — 13품목(공구 5·소모품 6·원자재 1·완제품 1), 관리 역할, 거래 기록, 입고·실사 조정(API-INV-02), 출하 등록(API-INV-04). 발주 버튼 없음.
 // 화면 구조 (사용자 시안 2026-10-16): [재고] [출하 등록] 탭. 출하 등록 = 이번 출하/지난 출하 · 단계(로트 고르기→수량→출하 전 확인→확정) · 합격 로트 카드(−/+) · 출하 요약
-import { LockIcon } from './ui';
+import { LockIcon, SecIcon } from './ui';
 import { useEffect, useRef, useState } from 'react';
 import { BTN, DARK, PAGE, useApp } from './ctx';
 import { Band, BandSkeleton, Skeleton, Tabs } from './ui';
@@ -19,10 +19,10 @@ const groupOf = (i: R) => (i.category === 'TOOL' ? '절삭 공구' : i.category 
 // 원자재 입고 검사 4가지 (6061-T6 봉재) — shortcut: 결과는 브라우저에만 저장, 서버 API 생기면 옮김
 const IN_CHECKS: [string, string][] = [['성적서 EN 10204 3.1 받음', '공급사 밀시트'], ['로트 코드 일치', '성적서 히트·배치 번호 = 입고품 표시'], ['성분 범위 안', 'KS D 6763 6061 — Mg 0.80~1.20 · Si 0.40~0.80 · Cu 0.15~0.40 등'], ['기계적 성질 최소값 이상', '압출봉 T6 — 인장 260 · 항복 240 N/mm² · 연신율 10%']];
 const TXN: Record<string, string> = { IN: '입고', USE: '사용', ADJUST: '조정', FG_IN: '합격 입고', SHIP: '출하', RECEIVE: '입고' };
-const box = 'rounded-card border border-line bg-white p-5';
-const tabBtn = (on: boolean) => `h-14 rounded-tile border px-7 text-band font-bold ${on ? 'border-ink bg-ink text-white' : 'border-line bg-white text-ink'}`;
+const box = 'rounded-card border border-line bg-white p-5 shadow-card';
+const tabBtn = (on: boolean) => `h-14 rounded-tile border px-7 text-band font-bold ${on ? 'border-brand-line bg-brand-tint text-brand-ink' : 'border-line bg-white text-ink'}`;
 // 할 일 버튼 — 누른 것(열린 입력 칸)만 파란색
-const todo = (on: boolean) => `h-11 rounded-tile border px-4 text-card font-bold disabled:text-ink-3 ${on ? 'border-ink bg-ink text-white' : 'border-line bg-white text-ink'}`;
+const todo = (on: boolean) => `h-11 rounded-tile border px-4 text-card font-bold disabled:text-ink-3 ${on ? 'border-brand-line bg-brand-tint text-brand-ink' : 'border-line bg-white text-ink'}`;
 
 export function InventoryScreen() {
   const { key, inv, reloadInv, role, user, back, go, toast, twin, eve } = useApp(); // eve: 이브 창이 열려 좁을 때 배치 바꿈 · key: 재고 부족 알림에서 온 품목 번호
@@ -98,25 +98,25 @@ export function InventoryScreen() {
     <div className={PAGE}>
       <div className="mx-auto flex max-w-[1440px] flex-col gap-3">
         {/* 디자인 통일 C안: 큰 갈래 = Tabs(차콜 선택) · 재고 탭은 결론 띠 1개 (bands.ts inventoryBand) */}
-        <div><Tabs label="재고 화면" value={tab} onChange={(k) => setTab(k as 'stock' | 'ship')} items={[{ key: 'stock', label: '재고', warn: lowN }, { key: 'ship', label: chosen.length > 0 ? '출하 등록 · 작성 중' : '출하 등록' }]} /></div>
+        <div><Tabs big label="재고 화면" value={tab} onChange={(k) => setTab(k as 'stock' | 'ship')} items={[{ key: 'stock', label: '재고', warn: lowN }, { key: 'ship', label: chosen.length > 0 ? '출하 등록 · 작성 중' : '출하 등록' }]} /></div>
         {tab === 'stock' && (() => { const spec = inventoryBand(inv.items, pendingIn.length); return <Band spec={spec} onAction={() => (spec.action === '입고 검사' ? inRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }) : openIn())} />; })()}
 
         {tab === 'stock' ? (<>
           {/* 한눈에 보기 */}
           <section className={box}>
-            <div className="flex items-center justify-between"><h3 className="flex items-center gap-2 text-card font-bold">한눈에 보기</h3><span className="rounded-full border border-line px-3 py-1 text-small">입고 검사 대기 {pendingIn.length}</span></div>
+            <div className="flex items-center justify-between"><h3 className="flex items-center gap-2 text-card font-bold"><SecIcon title="한눈에 보기" size={32} />한눈에 보기</h3><span className="rounded-full border border-line px-3 py-1 text-small">입고 검사 대기 {pendingIn.length}</span></div>
             <div className="mt-3 flex flex-wrap gap-2">{(['전체', ...GROUPS.map((g) => g[0])] as string[]).map((g) => { const its = g === '전체' ? inv.items : inv.items.filter((i) => groupOf(i) === g), lw = its.filter((i) => i.low).length; return (
-              <button key={g} onClick={() => setCat(g === '전체' ? '' : g)} className={`flex h-11 items-center gap-2 rounded-tile border px-4 text-card font-bold ${(cat || '전체') === g ? 'border-ink bg-ink text-white' : 'border-line bg-white text-ink'}`}>{g} <span className="font-normal">{its.length}</span>{lw > 0 && <span className="rounded-full border border-warn-mark bg-warn-bg px-2 text-small text-warn">▲ {lw}</span>}</button>); })}</div>
+              <button key={g} onClick={() => setCat(g === '전체' ? '' : g)} className={`flex h-11 items-center gap-2 rounded-tile border px-4 text-card font-bold ${(cat || '전체') === g ? 'border-brand-line bg-brand-tint text-brand-ink' : 'border-line bg-white text-ink'}`}>{g} <span className="font-normal">{its.length}</span>{lw > 0 && <span className="rounded-full border border-warn-mark bg-warn-bg px-2 text-small text-warn">▲ {lw}</span>}</button>); })}</div>
             <div className={`mt-4 grid gap-8 ${eve ? 'grid-cols-1' : 'grid-cols-[1.45fr_1fr]'}`}>
               <div>
-                <div className="flex items-center gap-4 text-small"><b className="text-card">재고 여유</b><span><i className="mr-1 inline-block h-2 w-5 rounded bg-info" />지금</span><span><i className="mr-1 inline-block h-3 w-[2px] bg-ink" />안전 재고</span></div>
+                <div className="flex items-center gap-4 text-small"><b className="text-card">재고 여유</b><span><i className="mr-1 inline-block h-2 w-5 rounded bg-[#9dbcf4]" />지금</span><span><i className="mr-1 inline-block h-3 w-[2px] bg-ink" />안전 재고</span></div>
                 {GROUPS.filter(([g]) => g !== '완제품' && (!cat || cat === g)).map(([g, note]) => { const its = inv.items.filter((i) => groupOf(i) === g); if (!its.length) return null; return (
                   <div key={g} className="mt-4">
                     <div className="text-body"><b className="text-card">{g}</b> <span className="ml-1 text-small text-ink-2">{note}{g === '원자재' && pendingIn.length ? ` · 입고 검사 대기 ${pendingIn.reduce((n, t) => n + Number(t.qty_change), 0)} (재고에 안 넣음)` : ''}</span></div>
                     <div className={`mt-2 grid gap-2 ${g === '원자재' ? 'grid-cols-1' : 'grid-cols-2'}`}>{its.map((i) => { const mx = Math.max(i.stock_qty, i.safety_stock * 2, 1); return (
-                      <div key={i.item_no} className={`grid grid-cols-[120px_1fr_auto] items-center gap-3 rounded-tile border px-3 py-2.5 ${i.low ? 'border-warn-line bg-warn-bg' : 'border-line-soft bg-white'}`}>
-                        <span className="truncate text-body">{i.low && <span className="text-warn">▲ </span>}{i.item_name}</span>
-                        <div className="relative h-2.5 rounded bg-tile"><div className="h-full rounded" style={{ width: `${(i.stock_qty / mx) * 100}%`, background: i.low ? '#e0b000' : '#4b5563' }} /><span className="absolute -top-1.5 h-[22px] w-[2px] bg-ink" style={{ left: `${(i.safety_stock / mx) * 100}%` }} /></div>
+                      <div key={i.item_no} className={`grid grid-cols-[120px_1fr_auto] items-center gap-3 rounded-tile border px-3 py-2.5 border-line bg-white`}>
+                        <span className="truncate text-body">{i.low && <span className="mr-1.5 rounded-[5px] bg-warn-bg px-1.5 text-[12px] font-semibold text-warn">부족</span>}{i.item_name}</span>
+                        <div className="relative h-2.5 rounded bg-tile"><div className="h-full rounded" style={{ width: `${(i.stock_qty / mx) * 100}%`, background: i.low ? '#f3c98a' : '#9dbcf4' }} /><span className="absolute -top-1.5 h-[22px] w-[2px] bg-ink" style={{ left: `${(i.safety_stock / mx) * 100}%` }} /></div>
                         <span className="whitespace-nowrap text-right"><b className="font-mono text-card">{Math.round(i.stock_qty * 10) / 10}</b> <span className="font-mono text-small text-ink-2">/ {i.safety_stock} {i.unit}</span>
                           {usedToday[i.item_no] ? <span className="block font-mono text-small text-ink-2">오늘 사용 −{Math.round(usedToday[i.item_no] * 100) / 100}</span> : null}</span>
                       </div>); })}</div>
@@ -126,7 +126,7 @@ export function InventoryScreen() {
                 <div className={eve ? 'border-t border-line-soft pt-4' : ''}>
                   <b className="text-card">완제품 {fgItem.item_name.replace(' 완제품', '')}</b>
                   <div className={eve ? 'grid grid-cols-2 gap-x-8' : ''}>{/* 이브 열림: 4줄을 2칸씩 */}
-                  {([['지금', fgNow, '#4b5563', false], ['이번 출하', -total, '', true], ['출하 뒤', Math.max(0, fgNow - total), '#4b5563', false], ['보류', heldQty, '', false]] as [string, number, string, boolean][]).map(([k, v, c, dash]) => (
+                  {([['지금', fgNow, '#9dbcf4', false], ['이번 출하', -total, '', true], ['출하 뒤', Math.max(0, fgNow - total), '#9dbcf4', false], ['보류', heldQty, '', false]] as [string, number, string, boolean][]).map(([k, v, c, dash]) => (
                     <div key={k} className="mt-3 grid grid-cols-[80px_1fr_56px] items-center gap-3 text-body"><span>{k === '보류' && <LockIcon />} {k}</span>
                       <div className="relative h-5 rounded bg-tile">{dash ? <div className="absolute inset-y-0 right-0 rounded border border-dashed border-slate-500" style={{ width: `${fgNow ? (total / fgNow) * 100 : 0}%` }} /> : c ? <div className="h-full rounded" style={{ width: `${fgNow ? (Math.max(0, v) / fgNow) * 100 : 0}%`, background: c }} /> : <div className="h-full w-5 rounded border-2 border-ink" />}</div>
                       <b className="text-right font-mono text-band">{v}</b></div>))}
@@ -138,7 +138,7 @@ export function InventoryScreen() {
           <div className="grid grid-cols-[1.6fr_1fr] items-start gap-4">
             {/* 거래 기록 */}
             <section className={box}>
-              <h3 className="flex items-center gap-2 text-card font-bold">거래 기록</h3>
+              <h3 className="flex items-center gap-2 text-card font-bold"><SecIcon title="거래 기록" size={32} />거래 기록</h3>
               <ul className="mt-3 max-h-[300px] divide-y divide-slate-100 overflow-y-auto border-t border-line-soft text-body">{txns.map((t, i) => { const ref = t.lot_no || t.fg_lot_no; const q = Number(t.qty_change); return (
                 <li key={i} className="grid grid-cols-[90px_80px_1fr_70px] items-center gap-2 py-2.5">
                   <span className={`font-mono ${t.live ? '' : 'text-ink-2'}`}>{t.live ? '' : `${md(t.txn_at)} `}{hm(t.txn_at)}</span><b>{TXN[t.txn_type] ?? t.txn_type}</b>
@@ -149,7 +149,7 @@ export function InventoryScreen() {
 
             {/* 할 일 */}
             <section className={box}>
-              <h3 className="flex items-center gap-2 text-card font-bold">할 일</h3>
+              <h3 className="flex items-center gap-2 text-card font-bold"><SecIcon title="할 일" size={32} />할 일</h3>
               {/* 누른 버튼(열린 입력 칸)만 파란색 — 출하 등록이 늘 파래서 눌린 것처럼 보이던 것을 고침 (사용자 요청 2026-10-20) */}
               <div className="mt-3 flex flex-wrap gap-2 border-b border-line-soft pb-4">
                 <button disabled={!myItems.length} onClick={() => openIn()} className={todo(form?.type === 'IN')}>입고 등록</button>
@@ -180,8 +180,8 @@ export function InventoryScreen() {
           </div>
         </>) : (<>
           <div className="flex gap-3">
-            <button onClick={() => setShipTab('now')} className={`h-12 rounded-tile border px-5 text-card font-bold ${shipTab === 'now' ? 'border-ink bg-ink text-white' : 'border-line bg-white text-ink'}`}>이번 출하 {nextNo}</button>
-            <button onClick={() => setShipTab('past')} className={`h-12 rounded-tile border px-5 text-card font-bold ${shipTab === 'past' ? 'border-ink bg-ink text-white' : 'border-line bg-white text-ink'}`}>지난 출하 {shipList.length}</button>
+            <button onClick={() => setShipTab('now')} className={`h-12 rounded-tile border px-5 text-card font-bold ${shipTab === 'now' ? 'border-brand-line bg-brand-tint text-brand-ink' : 'border-line bg-white text-ink'}`}>이번 출하 {nextNo}</button>
+            <button onClick={() => setShipTab('past')} className={`h-12 rounded-tile border px-5 text-card font-bold ${shipTab === 'past' ? 'border-brand-line bg-brand-tint text-brand-ink' : 'border-line bg-white text-ink'}`}>지난 출하 {shipList.length}</button>
           </div>
 
           {shipTab === 'past' ? (() => {
@@ -190,9 +190,9 @@ export function InventoryScreen() {
             return (
               <div className="grid grid-cols-[1fr_1.4fr] items-start gap-4">
                 <section className={box}>
-                  <h3 className="text-card font-bold">지난 출하</h3>
+                  <h3 className="flex items-center gap-2.5 text-card font-bold"><SecIcon title="지난 출하" size={32} />지난 출하</h3>
                   <div className="mt-3 flex max-h-[560px] flex-col gap-2 overflow-y-auto">{list.map((s) => (
-                    <button key={s.shipment_no} onClick={() => setPastSel(s.shipment_no)} className={`grid items-center rounded-tile border text-left ${eve ? 'grid-cols-[62px_1fr_auto] gap-2 px-3 py-2.5' : 'grid-cols-[150px_1fr_60px] gap-3 px-4 py-3'} ${s.shipment_no === cur?.shipment_no ? 'border-brand-line bg-[#f4f0ff]' : 'border-line-soft bg-white'}`}>
+                    <button key={s.shipment_no} onClick={() => setPastSel(s.shipment_no)} className={`grid items-center rounded-tile border text-left ${eve ? 'grid-cols-[62px_1fr_auto] gap-2 px-3 py-2.5' : 'grid-cols-[150px_1fr_60px] gap-3 px-4 py-3'} ${s.shipment_no === cur?.shipment_no ? 'border-brand-line bg-[#eef4fd]' : 'border-line-soft bg-white'}`}>
                       {/* 이브 열림: SHP / -2610 / -001 세 줄로 접어 폭을 줄이고 수량을 당겨 옴 */}
                       {eve
                         ? <b className="font-mono text-body leading-tight">{String(s.shipment_no).split('-').map((p, i) => <span key={i} className="block">{i ? `-${p}` : p}</span>)}</b>
@@ -203,7 +203,7 @@ export function InventoryScreen() {
                 </section>
                 {cur && (
                   <section className={box}>
-                    <div className="flex items-center justify-between"><h3 className="text-card font-bold">출하 <span className="font-mono">{cur.shipment_no}</span></h3>{cur.status === 'CONFIRMED' && <span className="rounded-tile border-2 border-ink px-3 py-1 text-card font-bold"><LockIcon /> 확정</span>}</div>
+                    <div className="flex items-center justify-between"><h3 className="flex items-center gap-2.5 text-card font-bold"><SecIcon title="출하" size={32} />출하 <span className="font-mono">{cur.shipment_no}</span></h3>{cur.status === 'CONFIRMED' && <span className="rounded-tile border-2 border-ink px-3 py-1 text-card font-bold"><LockIcon /> 확정</span>}</div>
                     <div className="mt-3 grid grid-cols-3 gap-4 text-card">
                       <div><div className="text-small text-ink-2">출하 일시</div>{md(cur.shipped_at)} {hm(cur.shipped_at)}</div>
                       <div><div className="text-small text-ink-2">출하처</div>{cur.customer_code}</div>
@@ -226,14 +226,14 @@ export function InventoryScreen() {
             <section className={`${box} grid grid-cols-4 gap-2 !p-3`}>{([['로트 고르기', `합격 로트 ${avail.length}`], ['수량', `로트 ${chosen.length} · ${total}개`], ['출하 전 확인', `${okN} / 3`], ['확정', '확인 상자']] as const).map(([t, sub], i) => {
               const n = i + 1, done = n < step, on = n === step;
               return <div key={t} className={`flex items-center gap-3 rounded-tile border px-3 py-2 ${on ? 'border-brand-line bg-brand-tint' : 'border-line-soft'}`}>
-                <span className={`flex h-10 w-10 items-center justify-center rounded-full font-bold ${done ? 'bg-ink text-white' : on ? 'bg-brand text-white' : 'border-2 border-line text-ink-2'}`}>{done ? '✓' : n}</span>
+                <span className={`flex h-10 w-10 items-center justify-center rounded-full font-bold ${done ? 'bg-brand-tint text-brand-ink' : on ? 'bg-brand text-white' : 'border-2 border-line text-ink-2'}`}>{done ? '✓' : n}</span>
                 <div><div className="text-band font-bold">{t}</div><div className="text-small text-ink-2">{sub}</div></div></div>;
             })}</section>
 
             <div className="grid grid-cols-[1.6fr_1fr] items-start gap-4">
               {/* 합격 로트 */}
               <section className={box}>
-                <div className="flex items-center justify-between"><h3 className="flex items-center gap-2 text-card font-bold">합격 로트</h3>
+                <div className="flex items-center justify-between"><h3 className="flex items-center gap-2 text-card font-bold"><SecIcon title="합격 로트" size={32} />합격 로트</h3>
                   {role === 'SUP' && <button onClick={() => { setShip(Object.fromEntries(avail.filter((l) => (dueOf(l) ?? '0000').slice(0, 10) <= today).map((l) => [l.lot_no, left(l)]))); setReview(false); }} className="h-11 rounded-tile border border-line bg-white px-4 text-body text-brand disabled:text-ink-3">오늘 납기 전부 채우기</button>}</div>
                 {avail.length === 0 ? <p className="mt-3 text-body text-ink-2">출하할 수 있는 합격 로트가 없습니다</p> : (
                   <div className="mt-3 grid grid-cols-2 gap-3">{avail.slice(0, 12).map((l) => { const q = ship[l.lot_no] ?? 0, mx = left(l), due = dueOf(l); return (
@@ -264,7 +264,7 @@ export function InventoryScreen() {
                   <span>지금</span><div className="h-5 rounded bg-info" /><b className="text-right font-mono">{fgNow}</b>
                   <span>출하 뒤</span><div className="h-5 overflow-hidden rounded border border-dashed border-line"><div className="h-full bg-info" style={{ width: `${fgNow ? (Math.max(0, fgNow - total) / fgNow) * 100 : 0}%` }} /></div><b className="text-right font-mono">{Math.max(0, fgNow - total)}</b>
                 </div>
-                <div className={`mt-4 flex flex-col gap-2 text-card ${review ? 'rounded-tile bg-tile p-3' : ''}`}>
+                <div className={`mt-4 flex flex-col gap-2 text-card ${review ? 'rounded-tile border border-line bg-white p-3' : ''}`}>
                   <label className="flex items-center gap-2"><input type="checkbox" readOnly checked={chosen.length > 0} className="h-4 w-4" />모든 로트 합격 (해제 포함)</label>
                   <label className="flex items-center gap-2"><input type="checkbox" readOnly checked={chosen.length > 0 && enough} className="h-4 w-4" />로트 남은 수량 ≥ 출하 수량</label>
                   <label className="flex items-center gap-2"><input type="checkbox" readOnly checked={chosen.length > 0 && fifo} className="h-4 w-4" />선입선출</label>

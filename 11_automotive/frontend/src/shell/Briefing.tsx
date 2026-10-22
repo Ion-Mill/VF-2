@@ -36,7 +36,7 @@ type Summary = {
   last: { label: string; good: number | null; target: number; defect: number; confirmed: boolean } | null;
 };
 const TAG_COLOR: Record<Tone, string> = { red: 'text-[#b4282d]', amber: 'text-[#9a5b00]', soon: 'text-[#6b6683]' };
-const SUM_BOX = 'flex min-w-0 flex-col gap-0.5 rounded-2xl border border-[#e4def8] bg-[#ffffff] px-3.5 py-2.5';
+const SUM_BOX = 'flex min-w-0 flex-col gap-0.5 rounded-2xl border border-[#dbe5f3] bg-[#ffffff] px-3.5 py-2.5';
 const SUM_LABEL = 'whitespace-nowrap text-[12.5px] font-bold text-[#6b6683]';
 const SUM_NOTE = 'text-[12.5px] leading-snug text-[#4b4766]';
 type CheckBase = { userId: string; shiftId: string; runId: number | null };
@@ -78,8 +78,8 @@ function Board({ todos, sum, lockout, onOpenLast, aiNote, check }: { todos: Todo
         <div className={SUM_BOX}>
           <span className={SUM_LABEL}>지난 교대{sum.last && ` · ${sum.last.label}`}</span>
           {sum.last ? (<>
-            <span className="flex items-center gap-1.5"><b className="font-mono text-[18px] leading-tight">{sum.last.good ?? '—'} / {sum.last.target}</b><span className="whitespace-nowrap rounded-md bg-[#f0edf9] px-1.5 text-[11.5px] font-bold text-[#4b4766]">{sum.last.confirmed ? '확정' : '잠정'}</span></span>
-            <span className={SUM_NOTE}>양품 · 불량 {sum.last.defect}<br />{onOpenLast && <button onClick={onOpenLast} className="font-semibold text-[#5a3bc8] underline">보고서 열기</button>}</span>
+            <span className="flex items-center gap-1.5"><b className="font-mono text-[18px] leading-tight">{sum.last.good ?? '—'} / {sum.last.target}</b><span className="whitespace-nowrap rounded-md bg-[#eef3fa] px-1.5 text-[11.5px] font-bold text-[#4b4766]">{sum.last.confirmed ? '확정' : '잠정'}</span></span>
+            <span className={SUM_NOTE}>양품 · 불량 {sum.last.defect}<br />{onOpenLast && <button onClick={onOpenLast} className="font-semibold text-[#2a55b8] underline">보고서 열기</button>}</span>
           </>) : <span className={SUM_NOTE}>보고서 없음</span>}
         </div>
       </div>
@@ -92,7 +92,7 @@ function Board({ todos, sum, lockout, onOpenLast, aiNote, check }: { todos: Todo
       {[...open, ...fin].map((t) => {
         const d = isDone(t);
         return (
-          <div key={t.key} className={`flex items-center gap-2 rounded-2xl border border-[#e4def8] pr-2.5 ${d ? 'bg-[#efedf5]' : 'bg-[#ffffff]'}`}>
+          <div key={t.key} className={`flex items-center gap-2 rounded-2xl border border-[#dbe5f3] pr-2.5 ${d ? 'bg-[#efedf5]' : 'bg-[#ffffff]'}`}>
             <label className="flex min-h-[64px] min-w-0 flex-1 cursor-pointer items-center gap-3.5 py-2 pl-3.5 pr-1">
               <input type="checkbox" checked={d} onChange={() => toggle(t.key)} className="ma-check h-[26px] w-[26px] shrink-0" />
               <span className="flex min-w-0 flex-1 flex-col gap-0.5">
@@ -100,7 +100,7 @@ function Board({ todos, sum, lockout, onOpenLast, aiNote, check }: { todos: Todo
                 <span className="text-[13px] leading-snug text-[#6b6683]"><b className={d ? '' : TAG_COLOR[t.tone]}>{t.tag}</b>{t.sub.startsWith(`${t.tag} · `) ? t.sub.slice(t.tag.length) : ` · ${t.sub}`}</span>
               </span>
             </label>
-            {!d && <button onClick={t.go} className="h-11 shrink-0 rounded-xl border border-[#cfc2f7] bg-[#ffffff] px-3.5 text-[15px] font-extrabold text-[#1f1b33] hover:bg-[#f3f1fb]">보기</button>}
+            {!d && <button onClick={t.go} className="h-11 shrink-0 rounded-xl border border-[#c7d6f5] bg-[#ffffff] px-3.5 text-[15px] font-extrabold text-[#1f1b33] hover:bg-[#f3f1fb]">보기</button>}
           </div>
         );
       })}

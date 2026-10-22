@@ -82,8 +82,8 @@ class TestPermissionMatrix(unittest.TestCase):
         ("WORK_ORDER", "VIEW",            "○", "○", "○", "○"),
         ("WORK_ORDER", "EDIT",            "-", "○", "-", "-"),
         ("WORK_ORDER", "ASSIGN",          "-", "-", "○", "-"),
-        ("WORK_ORDER", "APPROVE",         "-", "-", "○", "○"),     # MGR은 대리 (PROXY)
-        ("WORK_ORDER", "CANCEL",          "-", "-", "-", "○"),
+        ("WORK_ORDER", "APPROVE",         "-", "-", "○", "-"),     # 반장만
+        ("WORK_ORDER", "CANCEL",          "-", "-", "-", "-"),     # 취소는 두지 않음
         ("WORK_RECORD", "CONFIRM",        "-", "○", "-", "-"),
         ("WORK_RECORD", "CHECK",          "-", "-", "○", "-"),
         ("WORK_RECORD", "VIEW",           "-", "○", "○", "○"),     # OPR은 간이 기록만
@@ -126,7 +126,10 @@ class TestPermissionMatrix(unittest.TestCase):
         t = seed_table()
         self.assertEqual(t.scope("OPR", "BRIEFING", "VIEW"), "SUMMARY")           # 작업자는 요약 브리핑
         self.assertEqual(t.scope("OPR", "REVISION_HISTORY", "VIEW"), "OWN")       # 자기 문서 이력만
-        self.assertEqual(t.scope("MGR", "WORK_ORDER", "APPROVE"), "PROXY")
+        self.assertEqual(t.scope("SUP", "WORK_ORDER", "APPROVE"), "ALL")
+        self.assertIsNone(t.scope("MGR", "WORK_ORDER", "APPROVE"))
+        self.assertIsNone(t.scope("MGR", "WORK_ORDER", "CANCEL"))
+        self.assertIsNone(t.scope("SUP", "WORK_ORDER", "CANCEL"))
         self.assertEqual(t.scope("SUP", "INV_RECEIPT", "INPUT"), "OWNED_ITEMS")
 
     def test_live_events_by_role(self):

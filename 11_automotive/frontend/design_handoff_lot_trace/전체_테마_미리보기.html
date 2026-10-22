@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sky Blue 전체 테마</title>
+<!-- 로트 추적 핸드오프 6c "Sky Blue"를 홈을 뺀 모든 화면에 입힌 목업. 화면 내용은 10/2 시연 앱(localhost:3000)에서 옮긴 값.
+     다시 보기 타임라인 막대 · 관리도 점은 모양을 보이려고 넣은 예시값 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap">
+<style>
+:root{
+  --point:#5C7FFF; --point-ink:#3F5FE0; --point-deep:#2E48B8; --point-tint:rgba(92,127,255,.10); --point-soft:#A9BCFF;
+  --ink:#16181D; --dark:#26282F; --t2:#3A3E48; --t3:#6B7080; --t4:#8A8F9C; --ph:#A3A8B3; --sep:#B4B8C2;
+  --input:#F4F5F8; --panel:#F3F4F7; --track:rgba(22,24,29,.08); --rule:rgba(22,24,29,.06);
+  --ok:#22B07D; --ok-t:#178A63; --ok-bg:#E6F6EF;
+  --warn:#F0A23B; --warn-t:#A86200; --warn-bg:#FFF7E8; --warn-line:#F2CB8C; --warn-ink:#7A4A00;
+  --crit:#F05252; --crit-t:#C42E2E; --crit-bg:#FDEEEE;
+  --card-shadow:inset 0 1px 0 #fff,0 1px 2px rgba(16,24,40,.04),0 24px 48px -24px rgba(40,36,90,.18);
+  --fs-title:22px; --fs-band:20px; --fs-card:17px; --fs-body:16px; --fs-small:15px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:#EEF1F8;color:var(--ink);font-family:"Noto Sans KR",system-ui,sans-serif;-webkit-font-smoothing:antialiased;word-break:keep-all;font-size:var(--fs-body)}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--point);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.page{min-height:100vh;background:linear-gradient(180deg,#FFFFFF 0%,#F2F4FA 55%,#EAEEF7 100%);padding:12px 16px 96px}
+
+/* 위 유리 바 (App.tsx 헤더) — 고른 묶음만 차콜 + 하늘색 아이콘 */
+.bar{position:sticky;top:12px;z-index:30;display:flex;align-items:center;gap:8px;height:64px;padding:0 12px 0 24px;border-radius:24px;border:1px solid rgba(255,255,255,.7);background:rgba(255,255,255,.86);box-shadow:0 10px 30px rgba(28,37,48,.13);backdrop-filter:blur(24px)}
+.bar > nav{display:flex;gap:4px;margin-left:24px}
+.grp{position:relative}
+.nav{display:flex;align-items:center;gap:8px;height:44px;padding:0 14px;border:0;border-radius:12px;background:none;font-size:var(--fs-band);font-weight:600;color:#5f6b7a;white-space:nowrap;cursor:pointer}
+.nav svg{color:#8a94a3}
+.nav:hover{background:rgba(255,255,255,.7);color:var(--ink)}
+.nav.on{background:var(--dark);color:#fff;font-weight:700}
+.nav.on svg{color:var(--point-soft)}
+.nav small{font-size:var(--fs-small);color:#8a94a3}
+.nav.on small{color:rgba(255,255,255,.6)}
+.drop{position:absolute;left:0;top:52px;z-index:40;min-width:210px;display:flex;flex-direction:column;gap:2px;padding:8px;border-radius:16px;border:1px solid rgba(22,24,29,.08);background:#fff;box-shadow:0 18px 40px -16px rgba(40,36,90,.28)}
+.drop button{height:44px;padding:0 16px;border:0;border-radius:12px;background:none;text-align:left;font-size:var(--fs-card);cursor:pointer}
+.drop button:hover{background:var(--point-tint);color:var(--point-ink)}
+.drop button.sel{background:var(--dark);color:#fff;font-weight:700}
+.clock{margin-left:auto;display:flex;align-items:center;gap:10px;white-space:nowrap}
+.shift{padding:4px 10px;border-radius:12px;background:var(--warn-bg);color:var(--warn-t);font-size:var(--fs-card);font-weight:700}
+.clock b{font-size:var(--fs-title)}
+.tools{display:flex;gap:4px;margin-left:12px}
+.tools button{height:44px;padding:0 12px;border:0;border-radius:12px;background:none;font-size:var(--fs-card);font-weight:600;white-space:nowrap;cursor:pointer}
+.tools button:hover{background:rgba(255,255,255,.7)}
+
+main{max-width:1360px;margin:0 auto;padding:22px 16px 0;display:flex;flex-direction:column;gap:18px;min-width:0}
+main > *{min-width:0}
+.crumb{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:0 16px}
+.crumb nav{display:flex;align-items:center;gap:10px}
+.crumb .sep{color:var(--sep)}
+.crumb .here{color:var(--t3)}
+.live{display:flex;align-items:center;gap:8px;font-size:var(--fs-small);color:var(--t3);padding:7px 14px;border-radius:999px;background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.9)}
+.dot{width:7px;height:7px;border-radius:50%;flex:none;background:currentColor}
+
+/* 카드 */
+.card{border-radius:24px;background:rgba(255,255,255,.92);border:1px solid rgba(255,255,255,.95);box-shadow:var(--card-shadow);padding:22px 24px;min-width:0}
+.ch{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.ch h2{margin:0;font-size:var(--fs-card);font-weight:700}
+.ch .sub{font-size:var(--fs-small);color:var(--t4)}
+.ch .right{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.panel{border-radius:18px;background:var(--panel);padding:18px}
+.cols{display:grid;gap:18px;grid-template-columns:minmax(0,1fr)}
+.c2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.c21{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
+.c12{grid-template-columns:minmax(0,1fr) minmax(0,1.6fr)}
+.side-layout{display:grid;grid-template-columns:230px minmax(0,1fr);gap:18px;align-items:start}
+
+/* 머리 카드 = 결론 띠 자리 (상태 칩 · 큰 결론 · 오른쪽 차콜 버튼 · 아래 숫자 줄) */
+.head{padding:28px 32px 26px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex-wrap:wrap}
+.state{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.st{display:inline-flex;align-items:center;gap:8px;padding:5px 14px 5px 11px;border-radius:999px;font-size:var(--fs-small);font-weight:600}
+.st.live{background:var(--point-tint);color:var(--point-ink)}
+.st.live .dot{background:var(--point);animation:pulse 1.8s ease-out infinite}
+.st.ok{background:var(--ok-bg);color:var(--ok-t)} .st.ok .dot{background:var(--ok)}
+.st.warn{background:var(--warn-bg);color:var(--warn-t)} .st.warn .dot{background:var(--warn)}
+.st.crit{background:var(--crit-bg);color:var(--crit-t)} .st.crit .dot{background:var(--crit)}
+.st.info{background:rgba(22,24,29,.05);color:var(--t2)} .st.info .dot{background:var(--t4)}
+.meta-s{font-size:var(--fs-small);color:var(--t3)}
+.meta-s b{color:var(--ink);font-weight:600}
+h1{margin:14px 0 0;font-size:clamp(26px,3vw,36px);font-weight:800;line-height:1.15;letter-spacing:-.025em}
+h1.lotno{font-size:clamp(34px,4vw,46px);line-height:1.05;letter-spacing:-.03em}
+h1 .acc{color:var(--point)}
+.desc{margin:8px 0 0;font-size:var(--fs-card);color:var(--t3)}
+.tags{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.tag{padding:5px 10px;border-radius:8px;background:rgba(22,24,29,.05);color:var(--t2);font-size:var(--fs-small);font-weight:500;border:0;cursor:default}
+a.tag,button.tag{cursor:pointer;background:rgba(92,127,255,.08);color:var(--point-ink);text-decoration:none}
+.act{display:inline-flex;align-items:center;gap:8px;padding:13px 20px;border:0;border-radius:14px;background:var(--dark);color:#fff;font-size:var(--fs-card);font-weight:700;white-space:nowrap;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1px rgba(92,127,255,.35),0 12px 28px -10px rgba(92,127,255,.55);transition:transform .15s}
+.act:hover{transform:translateY(-1px)}
+.strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:26px}
+.strip .track{height:5px;border-radius:4px;background:var(--track);overflow:hidden}
+.strip .track.none{height:1px;margin:2px 0}
+.strip .fill{height:100%;border-radius:4px;background:var(--point)}
+.strip .fill.warn{background:var(--warn)} .strip .fill.crit{background:var(--crit)} .strip .fill.ok{background:var(--ok)}
+.strip .lb{margin-top:10px;font-size:var(--fs-small);color:var(--t4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.strip .v{font-size:28px;font-weight:700;line-height:1.25}
+.strip .v small{font-size:var(--fs-small);font-weight:500;color:var(--t3);margin-left:4px}
+.strip .n{font-size:var(--fs-small);color:var(--t3)}
+.strip .n.warn{color:var(--warn-t);font-weight:600}
+
+/* 고르기 칩 · 탭 */
+.segs{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.segs .lab{font-size:var(--fs-small);color:var(--t4);margin-right:2px}
+.seg{display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 15px;border-radius:999px;border:1px solid rgba(22,24,29,.08);background:#fff;font-size:var(--fs-body);cursor:pointer;white-space:nowrap}
+.seg:hover{border-color:rgba(92,127,255,.5);color:var(--point-ink)}
+.seg.sel{background:var(--dark);border-color:var(--dark);color:#fff;font-weight:700}
+.seg b{font-weight:700}
+.seg .w{color:var(--warn-t);font-weight:700}
+.seg.sel .w{color:#FFD08A}
+.tabs{display:inline-flex;gap:4px;padding:4px;border-radius:14px;background:var(--panel);max-width:100%;overflow-x:auto;scrollbar-width:none}
+.tabs button{height:40px;padding:0 16px;border:0;border-radius:10px;background:none;font-size:var(--fs-body);font-weight:600;color:var(--t3);cursor:pointer;white-space:nowrap}
+.tabs button.sel{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(16,24,40,.08),0 4px 10px -4px rgba(40,36,90,.18)}
+
+/* 왼쪽 목록 (문서함 · 품질) */
+.side{padding:12px;display:flex;flex-direction:column;gap:2px;position:sticky;top:96px}
+.side .grp-t{padding:10px 12px 6px;font-size:var(--fs-small);color:var(--t4)}
+.side button{display:flex;align-items:center;justify-content:space-between;height:46px;padding:0 14px;border:0;border-radius:12px;background:none;font-size:var(--fs-body);text-align:left;cursor:pointer}
+.side button:hover{background:var(--panel)}
+.side button.sel{background:var(--point-tint);color:var(--point-ink);font-weight:700;box-shadow:inset 3px 0 0 var(--point)}
+.cnt{min-width:24px;height:24px;padding:0 7px;border-radius:999px;background:var(--point-ink);color:#fff;font-size:13px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+
+/* 막대 줄 (재고 여유 · 공구 수명) */
+.meters{display:flex;flex-direction:column}
+.meter{display:grid;grid-template-columns:minmax(0,220px) minmax(0,1fr) 120px;gap:16px;align-items:center;padding:11px 0;border-bottom:1px solid var(--rule)}
+.meter:last-child{border-bottom:0}
+.meter .nm{font-size:var(--fs-body);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.meter .nm small{display:block;font-size:var(--fs-small);font-weight:400;color:var(--t4)}
+.meter .nm.warn{color:var(--warn-ink)}
+.mbar{position:relative;height:10px;border-radius:999px;background:var(--track)}
+.mbar i{position:absolute;left:0;top:0;bottom:0;border-radius:999px;background:var(--point)}
+.mbar i.warn{background:var(--warn)}
+.mbar .mk{position:absolute;top:-5px;bottom:-5px;width:2px;background:var(--ink);border-radius:1px}
+.meter .v{text-align:right;font-size:var(--fs-card);font-weight:700}
+.meter .v small{font-size:var(--fs-small);font-weight:400;color:var(--t3)}
+.grp-h{display:flex;align-items:baseline;gap:10px;margin:18px 0 4px;font-size:var(--fs-card);font-weight:700}
+.grp-h:first-child{margin-top:0}
+.grp-h small{font-size:var(--fs-small);font-weight:400;color:var(--t4)}
+
+/* 표 */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:var(--fs-body)}
+th{text-align:left;font-size:var(--fs-small);font-weight:500;color:var(--t4);padding:0 12px 10px;white-space:nowrap;border-bottom:1px solid var(--rule)}
+td{padding:12px;border-bottom:1px solid rgba(22,24,29,.05);vertical-align:top}
+tbody tr:nth-child(even) td{background:rgba(244,245,248,.6)}
+td.r,th.r{text-align:right}
+td small{display:block;font-size:var(--fs-small);color:var(--t3);margin-top:2px}
+tbody tr.go{cursor:pointer}
+tbody tr.go:hover td{background:var(--point-tint)}
+.plus{color:var(--ok-t);font-weight:700} .minus{color:var(--t2);font-weight:700}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:2px 10px;border-radius:999px;font-size:var(--fs-small);font-weight:600;white-space:nowrap}
+.badge.ok{background:var(--ok-bg);color:var(--ok-t)} .badge.warn{background:var(--warn-bg);color:var(--warn-t)} .badge.info{background:rgba(22,24,29,.05);color:var(--t2)} .badge.live{background:var(--point-tint);color:var(--point-ink)} .badge.crit{background:var(--crit-bg);color:var(--crit-t)}
+.minibar{display:flex;align-items:center;gap:10px}
+.minibar i{display:block;height:8px;border-radius:999px;background:var(--point)}
+
+/* 숫자 칸 */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.tile{border-radius:16px;background:var(--panel);padding:14px 16px}
+.tile small{display:block;font-size:var(--fs-small);color:var(--t4)}
+.tile b{font-size:26px;font-weight:700}
+.tile em{display:block;font-style:normal;font-size:var(--fs-small);color:var(--t3)}
+.tile.warn{background:var(--warn-bg);box-shadow:inset 0 0 0 1px var(--warn-line)} .tile.warn b{color:var(--warn-ink)} .tile.warn em{color:var(--warn-t)}
+
+.ghost{height:40px;padding:0 16px;border-radius:999px;border:1px solid rgba(22,24,29,.1);background:#fff;font-size:var(--fs-body);cursor:pointer;white-space:nowrap}
+.ghost:hover{border-color:rgba(92,127,255,.5);color:var(--point-ink)}
+.btn-p{height:44px;padding:0 20px;border:0;border-radius:13px;background:var(--point-ink);color:#fff;font-size:var(--fs-body);font-weight:700;cursor:pointer;white-space:nowrap}
+.btn-p:hover{background:var(--point-deep)}
+.empty{margin:0;color:var(--t3)}
+.note{font-size:var(--fs-small);color:var(--t4);margin-top:12px}
+.link-s{padding:8px 12px;border-radius:10px;background:rgba(92,127,255,.08);color:var(--point-ink);font-size:var(--fs-body);font-weight:600;border:0;cursor:pointer;white-space:nowrap}
+
+/* 로트 추적 */
+.lsteps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-top:26px}
+.lsteps .track{height:5px;border-radius:4px;background:var(--track);overflow:hidden}
+.lsteps .fill{height:100%;border-radius:4px;background:var(--point)}
+.lsteps .going .fill{box-shadow:0 0 10px rgba(92,127,255,.8)}
+.lsteps .code{margin-top:10px;font-size:var(--fs-small);color:var(--t4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lsteps .name{font-size:var(--fs-card);font-weight:600}
+.lsteps .name i{font-style:normal;color:var(--point);margin-left:4px}
+.lsteps .prog{display:block;font-size:var(--fs-small);font-weight:600;color:var(--point-ink)}
+.find{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.find label{font-size:var(--fs-card);font-weight:700}
+.search{position:relative;flex:0 1 360px;min-width:220px}
+.search svg{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:#9AA0AC;pointer-events:none}
+.search input{width:100%;height:48px;padding:0 14px 0 42px;border-radius:13px;background:var(--input);border:1px solid rgba(22,24,29,.06)}
+.search input::placeholder,input::placeholder{color:var(--ph)}
+.tree{margin-top:18px;display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+.mat{display:flex;align-items:center;flex:none}
+.mat-box{background:var(--dark);border-radius:13px;padding:10px 14px;color:#fff}
+.mat-box small{display:block;font-size:var(--fs-small);color:#A6A9B4}
+.link{width:28px;height:2px;background:var(--dark)}
+.mat-label{margin-left:10px;font-size:var(--fs-small);font-weight:600}
+.lots{display:flex;flex-wrap:wrap;gap:8px;flex:1;min-width:240px}
+.lot{display:flex;flex-direction:column;gap:3px;padding:9px 13px;border-radius:12px;background:#fff;border:1px solid rgba(22,24,29,.07);text-align:left;cursor:pointer;transition:transform .15s,box-shadow .15s}
+.lot:hover{transform:translateY(-1px);box-shadow:0 8px 18px -10px rgba(22,24,29,.35)}
+.lot b{font-weight:600}
+.lot span{display:flex;align-items:center;gap:6px;font-size:var(--fs-small);font-weight:600;color:var(--ok-t)}
+.lot .dot{width:6px;height:6px;background:var(--ok)}
+.lot.wait{background:var(--warn-bg);border-color:var(--warn-line)} .lot.wait b{color:var(--warn-ink)} .lot.wait span{color:var(--warn-t)} .lot.wait .dot{background:var(--warn)}
+.lot.cur{border:1.5px solid var(--point);box-shadow:0 10px 22px -12px rgba(92,127,255,.7)} .lot.cur b{font-weight:700} .lot.cur span{color:var(--point-ink)} .lot.cur .dot{background:var(--point);animation:pulse 1.8s ease-out infinite}
+.lot.other{background:rgba(255,255,255,.4);border:1px dashed rgba(22,24,29,.2)} .lot.other span{color:var(--t3)}
+.lmeta{display:flex;align-items:center;gap:28px;flex-wrap:wrap;margin-top:18px}
+.lmeta .rule{width:1px;height:34px;background:var(--track)}
+.lmeta small{display:block;font-size:var(--fs-small);color:var(--t4)}
+.lmeta b{font-size:var(--fs-band)}
+
+/* 시간표 (로트 · 다시 보기 같이 씀) */
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:var(--fs-small);color:var(--t3)}
+.legend span{display:flex;align-items:center;gap:6px}
+.legend i{display:inline-block;width:18px;height:10px;border-radius:3px}
+.gscroll{overflow-x:auto}
+.gwrap{position:relative;min-width:880px}
+.gantt{display:grid;grid-template-columns:176px minmax(0,1fr)}
+.axis{position:relative;height:34px;font-size:var(--fs-small);color:var(--t4)}
+.axis span{position:absolute;top:6px;transform:translateX(-50%);white-space:nowrap}
+.axis span:first-child{transform:none}
+.eq{height:58px;display:flex;flex-direction:column;justify-content:center;padding-left:6px;border-bottom:1px solid rgba(22,24,29,.05)}
+.eq b{font-weight:700} .eq small{font-size:var(--fs-small);color:var(--t4)}
+.lane{position:relative;height:58px;border-bottom:1px solid rgba(22,24,29,.05)}
+.odd{background:rgba(244,245,248,.6)}
+.vline{position:absolute;top:0;bottom:0;width:1px;background:rgba(22,24,29,.055)}
+.job{position:absolute;top:50%;height:30px;margin-top:-15px;border-radius:9px;background:var(--point);color:#fff;font-size:var(--fs-small);font-weight:700;line-height:30px;padding:0 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 8px 18px -8px rgba(92,127,255,.75);transform-origin:left;animation:barIn .7s cubic-bezier(.2,.8,.2,1) both;z-index:1}
+.seg-s{position:absolute;top:50%;height:24px;margin-top:-12px}
+.alarm{position:absolute;top:4px;bottom:4px;border-radius:6px;background:repeating-linear-gradient(135deg,rgba(240,82,82,.22) 0 4px,rgba(240,82,82,.08) 4px 8px);border:1px solid rgba(240,82,82,.35)}
+.marks{position:absolute;inset:0 0 0 176px;pointer-events:none}
+.vmark{position:absolute;top:34px;bottom:0}
+.vmark span{position:absolute;top:-30px;left:0;transform:translateX(-50%);padding:1px 9px;font-size:var(--fs-small);font-weight:700;white-space:nowrap}
+.hold{border-left:1.5px dashed #5F6472} .hold span{border-radius:6px;background:#fff;border:1px solid rgba(22,24,29,.1);font-weight:600}
+.nowl{width:2px;background:var(--ink)} .nowl span{border-radius:999px;background:var(--ink);color:#fff}
+
+/* 부품 지도 · 공차 위치 · 달력 · 관리도 */
+.pmap{display:grid;grid-template-columns:repeat(15,minmax(0,1fr));gap:6px}
+.pmap span{aspect-ratio:1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;background:#fff;border:1px solid rgba(22,24,29,.08);color:var(--t4)}
+.pmap .ok{background:var(--point);border-color:var(--point);color:#fff}
+.pmap .cur{background:#fff;border:2px solid var(--point);color:var(--point-ink);animation:pulse 1.8s ease-out infinite}
+.pmap .no{background:transparent;border:1px dashed rgba(22,24,29,.15);color:var(--sep)}
+.tol{display:grid;grid-template-columns:130px minmax(0,1fr) 90px;gap:14px;align-items:center;padding:9px 0;border-bottom:1px solid var(--rule)}
+.tol:last-child{border-bottom:0}
+.tol .tb{position:relative;height:22px}
+.tol .tb::before{content:"";position:absolute;left:0;right:0;top:10px;height:3px;border-radius:2px;background:var(--track)}
+.tol .tb .z{position:absolute;top:8px;height:7px;border-radius:4px;background:rgba(92,127,255,.18)}
+.tol .tb .p{position:absolute;top:4px;width:14px;height:14px;margin-left:-7px;border-radius:50%;background:var(--point);box-shadow:0 0 0 3px #fff,0 4px 10px -2px rgba(92,127,255,.7)}
+.tol .tb .lim{position:absolute;top:22px;font-size:12px;color:var(--t4);transform:translateX(-50%)}
+.tol .v{text-align:right;font-weight:700}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.cal .wd{text-align:center;font-size:var(--fs-small);color:var(--t4);padding-bottom:4px}
+.cal .d{min-height:64px;border-radius:12px;background:#fff;border:1px solid rgba(22,24,29,.06);padding:6px 8px;display:flex;flex-direction:column;gap:3px;font-size:var(--fs-small)}
+.cal .d.blank{background:transparent;border:0}
+.cal .d.today{border:1.5px solid var(--point);box-shadow:0 10px 22px -12px rgba(92,127,255,.7)}
+.cal .d b{font-weight:600;color:var(--t2)}
+.cal .d .k{align-self:flex-start;padding:0 8px;border-radius:999px;background:var(--point-tint);color:var(--point-ink);font-weight:700}
+.cal .d .k.warn{background:var(--warn-bg);color:var(--warn-t)}
+.tasks{display:flex;flex-direction:column;gap:14px}
+.tasks .eqh{font-weight:700;margin-bottom:6px}
+.tasks ol{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.tasks li{display:flex;gap:10px;align-items:center;padding:8px 12px;border-radius:12px;background:#fff;border:1px solid rgba(22,24,29,.06)}
+.tasks li i{font-style:normal;width:24px;height:24px;border-radius:50%;background:var(--panel);display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--t3);flex:none}
+.tasks li.warn{background:var(--warn-bg);border-color:var(--warn-line);color:var(--warn-ink)}
+.tasks li.warn i{background:#fff;color:var(--warn-t)}
+.chart svg{display:block;width:100%;height:auto}
+
+/* 다시 보기 */
+.eqcards{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+.eqc{border-radius:16px;background:var(--panel);padding:12px 14px}
+.eqc b{display:block}
+.eqc span{display:flex;align-items:center;gap:6px;font-size:var(--fs-small);color:var(--t3)}
+.eqc small{font-size:var(--fs-small);color:var(--t4)}
+.wips{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.wip{flex:1;min-width:140px;border-radius:14px;border:1px solid rgba(22,24,29,.07);background:#fff;padding:10px 14px}
+.wip small{font-size:var(--fs-small);color:var(--t4)}
+.wip .mbar{margin-top:6px;height:6px}
+.player{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.play{height:44px;padding:0 18px;border:0;border-radius:13px;background:var(--dark);color:#fff;font-weight:700;cursor:pointer}
+
+/* 지침카드 */
+.alist{display:flex;flex-direction:column;gap:10px}
+.aday{font-size:var(--fs-small);color:var(--t4);margin:4px 0 2px}
+.aitem{display:grid;grid-template-columns:70px minmax(0,1fr) auto;gap:16px;align-items:center;padding:16px 18px;border-radius:16px;background:#fff;border:1px solid rgba(22,24,29,.07);cursor:pointer;text-align:left;width:100%}
+.aitem:hover{border-color:rgba(92,127,255,.5)}
+.aitem.warn{background:var(--warn-bg);border:1.5px solid var(--warn-line)}
+.aitem .t{font-size:var(--fs-card);font-weight:700}
+.aitem .t small{display:block;font-size:var(--fs-small);font-weight:400;color:var(--t3)}
+
+/* 설정 */
+.inp{width:96px;height:42px;padding:0 12px;border-radius:12px;background:var(--input);border:1px solid rgba(22,24,29,.06);text-align:right;font-weight:600}
+.rules{display:flex;flex-direction:column;gap:8px}
+.rule-i{display:grid;grid-template-columns:200px minmax(0,1fr);gap:14px;padding:12px 14px;border-radius:14px;background:var(--panel)}
+.rule-i b{font-size:var(--fs-body)}
+.rule-i small{display:block;font-size:var(--fs-small);color:var(--t4)}
+
+/* 홈 (지금 그대로) */
+.home{position:relative;height:calc(100vh - 140px);min-height:520px;border-radius:24px;overflow:hidden;background:radial-gradient(120% 90% at 50% 20%,#e9edf2 0%,#cfd6de 60%,#b9c2cc 100%)}
+.home .floor{position:absolute;inset:18% 6% 34%;border-radius:12px;background:repeating-linear-gradient(90deg,rgba(255,255,255,.35) 0 1px,transparent 1px 60px),repeating-linear-gradient(0deg,rgba(255,255,255,.35) 0 1px,transparent 1px 60px);transform:perspective(900px) rotateX(48deg)}
+.home .msg{position:absolute;left:50%;top:30%;transform:translateX(-50%);padding:14px 20px;border-radius:14px;background:rgba(255,255,255,.86);box-shadow:0 10px 30px rgba(28,37,48,.13);font-size:var(--fs-card);text-align:center}
+.home .msg small{display:block;color:#5f6b7a;font-size:var(--fs-small)}
+.home .hud{position:absolute;left:16px;right:16px;bottom:16px;height:clamp(270px,34vh,350px);border-radius:24px;border:1px solid rgba(255,255,255,.7);background:rgba(255,255,255,.86);box-shadow:0 10px 30px rgba(28,37,48,.13);backdrop-filter:blur(24px);display:grid;grid-template-columns:1.2fr 1fr;gap:20px;padding:20px 24px;color:#26303a}
+.home .hud h3{margin:0 0 10px;font-size:17px}
+.home .hud .k{display:flex;gap:10px}
+.home .hud .k div{flex:1;border-radius:12px;background:#f4f4f6;padding:12px}
+.home .hud .k b{display:block;font-size:32px}
+.home .hud .k small{color:#5f6b7a;font-size:15px}
+.home .hud .row{height:44px;border-radius:10px;background:#f4f4f6;margin-bottom:8px}
+
+.eve{position:fixed;right:24px;bottom:24px;z-index:35;width:64px;height:64px;border-radius:50%;border:0;background:#fff;box-shadow:0 12px 30px -10px rgba(40,36,90,.35);font-weight:800;cursor:pointer}
+.eve em{position:absolute;top:-4px;right:-4px;min-width:24px;height:24px;border-radius:999px;background:var(--crit-t);color:#fff;font-style:normal;font-size:13px;display:flex;align-items:center;justify-content:center}
+.foot{border-radius:18px;border:1px dashed rgba(92,127,255,.45);background:rgba(255,255,255,.55);padding:16px 20px;color:var(--t2)}
+.foot ul{margin:6px 0 0;padding-left:20px;line-height:1.7}
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:60;padding:12px 18px;border-radius:12px;background:var(--ink);color:#fff;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(92,127,255,.55)}70%{box-shadow:0 0 0 8px rgba(92,127,255,0)}100%{box-shadow:0 0 0 0 rgba(92,127,255,0)}}
+@keyframes barIn{from{transform:scaleX(0);opacity:0}to{transform:scaleX(1);opacity:1}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:1500px){.bar > nav{margin-left:12px;gap:2px}.nav{padding:0 10px;gap:6px;font-size:18px}.clock{gap:8px}.clock b{font-size:var(--fs-band)}.tools{margin-left:4px}.tools button{padding:0 9px}}
+@media (max-width:1280px){.tools button:not(:last-child){display:none}.nav{padding:0 10px;font-size:var(--fs-card)}.nav svg{display:none}}
+@media (max-width:1000px){.c2,.c21,.c12,.side-layout{grid-template-columns:minmax(0,1fr)}.side{position:static;flex-direction:row;flex-wrap:wrap}.side .grp-t{width:100%}.eqcards{grid-template-columns:repeat(3,minmax(0,1fr))}.bar > nav{overflow-x:auto;scrollbar-width:none}.clock .num:first-of-type{display:none}.home .hud{grid-template-columns:1fr}}
+@media (max-width:700px){.page{padding:8px 0 96px}.bar{border-radius:0;top:0;padding-left:12px}.bar > nav{margin-left:6px}.bar svg.logo{display:none}main{padding:16px 16px 0}.head{padding:22px 18px}.card{padding:18px 16px}.lsteps{grid-template-columns:repeat(2,minmax(0,1fr))}.meter{grid-template-columns:1fr 90px}.meter .mbar{grid-column:1/-1;grid-row:2}.pmap{grid-template-columns:repeat(10,minmax(0,1fr))}.tol{grid-template-columns:100px minmax(0,1fr) 70px}.rule-i{grid-template-columns:1fr}.eqcards{grid-template-columns:repeat(2,minmax(0,1fr))}.aitem{grid-template-columns:1fr}.cal .d{min-height:48px;padding:4px}}
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="bar">
+    <svg class="logo" height="26" width="108" viewBox="0 0 250 60" aria-label="이브테크 EVETECH" role="img" style="overflow:visible;flex:none">
+      <text x="0" y="46" font-weight="800" font-size="46" fill="#1c232b">e</text>
+      <path d="M30 14l11 30h8l11-30" fill="none" stroke="#1c232b" stroke-width="8" stroke-linejoin="round"/>
+      <text x="62" y="46" font-weight="800" font-size="46" fill="#1c232b">e</text>
+      <rect x="94" y="14" width="3.5" height="32" fill="#5C7FFF"/>
+      <text x="105" y="46" font-weight="300" font-size="40" letter-spacing="3" fill="#5b6570">TECH</text>
+    </svg>
+    <nav aria-label="메뉴" id="menu"></nav>
+    <span class="clock"><span class="shift">주간</span><b class="num">10/02</b><b class="num">08:00</b></span>
+    <div class="tools"><button>공장 관리자 ▾</button><button>시연</button><button>알림 미리보기</button><button aria-label="화면 설정">⚙</button></div>
+  </header>
+  <main id="view"></main>
+</div>
+<button class="eve" aria-label="이브 열기">이브<em>17</em></button>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+// ───────── 메뉴 (App.tsx GROUPS · NAV_ICON) ─────────
+const GROUPS = [
+  ['홈', 'M3 10.5 12 3l9 7.5M5 9.5V21h14V9.5M10 21v-6h4v6', [['3D 라인', 'home']]],
+  ['생산', 'M2 20h20M4 20V9l5 3V9l5 3V5h6v15M8 16h1M13 16h1M17 16h1', [['로트 추적', 'lots'], ['현장 모니터', 'field']]],
+  ['정비', 'M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94z', [['다시 보기', 'replay'], ['예방 정비', 'pm']]],
+  ['품질', 'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0zM8 12l3 3 5-6', [['검사 기록', 'quality'], ['공정 능력 · 불량', 'qcap']]],
+  ['재고', 'M21 8 12 3 3 8v8l9 5 9-5zM3 8l9 5 9-5M12 13v8', [['재고', 'inventory'], ['공구 수명', 'tools']]],
+  ['문서', 'M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8zM14 3v5h5M9 13h6M9 17h6', [['작업지시서', 'docs'], ['작업기록서', 'docs'], ['간이 작업기록', 'docs'], ['교대 보고서', 'docs'], ['일일 보고서', 'docs'], ['수정 이력', 'docs'], ['사내 문서', 'docs'], ['지침카드', 'cards']]],
+  ['설정', 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1 7 17M17 7l2.1-2.1', [['설정', 'settings']]],
+];
+const NAME = { home: '3D 라인', lots: '로트 추적', field: '현장 모니터', replay: '다시 보기', pm: '예방 정비', quality: '검사 기록', qcap: '공정 능력 · 불량', inventory: '재고', tools: '공구 수명', docs: '작업지시서', cards: '지침카드', settings: '설정' };
+let open = null;
+const groupOf = (s) => GROUPS.find((g) => g[2].some((x) => x[1] === s));
+function renderMenu() {
+  const cur = groupOf(screen);
+  document.getElementById('menu').innerHTML = GROUPS.map(([label, d, subs]) => {
+    const ico = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
+    const on = cur && cur[0] === label ? ' on' : '';
+    if (subs.length === 1) return `<div class="grp"><button class="nav${on}" data-go="${subs[0][1]}"${on ? ' aria-current="page"' : ''}>${ico}${label}</button></div>`;
+    return `<div class="grp"><button class="nav${on}" data-open="${label}" aria-expanded="${open === label}">${ico}${label}<small aria-hidden="true">▾</small></button>${open === label ? `<div class="drop">${subs.map(([n, s]) => `<button data-go="${s}" class="${s === screen && (s !== 'docs' || n === '작업지시서') ? 'sel' : ''}">${n}</button>`).join('')}</div>` : ''}</div>`;
+  }).join('');
+}
+
+// ───────── 공통 조각 ─────────
+const st = (tone, t) => `<span class="st ${tone}"><i class="dot"></i>${t}</span>`;
+const crumb = (s, extra) => `<div class="crumb"><nav aria-label="위치"><b>${groupOf(s)[0]}</b><span class="sep">/</span><span class="${extra ? 'here' : ''}">${NAME[s]}</span>${extra ? `<span class="sep">/</span><span class="num">${extra}</span>` : ''}</nav><div class="live"><span class="dot" style="background:var(--ok)"></span><span class="num">실시간 · 10/2 08:00 기준</span></div></div>`;
+// 머리 카드 = C안 결론 띠의 자리 (색 5가지 → 상태 칩, 첫 줄 → 큰 제목, 둘째 줄 → 설명, 버튼 → 차콜 버튼)
+const head = ({ tone, state, meta = '', title, desc = '', tags = '', action = '', strip = '', cls = '' }) => `
+<section class="card head">
+  <div class="top"><div style="min-width:0;flex:1">
+    <div class="state">${st(tone, state)}${meta ? `<span class="meta-s">${meta}</span>` : ''}</div>
+    <h1 class="${cls}">${title}</h1>${desc ? `<p class="desc">${desc}</p>` : ''}${tags ? `<div class="tags">${tags}</div>` : ''}
+  </div>${action ? `<button class="act" data-toast="${action} (목업)">${action}</button>` : ''}</div>${strip}
+</section>`;
+// 숫자 줄 — 머리 카드 아래 (로트의 공정 5단계 선과 같은 모양)
+const strip = (items) => `<div class="strip">${items.map(([lb, v, unit, pct, tone, n, ntone]) => `<div>${pct == null ? '<div class="track none"></div>' : `<div class="track"><div class="fill ${tone || ''}" style="width:${pct}%"></div></div>`}<div class="lb">${lb}</div><div class="v num">${v}${unit ? `<small>${unit}</small>` : ''}</div>${n ? `<div class="n ${ntone || ''}">${n}</div>` : ''}</div>`).join('')}</div>`;
+const card = (title, sub, right, body, extra = '') => `<section class="card" ${extra}><div class="ch"><h2>${title}</h2>${sub ? `<span class="sub">${sub}</span>` : ''}${right ? `<div class="right">${right}</div>` : ''}</div>${body}</section>`;
+const segs = (lab, items, sel = 0) => `<div class="segs">${lab ? `<span class="lab">${lab}</span>` : ''}${items.map((x, i) => `<button class="seg${i === sel ? ' sel' : ''}">${x}</button>`).join('')}</div>`;
+const table = (heads, rows, cls = '') => `<div class="tbl-wrap"><table><thead><tr>${heads.map((h) => `<th class="${h.startsWith('>') ? 'r' : ''}">${h.replace('>', '')}</th>`).join('')}</tr></thead><tbody>${rows.map((r) => `<tr class="${cls}">${r.map((c, i) => `<td class="${heads[i].startsWith('>') ? 'r num' : ''}">${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+const meter = (name, now, safe, unit, sub) => { const max = Math.max(now, safe) * 1.35, low = now <= safe;
+  return `<div class="meter"><div class="nm ${low ? 'warn' : ''}">${low ? '▲ ' : ''}${name}${sub ? `<small>${sub}</small>` : ''}</div><div class="mbar"><i class="${low ? 'warn' : ''}" style="width:${now / max * 100}%"></i><span class="mk" style="left:${safe / max * 100}%" title="안전 재고 ${safe}"></span></div><div class="v num">${now} <small>/ ${safe} ${unit}</small></div></div>`; };
+const SIDE_GO = { '검사 기록': 'quality', '공정 능력 · 불량': 'qcap', '작업지시서': 'docs', '지침카드': 'cards' };
+const side = (title, items, sel) => `<nav class="card side" aria-label="${title}"><div class="grp-t">${title}</div>${items.map(([n, c]) => `<button class="${n === sel ? 'sel' : ''}"${SIDE_GO[n] ? ` data-go="${SIDE_GO[n]}"` : ''}>${n}${c ? `<span class="cnt">${c}</span>` : ''}</button>`).join('')}</nav>`;
+
+// ───────── 화면들 ─────────
+const S = {};
+
+S.home = () => `
+<div class="home" aria-label="홈 — 지금 화면 그대로">
+  <div class="floor"></div>
+  <div class="msg"><b>홈은 지금 화면 그대로</b><small>3D 라인 전체 화면 + 아래 정보판 (배치 C, C안 색) — 이번 테마를 입히지 않음</small></div>
+  <div class="hud">
+    <div><h3>생산 · 예측 · OEE</h3><div class="k"><div><small>실적</small><b>—</b></div><div><small>예측</small><b>—</b></div><div><small>OEE</small><b>—</b></div></div></div>
+    <div><h3>작업지시</h3><div class="row"></div><div class="row"></div><div class="row"></div></div>
+  </div>
+</div>`;
+
+S.field = () => `${crumb('field')}
+${head({ tone: 'info', state: '3D 화면', title: '현장 모니터는 3D 위 패널만 바뀝니다', desc: '위까지 3D 라인, 설비를 누르면 아래에 설비 패널이 열립니다. 아래 패널은 다른 화면과 같은 흰 카드 · 하늘색 포인트를 씁니다.' })}
+<div class="cols c2">${card('VF2-01 · OP-30 머시닝 1호기', '설비를 누르면 열리는 패널 (예시)', '<button class="ghost">닫기</button>', `<div class="tiles"><div class="tile"><small>상태</small><b style="font-size:20px;color:var(--point-ink)">● 가공</b></div><div class="tile"><small>지금 로트</small><b style="font-size:20px">LOT-2610-003-1</b></div><div class="tile warn"><small>공구 T03</small><b>88.2%</b><em>교체 준비 90%</em></div></div>`)}
+${card('지침카드', '이 설비', '', `<div class="aitem warn"><span class="num">09:56</span><div class="t">▲ 362 공구 수명 한계 도달<small>처리 책임: 작업자</small></div><span class="badge warn">처리 필요</span></div>`)}</div>`;
+
+S.lots = () => {
+  const steps = [['OP-10', 'SAW-01', '절단', 24], ['OP-20', 'MIL-01', '황삭', 24], ['OP-30', 'VF2-01/02', '정밀 가공', 24], ['OP-40', 'WSH-01', '디버링·세척', 24], ['OP-50', 'CMM-01', '측정', 9]];
+  const lots = [['LOT-2609-128-3', 'pass'], ['LOT-2609-129-1', 'pass'], ['LOT-2610-001-1', 'pass'], ['LOT-2610-001-2', 'pass'], ['LOT-2610-002-1', 'wait'], ['LOT-2610-003-1', 'cur'], ['LOT-2610-004-1', 'other']];
+  const L = { pass: '합격', wait: '판정 대기', cur: '생산 중', other: '생산 중' };
+  return `${crumb('lots', 'LOT-2610-003-1')}
+<section class="card head">
+  <div class="top"><div><div class="state">${st('live', '생산 중')}<span class="meta-s">OP-50 판정 <b class="num">9 / 24</b></span></div>
+    <h1 class="lotno num">LOT-2610-<span class="acc">003-1</span></h1>
+    <div class="tags"><span class="tag num">PO-2610-003</span><span class="tag num">MAT-2609-11</span></div></div>
+    <button class="act"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>생산 중 · 출하 금지</button></div>
+  <div class="lsteps">${steps.map(([op, eq, nm, n]) => `<div class="${n < 24 ? 'going' : ''}"><div class="track"><div class="fill" style="width:${n / 24 * 100}%"></div></div><div class="code num">${op} · ${eq}</div><div class="name">${nm}${n >= 24 ? '<i>✓</i>' : '<span class="prog num">9 / 24 판정</span>'}</div></div>`).join('')}</div>
+</section>
+<section class="card">
+  <div class="find"><label for="q">번호로 찾기</label><div class="search"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" placeholder="LOT · MAT · SHP 번호"></div><button class="btn-p">찾기</button><span class="meta-s">예시</span>${['MAT-2609-11', 'SHP-2609-001', 'LOT-2609-001-1'].map((x) => `<button class="seg num" data-fill="${x}">${x}</button>`).join('')}</div>
+  <div class="panel tree"><div class="mat"><div class="mat-box"><small>원자재</small><b class="num">MAT-2609-11</b></div><div class="link"></div><span class="mat-label">생산 로트</span></div>
+    <div class="lots">${lots.map(([c, s]) => `<button class="lot ${s}"><b class="num">${c}</b><span>${s === 'other' ? '' : '<i class="dot"></i>'}${L[s]}</span></button>`).join('')}</div>
+    <div class="note" style="width:100%;margin:0">원자재 1 : 생산 로트 7 (DOC-06 §7)</div></div>
+  <div class="lmeta"><div><small>LOT</small><b class="num">LOT-2610-003-1</b></div><div class="rule"></div><div><small>작업지시</small><b class="num">PO-2610-003</b> <span class="meta-s">10/01 야간</span></div><div class="rule"></div><div><small>원자재</small><b class="num">MAT-2609-11</b></div><button class="link-s" style="margin-left:auto" data-go="quality">검사 발췌 · 검사 기록</button></div>
+</section>
+${card('설비별 시간표', '<span class="num">LOT-2610-003-1</span>', `<div class="legend"><span><i style="background:var(--point)"></i>이 로트</span><span><i class="alarm" style="position:static;display:inline-block"></i>알람</span><span><i style="width:0;border-left:1.5px dashed #5F6472;height:14px;border-radius:0"></i>보류</span><span><i style="width:2px;background:var(--ink);height:14px;border-radius:0"></i>지금</span></div>`,
+  gantt({ t0: 23 * 60, total: 570, labels: ['23:00', '10/2 00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00'],
+    rows: [['SAW-01', 'OP-10 절단', [['00:00', '02:12', '003-1 · 24개']]], ['MIL-01', 'OP-20 황삭', [['01:27', '03:01', '003-1 · 24개']]], ['VF2-01', 'OP-30 정밀 가공', [['03:01', '04:42', '003-1 · 12개']], ['03:46', '04:04']], ['VF2-02', 'OP-30 정밀 가공', [['03:15', '04:44', '003-1 · 10개']]], ['WSH-01', 'OP-40 디버링·세척', [['03:30', '04:45', '003-1 · 14개']]], ['CMM-01', 'OP-50 측정', [['03:54', '04:48', '003-1 · 9개']]]],
+    hold: '04:48', now: '08:00' }))}
+<div class="cols c21">
+${card('수량', '', '<button class="ghost" data-go="quality">검사 기록</button>', `<div class="meters">${[['투입', 24, 24, ''], ['OP-50 판정', 9, 24, '합격 9 · 불합격 0'], ['완제품 입고', 0, 24, ''], ['출하', 0, 24, '금지']].map(([n, v, t, s]) => `<div class="meter"><div class="nm">${n}</div><div class="mbar"><i style="width:${v / t * 100}%"></i></div><div class="v num">${n === 'OP-50 판정' ? `${v} / ${t}` : v}${s ? `<small style="display:block">${s}</small>` : ''}</div></div>`).join('')}</div>`)}
+${card('보류 · 해제 · 폐기', '<span class="num">LOT-2610-003-1</span>', '', `<div class="segs"><input class="inp" style="width:220px;text-align:left" placeholder="보류 사유 (필수)" aria-label="보류 사유"><button class="ghost" disabled style="color:var(--ph)">보류 — 사유 필수</button></div><p class="empty" style="margin-top:16px">폐기할 불합격품 없음</p>`)}
+</div>`;
+};
+
+// 시간표 그리기 — 로트(작업 막대) · 다시 보기(상태 띠) 같이 씀. 시각 'HH:MM' → t0에서 몇 분
+function gantt({ t0, total, labels, rows, hold, now, nowLabel = '지금 ', states }) {
+  const m = (hm) => { const [h, mi] = hm.split(':').map(Number); return ((h * 60 + mi - t0) + 1440) % 1440; };
+  const pct = (v) => `${v / total * 100}%`;
+  const grid = labels.map((_, i) => `<div class="vline" style="left:${pct(i * 60)}"></div>`).join('');
+  let h = `<div class="gscroll"><div class="gwrap"><div class="gantt"><div></div><div class="axis">${labels.map((l, i) => `<span class="num" style="left:${pct(i * 60)}">${l}</span>`).join('')}</div>`;
+  rows.forEach(([eq, op, jobs, al], i) => {
+    h += `<div class="eq ${i % 2 ? 'odd' : ''}"><b class="num">${eq}</b><small>${op}</small></div><div class="lane ${i % 2 ? 'odd' : ''}">${grid}${al ? `<div class="alarm" style="left:${pct(m(al[0]))};width:${pct(m(al[1]) - m(al[0]))}" title="알람 ${al[0]}–${al[1]}"></div>` : ''}`;
+    h += jobs.map(([s, e, t], k) => states ? `<div class="seg-s" style="left:${pct(m(s))};width:${pct(m(e) - m(s))};${states[t]}" title="${t} ${s}–${e}"></div>`
+      : `<div class="job num" style="left:${pct(m(s))};width:${pct(m(e) - m(s))};animation-delay:${0.1 + i * 0.08}s" title="${eq} · ${op} ${s} → ${e}">${t}</div>`).join('') + '</div>';
+  });
+  h += `</div><div class="marks">${hold ? `<div class="vmark hold" style="left:${pct(m(hold))}"><span>보류 ${hold}</span></div>` : ''}${now ? `<div class="vmark nowl" style="left:${pct(m(now))}"><span class="num"${m(now) / total > 0.92 ? ' style="transform:translateX(-100%)"' : ''}>${nowLabel}${now}</span></div>` : ''}</div></div></div>`;
+  return h;
+}
+
+S.replay = () => {
+  // shortcut: 타임라인 상태 띠는 모양 보기용 예시값, 실제 화면은 /api/replay 값
+  const ST = { 가공: 'background:var(--point);border-radius:6px', 대기: 'background:#D5D9E2;border-radius:6px', 준비: 'background:var(--point-soft);border-radius:6px', 막힘: 'background:var(--warn);border-radius:6px', 정비: 'background:#6B7080;border-radius:6px', 고장: 'background:repeating-linear-gradient(135deg,rgba(240,82,82,.75) 0 4px,rgba(240,82,82,.45) 4px 8px);border-radius:6px', 휴식: 'background:#fff;border:1px dashed rgba(22,24,29,.25);border-radius:6px' };
+  const rows = [['SAW-01', 'OP-10 절단', [['17:00', '17:40', '가공'], ['17:40', '17:55', '준비'], ['17:55', '20:00', '가공'], ['20:00', '20:30', '휴식'], ['20:30', '23:59', '가공'], ['23:59', '00:17', '대기']]],
+    ['MIL-01', 'OP-20 황삭', [['17:00', '19:10', '가공'], ['19:10', '19:35', '막힘'], ['19:35', '20:00', '가공'], ['20:00', '20:30', '휴식'], ['20:30', '23:55', '가공'], ['23:55', '00:17', '대기']]],
+    ['VF2-01', 'OP-30 정밀 가공', [['17:00', '18:20', '가공'], ['18:20', '18:50', '고장'], ['18:50', '19:20', '정비'], ['19:20', '20:00', '가공'], ['20:00', '20:30', '휴식'], ['20:30', '23:50', '가공'], ['23:50', '00:17', '대기']]],
+    ['VF2-02', 'OP-30 정밀 가공', [['17:00', '20:00', '가공'], ['20:00', '20:30', '휴식'], ['20:30', '22:10', '가공'], ['22:10', '22:30', '준비'], ['22:30', '23:52', '가공'], ['23:52', '00:17', '대기']]],
+    ['WSH-01', 'OP-40 디버링·세척', [['17:00', '17:30', '대기'], ['17:30', '20:00', '가공'], ['20:00', '20:30', '휴식'], ['20:30', '00:02', '가공'], ['00:02', '00:17', '대기']]],
+    ['CMM-01', 'OP-50 측정', [['17:00', '18:00', '대기'], ['18:00', '20:00', '가공'], ['20:00', '20:30', '휴식'], ['20:30', '22:35', '가공'], ['22:35', '00:17', '대기']]]];
+  return `${crumb('replay')}
+${head({ tone: 'ok', state: '정상', meta: '<b class="num">10/2 00:17</b> 시점', title: '켜진 알람 없음', desc: '이 구간에는 알람 · 병목 변화가 없습니다',
+    strip: strip([['완제품', '44', '개', null], ['가동', '0', '/ 6대', 0, '', '모두 대기 17분째'], ['사건 목록', '0', '건', null]]) })}
+${card('그 시각 라인', '', '', `<div class="eqcards">${rows.map(([eq, op]) => `<div class="eqc"><b class="num">${eq}</b><span><i class="dot" style="background:var(--t4)"></i>대기</span><small>이 상태 17분째</small></div>`).join('')}</div>
+  <div class="wips">${[['재공-1', 11, 30], ['재공-2', 18, 30], ['재공-3', 8, 60], ['재공-4', 0, 30]].map(([n, v, t]) => `<div class="wip"><small>${n}</small> <b class="num">${v} / ${t}</b><div class="mbar"><i style="width:${v / t * 100}%"></i></div></div>`).join('')}</div>`)}
+${card('타임라인', '', `<div class="legend">${Object.entries(ST).map(([k, v]) => `<span><i style="${v}"></i>${k}</span>`).join('')}</div>`,
+  `<div class="player"><button class="play">▶ 재생</button><span class="meta-s">1초에</span>${segs('', ['1분', '5분', '15분'], 1)}<b class="num" style="margin-left:auto;font-size:var(--fs-band)">🕘 00:17</b></div>` +
+  gantt({ t0: 17 * 60, total: 437, labels: ['17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00', '10/2 00:00'], rows, now: '00:17', nowLabel: '▶ ', states: ST }))}`;
+};
+
+S.pm = () => {
+  const days = { 2: [8, 7], 3: [0, 2], 5: [0, 2], 6: [0, 4], 8: [0, 2], 10: [0, 8], 14: [0, 1], 22: [0, 1], 24: [0, 1], 26: [0, 1], 29: [0, 1] };
+  let cal = ['일', '월', '화', '수', '목', '금', '토'].map((d) => `<div class="wd">${d}</div>`).join('') + '<div class="d blank"></div>'.repeat(4);
+  for (let d = 1; d <= 31; d++) { const [o, n] = days[d] || [0, 0];
+    cal += `<div class="d${d === 2 ? ' today' : ''}"><b class="num">${d}</b>${o ? `<span class="k warn num">▲${o}</span>` : ''}${n ? `<span class="k num">${n}</span>` : ''}</div>`; }
+  const tasks = [['SAW-01', ['톱날 상태 점검']], ['MIL-01', ['윤활 레벨·습동면 점검']], ['VF2-01', ['창(유리) 손상 점검', '도어 인터록 작동 점검']],
+    ['VF2-02', ['▲윤활유 저장소 양 점검·보충', '▲벡터 드라이브 환기구·필터 청소', '▲웨이 커버 점검·윤활', '▲모터와 근접 센서 점검', '▲가이드 레일 그리스 주입', '▲공구 빼기 핑거 그리스 주입', '▲주축 윤활 탱크 양 점검', '▲주축 테이퍼 점검', '창(유리) 손상 점검', '도어 인터록 작동 점검']], ['WSH-01', ['세척액 상태 점검']]];
+  const eqs = [['SAW-01', 'OP-10 절단', '–', 1, 1, 1, 3], ['MIL-01', 'OP-20 밀링', '–', 1, '–', '–', '–'], ['VF2-01', 'OP-30 머시닝 1호기', '–', 2, 4, 10, 9], ['VF2-02', 'OP-30 머시닝 2호기', 8, 2, 4, 2, 9], ['WSH-01', 'OP-40 세척', '–', 1, '–', '–', 1], ['CMM-01', 'OP-50 측정', '–', '–', 1, '–', '–']];
+  return `${crumb('pm')}
+${head({ tone: 'warn', state: '기한 지남', title: '기한 지남 8건 — VF2-02 먼저', desc: '오늘 7건 · 9월 실시율 85.3% (목표 90%)', action: 'VF2-02 보기',
+    strip: strip([['▲ 기한 지남', '8', '건', null, '', 'VF2-02 · 먼저 하세요', 'warn'], ['오늘 기한', '7', '건', null, '', '설비 5대'], ['이번 주 (1~6일 뒤)', '10', '건', null, '', '이번 달 13건'], ['실시율 · 9월', '85.3', '%', 85.3, '', '목표 90%까지 4.7% 부족']]) })}
+${segs('', ['전체 장비', 'SAW-01 <b>1</b>', 'MIL-01 <b>1</b>', 'VF2-01 <b>2</b>', 'VF2-02 <span class="w">▲8</span> <b>2</b>', 'WSH-01 <b>1</b>', 'CMM-01'], 0)}
+${card('설비별 요약', '지남 1대', '', table(['설비', '>▲ 지남', '>오늘', '>이번 주', '>이번 달', '>기한 없음', ''], eqs.map(([e, o, a, b, c, d, f]) => [`<b class="num">${e}</b><small>${o}</small>`, a === 8 ? `<span class="badge warn">▲ ${a}</span>` : a, b, c, d, f, '<span style="color:var(--t4)">›</span>']), 'go'))}
+<div class="cols c12">
+${card('10월 기한 달력', '', '<div class="legend"><span><i style="background:var(--warn-bg);border:1px solid var(--warn-line)"></i>기한 지남</span><span><i style="background:#fff;border:1.5px solid var(--point)"></i>오늘</span><span><i style="background:var(--point-tint)"></i>마감 기한</span></div>', `<div class="cal">${cal}</div>`)}
+${card('10/2 (금) 기한 15건', '', '', `<div class="tasks">${tasks.map(([e, ts]) => `<div><div class="eqh num">${e}</div><ol>${ts.map((t, i) => `<li class="${t[0] === '▲' ? 'warn' : ''}"><i class="num">${i + 1}</i>${t}</li>`).join('')}</ol></div>`).join('')}</div>`)}
+</div>`;
+};
+
+S.quality = () => {
+  const done = new Set([1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]);
+  const map = Array.from({ length: 60 }, (_, i) => i + 1).map((n) => `<span class="num ${n > 55 ? 'no' : n === 55 ? 'cur' : done.has(n) ? 'ok' : ''}">${n}</span>`).join('');
+  const tol = [['◆ Ø45 H7', 45.0052, 45, 45.025, '45.000', '45.025'], ['전체 길이', 149.861, 149.5, 150.5], ['폭', 55.0311, 54.7, 55.3], ['두께', 12.0377, 11.8, 12.2], ['구멍 간 거리', 0.0127, -0.1, 0.1, '-0.1', '0.1', '+0.0127'], ['평면도', 0.0137, 0, 0.05, '0', '0.05']];
+  const files = ['22:32 · 55', '20:28 · 50', '20:26 · 45', '20:23 · 40', '20:21 · 35', '20:18 · 30'].map((x) => { const [t, n] = x.split(' · '); return [t, `129-1 · ${n}`, '<span class="badge ok">성공</span>']; });
+  const enh = [['LOT-2609-055-2', '보류 로트 · 남은 부품 전수', '해제', '18 / 18'], ['LOT-2609-056-1', '보류 다음 로트', '합격', '60 / 60'], ['LOT-2609-057-1', '보류 다음 로트', '합격', '10 / 10'], ['LOT-2609-073-1', '보류 로트 · 남은 부품 전수', '해제', '34 / 34'], ['LOT-2609-074-2', '보류 다음 로트', '합격', '34 / 34'], ['LOT-2609-075-1', '보류 다음 로트', '합격', '33 / 33']];
+  return `${crumb('quality')}
+<div class="side-layout">${side('품질', [['검사 기록'], ['공정 능력 · 불량']], '검사 기록')}
+<div class="cols">
+${head({ tone: 'ok', state: '불합격 0', meta: '검사 방식 <b>발췌</b> · 병목 <b class="num">OP-30</b>', title: '<span class="num">LOT-2609-129-1</span> 측정 12 / 55', tags: '<button class="tag" data-go="lots">로트 추적</button>',
+    strip: strip([['측정', '12', '/ 55', 12 / 55 * 100], ['합격', '12', '', 100, 'ok'], ['불합격', '0', '', 0, 'crit'], ['기록 없음', '0', '', 0], ['남은', '43', '', 43 / 55 * 100]]) })}
+<div class="cols c2">
+${card('부품 지도', '순번 55 · 합격 · Ø45 45.0052 · 22:29', '', `<div class="pmap">${map}</div><div class="legend" style="margin-top:12px"><span><i style="background:var(--point)"></i>합격</span><span><i style="background:var(--crit)"></i>불합격</span><span><i style="background:#fff;border:2px solid var(--point)"></i>측정 중</span><span><i style="background:#fff;border:1px solid rgba(22,24,29,.15)"></i>대기</span><span><i style="border:1px dashed rgba(22,24,29,.25)"></i>이 로트에 없는 순번</span></div><p class="note">M6 입력 전 (작업자 게이지)</p>`)}
+${card('공차 안 위치', '순번 55', '', `<div>${tol.map(([n, v, lo, hi, l1, l2, shown]) => `<div class="tol"><b>${n}</b><div class="tb"><span class="z" style="left:8%;right:8%"></span><span class="p" style="left:${8 + (v - lo) / (hi - lo) * 84}%"></span><span class="lim num" style="left:8%">${l1 ?? lo}</span><span class="lim num" style="left:92%">${l2 ?? hi}</span></div><span class="v num">${shown ?? v}</span></div>`).join('')}</div>`)}
+</div>
+<div class="cols c2">
+${card('측정 결과', '순번 55', '<span class="badge live"><i class="dot"></i>CMM-01 대기</span>', `<div class="tiles"><div class="tile"><small>부품 판정</small><b style="font-size:18px">M6·외관 입력 기다림</b></div><div class="tile"><small>M6 나사 게이지</small><b style="font-size:18px;color:var(--t3)">입력 전</b></div><div class="tile"><small>외관</small><b style="font-size:18px;color:var(--t3)">입력 전</b></div></div><p class="note">확인 상태 정상 · 부품 24.6 ℃ · 방 20 ℃ · 측정 지시 LOT-2610-001-2 (바코드·본인 확인은 OP-50 작업자 태블릿)</p>`)}
+${card('결과 파일', '9월 1301건 · 오늘 33건 · 9월 오류 0건', '', table(['받은 시각', '로트 · 순번', '상태'], files))}
+</div>
+${card('검사 강화', '지금 강화 중인 로트 없음 · 최근 강화 기록 (시연 데이터 9월)', '', table(['로트', '왜 강화', '상태', '>측정한 부품 / 로트'], enh.map(([l, w, s, n]) => [`<b class="num">${l}</b>`, w, `<span class="badge ${s === '합격' ? 'ok' : 'info'}">${s}</span>`, n])))}
+</div></div>`;
+};
+
+S.qcap = () => {
+  const cpk = [['부싱 압입 구멍 지름', 1.64, 1.67], ['전체 길이', 2.24, 1.33], ['폭', 2.12, 1.33], ['두께', 1.76, 1.33], ['구멍 간 거리', 1.91, 1.33], ['평면도 (부착면)', 1.54, 1.33]];
+  // shortcut: 관리도 점은 CL·UCL·LCL 사이의 예시값 (마지막 점만 실제 45.0052), 실제 화면은 측정값
+  const pts = [45.0131, 45.0118, 45.0142, 45.0109, 45.0125, 45.0151, 45.0097, 45.0133, 45.0128, 45.0114, 45.0162, 45.0121, 45.0104, 45.0139, 45.0127, 45.0146, 45.0112, 45.0098, 45.0135, 45.0123, 45.0157, 45.0117, 45.0129, 45.0108, 45.0141, 45.0052];
+  const W = 760, H = 240, lo = 44.998, hi = 45.027, y = (v) => 16 + (hi - v) / (hi - lo) * (H - 40), x = (i) => 110 + i * (W - 130) / (pts.length - 1);
+  const line = (v, dash, lab, col) => `<line x1="110" x2="${W - 20}" y1="${y(v)}" y2="${y(v)}" stroke="${col}" stroke-width="1.5" ${dash ? 'stroke-dasharray="5 4"' : ''}/><text x="104" y="${y(v) + 4}" text-anchor="end" font-size="12" fill="${col}">${lab}</text>`;
+  const svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="부싱 압입 구멍 지름 개별값 관리도">${line(45.025, 0, 'USL 45.025', '#C42E2E')}${line(45, 0, 'LSL 45', '#C42E2E')}${line(45.0202, 1, 'UCL 45.0202', '#8A8F9C')}${line(45.0051, 1, 'LCL 45.0051', '#8A8F9C')}${line(45.0127, 0, 'CL 45.0127', '#3F5FE0')}
+    <polyline fill="none" stroke="#5C7FFF" stroke-width="2" points="${pts.map((v, i) => `${x(i)},${y(v)}`).join(' ')}"/>${pts.map((v, i) => `<circle cx="${x(i)}" cy="${y(v)}" r="${i === pts.length - 1 ? 6 : 3.5}" fill="${i === pts.length - 1 ? '#fff' : '#5C7FFF'}" stroke="#5C7FFF" stroke-width="2"/>`).join('')}
+    ${['20:05', '03:34', '14:54', '22:29'].map((t, i) => `<text x="${x(Math.round(i * (pts.length - 1) / 3))}" y="${H - 4}" text-anchor="middle" font-size="12" fill="#8A8F9C">${t}</text>`).join('')}</svg>`;
+  const def = [['SUR-01', '버 남음', '경', 14], ['THR-01', '나사 통과 게이지 안 들어감', '중', 14], ['SUR-03', '찍힘·긁힘', '경', 4], ['DIM-03', '구멍 간 거리 벗어남', '중', 4], ['THR-02', '나사 정지 게이지 2회전 넘게 들어감', '중', 3], ['SUR-02', '구성인선 흔적 (뜯긴 면)', '경', 3], ['DIM-02', '치수 작음 (하한 밑)', '치명/중', 2], ['DIM-01', '치수 큼 (상한 넘음)', '치명/중', 1]];
+  return `${crumb('qcap')}
+<div class="side-layout">${side('품질', [['검사 기록'], ['공정 능력 · 불량']], '공정 능력 · 불량')}
+<div class="cols">
+${head({ tone: 'warn', state: 'Cpk 기준 미달 1항목', title: '부싱 압입 구멍 지름 Cpk <span class="num">1.64</span>', desc: '기준 1.67 · 불량률 0.9% (45 / 5,012) — 9/1 ~ 10/1 측정값 전체로 본 공정 능력',
+    strip: strip(cpk.map(([n, v, b]) => [n, v.toFixed(2), '', null, '', `기준 ${b}${v < b ? ' ▲ 미달' : ''}`, v < b ? 'warn' : ''])) })}
+${card('관리도 — 부싱 압입 구멍 지름', 'OP-30 정밀 가공 · 공차 45.000 ~ 45.025', segs('', ['◆ Ø45 H7', '전체 길이', '폭', '두께', '구멍 간 거리', '평면도'], 0), `<div class="chart">${svg}</div><p class="note">고른 점 · 10/1 22:29 · 45.0052 · 합격 · MR 0.0138 — ▲ 관리 한계(3σ) 밖 0 · ✕ 불합격(공차 밖) 0</p>`)}
+${card('불량 집계', '9/1 ~ 10/1 · 불량률 0.90% (45 / 5,012)', '', table(['코드', '이름', '등급', '개수'], def.map(([c, n, g, k]) => [`<b class="num">${c}</b>`, n, `<span class="badge ${g === '경' ? 'info' : 'warn'}">${g}</span>`, `<span class="minibar"><i style="width:${k / 14 * 140}px"></i><b class="num">${k}</b></span>`])))}
+</div></div>`;
+};
+
+S.inventory = () => `${crumb('inventory')}
+<div class="segs"><div class="tabs"><button class="sel">재고 <span style="color:var(--warn-t)">▲ 5</span></button><button>출하 등록</button></div></div>
+${head({ tone: 'warn', state: '안전 재고 이하', title: '안전 재고 이하 5품목', desc: 'M6 탭 4 / 8 개 · 축 윤활유 3.6 / 4 L 외 3품목', action: '입고 등록',
+  strip: strip([['전체', '13', '품목', null, '', '▲ 5', 'warn'], ['절삭 공구', '5', '', null, '', '▲ 1', 'warn'], ['정비 소모품', '6', '', null, '', '▲ 4', 'warn'], ['원자재', '1', '', null], ['완제품', '1', '', null], ['입고 검사 대기', '0', '', null]]) })}
+<div class="cols c21">
+${card('재고 여유', '지금 / 안전 재고 — 검은 눈금이 안전 재고', segs('', ['전체 <b>13</b> <span class="w">▲5</span>', '절삭 공구', '정비 소모품', '원자재', '완제품'], 0), `<div class="meters">
+  <div class="grp-h">절삭 공구 <small>SUP 관리 · 사용 = 공구 교체 기록 (OPR·MNT)</small></div>
+  ${meter('엔드밀 Ø10', 15, 9, '개')}${meter('드릴 Ø5.0', 8, 5, '개', 'M6 탭 아랫구멍')}${meter('M6 탭', 4, 8, '개')}${meter('보링바 인서트', 5, 4, '개')}${meter('페이스밀 인서트', 18, 14, '개')}
+  <div class="grp-h">정비 소모품 <small>MNT 관리 · 사용 = 작업기록서·예방 정비</small></div>
+  ${meter('축 윤활유', 3.6, 4, 'L')}${meter('절삭유 원액', 31.3, 20, 'L')}${meter('절삭유 필터', 2, 2, '개')}${meter('공기 필터', 2, 2, '개')}${meter('주축 윤활유', 7.6, 4, 'L')}${meter('그리스', 2, 2, '개')}
+  <div class="grp-h">원자재 <small>SUP 관리 · 사용 = 로트 투입 때 자동</small></div>
+  ${meter('6061-T6 봉재', 948, 200, '개분')}</div>`)}
+<div class="cols" style="align-content:start">
+${card('완제품 BRK-A100', '', '', `<div class="tiles"><div class="tile"><small>지금</small><b class="num">321</b></div><div class="tile"><small>이번 출하</small><b class="num">0</b></div><div class="tile"><small>출하 뒤</small><b class="num">321</b></div><div class="tile"><small>보류</small><b class="num">0</b></div></div>`)}
+${card('할 일', '', '', `<div class="segs"><button class="btn-p">입고 등록</button><button class="ghost">실사·조정</button><button class="ghost">출하 등록</button></div><div class="grp-h" style="margin-top:18px">원자재 입고 검사</div><p class="empty">검사할 원자재 입고 없음</p>`)}
+</div></div>
+${card('거래 기록', '최근 10건', '', table(['시각', '종류', '품목', '>수량'], [['08:02', '사용', '6061-T6 봉재 <small>LOT-2609-128-2</small>', -17], ['08:09', '사용', '절삭유 원액', -0.28], ['08:52', '사용', '6061-T6 봉재 <small>LOT-2609-128-3</small>', -2], ['09:14', '사용', '6061-T6 봉재 <small>LOT-2609-129-1</small>', -55], ['09:22', '사용', '엔드밀 Ø10', -1], ['09:56', '사용', 'M6 탭', -1], ['10:11', '사용', '엔드밀 Ø10', -1], ['11:44', '합격 입고', 'BRK-A100 완제품 <small>LOT-2609-127-1</small>', 60], ['13:07', '합격 입고', 'BRK-A100 완제품 <small>LOT-2609-128-1</small>', 12], ['13:47', '사용', 'M6 탭', -1]]
+  .map(([t, k, n, q]) => [`<span class="num">${t}</span>`, `<span class="badge ${k === '사용' ? 'info' : 'ok'}">${k}</span>`, n, `<span class="${q > 0 ? 'plus' : 'minus'}">${q > 0 ? '+' : ''}${q}</span>`])))}`;
+
+S.tools = () => {
+  const tl = [['VF2-01', 'T03 보링바 인서트', 353, 400, '구멍'], ['VF2-01', 'T02 엔드밀 Ø10', 168, 200, '분'], ['VF2-01', 'T04 드릴 Ø5.0', 820, 1000, '구멍'], ['VF2-02', 'T02 엔드밀 Ø10', 155, 200, '분'], ['VF2-01', 'T05 M6 탭', 260, 400, '구멍'], ['VF2-01', 'T01 페이스밀 인서트', 225, 400, '분'], ['VF2-02', 'T04 드릴 Ø5.0', 512, 1000, '구멍'], ['VF2-02', 'T05 M6 탭', 172, 400, '구멍'], ['VF2-02', 'T03 보링바 인서트', 107, 400, '구멍'], ['VF2-02', 'T01 페이스밀 인서트', 86, 400, '분']];
+  const hist = [['10/1 13:47', 'VF2-02-T05', '376 / 400 구멍 (94%)', '수명 90% 도달', '작업자 주간 2'], ['10/1 10:11', 'VF2-02-T02', '190 / 200 분 (95%)', '수명 90% 도달', '작업자 주간 2'], ['10/1 09:56', 'VF2-01-T05', '400 / 400 구멍 (100%)', '알람 362', '작업자 주간 2'], ['10/1 09:22', 'VF2-01-T02', '190 / 200 분 (95%)', '수명 90% 도달', '작업자 주간 2'], ['9/30 22:51', 'VF2-02-T03', '367 / 400 구멍 (92%)', '수명 90% 도달', '작업자 야간 2'], ['9/30 15:52', 'VF2-02-T04', '936 / 1000 구멍 (94%)', '수명 90% 도달', '작업자 주간 2'], ['9/30 04:12', 'VF2-02-T01', '400 / 400 분 (100%)', '알람 362', '작업자 야간 2']];
+  return `${crumb('tools')}
+${head({ tone: 'ok', state: '정상', title: '교체 준비 기준(90%) 넘은 공구 없음', desc: '가장 많이 쓴 공구: VF2-01 T03 보링바 인서트 88.2%' })}
+${card('공구 — OP-30 VF2-01 · VF2-02', '교체 준비 기준 = 한도의 90% (검은 눈금)', segs('', ['전체 <b>10</b>', 'VF2-01', 'VF2-02'], 0), `<div class="meters">${tl.map(([e, n, u, l, unit]) => { const p = u / l * 100;
+  return `<div class="meter"><div class="nm"><span class="num" style="color:var(--t4);font-weight:500">${e}</span> ${n}</div><div class="mbar"><i class="${p >= 85 ? 'warn' : ''}" style="width:${p}%"></i><span class="mk" style="left:90%"></span></div><div class="v num">${p.toFixed(1).replace('.0', '')}% <small style="display:block">${u} / ${l}${unit}</small></div></div>`; }).join('')}</div><p class="note">보기 전용 (공구 교체는 작업자 · 보전 담당자)</p>`)}
+${card('교체 이력', 'VF2-01 · VF2-02', '', table(['교체 시각', '공구', '교체 시 사용량 / 한도', '교체 사유', '교체자'], hist.map(([t, c, u, r, w]) => [`<span class="num">${t}</span>`, `<b class="num">${c}</b>`, `<span class="num">${u}</span>`, r.startsWith('알람') ? `<span class="badge warn">${r}</span>` : r, w])))}`;
+};
+
+S.docs = () => {
+  const rows = [['MW-0901', 'VF2-02', '991', '9/4', 'VF2-02 알람 991 온도가 초과한 증폭기 — 점검·수리', '서보 앰프 온도가 한계를 넘었다. 앞의 축 알람이 어느 앰프인지 알려 준다'], ['MW-0902', 'VF2-01', '254', '9/11', 'VF2-01 알람 254 스핀들 모터 과열 — 점검·수리', '주축 모터가 과열됐다. 아날로그 센서가 일정 시간 동안 온도 한계를 감지하면 뜬다'], ['MW-0903', 'VF2-01', '992', '9/14', 'VF2-01 알람 992 전류가 높은 증폭기 — 점검·수리', '서보 앰프가 모터에 너무 큰 전류가 흐르는 것을 감지'], ['MW-0904', 'VF2-02', '—', '9/14', 'VF2-02 알람 108 반복 — 원인 점검 (반복 알람 2단계)', '7일 안에 3번 난 뒤 조치 계획을 실행했는데 다시 났다 (지난 조치 효과 없음)'], ['MW-0905', 'VF2-02', '993', '9/15', 'VF2-02 알람 993 단락 — 점검·수리', '단락이 감지됐다. 앞의 축 알람이 단락이 있는 축을 알려 준다']];
+  return `${crumb('docs')}
+<div class="side-layout">${side('문서함', [['내 할 일 전체', 1], ['작업지시서'], ['작업기록서'], ['간이 작업기록'], ['교대 보고서'], ['일일 보고서', 1], ['수정 이력'], ['사내 문서'], ['지침카드']], '작업지시서')}
+<div class="cols">
+${head({ tone: 'info', state: '확정 · 검토할 문서 1건', title: '미확정 일일 보고서 <span class="num">2026-09-30</span>', desc: '가장 오래된 것부터 엽니다', action: '첫 문서 열기' })}
+${card('작업지시서', '5건 · 지난 기록 (9월 · 보기만)', '', `<div class="cols" style="gap:10px;margin-bottom:16px">${segs('상태', ['전체', '초안', '수정 중', '승인', '진행 중', '완료', '취소됨'], 0)}${segs('설비', ['전체', 'SAW-01', 'MIL-01', 'VF2-01', 'VF2-02', 'WSH-01', 'CMM-01'], 0)}</div>` +
+  table(['번호', '설비', '알람', '날짜', '상태', '요약'], rows.map(([n, e, a, d, t, s]) => [`<b class="num">${n}</b>`, `<span class="num">${e}</span>`, `<span class="num">${a}</span>`, `<span class="num">${d}</span>`, '<span class="badge ok">완료</span>', `<b>${t}</b><small>${s}</small>`]), 'go'))}
+</div></div>`;
+};
+
+S.cards = () => `${crumb('cards')}
+<div class="side-layout">${side('문서함', [['내 할 일 전체', 1], ['작업지시서'], ['작업기록서'], ['간이 작업기록'], ['교대 보고서'], ['일일 보고서', 1], ['수정 이력'], ['사내 문서'], ['지침카드', 1]], '지침카드')}
+<div class="cols">
+${head({ tone: 'warn', state: '처리 필요 1건', meta: '처리 책임: 작업자 · <b class="num">14시간 51분</b>째', title: 'VF2-01 · 362 공구 수명 한계 도달', action: '열기' })}
+${card('지침카드', '', `<div class="tabs"><button class="sel">처리 필요 1</button><button>전체 1</button></div><button class="ghost">최신순 ⇅</button>`, `<div class="cols" style="gap:10px;margin-bottom:16px">${segs('설비', ['전체', 'SAW-01', 'MIL-01', 'VF2-01', 'VF2-02', 'WSH-01', 'CMM-01'], 0)}${segs('등급', ['전체', '긴급', '주의', '참고'], 0)}</div>
+  <div class="alist"><div class="aday">10/1 (목)</div><button class="aitem warn"><b class="num">09:56</b><div class="t">▲ VF2-01 · 362 공구 수명 한계 도달<small>처리 책임: 작업자</small></div><span class="badge warn num">891분째</span></button></div>`)}
+</div></div>`;
+
+S.settings = () => `${crumb('settings')}
+${head({ tone: 'info', state: '알림 기준', title: '반복 알람 7일 안 3번 · 목표 미달 위험 90%', desc: '바꾸면 다음 계산부터 적용' })}
+<div class="segs"><div class="tabs">${['설비', '사용자', '알림 규칙', '목표 수량', '안전 재고'].map((t) => `<button class="${t === '알림 규칙' ? 'sel' : ''}">${t}</button>`).join('')}</div></div>
+${card('알림 기준', '', '<button class="btn-p">저장</button>', table(['규칙', '값', '근거'], [['반복 알람 — 며칠 안', '<input class="inp num" value="7" aria-label="며칠 안"> 일', 'DOC-07 10.2 [가상]'], ['반복 알람 — 몇 번', '<input class="inp num" value="3" aria-label="몇 번"> 번', ''], ['목표 미달 위험 (총 목표의 %)', '<input class="inp num" value="90" aria-label="퍼센트"> %', 'DOC-07 8장 [가상]'], ['반복 알람 2단계 재발 확인 기간', '<input class="inp num" value="7" aria-label="일"> 일', 'DOC-07 §10.4 [가상]'], ['짧은 반복 묶기', '1분 안 3번 이상', 'DOC-07 10.2 [참고] (보기만)'], ['알림 폭주', '10분 10건 / 5건', 'DOC-07 10.3 [참고] (보기만)'], ['보고 순위 (전부 보고)', '0 안전 ~ 4 참고', 'DOC-07 §10.5 [제안] (보기만)']].map(([a, b, c]) => [`<b>${a}</b>`, b, `<span class="meta-s">${c}</span>`])))}
+${card('알림 규칙 25종', 'notification_rule.csv', '', `<div class="rules">${[['ALARM_STOP', '알람 발생 (정지)', 'crit', '긴급 · 팝업', '정지 등급 알람 발생 → 로그인한 전원에게 중앙 팝업 (처리 책임은 그 설비 OPR·MNT)'], ['ALARM_WARN', '알람 발생 (주의)', 'warn', '주의 · 목록', '주의 등급 알람 발생'], ['ALARM_GUIDE', '알람 발생 (조작 안내)', 'info', '참고 · 목록', '조작 안내 등급 알람 발생'], ['REPEAT_ALARM', '반복 알람 (1단계)', 'warn', '주의 · 목록', '같은 설비·같은 알람(주의·정지 등급)이 7일 안에 3번 이상 → MNT·SUP'], ['TARGET_RISK', '목표 미달 위험', 'warn', '주의 · 목록', '예측 실적 < 총 목표(목표 + 이월)의 90%. 교대 시작 1시간 뒤부터 판단'], ['BOTTLENECK_MOVE', '병목 발생·이동', 'warn', '주의 · 목록', '병목 공정(또는 원인)이 바뀜']].map(([c, n, t, k, d]) => `<div class="rule-i"><div><b>${n}</b><small class="num">${c}</small></div><div><span class="badge ${t}">${k}</span><div style="margin-top:4px">${d}</div></div></div>`).join('')}</div><p class="note">… 19종 더 (목업에서는 6종만)</p>`)}`;
+
+// ───────── 화면 바꾸기 ─────────
+let screen = (location.hash.slice(1) in NAME) ? location.hash.slice(1) : 'lots';
+const foot = `<aside class="foot"><b>이 목업에서 바뀐 것</b><ul>
+<li>바탕 = 흰색→은색 그라데이션 (그라데이션은 바탕에만), 카드 = 반투명 흰색 · 모서리 24 · 보랏빛 그림자</li>
+<li>포인트 = 하늘색 #5C7FFF (막대 · 진행 · 지금 것), 흰 글자 버튼은 진한 #3F5FE0 — 보라(brand)는 쓰지 않음</li>
+<li>C안 결론 띠 → 화면 맨 위 "머리 카드": 상태 칩 · 큰 결론 · 오른쪽 차콜 버튼 · 아래 숫자 줄 (로트의 공정 5단계 선 모양)</li>
+<li>고른 칩 · 위 메뉴 = 차콜, 왼쪽 목록에서 고른 칸 = 하늘색 · 표 짝수 줄 연한 회색</li>
+<li>홈(3D 라인)은 지금 그대로 · 다시 보기 타임라인 막대와 관리도 점은 모양 보기용 예시값</li></ul></aside>`;
+function go(s) {
+  screen = s; open = null; renderMenu();
+  document.getElementById('view').innerHTML = S[s]() + (s === 'home' ? '' : foot);
+  history.replaceState(null, '', '#' + s); scrollTo(0, 0);
+}
+const toastEl = document.getElementById('toast'); let tt;
+const toast = (t) => { toastEl.textContent = t; toastEl.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => toastEl.classList.remove('on'), 1800); };
+document.addEventListener('click', (e) => {
+  const g = e.target.closest('[data-go]'); if (g) return go(g.dataset.go);
+  const o = e.target.closest('[data-open]'); if (o) { open = open === o.dataset.open ? null : o.dataset.open; return renderMenu(); }
+  const f = e.target.closest('[data-fill]'); if (f) { document.getElementById('q').value = f.dataset.fill; return; }
+  const t = e.target.closest('[data-toast]'); if (t) return toast(t.dataset.toast);
+  const sb = e.target.closest('.seg,.tabs button,.side button');
+  if (sb && !sb.closest('.find')) { sb.parentElement.querySelectorAll('.sel').forEach((x) => x.classList.remove('sel')); sb.classList.add('sel'); }
+  if (open && !e.target.closest('.grp')) { open = null; renderMenu(); }
+});
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && open) { open = null; renderMenu(); } });
+go(screen);
+</script>
+</body>
+</html>

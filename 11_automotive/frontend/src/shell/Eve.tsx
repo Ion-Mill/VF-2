@@ -41,7 +41,7 @@ const Icon = ({ d, size = 18, w = 2 }: { d: string[]; size?: number; w?: number 
 // 표정: 평소 ^ ^ · 새 소식 반짝 눈 · 주의 주황 반쯤 감은 눈 · 긴급 빨강 > < (3D 모델의 눈 모양을 평면으로). 이브 버튼(58px)은 3D 전신 그대로
 export type EveFace = 'happy' | 'news' | 'warn' | 'alarm';
 export function Robot({ face = 'happy', size }: { face?: EveFace; size: number }) {
-  const c = face === 'warn' ? '#FFB020' : face === 'alarm' ? '#FF5A52' : '#B79CFF';
+  const c = face === 'warn' ? '#FFB020' : face === 'alarm' ? '#FF5A52' : '#9DBCF4';
   const eye = (x: number, s: 1 | -1) =>
     face === 'happy' ? <path d={`M${x - 5} 37.5Q${x} 29.5 ${x + 5} 37.5`} fill="none" stroke={c} strokeWidth="2.9" strokeLinecap="round" />
     : face === 'news' ? <><ellipse cx={x} cy={35} rx={3.4} ry={4.8} fill={c} /><circle cx={x + 1.3} cy={33.2} r={1.1} fill="#fff" /></>
@@ -61,13 +61,12 @@ export function Robot({ face = 'happy', size }: { face?: EveFace; size: number }
   );
 }
 
-export function Eve({ tab, quick: showQuick, onPick, onClose, badges, bubble, bubbleKey, onBubble, brief, onNotice }: {
+export function Eve({ tab, quick: showQuick, onPick, onClose, badges, bubble, onBubble, brief, onNotice }: {
   tab: EveTab | null; quick: boolean; onPick: (t: EveTab) => void; onClose: () => void; badges: Partial<Record<EveTab, number>>;
-  bubble: string | null; bubbleKey?: number; onBubble: () => void; brief: React.ReactNode; onNotice: (n: Notice) => void;
+  bubble: string | null; onBubble: () => void; brief: React.ReactNode; onNotice: (n: Notice) => void;
 }) {
   const [menu, setMenu] = useState(false);
   const [later, setLater] = useState<string | null>(null); // [나중에] 누른 말풍선 — 글이 바뀌면 다시 뜸
-  useEffect(() => { setLater(null); }, [bubbleKey]);   // 알림 미리보기를 다시 누르면 [나중에]로 숨긴 말풍선도 다시 뜬다
   const [gl, setGl] = useState(true);
   const [focus, setFocus] = useState<FocusRef | null>(null);   // 채팅 기록에서 눌러 연 줄 — 그 줄이 속한 대화만 채팅 탭에 보인다
   const [slot, setSlot] = useState<HTMLElement | null>(null);   // 머리줄의 [새 채팅] 자리 — 상태를 가진 Chat이 여기에 버튼을 그린다 (createPortal)
@@ -98,6 +97,8 @@ export function Eve({ tab, quick: showQuick, onPick, onClose, badges, bubble, bu
   useEffect(() => { if (tab) setOpened(true); }, [tab]);
   const showPanel = !!tab || opened;
   const toast = closed && bubble && bubble !== later ? bubble : null;
+  // [열기]로 지침카드 등으로 옮기면 그 말풍선은 닫는다 (사용자 요청 2026-10-22) — [나중에]와 같이 글이 바뀌면 다시 뜸
+  const openToast = () => { setLater(toast); onBubble(); };
   const total = badges['알림'] ?? 0;
   const pick = (t: EveTab) => { setMenu(false); setFocus(null); onPick(t); };
   useEffect(() => {
@@ -111,12 +112,12 @@ export function Eve({ tab, quick: showQuick, onPick, onClose, badges, bubble, bu
     <div className={`ma-root${tab ? ' is-panel' : ''}`}>
       {toast && (
         <div className="ma-toast ma-rise" role="status" style={shift}>
-          <button type="button" className="ma-toast-main" onClick={onBubble}>
+          <button type="button" className="ma-toast-main" onClick={openToast}>
             <Robot face={toast.startsWith('⚠') ? 'alarm' : 'news'} size={36} />
             <span className="ma-toast-text"><span className="ma-toast-time ma-mono">이브</span><strong className="ma-toast-title">{toast}</strong></span>
           </button>
           <div className="ma-actions">
-            <button type="button" className="ma-btn ma-btn-primary" onClick={onBubble}>열기</button>
+            <button type="button" className="ma-btn ma-btn-primary" onClick={openToast}>열기</button>
             <button type="button" className="ma-btn ma-btn-ghost" onClick={() => setLater(toast)}>나중에</button>
           </div>
         </div>
@@ -126,7 +127,7 @@ export function Eve({ tab, quick: showQuick, onPick, onClose, badges, bubble, bu
           {EVE_TABS.map((t, i) => (
             <button key={t} type="button" role="menuitem" className="ma-menu-item ma-rise" style={{ animationDelay: `${i * 50}ms` }} onClick={() => pick(t)}>
               <span className="ma-menu-label">{t}</span>
-              <span className="ma-menu-icon"><Icon d={TAB_ICON[t]} size={20} />{badge(t, 'ma-menu-badge')}</span>
+              <span className="ma-menu-icon"><Icon d={TAB_ICON[t]} size={28} />{badge(t, 'ma-menu-badge')}</span>
             </button>
           ))}
         </div>
@@ -210,7 +211,7 @@ function AlertsTab({ onNotice }: { onNotice: (n: Notice) => void }) {
   const items = all.filter((it) => !onlyOpen || !handledOf(it)).sort((a, b) => tsOfI(b) - tsOfI(a));
   // 알림 폭주: 10분 안 10건 넘으면 띠 (DOC-07 10.3)
   const recent = alerts.filter((a) => SIM.now() - a.ts < 600000).length;
-  const chip = (on: boolean) => `h-9 whitespace-nowrap rounded-full border px-3 text-[12px] font-semibold ${on ? 'border-[#B79CFF] bg-[#B79CFF] text-[#1A1F23]' : 'border-slate-300'}`;
+  const chip = (on: boolean) => `h-9 whitespace-nowrap rounded-full border px-3 text-[12px] font-semibold ${on ? 'border-[#9DBCF4] bg-[#9DBCF4] text-[#1A1F23]' : 'border-slate-300'}`;
   const ab = 'h-11 rounded-full border border-slate-300 px-4 text-[14px] font-semibold hover:bg-slate-50 disabled:text-slate-400';
   const title = (it: Item) => (it.kind === 'a' ? `${MACHINES[it.a.machine].name} ${alarmTitle(it.a.alarm, it.a.code)}${it.n > 1 ? ` ×${it.n}` : ''}` : it.x.ruleName);
   const level = (it: Item) => (it.kind === 'a' ? it.a.level : it.x.level);
@@ -278,10 +279,10 @@ function AlertsTab({ onNotice }: { onNotice: (n: Notice) => void }) {
                 <li key={idOf(it)} className="grid grid-cols-[46px_20px_minmax(0,1fr)]">
                   <span className="pr-1 pt-[13px] text-right font-mono text-[13px] font-semibold text-[#4b4766]">{hhmm(at(it))}</span>
                   <span className="relative flex justify-center" aria-hidden="true">
-                    {g.rows.length > 1 && <span className="absolute w-0.5 bg-[#ddd5f7]" style={{ top: i === 0 ? 18 : 0, bottom: i === g.rows.length - 1 ? 'calc(100% - 18px)' : 0 }} />}
+                    {g.rows.length > 1 && <span className="absolute w-0.5 bg-[#dbe5f3]" style={{ top: i === 0 ? 18 : 0, bottom: i === g.rows.length - 1 ? 'calc(100% - 18px)' : 0 }} />}
                     <span className="relative mt-[15px] h-3 w-3 rounded-full" style={{ background: BAR[lv], boxShadow: '0 0 0 3px #f3f1fb' }} />
                   </span>
-                  <button onClick={() => setOpenId(idOf(it))} className={`my-1 flex w-full min-w-0 flex-col gap-0.5 rounded-xl border px-3 py-2 text-left ${hot ? 'border-[#f2c4c0] bg-[#fdeeee] hover:bg-[#fbe3e3]' : 'border-[#e4def8] bg-[#ffffff] hover:bg-[#f7f5fd]'}`}>
+                  <button onClick={() => setOpenId(idOf(it))} className={`my-1 flex w-full min-w-0 flex-col gap-0.5 rounded-xl border px-3 py-2 text-left ${hot ? 'border-[#f2c4c0] bg-[#fdeeee] hover:bg-[#fbe3e3]' : 'border-[#dbe5f3] bg-[#ffffff] hover:bg-[#f5f8fc]'}`}>
                     <b className={`truncate text-[15px] ${hot ? 'text-[#c62a2f]' : ''} ${done ? 'font-semibold text-[#6b6683]' : ''}`}>{title(it)}</b>
                     <span className="truncate text-[12.5px] text-slate-500">{lv}{it.kind === 'n' ? ' · 문서·확인 알림' : ` · 알람 ${it.a.code}`}{handledOf(it) ? ' · 처리됨' : ''}</span>
                   </button>
@@ -419,12 +420,12 @@ function Chat({ active, focus, headerSlot, onNewChat, ask, onAsked }: { active: 
       <div ref={body} className="ma-body text-[14px]" role="tabpanel">
         <div className="ma-pad min-h-full" aria-live="polite">
           {today.length === 0 && !waiting && <EveHello />}
-          {today.map((r, i) => <div key={i} data-at={r.at} {...(isFocusRow(r, focus) ? { 'data-focus': '1' } : {})} className={isFocusRow(r, focus) ? 'rounded-lg ring-2 ring-[#B79CFF]' : ''}><Bubble r={r} meta={`${md(r.at)} ${hhmm(r.at)}`} openSource={openSource} role={role} /></div>)}
+          {today.map((r, i) => <div key={i} data-at={r.at} {...(isFocusRow(r, focus) ? { 'data-focus': '1' } : {})} className={isFocusRow(r, focus) ? 'rounded-lg ring-2 ring-[#9DBCF4]' : ''}><Bubble r={r} meta={`${md(r.at)} ${hhmm(r.at)}`} openSource={openSource} role={role} /></div>)}
           {waiting && <EveThinking found={found} />}
         </div>
       </div>
       <form className="ma-compose" onSubmit={(e) => { e.preventDefault(); if (!waiting) send(); }}>
-        <div className="mb-3 flex flex-wrap justify-center gap-1.5">{ex.map((x) => <button key={x} type="button" disabled={waiting} onClick={() => send(x)} className="h-9 rounded-full border border-slate-300 bg-[#ffffff] px-3.5 text-[13px] font-bold hover:bg-[#f7f5fd]">{x}</button>)}</div>
+        <div className="mb-3 flex flex-wrap justify-center gap-1.5">{ex.map((x) => <button key={x} type="button" disabled={waiting} onClick={() => send(x)} className="h-9 rounded-full border border-slate-300 bg-[#ffffff] px-3.5 text-[13px] font-bold hover:bg-[#f5f8fc]">{x}</button>)}</div>
         {voice.enabled && (mic.state === 'recording' || voiceBusy || voiceNote !== '') && (
           <div className="ma-voice-note" role="status">
             {mic.state === 'recording' ? `듣고 있어요… 말이 끝나면 마이크 버튼을 다시 누르세요 (최대 ${Math.round(voice.maxSeconds)}초).` : voiceBusy ? '글자로 바꾸는 중이에요 (길게 말했다면 더 걸려요)…' : voiceNote}
