@@ -5,7 +5,7 @@
 //   전체 장비 = 숫자 4칸(지남·오늘·이번 주·실시율과 목표선) → 설비별 요약표(누르면 그 설비) → 이번 달 기한 달력(건수 점, 날짜를 누르면 설비별 번호 목록).
 //   설비별 = 결론 띠(기한 지남 · 오늘 정비 예정) → 급한 순 묶음(지남·오늘 펼침) → 오늘 실시 기록 ‖ 오른쪽 정비 진행 3단계(고르기 → 시작 → 끝·기록).
 //   기한 구분은 화면이 날짜로 센다: 지남 · 오늘 · 이번 주(1~6일 뒤, 내일 포함) · 이번 달(7일 뒤 ~ 이달 말) · 기한 없음. 다음 달 이후는 목록에 없고 숫자만 (2026-10-20). 서버의 DUE_SOON(오늘+내일)은 쓰지 않는다.
-import { LockIcon } from './ui';
+import { LockIcon, SecIcon } from './ui';
 import { useState } from 'react';
 import { BTN, CARD, DARK, PAGE, useApp } from './ctx';
 import { Band } from './ui';
@@ -74,7 +74,7 @@ export function PmPage() {
               const chip = (e: string) => {
                 const c = countOf(e === PM_ALL ? pm.tasks : pm.tasks.filter((t) => t.equipment_id === e)), on = tab === e;
                 return (
-                  <button key={e} role="tab" aria-selected={on} onClick={() => go('pm', e)} className={`flex h-11 shrink-0 items-center gap-2 rounded-full border px-4 text-card font-semibold ${on ? 'border-ink bg-ink text-white' : 'border-line bg-white hover:border-brand'}`}>
+                  <button key={e} role="tab" aria-selected={on} onClick={() => go('pm', e)} className={`flex h-11 shrink-0 items-center gap-2 rounded-full border px-4 text-card font-semibold ${on ? 'border-brand-line bg-brand-tint text-brand-ink' : 'border-line bg-white hover:border-brand'}`}>
                     <span className={e === PM_ALL ? '' : 'font-mono'}>{e}</span>
                     {c.over > 0 && <span className="rounded-full bg-warn-bg px-2 text-small text-warn">지남 ▲{c.over}</span>}
                     {c.soon > 0 && <span className={`rounded-full px-2 text-small ${on ? 'bg-white/20' : 'bg-tile text-ink-2'}`}>오늘 {c.soon}</span>}
@@ -120,13 +120,13 @@ export function PmAll() {
     <Band spec={pmBand({ over: c.over, soon: c.soon, week: c.week }, overEqs, rate, GOAL_PCT)} onAction={() => overEqs[0] && go('pm', overEqs[0])} />
     <section className="grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label="전체 장비 숫자">
       {kpis.map((k) => (
-        <div key={k.l} className="rounded-tile bg-tile px-3 py-2.5">
+        <div key={k.l} className="rounded-tile border border-line bg-white px-3 py-2.5">
           <div className={`text-small ${k.main && Number(k.v) > 0 ? 'font-bold text-warn' : 'text-ink-2'}`}>{k.main && Number(k.v) > 0 ? '▲ ' : ''}{k.l}</div>
           <div className={`font-mono text-num font-bold ${k.main && Number(k.v) > 0 ? 'text-warn' : 'text-ink'}`}>{k.v}<span className="ml-1 text-body font-normal text-ink-2">{k.u}</span></div>
           <div className="text-small text-ink-2">{k.s}</div>
         </div>
       ))}
-      <div className="rounded-tile bg-tile px-3 py-2.5">
+      <div className="rounded-tile border border-line bg-white px-3 py-2.5">
         <div className="text-small text-ink-2">실시율 · 9월</div>
         <div className={`font-mono text-num font-bold leading-tight ${rate !== null && rate < GOAL_PCT ? AMBER : ''}`}>{rate == null ? '—' : rate.toFixed(1)}<span className="text-body font-normal text-ink-2">%</span></div>
         <div className="relative my-1.5 h-2.5 rounded-full bg-track" role="img" aria-label={`실시율 ${rate ?? '—'}%, 목표 ${GOAL_PCT}%`}>
@@ -319,7 +319,7 @@ export function PmScreen({ eq }: { eq: string }) {
 
       {/* 오른쪽 정비 진행 3단계 */}
       <aside className="flex flex-col gap-3 rounded-tile border border-line-soft bg-tile p-3 lg:sticky lg:top-0" aria-label="정비 진행">
-        <h3 className="text-card font-bold">정비 진행 <span className="font-mono text-small font-normal text-ink-2">{eq}</span></h3>
+        <h3 className="flex items-center gap-2.5 text-card font-bold"><SecIcon title="정비 진행" size={32} />정비 진행 <span className="font-mono text-small font-normal text-ink-2">{eq}</span></h3>
         {!canDo ? (<>
           <span className={`${CHIP} w-fit bg-track text-ink-2`}>보기 전용</span>
           <p className="text-small text-ink-2">정비 시작·끝과 실시 기록은 보전 담당자가 합니다.</p>

@@ -37,9 +37,9 @@ function Part({ p, id, viewerRole }: { p: AlarmCardPart; id: string; viewerRole:
               const mine = s.role === viewerRole;
               return (
                 <li key={i} className="flex items-start gap-2">
-                  <span aria-label={`${s.no}단계`} className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full font-semibold ${s.no.length > 2 ? 'text-[12px]' : 'text-[15px]'} ${mine ? 'bg-violet-600 text-white' : 'bg-white text-slate-800 shadow-sm'}`}>{s.no}</span>
+                  <span aria-label={`${s.no}단계`} className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full font-semibold ${s.no.length > 2 ? 'text-[12px]' : 'text-[15px]'} ${mine ? 'bg-blue-600 text-white' : 'bg-white text-slate-800 shadow-sm'}`}>{s.no}</span>
                   <p className="m-0 min-w-0 flex-1">
-                    <span className={`mr-1.5 inline-block whitespace-nowrap rounded-lg px-2 py-0.5 text-[13px] font-semibold ${mine ? 'bg-violet-100 text-violet-700' : 'bg-slate-100 text-slate-600'}`}>{s.label}</span>
+                    <span className={`mr-1.5 inline-block whitespace-nowrap rounded-lg px-2 py-0.5 text-[13px] font-semibold ${mine ? 'bg-blue-100 text-blue-700' : 'bg-slate-100 text-slate-600'}`}>{s.label}</span>
                     <Inline text={s.text} />
                   </p>
                 </li>
@@ -74,13 +74,13 @@ function Sources({ sources }: { sources: AlarmAnswerCardProps['sources'] }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="flex flex-col gap-2 text-[12px]">
-      <button type="button" aria-expanded={open} onClick={() => setOpen((v) => !v)} className="w-fit underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-600">
+      <button type="button" aria-expanded={open} onClick={() => setOpen((v) => !v)} className="w-fit underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600">
         {open ? '▾ 출처:' : '▸ 출처'}
       </button>
       {open && (
         <div className="flex flex-wrap gap-x-1 gap-y-2">
           {sources.map((s, i) => (
-            <button key={i} type="button" onClick={s.onClick} className="underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-600">
+            <button key={i} type="button" onClick={s.onClick} className="underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600">
               {s.label} {s.docNo}{s.rev ? ` ${s.rev}` : ''} §{s.section}
             </button>
           ))}

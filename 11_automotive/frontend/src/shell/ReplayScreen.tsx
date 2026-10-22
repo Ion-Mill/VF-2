@@ -3,6 +3,7 @@
 // 3D에는 실시간 대신 그 시각의 상태·재공·병목을 넣는다 (ctx.setReplay). 센서는 10/1 실시간 기록만 (9월 센서 CSV는 생성 안 됨).
 // 구성 (2026-10-19 정비 탭 구조 수정): "그 시각" 결론 띠(시각 · 무슨 일 · 완제품 · 가동) → 왼쪽 사건 목록 | 오른쪽 그 시각 라인(설비 카드 + 재공) + 타임라인(시각으로 가기 · 사건 표시 · 상태 띠 · 굵기 · 재생).
 // 다이얼·[실시간] 버튼은 뺐다. 다른 화면으로 가면 3D는 실시간으로 돌아온다(아래 setReplay(null)).
+import { SecIcon, ToneTag } from './ui';
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useApp } from "./ctx";
 import { CAUSE_KO, LAYOUT, STATE_VIEW, stateOf } from "./data";
@@ -53,16 +54,28 @@ interface Ev {
   chain: boolean;
 }
 
-// 상태 색 = 하단 공통 범례(data.ts LEGEND)와 같은 색. 휴식(P02)만 공통 범례에 없어 대기 색 빗금
+// 상태 색 = 다시 보기 전용 파스텔 (사용자 요청 2026-10-21 "타임라인 색이 너무 별로, 다른 계열로"):
+// 가공은 초록 대신 파랑, 대기는 아주 옅게 물러나게, 고장 · 막힘만 빨강 · 주황 계열. 3D 아래 공통 범례(data.ts LEGEND)와는 다르다.
+// 휴식(P02)은 대기 색 빗금. 타임라인 막대만 이 파스텔, 설비 카드 글자 · 아이콘(ST_INK)은 앱 공용 상태 색 (사용자 선택 2026-10-22 "카드 아이콘 글자만")
 const ST_COLOR: Record<string, string> = {
-  RUN: "#1fbf63",
-  IDLE: "#8a97a4",
-  SETUP: "#3b82f6",
-  BLOCKED: "#e8954a",
-  MAINT: "#6b7580",
-  DOWN: "#e5484d",
+  RUN: "#7aa5f5",
+  IDLE: "#e2e8f0",
+  SETUP: "#8fd3e0",
+  BLOCKED: "#f4c27f",
+  MAINT: "#b8a6ee",
+  DOWN: "#ef8f9b",
 };
-const REST = "repeating-linear-gradient(45deg,#8a97a4 0 2px,#e3e7eb 2px 6px)";
+// tailwind.config.ts 토큰과 같은 값: ok(가공) · brand(준비) · warn(막힘 · 주의) · crit(고장) · 회색(대기 · 정비 — data.ts STATE_VIEW와 같이)
+const ST_INK: Record<string, { ink: string; tile: string }> = {
+  RUN: { ink: "#157a4f", tile: "#e6f6ef" },
+  IDLE: { ink: "#56667d", tile: "#eef2f7" },
+  SETUP: { ink: "#2a55b8", tile: "#e5effe" },
+  BLOCKED: { ink: "#a35a0c", tile: "#fff3e3" },
+  MAINT: { ink: "#56667d", tile: "#eef2f7" },
+  DOWN: { ink: "#c23042", tile: "#fdecee" },
+  WARN: { ink: "#a35a0c", tile: "#fff3e3" },
+};
+const REST = "repeating-linear-gradient(45deg,#cfd8e4 0 2px,#f3f6fa 2px 6px)";
 const segBg = (r: { state_code: string; reason_code: string | null }) =>
   r.state_code === "IDLE" && r.reason_code === "P02"
     ? REST
@@ -81,7 +94,7 @@ const EV_VIEW: Record<Ev["kind"], { icon: string; color: string }> = {
   WARN: { icon: "▲", color: "#b07400" },
   GUIDE: { icon: "i", color: "#8a97a4" },
   OK: { icon: "✓", color: "#13994f" },
-  BN: { icon: "◆", color: "#5a3bc8" },
+  BN: { icon: "◆", color: "#2a55b8" },
 };
 const EV_RANK: Record<Ev["kind"], number> = {
   STOP: 0,
@@ -364,11 +377,8 @@ export function ReplayScreen() {
   };
   const runNow = EQS.filter((eq) => segAt(eq, t)?.state_code === "RUN").length;
   const tone = stop ? "crit" : warn ? "warn" : "ok";
-  const BAND: Record<string, string> = {
-    crit: "border-crit-line bg-crit-bg", // 디자인 통일 C안 결론 띠 색
-    warn: "border-warn-line bg-warn-bg",
-    ok: "border-ok-line bg-ok-bg",
-  };
+  // 결론 띠 = 흰 카드 + 왼쪽 상태 태그 (화이트 카드 · 파스텔 블루, 2026-10-21 — 색은 태그에만)
+  const TONE_WORD: Record<string, string> = { crit: "정지", warn: "주의", ok: "정상" };
   const KEY: Record<string, string> = {
     crit: "text-crit",
     warn: "text-warn",
@@ -388,17 +398,20 @@ export function ReplayScreen() {
     const step = t1 - t0 > 12 * 36e5 ? 2 * 36e5 : 36e5;
     for (let h = Math.ceil(t0 / step) * step; h <= t1; h += step) ticks.push(h);
   }
-  const box = "rounded-card border border-line bg-white";
+  const box = "rounded-card border border-line bg-white shadow-card";
 
   return (
     <div className="absolute bottom-3 left-4 right-4 top-3 flex flex-col gap-3 overflow-hidden text-small">
       {/* 결론 띠: 시각 · 무슨 일 · 완제품 · 가동 */}
       <section
-        className={`grid shrink-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-6 gap-y-2 rounded-card border px-5 py-3 ${BAND[tone]}`}
+        className="grid shrink-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-6 gap-y-2 rounded-card border border-line bg-white px-5 py-3 shadow-card"
         aria-live="polite"
       >
-        <div className="font-mono text-band font-bold">
-          {md(simIso(t))} {hm(simIso(t))}
+        <div className="flex items-center gap-3">
+          <ToneTag tone={tone}>{TONE_WORD[tone]}</ToneTag>
+          <span className="font-mono text-band font-bold">
+            {md(simIso(t))} {hm(simIso(t))}
+          </span>
         </div>
         <div className="min-w-0">
           <div className="text-band font-bold">
@@ -486,7 +499,7 @@ export function ReplayScreen() {
         <aside className={`${box} relative`} aria-label="사건 목록">
           <div className="absolute inset-0 flex flex-col">
             <div className="flex items-baseline gap-2 px-4 pb-2 pt-3">
-              <h3 className="text-card font-bold">사건 목록</h3>
+              <h3 className="flex items-center gap-2.5 text-card font-bold"><SecIcon title="사건 목록" size={32} />사건 목록</h3>
               <span className="text-ink-2">{events.length}건</span>
             </div>
             <ol
@@ -545,7 +558,7 @@ export function ReplayScreen() {
             className={`${box} shrink-0 px-5 pb-4 pt-3 [--g:10px] xl:[--g:24px]`}
             aria-label="그 시각 라인"
           >
-            <h3 className="text-card font-bold">그 시각 라인</h3>
+            <h3 className="flex items-center gap-2.5 text-card font-bold"><SecIcon title="그 시각 라인" size={32} />그 시각 라인</h3>
             <div className="mt-4 grid grid-cols-6 gap-[var(--g)]">
               {EQS.map((eq) => {
                 const s = segAt(eq, t),
@@ -566,57 +579,40 @@ export function ReplayScreen() {
                   : wn
                     ? STATE_VIEW.WARN
                     : STATE_VIEW[st];
+                const k = down ? "DOWN" : wn ? "WARN" : st,
+                  tone = ST_INK[k] ?? ST_INK.IDLE,
+                  mins = s ? Math.max(0, Math.round((t - Date.parse(s.start_at)) / 60000)) : null;
                 return (
                   <div
                     key={eq}
-                    className={`relative flex min-h-[104px] w-full min-w-0 max-w-[100px] flex-col items-center justify-center justify-self-center gap-1.5 rounded-tile p-2.5 text-center ${down ? "-translate-y-1 border-2 border-crit bg-crit-bg shadow-lg" : wn ? "border-2 border-warn-mark bg-warn-bg" : run ? "border border-line bg-white" : "border border-dashed border-line bg-tile"}`}
+                    className={`relative flex min-h-[136px] min-w-0 flex-col gap-3 rounded-card border bg-gradient-to-b from-white to-[#f7faff] p-4 ${down ? "-translate-y-1 border-crit shadow-[inset_0_1px_0_#fff,0_0_0_1px_#c23042,0_16px_30px_-14px_rgba(194,48,66,.55)]" : wn ? "border-warn-line shadow-[inset_0_1px_0_#fff,0_14px_28px_-16px_rgba(163,90,12,.45)]" : "border-line shadow-[inset_0_1px_0_#fff,0_1px_2px_rgba(27,42,65,.05),0_12px_26px_-16px_rgba(27,42,65,.32)]"}`}
                   >
                     {(down || wn) && (
                       <span
-                        className={`absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full px-2 py-0.5 text-small font-bold text-white ${down ? "bg-crit" : "bg-warn"}`}
+                        className={`absolute -top-3 right-3 whitespace-nowrap rounded-[7px] px-2 py-0.5 text-[13px] font-bold text-white ${down ? "bg-crit" : "bg-warn"}`}
                       >
                         {down ? "그 시각 알람" : "주의"}
                       </span>
                     )}
-                    <b
-                      className={`max-w-full truncate font-mono text-card ${run || down || wn ? "" : "text-ink-2"}`}
-                    >
-                      {eq}
-                    </b>
-                    <div>
-                      <div
-                        className="whitespace-nowrap text-band font-bold leading-tight xl:text-band"
-                        style={{
-                          color: run || down || wn ? v.color : "#8a97a4",
-                        }}
-                      >
-                        {v.icon} {wn ? "주의" : v.text}
-                      </div>
-                      {al && (
-                        <div
-                          className="font-mono text-small font-semibold"
-                          style={{ color: v.color }}
-                          title={alarmName(al.alarm_code)}
-                        >
-                          알람 {al.alarm_code}
+                    <b className={`max-w-full truncate font-mono text-card ${run || down || wn ? "text-ink" : "text-ink-2"}`}>{eq}</b>
+                    <div className="flex min-w-0 items-center gap-2.5">
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-tile text-[18px] font-bold" style={{ background: tone.tile, color: tone.ink }} aria-hidden="true">
+                        {v.icon}
+                      </span>
+                      <div className="min-w-0">
+                        <div className="truncate text-band font-bold leading-tight" style={{ color: tone.ink }}>
+                          {wn ? "주의" : v.text}
                         </div>
-                      )}
+                        {al && (
+                          <div className="truncate font-mono text-small font-semibold" style={{ color: tone.ink }} title={alarmName(al.alarm_code)}>
+                            알람 {al.alarm_code}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <div className="max-w-full truncate text-small text-ink-2">
-                      {s ? (
-                        <>
-                          이 상태{" "}
-                          <b className="font-mono">
-                            {Math.max(
-                              0,
-                              Math.round((t - Date.parse(s.start_at)) / 60000),
-                            )}
-                          </b>
-                          분째
-                        </>
-                      ) : (
-                        ""
-                      )}
+                    <div className="mt-auto flex items-baseline justify-between gap-2 border-t border-line-soft pt-2 text-small text-ink-2">
+                      <span>이 상태</span>
+                      {mins != null && <span><b className="font-mono text-card text-ink">{mins}</b>분째</span>}
                     </div>
                   </div>
                 );
@@ -668,7 +664,7 @@ export function ReplayScreen() {
             aria-label="타임라인"
           >
             <div className="flex flex-wrap items-center gap-3">
-              <h3 className="text-card font-bold">타임라인</h3>
+              <h3 className="flex items-center gap-2.5 text-card font-bold"><SecIcon title="타임라인" size={32} />타임라인</h3>
               {/* 시각으로 가기: 날짜·시각만 고른다. 불러오는 범위는 그 시각이 속한 교대 (shiftOf) */}
               <div className="relative">
                 <button
@@ -736,7 +732,7 @@ export function ReplayScreen() {
                       <button
                         type="submit"
                         disabled={!draft.d || !draft.tm}
-                        className="h-8 rounded-ctl bg-ink px-3 font-semibold text-white disabled:bg-line"
+                        className="h-8 rounded-ctl bg-brand px-3 font-semibold text-white hover:bg-brand-ink disabled:bg-line"
                       >
                         이동
                       </button>
@@ -768,7 +764,7 @@ export function ReplayScreen() {
                       key={v}
                       onClick={() => setSpeed(v)}
                       aria-pressed={speed === v}
-                      className={`h-7 rounded-full px-3 text-small ${speed === v ? "bg-ink font-semibold text-white" : "text-ink hover:bg-white"}`}
+                      className={`h-7 rounded-full px-3 text-small ${speed === v ? "bg-brand-tint font-semibold text-brand-ink" : "text-ink hover:bg-white"}`}
                     >
                       {l}
                     </button>
@@ -861,7 +857,7 @@ export function ReplayScreen() {
                           <div
                             key={i}
                             title={`${r.state_code === "IDLE" && r.reason_code === "P02" ? "휴식" : STATE_VIEW[stateOf(r)].text} ${hm(r.start_at)}~${hm(r.end_at)}`}
-                            className="absolute top-0 h-full opacity-80"
+                            className="absolute top-0 h-full"
                             style={{
                               left: `${pct(Date.parse(r.start_at))}%`,
                               width: `${Math.max(0.2, pct(Date.parse(r.end_at)) - pct(Date.parse(r.start_at)))}%`,
@@ -896,7 +892,7 @@ export function ReplayScreen() {
               {LEG.map(([k, bg]) => (
                 <span key={k} className="flex items-center gap-1">
                   <i
-                    className="inline-block h-2.5 w-4 rounded opacity-80"
+                    className="inline-block h-2.5 w-4 rounded"
                     style={{ background: bg }}
                   />
                   {k}

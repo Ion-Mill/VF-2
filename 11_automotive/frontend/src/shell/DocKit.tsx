@@ -1,16 +1,17 @@
 'use client';
 // 문서 7종(지침카드·작업지시서·작업기록서·간이 작업기록·교대·일일 보고서·수정 이력)이 같이 쓰는 모양 부품.
-// 결론 띠 → 칸 카드 → 접기 → 출처 순서. 디자인 통일 C안(2026-10-20) 모양 — 새 화면은 ui.tsx 부품을 쓰고, 이 파일은 옮겨 가며 지운다.
+// 결론 띠 → 칸 카드 → 접기 → 출처 순서. 화이트 카드 · 파스텔 블루(2026-10-21) 모양 — 새 화면은 ui.tsx 부품을 쓰고, 이 파일은 옮겨 가며 지운다.
 import type { ReactNode } from 'react';
 import { PAGE } from './ctx';
+import { SecIcon } from './ui';
 
 export type Tone = 'crit' | 'warn' | 'ok' | 'acc' | 'solid-crit' | 'solid-warn' | 'mute';
 const CHIP: Record<Tone, string> = {
   crit: 'bg-crit-bg text-crit', warn: 'bg-warn-bg text-warn', ok: 'bg-ok-bg text-ok', acc: 'bg-info-bg text-info',
-  'solid-crit': 'bg-crit-bg text-crit', 'solid-warn': 'bg-warn-bg text-warn', mute: 'border border-line bg-white text-info', // C안 9장: 채운 칩 쓰지 않음
+  'solid-crit': 'bg-crit-bg text-crit', 'solid-warn': 'bg-warn-bg text-warn', mute: 'border border-line bg-white text-ink-2', // 채운 칩 쓰지 않음 (옅은 바탕 태그)
 };
 export function Chip({ tone = 'mute', mono, children }: { tone?: Tone; mono?: boolean; children: ReactNode }) {
-  return <span className={`inline-flex min-h-[26px] items-center gap-1 whitespace-nowrap rounded-full px-2.5 text-small font-semibold ${CHIP[tone]} ${mono ? 'font-mono' : ''}`}>{children}</span>;
+  return <span className={`inline-flex min-h-[26px] items-center gap-1 whitespace-nowrap rounded-[7px] px-2.5 text-small font-semibold ${CHIP[tone]} ${mono ? 'font-mono' : ''}`}>{children}</span>;
 }
 export const RO = <Chip>보기 전용</Chip>;
 
@@ -20,54 +21,57 @@ export function DocPage({ children, width = 960 }: { children: ReactNode; width?
 }
 export function DocHead({ title, sub, right }: { title: ReactNode; sub?: ReactNode; right?: ReactNode }) {
   return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-      <h2 className="text-title font-bold">{title}</h2>
-      {sub && <span className="text-small text-ink-2">{sub}</span>}
+    <div className="flex flex-wrap items-end gap-x-3 gap-y-2 pt-2">
+      <div className="min-w-0"><h2 className="text-[26px] font-bold leading-tight tracking-[-.02em]">{title}</h2>
+        {sub && <div className="mt-0.5 text-small text-ink-2">{sub}</div>}</div>
       {right && <div className="ml-auto flex flex-wrap items-center gap-2">{right}</div>}
     </div>
   );
 }
 // 상태 단계 알약 (지금 단계 = 진하게)
 export function Steps({ list, cur }: { list: string[]; cur: number }) {
-  return <span className="flex flex-wrap gap-1">{list.map((s, i) => <span key={s} className={`rounded-full px-3 py-1 text-small ${i === cur ? 'bg-ink font-bold text-white' : i < cur ? 'bg-track text-ink-2' : 'border border-line text-ink-2'}`}>{s}</span>)}</span>;
+  return <span className="flex flex-wrap gap-1">{list.map((s, i) => <span key={s} className={`rounded-full px-3 py-1 text-small ${i === cur ? 'bg-brand-tint font-bold text-brand-ink' : i < cur ? 'bg-track text-ink-2' : 'border border-line text-ink-2'}`}>{s}</span>)}</span>;
 }
 export function InfoRow({ children, right }: { children?: ReactNode; right?: ReactNode }) {
   return <div className="flex flex-wrap items-center gap-2 text-body">{children}{right && <div className="ml-auto flex flex-wrap items-center gap-2">{right}</div>}</div>;
 }
-// 결론 띠: 이 문서의 핵심 한 줄 + 설명 + 칩 + 버튼
-const BAND: Record<'crit' | 'warn' | 'ok' | 'mute', string> = {
-  crit: 'border-crit-line bg-crit-bg', warn: 'border-warn-line bg-warn-bg', ok: 'border-ok-line bg-ok-bg', mute: 'border-line bg-white',
+// 결론 띠 = 머리 카드: 흰 카드 + 왼쪽 상태 아이콘 칸(색은 여기만) + 핵심 한 줄 + 설명 + 칩 + 버튼
+const BAND: Record<'crit' | 'warn' | 'ok' | 'mute', [string, string]> = {
+  crit: ['bg-crit-bg text-crit', '⚠'], warn: ['bg-warn-bg text-warn', '▲'], ok: ['bg-ok-bg text-ok', '✓'], mute: ['bg-info-bg text-info', 'ⓘ'],
 };
 export function Band({ tone, title, desc, chips, children }: { tone: keyof typeof BAND; title: ReactNode; desc?: ReactNode; chips?: ReactNode; children?: ReactNode }) {
   return (
-    <section className={`flex flex-col gap-1.5 rounded-card border px-4 py-3.5 ${BAND[tone]}`}>
-      <div className="text-band font-bold leading-snug">{title}</div>
-      {desc && <div className="text-card text-ink-2">{desc}</div>}
-      {chips && <div className="flex flex-wrap items-center gap-1.5">{chips}</div>}
-      {children}
+    <section className="flex items-start gap-4 rounded-card border border-line bg-white p-6 shadow-card">
+      <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-ctl text-[20px] font-bold ${BAND[tone][0]}`} aria-hidden="true">{BAND[tone][1]}</span>
+      <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+        <div className="text-[22px] font-bold leading-snug tracking-[-.02em]">{title}</div>
+        {desc && <div className="text-card text-ink-2">{desc}</div>}
+        {chips && <div className="flex flex-wrap items-center gap-1.5">{chips}</div>}
+        {children}
+      </div>
     </section>
   );
 }
 // 칸 카드: 제목 + 오른쪽 칩 + 내용
 export function Sec({ title, right, children }: { title: ReactNode; right?: ReactNode; children?: ReactNode }) {
   return (
-    <section className="rounded-card border border-line bg-white">
-      <div className="flex flex-wrap items-center gap-2 px-4 py-3"><h3 className="text-card font-bold">{title}</h3>{right && <div className="ml-auto flex flex-wrap items-center gap-1.5">{right}</div>}</div>
-      {children !== undefined && children !== null && children !== false && <div className="px-4 pb-4">{children}</div>}
+    <section className="rounded-card border border-line bg-white shadow-card">
+      <div className="flex flex-wrap items-center gap-2.5 px-5 py-4"><SecIcon title={title} /><h3 className="text-card font-bold">{title}</h3>{right && <div className="ml-auto flex flex-wrap items-center gap-1.5">{right}</div>}</div>
+      {children !== undefined && children !== null && children !== false && <div className="px-5 pb-5">{children}</div>}
     </section>
   );
 }
 export function Fold({ summary, children, open }: { summary: ReactNode; children: ReactNode; open?: boolean }) {
   return (
-    <details open={open} className="group rounded-card border border-line bg-white">
-      <summary className="flex min-h-[48px] cursor-pointer list-none items-center gap-2 px-4 text-body font-semibold text-info hover:bg-tile"><span className="transition group-open:rotate-90">▸</span>{summary}</summary>
-      <div className="px-4 pb-4 text-body">{children}</div>
+    <details open={open} className="group rounded-card border border-line bg-white shadow-card">
+      <summary className="flex min-h-[48px] cursor-pointer list-none items-center gap-2 px-5 text-body font-semibold text-info hover:bg-tile"><span className="transition group-open:rotate-90">▸</span>{summary}</summary>
+      <div className="px-5 pb-5 text-body">{children}</div>
     </details>
   );
 }
 export function Kpi({ label, value, unit, sub, tone }: { label: ReactNode; value: ReactNode; unit?: ReactNode; sub?: ReactNode; tone?: 'main' | 'bad' | 'ok' }) {
   return (
-    <div className="flex min-w-0 flex-col rounded-tile bg-tile px-3 py-2.5">{/* C안: 채운 칸·강조 테두리 없음 (main도 같은 회색 칸) */}
+    <div className="flex min-w-0 flex-col rounded-tile border border-line bg-white px-4 py-3">{/* 흰 칸 + 선 (main도 같은 칸, 강조는 결론 띠) */}
       <span className="text-small text-ink-2">{label}</span>
       <span className={`font-mono text-num font-bold tabular-nums ${tone === 'bad' ? 'text-crit' : tone === 'ok' ? 'text-ok' : 'text-ink'}`}>{value}{unit && <small className="ml-1 font-sans text-body font-normal text-ink-2">{unit}</small>}</span>
       {sub && <span className="text-small text-ink-2">{sub}</span>}
@@ -75,14 +79,14 @@ export function Kpi({ label, value, unit, sub, tone }: { label: ReactNode; value
   );
 }
 export function Bar({ pct, tone, outline }: { pct: number; tone?: 'ok'; outline?: boolean }) {
-  return <div className={`h-1.5 rounded-[3px] bg-track ${outline ? 'box-content border border-line' : ''}`}><div className={`h-full rounded-[3px] ${tone === 'ok' ? 'bg-ok' : 'bg-bar'}`} style={{ width: `${Math.max(0, Math.min(100, pct))}%` }} /></div>;
+  return <div className={`h-1.5 rounded-[3px] bg-track ${outline ? 'box-content border border-line' : ''}`}><div className={`h-full rounded-[3px] ${tone === 'ok' ? 'bg-ok' : 'bg-brand-line'}`} style={{ width: `${Math.max(0, Math.min(100, pct))}%` }} /></div>;
 }
 // 번호 목록 (큰 번호 동그라미)
 export function NumList({ items, start = 1, big }: { items: string[]; start?: number; big?: boolean }) {
   return (
     <ol className="flex flex-col gap-2">{items.map((s, i) => (
       <li key={i} className={`grid grid-cols-[30px_minmax(0,1fr)] items-start gap-3 ${big ? 'text-card' : 'text-card'}`}>
-        <span className={`flex h-[28px] w-[28px] items-center justify-center rounded-full font-mono text-body font-bold ${big ? 'bg-ink text-white' : 'border border-line bg-white text-ink'}`}>{start + i}</span>
+        <span className={`flex h-[28px] w-[28px] items-center justify-center rounded-full font-mono text-body font-bold ${big ? 'bg-brand-tint text-brand-ink' : 'border border-line bg-white text-ink'}`}>{start + i}</span>
         <span className="pt-0.5 leading-relaxed">{s}</span>
       </li>))}</ol>
   );

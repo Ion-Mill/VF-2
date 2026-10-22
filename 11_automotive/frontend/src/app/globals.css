@@ -2,9 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-html,body{margin:0;height:100%;background:#f2f3f5;}
-a{color:#5a3bc8;}
-a:hover{color:#43299e;}
+html,body{margin:0;height:100%;background:#f5f8fc;}
+a{color:#2a55b8;}
+a:hover{color:#1f4596;}
 canvas{outline:none;display:block;}
 @keyframes introTitle{0%{opacity:0;transform:translateY(14px) scale(.98)}
 12%{opacity:0;transform:translateY(14px) scale(.98)}
@@ -44,7 +44,9 @@ canvas{outline:none;display:block;}
 }
 
 
-body{font-family:'Noto Sans KR Variable','Noto Sans KR',system-ui,sans-serif;}
+body{font-family:'Pretendard Variable',Pretendard,system-ui,'Malgun Gothic',sans-serif;}
+.font-mono{font-variant-numeric:tabular-nums;} /* mono = 같은 Pretendard, 숫자 폭만 맞춤 (2026-10-21) */
+h1,h2,h3{letter-spacing:-.01em;}
 
 /* 데이터적용본: 화면 설정 "계산한 크기로 글자 키우기" (UI설계서 2.4 식) — 현장 보기 띠·3D 이름표 */
 .fs-scaled aside { font-size: var(--fs-body); }
@@ -55,13 +57,19 @@ body{font-family:'Noto Sans KR Variable','Noto Sans KR',system-ui,sans-serif;}
 .ma-panel { top: 60px; bottom: 46px; }
 .ma-fab { bottom: 70px; } /* 아래 범례 유리 줄(46px) 위 (시안 3a, 2026-10-20) */
 /* 이브 버튼 왼쪽 작은 채팅창 (사용자 요청 2026-10-20) — 이브 버튼(64px, 오른쪽 24px) 왼쪽에 붙은 흰 알약 */
-.ma-quick { position: fixed; right: 100px; bottom: 78px; z-index: calc(var(--ma-z) + 1); display: flex; align-items: center; gap: 6px; width: min(340px, calc(100vw - 140px)); height: 48px; padding: 0 5px 0 18px; border-radius: 9999px; background: rgba(255,255,255,.94); border: 1px solid #dcdde1; box-shadow: 0 8px 24px rgba(28,37,48,.16); backdrop-filter: blur(12px); }
-.ma-quick input { flex: 1; min-width: 0; border: 0; background: transparent; font-size: 15px; color: #26303a; outline: none; }
-.ma-quick input::placeholder { color: #8a94a3; }
-.ma-quick:focus-within { border-color: #6a43e0; box-shadow: 0 0 0 3px #f0ebff, 0 8px 24px rgba(28,37,48,.16); }
-.ma-quick button { display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; flex: none; border: 0; border-radius: 9999px; background: #6a43e0; color: #fff; cursor: pointer; }
-.ma-quick button:disabled { background: #e8eaed; color: #6b7380; cursor: default; }
+.ma-quick { position: fixed; right: 100px; bottom: 78px; z-index: calc(var(--ma-z) + 1); display: flex; align-items: center; gap: 6px; width: min(340px, calc(100vw - 140px)); height: 48px; padding: 0 5px 0 18px; border-radius: 9999px; background: #fff; border: 1px solid #e3e9f2; box-shadow: 0 10px 26px -14px rgba(27,42,65,.35); }
+.ma-quick input { flex: 1; min-width: 0; border: 0; background: transparent; font-size: 15px; color: #1b2a41; outline: none; }
+.ma-quick input::placeholder { color: #7d8ca1; }
+.ma-quick:focus-within { border-color: #cbdcfb; box-shadow: 0 0 0 3px #e5effe, 0 10px 26px -14px rgba(27,42,65,.35); }
+.ma-quick button { display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; flex: none; border: 0; border-radius: 9999px; background: #3d6fe0; color: #fff; cursor: pointer; }
+.ma-quick button:disabled { background: #edf1f7; color: #9fb4d6; cursor: default; }
 .ma-menu, .ma-toast { bottom: 146px; }
+/* 이브 메뉴 4개를 크게 (사용자 요청 2026-10-21) — 위젯 기본 48px 동그라미·13px 글자 */
+.ma-menu { gap: 16px; }
+.ma-menu-item { gap: 12px; }
+.ma-menu-label { height: 40px; padding: 0 18px; border-radius: 20px; font-size: 16px; }
+.ma-menu-icon { width: 64px; height: 64px; }
+.ma-menu-badge { min-width: 24px; height: 24px; border-radius: 12px; font-size: 12px; }
 /* 어두운 창 안의 기존 탭 내용 (밝은 화면용 Tailwind 색) */
 .ma-panel .text-slate-400, .ma-panel .text-slate-500 { color: var(--ma-panel-mute); }
 .ma-panel .text-slate-700 { color: var(--ma-panel-sub); }
@@ -72,10 +80,16 @@ body{font-family:'Noto Sans KR Variable','Noto Sans KR',system-ui,sans-serif;}
 .ma-panel option { color: #15191C; }
 
 /* 스크롤바 색은 테마에 맞춤 (페이지구조 v3 공통 규칙) */
-* { scrollbar-width: thin; scrollbar-color: #c3cad3 transparent; }
+* { scrollbar-width: thin; scrollbar-color: #c7d3e3 transparent; }
 .ma-panel * { scrollbar-color: rgba(255, 255, 255, 0.25) transparent; }
 
 /* 실버 필 테마(2026-10-16)는 디자인 통일 C안으로 걷어냄 (2026-10-20) — 흰 평면 카드 · 선 1px · 차콜 선택 */
+/* 진행 중 막대에만 빛이 3초마다 한 번 지나감 (로트 추적 공정 길, 2026-10-21 — 예전 보라 .bar-glow를 바꿈) */
+.bar-shine{overflow:hidden;}
+.bar-shine::after{content:"";position:absolute;inset:0;width:40%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.7),transparent);animation:barShine 3s ease-in-out infinite;}
+@keyframes barShine{0%{transform:translateX(-100%)}60%,100%{transform:translateX(260%)}}
+@media (prefers-reduced-motion:reduce){.bar-shine::after{animation:none;display:none;}}
+
 /* 다시 보기 카드: 가공 = 흐르는 빛 (2026-10-17) */
 @keyframes rpSheen{0%{transform:translateX(-150%) rotate(20deg)}100%{transform:translateX(450%) rotate(20deg)}}
 .rp-sheen{animation:rpSheen 3.2s ease-in-out infinite}
@@ -86,19 +100,19 @@ body{font-family:'Noto Sans KR Variable','Noto Sans KR',system-ui,sans-serif;}
 @media (prefers-reduced-motion:reduce){.eve-glow{animation:none}}
 
 /* 이브 창 시안 4b (사용자 선택 2026-10-20): 연보라 바탕 · 흰 알약 탭(선택 = 차콜) · 동그란 닫기. 이브 얼굴은 그대로 */
-.ma-panel{--ma-panel-fg:#1f1b33;--ma-panel-sub:#4b4766;--ma-panel-mute:#6b6683;--ma-panel-line:#ddd5f7;background:#f3f1fb!important;color:#1f1b33;border:2px solid #d9ccff;border-radius:28px;box-shadow:0 20px 50px rgba(80,60,160,.18)}
+.ma-panel{--ma-panel-fg:#1b2a41;--ma-panel-sub:#56667d;--ma-panel-mute:#7d8ca1;--ma-panel-line:#dbe5f3;background:#f5f8fc!important;color:#1b2a41;border:2px solid #cbdcfb;border-radius:28px;box-shadow:0 20px 50px rgba(27,42,65,.18)}
 .ma-panel .ma-panel-head{height:64px;border-bottom:0;padding:0 14px 0 20px}
 .ma-panel .ma-panel-title{font-size:18px}
-.ma-panel .ma-icon-btn{width:40px;height:40px;border-radius:50%;background:#fff;color:#3d3955;box-shadow:0 1px 3px rgba(40,30,80,.12)}
-.ma-panel .ma-icon-btn:hover,.ma-panel .hover\:bg-slate-50:hover,.ma-panel .hover\:bg-slate-100:hover,.ma-panel .hover\:bg-white\/10:hover{background:rgba(60,40,140,.06)}
-.ma-panel .ma-tabs{margin:0 14px 4px;padding:5px;border:0;background:#fff;border-radius:999px;gap:4px;box-shadow:0 1px 3px rgba(40,30,80,.08)}
-.ma-panel .ma-tab{height:40px;border:0;border-radius:999px;font-size:14px;color:#3d3955}
-.ma-panel .ma-tab[aria-selected="true"]{background:#26303a;color:#fff;border:0}
+.ma-panel .ma-icon-btn{width:40px;height:40px;border-radius:50%;background:#fff;color:#3a4a61;box-shadow:0 1px 3px rgba(27,42,65,.12)}
+.ma-panel .ma-icon-btn:hover,.ma-panel .hover\:bg-slate-50:hover,.ma-panel .hover\:bg-slate-100:hover,.ma-panel .hover\:bg-white\/10:hover{background:rgba(30,70,150,.06)}
+.ma-panel .ma-tabs{margin:0 14px 4px;padding:5px;border:0;background:#fff;border-radius:999px;gap:4px;box-shadow:0 1px 3px rgba(27,42,65,.08)}
+.ma-panel .ma-tab{height:40px;border:0;border-radius:999px;font-size:14px;color:#3a4a61}
+.ma-panel .ma-tab[aria-selected="true"]{background:#1b2a41;color:#fff;border:0}
 .ma-panel .ma-tab-badge{background:none;color:#e5484d;min-width:0;height:auto;padding:0;font-size:14px}
-.ma-panel .border-slate-200,.ma-panel .border-slate-300,.ma-panel .border-white\/25{border-color:#ddd5f7}
-.ma-panel select,.ma-panel input:not(.ma-input){background:#fff;color:#26303a}
+.ma-panel .border-slate-200,.ma-panel .border-slate-300,.ma-panel .border-white\/25{border-color:#dbe5f3}
+.ma-panel select,.ma-panel input:not(.ma-input){background:#fff;color:#1b2a41}
 .ma-panel .text-\[\#9a6200\]{color:#9a6200}
-.ma-panel *{scrollbar-color:rgba(60,40,140,.25) transparent}
+.ma-panel *{scrollbar-color:rgba(30,70,150,.25) transparent}
 
 /* 재공 판은 3D 바닥 글자로 바꿈 (2026-10-19) — 떠 있는 판 숨김 */
 [data-tier="wip"]{display:none!important}
@@ -108,28 +122,38 @@ body{font-family:'Noto Sans KR Variable','Noto Sans KR',system-ui,sans-serif;}
 .ma-panel.ma-side{animation:ma-rise .28s cubic-bezier(.2,.9,.25,1.15) both;transform-origin:bottom right} /* 팝업은 이브 버튼 쪽에서 떠오름 */
 .ma-root.is-panel .ma-fab{display:flex;right:24px} /* 팝업이 열려도 이브 버튼은 오른쪽 구석 그대로 (누르면 닫힘) */
 
-/* 네온 바이올렛 포인트 (사용자 선택 2026-10-19): 이브 위젯의 라임 자리를 보라로. 차콜·상태색은 그대로 */
-.ma-root{--ma-lime:#b79cff;--ma-lime-ring:#6a43e0}
+/* 이브 위젯 포인트 (라임 자리) = 옅은 파랑 (2026-10-21, 예전 네온 바이올렛을 바꿈) */
+.ma-root{--ma-lime:#9dbcf4;--ma-lime-ring:#3d6fe0}
 
 /* 이브 채팅 입력 = 팀원 '새 채팅 시안' (사용자 선택 2026-10-20): 흰 둥근 알약 입력창 · 동그란 보내기. 예전 모양은 구현_중_수정사항/백업_1020_이브패널/globals.css */
 .ma-panel .ma-compose{border-top:0;padding:6px 14px 16px}
-.ma-panel .ma-compose-box{border:0;border-radius:999px;background:#fff;box-shadow:0 4px 14px rgba(40,30,80,.12);padding:6px 6px 6px 18px}
-.ma-panel .ma-compose-box:focus-within{box-shadow:0 0 0 2px var(--ma-lime-ring),0 4px 14px rgba(40,30,80,.12)}
-.ma-panel .ma-input{height:44px;color:#1f1b33}
-.ma-panel .ma-input::placeholder{color:#8a879a}
-.ma-panel .ma-send{width:44px;height:44px;border-radius:50%;background:#26303a;color:#b79cff}
+.ma-panel .ma-compose-box{border:0;border-radius:999px;background:#fff;box-shadow:0 4px 14px rgba(27,42,65,.12);padding:6px 6px 6px 18px}
+.ma-panel .ma-compose-box:focus-within{box-shadow:0 0 0 2px var(--ma-lime-ring),0 4px 14px rgba(27,42,65,.12)}
+.ma-panel .ma-input{height:44px;color:#1b2a41}
+.ma-panel .ma-input::placeholder{color:#7d8ca1}
+.ma-panel .ma-send{width:44px;height:44px;border-radius:50%;background:#1b2a41;color:#9dbcf4}
 
 /* 채팅 마이크 버튼 (2026-10-20): 누르고 있는 동안 녹음. 서버의 음성 스위치가 켜졌을 때만 보인다 */
-.ma-panel .ma-mic{width:44px;height:44px;border-radius:50%;background:transparent;color:#4b4766;display:inline-flex;align-items:center;justify-content:center;flex:none;touch-action:none;user-select:none;-webkit-user-select:none}
-.ma-panel .ma-mic:hover:not(:disabled){background:#f1eefb}
+.ma-panel .ma-mic{width:44px;height:44px;border-radius:50%;background:transparent;color:#56667d;display:inline-flex;align-items:center;justify-content:center;flex:none;touch-action:none;user-select:none;-webkit-user-select:none}
+.ma-panel .ma-mic:hover:not(:disabled){background:#eef4fd}
 .ma-panel .ma-mic.is-rec{background:#c62a2f;color:#fff;box-shadow:0 0 0 4px rgba(198,42,47,.25)}
 .ma-panel .ma-mic:disabled{opacity:.4;cursor:not-allowed}
-.ma-panel .ma-voice-note{margin:0 6px 8px;text-align:center;font-size:12.5px;line-height:1.45;color:#4b4766}
+.ma-panel .ma-voice-note{margin:0 6px 8px;text-align:center;font-size:12.5px;line-height:1.45;color:#56667d}
 
 /* 이브 창 시안 2 · 보통 바이올렛 (사용자 선택 2026-10-21): 퓨어 실버 창 + 연보라 테두리. 보라는 링크·칩·선택 탭 점·체크 칸·[보기] 테두리에만 (위 시안 4b의 연보라 바탕을 덮음) */
-.ma-panel{background:linear-gradient(180deg,#fbfbfc 0%,#f1f2f5 100%)!important;border:2px solid #d9ccff;box-shadow:0 20px 50px rgba(28,37,48,.16);--ma-panel-line:#e3e4e8}
-.ma-panel .border-slate-200,.ma-panel .border-slate-300,.ma-panel .border-white\/25{border-color:#e3e4e8}
-.ma-panel .ma-tab[aria-selected="true"]::after{content:'';display:inline-block;width:6px;height:6px;margin-left:8px;border-radius:50%;background:#b79cff;vertical-align:middle}
-.ma-panel .ma-check{appearance:none;-webkit-appearance:none;margin:0;border:1.5px solid #cfc2f7;border-radius:8px;background:#fff;cursor:pointer}
-.ma-panel .ma-check:checked{border-color:#26303a;background:#26303a url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7'/%3E%3C/svg%3E") center/16px no-repeat}
-.ma-panel .ma-check:focus-visible{outline:2px solid #6a43e0;outline-offset:2px}
+.ma-panel{background:linear-gradient(180deg,#ffffff 0%,#f5f8fc 100%)!important;border:2px solid #cbdcfb;box-shadow:0 20px 50px rgba(28,37,48,.16);--ma-panel-line:#e3e9f2}
+.ma-panel .border-slate-200,.ma-panel .border-slate-300,.ma-panel .border-white\/25{border-color:#e3e9f2}
+.ma-panel .ma-tab[aria-selected="true"]::after{content:'';display:inline-block;width:6px;height:6px;margin-left:8px;border-radius:50%;background:#9dbcf4;vertical-align:middle}
+.ma-panel .ma-check{appearance:none;-webkit-appearance:none;margin:0;border:1.5px solid #c7d6f5;border-radius:8px;background:#fff;cursor:pointer}
+.ma-panel .ma-check:checked{border-color:#1b2a41;background:#1b2a41 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7'/%3E%3C/svg%3E") center/16px no-repeat}
+.ma-panel .ma-check:focus-visible{outline:2px solid #3d6fe0;outline-offset:2px}
+
+/* 재고 · 문서 묶음 화면만 글자 한 단계 크게 (사용자 요청 2026-10-22 "가독성 좋게") — App.tsx가 그 화면 틀에 .fs-up을 붙임. 15→16 · 16→17 · 17→20 · 20→22 · 22→24 */
+.fs-up { font-size: 17px; }
+.fs-up .text-small { font-size: 16px; }
+.fs-up .text-body { font-size: 17px; }
+.fs-up .text-card { font-size: 20px; }
+.fs-up .text-band { font-size: 22px; }
+.fs-up .text-title { font-size: 24px; }
+.fs-up .text-\[12px\] { font-size: 13px; }
+.fs-up .text-\[13px\] { font-size: 14px; }

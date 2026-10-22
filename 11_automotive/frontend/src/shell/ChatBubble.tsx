@@ -22,7 +22,7 @@ export function FixedFold({ title, fold, rest, defaultOpen = false }: { title: s
   return (
     <section aria-labelledby={`${uid}-h`} className="flex flex-col gap-2">
       <h3 id={`${uid}-h`} className={HEADING}>
-        <button type="button" aria-expanded={open} aria-controls={`${uid}-b`} onClick={() => setOpen((v) => !v)} className="cursor-pointer text-left font-bold focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-600">
+        <button type="button" aria-expanded={open} aria-controls={`${uid}-b`} onClick={() => setOpen((v) => !v)} className="cursor-pointer text-left font-bold focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600">
           {open ? '▾ ' : '▸ '}{title}
         </button>
       </h3>
@@ -56,13 +56,13 @@ function PlainSources({ sources, openSource }: { sources: ChatRow['sources']; op
   const [open, setOpen] = useState(false);
   return (
     <div className="flex flex-col gap-2 text-[12px]">
-      <button type="button" aria-expanded={open} onClick={() => setOpen((v) => !v)} className="w-fit underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-600">
+      <button type="button" aria-expanded={open} onClick={() => setOpen((v) => !v)} className="w-fit underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600">
         {open ? '▾ 출처:' : '▸ 출처'}
       </button>
       {open && (
         <div className="flex flex-wrap gap-x-1 gap-y-2">
           {sources.map((s, i) => (
-            <button key={i} type="button" onClick={() => openSource(s.doc_no, s.section)} className="underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-600">
+            <button key={i} type="button" onClick={() => openSource(s.doc_no, s.section)} className="underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600">
               {s.doc_name} {s.doc_no} {s.rev} §{s.section}
             </button>
           ))}
@@ -110,5 +110,5 @@ export function HistoryItem({ q, when, onOpen }: { q: string; when: string; onOp
 export function Spark({ v, w = 80, h = 18 }: { v: number[]; w?: number; h?: number }) {
   if (v.length < 2) return <span>—</span>;
   const lo = Math.min(...v), hi = Math.max(...v), r = hi - lo || 1;
-  return <svg width={w} height={h} className="inline align-middle"><polyline fill="none" stroke="#7a52f0" strokeWidth="1.5" points={v.map((x, i) => `${(i / (v.length - 1)) * w},${h - 1 - ((x - lo) / r) * (h - 2)}`).join(' ')} /></svg>;
+  return <svg width={w} height={h} className="inline align-middle"><polyline fill="none" stroke="#3d6fe0" strokeWidth="1.5" points={v.map((x, i) => `${(i / (v.length - 1)) * w},${h - 1 - ((x - lo) / r) * (h - 2)}`).join(' ')} /></svg>;
 }

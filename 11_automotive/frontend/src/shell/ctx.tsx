@@ -37,6 +37,7 @@ export interface AppCtx {
   rules: { repeat_days: number; repeat_count: number; target_risk_pct: number; repeat2_days: number; burst: string; flood: string };
   restoreMachine: (m: MachineId) => Promise<void>;
   setReplay: (frame: unknown | null) => void;
+  bandOff: string[]; // 홈 알림 띠에서 X로 닫은 주의 알람 id
   eve: boolean; // 이브 창 열림 (화면 폭 444px 줄어듦)
 }
 
@@ -50,6 +51,6 @@ export const useApp = () => {
 // 공통 버튼 모양 (터치 크기 44px 이상, 2.4)
 // 디자인 통일 C안 (2026-10-20): 값만 먼저 토큰으로 — 화면을 ui.tsx 부품(Btn·Page·Sec)으로 바꾸면서 지운다
 export const BTN = 'h-11 rounded-ctl border border-line bg-white px-4 text-body font-semibold text-ink hover:bg-tile disabled:cursor-not-allowed disabled:bg-track disabled:text-bar disabled:hover:bg-track';
-export const DARK = 'h-11 rounded-ctl bg-ink px-4 text-body font-semibold text-white hover:bg-black disabled:cursor-not-allowed disabled:bg-track disabled:text-bar';
+export const DARK = 'h-11 rounded-ctl bg-brand px-4 text-body font-semibold text-white hover:bg-brand-ink disabled:cursor-not-allowed disabled:bg-track disabled:text-bar';
 export const PAGE = 'absolute inset-0 overflow-y-auto bg-ground p-4';
-export const CARD = 'rounded-card border border-line bg-white p-4';
+export const CARD = 'rounded-card border border-line bg-white p-4 shadow-card';

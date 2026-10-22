@@ -24,7 +24,7 @@ from . import records as R
 from . import stage4 as S4
 from .calendar import extend_calendar
 from .common import KST, ROOT, Out, _cell, at, fmt_dt, load_config, load_masters
-from .flow import MNT_BY_SHIFT, OPR_BY_PROC
+from .flow import MNT_BY_SHIFT, OPR_BY_PROC, Hold
 from .past import run_once, search_t05
 from .pm import PROC, next_due
 from .plan import MaintWindow, PlannedAlarm
@@ -116,6 +116,8 @@ class Realtime:
                     t.change_pt = float(rt_tools.uniform(lo, hi)) / 100.0
         self.sim, self.rng = sim, rng
         self.rr = rng.stream("rt-events")
+        self.rp = rng.stream("rt-preview")                       # 알림 미리보기 버튼 (사건 버튼 난수와 따로)
+        self.fix_plan: list[dict] = []                           # 미리보기 '정비': 고장 뒤 보전 담당이 수리 정비로 들어갈 차례
         self.m = self.N                                          # 다음에 돌릴 분
         self.ms = 0                                              # 다음 분까지 쌓인 시뮬레이터 밀리초
         self.speed = self.rt["default_speed"]
@@ -263,6 +265,45 @@ class Realtime:
         self._op("inject", scenario_code=code, equipment_id=eq)
         self._emit("event_started", at=fmt_dt(self.now()), scenario_code=code, equipment_id=eq, name=sc["name"])
         return {k: v for k, v in ev.items() if k != "window"}
+
+    # ---------- 알림 미리보기 버튼 (화면 담당 확인용, 2026-10-21) ----------
+    PREVIEW_EQ = {"OP-10": ["SAW-01"], "OP-20": ["MIL-01"], "OP-30": ["VF2-01", "VF2-02"], "OP-40": ["WSH-01"], "OP-50": ["CMM-01"]}
+
+    def fire(self, kind: str) -> dict:
+        """지금 분에 알람 하나를 일으킨다. warn = 주의 아무거나, stop = 고장(정지 등급) 아무거나, air = 120 공기압,
+        maint = 고장 3분 뒤 보전 담당이 수리 정비(MAINT 20~40분, 사유는 그 고장)로 들어감. 누를 수 없으면 ValueError(이유)."""
+        if kind not in ("warn", "stop", "air", "maint"):
+            raise ValueError("kind는 warn·stop·air·maint 중 하나")
+        if self.paused or self.m >= self.end_m:
+            raise ValueError("시연이 멈춰 있습니다 — [시연 ▾]에서 다시 돌리세요")
+        if not self.sim.cal.is_work(self.m):                    # 휴식·휴무 분에는 설비가 서 있어 알람이 근무 재개 때까지 밀린다
+            raise ValueError("지금은 휴식·휴무 시간이라 알람이 바로 나지 않습니다 — 근무 시간에 다시 누르거나 [시연 ▾]에서 넘기세요")
+        sev = "WARN" if kind in ("warn", "air") else "STOP"
+        pool = [a for a in self.M["alarm_master"] if a["severity"] == sev] if kind != "air" else             [a for a in self.M["alarm_master"] if a["alarm_code"] == "120"]
+        up = lambda e: self.sim.mach[e].cur_state[0] != "DOWN"   # 이미 고장 난 설비는 피한다 (정비가 그 고장 뒤로 밀림)
+        pool = [x for x in pool if any(up(e) for e in self.PREVIEW_EQ[x["process_code"]])] or pool
+        a = pool[int(self.rp.integers(len(pool)))]
+        eqs = [e for e in self.PREVIEW_EQ[a["process_code"]] if up(e)] or self.PREVIEW_EQ[a["process_code"]]
+        eq = eqs[int(self.rp.integers(len(eqs)))]
+        self._plan_alarm(PlannedAlarm(self.m, eq, a["alarm_code"], sev, True))
+        if kind == "maint":
+            self.fix_plan.append({"eq": eq, "at": self.m + 3, "dur": int(self.rp.integers(20, 41)), "until": self.m + 60})
+        self._op("preview", kind=kind, alarm_code=a["alarm_code"], equipment_id=eq)
+        return {"kind": kind, "alarm_code": a["alarm_code"], "name_ko": a["name_ko"], "equipment_id": eq, "at": fmt_dt(self.now())}
+
+    def _fix_to_maint(self, m: int):
+        """미리보기 '정비': 고장(DOWN)을 끝내고(알람 해제) 같은 분에 수리 정비(MAINT)를 시작한다."""
+        for f in list(self.fix_plan):
+            mc = self.sim.mach[f["eq"]]
+            if m < f["at"]:
+                continue
+            if mc.holds and mc.holds[0].kind == "DOWN":
+                h = mc.holds[0]
+                h.end = m                                        # 고장 끝(알람 해제) → 같은 분에 수리 정비, 사유는 그 고장 그대로
+                mc.holds.insert(1, Hold("MAINT", h.reason, end=m + f["dur"], wall=True))
+                self.fix_plan.remove(f)
+            elif m >= f["until"]:
+                self.fix_plan.remove(f)                          # 알람이 끝내 안 났으면 버림
 
     def _plan_alarm(self, p: PlannedAlarm):
         q = self.sim.alarm_plan[p.equipment_id]
@@ -459,6 +500,8 @@ class Realtime:
     def _minute(self) -> list[dict]:
         sim, m = self.sim, self.m
         n0 = len(self.events)
+        if self.fix_plan:
+            self._fix_to_maint(m)
         sim.step(m)
         cal = sim.cal
         t = fmt_dt(cal.to_dt(m))

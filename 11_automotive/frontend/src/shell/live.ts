@@ -72,14 +72,17 @@ export const minsSince = (iso: string | null | undefined) => (iso ? Math.max(0, 
 
 export function useLive() {
   const [twin, setTwin] = useState<Twin | null>(null);
-  const [connected, setConnected] = useState(false);
+  const [connected, setConnected] = useState(true); // 첫 응답 전에 '연결 끊김' 띠가 번쩍이지 않게 — 3번 연속 실패해야 끊김
   const [lastOk, setLastOk] = useState<string | null>(null);
   const seq = useRef(0);
   const run = useRef<number | null>(null);
   const subs = useRef(new Set<(e: SimEvent[]) => void>());
   const fails = useRef(0);
+  const busy = useRef(false);
 
   const pull = useCallback(async () => {
+    if (busy.current) return; // 서버가 잠깐 느릴 때 1초마다 요청이 쌓이지 않게
+    busy.current = true;
     try {
       const t = await api<Twin>('line/twin');
       SIM.at = Date.parse(t.clock.sim_at); SIM.real = Date.now(); SIM.speed = t.clock.speed; SIM.paused = t.clock.paused;
@@ -92,6 +95,8 @@ export function useLive() {
     } catch {
       fails.current += 1;
       if (fails.current >= 3) setConnected(false); // 3번 연속 실패 = 연결 끊김 (2.8)
+    } finally {
+      busy.current = false;
     }
   }, []);
 

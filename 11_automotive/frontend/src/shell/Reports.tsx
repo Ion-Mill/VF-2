@@ -244,7 +244,7 @@ export function DailyReportScreen() {
                 <div className="flex min-w-0 flex-col gap-1.5 rounded-tile border border-line bg-white px-3 py-2">
                   <span className="text-small text-ink-2">주간 / 야간</span>
                   {sum > 0 ? <div className="mt-auto flex h-8 overflow-hidden whitespace-nowrap rounded-tile text-small font-semibold" role="img" aria-label={`주간 ${dq}개, 야간 ${nq}개`}>
-                    <span className="flex min-w-0 items-center bg-ink px-2 text-white" style={{ width: `${(dq / sum) * 100}%` }}>주간 {dq}</span>
+                    <span className="flex min-w-0 items-center bg-brand px-2 text-white" style={{ width: `${(dq / sum) * 100}%` }}>주간 {dq}</span>
                     <span className="flex min-w-0 items-center bg-tile px-2 text-ink" style={{ width: `${(nq / sum) * 100}%` }}>야간 {nq}{night?.status !== 'CONFIRMED' ? ' (잠정)' : ''}</span>
                   </div> : <span className="text-body text-ink-2">—</span>}
                 </div>

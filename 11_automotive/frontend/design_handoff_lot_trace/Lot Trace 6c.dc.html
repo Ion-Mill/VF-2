@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap">
+<style>
+body{margin:0;background:#EEF1F8;-webkit-font-smoothing:antialiased}
+a{color:#3F5FE0;text-decoration:none}
+a:hover{color:#2E48B8}
+input::placeholder{color:#A3A8B3}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(92,127,255,.55)}70%{box-shadow:0 0 0 8px rgba(92,127,255,0)}100%{box-shadow:0 0 0 0 rgba(92,127,255,0)}}
+@keyframes barIn{from{transform:scaleX(0);opacity:0}to{transform:scaleX(1);opacity:1}}
+@keyframes nowGlow{0%,100%{opacity:.55}50%{opacity:1}}
+</style>
+</helmet>
+<div style="min-height:100vh;word-break:keep-all;font-family:'Pretendard Variable',Pretendard,system-ui,sans-serif;color:#16181D;background:linear-gradient(180deg,#FFFFFF 0%,#F2F4FA 55%,#EAEEF7 100%);padding:0 0 64px">
+
+  <header style="max-width:1360px;margin:0 auto;padding:22px 32px 6px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
+    <div style="display:flex;align-items:center;gap:14px">
+      <div style="width:30px;height:30px;border-radius:9px;background:#5C7FFF;box-shadow:0 6px 16px -6px rgba(92,127,255,.7), inset 0 1px 0 rgba(255,255,255,.4)"></div>
+      <div style="display:flex;align-items:center;gap:10px;font-size:14px">
+        <span style="font-weight:700;letter-spacing:-0.01em;white-space:nowrap">Lot Trace</span>
+        <span style="color:#B4B8C2">/</span>
+        <span style="color:#6B7080">추적</span>
+        <span style="color:#B4B8C2">/</span>
+        <span style="font-family:'JetBrains Mono',monospace;white-space:nowrap;font-size:13px;color:#16181D">LOT-2610-003-1</span>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:#6B7080;padding:7px 12px;border-radius:999px;background:rgba(255,255,255,0.6);border:1px solid rgba(255,255,255,0.9)">
+      <span style="width:6px;height:6px;border-radius:50%;background:#22B07D"></span>
+      <span style="white-space:nowrap">실시간 · 10/2 08:00 기준</span>
+    </div>
+  </header>
+
+  <main style="max-width:1360px;margin:0 auto;padding:14px 32px 0;display:flex;flex-direction:column;gap:18px">
+
+    <section style="position:relative;overflow:hidden;border-radius:24px;background:rgba(255,255,255,0.92);border:1px solid rgba(255,255,255,0.95);box-shadow:inset 0 1px 0 #fff, 0 1px 2px rgba(16,24,40,.04), 0 24px 48px -24px rgba(40,36,90,.18);padding:28px 32px 26px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex-wrap:wrap">
+        <div style="display:flex;flex-direction:column;gap:12px;min-width:0">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <span style="white-space:nowrap;display:inline-flex;align-items:center;gap:8px;padding:5px 12px 5px 10px;border-radius:999px;background:rgba(92,127,255,0.10);color:#3F5FE0;font-size:12.5px;font-weight:600">
+              <span style="width:7px;height:7px;border-radius:50%;background:#5C7FFF;animation:pulse 1.8s ease-out infinite"></span>
+              생산 중
+            </span>
+            <span style="font-size:13px;color:#6B7080;white-space:nowrap">OP-50 판정 <span style="font-family:'JetBrains Mono',monospace;white-space:nowrap;color:#16181D;font-weight:600">9 / 24</span></span>
+          </div>
+          <h1 style="margin:0;white-space:nowrap;font-size:clamp(30px,4vw,44px);line-height:1.05;font-weight:800;letter-spacing:-0.035em"><span>LOT-2610-</span><span style="color:#5C7FFF">003-1</span></h1>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <span style="font-family:'JetBrains Mono',monospace;white-space:nowrap;font-size:12px;font-weight:500;padding:5px 10px;border-radius:8px;background:rgba(22,24,29,0.05);color:#3A3E48">PO-2610-003</span>
+            <span style="font-family:'JetBrains Mono',monospace;white-space:nowrap;font-size:12px;font-weight:500;padding:5px 10px;border-radius:8px;background:rgba(22,24,29,0.05);color:#3A3E48">MAT-2609-11</span>
+          </div>
+        </div>
+        <button style="white-space:nowrap;flex-shrink:0;display:inline-flex;align-items:center;gap:10px;padding:13px 20px;border-radius:14px;border:none;cursor:pointer;font-family:inherit;font-size:14.5px;font-weight:700;color:#fff;background:#26282F;box-shadow:inset 0 1px 0 rgba(255,255,255,.12), 0 0 0 1px rgba(92,127,255,.35), 0 12px 28px -10px rgba(92,127,255,.55)" style-hover="transform:translateY(-1px)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2.5"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+          생산 중 · 출하 금지
+        </button>
+      </div>
+
+      <div style="margin-top:26px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="height:4px;border-radius:4px;background:#5C7FFF"></div>
+          <div style="font-size:12px;color:#8A8F9C;font-family:'JetBrains Mono',monospace">OP-10 · SAW-01</div>
+          <div style="font-size:14px;font-weight:600">절단 <span style="color:#5C7FFF">✓</span></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="height:4px;border-radius:4px;background:#5C7FFF"></div>
+          <div style="font-size:12px;color:#8A8F9C;font-family:'JetBrains Mono',monospace">OP-20 · MIL-01</div>
+          <div style="font-size:14px;font-weight:600">황삭 <span style="color:#5C7FFF">✓</span></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="height:4px;border-radius:4px;background:#5C7FFF"></div>
+          <div style="font-size:12px;color:#8A8F9C;font-family:'JetBrains Mono',monospace">OP-30 · VF2-01/02</div>
+          <div style="font-size:14px;font-weight:600">정밀 가공 <span style="color:#5C7FFF">✓</span></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="height:4px;border-radius:4px;background:#5C7FFF"></div>
+          <div style="font-size:12px;color:#8A8F9C;font-family:'JetBrains Mono',monospace">OP-40 · WSH-01</div>
+          <div style="font-size:14px;font-weight:600">디버링·세척 <span style="color:#5C7FFF">✓</span></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="height:4px;border-radius:4px;background:rgba(22,24,29,0.08);overflow:hidden"><div style="width:37.5%;height:100%;border-radius:4px;background:#5C7FFF;box-shadow:0 0 10px rgba(92,127,255,.8)"></div></div>
+          <div style="font-size:12px;color:#8A8F9C;font-family:'JetBrains Mono',monospace">OP-50 · CMM-01</div>
+          <div style="font-size:14px;font-weight:600;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap">측정 <span style="font-family:'JetBrains Mono',monospace;white-space:nowrap;font-size:12px;color:#3F5FE0;font-weight:600">9 / 24 판정</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section style="border-radius:24px;background:rgba(255,255,255,0.78);border:1px solid rgba(255,255,255,0.95);box-shadow:inset 0 1px 0 #fff, 0 1px 2px rgba(16,24,40,.04), 0 18px 40px -24px rgba(40,36,90,.16);padding:22px 24px;display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <span style="font-size:14px;font-weight:700;margin-right:4px;white-space:nowrap">번호로 찾기</span>
+        <div style="flex:0 1 340px;min-width:220px;display:flex;align-items:center;gap:10px;padding:0 14px;height:44px;border-radius:13px;background:#F4F5F8;border:1px solid rgba(22,24,29,0.06);box-shadow:inset 0 1px 2px rgba(16,24,40,.04)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9AA0AC" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+          <input value="{{ q }}" onChange="{{ onQ }}" placeholder="LOT · MAT · SHP 번호" style="flex:1;min-width:0;border:none;outline:none;background:transparent;font-family:'JetBrains Mono',monospace;white-space:nowrap;font-size:13px;color:#16181D">
+        </div>
+        <button style="white-space:nowrap;flex-shrink:0;height:44px;padding:0 22px;border:none;border-radius:13px;cursor:pointer;font-family:inherit;font-size:14px;font-weight:700;color:#fff;background:#5C7FFF;box-shadow:inset 0 1px 0 rgba(255,255,255,.3), 0 10px 22px -10px rgba(92,127,255,.8)" style-hover="filter:brightness(1.06)">찾기</button>
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-left:6px">
+          <span style="font-size:12.5px;color:#8A8F9C;margin-right:2px">예시</span>
+          <button onClick="{{ ex1 }}" style="white-space:nowrap;cursor:pointer;font-family:'JetBrains Mono',monospace;white-space:nowrap;font-size:12px;padding:7px 11px;border-radius:999px;border:1px solid rgba(22,24,29,0.08);background:#fff;color:#3A3E48" style-hover="border-color:rgba(92,127,255,.5);color:#3F5FE0">MAT-2609-11</button>
+          <button onClick="{{ ex2 }}" style="white-space:nowrap;cursor:pointer;font-family:'JetBrains Mono',monospace;white-space:nowrap;font-size:12px;padding:7px 11px;border-radius:999px;border:1px solid rgba(22,24,29,0.08);background:#fff;color:#3A3E48" style-hover="border-color:rgba(92,127,255,.5);color:#3F5FE0">SHP-2609-001</button>
+          <button onClick="{{ ex3 }}" style="white-space:nowrap;cursor:pointer;font-family:'JetBrains Mono',monospace;white-space:nowrap;font-size:12px;padding:7px 11px;border-radius:999px;border:1px solid rgba(22,24,29,0.08);background:#fff;color:#3A3E48" style-hover="border-color:rgba(92,127,255,.5);color:#3F5FE0">LOT-2609-001-1</button>
+        </div>
+      </div>
+
+      <div style="border-radius:18px;background:#F3F4F7;border:1px solid rgba(22,24,29,0.04);padding:18px;display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:12px;flex:0 0 auto;flex-shrink:0">
+          <div style="padding:10px 14px;border-radius:13px;background:#26282F;color:#fff;display:flex;flex-direction:column;gap:2px;box-shadow:0 10px 20px -12px rgba(0,0,0,.5)">
+            <span style="font-size:11px;color:#A6A9B4">원자재</span>
+            <span style="font-family:'JetBrains Mono',monospace;white-space:nowrap;font-size:13px;font-weight:600">MAT-2609-11</span>
+          </div>
+          <div style="width:28px;height:2px;border-radius:2px;background:#26282F"></div>
+          <span style="font-size:12.5px;font-weight:600;color:#3A3E48;white-space:nowrap">생산 로트</span>
+        </div>
+        <div style="flex:1;min-width:280px;display:flex;flex-wrap:wrap;gap:8px">
+          <div style="display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:12px;background:#fff;border:1px solid rgba(22,24,29,0.07);cursor:pointer" style-hover="transform:translateY(-1px);box-shadow:0 8px 16px -10px rgba(16,24,40,.25)">
+            <span style="font-family:'JetBrains Mono',monospace;white-space:nowrap;font-size:12.5px;font-weight:600">LOT-2609-128-3</span>
+            <span style="white-space:nowrap;display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;color:#178A63"><span style="width:6px;height:6px;border-radius:50%;background:#22B07D"></span>합격</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:12px;background:#fff;border:1px solid rgba(22,24,29,0.07);cursor:pointer" style-hover="transform:translateY(-1px);box-shadow:0 8px 16px -10px rgba(16,24,40,.25)">
+            <span style="font-family:'JetBrains Mono',monospace;white-space:nowrap;font-size:12.5px;font-weight:600">LOT-2609-129-1</span>
+            <span style="white-space:nowrap;display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;color:#178A63"><span style="width:6px;height:6px;border-radius:50%;background:#22B07D"></span>합격</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:12px;background:#fff;border:1px solid rgba(22,24,29,0.07);cursor:pointer" style-hover="transform:translateY(-1px);box-shadow:0 8px 16px -10px rgba(16,24,40,.25)">
+            <span style="font-family:'JetBrains Mono',monospace;white-space:nowrap;font-size:12.5px;font-weight:600">LOT-2610-001-1</span>
+            <span style="white-space:nowrap;display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;color:#178A63"><span style="width:6px;height:6px;border-radius:50%;background:#22B07D"></span>합격</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:12px;background:#fff;border:1px solid rgba(22,24,29,0.07);cursor:pointer" style-hover="transform:translateY(-1px);box-shadow:0 8px 16px -10px rgba(16,24,40,.25)">
+            <span style="font-family:'JetBrains Mono',monospace;white-space:nowrap;font-size:12.5px;font-weight:600">LOT-2610-001-2</span>
+            <span style="white-space:nowrap;display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;color:#178A63"><span style="width:6px;height:6px;border-radius:50%;background:#22B07D"></span>합격</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:12px;background:#FFF7E8;border:1px solid #F2CB8C;cursor:pointer" style-hover="transform:translateY(-1px);box-shadow:0 8px 16px -10px rgba(200,130,20,.4)">
+            <span style="font-family:'JetBrains Mono',monospace;white-space:nowrap;font-size:12.5px;font-weight:600;color:#7A4A00">LOT-2610-002-1</span>
+            <span style="white-space:nowrap;display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;color:#A86200"><span style="width:6px;height:6px;border-radius:50%;background:#F0A23B"></span>판정 대기</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:12px;border:1.5px solid #5C7FFF;background:#fff;box-shadow:0 10px 22px -12px rgba(92,127,255,.7);cursor:pointer">
+            <span style="font-family:'JetBrains Mono',monospace;white-space:nowrap;font-size:12.5px;font-weight:700">LOT-2610-003-1</span>
+            <span style="white-space:nowrap;display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;color:#3F5FE0"><span style="width:6px;height:6px;border-radius:50%;background:#5C7FFF;animation:pulse 1.8s ease-out infinite"></span>생산 중</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:12px;background:rgba(255,255,255,0.4);border:1px dashed rgba(22,24,29,0.2);cursor:pointer" style-hover="background:#fff">
+            <span style="font-family:'JetBrains Mono',monospace;white-space:nowrap;font-size:12.5px;font-weight:600;color:#3A3E48">LOT-2610-004-1</span>
+            <span style="font-size:11.5px;font-weight:600;color:#6B7080;white-space:nowrap">생산 중</span>
+          </div>
+        </div>
+        <div style="flex-basis:100%;font-size:12px;color:#8A8F9C;padding-left:2px">원자재 1 : 생산 로트 7 <span style="font-family:'JetBrains Mono',monospace;white-space:nowrap;font-size:11.5px">(DOC-06 §7)</span></div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:28px;flex-wrap:wrap;padding:4px 4px 2px">
+        <div style="display:flex;flex-direction:column;gap:3px">
+          <span style="font-size:11.5px;color:#8A8F9C">LOT</span>
+          <span style="font-family:'JetBrains Mono',monospace;white-space:nowrap;font-size:15px;font-weight:700">LOT-2610-003-1</span>
+        </div>
+        <div style="width:1px;height:30px;background:rgba(22,24,29,0.08)"></div>
+        <div style="display:flex;flex-direction:column;gap:3px">
+          <span style="font-size:11.5px;color:#8A8F9C">작업지시</span>
+          <span style="font-size:15px"><span style="font-family:'JetBrains Mono',monospace;white-space:nowrap;font-weight:700">PO-2610-003</span> <span style="color:#6B7080;font-size:13px">· 10/01 야간</span></span>
+        </div>
+        <div style="width:1px;height:30px;background:rgba(22,24,29,0.08)"></div>
+        <div style="display:flex;flex-direction:column;gap:3px">
+          <span style="font-size:11.5px;color:#8A8F9C">원자재</span>
+          <span style="font-family:'JetBrains Mono',monospace;white-space:nowrap;font-size:15px;font-weight:700">MAT-2609-11</span>
+        </div>
+        <a href="#" style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;padding:8px 12px;border-radius:10px;background:rgba(92,127,255,0.08)">검사 발췌 <span>→</span></a>
+      </div>
+    </section>
+
+    <section style="border-radius:24px;background:rgba(255,255,255,0.82);border:1px solid rgba(255,255,255,0.95);box-shadow:inset 0 1px 0 #fff, 0 1px 2px rgba(16,24,40,.04), 0 18px 40px -24px rgba(40,36,90,.16);padding:22px 24px 18px">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:18px">
+        <div style="display:flex;align-items:baseline;gap:10px">
+          <h2 style="margin:0;font-size:16px;font-weight:700;letter-spacing:-0.01em">설비별 시간표</h2>
+          <span style="font-family:'JetBrains Mono',monospace;white-space:nowrap;font-size:12.5px;color:#8A8F9C">LOT-2610-003-1</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;font-size:12px;color:#6B7080">
+          <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:16px;height:8px;border-radius:3px;background:#5C7FFF"></span>이 로트</span>
+          <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:16px;height:8px;border-radius:3px;background:repeating-linear-gradient(135deg,rgba(240,82,82,.35) 0 3px,rgba(240,82,82,.12) 3px 6px)"></span>알람</span>
+          <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:0;height:12px;border-left:1.5px dashed #6B7080"></span>보류</span>
+          <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:2px;height:12px;border-radius:2px;background:#5C7FFF"></span>지금</span>
+        </div>
+      </div>
+
+      <div style="overflow-x:auto">
+        <div style="position:relative;min-width:860px">
+          <div style="display:grid;grid-template-columns:168px minmax(0,1fr);height:30px;align-items:end">
+            <div></div>
+            <div style="position:relative;height:100%">
+              <sc-for list="{{ hours }}" as="h" hint-placeholder-count="10">
+                <span style="position:absolute;bottom:8px;left:{{ h.left }};transform:{{ h.tx }};font-family:'JetBrains Mono',monospace;white-space:nowrap;font-size:11.5px;color:#8A8F9C;white-space:nowrap">{{ h.label }}</span>
+              </sc-for>
+            </div>
+          </div>
+          <div style="border-top:1px solid rgba(22,24,29,0.07)">
+            <sc-for list="{{ rows }}" as="r" hint-placeholder-count="6">
+              <div style="display:grid;grid-template-columns:168px minmax(0,1fr);height:{{ rowH }};border-bottom:1px solid rgba(22,24,29,0.05)">
+                <div style="display:flex;flex-direction:column;justify-content:center;gap:2px;padding-left:4px">
+                  <span style="font-family:'JetBrains Mono',monospace;white-space:nowrap;font-size:13px;font-weight:700">{{ r.eq }}</span>
+                  <span style="font-size:12px;color:#8A8F9C">{{ r.op }} {{ r.name }}</span>
+                </div>
+                <div style="position:relative;background-image:linear-gradient(to right, rgba(22,24,29,0.055) 1px, transparent 1px);background-size:{{ gridSize }} 100%;background-color:{{ r.bg }}">
+                  <sc-if value="{{ r.hasAlarm }}" hint-placeholder-val="{{ false }}">
+                    <div style="position:absolute;top:4px;bottom:4px;left:{{ r.alarmLeft }};width:{{ r.alarmWidth }};border-radius:6px;background:repeating-linear-gradient(135deg,rgba(240,82,82,.22) 0 4px,rgba(240,82,82,.08) 4px 8px);border:1px solid rgba(240,82,82,.35)"></div>
+                  </sc-if>
+                  <div onMouseEnter="{{ r.enter }}" onMouseLeave="{{ leave }}" style="position:absolute;top:50%;margin-top:{{ barOffset }};height:{{ barH }};left:{{ r.left }};width:{{ r.width }};border-radius:9px;background:#5C7FFF;box-shadow:inset 0 1px 0 rgba(255,255,255,.35), 0 8px 18px -8px rgba(92,127,255,.75);display:flex;align-items:center;padding:0 10px;box-sizing:border-box;cursor:pointer;transform-origin:left center;animation:barIn .7s cubic-bezier(.2,.8,.2,1) both;animation-delay:{{ r.delay }};z-index:1">
+                    <span style="font-family:'JetBrains Mono',monospace;white-space:nowrap;font-size:11.5px;font-weight:700;color:#fff;white-space:nowrap;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis">003-1 · {{ r.qty }}개</span>
+                    <sc-if value="{{ r.hovered }}" hint-placeholder-val="{{ false }}">
+                      <div style="position:absolute;left:0;bottom:calc(100% + 10px);min-width:200px;padding:12px 14px;border-radius:12px;background:rgba(22,24,29,0.94);color:#fff;box-shadow:0 16px 32px -12px rgba(0,0,0,.45);display:flex;flex-direction:column;gap:6px;z-index:5;pointer-events:none">
+                        <span style="font-family:'JetBrains Mono',monospace;white-space:nowrap;font-size:12px;font-weight:700">{{ r.eq }} <span style="color:#A6A9B4;font-weight:500">· {{ r.op }} {{ r.name }}</span></span>
+                        <span style="font-family:'JetBrains Mono',monospace;white-space:nowrap;font-size:12px;color:#D6D8E0">{{ r.s }} → {{ r.e }} <span style="color:#CCD7FF">({{ r.dur }})</span></span>
+                        <span style="font-size:12px;color:#D6D8E0">수량 {{ r.qty }}개</span>
+                      </div>
+                    </sc-if>
+                  </div>
+                  <sc-if value="{{ r.hasHold }}" hint-placeholder-val="{{ false }}">
+                    <div style="position:absolute;top:6px;bottom:6px;left:{{ r.holdLeft }};border-left:1.5px dashed #5F6472;z-index:2"></div>
+                    <span style="position:absolute;top:50%;transform:translateY(-50%);left:{{ r.holdLeft }};margin-left:8px;font-size:11px;font-weight:600;color:#3A3E48;padding:3px 7px;border-radius:6px;background:#fff;border:1px solid rgba(22,24,29,0.1);z-index:2">보류</span>
+                  </sc-if>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="position:absolute;top:22px;bottom:0;left:{{ nowLeft }};width:0;pointer-events:none;z-index:3">
+            <div style="position:absolute;top:0;left:50%;transform:translate(-50%,-100%);padding:3px 8px;border-radius:999px;background:#16181D;color:#fff;font-size:10.5px;font-weight:700;white-space:nowrap;box-shadow:0 6px 14px -6px transparent">지금 08:00</div>
+            <div style="position:absolute;top:0;bottom:0;left:-1px;width:2px;border-radius:2px;background:#16181D"></div>
+            <div style="position:absolute;top:0;bottom:0;left:-5px;width:10px;background:transparent;filter:blur(6px);animation:nowGlow 2.4s ease-in-out infinite"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;density&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;comfortable&quot;,&quot;compact&quot;],&quot;default&quot;:&quot;comfortable&quot;,&quot;tsType&quot;:&quot;'comfortable'|'compact'&quot;},&quot;showEvents&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  state = { hover: null, q: '' };
+  renderVals() {
+    const SPAN = 570;
+    const tm = t => { const [h, m] = t.split(':').map(Number); return h === 23 ? m : (h + 1) * 60 + m; };
+    const pct = v => (v / SPAN * 100).toFixed(3) + '%';
+    const compact = this.props.density === 'compact';
+    const events = this.props.showEvents ?? true;
+    const rowH = compact ? 46 : 60, barH = compact ? 24 : 30;
+    const data = [
+      { eq: 'SAW-01', op: 'OP-10', name: '절단', s: '00:00', e: '02:12', qty: 24 },
+      { eq: 'MIL-01', op: 'OP-20', name: '황삭', s: '01:27', e: '03:01', qty: 24 },
+      { eq: 'VF2-01', op: 'OP-30', name: '정밀 가공', s: '03:01', e: '04:42', qty: 12, alarm: ['03:46', '04:04'] },
+      { eq: 'VF2-02', op: 'OP-30', name: '정밀 가공', s: '03:15', e: '04:44', qty: 10 },
+      { eq: 'WSH-01', op: 'OP-40', name: '디버링·세척', s: '03:30', e: '04:45', qty: 14 },
+      { eq: 'CMM-01', op: 'OP-50', name: '측정', s: '03:54', e: '04:48', qty: 9, hold: '04:48' },
+    ];
+    const rows = data.map((d, i) => {
+      const a = tm(d.s), b = tm(d.e), dm = b - a;
+      return {
+        ...d,
+        left: pct(a), width: pct(dm),
+        dur: (dm >= 60 ? Math.floor(dm / 60) + 'h ' : '') + (dm % 60) + 'm',
+        bg: i % 2 ? 'rgba(244,245,248,0.6)' : 'transparent',
+        delay: (0.1 + i * 0.08) + 's',
+        hovered: this.state.hover === i,
+        enter: () => this.setState({ hover: i }),
+        hasAlarm: events && !!d.alarm,
+        alarmLeft: d.alarm ? pct(tm(d.alarm[0])) : '0', alarmWidth: d.alarm ? pct(tm(d.alarm[1]) - tm(d.alarm[0])) : '0',
+        hasHold: events && !!d.hold, holdLeft: d.hold ? pct(tm(d.hold)) : '0',
+      };
+    });
+    const hours = Array.from({ length: 9 }, (_, i) => ({
+      left: pct(i * 60),
+      tx: i === 0 ? 'none' : 'translateX(-50%)',
+      label: i === 0 ? '23:00' : i === 1 ? '10/2 00:00' : String(i - 1).padStart(2, '0') + ':00',
+    }));
+    const setQ = q => () => this.setState({ q });
+    return {
+      rows, hours,
+      rowH: rowH + 'px', barH: barH + 'px', barOffset: (-barH / 2) + 'px',
+      gridSize: (60 / SPAN * 100).toFixed(4) + '%',
+      nowLeft: `calc(168px + (100% - 168px) * ${(tm('08:00') / SPAN).toFixed(4)})`,
+      leave: () => this.setState({ hover: null }),
+      q: this.state.q,
+      onQ: e => this.setState({ q: e.target.value }),
+      ex1: setQ('MAT-2609-11'), ex2: setQ('SHP-2609-001'), ex3: setQ('LOT-2609-001-1'),
+    };
+  }
+}
+</script>
+</body>
+</html>

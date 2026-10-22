@@ -34,10 +34,10 @@ function setup(cv) {
       [[70, 205, 16], [40, 235, 10]].forEach(([x, y, r]) => { c.beginPath(); c.arc(x, y, r, 0, 7); c.fill(); c.stroke(); });
       if (kind.startsWith('dots')) { c.fillStyle = '#5b6570'; [120, 160, 200].forEach((x, i) => { c.globalAlpha = 0.35 + 0.65 * (((Date.now() / 300) | 0) % 3 === i ? 1 : 0); c.beginPath(); c.arc(x, 105, 11, 0, 7); c.fill(); }); c.globalAlpha = 1; }
       else if (kind === 'check') { c.strokeStyle = '#2f9e5b'; c.lineWidth = 18; c.lineCap = 'round'; c.lineJoin = 'round'; c.beginPath(); c.moveTo(115, 105); c.lineTo(150, 138); c.lineTo(210, 72); c.stroke(); }
-      else { const col = { card: '#6a43e0', code: '#c2570c', rec: '#2f9e5b' }[kind], lab = { card: '지침카드', code: '알람 코드집', rec: '정비 기록' }[kind];
+      else { const col = { card: '#3d6fe0', code: '#c2570c', rec: '#2f9e5b' }[kind], lab = { card: '지침카드', code: '알람 코드집', rec: '정비 기록' }[kind];
         c.fillStyle = '#fff'; c.strokeStyle = col; c.lineWidth = 6; c.beginPath(); c.roundRect(125, 45, 70, 86, 8); c.fill(); c.stroke();
         c.fillStyle = col; c.fillRect(125, 45, 70, 18); c.fillStyle = '#c3cad2'; [80, 96, 112].forEach(y => c.fillRect(137, y, 46, 7));
-        c.fillStyle = '#26303a'; c.font = '800 26px "Noto Sans KR Variable", sans-serif'; c.textAlign = 'center'; c.fillText(lab, 160, 168); }
+        c.fillStyle = '#26303a'; c.font = '800 26px "Pretendard Variable", sans-serif'; c.textAlign = 'center'; c.fillText(lab, 160, 168); }
       ct.needsUpdate = true; };
     var cloud = new THREE.Sprite(new THREE.SpriteMaterial({ map: ct, depthTest: false })); cloud.scale.set(0.36, 0.29, 1); cloud.position.set(0.3, 0.86, 0.05); R.root.add(cloud);
     [-1, 1].forEach(s => { for (let k = 0; k < 5; k++) { const ln = new THREE.Mesh(new THREE.PlaneGeometry(0.085, 0.006), lineM); ln.rotation.x = -Math.PI / 2; ln.rotation.z = 0; ln.position.set(s * 0.062, 0.0135 + (s < 0 ? 0.002 : 0.002), -0.055 + k * 0.026); book.add(ln); } });

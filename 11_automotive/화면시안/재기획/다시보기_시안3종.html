@@ -1,0 +1,579 @@
+<title>다시 보기 화면 시안</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap">
+<style>
+/* 레이아웃: 위 = 시안 고르기 · 상황 고르기, 아래 = 실제 앱 크기 화면 틀(가로 스크롤 상자 안). 색·글자는 앱의 디자인 통일 C안 토큰 그대로 */
+:root{
+  --ink:#26303a; --ink2:#5f6b7a; --ink3:#8a94a3;
+  --line:#dcdde1; --line-soft:#eef0f2; --tile:#f4f4f6; --ground:#f2f3f5; --track:#e8eaed; --card:#ffffff;
+  --brand:#6a43e0; --brand-ink:#5a3bc8; --brand-tint:#f0ebff; --brand-line:#c4b3f5;
+  --crit:#c62a2f; --crit-bg:#fdeeee; --crit-line:#e8b4b5;
+  --warn:#9a6200; --warn-bg:#fff6e0; --warn-line:#ecd29a; --warn-mark:#e0b000;
+  --ok:#127a46; --ok-bg:#e0f2e8; --ok-line:#b7dcc6;
+  --page:#e7e9ed;
+  --font:"Noto Sans KR",system-ui,"Malgun Gothic",sans-serif;
+}
+*{box-sizing:border-box}
+body{background:var(--page);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0}
+button:focus-visible,[data-scrub]:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.num{font-variant-numeric:tabular-nums}
+
+/* 고르기 영역 */
+.top{max-width:1480px;margin:0 auto 14px;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-end;justify-content:space-between}
+.top h1{margin:0;font-size:22px;font-weight:800;text-wrap:balance}
+.top p{margin:2px 0 0;color:var(--ink2)}
+.pick{display:flex;flex-wrap:wrap;gap:8px}
+.tab{display:flex;flex-direction:column;align-items:flex-start;padding:8px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card);min-width:150px;text-align:left}
+.tab b{font-size:16px}
+.tab span{font-size:13px;color:var(--ink2)}
+.tab[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-tint)}
+.tab[aria-pressed="true"] b{color:var(--brand-ink)}
+.seg{display:inline-flex;padding:3px;border:1px solid var(--line);border-radius:999px;background:var(--tile)}
+.seg button{height:30px;padding:0 14px;border-radius:999px;font-size:14px;white-space:nowrap}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#fff;font-weight:700}
+.scen{display:flex;align-items:center;gap:8px;color:var(--ink2);font-size:14px}
+.stage{max-width:1480px;margin:0 auto;overflow-x:auto;border-radius:18px}
+.notes{max-width:1480px;margin:14px auto 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+.notes div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.notes b{display:block;font-size:15px;margin-bottom:2px}
+.notes span{color:var(--ink2);font-size:14px}
+
+/* 공통 화면 틀 */
+.fr{height:790px;min-width:1240px;background:var(--ground);padding:14px;display:flex;flex-direction:column;gap:12px;user-select:none}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px}
+.h3{font-size:17px;font-weight:700;margin:0}
+.muted{color:var(--ink2)}
+.faint{color:var(--ink3)}
+.ic{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;color:#fff;font-weight:800;flex-shrink:0}
+.chip{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:999px;font-size:14px;font-weight:700;white-space:nowrap}
+
+/* 결론 띠 (A·C) */
+.band{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:28px;padding:12px 8px 12px 22px;border:1px solid;border-radius:16px;flex-shrink:0}
+.band.ok{background:var(--ok-bg);border-color:var(--ok-line)}
+.band.warn{background:var(--warn-bg);border-color:var(--warn-line)}
+.band.crit{background:var(--crit-bg);border-color:var(--crit-line)}
+.b-time .hm{font-size:30px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.b-time .sub{font-size:14px;color:var(--ink2)}
+.b-msg{font-size:20px;font-weight:700;line-height:1.35}
+.b-msg .k{font-weight:800}
+.b-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.kpis{display:flex}
+.kpi{padding:2px 22px;border-left:1px solid rgba(38,48,58,.14);min-width:116px}
+.kpi .l{font-size:14px;color:var(--ink2)}
+.kpi .v{font-size:28px;font-weight:800;line-height:1.15}
+.kpi .u{font-size:15px;color:var(--ink2);margin-left:4px;font-weight:500}
+.tone-ok{color:var(--ok)} .tone-warn{color:var(--warn)} .tone-crit{color:var(--crit)}
+
+/* 사건 목록 (A·B) */
+.evs{list-style:none;margin:0;padding:6px 8px;overflow-y:auto;flex:1;min-height:0}
+.ev{width:100%;display:grid;grid-template-columns:48px 22px minmax(0,1fr);gap:8px;align-items:start;padding:8px 8px;border-radius:10px;text-align:left;border:1px solid transparent}
+.ev:hover{background:var(--tile)}
+.ev[aria-current="true"]{background:var(--brand-tint);border-color:var(--brand-line)}
+.ev .tm{font-weight:700;line-height:22px}
+.ev .ic{width:22px;height:22px;font-size:12px}
+.ev .hd{font-weight:700;font-size:16px;line-height:22px}
+.ev .sb{font-size:14px;color:var(--ink2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ev.past .hd,.ev.past .tm{color:var(--ink2);font-weight:500}
+.ev.chain{margin-left:14px;width:calc(100% - 14px)}
+.empty{margin:auto;padding:24px 18px;text-align:center;color:var(--ink2)}
+.empty .ic{width:40px;height:40px;font-size:18px;background:var(--ok-bg);color:var(--ok);margin-bottom:10px}
+.empty b{display:block;color:var(--ink);font-size:16px;margin-bottom:2px}
+
+/* 타임라인 공통 */
+.plot{position:relative;cursor:pointer;touch-action:none;outline:none}
+.lane{position:relative;border-radius:6px;overflow:hidden;background:var(--track)}
+.lane i{position:absolute;top:0;height:100%}
+.lane .hr{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.75);z-index:1}
+.cur{position:absolute;width:2px;margin-left:-1px;background:var(--ink);pointer-events:none;z-index:3}
+.cur .bub{position:absolute;top:-2px;left:50%;transform:translate(-50%,-100%);background:var(--ink);color:#fff;font-size:13px;font-weight:700;padding:1px 8px;border-radius:999px;white-space:nowrap}
+.mk{position:absolute;transform:translateX(-50%);border:2px solid var(--card);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;border-radius:999px}
+.axis{position:relative;height:20px;font-size:13px;color:var(--ink2)}
+.axis span{position:absolute;transform:translateX(-50%)}
+.axis span:first-child{transform:none}
+.axis span:last-child{transform:translateX(-100%)}
+.legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:14px;color:var(--ink2)}
+.legend span{display:flex;align-items:center;gap:6px}
+.legend em{display:inline-block;width:16px;height:10px;border-radius:3px}
+.ctl{display:flex;align-items:center;gap:8px}
+.btn{height:32px;padding:0 14px;border:1px solid var(--line);border-radius:999px;background:var(--card);font-weight:700;white-space:nowrap}
+.btn:hover{border-color:var(--ink3)}
+.btn.dark{background:var(--ink);border-color:var(--ink);color:#fff}
+.clock{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:var(--tile);font-weight:700}
+.speed{display:inline-flex;align-items:center;height:32px;padding:2px;border:1px solid var(--line);border-radius:999px;background:var(--tile)}
+.speed .lb{padding:0 8px 0 10px;font-size:14px;color:var(--ink2)}
+.speed button{height:26px;padding:0 12px;border-radius:999px;font-size:14px}
+.speed button[aria-pressed="true"]{background:var(--ink);color:#fff;font-weight:700}
+
+/* ───── 시안 A: 정돈형 ───── */
+.A .body{flex:1;min-height:0;display:grid;grid-template-columns:290px minmax(0,1fr);gap:12px}
+.A aside{display:flex;flex-direction:column;min-height:0}
+.A .hd-row{display:flex;align-items:baseline;gap:8px;padding:14px 16px 10px;border-bottom:1px solid var(--line-soft)}
+.A .right{display:flex;flex-direction:column;gap:12px;min-height:0}
+.A .line{padding:14px 20px 18px}
+.A .line .hd-row{padding:0 0 12px;border:0;justify-content:space-between}
+.flow{display:grid;grid-template-columns:1fr 84px 1fr 84px 1fr 84px 1fr 84px 1fr;align-items:center}
+.col{display:flex;flex-direction:column;gap:6px;min-width:0}
+.op{font-size:13px;color:var(--ink3);font-weight:700;letter-spacing:.04em}
+.node{position:relative;display:grid;grid-template-columns:34px minmax(0,1fr);align-items:center;gap:10px;height:66px;padding:0 12px;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+.node .ic{width:34px;height:34px;font-size:15px}
+.node .id{font-weight:700;font-size:16px;line-height:1.2}
+.node .st{font-weight:800;font-size:17px;line-height:1.25}
+.node .mn{font-size:14px;color:var(--ink2)}
+.node.idle{background:var(--tile);border-style:dashed}
+.node.idle .id{color:var(--ink2)}
+.node.down{border:2px solid var(--crit);background:var(--crit-bg);box-shadow:0 6px 16px rgba(198,42,47,.18)}
+.node.warn{border:2px solid var(--warn-mark);background:var(--warn-bg)}
+.node .tag{position:absolute;top:-11px;right:10px;font-size:12px;font-weight:800;color:#fff;padding:0 8px;border-radius:999px;line-height:20px}
+.pair{display:flex;flex-direction:column;gap:6px}
+.pair .node{height:58px}
+.conn{position:relative;display:flex;align-items:center;justify-content:center;align-self:center;margin-top:26px}
+.conn:before{content:"";position:absolute;left:0;right:0;top:50%;height:2px;background:var(--line)}
+.wip{position:relative;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:3px 9px 5px;text-align:center;min-width:64px}
+.wip b{font-size:16px}
+.wip .lim{color:var(--ink3);font-size:13px}
+.wip .nm{font-size:12px;color:var(--ink2);line-height:1.2}
+.gauge{height:4px;border-radius:2px;background:var(--track);margin-top:3px;overflow:hidden}
+.gauge i{display:block;height:100%;background:var(--ink3)}
+.wip.over{border-color:var(--crit);background:var(--crit-bg)} .wip.over b{color:var(--crit)} .wip.over .gauge i{background:var(--crit)}
+.wip.warm{border-color:var(--warn-mark);background:var(--warn-bg)} .wip.warm b{color:var(--warn)} .wip.warm .gauge i{background:var(--warn-mark)}
+.A .tl{flex:1;min-height:0;display:flex;flex-direction:column;padding:14px 18px 12px}
+.A .tl-head{display:flex;align-items:center;gap:10px}
+.A .tl-grid{flex:1;min-height:0;display:grid;grid-template-columns:128px minmax(0,1fr);gap:0 12px;margin-top:8px}
+.A .labels{display:flex;flex-direction:column;justify-content:flex-start;padding-top:40px;gap:8px}
+.A .labels div{height:36px;display:flex;flex-direction:column;justify-content:center;line-height:1.2}
+.A .labels b{font-size:15px}
+.A .labels span{font-size:13px;font-weight:700}
+.A .plot{padding-top:40px}
+.A .mkrow{position:absolute;top:10px;left:0;right:0;height:22px}
+.A .lanes{display:flex;flex-direction:column;gap:8px}
+.A .lane{height:36px}
+.A .legend{margin:6px 0 0 140px}
+
+/* ───── 시안 B: 플레이어형 ───── */
+.B .bar{display:flex;align-items:center;gap:16px;padding:10px 12px 10px 10px;flex-shrink:0}
+.B .state{display:flex;align-items:center;gap:10px;padding:6px 16px 6px 8px;border-radius:999px;font-weight:800;font-size:17px}
+.B .state .ic{width:28px;height:28px;font-size:14px}
+.B .state.ok{background:var(--ok-bg);color:var(--ok)} .B .state.ok .ic{background:var(--ok)}
+.B .state.warn{background:var(--warn-bg);color:var(--warn)} .B .state.warn .ic{background:var(--warn-mark)}
+.B .state.crit{background:var(--crit);color:#fff} .B .state.crit .ic{background:#fff;color:var(--crit)}
+.B .msg2{display:flex;gap:6px;flex-wrap:wrap;min-width:0;flex:1}
+.B .stats{display:flex;gap:6px;margin-left:auto}
+.B .stat{display:flex;align-items:baseline;gap:6px;padding:6px 14px;border-radius:12px;background:var(--tile)}
+.B .stat .l{font-size:14px;color:var(--ink2)}
+.B .stat b{font-size:20px}
+.B .stat .u{font-size:14px;color:var(--ink2)}
+.B .strip{display:flex;align-items:center;padding:12px 16px;gap:0;flex-shrink:0}
+.B .pill{display:flex;align-items:center;gap:8px;padding:6px 12px 6px 6px;border-radius:999px;border:1px solid var(--line);background:var(--card);white-space:nowrap}
+.B .pill .ic{width:26px;height:26px;font-size:12px}
+.B .pill b{font-size:15px}
+.B .pill .s{font-size:14px;font-weight:700}
+.B .pill .m{font-size:13px;color:var(--ink2)}
+.B .pill.idle{background:var(--tile);border-style:dashed}
+.B .pill.down{border:2px solid var(--crit);background:var(--crit-bg)}
+.B .pill.warn{border:2px solid var(--warn-mark);background:var(--warn-bg)}
+.B .pp{display:flex;flex-direction:column;gap:4px}
+.B .arrow{flex:1;display:flex;align-items:center;gap:0;min-width:70px}
+.B .arrow:before,.B .arrow:after{content:"";flex:1;height:2px;background:var(--line)}
+.B .wq{font-size:14px;padding:1px 8px;border-radius:8px;border:1px solid var(--line);background:var(--card);white-space:nowrap}
+.B .wq b{font-size:15px}
+.B .wq.over{border-color:var(--crit);background:var(--crit-bg);color:var(--crit)}
+.B .wq.warm{border-color:var(--warn-mark);background:var(--warn-bg);color:var(--warn)}
+.B .main{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:12px}
+.B .tl{display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.B .tl-top{display:flex;align-items:center;justify-content:space-between;padding:12px 18px 0}
+.B .tl-grid{flex:1;min-height:0;display:grid;grid-template-columns:96px minmax(0,1fr);gap:0 12px;padding:0 18px}
+.B .labels{display:flex;flex-direction:column;padding-top:38px;padding-bottom:20px;gap:10px}
+.B .labels div{flex:1;display:flex;align-items:center;font-weight:700;font-size:15px}
+.B .plot{display:flex;flex-direction:column;padding-top:38px}
+.B .mkrow{position:absolute;top:8px;left:0;right:0;height:22px}
+.B .lanes{flex:1;display:flex;flex-direction:column;gap:10px}
+.B .lane{flex:1}
+.B .transport{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:20px;padding:10px 18px;border-top:1px solid var(--line-soft);background:var(--tile)}
+.B .tbtns{display:flex;align-items:center;gap:6px}
+.B .rb{height:36px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-weight:700;font-size:14px}
+.B .playb{width:48px;height:48px;border-radius:999px;background:var(--ink);color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center}
+.B .big{display:flex;align-items:baseline;gap:10px;justify-content:center}
+.B .big b{font-size:30px;font-weight:800;letter-spacing:-.02em}
+.B .side{display:flex;flex-direction:column;min-height:0}
+.B .side .hd-row{display:flex;align-items:baseline;gap:8px;padding:14px 16px 10px;border-bottom:1px solid var(--line-soft)}
+
+/* ───── 시안 C: 설비 행 통합형 ───── */
+.C .evstrip{display:flex;align-items:center;gap:10px;padding:8px 12px;flex-shrink:0;overflow-x:auto;min-height:52px}
+.C .evstrip .lb{font-weight:700;white-space:nowrap;padding-right:6px}
+.C .ec{display:flex;align-items:center;gap:8px;padding:4px 12px 4px 6px;border:1px solid var(--line);border-radius:999px;background:var(--card);white-space:nowrap;font-size:14px}
+.C .ec .ic{width:22px;height:22px;font-size:11px}
+.C .ec[aria-current="true"]{border-color:var(--brand);background:var(--brand-tint)}
+.C .ec.past{color:var(--ink2)}
+.C .ec b{font-size:15px}
+.C .tbl{flex:1;min-height:0;display:flex;flex-direction:column;padding:12px 18px 12px}
+.C .tbl-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.C .grid{position:relative;flex:1;min-height:0;display:flex;flex-direction:column;outline:none}
+.C .row{display:grid;grid-template-columns:128px 190px minmax(0,1fr);align-items:center}
+.C .row.hd{height:30px;font-size:13px;color:var(--ink2);font-weight:700;border-bottom:1px solid var(--line-soft)}
+.C .row.eq{height:50px}
+.C .row.eq + .row.eq{border-top:1px solid var(--line-soft)}
+.C .row.wp{height:40px;background:var(--tile);border-radius:8px}
+.C .row .c1{padding-left:4px;line-height:1.2}
+.C .row .c1 b{font-size:16px}
+.C .row .c1 small{display:block;font-size:12px;color:var(--ink3);font-weight:700;letter-spacing:.04em}
+.C .row .c2{display:flex;align-items:center;gap:8px;line-height:1.2}
+.C .row .c2 .ic{width:26px;height:26px;font-size:12px}
+.C .row .c2 .s{font-weight:800;font-size:16px}
+.C .row .c2 .m{font-size:13px;color:var(--ink2)}
+.C .row .c2 .code{font-size:13px;font-weight:700}
+.C .row.eq.down{background:var(--crit-bg);border-radius:8px}
+.C .row.eq.warn{background:var(--warn-bg);border-radius:8px}
+.C .lane{height:26px;margin-right:2px}
+.C .wpl{font-size:13px;color:var(--ink2);padding-left:4px}
+.C .wpv{display:flex;align-items:center;gap:8px;font-size:14px}
+.C .wpv b{font-size:16px}
+.C .wpv .gauge{width:56px;margin:0}
+.C .wpv.over b{color:var(--crit)} .C .wpv.over .gauge i{background:var(--crit)}
+.C .wpv.warm b{color:var(--warn)} .C .wpv.warm .gauge i{background:var(--warn-mark)}
+.C svg.spark{width:100%;height:30px;display:block}
+.C .hdaxis{position:relative;height:100%}
+.C .hdaxis span{position:absolute;top:6px;transform:translateX(-50%)}
+.C .hdaxis span:first-child{transform:none}
+.C .hdaxis span:last-child{transform:translateX(-100%)}
+.C .legend{margin-top:8px;padding-left:318px}
+.C .lmk{position:absolute;top:50%;transform:translate(-50%,-50%);width:16px;height:16px;border:2px solid var(--card);border-radius:999px;color:#fff;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;z-index:2}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="top">
+  <div>
+    <h1>다시 보기 화면 시안 3종</h1>
+    <p>지금 화면(10/1 21:35, 야간 교대)과 같은 기록으로 그렸습니다. 타임라인을 누르거나 끌면 시각이 바뀌고, ▶ 재생도 됩니다.</p>
+  </div>
+  <div class="pick" role="group" aria-label="시안 고르기" id="tabs"></div>
+</div>
+<div class="top" style="align-items:center;justify-content:flex-start">
+  <div class="scen">상황
+    <span class="seg" role="group" aria-label="상황" id="scen"></span>
+  </div>
+</div>
+<div class="stage"><div id="app"></div></div>
+<div class="notes" id="notes"></div>
+
+<script>
+// ── 기록 (지금 화면과 같은 값: 21:35에 SAW 대기 11분 · MIL 준비 11분 · VF2-01 가공 52분 · VF2-02 가공 1분 · WSH 대기 35분 · CMM 대기 34분)
+// t = 17:00부터 지난 분 (교대 17:00~22:00 = 0~300)
+const T1 = 300;
+const EQS = [
+  {id:'SAW-01',op:'OP-10'},{id:'MIL-01',op:'OP-20'},{id:'VF2-01',op:'OP-30'},
+  {id:'VF2-02',op:'OP-30'},{id:'WSH-01',op:'OP-40'},{id:'CMM-01',op:'OP-50'}];
+const WIPN = [{k:'재공-1',lim:30,warn:null,after:'SAW-01'},{k:'재공-2',lim:30,warn:24,after:'MIL-01'},{k:'재공-3',lim:60,warn:null,after:'VF2-02'},{k:'재공-4',lim:30,warn:null,after:'WSH-01'}];
+const BASE = {
+  'SAW-01':[[0,'I'],[180,'R'],[191,'I'],[235,'R'],[238,'S'],[249,'R'],[264,'I']],
+  'MIL-01':[[0,'I'],[180,'R'],[201,'I'],[207,'R'],[264,'S'],[280,'R'],[291,'I'],[296,'R']],
+  'VF2-01':[[0,'I'],[180,'S'],[210,'R'],[213,'S'],[223,'R']],
+  'VF2-02':[[0,'I'],[180,'S'],[210,'R'],[216,'S'],[235,'R'],[257,'I'],[258,'R'],[265,'I'],[274,'R'],[282,'I'],[290,'R']],
+  'WSH-01':[[0,'I'],[180,'R'],[200,'I'],[216,'R'],[240,'I']],
+  'CMM-01':[[0,'I'],[180,'R'],[210,'I'],[240,'R'],[241,'I']]};
+const SCEN = {
+  normal:{name:'정상 (지금 화면)', segs:BASE, alarms:[], bn:[],
+    wip:[[0,0,0,0,0],[180,4,2,0,0],[220,10,14,6,0],[275,15,23,11,0],[300,16,22,12,1]],
+    done:t=>Math.max(0,Math.round((t-200)*15/75))},
+  alarm:{name:'정지 알람 상황 (예시)',
+    segs:{...BASE,'VF2-02':[[0,'I'],[180,'S'],[210,'R'],[216,'S'],[235,'R'],[260,'D']],
+                  'MIL-01':[[0,'I'],[180,'R'],[201,'I'],[207,'R'],[264,'S'],[280,'B']]},
+    alarms:[
+      {id:1,eq:'WSH-01',code:'WSH-02',name:'세정력 저하',sev:'WARN',at:220,clr:226},
+      {id:2,eq:'VF2-02',code:'174',name:'공구 부하가 초과됨',sev:'WARN',at:248,clr:null},
+      {id:3,eq:'VF2-02',code:'966',name:'과도한 공구 불균형',sev:'STOP',at:260,clr:null,prev:2,lot:'LOT-2609-128-1'}],
+    bn:[{at:265,txt:'OP-20 → OP-30 · 고장'}],
+    wip:[[0,0,0,0,0],[180,4,2,0,0],[220,10,14,6,0],[260,14,24,9,0],[275,17,34,6,0],[300,19,38,4,0]],
+    done:t=>t<=260?Math.max(0,Math.round((t-200)*15/75)):12+Math.round((t-260)*3/40)}
+};
+const ST = { // 막대 색: 대기는 옅게 해서 일한 구간이 먼저 보이게
+  R:{t:'가공',c:'#1fbf63',ink:'#13994f',g:'●'}, I:{t:'대기',c:'#cdd3da',ink:'#4b5a69',g:'○'},
+  S:{t:'준비',c:'#3b82f6',ink:'#1f5fc4',g:'⚙'}, B:{t:'막힘',c:'#e8954a',ink:'#b45309',g:'■'},
+  M:{t:'정비',c:'#6b7580',ink:'#4b5a69',g:'▨'}, D:{t:'고장',c:'#e5484d',ink:'#c62a2f',g:'!'}};
+const EVV = {STOP:{g:'!',c:'#c62a2f'},WARN:{g:'▲',c:'#b07400'},OK:{g:'✓',c:'#13994f'},BN:{g:'◆',c:'#5a3bc8'}};
+const SPEEDS = [[60,'1분'],[300,'5분'],[900,'15분']];
+const VARIANTS = {
+  A:{name:'A · 정돈형',sub:'지금 구조 그대로, 읽기 쉽게',notes:[
+    ['라인을 공정 흐름으로','OP-30 두 대를 위아래로 묶고, 재공 칩을 설비 사이 선 위에 올렸습니다. 한도 대비 막대가 같이 붙습니다.'],
+    ['대기를 옅게','막대에서 대기를 밝은 회색으로 바꿔 가공·준비·고장 구간이 먼저 눈에 들어옵니다. 1시간마다 흰 눈금선.'],
+    ['결론 띠 정리','시각을 크게, 교대 범위를 밑에. 오른쪽 숫자 셋(완제품·가동·켜진 알람)을 구분선으로 나눴습니다.'],
+    ['커서에 시각 표시','세로선 위에 지금 보는 시각이 붙어 따로 찾지 않아도 됩니다.']]},
+  B:{name:'B · 플레이어형',sub:'타임라인 크게, 재생 막대 아래',notes:[
+    ['영상 재생기처럼','재생·10분 앞뒤·속도를 아래 한 줄에 모으고 지금 시각을 가운데 크게 보여 줍니다.'],
+    ['라인은 한 줄 요약','설비 상태를 알약 모양 한 줄로 줄여 타임라인 자리를 넓혔습니다.'],
+    ['사건 목록은 오른쪽','타임라인을 보며 오른쪽 목록을 누르는 흐름. 왼쪽부터 읽는 순서가 상태 → 기록 → 사건이 됩니다.'],
+    ['상태 알약','맨 위 왼쪽 알약 하나로 정상·주의·정지를 바로 구분합니다.']]},
+  C:{name:'C · 설비 행 통합형',sub:'설비 한 줄 = 그 시각 상태 + 기록',notes:[
+    ['설비 이름을 한 번만','지금은 위(라인 카드)와 아래(타임라인)에 설비가 두 번 나옵니다. 한 줄에 그 시각 상태와 막대를 같이 둬 눈이 오가지 않게 했습니다.'],
+    ['재공 흐름도 기록으로','설비 사이 줄에 재공 수와 함께 교대 동안의 재공 추이(점선 = 한도)를 그렸습니다.'],
+    ['사건은 위 한 줄','사건을 가로 칩으로 올리고, 막대 위에도 그 설비 줄에 바로 표시합니다.'],
+    ['화면을 덜 나눔','카드 수가 넷에서 셋으로 줄어 테두리·여백이 덜 복잡합니다.']]}
+};
+
+// ── 상태
+let S = {v:'A', scen:'normal', t:275, play:false, speed:60, focus:null};
+try{ const v=localStorage.getItem('replay-variant'); if(VARIANTS[v]) S.v=v; }catch(e){}
+const D = () => SCEN[S.scen];
+const pad = n => String(n).padStart(2,'0');
+const hm = m => { const x=Math.floor(m); return `${pad(17+Math.floor(x/60))}:${pad(x%60)}`; };
+const pct = m => (m/T1*100).toFixed(3)+'%';
+const segs = eq => { const a=D().segs[eq]; return a.map(([s,st],i)=>({s,e:i<a.length-1?a[i+1][0]:T1,st})); };
+const segAt = (eq,t) => segs(eq).find(r=>r.s<=t && t<r.e) || segs(eq).at(-1);
+const activeAl = t => D().alarms.filter(a=>a.at<=t && (a.clr==null || t<a.clr));
+const wipAt = (i,t) => { const w=D().wip; let k=w.findIndex(r=>r[0]>t); if(k<0) return w.at(-1)[i+1]; if(k===0) return w[0][i+1];
+  const [a,b]=[w[k-1],w[k]]; return Math.round(a[i+1]+(b[i+1]-a[i+1])*(t-a[0])/(b[0]-a[0])); };
+const wipCls = (i,n) => n>WIPN[i].lim ? 'over' : (WIPN[i].warn!=null && n>WIPN[i].warn ? 'warm' : '');
+
+function eqView(eq,t){
+  const s=segAt(eq,t), al=activeAl(t).filter(a=>a.eq===eq).sort((a,b)=>(a.sev==='STOP'?-1:1)-(b.sev==='STOP'?-1:1)||b.at-a.at)[0];
+  const down = al?.sev==='STOP' || s.st==='D', warn = !down && al?.sev==='WARN';
+  const v = down ? ST.D : ST[s.st];
+  return {s, al, down, warn, kind: down?'down':warn?'warn':s.st==='R'?'run':s.st==='I'?'idle':'other',
+    text: warn ? '주의' : v.t, color: warn ? 'var(--warn)' : v.ink, glyph: warn ? '▲' : v.g,
+    dot: warn ? 'var(--warn-mark)' : s.st==='I' && !down ? '#a3adb8' : v.ink,
+    min: Math.max(0, Math.floor(t - (down && s.st==='D' ? s.s : s.s)))};
+}
+function events(){
+  const d=D(), out=[];
+  d.alarms.forEach(a=>{
+    out.push({at:a.at,kind:a.sev,chain:!!a.prev,head:a.eq,sub:`${a.code} ${a.name} · ${a.clr!=null?(a.clr-a.at)+'분':'해제 안 됨'}`, eq:a.eq});
+    const child=d.alarms.some(b=>b.prev===a.id);
+    if(a.sev==='STOP' && !child && a.clr!=null) out.push({at:a.clr,kind:'OK',chain:false,head:a.eq,sub:'알람 해제',eq:a.eq});
+  });
+  d.bn.forEach(b=>out.push({at:b.at,kind:'BN',chain:false,head:'병목 변화',sub:b.txt}));
+  return out.sort((a,b)=>a.at-b.at);
+}
+function summary(t){
+  const act=activeAl(t), stop=act.filter(a=>a.sev==='STOP').sort((a,b)=>b.at-a.at)[0], warn=act.find(a=>a.sev==='WARN');
+  const tone = stop?'crit':warn?'warn':'ok';
+  let msg, chips=[];
+  if(stop){
+    const v=eqView(stop.eq,t), since=Math.floor(t-(v.s.st==='D'?v.s.s:stop.at));
+    msg=`<span class="k tone-crit">${stop.eq}</span> 알람 <span class="k tone-crit num">${stop.code}</span>로 멈춘 지 <span class="k tone-crit num">${since}</span>분째`;
+    const chain=[]; let x=stop; while(x){ chain.unshift(x.code); x=x.prev?D().alarms.find(a=>a.id===x.prev):null; }
+    chips.push(`<span class="chip" style="background:var(--crit);color:#fff">⚠ ${stop.name}</span>`);
+    if(chain.length>1) chips.push(`<span class="chip" style="background:var(--card);color:var(--crit)">연쇄 ${chain.join(' → ')}</span>`);
+    if(stop.lot) chips.push(`<span class="chip" style="background:var(--card);color:var(--ink2)">로트 ${stop.lot}</span>`);
+  } else if(warn){
+    msg=`<span class="k tone-warn">${warn.eq}</span> 주의 알람 <span class="k tone-warn num">${warn.code}</span> · <span class="num">${Math.floor(t-warn.at)}</span>분째`;
+    chips.push(`<span class="chip" style="background:var(--warn);color:#fff">▲ ${warn.name}</span>`);
+  } else msg=`<span class="tone-ok">켜진 알람 없음</span>`;
+  const run=EQS.filter(e=>eqView(e.id,t).kind==='run').length;
+  return {tone,msg,chips,run,done:D().done(t),alarms:act.length,stop,warn};
+}
+
+// ── 조각
+const icon = (v,cls='') => `<span class="ic ${cls}" style="background:${v.down?'var(--crit)':v.dot}">${v.glyph}</span>`;
+const laneHtml = (eq, cls='lane', marks=false) => `<div class="${cls}">${segs(eq).map(r=>`<i style="left:${pct(r.s)};width:${pct(r.e-r.s)};background:${ST[r.st].c}" title="${ST[r.st].t} ${hm(r.s)}~${hm(r.e)}"></i>`).join('')}
+  ${[60,120,180,240].map(h=>`<span class="hr" style="left:${pct(h)}"></span>`).join('')}
+  ${marks?D().alarms.filter(a=>a.eq===eq).map(a=>`<span class="lmk" style="left:${pct(a.at)};background:${EVV[a.sev].c}" title="${hm(a.at)} ${a.code} ${a.name}">${EVV[a.sev].g}</span>`).join(''):''}</div>`;
+const markers = () => events().filter(e=>e.kind!=='OK' && !e.chain).map(e=>{
+  const big=e.kind==='STOP'||e.kind==='WARN';
+  return `<button class="mk" data-jump="${e.at}" style="left:${pct(e.at)};top:${big?0:3}px;width:${big?22:16}px;height:${big?22:16}px;background:${EVV[e.kind].c};${e.kind==='BN'?'border-radius:4px;transform:translateX(-50%) rotate(45deg)':''}" title="${hm(e.at)} ${e.head} · ${e.sub}" aria-label="${hm(e.at)} ${e.head} ${e.sub}로 가기">${big?EVV[e.kind].g:''}</button>`;}).join('');
+const axis = () => `<div class="axis num">${[0,60,120,180,240,300].map(h=>`<span style="left:${pct(h)}">${hm(h)}</span>`).join('')}</div>`;
+const legend = () => `<div class="legend">${Object.values(ST).map(v=>`<span><em style="background:${v.c}"></em>${v.t}</span>`).join('')}<span><em style="background:#5a3bc8;width:10px;height:10px;transform:rotate(45deg)"></em>병목 변화</span></div>`;
+const cursor = (top,bottom) => `<div class="cur" style="left:${pct(S.t)};top:${top}px;bottom:${bottom}px"><span class="bub num">${hm(S.t)}</span></div>`;
+const playBtn = (cls='btn') => `<button class="${cls}" data-act="play">${S.play?'⏸ 멈춤':'▶ 재생'}</button>`;
+const speedSeg = () => `<span class="speed" role="group" aria-label="재생 속도"><span class="lb">1초에</span>${SPEEDS.map(([v,l])=>`<button data-speed="${v}" aria-pressed="${S.speed===v}">${l}</button>`).join('')}</span>`;
+const clock = () => `<span class="clock num" title="날짜·시각을 골라 그 교대로 이동">🕘 10/1 ${hm(S.t)} <span class="faint">▾</span></span>`;
+function evList(){
+  const ev=events(), cur=ev.reduce((c,e,i)=>e.at<=S.t?i:c,-1);
+  if(!ev.length) return `<div class="empty"><span class="ic">✓</span><b>조용한 교대</b>17:00~22:00 사이에<br>알람·병목 변화가 없습니다</div>`;
+  return `<ol class="evs">${ev.map((e,i)=>`<li><button class="ev ${e.chain?'chain':''} ${e.at<S.t && i!==cur?'past':''}" data-jump="${e.at}" aria-current="${i===cur}">
+    <span class="tm num">${hm(e.at)}</span><span class="ic" style="background:${EVV[e.kind].c}">${EVV[e.kind].g}</span>
+    <span style="min-width:0"><div class="hd">${e.head}</div><div class="sb" title="${e.sub}">${e.sub}</div></span></button></li>`).join('')}</ol>`;
+}
+function band(){
+  const s=summary(S.t);
+  return `<section class="band ${s.tone}" aria-live="polite">
+    <div class="b-time"><div class="hm num">${hm(S.t)}</div><div class="sub">10/1 · 야간 교대 17:00~22:00</div></div>
+    <div style="min-width:0"><div class="b-msg">${s.msg}</div>${s.chips.length?`<div class="b-chips">${s.chips.join('')}</div>`:''}</div>
+    <div class="kpis">
+      <div class="kpi"><div class="l">완제품</div><div class="v num">${s.done}<span class="u">개</span></div></div>
+      <div class="kpi"><div class="l">가동</div><div class="v num">${s.run}<span class="u">/ 6대</span></div></div>
+      <div class="kpi"><div class="l">켜진 알람</div><div class="v num ${s.alarms?'tone-crit':''}">${s.alarms}<span class="u">건</span></div></div>
+    </div></section>`;
+}
+
+// ── 시안 A
+function nodeA(eq){
+  const v=eqView(eq,S.t);
+  return `<div class="node ${v.kind}">
+    ${v.down?`<span class="tag" style="background:var(--crit)">알람 ${v.al?.code??''}</span>`:v.warn?`<span class="tag" style="background:var(--warn)">주의 ${v.al.code}</span>`:''}
+    ${icon(v)}<div style="min-width:0"><div class="id">${eq}</div>
+    <div><span class="st" style="color:${v.kind==='idle'?'var(--ink2)':v.color}">${v.text}</span> <span class="mn num">${v.min}분째</span></div></div></div>`;
+}
+function wipA(i){
+  const n=wipAt(i,S.t), w=WIPN[i];
+  return `<div class="conn"><div class="wip ${wipCls(i,n)}" title="${w.k} · 한도 ${w.lim}"><b class="num">${n}</b><span class="lim num">/${w.lim}</span><div class="nm">${w.k}</div><div class="gauge"><i style="width:${Math.min(100,n/w.lim*100)}%"></i></div></div></div>`;
+}
+function renderA(){
+  const lbl = EQS.map(e=>{const v=eqView(e.id,S.t);return `<div><b>${e.id}</b><span style="color:${v.kind==='idle'?'var(--ink3)':v.color}">${v.glyph} ${v.text}</span></div>`;}).join('');
+  return `<div class="fr A">${band()}
+  <div class="body">
+    <aside class="card" aria-label="사건 목록"><div class="hd-row"><h3 class="h3">사건</h3><span class="muted num">${events().length}건</span></div>${evList()}</aside>
+    <div class="right">
+      <section class="card line" aria-label="그 시각 라인">
+        <div class="hd-row"><h3 class="h3">그 시각 라인</h3><span class="muted num">${hm(S.t)} 기준</span></div>
+        <div class="flow">
+          <div class="col"><span class="op">OP-10</span>${nodeA('SAW-01')}</div>${wipA(0)}
+          <div class="col"><span class="op">OP-20</span>${nodeA('MIL-01')}</div>${wipA(1)}
+          <div class="col"><span class="op">OP-30 · 2대</span><div class="pair">${nodeA('VF2-01')}${nodeA('VF2-02')}</div></div>${wipA(2)}
+          <div class="col"><span class="op">OP-40</span>${nodeA('WSH-01')}</div>${wipA(3)}
+          <div class="col"><span class="op">OP-50</span>${nodeA('CMM-01')}</div>
+        </div>
+      </section>
+      <section class="card tl" aria-label="타임라인">
+        <div class="tl-head"><h3 class="h3">타임라인</h3>${clock()}<span style="margin-left:auto" class="ctl">${playBtn()}${speedSeg()}</span></div>
+        <div class="tl-grid">
+          <div class="labels">${lbl}</div>
+          <div class="plot" data-scrub="A" tabindex="0" role="slider" aria-label="다시 볼 시각" aria-valuetext="${hm(S.t)}">
+            <div class="mkrow">${markers()}</div>
+            <div class="lanes">${EQS.map(e=>laneHtml(e.id)).join('')}</div>
+            ${axis()}${cursor(36,22)}
+          </div>
+        </div>
+        ${legend()}
+      </section>
+    </div>
+  </div></div>`;
+}
+
+// ── 시안 B
+function pillB(eq){
+  const v=eqView(eq,S.t);
+  return `<div class="pill ${v.kind}">${icon(v)}<b>${eq}</b><span class="s" style="color:${v.kind==='idle'?'var(--ink2)':v.color}">${v.down&&v.al?`알람 ${v.al.code}`:v.text}</span><span class="m num">${v.min}분</span></div>`;
+}
+const wqB = i => { const n=wipAt(i,S.t), w=WIPN[i]; return `<div class="arrow"><span class="wq num ${wipCls(i,n)}" title="${w.k}"><b>${n}</b>/${w.lim}</span></div>`; };
+function renderB(){
+  const s=summary(S.t);
+  const stLbl = s.tone==='crit'?'정지':s.tone==='warn'?'주의':'정상';
+  const stG = s.tone==='crit'?'!':s.tone==='warn'?'▲':'✓';
+  return `<div class="fr B">
+  <section class="card bar" aria-live="polite">
+    <span class="state ${s.tone}"><span class="ic">${stG}</span>${stLbl}</span>
+    <div class="msg2"><span style="font-size:18px;font-weight:700">${s.msg}</span>${s.chips.join('')}</div>
+    <div class="stats">
+      <span class="stat"><span class="l">완제품</span><b class="num">${s.done}</b><span class="u">개</span></span>
+      <span class="stat"><span class="l">가동</span><b class="num">${s.run}</b><span class="u">/ 6대</span></span>
+      <span class="stat"><span class="l">켜진 알람</span><b class="num ${s.alarms?'tone-crit':''}">${s.alarms}</b><span class="u">건</span></span>
+    </div>
+  </section>
+  <section class="card strip" aria-label="그 시각 라인">
+    ${pillB('SAW-01')}${wqB(0)}${pillB('MIL-01')}${wqB(1)}
+    <div class="pp">${pillB('VF2-01')}${pillB('VF2-02')}</div>${wqB(2)}
+    ${pillB('WSH-01')}${wqB(3)}${pillB('CMM-01')}
+  </section>
+  <div class="main">
+    <section class="card tl" aria-label="타임라인">
+      <div class="tl-top"><h3 class="h3">10/1 야간 교대 기록</h3>${legend()}</div>
+      <div class="tl-grid">
+        <div class="labels">${EQS.map(e=>`<div>${e.id}</div>`).join('')}</div>
+        <div class="plot" data-scrub="B" tabindex="0" role="slider" aria-label="다시 볼 시각" aria-valuetext="${hm(S.t)}">
+          <div class="mkrow">${markers()}</div>
+          <div class="lanes">${EQS.map(e=>laneHtml(e.id)).join('')}</div>
+          ${axis()}${cursor(34,20)}
+        </div>
+      </div>
+      <div class="transport">
+        <div class="tbtns">
+          <button class="rb" data-act="start" aria-label="교대 처음으로">⏮</button>
+          <button class="rb" data-step="-10">−10분</button>
+          <button class="playb" data-act="play" aria-label="${S.play?'멈춤':'재생'}">${S.play?'❚❚':'▶'}</button>
+          <button class="rb" data-step="10">+10분</button>
+        </div>
+        <div class="big"><b class="num">${hm(S.t)}</b><span class="muted">10/1 (목)</span>${clock()}</div>
+        ${speedSeg()}
+      </div>
+    </section>
+    <aside class="card side" aria-label="사건 목록"><div class="hd-row"><h3 class="h3">사건</h3><span class="muted num">${events().length}건</span></div>${evList()}</aside>
+  </div></div>`;
+}
+
+// ── 시안 C
+const OFF = 318; // 설비(128) + 상태(190) 칸 너비 = 막대가 시작하는 자리
+function spark(i){
+  const w=WIPN[i], pts=[]; for(let m=0;m<=T1;m+=5) pts.push([m,wipAt(i,m)]);
+  const mx=Math.max(w.lim, ...pts.map(p=>p[1]))*1.15, y=v=>(30-v/mx*28).toFixed(1);
+  const line=pts.map(p=>`${p[0]},${y(p[1])}`).join(' '), over=pts.some(p=>p[1]>w.lim);
+  return `<svg class="spark" viewBox="0 0 300 30" preserveAspectRatio="none" aria-hidden="true">
+    <polygon points="0,30 ${line} 300,30" fill="${over?'rgba(198,42,47,.14)':'rgba(95,107,122,.14)'}"></polygon>
+    <polyline points="${line}" fill="none" stroke="${over?'#c62a2f':'#8a94a3'}" stroke-width="1.5" vector-effect="non-scaling-stroke"></polyline>
+    <line x1="0" x2="300" y1="${y(w.lim)}" y2="${y(w.lim)}" stroke="#8a94a3" stroke-dasharray="4 3" vector-effect="non-scaling-stroke"></line></svg>`;
+}
+function rowEqC(e){
+  const v=eqView(e.id,S.t);
+  return `<div class="row eq ${v.kind}"><div class="c1"><b>${e.id}</b><small>${e.op}</small></div>
+    <div class="c2">${icon(v)}<div><span class="s" style="color:${v.kind==='idle'?'var(--ink2)':v.color}">${v.text}</span> <span class="m num">${v.min}분째</span>${v.al?`<div class="code" style="color:${v.down?'var(--crit)':'var(--warn)'}">알람 ${v.al.code} ${v.al.name}</div>`:''}</div></div>
+    ${laneHtml(e.id,'lane',true)}</div>`;
+}
+function rowWipC(i){
+  const n=wipAt(i,S.t), w=WIPN[i], c=wipCls(i,n);
+  return `<div class="row wp"><div class="wpl">↓ ${w.k}</div><div class="wpv ${c}"><span><b class="num">${n}</b><span class="faint num"> / ${w.lim}</span></span><div class="gauge"><i style="width:${Math.min(100,n/w.lim*100)}%"></i></div></div>${spark(i)}</div>`;
+}
+function renderC(){
+  const ev=events(), cur=ev.reduce((c,e,i)=>e.at<=S.t?i:c,-1);
+  const strip = ev.length ? ev.map((e,i)=>`<button class="ec ${e.at<S.t&&i!==cur?'past':''}" data-jump="${e.at}" aria-current="${i===cur}"><span class="ic" style="background:${EVV[e.kind].c}">${EVV[e.kind].g}</span><span class="num">${hm(e.at)}</span><b>${e.head}</b>${e.sub}</button>`).join('')
+    : `<span class="ec" style="border-style:dashed"><span class="ic" style="background:var(--ok)">✓</span>이 교대(17:00~22:00)에는 알람·병목 변화가 없습니다</span>`;
+  const byId=Object.fromEntries(EQS.map(e=>[e.id,e]));
+  return `<div class="fr C">${band()}
+  <section class="card evstrip" aria-label="사건 목록"><span class="lb">사건 <span class="muted num">${ev.length}건</span></span>${strip}</section>
+  <section class="card tbl" aria-label="설비별 상태와 기록">
+    <div class="tbl-top"><h3 class="h3">설비별 상태와 기록</h3>${clock()}<span style="margin-left:auto" class="ctl">${playBtn()}${speedSeg()}</span></div>
+    <div class="grid" data-scrub="C" data-off="${OFF}" tabindex="0" role="slider" aria-label="다시 볼 시각" aria-valuetext="${hm(S.t)}">
+      <div class="row hd"><div class="c1">설비</div><div>${hm(S.t)} 상태</div><div class="hdaxis num">${[0,60,120,180,240,300].map(h=>`<span style="left:${pct(h)}">${hm(h)}</span>`).join('')}</div></div>
+      ${rowEqC(byId['SAW-01'])}${rowWipC(0)}${rowEqC(byId['MIL-01'])}${rowWipC(1)}
+      ${rowEqC(byId['VF2-01'])}${rowEqC(byId['VF2-02'])}${rowWipC(2)}
+      ${rowEqC(byId['WSH-01'])}${rowWipC(3)}${rowEqC(byId['CMM-01'])}
+      <div class="cur" style="left:calc(${OFF}px + (100% - ${OFF+2}px) * ${S.t/T1});top:30px;bottom:0"><span class="bub num">${hm(S.t)}</span></div>
+    </div>
+    ${legend()}
+  </section></div>`;
+}
+
+// ── 그리기 · 조작
+const R = {A:renderA,B:renderB,C:renderC};
+function render(){
+  document.getElementById('tabs').innerHTML = Object.entries(VARIANTS).map(([k,v])=>`<button class="tab" data-v="${k}" aria-pressed="${S.v===k}"><b>${v.name}</b><span>${v.sub}</span></button>`).join('');
+  document.getElementById('scen').innerHTML = Object.entries(SCEN).map(([k,v])=>`<button data-scen="${k}" aria-pressed="${S.scen===k}">${v.name}</button>`).join('');
+  document.getElementById('app').innerHTML = R[S.v]();
+  document.getElementById('notes').innerHTML = VARIANTS[S.v].notes.map(([b,s])=>`<div><b>${b}</b><span>${s}</span></div>`).join('');
+  if(S.focus){ const el=document.querySelector(`[data-scrub="${S.focus}"]`); if(el) el.focus({preventScroll:true}); }
+}
+const setT = m => { S.t=Math.min(T1,Math.max(0,m)); render(); };
+let drag=null;
+function fromX(x){ const {r,off}=drag; const w=r.width-off-2; return (x-r.left-off)/w*T1; }
+document.addEventListener('pointerdown',e=>{
+  if(e.target.closest('button')) return;
+  const el=e.target.closest('[data-scrub]'); if(!el) return;
+  drag={r:el.getBoundingClientRect(), off:Number(el.dataset.off||0)};
+  S.focus=el.dataset.scrub; S.play=false; setT(fromX(e.clientX));
+});
+window.addEventListener('pointermove',e=>{ if(drag) setT(fromX(e.clientX)); });
+window.addEventListener('pointerup',()=>{ drag=null; });
+document.addEventListener('keydown',e=>{
+  const el=e.target.closest?.('[data-scrub]'); if(!el) return;
+  const d=e.shiftKey?10:1;
+  if(e.key==='ArrowRight'){e.preventDefault();S.focus=el.dataset.scrub;setT(S.t+d);}
+  if(e.key==='ArrowLeft'){e.preventDefault();S.focus=el.dataset.scrub;setT(S.t-d);}
+});
+document.addEventListener('focusout',e=>{ if(e.target.dataset?.scrub && !drag) setTimeout(()=>{ if(!document.activeElement?.dataset?.scrub) S.focus=null; }); });
+let timer=null;
+function setPlay(on){
+  S.play=on; clearInterval(timer);
+  if(on){ if(S.t>=T1) S.t=0; timer=setInterval(()=>{ S.t+=0.1*S.speed/60; if(S.t>=T1){S.t=T1;setPlay(false);} render(); },100); }
+  render();
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  if(b.dataset.v){ S.v=b.dataset.v; S.focus=null; try{localStorage.setItem('replay-variant',S.v);}catch(_){} render(); }
+  else if(b.dataset.scen){ S.scen=b.dataset.scen; render(); }
+  else if(b.dataset.jump){ setPlay(false); setT(Number(b.dataset.jump)); }
+  else if(b.dataset.speed){ S.speed=Number(b.dataset.speed); render(); }
+  else if(b.dataset.step){ setPlay(false); setT(S.t+Number(b.dataset.step)); }
+  else if(b.dataset.act==='play') setPlay(!S.play);
+  else if(b.dataset.act==='start'){ setPlay(false); setT(0); }
+});
+render();
+</script>

@@ -117,3 +117,26 @@ def test_realtime_skip_to_night_start():
     assert a.clock()["sim_at"] == "2026-10-01T17:00:00+09:00"
     a.skip("TODAY_20:00")
     assert a.clock()["sim_at"] == "2026-10-01T20:00:00+09:00"
+
+
+def test_realtime_preview_fire():
+    """알림 미리보기: 주의·고장·공기압은 그 등급 알람이 바로 나고, 정비는 고장 3분 뒤 수리 정비(MAINT)로 바뀐다 (2026-10-21)."""
+    from gen.realtime import Realtime
+    cfg = load_config()
+    a = Realtime(cfg, load_masters(cfg))
+    sev = {"warn": "WARN", "stop": "STOP", "air": "WARN", "maint": "STOP"}
+    fired = {}
+    for kind in ("warn", "stop", "air", "maint"):
+        r = fired[kind] = a.fire(kind)
+        a.tick(60 / a.speed)                                     # 1분
+        al = [e for e in a.events if e["type"] == "alarm"][-1]
+        assert (al["alarm_code"], al["equipment_id"], al["severity"]) == (r["alarm_code"], r["equipment_id"], sev[kind])
+    assert r["alarm_code"] and [e for e in a.events if e["type"] == "alarm"][-2]["alarm_code"] == "120"
+    a.speed = 1
+    eq, seen = r["equipment_id"], []
+    for _ in range(6):                                           # 6분: 고장 → (가동 없이) 바로 정비
+        a.tick(60)
+        seen.append(a.sim.mach[eq].cur_state[0])
+    assert seen[-1] == "MAINT" and "RUN" not in seen[seen.index("DOWN"):], seen
+    assert fired["maint"]["equipment_id"] != fired["stop"]["equipment_id"]   # 이미 고장 난 설비는 피함
+
