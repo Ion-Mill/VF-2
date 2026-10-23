@@ -118,8 +118,20 @@ const NAV_ICON: Record<string, string> = {
 };
 const btn = 'h-11 rounded-ctl border border-line bg-white px-3 text-body font-semibold hover:bg-tile';
 
+// 새로고침해도 로그인한 사람 그대로 — 화면은 주소(screenFromUrl)로 다시 열림 (사용자 요청 2026-10-23). 탭을 닫거나 로그아웃하면 지움
+const SESSION_USER = 'brk-session-user';
 export default function App() {
-  const [user, setUser] = useState<UserRec | null>(null);
+  const [user, setUserRaw] = useState<UserRec | null>(null);
+  const [ready, setReady] = useState(false); // 서버 그리기 때는 저장소를 못 읽어서, 읽기 전에는 로그인 화면을 잠깐도 보이지 않는다
+  useEffect(() => {
+    try { const id = sessionStorage.getItem(SESSION_USER); const u = USERS.find((x) => x.id === id); if (u) setUserRaw(u); } catch { /* 저장소를 못 쓰면 로그인부터 */ }
+    setReady(true);
+  }, []);
+  const setUser = (u: UserRec | null) => {
+    try { if (u) sessionStorage.setItem(SESSION_USER, u.id); else sessionStorage.removeItem(SESSION_USER); } catch { /* 저장 못 해도 화면은 계속 */ }
+    setUserRaw(u);
+  };
+  if (!ready) return null;
   if (!user) return <Login onLogin={setUser} />;
   return <Frame key="session" user={user} setUser={setUser} />;
 }
