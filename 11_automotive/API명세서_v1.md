@@ -157,7 +157,7 @@
 |---|---|---|---|---|---|---|
 | API-SET-01 | GET·PATCH `/api/settings/notification-rules` | 알림 기준값·재발 확인 기간 | G | 값 | — | SCR-25, FR-AST-02-16 |
 | API-SET-02 | GET·PATCH `/api/settings/targets` | 교대 목표(90)·하루 목표(180) | G | 값 | — | SCR-25 |
-| API-SET-03 | GET·PATCH `/api/settings/users` | 사용자·역할 | G | 값 | — | SCR-25, NFR-SEC-04 |
+| API-SET-03 | GET·PATCH `/api/settings/users` | 사용자·역할 — **2026-10-23부터 쓰지 않음** (설정 사용자 탭을 SCR-27로 옮김 → API-USR-01·03이 대신. 번호는 남김) | G | 값 | — | SCR-25, NFR-SEC-04 |
 | API-SIM-01 | POST `/api/sim/inject` | **사건 버튼** — 누른 때(시연 시계 지금) 사건 시작 (S1·S3·S4·S6, S2·S5는 과거 기록이라 버튼 없음) | 시연 모드 | `scenario_code` (시각은 보내지 않음) | 사건 ID(실행 중에만 쓰는 번호, DB 엔터티 아님 — 알람에는 `scenario_code`로 남음), 대상 설비, 시작 시각. 대상 설비가 가공 중(RUN)이 아니거나 진행 중인 사건이 있으면 `INVALID_STATE` (같은 사건 반복은 앞 사건이 끝난 뒤 가능) | NFR-DATA-10, 설계서 7장 |
 | API-SIM-02 | GET·POST `/api/sim/clock` | 시연 시계: 조회 / 배속(180·60·10·1배)·일시정지·다시 시작·넘기기 (지금 → 17:00. 넘기는 동안 남은 주간 교대를 만든다. 다음 날 06:00으로 넘기기는 없음, 2026-10-13) | 시연 모드 | POST: `speed` 또는 `paused` 또는 넘길 시각 | 지금 시연 시각, 배속, 일시정지 여부, 진행 중 사건, 버튼별 누를 수 있는지(잠긴 이유) | NFR-DATA-10, 기획서 15장 |
 | API-SIM-03 | POST `/api/sim/reset` | 시연 데이터 처음으로 — 10/1 08:00(9/30 끝 상태)으로 되돌림 (리허설용) | 시연 모드 | — | 시연 시각 08:00 | NFR-DATA-10, 테스트계획서 6장 |
@@ -187,6 +187,17 @@
 
   멈춘 때까지의 기록은 `export()`로 `out_realtime/` CSV가 된다 (번호는 9월 다음부터, 논리 ERD 11.1).
 
+
+### 2.10 직원 관리 (USR-01, MGR만, 2026-10-23)
+
+| ID | 방식 · 주소 | 하는 일 | 역할 | 보내는 값 | 돌려받는 값 | 화면 · 요구사항 |
+|---|---|---|---|---|---|---|
+| API-USR-01 | GET `/api/staff` | 직원 명단 + 배치표 + 결론 띠 | G | `period` (`today`·`7d`·`30d`·`sep`, 처음 `7d`), 역할·교대 거름 | 사람마다 `user_id`, `user_name`, `role_code`, `home_shift_type`, `home_process_code`·`home_process_code_2`, `is_active`, `on_shift`(지금 근무), `period_counts`(역할별 대표 숫자). 배치표 칸(공정·보전·반장 × 주간·야간 → 사람 목록), 담당 0명 칸 목록 | SCR-27, FR-USR-01-01~03·09·12 |
+| API-USR-02 | GET `/api/staff/{user_id}/activity` | 직원 상세: 숫자 4칸 + 최근 업무 | G | `period`, `page`·`size` | `kpis`(역할별 4개, 합계만), `items`(시각, 한 일 종류, 대상 번호, 열 화면·키) — 기존 표의 `~_by` 칸을 모은 것, 채팅 기록 없음 | SCR-27, FR-USR-01-07·08·10·11 |
+| API-USR-03 | PATCH `/api/staff/assignments` | 배치 바꾸기 (한 번에 여러 사람) | G | `changes`: 사람마다 `user_id`, 바꿀 `home_shift_type`·`home_process_code`·`home_process_code_2`, `reason`(선택) | 바뀐 사람 목록, 사람마다 수정 이력 `revision_id`(`APP_USER`), 그 결과 담당 0명 칸 | SCR-27, FR-USR-01-04~06 |
+
+- **API-USR-03 규칙:** 같은 역할만 그 줄에 넣을 수 있고(공정 = OPR, 보전 = MNT, 반장 = SUP), 담당 공정은 최대 2개 — 어기면 `VALIDATION`. 역할(`role_code`)·`is_active`는 이 API로 바꾸지 않는다 (FR-USR-01-11). 저장하면 바로 적용되고, 사람마다 `document_revision`(문서 종류 `APP_USER`, 문서 키 = `user_id`) + 바뀐 칸 전·후를 남겨 **API-DOC-02 수정 이력**으로 보인다.
+- MGR이 아니면 세 API 모두 `FORBIDDEN` (NFR-SEC-04·05).
 ---
 
 ## 3. 실시간 사건 (API-STR-01)
@@ -236,7 +247,7 @@
 | AST-01 브리핑 | API-AST-01 | ML-01 공구 수명 | API-TOOL-01·02 |
 | AST-02 알림 | API-NTF-01~04, API-STR-01, API-SET-01 | AST-03 수정 이력 | API-DOC-01·02, API-RPT-04, API-DOCS-02 |
 | MNT-01 질문 답변 | API-AST-02, API-DOCS-01 | AST-COM 비서 공통 | API-AST-01·02, API-MNT-01·10 |
-| 공통·권한·시연 | API-AUTH-01~04, API-SET-02·03, API-SIM-01~03 | | |
+| 공통·권한·시연 | API-AUTH-01~04, API-SET-02·03, API-SIM-01~03 | USR-01 직원 관리 | API-USR-01~03 |
 
 ---
 
@@ -270,3 +281,4 @@
 | v1 수정 | 2026-10-20 | 채팅 마이크 녹음 길이 (`구현_중_수정사항/1020_수정간단내용.md` 67장, API 수 63개 그대로): API-AST-02 딸림 설명의 POST `/api/assistant/transcribe` 상한을 "약 1.5MB·20초"에서 "약 1.5MB, 길이는 서버 설정(기본·최대 60초)"으로. 백엔드는 비서를 최대 45초까지 기다림 |
 | v1 수정 | 2026-10-21 | 알림 미리보기 [상황 일으키기] (`구현_중_수정사항/1021_수정간단내용.md` 55장, API 수 그대로): 10장 시연 API 아래에 API-SIM-01 딸림 POST `/api/sim/fire` [제안] |
 | v1 수정 | 2026-10-22 | 작업지시서 승인은 반장만 (`구현_중_수정사항/1022_수정간단내용.md` 6장, API 수 63개 그대로): API-MNT-06 역할 S·G → S, 하는 일에서 관리자 대리 승인을 뺌. API-MNT-08 취소 역할 G → 권한 없음 |
+| v1 수정 | 2026-10-23 | 직원 관리 USR-01 (`구현_중_수정사항/1023_수정간단내용.md` 7장, API 63 → **66개**): 2.10 새 절 — API-USR-01 명단·배치표, API-USR-02 직원 상세, API-USR-03 배치 바꾸기(수정 이력 `APP_USER`). API-SET-03은 쓰지 않음 표시(번호 남김). 5장 대응표에 USR-01 |

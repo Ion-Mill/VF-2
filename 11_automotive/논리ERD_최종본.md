@@ -10,7 +10,7 @@
 | 최종본 조사 근거 | R1 `docs/line/3D_설비규격/3D_설비규격_조사.md` (설비 크기·공장 배치), R2 `docs/background/데이터보관/데이터보관기간_조사.md` (보관 기간), R3 `docs/quality/CMM_자동입력/CMM_자동입력_조사.md` (CMM 자동 입력), R4 `docs/production/운영기준_근거/병목조치_반복알람_우선순위_조사.md` (반복 알람 2단계·보고 순위·필수 정지), R5 `docs/production/운영기준_근거/완제품_재고담당_현장화면_조사.md` (완제품·출하·재고 담당·06:00) |
 | 다음 문서 | 물리 ERD, AI 비서 설계 (기획서 18장 3·5번). API 명세서·테스트 계획서는 작성 완료 ([API명세서_v1.md](API명세서_v1.md), [테스트계획서_v1.md](테스트계획서_v1.md)) |
 | 엔터티 수 | **59개** (8개 주제 영역. 2026-10-13 `chat_log` 채팅 기록 추가) |
-| 코드 목록·관계·규칙 | 코드 목록 **54개** (6.1~6.54), 관계 **125개** (1~125), 규칙 **R-01~R-88** — R-20은 쓰지 않는 번호라 번호 규칙 87개 + 보조 규칙 4개(R-06a·R-24a·R-31a·R-45a) = **91개** |
+| 코드 목록·관계·규칙 | 코드 목록 **54개** (6.1~6.54), 관계 **126개** (1~126, 126 = 2026-10-23 직원 배치), 규칙 **R-01~R-88** — R-20은 쓰지 않는 번호라 번호 규칙 87개 + 보조 규칙 4개(R-06a·R-24a·R-31a·R-45a) = **91개** |
 
 > 이 문서는 **논리 모델만** 다룬다: 엔터티, 속성, 키(PK/FK), 관계, 카디널리티, 필수 여부, 값의 뜻, 코드 목록. DB 제품·물리 자료형·인덱스·파티션은 정하지 않는다 → **물리 ERD에서 [선택 필요: 기술 회의]**.
 > 기획서 12.4와 설계서 5장의 이름이 다르면 **설계서 5장 이름**을 쓰고 10장 대응표에 적는다. 최종본에서 더한 엔터티·속성 이름은 **2026-10-07 변경 명세 4장 이름**(모든 문서 공통)을 쓴다. ("변경 명세"는 2026-10-07 최종본 작업 때 쓴 내부 메모로 이 폴더에 없다. 결정은 [26.10.06_회의결과_수정사항.md](26.10.06_회의결과_수정사항.md)와 이 문서 3·5장에 반영되어 있다.)
@@ -2333,8 +2333,8 @@ erDiagram
 | 속성(영문) | 한국어 이름 | 논리 형식 | 키 | 필수 | 값·규칙 | 출처 |
 |---|---|---|---|---|---|---|
 | revision_id | 버전 번호 | 정수 | PK | ○ | 일련번호 | [제안] |
-| doc_type | 문서 종류 | 코드 | UK | ○ | 6.17 (작업지시서 / 작업기록서 / 교대 보고서 / 일일 보고서 / 사내 문서 / 예방 정비 실시 기록 / 출하 기록) | FR-AST-03-01, R5 표 C |
-| doc_key | 문서 번호 | 문자 | UK | ○ | doc_type에 따라 가리키는 키: MW-…, MR-… / MR-S-…, shift_id, 근무일 날짜, DOC-… / GLOSSARY, pm_record_id, SHP-… (R-35) | FR-AST-03-02 |
+| doc_type | 문서 종류 | 코드 | UK | ○ | 6.17 (작업지시서 / 작업기록서 / 교대 보고서 / 일일 보고서 / 사내 문서 / 예방 정비 실시 기록 / 출하 기록) + 직원 배치(APP_USER, 문서 아님, 2026-10-23) | FR-AST-03-01, R5 표 C |
+| doc_key | 문서 번호 | 문자 | UK | ○ | doc_type에 따라 가리키는 키: MW-…, MR-… / MR-S-…, shift_id, 근무일 날짜, DOC-… / GLOSSARY, pm_record_id, SHP-…, user_id(APP_USER) (R-35) | FR-AST-03-02 |
 | version_no | 버전 | 정수 | UK | ○ | 0부터. (doc_type, doc_key, version_no)는 UK. 0 = AI비서 초안 (사내 문서는 Rev.0 원본, 간이 작업기록·예방 정비 실시 기록·출하 기록은 사람이 처음 저장한 것) | 기획서 4.5, FR-AST-03-02 |
 | author_kind | 작성 주체 | 코드 | | ○ | 6.18 (AI / 사람). v0만 AI일 수 있음 | FR-AST-03-03 |
 | author_user_id | 고친 사람 | 문자 | FK | 조건 | → app_user. 사람이면 필수, AI면 비움 | FR-AST-03-02 |
@@ -2763,8 +2763,10 @@ erDiagram
 | INTERNAL_DOC | 사내 문서 (**용어집 포함** — GLOSSARY, 6.52) | internal_doc.doc_no | 같음, D-05 |
 | PM_RECORD | 예방 정비 실시 기록 | pm_record.pm_record_id | FR-AST-03-01 (같은 날 추가), DOC-04 5장 |
 | SHIPMENT | 출하 기록 (최종본 추가) [제안] | shipment.shipment_no | R5 표 C "확정 뒤 수정은 사유 필수 (FR-AST-03 모양)" |
+| APP_USER | 직원 배치 (2026-10-23 추가) | app_user.user_id | FR-USR-01-05 |
 
 - 지침카드(화면)는 문서 종류가 아니다 (확정하지 않음).
+- **직원 배치(APP_USER)** 는 문서가 아니지만 바꾼 사람·때·사유·칸 전후를 남기려고 같은 표를 빌린다 (2026-10-23, FR-USR-01-05). 관리자가 배치(담당 교대·담당 공정)를 바꿀 때마다 그 사람의 새 버전이 생긴다. author_kind = 사람, author_user_id = MGR만, status_after는 비움, 버전 0 = 처음 바꾸기 직전 배치 [제안]. FR-AST-03-01의 대상 문서 7종은 그대로다.
 - 출하 기록을 **넣었다** [제안]: 확정하면 완제품 재고가 빠지는 기록이라 고친 내역(누가·언제·사유)이 필요하다 (NFR-REL-02·03, R5 표 C). 요구사항 FR-AST-03-01·기획서 AST-03·4.5·UI설계서 SCR-17도 일곱 종류로 맞췄다 (교차 점검 2026-10-07, 12장 #17).
 - 예방 정비 실시 기록을 **넣었다** [제안]: 기획서 4.5 "모든 문서에 버전, 수정한 사람, 시각, 바뀐 내용, 사유가 남는다", DOC-04 5장 "확정한 기록을 고치면 수정 이력(AST-03)에 남는다", 확정하면 재고가 빠지는 기록이라 고친 내역이 필요하다 (NFR-REL-02·03). 기획서_최종본 AST-03 표·13.1에도 반영됐다 (최종본에서 출하 기록을 더해 일곱 종류, 12장 #6·#17). 보기 권한은 13.1 "수정 이력" 줄을 따른다.
 
@@ -3411,6 +3413,7 @@ erDiagram
 | 123 | 원인 점검 요청의 간이 작업기록 | notification | work_record (cause_check_notification_id) | 0..1 : 0..1 | 다른 공정만, 간이 작업기록 1건, 확정 = MNT |
 | 124 | 출하의 버전 | shipment | document_revision (doc_type SHIPMENT + doc_key) | 1 : 1..N | 관계 93과 같은 규칙 (버전은 일곱 종류 중 하나만 가리킴, R-35) |
 | 125 | 사용자의 채팅 기록 | app_user | chat_log (user_id) | 1 : 0..N | 사용자(로그인 아이디)마다 따로 저장, 본인 기록만 봄 [제안], 30일 지나면 삭제 (6.53) |
+| 126 | 직원 배치의 버전 (2026-10-23) | app_user | document_revision (doc_type APP_USER + doc_key) | 1 : 0..N | 배치를 바꿀 때만 생김. 고친 사람은 MGR만 (FR-USR-01-04·05) |
 
 ---
 
@@ -3582,6 +3585,7 @@ erDiagram
 | ML-01 공구 수명 | FR-ML-01-01~08 | tool, tool_usage, tool_change | tool_type, operation_report, alarm_event (362·174) |
 | QLT-01 검사 기록·불량 집계 | FR-QLT-01-01~22 | inspection_plan, inspection_result, defect_record, inspection_item (Cpk 전수 표시), cmm_import, notification (CMM 알림) | production_lot, lot_hold, defect_code, equipment (CMM-01), app_user |
 | AI 비서 공통 | FR-AST-COM-01~21 | (규칙) document_revision.author_kind, equipment_state_log.reason_suggested_code, notification.report_rank (전부 보고 순서, 계산) | doc_chunk, internal_doc, alarm_master, alarm_guide_map, notification_rule |
+| USR-01 직원 관리 (2026-10-23) | FR-USR-01-01~12 | app_user (담당 교대·담당 공정만), document_revision, document_revision_change (APP_USER) | shift, operation_report, equipment_state_log, tool_change, maintenance_work_order, work_record, pm_record, inspection_result, defect_record, lot_hold, inventory_txn, shipment, shift_report, daily_report, document_revision (모든 `~_by` 칸을 사람별로 읽음. chat_log는 읽지 않음) |
 | 비기능: 데이터 | NFR-DATA-01~13 | 생성기가 모든 엔터티를 만든다 (NFR-DATA-12 역할 바꿔 보기는 화면 기능 — 새 엔터티 없음, app_user·role만 읽음). NFR-DATA-13 보관 기간 = 6.53 (모든 엔터티) | 8장 R-01~R-88 |
 | 비기능: 보안·권한 | NFR-SEC-01~08 | app_user, role, role_permission (MGR 전체 조회 R-76) | 모든 `~_by` 칸. NFR-SEC-08(외부 LLM에 보내는 자료의 범위)은 새 엔터티 없음 — 외부로 보내는 것은 질문·사내 문서 조각·가상 운영 값으로 한정하고 사람 이름·사원 번호·계정 정보는 보내지 않음 (R-87, 걸러내는 단계는 구현 전) |
 | 비기능: 안전 | NFR-SAFE-01~05 | work_record_check, maintenance_work_order.safety_block_doc_rev | isolation_point, alarm_master.lockout_level, pm_task.lockout_level |
@@ -3785,6 +3789,7 @@ erDiagram
 | 최종본 수정 (교대 보고서 인계 사항 비서 범위 맞춤, 2026-10-19) | 2026-10-19 | 엔터티·속성·관계 수 그대로 (글만 고침). `shift_report` 설명의 "특이 사항·인계 문장은 비서"를 "특이 사항 문장은 비서(LLM), 인계 사항 문장은 프로그램"으로, `handover_text` 설명의 "비서는 순서를 바꾸거나 빼지 않는다"를 "프로그램이 항목·순서·문장을 만든다"로 고침 (요구사항정의서 FR-PRD-02-08과 같이, R-73 일반 원칙은 그대로, `구현_중_수정사항/1019_수정간단내용.md` 13장) | 비서(LLM) 담당 |
 | 최종본 수정 (재공 자리 WIP-2, 2026-10-20) | 2026-10-20 | 엔터티·속성·관계 수 그대로. `layout_object` WIP-2(OP-20→30)를 VF2-01·02 사이 앞(13,188~14,388)에서 MIL-01·VF2-01 사이 앞(10,040~11,240)으로 — 3D 화면에서 2공정·3공정 사이에 보이게 (사용자 요청) |
 | 최종본 수정 (작업지시서 승인은 반장만, 2026-10-22) | 2026-10-22 | 엔터티·속성·관계 수 그대로 (글만 고침). `maintenance_work_order.approved_by` 는 반장만. `cancelled_by`·`approved_as_proxy` 계산에 쓰는 역할 비교·상태 코드 CANCELLED 는 칸으로 남기고, 새 취소 권한은 없다. (`구현_중_수정사항/1022_수정간단내용.md` 6장) | 문서 담당 |
+| 최종본 수정 (직원 관리 USR-01, 2026-10-23) | 2026-10-23 | 엔터티·속성 수 그대로, 관계 125 → 126개(맨 위 요약 줄도), 코드 목록 수 그대로(6.17에 값 하나). 6.17 문서 종류에 **APP_USER(직원 배치)** — 관리자가 배치를 바꾸면 `document_revision`에 사람마다 새 버전(문서 아님, FR-AST-03-01 7종 그대로). `doc_type`·`doc_key` 설명, 7장 관계 126(app_user → document_revision), 9장 추적표 USR-01 줄 (`구현_중_수정사항/1023_수정간단내용.md` 7장) | 프론트엔드 |
 
 **문서끼리 다르던 점과 이 문서의 선택**
 
