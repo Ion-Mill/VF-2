@@ -157,3 +157,20 @@ h1,h2,h3{letter-spacing:-.01em;}
 .fs-up .text-title { font-size: 24px; }
 .fs-up .text-\[12px\] { font-size: 13px; }
 .fs-up .text-\[13px\] { font-size: 14px; }
+
+/* 문서 인쇄 (2026-10-23): 화면 캡처가 아니라 문서 틀(DocKit DocPage의 data-print)만 A4에 이어서 찍는다.
+   문서로 가는 길(조상)은 높이 고정·스크롤 숨김을 풀고, 나머지(위 바·3D·이브·알림)는 숨긴다 */
+@media print {
+  @page { size: A4; margin: 10mm; }
+  html, body { height: auto !important; background: #fff !important; }
+  body *:not(:has([data-print])):not([data-print]):not([data-print] *) { display: none !important; }
+  body :has([data-print]), [data-print] { display: block !important; position: static !important; height: auto !important; min-height: 0 !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; background: #fff !important; }
+  /* 폭 1000px로 놓고 줄여 찍음 — 배율은 [인쇄] 버튼(DocKit printDoc)이 한 장에 맞춰 넣고, Ctrl+P면 폭만 맞춤(0.718). 종이 폭에선 md·lg 칸이 안 켜지므로 문서 화면에 print: 칸을 같이 둠 */
+  [data-print] > div { max-width: none !important; width: 1000px !important; zoom: var(--print-zoom, .718); }
+  /* 글자만 있는 버튼 = 인쇄·닫기·저장 같은 조작 → 숨김. 칩을 감싼 버튼(주간·야간 확정, 수정 이력 버전)은 내용이라 남김 */
+  [data-print] button:not(:has(*)), [data-print] select { display: none !important; }
+  [data-print] .shadow-card { box-shadow: none !important; }
+  [data-print] section, [data-print] tr, [data-print] li { break-inside: avoid; }
+  [data-print] h2, [data-print] h3 { break-after: avoid; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; } /* 상태 칩 옅은 바탕색 유지 */
+}

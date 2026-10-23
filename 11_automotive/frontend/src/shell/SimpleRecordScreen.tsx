@@ -10,7 +10,7 @@ import { ALARMS, LEVEL_VIEW, alarmTitle, hhmm, machineLabel, sevText } from './m
 import { ConfirmBox, LOCK, LockChecks, LockHead, SafeTag, SafetyBlock, needsLock, safetySrc } from './Safety';
 import { PartsPicker } from './WorkRecordScreen';
 import { diff, rev, type SimpleRecord } from './workflow';
-import { Acts, Band, Chip, DocHead, DocPage, RO, Sec, SrcFold, Steps } from './DocKit';
+import { Acts, Band, Chip, DocHead, DocPage, printDoc, RO, Sec, SrcFold, Steps } from './DocKit';
 
 export default function SimpleRecordScreen({ no }: { no: string }) {
   const { srs, putSr, alerts, user, role, back, markAlert, notices, handleNotice, go, toast, reloadInv, openSource, inv } = useApp();
@@ -54,7 +54,7 @@ export default function SimpleRecordScreen({ no }: { no: string }) {
   return (
     <DocPage>
       <DocHead title={<>{cause ? '원인 점검 간이 기록' : '간이 작업기록'} <span className="font-mono">{rec.no}</span></>}
-        right={<><Steps list={['입력', '확정']} cur={done ? 1 : 0} />{(role !== 'OPR' || rec.savedBy === user.name || rec.by === user.name) && <button onClick={() => go('revs', `SR:${rec.no}`)} className={BTN}>수정 이력</button>}<button onClick={back} className={BTN}>닫기</button></>} />
+        right={<><Steps list={['입력', '확정']} cur={done ? 1 : 0} />{(role !== 'OPR' || rec.savedBy === user.name || rec.by === user.name) && <button onClick={() => go('revs', `SR:${rec.no}`)} className={BTN}>수정 이력</button>}<button onClick={printDoc} className={BTN}>인쇄</button><button onClick={back} className={BTN}>닫기</button></>} />
       <Band tone={tone}
         title={<><span style={{ color: lv.color }}>{lv.icon} {a ? sevText(a) : ''}</span> · {MACHINES[rec.machine].name} · 알람 <span className="font-mono" style={{ color: lv.color }}>{rec.code}</span> {a ? a.nameKo.replace(/\(.*\)/, '') : alarmTitle(a, rec.code)}</>}
         desc={a?.easy}

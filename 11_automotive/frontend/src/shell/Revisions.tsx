@@ -9,7 +9,7 @@ import { BTN, useApp } from './ctx';
 import { hm, md, useFetch } from './live';
 import { userName } from './model';
 import type { Revision } from './workflow';
-import { Chip, DocHead, DocPage, Sec } from './DocKit';
+import { Chip, DocHead, DocPage, printDoc, Sec } from './DocKit';
 
 const TYPE: Record<string, string> = { WO: '정비 작업지시서', WR: '작업기록서', SR: '간이 작업기록', SHIFT: '교대 보고서', DAILY: '일일 보고서', MAINT_WO: '정비 작업지시서', WORK_RECORD: '작업기록서', QUICK_RECORD: '간이 작업기록', SHIFT_REPORT: '교대 보고서', DAILY_REPORT: '일일 보고서', PM_RECORD: '예방 정비 실시 기록', SHIPMENT: '출하 기록', INTERNAL_DOC: '사내 문서' };
 const SRV: Record<string, string> = { SHIFT: 'SHIFT_REPORT', DAILY: 'DAILY_REPORT' };
@@ -49,7 +49,7 @@ export function RevisionsScreen() {
     const shown = list.filter((x) => !type || (TYPE[x.doc_type] ?? x.doc_type) === type);
     return (
       <DocPage width={1440}>
-        <DocHead title="수정 이력" sub="모든 문서 · 최근 순" right={<button onClick={back} className={BTN}>닫기</button>} />
+        <DocHead title="수정 이력" sub="모든 문서 · 최근 순" right={<><button onClick={printDoc} className={BTN}>인쇄</button><button onClick={back} className={BTN}>닫기</button></>} />
         {role !== 'OPR' && <CBand spec={revsBand(list[0] && { at: `${md(list[0].created_at)} ${hm(list[0].created_at)}`, doc: TYPE[list[0].doc_type] ?? list[0].doc_type, no: list[0].doc_key, who: list[0].author_kind === 'AI' ? '비서' : userName(list[0].author_user_id), ver: `v${list[0].version_no}` })} />}{/* 디자인 통일 C안: 결론 띠 (bands.ts revsBand) */}
         {role === 'OPR' ? blocked('작업자는 자기가 쓴 간이 작업기록의 이력만 볼 수 있습니다') : (<>
           <div className="flex flex-wrap gap-1.5">{['', ...types].map((t) => <button key={t || '전체'} onClick={() => setType(t)} className={`h-9 rounded-full border px-3 text-small font-semibold ${type === t ? 'border-brand-line bg-brand-tint text-brand-ink' : 'border-line bg-white'}`}>{t || '전체'}</button>)}</div>
@@ -65,9 +65,9 @@ export function RevisionsScreen() {
   }
   return (
     <DocPage width={1100}>
-      <DocHead title="수정 이력" sub={`${TYPE[kind]} ${id}`} right={<><button onClick={() => go('revs', null)} className={BTN}>모든 문서 보기</button><button onClick={back} className={BTN}>닫기</button></>} />
+      <DocHead title="수정 이력" sub={`${TYPE[kind]} ${id}`} right={<><button onClick={() => go('revs', null)} className={BTN}>모든 문서 보기</button><button onClick={printDoc} className={BTN}>인쇄</button><button onClick={back} className={BTN}>닫기</button></>} />
       {isBlocked ? blocked('작업자는 자기가 쓴 간이 작업기록의 이력만 볼 수 있습니다') : revs.length === 0 ? <Sec title="버전 없음"><span className="text-body text-ink-2">저장하면 생깁니다</span></Sec> : (
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-[300px_minmax(0,1fr)]">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-[300px_minmax(0,1fr)] print:grid-cols-[300px_minmax(0,1fr)]">
           <ol className="flex flex-col gap-1.5">
             {revs.map((r, i) => (
               <li key={i}><button onClick={() => setSel(i)} aria-pressed={i === sel} className={`flex w-full flex-col gap-1 rounded-tile border px-3 py-2 text-left text-body ${i === sel ? 'border-ink bg-tile' : 'border-line bg-white hover:bg-tile'}`}>

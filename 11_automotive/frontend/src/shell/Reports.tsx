@@ -13,7 +13,7 @@ import { parseHandover } from './Briefing';
 import { NO_LOCKOUT, handoverCount } from './reportLabels';
 import { ConfirmBox } from './Safety';
 import { WO_STEPS } from './workflow';
-import { Acts, Bar, Chip, DocHead, DocPage, Fold, InfoRow, Kpi, RankRow, ReportLine, ReportLines, RO, Sec, Steps, type Tone } from './DocKit';
+import { Acts, Bar, Chip, DocHead, DocPage, Fold, InfoRow, Kpi, printDoc, RankRow, ReportLine, ReportLines, RO, Sec, Steps, type Tone } from './DocKit';
 
 const ST: Record<string, string> = { AI_DRAFT: 'AI비서 초안', EDITING: '수정 중', CONFIRMED: '확정' };
 // 9월 기록의 영어 상태 → 한글
@@ -89,7 +89,7 @@ export function ShiftReportScreen() {
         right={<Steps list={['AI_DRAFT', 'EDITING', 'CONFIRMED'].map((s) => `${ST[s]}${r.status === s ? ` v${ver}` : ''}`)} cur={['AI_DRAFT', 'EDITING', 'CONFIRMED'].indexOf(r.status)} />} />
       <InfoRow right={<>
         <select aria-label="교대" value={sid} onChange={(e) => go('shift', e.target.value)} className="h-11 rounded-ctl border border-line bg-white px-2 text-body">{[...(shiftReports ?? [])].reverse().map((x) => <option key={x.shift_id}>{x.shift_id}</option>)}</select>
-        <button onClick={() => go('revs', `SHIFT:${sid}`)} className={BTN}>수정 이력</button><button onClick={() => window.print()} className={BTN}>인쇄</button><button onClick={back} className={BTN}>닫기</button>
+        <button onClick={() => go('revs', `SHIFT:${sid}`)} className={BTN}>수정 이력</button><button onClick={printDoc} className={BTN}>인쇄</button><button onClick={back} className={BTN}>닫기</button>
       </>}>
         {confirmed ? <Chip tone="ok"><LockIcon /> 확정 {userName(r.confirmed_by)} {r.confirmed_at ? `${md(r.confirmed_at)} ${hm(r.confirmed_at)}` : ''}</Chip> : <span className="font-semibold text-ink-2">ⓘ 확정 전</span>}
         {r.partial && <Chip tone="acc">교대 진행 중</Chip>}
@@ -97,7 +97,7 @@ export function ShiftReportScreen() {
 
       <Sec title="생산" right={<Chip tone={pct < 90 ? 'warn' : 'ok'}>목표 대비 {pct}%</Chip>}>
         <div className="flex flex-col gap-3">
-          <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4">
+          <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4 print:grid-cols-4">
             <Kpi label="실적" value={actual} unit="개" tone="main" />
             <Kpi label="총 목표" value={target} unit="개" />
             <Kpi label={actual >= target ? '초과' : '남은 수량'} value={Math.abs(target - actual)} unit="개" tone={actual >= target ? 'ok' : 'bad'} />
@@ -108,7 +108,7 @@ export function ShiftReportScreen() {
             {['VF2-01', 'VF2-02'].map((m) => <span key={m}>{m} <b className="ml-1 font-mono text-title font-semibold text-ink">{r.availability?.[m] ?? '—'}</b>%</span>)}</div>
         </div>
       </Sec>
-      <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-2 print:grid-cols-2">
         <Sec title="필수 정지" right={<Chip tone={stops.length ? 'crit' : 'ok'}>{stops.length}건 · {stopMin}분</Chip>}>
           {stops.length ? stops.map((s, i) => { const w = myWos.find((x) => x.alertId === `a-${s.alarm_event_id}`) ?? null; const pw = pastWos.find((x) => x.alarm_event_id && x.alarm_event_id === String(s.alarm_event_id)) ?? pastWos.find((x) => x.equipment_id === s.equipment_id && x.created_at >= s.start_at && x.created_at <= s.end_at); return (
             <div key={i} className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-t border-dashed border-line py-2 text-body first:border-t-0">
@@ -218,14 +218,14 @@ export function DailyReportScreen() {
   const prodItems = items.filter((x) => x.rank === '생산');
   const urgItems = stops.length ? [] : items.filter((x) => x.rank === '긴급');
   const warnItems = items.filter((x) => x.rank === '주의'), refItems = items.filter((x) => x.rank === '참고');
-  const probGrid = 'grid grid-cols-[76px_minmax(0,1fr)_76px] items-center gap-x-3 gap-y-1 border-t border-dashed border-line py-2.5 text-body first:border-t-0 md:grid-cols-[76px_minmax(0,1fr)_84px_minmax(0,1.1fr)_40px]';
+  const probGrid = 'grid grid-cols-[76px_minmax(0,1fr)_76px] items-center gap-x-3 gap-y-1 border-t border-dashed border-line py-2.5 text-body first:border-t-0 md:grid-cols-[76px_minmax(0,1fr)_84px_minmax(0,1.1fr)_40px] print:grid-cols-[76px_minmax(0,1fr)_84px_minmax(0,1.1fr)_40px]';
 
   return (
     <DocPage width={1100}>
       <DocHead title="일일 보고서" sub={`${md(d)} · 생산일 08:00 ~ 다음 날 05:00`} right={<Steps list={['AI비서 초안', '확정']} cur={confirmed ? 1 : 0} />} />
       <InfoRow right={<>
         <select aria-label="날짜" value={d} onChange={(e) => go('daily', e.target.value)} className="h-11 rounded-ctl border border-line bg-white px-2 text-body">{[...(dailyReports ?? [])].reverse().map((x) => <option key={x.work_date}>{x.work_date}</option>)}</select>
-        <button onClick={() => go('revs', `DAILY:${d}`)} className={BTN}>수정 이력</button><button onClick={() => window.print()} className={BTN}>인쇄</button><button onClick={back} className={BTN}>닫기</button>
+        <button onClick={() => go('revs', `DAILY:${d}`)} className={BTN}>수정 이력</button><button onClick={printDoc} className={BTN}>인쇄</button><button onClick={back} className={BTN}>닫기</button>
       </>}>
         <button onClick={() => go('shift', `${d}-D`)}><Chip tone={day?.status === 'CONFIRMED' ? 'ok' : 'warn'}>주간 {day?.status === 'CONFIRMED' ? <><LockIcon /> 확정</> : 'ⓘ 미확정'}</Chip></button>
         <button onClick={() => go('shift', `${d}-N`)}><Chip tone={night?.status === 'CONFIRMED' ? 'ok' : 'warn'}>야간 {night?.status === 'CONFIRMED' ? <><LockIcon /> 확정</> : 'ⓘ 미확정'}</Chip></button>
@@ -241,7 +241,7 @@ export function DailyReportScreen() {
             const dq = Number(day?.actual_qty ?? 0) || 0, nq = Number(night?.actual_qty ?? 0) || 0, sum = dq + nq;
             const gap = actual >= target ? '초과' : '부족';
             return (
-              <div className="grid grid-cols-2 gap-2.5 md:grid-cols-5">
+              <div className="grid grid-cols-2 gap-2.5 md:grid-cols-5 print:grid-cols-5">
                 <Kpi field="실적" label="실적" value={actual} unit="개" sub={`목표 ${target}개`} tone="main" />
                 <div className="flex min-w-0 flex-col gap-1.5 rounded-tile border border-line bg-white px-3 py-2">
                   <span data-summary-field="주간 / 야간" className="text-small text-ink-2">주간 / 야간</span>
@@ -261,18 +261,18 @@ export function DailyReportScreen() {
       </div>
 
       <Sec title="오늘의 문제" right={<><Chip tone="crit">고장 손실 약 {r.failure_loss_qty}개</Chip><Chip tone="warn">속도 손실 약 {r.speed_loss_qty}개</Chip><Chip>추정</Chip></>}>
-        <div className="hidden grid-cols-[76px_minmax(0,1fr)_84px_minmax(0,1.1fr)_40px] gap-3 pb-1 text-small text-ink-2 md:grid"><span>문제</span><span /><span className="text-right">생산 피해</span><span>처리</span><span /></div>
-        {safeItems.map((x) => <div key={x.text} className={probGrid}><Chip tone="solid-crit"><LockIcon /> 안전</Chip><span className="col-span-2 md:col-span-4"><ReportLine text={x.text} /></span></div>)}
+        <div className="hidden grid-cols-[76px_minmax(0,1fr)_84px_minmax(0,1.1fr)_40px] gap-3 pb-1 text-small text-ink-2 md:grid print:grid"><span>문제</span><span /><span className="text-right">생산 피해</span><span>처리</span><span /></div>
+        {safeItems.map((x) => <div key={x.text} className={probGrid}><Chip tone="solid-crit"><LockIcon /> 안전</Chip><span className="col-span-2 md:col-span-4 print:col-span-4"><ReportLine text={x.text} /></span></div>)}
         {[...stops].sort((a, b) => b.loss_qty - a.loss_qty).map((s, i) => (
           <div key={i} className={probGrid}>
             <Chip tone="solid-crit">⚠ 긴급</Chip>
             <span><b>{s.equipment_id}</b> · {s.reason_name} <b className="font-mono">{s.minutes}</b>분 <span className="text-small text-ink-2">{md(s.start_at)} {hm(s.start_at)}</span></span>
             <span className="text-right font-mono text-title font-semibold text-crit">−{s.loss_qty}<small className="ml-0.5 font-sans text-small font-normal text-ink-2">개</small></span>
-            <span className="col-span-3 flex flex-wrap items-center gap-1.5 md:col-span-1">{fixOf(s)}</span>
-            <button onClick={() => go('replay', s.start_at)} aria-label={`다시 보기 ${md(s.start_at)} ${hm(s.start_at)}`} className="hidden h-9 rounded-ctl border border-line bg-white text-small hover:bg-tile md:block">▶</button>
+            <span className="col-span-3 flex flex-wrap items-center gap-1.5 md:col-span-1 print:col-span-1">{fixOf(s)}</span>
+            <button onClick={() => go('replay', s.start_at)} aria-label={`다시 보기 ${md(s.start_at)} ${hm(s.start_at)}`} className="hidden h-9 rounded-ctl border border-line bg-white text-small hover:bg-tile md:block print:block">▶</button>
           </div>))}
-        {urgItems.map((x) => <div key={x.text} className={probGrid}><Chip tone="solid-crit">⚠ 긴급</Chip><span className="col-span-2 md:col-span-4"><ReportLine text={x.text} /></span></div>)}
-        {prodItems.map((x) => <div key={x.text} className={probGrid}><Chip tone="warn">▲ 생산</Chip><span className="col-span-2 md:col-span-4">{prodText(x.text)}</span></div>)}
+        {urgItems.map((x) => <div key={x.text} className={probGrid}><Chip tone="solid-crit">⚠ 긴급</Chip><span className="col-span-2 md:col-span-4 print:col-span-4"><ReportLine text={x.text} /></span></div>)}
+        {prodItems.map((x) => <div key={x.text} className={probGrid}><Chip tone="warn">▲ 생산</Chip><span className="col-span-2 md:col-span-4 print:col-span-4">{prodText(x.text)}</span></div>)}
         {safeItems.length + stops.length + urgItems.length + prodItems.length === 0 && <span className="text-body text-ink-2">긴급 · 생산 문제 없음</span>}
         {(warnItems.length > 0 || refItems.length > 0) && <div className="mt-2"><Fold summary={`주의 ${warnItems.length}건 · 참고 ${refItems.length}건`}>
           {warnItems.length > 0 && <RankRow left={<Chip>주의</Chip>}><div className="flex flex-col gap-1.5">{warnItems.map((x) => <ReportLine key={x.text} text={x.text} />)}</div></RankRow>}
