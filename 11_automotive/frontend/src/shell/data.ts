@@ -20,6 +20,7 @@ export const MENU: [string, string, string, string, string, string][] = [
   ['공구 수명', 'SCR-22', '○', '○', '보기', '보기'],
   ['예방 정비', 'SCR-23', '—', '○', '보기', '보기'],
   ['사내 문서', 'SCR-24', '보기', '보기', '보기', '보기'],
+  ['직원 관리', 'SCR-27', '—', '—', '—', '○'],
   ['설정', 'SCR-25', '—', '—', '—', '○'],
 ];
 export const ROLE_COL: Record<Role, number> = { OPR: 2, MNT: 3, SUP: 4, MGR: 5 };

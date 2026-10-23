@@ -139,6 +139,12 @@ t('현장 모니터: 고장이 주의보다 먼저', () => {
   assert.equal(b.tone, 'crit');
 });
 t('설정: 기본 알림 기준 문장', () => { assert.equal(B.settingsBand({ repeat_days: 7, repeat_count: 3, target_risk_pct: 90 }, 0).title, '알림 기준 — 반복 알람 7일 안 3번 · 목표 미달 위험 90%'); });
+t('직원 관리: 빈 공정이면 주의, 없으면 근무 인원', () => {
+  const w = B.staffBand(6, '주간', ['야간 OP-20', '야간 OP-30']);
+  assert.equal(w.tone, 'warn'); assert.equal(w.title, '야간 OP-20 담당이 없어요 외 1칸');
+  assert.equal(B.staffBand(6, '주간', []).title, '지금 주간 근무 6명 · 담당 없는 공정 없음');
+  assert.equal(B.staffBand(0, null, []).title, '지금 근무 중인 교대 없음 · 담당 없는 공정 없음');
+});
 
 if (fail) { console.log(`\n${fail}개 실패`); process.exit(1); }
 console.log('\n전부 통과');

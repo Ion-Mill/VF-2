@@ -8,7 +8,7 @@ import type { AlertRec, Notice, UserRec } from './model';
 import type { SimpleRecord, WorkOrder, WorkRecord } from './workflow';
 
 export type Screen = 'line' | 'layout2d' | 'field' | 'cards' | 'card' | 'wo' | 'wr' | 'sr' | 'docs' | 'replay' | 'shift' | 'daily' | 'revs'
-  | 'lots' | 'quality' | 'qcap' | 'inventory' | 'tools' | 'pm' | 'idocs' | 'settings';
+  | 'lots' | 'quality' | 'qcap' | 'inventory' | 'tools' | 'pm' | 'idocs' | 'staff' | 'settings';
 
 export interface Settings { bloom: boolean; sound: boolean; cards: boolean; monitorInch: number; distanceM: number; fontScale: boolean; autoReturnSec: number }
 export const DEFAULT_SETTINGS: Settings = { bloom: true, sound: true, cards: false, monitorInch: 55, distanceM: 3, fontScale: false, autoReturnSec: 90 };

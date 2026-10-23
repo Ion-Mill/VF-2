@@ -8,7 +8,7 @@ import { ID_OF, LAYOUT, LEGEND, MACHINES, type Role } from './data';
 import { Ctx, DEFAULT_SETTINGS, type AppCtx, type History, type Inv, type Screen, type Settings } from './ctx';
 import { api, md, SIM, simIso, tsOf, useFetch, useLive, useLocal, usePersist, type SimEvent } from './live';
 import { askGuideCard } from './assistText';
-import { ALARMS, ROLE_NAME, SHIFT_NAME, USERS, homeScreen, levelOfSev, type AlarmRec, type AlertRec, type Notice, type UserRec } from './model';
+import { ALARMS, ROLE_NAME, SHIFT_NAME, USERS, applyAssignments, homeScreen, levelOfSev, type AlarmRec, type AlertRec, type Notice, type UserRec } from './model';
 import { derive, fromEvents, fromPast, groupPmPast, repeatOf, type RuleCtx } from './rules';
 import { LOCK } from './Safety';
 import { nextNo, pad, rev, type SimpleRecord, type WorkOrder, type WorkRecord } from './workflow';
@@ -36,6 +36,7 @@ import { ToolsScreen } from './ToolsScreen';
 import { PmPage } from './PmScreen';
 import { DocsScreen, SourcePopup } from './DocsScreen';
 import { SettingsScreen } from './SettingsScreen';
+import { StaffScreen } from './StaffScreen';
 
 const FactoryDashboard: any = dynamic(() => import('@/components/FactoryDashboard'), {
   ssr: false,
@@ -45,19 +46,19 @@ const FactoryDashboard: any = dynamic(() => import('@/components/FactoryDashboar
 const TITLE: Record<Screen, string> = {
   line: '3D 라인 뷰', layout2d: '3D 라인 뷰 · 2D 배치도', field: '현장 모니터', cards: '지침카드', card: '지침카드', wo: '정비 작업지시서', wr: '작업기록서', sr: '간이 작업기록',
   docs: '문서함', replay: '다시 보기', shift: '교대 보고서', daily: '일일 보고서', revs: '수정 이력', lots: '로트 추적', quality: '검사 기록', qcap: '공정 능력 · 불량',
-  inventory: '재고', tools: '공구 수명', pm: '예방 정비 일정', idocs: '사내 문서', settings: '설정',
+  inventory: '재고', tools: '공구 수명', pm: '예방 정비 일정', idocs: '사내 문서', staff: '직원 관리', settings: '설정',
 };
 // 제목 밑 한 줄 설명 (화이트 카드 · 파스텔 블루 목업, 2026-10-21) — 없는 화면은 제목만
 const SUB: Partial<Record<Screen, string>> = {
   field: '설비를 누르면 3D 화면 아래에 설비 패널이 열립니다.', cards: '알람마다 나온 지침카드를 처리합니다.', docs: '작업지시서와 기록 문서를 찾아 확인합니다.',
   lots: '원자재부터 출하까지 한 로트가 지나온 길을 봅니다.', quality: '로트별 측정 결과와 부품 지도를 봅니다.', qcap: '측정값 전체로 공정 능력과 불량을 봅니다.',
   inventory: '공구 · 소모품 · 원자재 · 완제품 재고를 봅니다.', tools: '공구별 사용량과 교체 이력을 봅니다.', pm: '설비별 예방 정비 기한과 오늘 할 일을 봅니다.',
-  revs: '문서가 언제 누구에 의해 바뀌었는지 봅니다.', idocs: '사내 표준 문서를 찾아 봅니다.', settings: '알림 기준과 기준 값을 바꿉니다.',
+  revs: '문서가 언제 누구에 의해 바뀌었는지 봅니다.', idocs: '사내 표준 문서를 찾아 봅니다.', staff: '직원 배치와 사람별 업무 기록을 봅니다 (관리자만).', settings: '알림 기준과 기준 값을 바꿉니다.',
 };
 // 메뉴 (페이지구조 v3 5.1). 권한 없는 페이지는 흐리게 (N3) — 열 수 있는 역할 목록, 없으면 전원
 const MENU_V3: [string, Screen | 'home', Role[]?][] = [
   ['홈', 'home'], ['지침카드', 'cards'], ['문서함', 'docs'], ['로트 추적', 'lots'], ['품질', 'quality', ['OPR', 'SUP', 'MGR']], ['공정 능력 · 불량', 'qcap', ['SUP', 'MGR']], ['재고', 'inventory'], ['공구 수명', 'tools'],
-  ['예방 정비', 'pm', ['MNT', 'SUP', 'MGR']], ['다시 보기', 'replay'], ['현장 모니터', 'field'], ['설정', 'settings', ['MGR']],
+  ['예방 정비', 'pm', ['MNT', 'SUP', 'MGR']], ['다시 보기', 'replay'], ['현장 모니터', 'field'], ['직원 관리', 'staff', ['MGR']], ['설정', 'settings', ['MGR']],
 ];
 // 문서함 카테고리 (v3 문서함 8개) — 고르면 오른쪽에 그 화면. 문서 하나를 열어도 문서함 안에 보임
 const DOC_CATS: [string, Screen, string | null, Role[]?][] = [
@@ -80,7 +81,7 @@ const expandRefs = (lines: string[]) => lines.flatMap((s) => {
   return m && src ? fullOrder(src).slice(+m[2] - 1, +m[3]).map((x, i) => `${x} (§${m[1]} 점검 ${+m[2] + i})`) : [s];
 });
 const woSteps = (al: AlarmRec, trigger: WorkOrder['trigger']) => expandRefs(trigger === 'REPEAT_2' ? (al.maint.length ? al.maint : al.steps) : fullOrder(al));
-const SCREENS: Screen[] = ['line', 'layout2d', 'field', 'cards', 'card', 'wo', 'wr', 'sr', 'docs', 'replay', 'shift', 'daily', 'revs', 'lots', 'quality', 'qcap', 'inventory', 'tools', 'pm', 'idocs', 'settings'];
+const SCREENS: Screen[] = ['line', 'layout2d', 'field', 'cards', 'card', 'wo', 'wr', 'sr', 'docs', 'replay', 'shift', 'daily', 'revs', 'lots', 'quality', 'qcap', 'inventory', 'tools', 'pm', 'idocs', 'staff', 'settings'];
 const urlOf = (s: Screen, k: string | null) => (s === 'line' ? '/' : `/${s}`) + (k ? `?k=${encodeURIComponent(k)}` : '');
 function screenFromUrl(role: Role): [Screen, string | null] {
   if (typeof window === 'undefined') return [homeScreen(role), null];
@@ -101,6 +102,7 @@ const GROUPS: { label: string; row?: boolean; subs: [string, Screen, Role[]?, (s
   { label: '품질', subs: [['검사 기록', 'quality', ['OPR', 'SUP', 'MGR']], ['공정 능력 · 불량', 'qcap', ['SUP', 'MGR']]] },
   { label: '재고', subs: [['재고', 'inventory'], ['공구 수명', 'tools']] },
   { label: '문서', subs: [['지침카드', 'cards'], ...DOC_CATS.map(([n, s2, k2, roles]) => [n, s2, roles, k2] as [string, Screen, Role[]?, (string | null)?])], related: ['docs', 'wo', 'wr', 'sr', 'shift', 'daily', 'revs', 'idocs', 'card'] }, // 지침카드는 정비에서 문서로 옮김 (사용자 요청 2026-10-20), 문서 묶음 맨 위 (2026-10-22)
+  { label: '직원 관리', subs: [['직원 관리', 'staff', ['MGR']]] }, // SCR-27 관리자만, 설정 바로 앞 (2026-10-23, 요구사항 USR-01)
   { label: '설정', subs: [['설정', 'settings', ['MGR']]] },
 ];
 // 위 메뉴 아이콘 (상단바 시안 '아이콘 1', 사용자 선택 2026-10-21): 묶음 이름 → 24칸 선 그림
@@ -111,6 +113,7 @@ const NAV_ICON: Record<string, string> = {
   품질: 'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0zM8 12l3 3 5-6',
   재고: 'M21 8 12 3 3 8v8l9 5 9-5zM3 8l9 5 9-5M12 13v8',
   문서: 'M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8zM14 3v5h5M9 13h6M9 17h6',
+  '직원 관리': 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75',
   설정: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1 7 17M17 7l2.1-2.1',
 };
 const btn = 'h-11 rounded-ctl border border-line bg-white px-3 text-body font-semibold hover:bg-tile';
@@ -142,6 +145,9 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
 
   // ---------- 서버에서 가끔 받는 값 ----------
   const pastOpen = useFetch<{ notifications: (Record<string, string> & { to: string[] })[] }>(runId ? 'notifications/past-open' : null, 0, [runId]);
+  // 직원 관리에서 바꾼 배치(API-USR-03)를 화면 사용자 목록에 덮어씀 — 시연을 처음으로 돌리면(run_id) 원래 배치로 다시 받는다
+  const assigned = useFetch<{ users: Parameters<typeof applyAssignments>[0] }>(runId ? 'users' : null, 0, [runId]);
+  useEffect(() => { if (assigned.data) applyAssignments(assigned.data.users); }, [assigned.data]);
   const hist = useFetch<History>('maint/history');
   const invF = useFetch<Inv>(connected ? 'inventory' : null, 10000);
   const pmF = useFetch<AppCtx['pm']>(connected ? 'maint/pm-schedule' : null, 15000);
@@ -585,6 +591,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
           {screen === 'lots' && <LotScreen />}
           {screen === 'inventory' && <InventoryScreen />}
           {screen === 'tools' && <ToolsScreen />}
+          {screen === 'staff' && <StaffScreen />}
           {screen === 'settings' && <SettingsScreen />}
         </div>
 

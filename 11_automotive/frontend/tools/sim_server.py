@@ -35,6 +35,7 @@ from gen.realtime import Realtime  # noqa: E402
 from server_assistant import answer  # noqa: E402
 from server_live import Live, iso  # noqa: E402
 from server_past import Past  # noqa: E402
+import server_staff as ST  # noqa: E402
 from llm_compose import Composer, sentences  # noqa: E402
 from db_relay import DbRelay  # noqa: E402
 
@@ -73,6 +74,8 @@ class State:
         self.rule_values = {"repeat_days": 7, "repeat_count": 3, "burst": "1분 안 3번 이상", "flood": "10분 10건 / 5건",
                             "target_risk_pct": 90, "repeat2_days": 7}
         self.settings_log: list[dict] = []
+        self.assign: dict[str, dict] = {}        # 직원 관리에서 바꾼 배치 (API-USR-03) — 직원 명단(app_user.csv) 위에 덮어씀
+        self.staff_past: list[dict] | None = None  # 9월 기록의 사람별 일 (처음 부를 때 한 번 만든다)
         self.connected_at = time.time()
         # 백엔드 DB 중계 (2026-10-20, 기본 꺼짐 — db_relay.py 머리 주석. 로컬 Docker 백엔드에서만 켜진다)
         self.relay = DbRelay.from_env(self._relay_clock)
@@ -114,6 +117,7 @@ class State:
             self.revs.clear()
             self.ships.clear()
             self.pm_open.clear()
+            self.assign.clear()
             COMPOSER.clear()                         # 비서가 다듬어 둔 문장도 새 회차에 가져가지 않는다
             self._push(self.rt.events[n0:] if len(self.rt.events) > n0 else self.rt.events)
 
@@ -537,9 +541,73 @@ def _route(method, p, q, body, rt, live, P):
         return briefing_text(body)
     if key == "assist/alarm-text" and method == "POST":            # 알림 탭 알람 상세의 본문 문장을 비서가 다듬어 뒀는지 묻는다 (기다리지 않는다, 사용자가 연 알림만)
         return alarm_text(body)
+    if p[:1] == ["staff"]:
+        return staff_api(method, p, q, body, rt, live, P)
     if key == "users":
-        return {"users": list(P.users.values())}
+        return {"users": ST.users_now(P, S.assign)}       # 직원 관리에서 바꾼 배치까지 (화면이 받아 담당 공정·교대를 바로 바꾼다, FR-USR-01-06)
     raise ApiError(404, "NOT_FOUND", f"없는 주소: {key}")
+
+
+def staff_api(method, p, q, body, rt, live, P):
+    """직원 관리 (API-USR-01~03, SCR-27). 관리자만 (NFR-SEC-04·05) — 조회도 ?role=MGR, 바꾸기는 다른 API처럼 POST (명세는 PATCH)."""
+    if ((q.get("role") or [None])[0] if method == "GET" else body.get("role")) != "MGR":
+        raise ApiError(403, "FORBIDDEN", "직원 관리는 관리자만")
+    users = ST.users_now(P, S.assign)
+    byid = {u["user_id"]: u for u in users}
+    if p == ["staff", "assignments"] and method == "POST":
+        new = {}
+        for c in body.get("changes") or []:
+            u = byid.get(c.get("user_id"))
+            if not u:
+                raise ApiError(400, "VALIDATION", "없는 직원")
+            try:
+                new[u["user_id"]] = ST.check_change(u, c)
+            except ValueError as e:
+                raise ApiError(400, "VALIDATION", str(e))
+        out = []
+        for uid, v in new.items():
+            diffs = [{"field_name": k, "before_value": byid[uid][k], "after_value": x} for k, x in v.items() if byid[uid][k] != x]
+            if not diffs:
+                continue
+            S.assign[uid] = {**S.assign.get(uid, {}), **v}
+            rid = f"L{len(S.revs) + 1}"
+            S.revs.append({"revision_id": rid, "doc_type": "APP_USER", "doc_key": uid,
+                           "version_no": 1 + sum(1 for r in S.revs if r["doc_type"] == "APP_USER" and r["doc_key"] == uid),
+                           "author_kind": "USER", "author_user_id": body.get("user_id"), "created_at": fmt_dt(rt.now()),
+                           "reason": body.get("reason") or None, "status_after": None, "changes": diffs})
+            out.append({"user_id": uid, "revision_id": rid})
+        if not out:
+            raise ApiError(400, "VALIDATION", "바뀐 내용이 없어요")
+        users = ST.users_now(P, S.assign)
+        rows, empty = ST.board(users)
+        return {"changed": out, "users": users, "board": rows, "empty": empty}
+    if method != "GET":
+        raise ApiError(404, "NOT_FOUND", "없는 주소")
+    now = rt.now()
+    period = (q.get("period") or ["7d"])[0]
+    a, b = ST.period_range(period, now)
+    if S.staff_past is None:
+        S.staff_past = ST.past_events(P, read_csv_once)
+    evs = [e for e in S.staff_past + ST.live_events(S, rt) if a <= e["at"] <= b]
+    rng = {"period": period, "from": iso(a), "to": iso(b)}
+    if p == ["staff"]:
+        sh = live.shift()
+        on = sh.start <= now < sh.end
+        rows, empty = ST.board(users)
+        mine = {}
+        for e in evs:
+            mine.setdefault(e["user"], []).append(e)
+        return {**rng, "shift": {"shift_id": sh.shift_id, "shift_type": sh.shift_type, "on": on}, "board": rows, "empty": empty,
+                "users": [{**u, "on_shift": on and u["home_shift_type"] == sh.shift_type, "kpis": ST.kpis(u["role_code"], mine.get(u["user_id"], []))} for u in users]}
+    if len(p) == 3 and p[2] == "activity":
+        u = byid.get(p[1])
+        if not u:
+            raise ApiError(404, "NOT_FOUND", "없는 직원")
+        mine = sorted((e for e in evs if e["user"] == u["user_id"]), key=lambda e: e["at"], reverse=True)
+        size = int((q.get("size") or ["80"])[0])
+        return {**rng, "user": u, "kpis": ST.kpis(u["role_code"], mine), "total": len(mine),
+                "items": [{"at": iso(e["at"]), "kind": e["kind"], "text": e["text"], "screen": e["screen"], "key": e["key"]} for e in mine[:size]]}
+    raise ApiError(404, "NOT_FOUND", "없는 주소")
 
 
 def shift_with_llm(d):

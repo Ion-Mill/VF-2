@@ -11,10 +11,10 @@ import { userName } from './model';
 import type { Revision } from './workflow';
 import { Chip, DocHead, DocPage, printDoc, Sec } from './DocKit';
 
-const TYPE: Record<string, string> = { WO: '정비 작업지시서', WR: '작업기록서', SR: '간이 작업기록', SHIFT: '교대 보고서', DAILY: '일일 보고서', MAINT_WO: '정비 작업지시서', WORK_RECORD: '작업기록서', QUICK_RECORD: '간이 작업기록', SHIFT_REPORT: '교대 보고서', DAILY_REPORT: '일일 보고서', PM_RECORD: '예방 정비 실시 기록', SHIPMENT: '출하 기록', INTERNAL_DOC: '사내 문서' };
+const TYPE: Record<string, string> = { WO: '정비 작업지시서', WR: '작업기록서', SR: '간이 작업기록', SHIFT: '교대 보고서', DAILY: '일일 보고서', MAINT_WO: '정비 작업지시서', WORK_RECORD: '작업기록서', QUICK_RECORD: '간이 작업기록', SHIFT_REPORT: '교대 보고서', DAILY_REPORT: '일일 보고서', PM_RECORD: '예방 정비 실시 기록', SHIPMENT: '출하 기록', INTERNAL_DOC: '사내 문서', APP_USER: '직원 배치' };
 const SRV: Record<string, string> = { SHIFT: 'SHIFT_REPORT', DAILY: 'DAILY_REPORT' };
 // 서버가 고친 칸은 칸 이름이 영어로 온다 (backend/app/services/documents.py fields) → 한글로 (9월 기록은 이미 한글, 2026-10-20)
-const FIELD: Record<string, string> = { notable_text: '특이 사항', handover_text: '인계 사항', issues_summary: '오늘의 문제', title: '제목', symptom: '증상', cause: '원인', action: '조치', worker_memo: '작업자 메모', end_at: '끝난 시각', repair_min: '수리 시간', result: '결과', measured_value: '측정값', measured_unit: '단위', memo: '메모' };
+const FIELD: Record<string, string> = { notable_text: '특이 사항', handover_text: '인계 사항', issues_summary: '오늘의 문제', title: '제목', symptom: '증상', cause: '원인', action: '조치', worker_memo: '작업자 메모', end_at: '끝난 시각', repair_min: '수리 시간', result: '결과', measured_value: '측정값', measured_unit: '단위', memo: '메모', home_shift_type: '담당 교대', home_process_code: '담당 공정', home_process_code_2: '두 번째 담당 공정' };
 const blocked = (msg: string) => <div className="flex flex-col items-center gap-1 rounded-card border border-dashed border-line bg-white px-4 py-8 text-center"><LockIcon size={28} /><b>{msg}</b></div>;
 
 export function RevisionsScreen() {

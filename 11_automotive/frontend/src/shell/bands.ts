@@ -203,3 +203,10 @@ export const idocBand = (d: { no: string; name: string; rev: string; approver: s
   d.pending ? { tone: 'todo', title: `개정 승인 대기 ${d.pending}건 — ${d.no}`, action: '승인', actionLock: true } : { tone: 'todo', title: `${d.no} ${d.name} · ${d.rev}`, desc: `승인 ${d.approver} · 개정 승인 대기 없음` };
 export const settingsBand = (rules: { repeat_days: number; repeat_count: number; target_risk_pct: number }, unsaved: number): BandSpec =>
   unsaved ? { tone: 'todo', title: `저장하지 않은 변경 ${unsaved}개`, action: '저장' } : { tone: 'todo', title: `알림 기준 — 반복 알람 ${rules.repeat_days}일 안 ${rules.repeat_count}번 · 목표 미달 위험 ${rules.target_risk_pct}%`, desc: '바꾸면 다음 계산부터 적용' };
+
+// ---------------------------------------------------------------- 직원 관리 (StaffScreen, SCR-27)
+// onShift = 지금 근무 인원(서버 users[].on_shift), shiftName = "주간"·"야간"·null(근무 교대 없음), empty = 담당 0명 공정 칸 ("야간 OP-30"). 주의는 공정 담당 0명일 때만 (FR-USR-01-03)
+export function staffBand(onShift: number, shiftName: string | null, empty: string[]): BandSpec {
+  if (empty.length) return { tone: 'warn', title: `${empty[0]} 담당이 없어요${empty.length > 1 ? ` 외 ${empty.length - 1}칸` : ''}`, desc: '배치표에서 담당을 넣어 주세요', chips: empty, action: '배치 바꾸기' };
+  return { tone: 'ok', title: shiftName ? `지금 ${shiftName} 근무 ${onShift}명 · 담당 없는 공정 없음` : '지금 근무 중인 교대 없음 · 담당 없는 공정 없음' };
+}
