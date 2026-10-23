@@ -1027,7 +1027,12 @@ export default class FactoryDashboard extends React.Component<any, any> {
           const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
           const face = new THREE.Mesh(new THREE.PlaneGeometry(SW, SH), new THREE.MeshBasicMaterial({ map: tex, transparent: true, toneMapped: false, fog: false })); // 안개에 묻히지 않게 (글자·상태색 그대로)
           face.position.set(x, y, z + 0.03);
-          const back = new THREE.Mesh(new RoundedBoxGeometry(SW * (1 - 2 * SIGN_M / 680), SH * (1 - 2 * SIGN_M / 286), 0.05, 5, 0.024), bodyM); back.position.set(x, y, z); // 앞면 그림의 판 크기 (바깥 여백은 네온 자리)
+          // 몸체 = 앞면 그림의 판과 같은 둥근 사각형을 뽑은 것 (각진 상자는 모서리가 판 밖으로 튀어나왔음, 2026-10-23). 바깥 여백은 네온 자리
+          const bev = 0.006, bw = SW * (1 - 2 * SIGN_M / 680) - 2 * bev - 0.006, bh = SH * (1 - 2 * SIGN_M / 286) - 2 * bev - 0.006, br = SW * 36 / 680 - bev;
+          const bs = new THREE.Shape(); bs.moveTo(-bw / 2 + br, -bh / 2); bs.lineTo(bw / 2 - br, -bh / 2); bs.quadraticCurveTo(bw / 2, -bh / 2, bw / 2, -bh / 2 + br); bs.lineTo(bw / 2, bh / 2 - br); bs.quadraticCurveTo(bw / 2, bh / 2, bw / 2 - br, bh / 2);
+          bs.lineTo(-bw / 2 + br, bh / 2); bs.quadraticCurveTo(-bw / 2, bh / 2, -bw / 2, bh / 2 - br); bs.lineTo(-bw / 2, -bh / 2 + br); bs.quadraticCurveTo(-bw / 2, -bh / 2, -bw / 2 + br, -bh / 2);
+          const bg = new THREE.ExtrudeGeometry(bs, { depth: 0.04, bevelEnabled: true, bevelThickness: bev, bevelSize: bev, bevelSegments: 2, curveSegments: 12 }); bg.translate(0, 0, -0.02);
+          const back = new THREE.Mesh(bg, bodyM); back.position.set(x, y, z);
           const glow = new THREE.Mesh(new THREE.PlaneGeometry(SW * 1.3, SH * 1.6), new THREE.MeshBasicMaterial({ map: glowTex, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false, fog: false }));
           glow.position.set(x, y, z - 0.04); glow.visible = false; g.add(glow);
           if (id !== 'inf' && id !== 'rack') { face.userData.mid = id; back.userData.mid = id; pickables.push(face, back); } // 판을 눌러도 그 설비 선택 (투입 대·봉재 랙은 선택 없음)
