@@ -3,7 +3,7 @@
 // 3D에는 실시간 대신 그 시각의 상태·재공·병목을 넣는다 (ctx.setReplay). 센서는 10/1 실시간 기록만 (9월 센서 CSV는 생성 안 됨).
 // 구성 (2026-10-19 정비 탭 구조 수정): "그 시각" 결론 띠(시각 · 무슨 일 · 완제품 · 가동) → 왼쪽 사건 목록 | 오른쪽 그 시각 라인(설비 카드 + 재공) + 타임라인(시각으로 가기 · 사건 표시 · 상태 띠 · 굵기 · 재생).
 // 다이얼·[실시간] 버튼은 뺐다. 다른 화면으로 가면 3D는 실시간으로 돌아온다(아래 setReplay(null)).
-import { SecIcon, ToneTag } from './ui';
+import { BackButton, SecIcon, ToneTag } from './ui';
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useApp } from "./ctx";
 import { CAUSE_KO, LAYOUT, STATE_VIEW, stateOf } from "./data";
@@ -136,7 +136,7 @@ function shiftOf(ms: number): { a: number; b: number; label: string } {
 const LANE_PX = 40; // 막대 굵기 최대값 (자리가 모자라면 같이 얇아짐)
 
 export function ReplayScreen() {
-  const { key, setReplay, twin } = useApp();
+  const { key, setReplay, twin, back } = useApp();
   const center = key ?? simIso(SIM.now() - 30 * 60000);
   const sh0 = shiftOf(Date.parse(center));
   const [from, setFrom] = useState(toLocalInput(simIso(sh0.a)));
@@ -408,6 +408,7 @@ export function ReplayScreen() {
         aria-live="polite"
       >
         <div className="flex items-center gap-3">
+          <BackButton onClick={back} />
           <ToneTag tone={tone}>{TONE_WORD[tone]}</ToneTag>
           <span className="font-mono text-band font-bold">
             {md(simIso(t))} {hm(simIso(t))}

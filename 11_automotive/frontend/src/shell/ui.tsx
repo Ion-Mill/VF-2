@@ -17,10 +17,21 @@ export function Page({ doc, children }: { doc?: boolean; children: ReactNode }) 
   );
 }
 
-/** 화면 머리: 제목 26 굵게 + 밑에 부제 한 줄 · 오른쪽 = 화면 전체 버튼(맨 끝 [닫기]) 또는 큰 갈래 탭 */
-export function PageHead({ title, sub, right }: { title: ReactNode; sub?: ReactNode; right?: ReactNode }) {
+/** 뒤로가기 동그란 ← (시안 A, 사용자 선택 2026-10-23) — 바로 전 화면, 기록이 없으면 홈 (App.tsx back) */
+export function BackButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button type="button" onClick={onClick} aria-label="뒤로" title="뒤로"
+      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-line bg-white text-ink shadow-[0_1px_3px_rgba(27,42,65,.08)] hover:border-brand-line hover:text-brand-ink">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7" /></svg>
+    </button>
+  );
+}
+
+/** 화면 머리: [←] 제목 26 굵게 + 밑에 부제 한 줄 · 오른쪽 = 화면 전체 버튼(맨 끝 [닫기]) 또는 큰 갈래 탭 */
+export function PageHead({ title, sub, right, onBack }: { title: ReactNode; sub?: ReactNode; right?: ReactNode; onBack?: () => void }) {
   return (
     <div className="flex min-h-11 flex-wrap items-end gap-x-3 gap-y-2 pt-2">
+      {onBack && <div className="self-center"><BackButton onClick={onBack} /></div>}
       <div className="min-w-0"><h2 className="text-[26px] font-bold leading-tight tracking-[-.02em] text-ink">{title}</h2>
         {sub && <div className="mt-0.5 text-small text-ink-2">{sub}</div>}</div>
       {right && <div className="ml-auto flex flex-wrap items-center gap-2">{right}</div>}

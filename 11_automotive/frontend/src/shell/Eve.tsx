@@ -118,7 +118,7 @@ export function Eve({ tab, quick: showQuick, onPick, onClose, badges, bubble, on
   return (
     <div className={`ma-root${tab ? ' is-panel' : ''}`}>
       {toast && (
-        <div className="ma-toast ma-rise" role="status" style={shift}>
+        <div className={`ma-toast ma-rise ${toast.startsWith('⚠') ? 'is-crit' : toast.startsWith('▲') ? 'is-warn' : 'is-info'}`} role="status" style={shift}>
           <button type="button" className="ma-toast-main" onClick={openToast}>
             <Robot face={toast.startsWith('⚠') ? 'alarm' : 'news'} size={36} />
             <span className="ma-toast-text"><span className="ma-toast-time ma-mono">이브</span><strong className="ma-toast-title">{toast}</strong></span>

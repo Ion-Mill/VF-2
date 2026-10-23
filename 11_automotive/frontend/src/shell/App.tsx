@@ -21,7 +21,7 @@ import Login from './Login';
 import Logo from './Logo';
 import Panels from './Panels';
 import HomeHud, { GLASS } from './HomeHud';
-import { LockIcon, PageHead } from './ui';
+import { BackButton, LockIcon, PageHead } from './ui';
 import Popup from './Popup';
 import SimPanel from './SimPanel';
 import SimpleRecordScreen from './SimpleRecordScreen';
@@ -500,9 +500,10 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
         {/* 이브 창(1안, 사용자 선택 2026-10-20): 창 모양·자리는 모든 화면 같음(오른쪽, 위 바 아래 ~ 이브 버튼 위). 홈은 3D 위에 뜨고, 다른 화면은 본문이 창 폭(420 + 오른쪽 24 + 간격 12)만큼 비켜 줌 */}
         <div className={`flex min-h-0 flex-1 flex-col ${curGroup?.label === '재고' || curGroup?.label === '문서' ? 'fs-up' : ''}`} style={{ paddingTop: home ? 0 : 88, paddingBottom: screen === 'layout2d' ? 64 : screen === 'field' ? 70 : 0, paddingRight: side && !home ? 456 : 0, transition: 'padding-right .25s ease' }}>
         {/* 화면 머리 (디자인 통일 C안 2장): 회색 제목 띠 대신 PageHead. 생산 묶음은 가로 막대가 제목 자리를 대신한다 */}
-        {screen !== 'line' && screen !== 'layout2d' && screen !== 'replay' && !sideRow && <div className="shrink-0 bg-ground px-4 pt-3"><PageHead title={TITLE[screen]} sub={SUB[screen]} /></div>}
+        {screen !== 'line' && screen !== 'layout2d' && screen !== 'replay' && !sideRow && <div className="shrink-0 bg-ground px-4 pt-3"><PageHead title={TITLE[screen]} sub={SUB[screen]} onBack={back} /></div>}
         {sideRow && curGroup && (
           <nav aria-label={curGroup.label} className="relative z-10 flex h-12 shrink-0 items-center gap-1.5 border-b border-line bg-white px-3">
+            <BackButton onClick={back} />
             <span className="flex items-center pr-3 text-card font-bold text-ink-2">{curGroup.label}</span>
             {curGroup.subs.map(([name, s2, roles]) => { const ok = !roles || roles.includes(role); const on = screen === s2; return (
               <button key={name} disabled={!ok} onClick={() => go(s2)} title={ok ? undefined : '이 계정은 볼 수 없습니다'}

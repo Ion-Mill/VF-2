@@ -172,3 +172,17 @@ h1,h2,h3{letter-spacing:-.01em;}
   [data-print] h2, [data-print] h3 { break-after: avoid; }
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; } /* 상태 칩 옅은 바탕색 유지 */
 }
+/* 이브 말풍선 색 (사용자 요청 2026-10-23): 위험도가 있으면 그 색(⚠ 긴급 = crit, ▲ 주의 = warn), 나머지 소식은 흰 카드 + 파스텔 블루(brand). 값은 tailwind.config.ts 토큰 */
+.ma-toast.is-crit,.ma-toast.is-warn,.ma-toast.is-info{-webkit-backdrop-filter:none;backdrop-filter:none}
+.ma-toast.is-crit{background:#fdecee;color:#7a1522;border:2px solid #e5484d;box-shadow:0 16px 36px rgba(194,48,66,.28)}
+.ma-toast.is-crit .ma-toast-time{color:#c23042}
+.ma-toast.is-crit .ma-btn-primary{background:#c23042;color:#fff}
+.ma-toast.is-crit .ma-btn-ghost{background:#fff;border-color:#f6c9cf;color:#c23042}
+.ma-toast.is-warn{background:#fff3e3;color:#5c3306;border:2px solid #e0a300;box-shadow:0 16px 36px rgba(163,90,12,.22)}
+.ma-toast.is-warn .ma-toast-time{color:#a35a0c}
+.ma-toast.is-warn .ma-btn-primary{background:#a35a0c;color:#fff}
+.ma-toast.is-warn .ma-btn-ghost{background:#fff;border-color:#f6d6a8;color:#a35a0c}
+.ma-toast.is-info{background:#fff;color:#1b2a41;border:1px solid #cbdcfb;box-shadow:0 16px 36px rgba(27,42,65,.18)}
+.ma-toast.is-info .ma-toast-time{color:#2a55b8}
+.ma-toast.is-info .ma-btn-primary{background:#3d6fe0;color:#fff}
+.ma-toast.is-info .ma-btn-ghost{background:#fff;border-color:#e3e9f2;color:#3a4a61}
