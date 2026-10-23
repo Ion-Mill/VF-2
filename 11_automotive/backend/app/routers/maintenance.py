@@ -317,7 +317,24 @@ def pm_schedule(equipment_id: str | None = None, frm: date | None = Query(None, 
                 _: Actor = Depends(require("PM_SCHEDULE", "VIEW")), db: Db = Depends(get_db)):
     """예방 정비 일정 (PM-01): 항목·주기·다음 기한·넘긴 날 수·잠금·표지 수준, 제때 실시율(기간, 기본 최근 30일 — 목표 90%)"""
     return {"items": db.all("maintenance.pm_schedule", equipment_id=equipment_id),
-            "on_time": db.all("maintenance.pm_on_time", equipment_id=equipment_id, **{"from": frm, "to": to})}
+            "on_time": db.all("maintenance.pm_on_time", equipment_id=equipment_id, **{"from": frm, "to": to}),
+            # 2026-10-23 (화면 → 백엔드 전환 C2): 오늘 실시 기록(초안 포함)·지금 열린 정비 구간 — SCR-23 [정비 끝]·오늘 기록
+            "today_records": db.all("maintenance.pm_today_records"),
+            "open_windows": db.all("maintenance.pm_open_windows")}
+
+
+@router.get("/history")
+def history(_: Actor = Depends(require("GUIDE_CARD", "VIEW")), db: Db = Depends(get_db)):
+    """정비 과거 기록 한 번에 (2026-10-23, 화면 → 백엔드 전환 C2): 실시간 구간 앞(시연: 9월)의 작업지시서·단계·작업기록서·점검·부품·알람.
+    지침카드의 예상 부품(같은 알람에 쓴 부품)·지난 조치, 문서함의 지난 문서에 쓴다"""
+    before = db.scalar("line.live_from")
+    group = lambda rows, key: {k: [r for r in rows if r[key] == k] for k in dict.fromkeys(r[key] for r in rows)}
+    return {"work_orders": db.all("maintenance.history_work_orders", before=before),
+            "steps": group(db.all("maintenance.history_steps", before=before), "wo_no"),
+            "work_records": db.all("maintenance.history_work_records", before=before),
+            "checks": group(db.all("maintenance.history_checks", before=before), "record_no"),
+            "parts": group(db.all("maintenance.history_parts", before=before), "record_no"),
+            "alarms": db.all("maintenance.history_alarms", before=before), "before": before}
 
 
 class PmRecordIn(BaseModel):

@@ -62,6 +62,11 @@ class Rng:
             self._cache[name] = np.random.default_rng([self.seed, key])
         return self._cache[name]
 
+    def fresh(self, name: str) -> np.random.Generator:
+        """stream(name)을 처음 부를 때와 같은 난수를 새로 만든다 (모아 두지 않음 — 여러 번 불러도 같은 값)."""
+        key = int.from_bytes(hashlib.sha256(name.encode("utf-8")).digest()[:8], "little")
+        return np.random.default_rng([self.seed, key])
+
 
 # ---------- 시각 ----------
 
@@ -145,6 +150,33 @@ class Out:
             w = csv.writer(f, lineterminator="\r\n")
             w.writerow(columns)
             w.writerows([_cell(v) for v in r] for r in rows)
+        self.counts[entity] = len(rows)
+
+
+class MemOut(Out):
+    """Out과 같은 칸·순서·글자(CSV 칸 값)로, 파일 대신 메모리에 둔다 (시연 서버 → DB 중계, 2026-10-23).
+    tables[엔터티] = (칸 이름들, [칸 값 튜플, …])"""
+
+    def __init__(self):
+        self.counts: dict[str, int] = {}
+        self.tables: dict[str, tuple[list[str], list[tuple]]] = {}
+
+    def clear(self):
+        self.tables.clear()
+
+    def write(self, entity: str, columns: list[str], rows: list[dict], sort_key=None):
+        if sort_key is not None:
+            rows = sorted(rows, key=sort_key)
+        for r in rows:
+            unknown = {k for k in r if not k.startswith("_")} - set(columns)
+            if unknown:
+                raise KeyError(f"{entity}: ERD에 없는 칸 {sorted(unknown)}")
+        self.tables[entity] = (list(columns), [tuple(_cell(r.get(c)) for c in columns) for r in rows])
+        self.counts[entity] = len(rows)
+
+    def write_tuples(self, entity: str, columns: list[str], rows: list[tuple]):
+        rows.sort(key=lambda r: r[:3])
+        self.tables[entity] = (list(columns), [tuple(_cell(v) for v in r) for r in rows])
         self.counts[entity] = len(rows)
 
 

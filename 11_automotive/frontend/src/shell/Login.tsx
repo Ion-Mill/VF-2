@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { USERS, type UserRec } from './model';
 import Logo from './Logo';
+import { backendLogin, backendMode } from './backendApi';
 
 // 시연용: 모든 계정 비밀번호 0000 (사용자 결정 2026-10-15)
 export const DEMO_PW = '0000';   // assistantApi.ts(이브 채팅의 백엔드 로그인)도 같은 값을 쓴다
@@ -12,9 +13,17 @@ export default function Login({ onLogin }: { onLogin: (u: UserRec) => void }) {
   const [pw, setPw] = useState('');
   const [open, setOpen] = useState(false);
   const [fail, setFail] = useState('');
+  const [busy, setBusy] = useState(false);
   const pick = USERS.find((u) => u.id === id);
-  const go = () => {
+  const go = async () => {
     if (!pick) return setFail('아이디를 골라 주세요');
+    if (backendMode()) {
+      // 화면 → 백엔드 전환 (C2): 백엔드가 비밀번호를 확인하고 토큰을 준다 (backendApi.ts)
+      setBusy(true);
+      try { await backendLogin(pick.id, pw); } catch (e) { setBusy(false); return setFail((e as Error).message); }
+      setBusy(false);
+      return onLogin(pick);
+    }
     if (pw !== DEMO_PW) return setFail('비밀번호가 맞지 않습니다');
     onLogin(pick);
   };
@@ -42,7 +51,7 @@ export default function Login({ onLogin }: { onLogin: (u: UserRec) => void }) {
         </div>
         <input type="password" value={pw} onChange={(e) => setPw(e.target.value)} placeholder="비밀번호" aria-label="비밀번호" className={field} />
         {fail && <p className="text-center text-small font-semibold text-crit">{fail}</p>}
-        <button type="submit" className="mx-auto mt-2 h-12 w-[160px] rounded-full bg-brand text-card font-bold text-white hover:bg-brand-ink">로그인</button>
+        <button type="submit" disabled={busy} className="mx-auto mt-2 h-12 w-[160px] rounded-full bg-brand text-card font-bold text-white hover:bg-brand-ink disabled:opacity-60">{busy ? '확인 중…' : '로그인'}</button>
       </form>
     </div>
   );

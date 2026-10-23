@@ -215,3 +215,38 @@ SELECT a.alarm_code FROM work_record w
 
 -- name: assist_items
 SELECT item_no, item_name FROM inventory_item WHERE category IN ('TOOL','CONSUMABLE') AND is_active ORDER BY item_no;
+
+-- ---------- 정비 이력 한 번에 (2026-10-23, 화면 → 백엔드 전환 C2) — 실시간 구간 앞(과거 기록)만: 지침카드 예상 부품·지난 조치 ----------
+-- name: history_work_orders
+SELECT w.*, array_to_string(v.trigger_kind::text[], '|') AS trigger_kind
+  FROM maintenance_work_order w LEFT JOIN v_work_order v USING (wo_no)
+ WHERE w.created_at < CAST(:before AS timestamptz) ORDER BY w.wo_no;
+
+-- name: history_steps
+SELECT s.* FROM work_order_step s JOIN maintenance_work_order w USING (wo_no)
+ WHERE w.created_at < CAST(:before AS timestamptz) ORDER BY s.wo_no, s.step_no;
+
+-- name: history_work_records
+SELECT * FROM work_record WHERE start_at < CAST(:before AS timestamptz) ORDER BY record_no;
+
+-- name: history_checks
+SELECT c.* FROM work_record_check c JOIN work_record r USING (record_no)
+ WHERE r.start_at < CAST(:before AS timestamptz) ORDER BY c.record_no, c.check_seq;
+
+-- name: history_parts
+SELECT p.* FROM work_record_part p JOIN work_record r USING (record_no)
+ WHERE r.start_at < CAST(:before AS timestamptz) ORDER BY p.record_no, p.item_no;
+
+-- name: history_alarms
+SELECT * FROM alarm_event WHERE occurred_at < CAST(:before AS timestamptz) ORDER BY alarm_event_id;
+
+-- 예방 정비 화면: 오늘 기록·지금 열린 정비(MAINT) 구간
+-- name: pm_today_records
+SELECT r.* FROM pm_record r
+ WHERE r.done_at >= date_trunc('day', app_now() AT TIME ZONE 'Asia/Seoul') AT TIME ZONE 'Asia/Seoul' OR r.status = 'DRAFT'
+ ORDER BY r.pm_record_id;
+
+-- name: pm_open_windows
+SELECT equipment_id, start_at, end_at, 'MAINT' AS kind FROM equipment_state_log
+ WHERE state_code = 'MAINT' AND start_at <= app_now() AND coalesce(end_at, 'infinity') > app_now()
+ ORDER BY start_at;

@@ -22,6 +22,12 @@ class Settings(BaseModel):
     assistant_key: str = ""
     cors_origins: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]  # 프론트(React) 개발 서버
     demo_mode: bool = False          # NFR-DATA-12 역할 바꿔 보기, 시연 시계 조작
+    # 시연 서버 DB 중계 받기 (2026-10-23, "DB 1개 = 공장 1개"): /api/ingest/sync·reset·clock만 연다 (시연 모드의 다른 문은 안 엶).
+    #   켜면 시뮬레이터 10/1 기록이 이 DB에 쌓이고, 시연 서버 [처음으로]가 이 DB를 시연 기준점으로 되돌린다 — 모두가 같이 봄
+    sim_sync: bool = False
+    # 시뮬레이터(시연 서버) 주소 (2026-10-23, 화면 → 백엔드 전환 C2): 있으면 시연 시계·사건 버튼·처음으로와 시뮬레이터가 주인인 기록
+    #   (로트 보류·해제, 공구 교체, 예방 정비 시작·끝, 설비 복귀)을 백엔드가 권한 확인 뒤 시뮬레이터에 넘긴다 (app/services/sim_link.py)
+    sim_url: str | None = None
     cmm_inbox_dir: str = "/data/cmm/inbox"
     cmm_processed_dir: str = "/data/cmm/processed"
     cmm_error_dir: str = "/data/cmm/error"
@@ -48,7 +54,7 @@ class Settings(BaseModel):
                 continue
             if field == "cors_origins":
                 data[field] = [x.strip() for x in v.split(",") if x.strip()]
-            elif field in ("demo_mode", "run_workers", "qr_ship_check_required"):
+            elif field in ("demo_mode", "sim_sync", "run_workers", "qr_ship_check_required"):
                 data[field] = v.lower() in ("1", "true", "yes", "on")
             else:
                 data[field] = v

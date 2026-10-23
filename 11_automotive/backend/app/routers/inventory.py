@@ -12,6 +12,7 @@ from pydantic import BaseModel, Field
 from ..config import get_settings
 from ..db import Db, get_db
 from ..errors import AppError
+from ..services import sim_link
 from ..security import Actor, require
 from ..services import documents
 from .common import changed, must
@@ -36,6 +37,17 @@ def owned_item(db: Db, actor: Actor, item_no: str) -> dict:
 def items(_: Actor = Depends(require("INVENTORY", "VIEW")), db: Db = Depends(get_db)):
     """재고 13품목 (INV-01): 재고·안전 재고·관리 역할·부족 여부, 완제품·보류 수량"""
     return db.all("inventory.items")
+
+
+@router.get("/inventory/screen")
+def inventory_screen(past: int = Query(80, le=500), _: Actor = Depends(require("INVENTORY", "VIEW")), db: Db = Depends(get_db)):
+    """재고 화면 한 번에 (2026-10-23, 화면 → 백엔드 전환 C2 — SCR-21): 13품목 + 실시간 구간 시작 때 재고(stock_at_start),
+    실시간 구간 거래 전부(live_txns)와 그 앞 거래 past개(past_txns)"""
+    live_from = db.scalar("line.live_from")
+    start = {r["item_no"]: r["qty"] for r in db.all("inventory.stock_at", at=live_from)}
+    return {"items": [{**i, "stock_at_start": start.get(i["item_no"], 0)} for i in db.all("inventory.items")],
+            "live_txns": db.all("inventory.txns_since", since=live_from),
+            "past_txns": db.all("inventory.txns_before", before=live_from, limit=past), "live_from": live_from}
 
 
 @router.get("/inventory/{item_no}/txns")
@@ -126,10 +138,16 @@ def ship_qr_gate(db: Db, shipment_no: str) -> None:
 
 
 @router.get("/shipments")
-def shipments(status: str | None = None, limit: int = Query(100, le=500), _: Actor = Depends(require("SHIPMENT", "VIEW")),
+def shipments(status: str | None = None, limit: int = Query(100, le=500), lines: bool = False, _: Actor = Depends(require("SHIPMENT", "VIEW")),
               db: Db = Depends(get_db)):
-    """출하 목록 (INV-04)"""
-    return db.all("inventory.shipments", status=status, limit=limit)
+    """출하 목록 (INV-04). lines=true면 출하마다 로트 줄(lines)까지 (2026-10-23, 화면 → 백엔드 전환 C2)"""
+    rows = db.all("inventory.shipments", status=status, limit=limit)
+    if lines:
+        by: dict[str, list] = {}
+        for x in db.all("inventory.shipment_lines_all"):
+            by.setdefault(x["shipment_no"], []).append(x)
+        rows = [{**r, "lines": by.get(r["shipment_no"], [])} for r in rows]
+    return rows
 
 
 @router.get("/shipments/candidates")
@@ -227,6 +245,14 @@ def tools(equipment_id: str | None = None, _: Actor = Depends(require("TOOL_LIFE
     return db.all("inventory.tools", equipment_id=equipment_id)
 
 
+@router.get("/tools/changes")
+def tool_changes_all(past: int = Query(40, le=500), _: Actor = Depends(require("TOOL_LIFE", "VIEW")), db: Db = Depends(get_db)):
+    """공구 교체 내역 전체 (2026-10-23, 화면 → 백엔드 전환 C2 — SCR-22): 실시간 구간(changes_today)과 그 앞 past개(past_changes)"""
+    live_from = db.scalar("line.live_from")
+    return {"changes_today": db.all("inventory.tool_changes_since", since=live_from),
+            "past_changes": db.all("inventory.tool_changes_before", before=live_from, limit=past)}
+
+
 @router.get("/tools/{tool_id}/changes")
 def tool_changes(tool_id: str, _: Actor = Depends(require("TOOL_LIFE", "VIEW")), db: Db = Depends(get_db)):
     """공구 교체 내역"""
@@ -241,6 +267,10 @@ class ToolChangeIn(BaseModel):
 @router.post("/tools/{tool_id}/change")
 def tool_change(tool_id: str, body: ToolChangeIn, actor: Actor = Depends(require("TOOL_CHANGE", "INPUT")),
                 db: Db = Depends(get_db)):
-    """공구 교체 기록 (TOOL-02): 사용량 0 + 재고 차감 + 수명 알림 자동 처리"""
+    """공구 교체 기록 (TOOL-02): 사용량 0 + 재고 차감 + 수명 알림 자동 처리.
+    시뮬레이터가 이어져 있으면 시뮬레이터가 교체한다 (사용량 0·준비 3~8분·재고 차감) — 기록은 DB 중계로 들어온다"""
+    if sim_link.enabled():
+        sim_link.call("POST", f"tools/{tool_id}/change", {"role": actor.role, "user_id": actor.user_id})
+        return {"tool_change_id": None, "via": "simulator"}
     return {"tool_change_id": db.scalar("inventory.tool_change", tool_id=tool_id, actor=actor.user_id, reason=body.reason,
                                         alarm_event_id=body.alarm_event_id)}

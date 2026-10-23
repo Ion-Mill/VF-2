@@ -4,6 +4,7 @@
 // - 시연 모드의 시각은 모두 시뮬레이터 시계 (NFR-DATA-10): SIM.now()
 // - 화면에서 만든 문서(작업지시서·작업기록서 등)는 DB가 [선택 필요: 기술 회의]라 이 브라우저(localStorage)에 시연 회차(run_id)별로 남긴다.
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { BackendErr, backendMode, backendRoute } from './backendApi';
 
 export type Eq = 'SAW-01' | 'MIL-01' | 'VF2-01' | 'VF2-02' | 'WSH-01' | 'CMM-01';
 export const EQS: Eq[] = ['SAW-01', 'MIL-01', 'VF2-01', 'VF2-02', 'WSH-01', 'CMM-01'];
@@ -44,6 +45,10 @@ export interface SimEvent { seq: number; type: string; at?: string; [k: string]:
 export class ApiErr extends Error { constructor(public code: string, msg: string) { super(msg); } }
 
 export async function api<T = any>(path: string, body?: unknown): Promise<T> {
+  if (backendMode()) {
+    // 화면 → 백엔드 전환 (C2, 2026-10-23): 스위치가 켜져 있으면 같은 주소 이름을 백엔드로 (backendApi.ts)
+    try { return await backendRoute(path, body) as T; } catch (e) { if (e instanceof BackendErr) throw new ApiErr(e.code, e.message); throw e; }
+  }
   let r: Response;
   try {
     r = await fetch('/api/' + path, body === undefined ? { cache: 'no-store' } : { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });

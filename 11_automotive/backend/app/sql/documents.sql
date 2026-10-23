@@ -2,7 +2,7 @@
 
 -- 교대 보고서. target_qty = 총 목표 (목표 + 이월, R-88 — 생산 칸). 이월이 잠정이면 carry_over_is_provisional
 -- name: shift_report
-SELECT r.*, s.work_date, s.shift_type, s.supervisor_user_id, s.target_qty AS shift_target_qty, s.carry_over_qty,
+SELECT r.*, s.work_date, s.shift_type, s.start_at, s.end_at, s.supervisor_user_id, s.target_qty AS shift_target_qty, s.carry_over_qty,
        t.carry_over_is_provisional
   FROM shift_report r JOIN shift s USING (shift_id) JOIN v_shift_target t USING (shift_id)
  WHERE r.shift_id = :shift_id;
@@ -360,3 +360,26 @@ SELECT s.shift_id, s.shift_type, s.target_qty + s.carry_over_qty AS total_target
   FROM shift s LEFT JOIN shift_report r USING (shift_id)
  WHERE s.work_date = CAST(:work_date AS date)
  ORDER BY s.start_at;
+
+-- ---------- 화면 → 백엔드 전환 C2 (2026-10-23): 목록·이력 한 번에 ----------
+-- name: shift_report_list
+SELECT r.shift_id, r.status, r.current_version, s.work_date, s.shift_type, s.start_at, s.end_at, s.supervisor_user_id
+  FROM shift_report r JOIN shift s USING (shift_id) ORDER BY s.start_at;
+
+-- name: daily_report_list
+SELECT work_date, status, current_version FROM daily_report ORDER BY work_date;
+
+-- 최근 문서 버전 (모든 문서). OPR(OWN)은 자기가 고친 것만
+-- name: revisions_recent
+SELECT r.revision_id, r.doc_type, r.doc_key, r.version_no, r.author_kind, r.author_user_id, r.created_at, r.reason, r.status_after
+  FROM document_revision r
+ WHERE CAST(:own_user AS text) IS NULL OR r.author_user_id = CAST(:own_user AS text)
+ ORDER BY r.revision_id DESC LIMIT CAST(:limit AS int);
+
+-- name: revision_changes_of
+SELECT revision_id, field_name, before_value, after_value FROM document_revision_change
+ WHERE revision_id = ANY(string_to_array(CAST(:ids AS text), ',')::bigint[]) ORDER BY revision_id;
+
+-- 사내 문서 조각 (절마다 첫 줄 = "문서 > 1. 제목 > 1.1 제목", 긴 절은 (1/3)처럼 나뉨) — 화면 절 목록으로 다시 모은다
+-- name: internal_doc_chunks
+SELECT section, chunk_text FROM doc_chunk WHERE doc_no = :doc_no ORDER BY chunk_id;

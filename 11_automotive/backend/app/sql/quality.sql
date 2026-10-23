@@ -51,14 +51,18 @@ SELECT l.lot_no, :part_seq, o.product_code, :item_seq, :insp_kind, NULL, :judgem
 RETURNING result_id;
 
 -- Cpk (FR-QLT-01-08): 개별값 관리도(I-MR) 방식 σ = 평균 이동 범위 ÷ 1.128. 50개 미만이면 "계산 중"
--- 설비별(가공 설비)은 참고용 — 판정·전수 전환은 전체 값 (가공 설비 = 05 결정기록 P-11)
+-- 설비별(가공 설비)은 참고용 — 판정·전수 전환은 전체 설비 값 (가공 설비 = 05 결정기록 P-11)
+-- 표본 = 지금 시각까지 **최근 측정값 50개** (DOC-06 §5.1 ④, 관리도 점과 같은 범위 — 2026-10-23, 전에는 전체 값). DB fn_item_cpk와 같은 식
 -- name: cpk
-WITH v AS (
-    SELECT r.measured_value AS x, r.measured_at, r.result_id,
-           r.measured_value - lag(r.measured_value) OVER (ORDER BY r.measured_at, r.result_id) AS mr
+WITH recent AS (
+    SELECT r.measured_value AS x, r.measured_at, r.result_id
       FROM v_inspection_result r
      WHERE r.product_code = :product_code AND r.item_seq = :item_seq AND r.use_for_judgement AND r.measured_value IS NOT NULL
+       AND r.measured_at <= app_now()
        AND (CAST(:equipment_id AS text) IS NULL OR r.machined_equipment_id = CAST(:equipment_id AS text))
+     ORDER BY r.measured_at DESC, r.result_id DESC LIMIT 50
+), v AS (
+    SELECT x, measured_at, result_id, x - lag(x) OVER (ORDER BY measured_at, result_id) AS mr FROM recent
 )
 SELECT i.item_seq, i.item_name, i.lsl, i.usl, i.cpk_min, i.is_full_check_by_cpk, count(v.x)::int AS n, avg(v.x) AS mean,
        avg(abs(v.mr)) / 1.128 AS sigma,

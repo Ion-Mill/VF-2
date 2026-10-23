@@ -141,3 +141,35 @@ SELECT fn_resume_normal(:hold_id, :actor) AS hold_id;
 
 -- name: hold
 SELECT h.*, l.status AS lot_status FROM lot_hold h JOIN production_lot l USING (lot_no) WHERE h.hold_id = :hold_id;
+
+-- ---------- 로트 화면 한 번에 (2026-10-23, 화면 → 백엔드 전환 C2 — SCR-19 로트 추적·SCR-20·SCR-21) ----------
+-- 로트마다: 상태·수량·검사 방식·판정·게이지 합불·공정별 완료 수(실적 줄 PQ 합)·마지막 보류·출하 내역. 오래된 것부터
+-- name: lots_screen
+SELECT l.*, p.gauge_pass_qty, p.gauge_fail_qty,
+       (SELECT coalesce(jsonb_object_agg(x.process_code, x.n), '{}'::jsonb)
+          FROM (SELECT r.process_code, sum(r.pq)::int AS n FROM operation_report r
+                 WHERE r.lot_no = l.lot_no AND r.end_at <= app_now() GROUP BY r.process_code) x) AS process_done,
+       (SELECT min(r.start_at) FROM operation_report r WHERE r.lot_no = l.lot_no) AS first_in_at,
+       (SELECT to_jsonb(h) FROM (SELECT hold_id, trigger_type AS trigger, hold_reason AS reason, held_by, held_at, released_by, released_at,
+                                        scrap_proposed_qty AS scrap_qty
+                                   FROM lot_hold WHERE lot_no = l.lot_no ORDER BY held_at DESC LIMIT 1) h) AS hold,
+       (SELECT coalesce(jsonb_agg(jsonb_build_object('shipment_no', s.shipment_no, 'customer_code', s.customer_code, 'shipped_at', s.shipped_at,
+                                                     'qty', sl.qty) ORDER BY s.shipped_at), '[]'::jsonb)
+          FROM shipment_line sl JOIN shipment s USING (shipment_no) WHERE sl.lot_no = l.lot_no) AS shipments
+  FROM v_production_lot l LEFT JOIN inspection_plan p USING (lot_no)
+ ORDER BY l.order_no, l.lot_seq;
+
+-- name: lot_reports
+SELECT lot_no, process_code, equipment_id, worker_user_id, shift_id, start_at, end_at, pq, gq, rq, sq
+  FROM operation_report WHERE lot_no = :lot_no ORDER BY start_at;
+
+-- name: lot_alarms
+SELECT a.alarm_event_id, a.equipment_id, a.alarm_code, a.severity_at_event, a.occurred_at, a.cleared_at, a.lot_no,
+       a.prev_alarm_event_id, a.scenario_code
+  FROM alarm_event a WHERE a.lot_no = :lot_no ORDER BY a.occurred_at;
+
+-- name: holds_before
+SELECT * FROM lot_hold WHERE held_at < CAST(:before AS timestamptz) ORDER BY held_at;
+
+-- name: material_lots
+SELECT * FROM raw_material_lot ORDER BY received_date, material_lot_no;
