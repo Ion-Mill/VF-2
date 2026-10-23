@@ -136,6 +136,26 @@ def _prev_take(user_id: str, new_chat: bool) -> dict | None:
         return hit[1]
 
 
+# 상태 되묻기 다음 글 (2026-10-22). FOLLOWUP이 꺼져 있어도, 상태 빈 칸을 물은 답 하나만 기억해 다음 글에 한 번 넘긴다.
+_status_prev: dict[str, tuple[float, dict]] = {}
+
+
+def _status_prev_take(user_id: str, new_chat: bool) -> dict | None:
+    with _prev_lock:
+        if new_chat:
+            _status_prev.pop(user_id, None)
+            return None
+        hit = _status_prev.pop(user_id, None)
+        if hit is None or _now() - hit[0] > PREV_TTL_S:
+            return None
+        return hit[1]
+
+
+def _status_prev_keep(user_id: str, rec: dict) -> None:
+    with _prev_lock:
+        _status_prev[user_id] = (_now(), rec)
+
+
 def _prev_keep(user_id: str, rec: dict | None) -> None:
     if rec is None:
         return
@@ -179,11 +199,15 @@ def chat(req: ChatRequest) -> dict:
         with BT.acting_as(req.user.user_id, req.allowed_tools), EXT.external_request(provider) as ext:   # provider가 None이면 아무것도 안 바뀐다. 끝나면 되돌린다
             ctx = _context(req.context)
             keep_prev = C.settings().followup
-            prev = _prev_take(req.user.user_id, ctx.get("new_chat") == "1") if keep_prev else None
+            new_chat = ctx.get("new_chat") == "1"
+            prev = _prev_take(req.user.user_id, new_chat) if keep_prev else _status_prev_take(req.user.user_id, new_chat)
             a = answer(req.question, req.user.role_code, ctx, prev=prev, screen_text=req.screen_text)
             rec = a.pop("_followup", None)      # 화면·백엔드로 나가지 않는다
+            status_rec = a.pop("_status_ask", None)
             if keep_prev:
                 _prev_keep(req.user.user_id, rec)
+            elif status_rec:
+                _status_prev_keep(req.user.user_id, status_rec)
             if ext is not None:
                 miss = ext.material_failure()                        # 재료를 정하는 단계의 외부 호출 실패 → 오류 (다른 LLM으로 몰래 바꾸지 않는다)
                 if miss:

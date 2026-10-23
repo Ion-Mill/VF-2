@@ -94,9 +94,10 @@ function screenFromUrl(role: Role): [Screen, string | null] {
 const ZONES: [string, string[], MachineId[]][] = [['1·2공정', ['OP-10', 'OP-20'], ['saw', 'mil']], ['3공정', ['OP-30'], ['vf1', 'vf2']], ['4·5공정', ['OP-40', 'OP-50'], ['wsh', 'cmm']]];
 // 왼쪽 메뉴 묶음 (사용자 요청 2026-10-19): 홈 / 생산(로트·현장) / 정비(정지·재생·예방 정비) / 품질 / 재고(공구) / 문서(+지침카드, 2026-10-20) / 설정.
 // 묶음 안 화면은 상단 바 가운데 탭으로 바꾼다. related = 그 묶음에서 열리는 다른 화면
-const GROUPS: { label: string; subs: [string, Screen, Role[]?, (string | null)?][]; related?: Screen[] }[] = [
+// row: true 이면 그 묶음의 하위 탭을 본문 위 가로 한 줄로 보인다 (생산). 위 유리 메뉴 펼침은 그대로다.
+const GROUPS: { label: string; row?: boolean; subs: [string, Screen, Role[]?, (string | null)?][]; related?: Screen[] }[] = [
   { label: '홈', subs: [['3D 라인', 'line']], related: ['layout2d'] },
-  { label: '생산', subs: [['로트 추적', 'lots'], ['현장 모니터', 'field']] },
+  { label: '생산', row: true, subs: [['로트 추적', 'lots'], ['현장 모니터', 'field']] },
   { label: '정비', subs: [['다시 보기', 'replay'], ['예방 정비', 'pm', ['MNT', 'SUP', 'MGR']]] },
   { label: '품질', subs: [['검사 기록', 'quality', ['OPR', 'SUP', 'MGR']], ['공정 능력 · 불량', 'qcap', ['SUP', 'MGR']]] },
   { label: '재고', subs: [['재고', 'inventory'], ['공구 수명', 'tools']] },
@@ -320,6 +321,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
   const [eveI, setEveI] = useState(0); // 홈 이브 알림 띠에서 보고 있는 알람 번호
   const [zone, setZone] = useState<string | null>(null);
   const curGroup = GROUPS.find((g) => g.subs.some(([, s2]) => s2 === screen) || g.related?.includes(screen));
+  const sideRow = !!curGroup?.row; // 가로 메뉴바(row) 묶음: 본문 맨 위 가로 바에 하위 탭을 보인다
   useEffect(() => { // 펼친 메뉴 바깥을 누르거나 Esc면 닫기
     if (!navOpen) return;
     const off = (e: Event) => { if (e instanceof KeyboardEvent ? e.key === 'Escape' : !(e.target as Element).closest?.('[data-nav]')) setNavOpen(null); };
@@ -492,8 +494,16 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
 
         {/* 이브 창(1안, 사용자 선택 2026-10-20): 창 모양·자리는 모든 화면 같음(오른쪽, 위 바 아래 ~ 이브 버튼 위). 홈은 3D 위에 뜨고, 다른 화면은 본문이 창 폭(420 + 오른쪽 24 + 간격 12)만큼 비켜 줌 */}
         <div className={`flex min-h-0 flex-1 flex-col ${curGroup?.label === '재고' || curGroup?.label === '문서' ? 'fs-up' : ''}`} style={{ paddingTop: home ? 0 : 88, paddingBottom: screen === 'layout2d' ? 64 : screen === 'field' ? 70 : 0, paddingRight: side && !home ? 456 : 0, transition: 'padding-right .25s ease' }}>
-        {/* 화면 머리 (디자인 통일 C안 2장): 회색 제목 띠 대신 PageHead. 각 화면이 자기 머리를 갖기 전까지 App이 그림 — 홈·다시 보기는 무대라 없음 */}
-        {screen !== 'line' && screen !== 'layout2d' && screen !== 'replay' && <div className="shrink-0 bg-ground px-4 pt-3"><PageHead title={TITLE[screen]} sub={SUB[screen]} /></div>}
+        {/* 화면 머리 (디자인 통일 C안 2장): 회색 제목 띠 대신 PageHead. 생산 묶음은 가로 막대가 제목 자리를 대신한다 */}
+        {screen !== 'line' && screen !== 'layout2d' && screen !== 'replay' && !sideRow && <div className="shrink-0 bg-ground px-4 pt-3"><PageHead title={TITLE[screen]} sub={SUB[screen]} /></div>}
+        {sideRow && curGroup && (
+          <nav aria-label={curGroup.label} className="relative z-10 flex h-12 shrink-0 items-center gap-1.5 border-b border-line bg-white px-3">
+            <span className="flex items-center pr-3 text-card font-bold text-ink-2">{curGroup.label}</span>
+            {curGroup.subs.map(([name, s2, roles]) => { const ok = !roles || roles.includes(role); const on = screen === s2; return (
+              <button key={name} disabled={!ok} onClick={() => go(s2)} title={ok ? undefined : '이 계정은 볼 수 없습니다'}
+                className={`flex h-10 items-center rounded-tile px-4 text-card font-bold disabled:cursor-not-allowed disabled:text-ink-3 ${on ? 'bg-brand-tint text-brand-ink' : 'text-ink-2 hover:bg-tile'}`}>{name}</button>); })}
+          </nav>
+        )}
         <div className={`relative min-h-0 flex-1 overflow-hidden ${connected ? '' : 'grayscale-[0.6]'}`}>
           <div className="absolute overflow-hidden" style={{ ...stagePos, visibility: show3D ? 'visible' : 'hidden', opacity: show3D ? 1 : 0, pointerEvents: show3D ? 'auto' : 'none' }}>
             <FactoryDashboard embedded dataMode warnIds={[...new Set(open.filter((a) => a.level === '주의').map((a) => a.machine))]} layout={LAYOUT} quality="자동" introOnLoad={false} showCards={settings.cards} alarmText={alarmText} cardText={cardText}
@@ -524,17 +534,24 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
                     <button onClick={() => { setZone(null); setSnapSel(null); api3d()?.setView('front'); }} className={`h-10 rounded-full px-4 text-card font-bold ${zone === null ? 'bg-brand-tint text-brand-ink' : 'hover:bg-tile'}`}>전체</button>
                   </div>
                 )}
-                {/* 3D 조작: 홈 = 왼쪽 세로 유리 줄 (시안 3a), 현장 모니터 = 오른쪽 아래 */}
-                <div className={`pointer-events-auto absolute flex gap-1 p-1.5 ${home ? 'left-5 top-[92px] flex-row rounded-stage border border-line bg-white shadow-card' : 'bottom-3 right-3 rounded-full border border-line bg-white/90 shadow-md'}`}>{/* 홈: 왼쪽 위 가로 줄 (시안 C 확정, 2026-10-20) */}
-                  {(() => { const sb = home ? 'h-12 w-14 rounded-card text-card font-semibold text-ink-2 hover:bg-tile' : 'h-8 min-w-9 rounded-full px-3 text-small font-semibold hover:bg-brand-tint'; return (<>
-                    {home && <span className="flex h-12 w-14 items-center justify-center rounded-card bg-brand-tint text-card font-bold text-brand-ink" aria-current="true">3D</span>}
+                {/* 3D 조작: 홈 = 왼쪽 유리 줄 (시안 3a), 현장 모니터 = 오른쪽 위 확대·축소만 */}
+                {home ? (
+                <div className="pointer-events-auto absolute left-5 top-[92px] flex flex-row gap-1 rounded-stage border border-line bg-white p-1.5 shadow-card">{/* 홈: 왼쪽 위 가로 줄 (시안 C 확정, 2026-10-20) */}
+                  {(() => { const sb = 'h-12 w-14 rounded-card text-card font-semibold text-ink-2 hover:bg-tile'; return (<>
+                    <span className="flex h-12 w-14 items-center justify-center rounded-card bg-brand-tint text-card font-bold text-brand-ink" aria-current="true">3D</span>
                     <button onClick={() => go('layout2d')} className={sb}>2D</button>
                     <button onClick={() => { api3d()?.setView('front'); setSnapSel(null); }} className={sb}>전체</button>
-                    {home && <button onClick={() => api3d()?.setView('top')} className={sb}>위</button>}
-                    <button onClick={() => api3d()?.nav('zoom', 0.85)} className={`${sb} ${home ? 'text-title' : ''}`} aria-label="확대">+</button>
-                    <button onClick={() => api3d()?.nav('zoom', 1.18)} className={`${sb} ${home ? 'text-title' : ''}`} aria-label="축소">−</button>
+                    <button onClick={() => api3d()?.setView('top')} className={sb}>위</button>
+                    <button onClick={() => api3d()?.nav('zoom', 0.85)} className={`${sb} text-title`} aria-label="확대">+</button>
+                    <button onClick={() => api3d()?.nav('zoom', 1.18)} className={`${sb} text-title`} aria-label="축소">−</button>
                   </>); })()}
                 </div>
+                ) : screen === 'field' ? (
+                  <div className="pointer-events-auto absolute right-3 top-3 z-10 flex gap-1 rounded-full border border-line bg-white/90 p-1 shadow-md">
+                    <button onClick={() => api3d()?.nav('zoom', 0.85)} className="h-11 w-11 rounded-full text-[22px] font-bold leading-none hover:bg-brand-tint" aria-label="확대">+</button>
+                    <button onClick={() => api3d()?.nav('zoom', 1.18)} className="h-11 w-11 rounded-full text-[22px] font-bold leading-none hover:bg-brand-tint" aria-label="축소">−</button>
+                  </div>
+                ) : null}
                 {home && <HomeHud />}
               </>
             )}

@@ -50,6 +50,6 @@ def test_remaining_time_question_says_the_end_time_is_not_recorded(v3, monkeypat
 
 def test_plain_status_question_does_not_add_the_note(v3, monkeypatch):
     FakeBackend().install(monkeypatch)
-    a = A.answer("VF2-02 지금 상태 어때?", "MNT", {})
+    a = A.answer("VF2-02 돌아가?", "MNT", {})
     text = " ".join(str(x) for x in (a.get("conclusion"), a.get("steps"), a.get("current_data")))
     assert "설비 상태" in text and "기록에 없습니다" not in text
