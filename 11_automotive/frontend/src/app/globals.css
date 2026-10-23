@@ -67,7 +67,6 @@ h1,h2,h3{letter-spacing:-.01em;}
 /* 이브 메뉴 4개를 크게 (사용자 요청 2026-10-21) — 위젯 기본 48px 동그라미·13px 글자 */
 .ma-menu { gap: 16px; }
 .ma-menu-item { gap: 12px; }
-.ma-menu-label { height: 40px; padding: 0 18px; border-radius: 20px; font-size: 16px; }
 .ma-menu-icon { width: 64px; height: 64px; }
 .ma-menu-badge { min-width: 24px; height: 24px; border-radius: 12px; font-size: 12px; }
 /* 어두운 창 안의 기존 탭 내용 (밝은 화면용 Tailwind 색) */
@@ -105,9 +104,9 @@ h1,h2,h3{letter-spacing:-.01em;}
 .ma-panel .ma-panel-title{font-size:18px}
 .ma-panel .ma-icon-btn{width:40px;height:40px;border-radius:50%;background:#fff;color:#3a4a61;box-shadow:0 1px 3px rgba(27,42,65,.12)}
 .ma-panel .ma-icon-btn:hover,.ma-panel .hover\:bg-slate-50:hover,.ma-panel .hover\:bg-slate-100:hover,.ma-panel .hover\:bg-white\/10:hover{background:rgba(30,70,150,.06)}
-.ma-panel .ma-tabs{margin:0 14px 4px;padding:5px;border:0;background:#fff;border-radius:999px;gap:4px;box-shadow:0 1px 3px rgba(27,42,65,.08)}
-.ma-panel .ma-tab{height:40px;border:0;border-radius:999px;font-size:14px;color:#3a4a61}
-.ma-panel .ma-tab[aria-selected="true"]{background:#1b2a41;color:#fff;border:0}
+.ma-panel .ma-tabs{margin:0 14px 2px;padding:3px;border:0;background:#fff;border-radius:999px;gap:2px;box-shadow:0 1px 3px rgba(27,42,65,.08)}
+.ma-panel .ma-tab{height:32px;display:inline-flex;align-items:center;justify-content:center;gap:5px;border:0;border-radius:999px;font-size:13px;color:#56667d} /* 작게 · 아이콘 + 이름, 고른 탭은 그 탭 색(Eve.tsx TAB_COLOR) (사용자 요청 2026-10-23) */
+.ma-panel .ma-tab[aria-selected="true"]{font-weight:700;border:0}
 .ma-panel .ma-tab-badge{background:none;color:#e5484d;min-width:0;height:auto;padding:0;font-size:14px}
 .ma-panel .border-slate-200,.ma-panel .border-slate-300,.ma-panel .border-white\/25{border-color:#dbe5f3}
 .ma-panel select,.ma-panel input:not(.ma-input){background:#fff;color:#1b2a41}
@@ -141,9 +140,8 @@ h1,h2,h3{letter-spacing:-.01em;}
 .ma-panel .ma-voice-note{margin:0 6px 8px;text-align:center;font-size:12.5px;line-height:1.45;color:#56667d}
 
 /* 이브 창 시안 2 · 보통 바이올렛 (사용자 선택 2026-10-21): 퓨어 실버 창 + 연보라 테두리. 보라는 링크·칩·선택 탭 점·체크 칸·[보기] 테두리에만 (위 시안 4b의 연보라 바탕을 덮음) */
-.ma-panel{background:linear-gradient(180deg,#ffffff 0%,#f5f8fc 100%)!important;border:2px solid #cbdcfb;box-shadow:0 20px 50px rgba(28,37,48,.16);--ma-panel-line:#e3e9f2}
+.ma-panel{background:linear-gradient(180deg,#e8edf5 0%,#dfe6f0 100%)!important; /* 안의 흰 카드와 구분되게 한 단계 어둡게 (사용자 요청 2026-10-23) */border:2px solid #cbdcfb;box-shadow:0 20px 50px rgba(28,37,48,.16);--ma-panel-line:#e3e9f2}
 .ma-panel .border-slate-200,.ma-panel .border-slate-300,.ma-panel .border-white\/25{border-color:#e3e9f2}
-.ma-panel .ma-tab[aria-selected="true"]::after{content:'';display:inline-block;width:6px;height:6px;margin-left:8px;border-radius:50%;background:#9dbcf4;vertical-align:middle}
 .ma-panel .ma-check{appearance:none;-webkit-appearance:none;margin:0;border:1.5px solid #c7d6f5;border-radius:8px;background:#fff;cursor:pointer}
 .ma-panel .ma-check:checked{border-color:#1b2a41;background:#1b2a41 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7'/%3E%3C/svg%3E") center/16px no-repeat}
 .ma-panel .ma-check:focus-visible{outline:2px solid #3d6fe0;outline-offset:2px}

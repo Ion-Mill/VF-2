@@ -31,6 +31,13 @@ const TAB_ICON: Record<EveTab, string[]> = {
   채팅: ['M4 5h16v11H9l-5 4z'],
   '채팅 기록': ['M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0', 'M12 7v5l3 2'],
 };
+// 메뉴 아이콘 · 고른 탭 색 = 테마 토큰(tailwind.config.ts) [바탕, 글자, 선] — 넷 다 다르게 (사용자 요청 2026-10-23)
+const TAB_COLOR: Record<EveTab, [string, string, string]> = {
+  브리핑: ['#e5effe', '#2a55b8', '#cbdcfb'], // brand
+  알림: ['#fff3e3', '#a35a0c', '#f6d6a8'], // warn
+  채팅: ['#e6f6ef', '#157a4f', '#bfe6cf'], // ok
+  '채팅 기록': ['#eef2f7', '#56667d', '#e3e9f2'], // info(회색)
+};
 // 어두운 창 위 수준 글자색 (위젯 .ma-tone-*)
 const TONE: Record<Level, string> = { 긴급: '#FF8A7E', 주의: '#FFC46B', 참고: '#A9C2FF' };
 
@@ -125,9 +132,8 @@ export function Eve({ tab, quick: showQuick, onPick, onClose, badges, bubble, on
       {menu && !tab && (
         <div className="ma-menu" role="menu" aria-label="이브 메뉴" style={shift}>
           {EVE_TABS.map((t, i) => (
-            <button key={t} type="button" role="menuitem" className="ma-menu-item ma-rise" style={{ animationDelay: `${i * 50}ms` }} onClick={() => pick(t)}>
-              <span className="ma-menu-label">{t}</span>
-              <span className="ma-menu-icon"><Icon d={TAB_ICON[t]} size={28} />{badge(t, 'ma-menu-badge')}</span>
+            <button key={t} type="button" role="menuitem" aria-label={t} title={t} className="ma-menu-item ma-rise" style={{ animationDelay: `${i * 50}ms` }} onClick={() => pick(t)}>
+              <span className="ma-menu-icon" style={{ background: TAB_COLOR[t][0], color: TAB_COLOR[t][1], borderColor: TAB_COLOR[t][2] }}><Icon d={TAB_ICON[t]} size={28} />{badge(t, 'ma-menu-badge')}</span>
             </button>
           ))}
         </div>
@@ -141,7 +147,7 @@ export function Eve({ tab, quick: showQuick, onPick, onClose, badges, bubble, on
             <button type="button" className="ma-icon-btn" onClick={onClose} aria-label="창 닫기"><Icon d={['M6 6l12 12M18 6L6 18']} /></button>
           </header>
           <div className="ma-tabs" role="tablist" aria-label="이브 메뉴">
-            {EVE_TABS.map((t) => <button key={t} type="button" role="tab" className="ma-tab" aria-selected={tab === t} onClick={() => { setFocus(null); onPick(t); }}>{t}{badge(t, 'ma-tab-badge')}</button>)}
+            {EVE_TABS.map((t) => <button key={t} type="button" role="tab" className="ma-tab" aria-selected={tab === t} style={tab === t ? { background: TAB_COLOR[t][0], color: TAB_COLOR[t][1] } : undefined} onClick={() => { setFocus(null); onPick(t); }}><Icon d={TAB_ICON[t]} size={15} />{t}{badge(t, 'ma-tab-badge')}</button>)}
           </div>
           {/* 채팅은 다른 탭으로 가도 지우지 않고 숨기기만 한다 — 보낸 질문·기다리는 답·입력 중인 글이 그대로 남는다 (2026-10-20). contents = 보일 때 모양은 그대로 */}
           <div className={tab === '채팅' ? 'contents' : 'hidden'}>
