@@ -13,7 +13,7 @@ from ..config import get_settings
 from ..db import Db, get_db
 from ..errors import AppError
 from ..security import service_key
-from ..services import cmm
+from ..services import cmm, sim_sync
 from .common import changed
 
 router = APIRouter(prefix="/api/ingest", tags=["설비 데이터 받기"], dependencies=[Depends(service_key("ingest"))])
@@ -177,12 +177,57 @@ class ClockIn(BaseModel):
     paused: bool = False
 
 
+def _sim_only(what: str) -> None:
+    """시연 서버 DB 중계 입구(clock·sync·reset)는 **MOM_SIM_SYNC=true 또는 시연 모드** 서버에서만 받는다 (2026-10-23).
+    "DB 1개 = 공장 1개" — 켠 서버의 DB에 시뮬레이터 기록이 쌓이고 [처음으로] 때 모두의 10/1 기록이 되돌아간다.
+    아니면 409 → 시연 서버의 DB 중계가 스스로 꺼진다"""
+    s = get_settings()
+    if not (s.sim_sync or s.demo_mode):
+        raise AppError(409, "INVALID_STATE", f"시뮬레이터 받기가 꺼진 서버 — {what} (MOM_SIM_SYNC)", {"reason": "SIM_SYNC_OFF"})
+
+
 @router.post("/clock")
 def clock(body: ClockIn, db: Db = Depends(get_db)):
     """시연 시계를 시뮬레이터 시계에 맞춘다 (팀과 논의/비서_시뮬레이터_DB_연결_논의 3-1 "서비스 키로 부르는 시계 입구", 2026-10-20).
-    **시연 모드(MOM_DEMO_MODE=true — 로컬 Docker DB)에서만** 받는다. 공용 DB 서버는 시연 모드가 꺼져 있어 409 → 시연 서버의
-    DB 중계가 스스로 꺼진다 (공용 DB에 시연 사건이 섞이지 않게 하는 잠금)"""
-    if not get_settings().demo_mode:
-        raise AppError(409, "INVALID_STATE", "시연 모드가 아닌 서버 — 시뮬레이터 시계를 받지 않음 (공용 DB 보호)",
-                       {"reason": "NOT_DEMO_MODE"})
+    MOM_SIM_SYNC 또는 시연 모드에서만 (DB 시계는 하나 — 모두의 "지금"이 시뮬레이터 시계를 따른다)"""
+    _sim_only("시뮬레이터 시계를 받지 않음")
     return db.one("common.sim_set", mode="SIM", sim_at=body.sim_at, speed=body.speed, paused=body.paused)
+
+
+class SyncTable(BaseModel):
+    columns: list[str] = Field(max_length=40)
+    upsert: list[list[str | None]] = Field(default_factory=list, max_length=20000)   # CSV 칸 글자 (빈칸·null = NULL)
+    delete: list[list[str]] = Field(default_factory=list, max_length=20000)          # 기본 키 값 (sensor_sample만)
+
+
+class SyncIn(BaseModel):
+    tables: dict[str, SyncTable] = Field(max_length=20)
+
+
+@router.post("/sync")
+def sync(body: SyncIn, db: Db = Depends(get_db)):
+    """시뮬레이터 10/1 기록을 표째로 DB에 맞춘다 (시연 서버 DB 중계, 2026-10-23 — app/services/sim_sync.py).
+    MOM_SIM_SYNC 또는 시연 모드에서만. 줄은 생성기 out_realtime CSV와 같은 칸·번호, 기본 키가 같으면 덮어쓴다. 한 요청 = 한 트랜잭션"""
+    _sim_only("시뮬레이터 기록을 받지 않음")
+    if sum(len(t.upsert) + len(t.delete) for t in body.tables.values()) > 20000:
+        raise AppError(422, "VALIDATION", "한 번에 2만 줄까지 — 나눠 보낸다")
+    return sim_sync.apply(db, {k: v.model_dump() for k, v in body.tables.items()})
+
+
+class ResetIn(BaseModel):
+    # 시뮬레이터 시작점 (생성기 Realtime.baseline()). 주면 되돌린 DB가 이 시작점과 같은지 확인한다 — 다르면 되돌리지 않음
+    start_at: datetime | None = None
+    id_after: dict[str, int] = Field(default_factory=dict, max_length=20)   # 표 → 시작점의 마지막 번호 (그다음부터 시뮬레이터가 씀)
+
+
+@router.post("/reset")
+def reset(body: ResetIn | None = None, db: Db = Depends(get_db)):
+    """시연 데이터 처음으로 (시연 서버 [처음으로]·켤 때, 2026-10-23): 운영 데이터를 시연 기준점으로 되돌리고 그 뒤 센서 값을 지운다
+    (fn_demo_reset — 누가 눌러도 모두의 기록이 되돌아간다). MOM_SIM_SYNC 또는 시연 모드에서만. 기준점이 없으면 INVALID_STATE.
+    시작점(start_at·id_after)을 주면 기준점의 시각·마지막 번호가 시뮬레이터와 같은지 보고, 다르면 409 BASELINE_MISMATCH로 되돌리기를
+    취소한다 (10/1 뒤 기록을 DB에 채우거나 기준점을 다시 찍었는데 시뮬레이터 시작점이 그대로면 번호가 겹치므로)"""
+    _sim_only("시연 데이터를 되돌리지 않음")
+    out = db.one("common.demo_reset")["result"]
+    if body is not None and (body.start_at is not None or body.id_after):
+        sim_sync.check_baseline(db, body.start_at, body.id_after)   # 다르면 예외 → 이 트랜잭션(되돌리기)이 취소됨
+    return out
