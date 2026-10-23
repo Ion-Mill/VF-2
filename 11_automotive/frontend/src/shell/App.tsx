@@ -7,6 +7,7 @@ import type { MachineId } from '@/components/types';
 import { ID_OF, LAYOUT, LEGEND, MACHINES, type Role } from './data';
 import { Ctx, DEFAULT_SETTINGS, type AppCtx, type History, type Inv, type Screen, type Settings } from './ctx';
 import { api, md, SIM, simIso, tsOf, useFetch, useLive, useLocal, usePersist, type SimEvent } from './live';
+import { backendLogout } from './backendApi';
 import { askGuideCard } from './assistText';
 import { ALARMS, ROLE_NAME, SHIFT_NAME, USERS, homeScreen, levelOfSev, type AlarmRec, type AlertRec, type Notice, type UserRec } from './model';
 import { derive, fromEvents, fromPast, groupPmPast, repeatOf, type RuleCtx } from './rules';
@@ -463,7 +464,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
             {acct && (
               <div className="absolute right-0 top-[52px] z-30 max-h-[70vh] w-[220px] overflow-y-auto rounded-tile border border-line bg-white py-1 shadow-lg">
                 {USERS.map((u) => <button key={u.id} onClick={() => { setAcct(false); setUser(u); }} className={`flex h-11 w-full items-center px-4 text-left text-body hover:bg-tile ${u.id === user.id ? 'font-bold text-brand-ink' : ''}`}>{u.name}</button>)}
-                <button onClick={() => setUser(null)} className="flex h-11 w-full items-center border-t border-line-soft px-4 text-left text-body text-ink-2 hover:bg-tile">로그아웃</button>
+                <button onClick={() => { backendLogout(); setUser(null); }} className="flex h-11 w-full items-center border-t border-line-soft px-4 text-left text-body text-ink-2 hover:bg-tile">로그아웃</button>
               </div>
             )}
           </div>

@@ -6,6 +6,7 @@ AI비서 초안(v0) → 사람이 고침(v1…) → 확정. 확정 뒤 수정(re
 """
 from __future__ import annotations
 
+import re
 from datetime import date
 
 from fastapi import APIRouter, Depends, Query
@@ -57,6 +58,18 @@ def _own_shift(db: Db, actor: Actor, shift_id: str) -> None:
     if sup is None or sup != actor.user_id:
         raise AppError(403, "FORBIDDEN", f"교대 보고서는 그 교대 반장({sup or '없음'})만 고치고 확정함",
                        {"reason": "NOT_SHIFT_SUPERVISOR"})
+
+
+@router.get("/reports/shift")
+def shift_report_list(_: Actor = Depends(require("SHIFT_REPORT", "VIEW")), db: Db = Depends(get_db)):
+    """교대 보고서 목록 (2026-10-23, 화면 → 백엔드 전환 C2): 교대·상태·버전·교대 시각 — 화면의 보고서 고르기·확정 요청 알림"""
+    return db.all("documents.shift_report_list")
+
+
+@router.get("/reports/daily")
+def daily_report_list(_: Actor = Depends(require("DAILY_REPORT", "VIEW")), db: Db = Depends(get_db)):
+    """일일 보고서 목록 (2026-10-23, 화면 → 백엔드 전환 C2): 날짜·상태·버전"""
+    return db.all("documents.daily_report_list")
 
 
 @router.get("/reports/shift/{shift_id}")
@@ -179,6 +192,20 @@ def inbox(doc_type: str | None = Query(None, alias="type"), status: str | None =
     return [r for r in rows if _doc_viewable(db, actor, r["doc_type"], r["doc_key"])]
 
 
+@router.get("/documents/revisions")
+def revisions_recent(limit: int = Query(200, le=1000), actor: Actor = Depends(require("REVISION_HISTORY", "VIEW")),
+                     db: Db = Depends(get_db)):
+    """최근 문서 버전 (2026-10-23, 화면 → 백엔드 전환 C2 — SCR-17 수정 이력 전체 보기): 모든 문서의 버전 + 바뀐 칸.
+    역할이 볼 수 있는 문서만, OPR(OWN)은 자기가 고친 것만. 오래된 것부터"""
+    own = actor.user_id if actor.scope == "OWN" else None
+    rows = [r for r in reversed(db.all("documents.revisions_recent", own_user=own, limit=limit))
+            if _doc_viewable(db, actor, r["doc_type"], r["doc_key"])]
+    changes: dict[str, list] = {}
+    for c in db.all("documents.revision_changes_of", ids=",".join(str(r["revision_id"]) for r in rows)):
+        changes.setdefault(str(c["revision_id"]), []).append(c)
+    return {"revisions": rows, "changes": changes}
+
+
 @router.get("/documents/{doc_type}/{doc_key}/revisions")
 def revisions(doc_type: str, doc_key: str, actor: Actor = Depends(require("REVISION_HISTORY", "VIEW")),
               db: Db = Depends(get_db)):
@@ -206,9 +233,34 @@ def internal_docs(_: Actor = Depends(require("INTERNAL_DOC", "VIEW")), db: Db = 
 
 
 @router.get("/internal-docs/{doc_no}")
-def internal_doc(doc_no: str, _: Actor = Depends(require("INTERNAL_DOC", "VIEW")), db: Db = Depends(get_db)):
-    """사내 문서 1건 (Rev·승인 정보)"""
-    return must(db.one("documents.internal_doc", doc_no=doc_no), "사내 문서")
+def internal_doc(doc_no: str, sections: bool = Query(False, description="절 목록·본문까지 (2026-10-23, SCR-24 문서 보기)"),
+                 _: Actor = Depends(require("INTERNAL_DOC", "VIEW")), db: Db = Depends(get_db)):
+    """사내 문서 1건 (Rev·승인 정보). sections=true면 현행판 문서 조각(doc_chunk)을 절로 다시 모아 {section, title, level, text}"""
+    row = must(db.one("documents.internal_doc", doc_no=doc_no), "사내 문서")
+    if sections:
+        row["sections"] = _sections(db.all("documents.internal_doc_chunks", doc_no=doc_no))
+    return row
+
+
+_PART = re.compile(r"\s*\(\d+/\d+\)\s*$")
+_NUM = re.compile(r"^§?(\d+(?:\.\d+)*)\.?\s+(.*)$")
+
+
+def _sections(chunks: list[dict]) -> list[dict]:
+    """조각 → 절. 첫 줄 "문서 > 1. 제목 > 1.1 제목 (1/3)"의 마지막 마디가 절 제목, 마디 수 + 1이 제목 깊이(#의 수)"""
+    out: list[dict] = []
+    for c in chunks:
+        head, _, body = (c["chunk_text"] or "").partition("\n")
+        crumbs = [x.strip() for x in head.split(" > ")]
+        last = _PART.sub("", crumbs[-1]) if crumbs else ""
+        m = _NUM.match(last)
+        sec = c["section"].lstrip("§")
+        if out and out[-1]["section"] == sec:
+            out[-1]["text"] = (out[-1]["text"] + "\n" + body.strip()).strip()
+            continue
+        out.append({"section": sec, "title": m.group(2) if m else last, "level": len(crumbs) + (0 if len(crumbs) > 1 else 1),
+                    "text": body.strip()})
+    return out
 
 
 @router.get("/internal-docs/{doc_no}/sections/{section}")

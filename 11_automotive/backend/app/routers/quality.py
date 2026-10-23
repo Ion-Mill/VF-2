@@ -84,7 +84,7 @@ def select(result_id: int, body: SelectIn, actor: Actor = Depends(require("QUALI
 # ---------------- CMM 결과 파일 (QLT-04) ----------------
 @router.get("/inspection/cmm-imports")
 def imports(status: str | None = Query(None, description="비우면 전부, PROBLEM = 실패·확인 필요만"),
-            limit: int = Query(100, le=500), _: Actor = Depends(require("QUALITY", "VIEW")), db: Db = Depends(get_db)):
+            limit: int = Query(100, le=5000), _: Actor = Depends(require("QUALITY", "VIEW")), db: Db = Depends(get_db)):
     """결과 파일 기록·오류 목록 (QLT-04): 파일 이름·받은 시각·상태·오류"""
     rows = db.all("quality.imports", problem_only=status == "PROBLEM", limit=limit)
     return rows if status in (None, "PROBLEM") else [r for r in rows if r["status"] == status]

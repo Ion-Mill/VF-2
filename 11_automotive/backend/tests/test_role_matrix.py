@@ -103,11 +103,19 @@ EXPECTED = {
     ("GET", "/api/internal-docs"): ALL, ("GET", "/api/internal-docs/{doc_no}"): ALL,
     ("GET", "/api/internal-docs/{doc_no}/sections/{section}"): ALL,
     ("POST", "/api/internal-docs/{doc_no}/revisions/{rev}/approve"): "...M",
+    # 화면 → 백엔드 전환 C2 (2026-10-23): 화면 한 번에 읽기 — 각 화면의 상세 조회와 같은 권한
+    ("GET", "/api/reports/shift"): ALL, ("GET", "/api/reports/daily"): ".MSM",
+    ("GET", "/api/documents/revisions"): ALL,                        # * OPR = 자기 것
+    ("GET", "/api/maint/history"): ALL, ("GET", "/api/lots/screen"): ALL,
+    ("GET", "/api/inventory/screen"): ALL, ("GET", "/api/tools/changes"): ALL,
+    # 시뮬레이터가 주인인 기록을 넘기는 문 (MOM_SIM_URL이 있을 때만) — 같은 일을 하는 정식 API와 같은 권한
+    ("POST", "/api/sim/work-record-confirmed"): "OM..",              # 작업기록서·간이 기록 확정과 같음
+    ("POST", "/api/sim/pm-start"): ".M..", ("POST", "/api/sim/pm-end"): ".M..",
 }
 
 # 로그인만 보는 API (처리기 안에서 시연 모드·MGR 등을 따로 본다)
 LOGIN_ONLY = {"/api/auth/login", "/api/auth/logout", "/api/demo/role", "/api/me", "/api/codes", "/api/dataset",
-              "/api/sim/clock", "/api/sim/inject", "/api/sim/reset", "/api/stream/events"}
+              "/api/sim/clock", "/api/sim/inject", "/api/sim/reset", "/api/sim/fire", "/api/stream/events"}
 
 
 class TestRoleMatrix(unittest.TestCase):
