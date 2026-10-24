@@ -2,7 +2,7 @@
 
 외부 Claude 채팅에서만 켜진다. 비교 1번·2번을 나누지 않는다.
 뜻이 안 정해지면 LLM이 질문만 한다. 조회 요청이 온 뒤에만 설비·기간을 보고 이미 있는 조회를 실행한다.
-위 문장은 LLM, 아래 `원문 보기`는 프로그램 원문이다. 달력 날짜는 쓰지 않고 기간 말은 `REFERENCE_AT`로 계산한다.
+위 문장은 LLM, 아래 `원문 보기`는 프로그램 원문이다. 달력 날짜는 쓰지 않고 기간 말은 시연 서버 시계로 계산한다. 시계를 못 읽으면 `REFERENCE_AT`다.
 """
 from __future__ import annotations
 
@@ -13,6 +13,7 @@ from backend.config import REFERENCE_AT
 from backend.llm import client as C
 from backend.llm import external as EXT
 from backend.safety import fixed_block as FB
+from backend.services import sim_clock
 
 DECIDE_JOB = "lookup_decide"
 WRITE_JOB = "lookup_write"
@@ -73,7 +74,7 @@ _DECIDE_SYSTEM = """너는 자동차 부품 절삭가공 라인의 비서다.
 한 턴에는 질문과 조회 중 하나만 한다. 뜻이 안 정해지면 question에 질문만 쓰고 lookups는 빈 배열로 둔다. 뜻이 정해지면 question은 빈 문자열이다.
 조회 name은 생산, OEE, MTTR, 공구 수명, 알람 횟수, 정지 횟수, 재고, 가동 상태, 정비 기한만 쓴다. 새 조회는 만들지 않는다.
 equipment는 설비 이름(SAW-01, MIL-01, VF2-01, VF2-02, WSH-01, CMM-01), 모든 설비, 또는 빈 문자열이다. 모든설비는 모든 설비와 같고, 가동상태는 가동 상태와 같다.
-period는 어제·오늘·지난 N일 같은 기간 말이다. 달력 날짜는 쓰지 않는다. 이번 말에 기간이 없어도 앞 대화의 기간 말을 period에 넣는다.
+period는 어제·오늘·지난 N일·이번 교대·직전 교대 같은 기간 말이다. 달력 날짜는 쓰지 않는다. 이번 말에 기간이 없어도 앞 대화의 기간 말을 period에 넣는다.
 kind는 고장·알람 번호처럼 종류를 좁히는 말이다. 없으면 빈 문자열이다. 재고는 품목이 있으면 kind에 그 품목 이름만 넣고, 품목이 없으면 kind를 비운다. 한 질문에 조회가 둘이면 lookups에 둘 다 넣는다.
 재고처럼 설비 없이 되는 조회는 equipment를 비운다. 가동 상태·정비 기한·정지 횟수·MTTR은 설비 이름이 없으면 조회하지 말고 설비 이름을 질문한다.
 앞 대화의 숫자는 어떤 질문인지 푸는 데만 쓰고, 그 숫자를 답으로 다시 말하지 않는다. 마크다운 기호는 쓰지 않는다."""
@@ -123,10 +124,17 @@ def canonical(name: str) -> str | None:
 
 
 def period_window(period: str) -> tuple[date | None, date | None, str | None]:
-    """기간 말만 계산한다. LLM이 적은 달력 날짜는 지운 뒤의 말에만 맞춘다."""
+    """기간 말만 계산한다. LLM이 적은 달력 날짜는 지운 뒤의 말에만 맞춘다. 시연 시계가 있으면 그 날짜·근무, 없으면 REFERENCE_AT."""
     text = _CALENDAR.sub(" ", period or "")
     shift = "N" if re.search(r"야간|간밤|어젯밤", text) else ("D" if "주간" in text else None)
-    ref = date.fromisoformat(REFERENCE_AT[:10])
+    live = sim_clock.current()
+    ref = live.at.date() if live else date.fromisoformat(REFERENCE_AT[:10])
+    if live is not None and sim_clock.PREV_SHIFT.search(text):
+        prev = sim_clock.previous_open()
+        return (prev[0], prev[0], prev[1]) if prev else (None, None, shift)
+    if live is not None and sim_clock.CUR_SHIFT.search(text):
+        cur = sim_clock.current_kind()
+        return (cur[0], cur[0], cur[1]) if cur else (None, None, shift)
     if re.search(r"어제|어젯|간밤|전날", text):
         day = ref - timedelta(days=1)
         return day, day, shift
