@@ -28,7 +28,8 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]                                   # 11_automotive
 DEFAULT_URL = "http://127.0.0.1:8100"
 HTTP_TIMEOUT_S = 130.0                                   # 비서의 시간 예산(120초)보다 조금 길게
-MAX_PARALLEL = 2                                         # 동시에 비서를 부르는 수
+MAX_PARALLEL = 2                                         # 보고서·작업지시서·브리핑·알림이 동시에 비서를 부르는 수
+GUIDE_PARALLEL = 2                                       # 지침카드 두 칸(먼저 할 일·보전)은 위 자리와 따로. 보고서가 자리를 잡아도 같이 시작한다
 LOCAL_HOSTS = ("127.0.0.1", "localhost", "::1")
 _SENT = re.compile(r"(?<=[.!?])\s+")
 
@@ -95,6 +96,7 @@ class Composer:
         self.enabled = (os.environ.get("MOM_LLM_COMPOSE", "") == "1") if enabled is None else enabled
         self._lock = threading.Lock()
         self._sem = threading.Semaphore(MAX_PARALLEL)
+        self._guide_sem = threading.Semaphore(GUIDE_PARALLEL)
         self._e: dict[tuple, Entry] = {}
         self.threads: list[threading.Thread] = []      # 시험이 끝나기를 기다릴 때 쓴다
 
@@ -133,7 +135,7 @@ class Composer:
         t0 = time.monotonic()
         out, why, status = None, "", None
         try:
-            with self._sem:
+            with (self._guide_sem if kind == "guide_card" else self._sem):
                 res = self._post(kind, [{"id": i, "text": t} for i, t in zip(ids, texts)])
             got = [l["text"] for l in res["lines"]]
             if len(got) == len(texts) and all(isinstance(g, str) and g.strip() for g in got):

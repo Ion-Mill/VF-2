@@ -18,7 +18,7 @@ from backend.privacy import outbound_guard as OG
 pytestmark = pytest.mark.own_backend
 KEY = "test-service-key"
 H = {"X-Service-Key": KEY}
-SONNET = "claude-sonnet-5-5"
+SONNET = "claude-haiku-5-5"          # 외부 앱 다듬기(compose)가 요청하는 모델. 가짜 응답의 모델 이름이 이와 같아야 글 검사까지 간다
 client = TestClient(CS.app)
 
 SHIFT = [{"id": "s1", "text": "실적 87개 / 총 목표 90개 (-3개)."},
@@ -289,6 +289,22 @@ def test_guide_card_rewrites_that_change_the_meaning_are_rejected(why, mut):
     r = use(bad, bad)
     assert_503(post("guide_card", CARD))
     assert len(r.calls) == 2, why
+
+
+MAINT = [{"id": "g1", "text": "잠금·표지 후, 충돌 징후가 없으면 볼스크류가 손으로 도는지 본다"}]
+
+
+def test_guide_card_keeps_lockout_words_already_in_the_step():
+    use({"lines": [{"id": "g1", "text": "잠금·표지 후, 충돌 징후가 없으면 볼스크류가 손으로 도는지 확인한다"}]})
+    res = post("guide_card", MAINT)
+    assert res.status_code == 200 and "잠금" in res.json()["lines"][0]["text"] and "표지" in res.json()["lines"][0]["text"]
+
+
+def test_guide_card_rejects_dropping_lockout_words_that_were_in_the_source():
+    dropped = {"lines": [{"id": "g1", "text": "충돌 징후가 없으면 볼스크류가 손으로 도는지 확인한다"}]}
+    r = use(dropped, dropped)
+    assert_503(post("guide_card", MAINT))
+    assert len(r.calls) == 2 and "안전 용어가 빠짐" in r.calls[1]["stdin"]
 
 
 # ------------------------------------------------------------------ 설비 이름의 '#1'은 마크다운이 아니다 (실행 안내 검증 중 발견)
