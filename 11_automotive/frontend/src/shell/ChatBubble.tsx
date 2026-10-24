@@ -66,7 +66,6 @@ function PlainSources({ sources, openSource }: { sources: ChatRow['sources']; op
               {s.doc_name} {s.doc_no} {s.rev} §{s.section}
             </button>
           ))}
-          <span className="w-full text-slate-500">모두 가상 사내 문서예요</span>   {/* 답 본문에서 "가상 기준"을 빼는 대신 여기서 한 번 밝힌다 (2026-10-21) */}
         </div>
       )}
     </div>
