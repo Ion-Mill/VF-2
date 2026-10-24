@@ -127,14 +127,28 @@ def edit_shipment(db: Db, shipment_no: str, actor_id: str, changes: dict, reason
 
 
 def edit_work_order(db: Db, wo_no: str, actor_id: str, changes: dict, reason: str | None, version: int | None = None) -> int:
+    """제목·증상, 그리고 작업 순서(steps = 글자 목록, 2026-10-23 — 화면 [저장]이 순서도 고친다).
+    작업 순서는 수정 이력에 " / "로 이은 한 칸("steps")으로 남는다"""
     cur = _must(db.one("maintenance.wo_get", wo_no=wo_no), "작업지시서")
     _guard("WORK_ORDER", cur, reason, version)
-    fields = ("title", "symptom")
-    diffs = _diff(cur, changes, fields)
+    fields = ("title", "symptom", "steps")
+    old_steps = db.all("maintenance.wo_steps", wo_no=wo_no)
+    new_steps = None
+    if changes.get("steps") is not None:
+        new_steps = [str(s).strip() for s in changes["steps"] if str(s).strip()]
+        changes = {**changes, "steps": " / ".join(new_steps)}
+    diffs = _diff({**cur, "steps": " / ".join(s["step_text"] for s in old_steps)}, changes, fields)
     status = _next_status("WORK_ORDER", cur["status"])
-    ver = _save(db, "WORK_ORDER", wo_no, actor_id, reason, status, {f: changes.get(f, cur.get(f)) for f in fields}, diffs)
+    content = {f: changes.get(f, cur.get(f)) for f in ("title", "symptom")}
+    content["steps"] = new_steps if new_steps is not None else [s["step_text"] for s in old_steps]
+    ver = _save(db, "WORK_ORDER", wo_no, actor_id, reason, status, content, diffs)
     db.exec("maintenance.wo_update_content", wo_no=wo_no, title=changes.get("title"), symptom=changes.get("symptom"),
             version=ver)
+    if new_steps is not None and any(d["field"] == "steps" for d in diffs):
+        src = {s["step_text"]: s["source_section"] for s in old_steps}
+        db.exec("maintenance.wo_steps_clear", wo_no=wo_no)
+        for i, text in enumerate(new_steps, start=1):
+            db.exec("maintenance.wo_step_add", wo_no=wo_no, step_no=i, step_text=text, source_section=src.get(text, "사람 작성"))
     return ver
 
 

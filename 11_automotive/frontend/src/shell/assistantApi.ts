@@ -10,6 +10,7 @@
 //   토큰은 **메모리에만** 둔다 (새로고침하면 다음 질문에서 조용히 다시 받는다). 시연 비밀번호는 Login.tsx의 DEMO_PW.
 // - 실패는 명세대로 "응답 없음" — 옛 규칙 답으로 몰래 바꿔 주지 않는다 (숫자가 엇갈리지 않게).
 import { DEMO_PW } from './Login';
+import { backendMode } from './backendApi';
 import { buildAskContext } from './carry';
 import { STATUS_KO } from './assistantStatus';
 import { itemKeysOf } from './briefChecks';
@@ -20,7 +21,8 @@ export interface AssistantSource { doc_no: string; doc_name: string; rev: string
 export interface AssistantResult { answer: string; status: string; sources: AssistantSource[]; series?: undefined; chatId?: number }   // series = 옛 규칙 답의 센서 그래프. 새 길에는 없다. chatId = 서버 chat_log 번호 (이어서 물을 때 prev_chat_id로 보낸다)
 
 const BASE = (process.env.NEXT_PUBLIC_MOM_API ?? '').trim().replace(/\/+$/, '');
-export const backendChatEnabled = () => BASE !== '';
+// 백엔드 모드(기본, 2026-10-24)면 주소가 없어도 같은 주소 /api(화면 서버가 백엔드로 넘김)로 백엔드 비서를 쓴다
+export const backendChatEnabled = () => BASE !== '' || backendMode();
 
 // 한 질문을 기다리는 최대 시간: 백엔드가 비서를 기다리는 130초 + 여유 10초
 export const ASK_TIMEOUT_MS = 140_000;

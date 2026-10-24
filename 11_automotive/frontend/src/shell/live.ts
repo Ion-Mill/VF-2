@@ -26,7 +26,7 @@ export interface Production {
 export interface OrderRow { order_no: string; order_qty: number; done_qty: number; defect_qty: number; lots: string[]; current_process: string; due_at: string | null; status: string; delay: string | null; started_at: string | null; completed_at: string | null }
 export interface Twin {
   run_id: number;
-  clock: { sim_at: string; speed: number; paused: boolean; running_event: string | null; buttons_locked: boolean; finished: boolean };
+  clock: { sim_at: string; speed: number; paused: boolean; running_event: string | null; buttons_locked: boolean; finished: boolean; can_control?: boolean };
   buttons: Record<string, string | null>;
   shift: { shift_id: string; shift_type: 'DAY' | 'NIGHT'; start_at: string; end_at: string; supervisor_user_id: string };
   equipment: Record<Eq, EqLive>;

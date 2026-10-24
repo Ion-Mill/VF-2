@@ -100,7 +100,13 @@ SELECT l.equipment_id,
        round(coalesce(sum(extract(epoch FROM least(coalesce(l.end_at, 'infinity'), app_now(), s.end_at) - greatest(l.start_at, s.start_at)) / 60
                           / nullif(CASE WHEN e.equipment_id = 'WSH-01' THEN e.batch_time_min / nullif(e.batch_qty, 0) ELSE e.std_cycle_min END, 0))
              FILTER (WHERE r.reason_group = 'FAILURE' AND l.state_code IN ('DOWN', 'IDLE')
-                       AND least(coalesce(l.end_at, 'infinity'), app_now(), s.end_at) - greatest(l.start_at, s.start_at) >= interval '5 minutes'), 0)::numeric, 1) AS loss_qty
+                       AND least(coalesce(l.end_at, 'infinity'), app_now(), s.end_at) - greatest(l.start_at, s.start_at) >= interval '5 minutes'), 0)::numeric, 1) AS loss_qty,
+       -- 순간 정지 = 고장 그룹 사유로 5분 안 된 정지 (화면 손실 줄 "순간 정지 N건 M분", 시연 서버 short_stops와 같음 — 2026-10-24)
+       count(*) FILTER (WHERE r.reason_group = 'FAILURE' AND l.state_code <> 'RUN'
+                          AND least(coalesce(l.end_at, 'infinity'), app_now(), s.end_at) - greatest(l.start_at, s.start_at) < interval '5 minutes')::int AS short_count,
+       coalesce(round(sum(extract(epoch FROM least(coalesce(l.end_at, 'infinity'), app_now(), s.end_at) - greatest(l.start_at, s.start_at)) / 60)
+             FILTER (WHERE r.reason_group = 'FAILURE' AND l.state_code <> 'RUN'
+                       AND least(coalesce(l.end_at, 'infinity'), app_now(), s.end_at) - greatest(l.start_at, s.start_at) < interval '5 minutes')::numeric, 0), 0)::int AS short_min
   FROM shift s
   JOIN equipment_state_log l ON l.start_at < least(s.end_at, app_now()) AND coalesce(l.end_at, 'infinity') > s.start_at
   JOIN equipment e USING (equipment_id)

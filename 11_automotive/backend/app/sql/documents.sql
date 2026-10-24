@@ -362,9 +362,35 @@ SELECT s.shift_id, s.shift_type, s.target_qty + s.carry_over_qty AS total_target
  ORDER BY s.start_at;
 
 -- ---------- 화면 → 백엔드 전환 C2 (2026-10-23): 목록·이력 한 번에 ----------
+-- 시작했지만 아직 초안이 없는 교대(진행 중·막 끝남)도 미리보기 줄로 함께 (preview = true, 2026-10-24 — 화면 → 백엔드 전환).
+-- 미리보기는 저장하지 않는다 — 교대가 끝나면 스케줄러가 진짜 초안을 만든다
 -- name: shift_report_list
-SELECT r.shift_id, r.status, r.current_version, s.work_date, s.shift_type, s.start_at, s.end_at, s.supervisor_user_id
-  FROM shift_report r JOIN shift s USING (shift_id) ORDER BY s.start_at;
+SELECT r.shift_id, r.status, r.current_version, s.work_date, s.shift_type, s.start_at, s.end_at, s.supervisor_user_id,
+       false AS preview, false AS in_progress
+  FROM shift_report r JOIN shift s USING (shift_id)
+UNION ALL
+SELECT s.shift_id, 'AI_DRAFT', 0, s.work_date, s.shift_type, s.start_at, s.end_at, s.supervisor_user_id,
+       true AS preview, s.end_at > app_now() AS in_progress
+  FROM shift s
+ WHERE s.start_at <= app_now() AND s.start_at >= app_now() - interval '2 days'
+   AND NOT EXISTS (SELECT 1 FROM shift_report r WHERE r.shift_id = s.shift_id)
+ ORDER BY start_at;
+
+-- 교대가 시작했나·진행 중인가 (미리보기)
+-- name: shift_started
+SELECT s.start_at <= app_now() AS started, s.end_at > app_now() AS in_progress FROM shift s WHERE s.shift_id = :shift_id;
+
+-- 교대 구간 알람 등급별 코드 (교대 보고서 특이 사항 문장 — 2026-10-24)
+-- name: report_alarm_codes
+WITH w AS (SELECT start_at AS f, least(end_at, app_now()) AS t FROM shift WHERE shift_id = :shift_id)
+SELECT a.severity_at_event AS severity, count(*)::int AS n, string_agg(DISTINCT a.alarm_code, ', ' ORDER BY a.alarm_code) AS codes
+  FROM alarm_event a CROSS JOIN w WHERE a.occurred_at >= w.f AND a.occurred_at < w.t
+ GROUP BY a.severity_at_event;
+
+-- 교대 구간에 걸린 로트 보류 (교대 보고서 특이 사항 문장)
+-- name: report_holds
+SELECT h.lot_no FROM lot_hold h JOIN shift s ON h.held_at >= s.start_at AND h.held_at < s.end_at
+ WHERE s.shift_id = :shift_id ORDER BY h.held_at;
 
 -- name: daily_report_list
 SELECT work_date, status, current_version FROM daily_report ORDER BY work_date;

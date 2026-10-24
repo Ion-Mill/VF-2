@@ -1,7 +1,9 @@
 'use client';
 // 화면 → 백엔드 전환 (C2, 2026-10-23 — 기획서 12.1 "화면은 백엔드만", 팀과 논의/비서_시뮬레이터_DB_연결_논의_20261017.md 3장 C2).
 //
-//   켜기: NEXT_PUBLIC_MOM_BACKEND=1 + NEXT_PUBLIC_MOM_API(백엔드 주소). 둘 다 있을 때만 켜짐, **기본 꺼짐** — 끄면 예전처럼 시연 서버(sim_server.py).
+//   **기본 켜짐 (2026-10-24, 사용자 결정 "지금 기본값을 백엔드로")** — 끄려면 NEXT_PUBLIC_MOM_BACKEND=0 (예전처럼 시연 서버 sim_server.py 직접).
+//   백엔드 주소: NEXT_PUBLIC_MOM_API가 있으면 그 주소를 브라우저가 직접(CORS 필요), 없으면 같은 주소 /api — 화면 서버(next.config.mjs)가
+//   백엔드(MOM_BACKEND_URL, 기본 http://127.0.0.1:8000)로 넘긴다. 배포(같은 주소 아래 /api)도 이 길.
 //   화면 ──▶ 백엔드(FastAPI) ──▶ DB.   시뮬레이터(가짜 공장)는 DB 중계로 DB에 쓰고, 시연 조작은 백엔드가 시뮬레이터에 넘긴다 (backend/app/services/sim_link.py).
 //
 // live.ts api()가 시연 서버 주소 이름(line/twin, lots …) 그대로 여기로 넘기면, 백엔드 API를 불러 화면이 쓰던 모양으로 바꿔 돌려준다.
@@ -12,7 +14,7 @@ import { LAYOUT, MASTERS } from './data';
 import type { Eq } from './live';
 
 const BASE = (process.env.NEXT_PUBLIC_MOM_API ?? '').trim().replace(/\/+$/, '');
-export const backendMode = () => process.env.NEXT_PUBLIC_MOM_BACKEND === '1' && BASE !== '';
+export const backendMode = () => process.env.NEXT_PUBLIC_MOM_BACKEND !== '0';
 
 export class BackendErr extends Error { constructor(public code: string, msg: string, public status = 0) { super(msg); } }
 
@@ -124,7 +126,7 @@ async function twin(): Promise<J> {
   for (const r of b.reliability ?? []) rel[r.equipment_id] = { failures: Number(r.failure_count ?? 0), mttr_min: num(r.mttr_min), mtbf_h: num(r.mtbf_hours), mttr_warn: !!r.is_mttr_warn };
   const out = {
     run_id: Number(sim.run_id ?? 1),
-    clock: { sim_at: now, speed: Number(sim.speed ?? 1), paused: !!sim.paused, running_event: sim.running_event ?? null, buttons_locked: !!sim.buttons_locked, finished: !!sim.finished },
+    clock: { sim_at: now, speed: Number(sim.speed ?? 1), paused: !!sim.paused, running_event: sim.running_event ?? null, buttons_locked: !!sim.buttons_locked, finished: !!sim.finished, can_control: b.sim_control !== false },
     buttons: sim.buttons ?? {},
     shift: { shift_id: s.shift_id, shift_type: s.shift_type, start_at: s.start_at, end_at: s.end_at, supervisor_user_id: s.supervisor_user_id },
     equipment, wip, soak_qty: soak, wip_limits: wipLimits,
@@ -140,7 +142,10 @@ async function twin(): Promise<J> {
       rate_per_hour: Math.round(Number(s.rate_per_min ?? 0) * 600) / 10, elapsed_work_min: elapsed, left_work_min: Number(s.remaining_min ?? 0),
       risk: !!s.is_target_risk && elapsed >= 60, risk_line_qty: Math.round(0.9 * total * 10) / 10, hourly,
       failure_loss_qty: Number(s.failure_loss_qty ?? 0), speed_loss_qty: Number(s.speed_loss_qty ?? 0), loss_qty: Number(s.loss_qty ?? 0),
-      short_stops: { count: 0, minutes: 0 }, supervisor_user_id: s.supervisor_user_id, is_estimated: true,
+      short_stops: {   // 고장 그룹 5분 미만 정지 (백엔드 line.shift_equipment_stops short_count·short_min, 2026-10-24)
+        count: (b.stops ?? []).reduce((n: number, x: J) => n + Number(x.short_count ?? 0), 0),
+        minutes: (b.stops ?? []).reduce((n: number, x: J) => n + Number(x.short_min ?? 0), 0),
+      }, supervisor_user_id: s.supervisor_user_id, is_estimated: true,
     },
     kpi: {
       from: s.start_at, to: now,
@@ -279,7 +284,8 @@ async function shiftReport(sid: string) {
   return {
     ...r, availability: av ?? {}, lots: (r.lots ?? []).map((l: J) => (typeof l === 'string' ? l : l.lot_no)),
     // 병목: 기준 병목(OP-30 BASE)은 빼고 바뀐 것만 (시연 서버 보고서와 같음)
-    bottleneck: (r.bottleneck ?? []).filter((b: J) => b.cause_code !== 'BASE').map((b: J) => ({ ...b, at: b.at ?? b.from_at })), partial: false,
+    bottleneck: (r.bottleneck ?? []).filter((b: J) => b.cause_code !== 'BASE').map((b: J) => ({ ...b, at: b.at ?? b.from_at })),
+    partial: !!r.in_progress,      // 진행 중인 교대 = 저장하지 않는 미리보기 (백엔드 preview, 2026-10-24)
     ...(await docRevisions('SHIFT_REPORT', sid)),
   };
 }
@@ -287,6 +293,7 @@ async function shiftReport(sid: string) {
 /** 교대 보고서 저장·확정·확정 후 수정 — 시연 서버는 한 번에 했고, 백엔드는 [고친 칸 저장(PATCH)] → [확정] 두 걸음 */
 async function shiftReportAction(sid: string, action: string, b: J) {
   const cur = await get(`reports/shift/${encodeURIComponent(sid)}`);
+  if (cur.preview) throw new BackendErr('INVALID_STATE', cur.in_progress ? '교대가 끝나면 보고서 초안이 생겨 저장·확정할 수 있어요 (지금은 진행 중 미리보기)' : '보고서 초안을 만드는 중이에요 — 잠시 뒤 다시 눌러 주세요', 409);
   const changes: J = {};
   for (const f of ['notable_text', 'handover_text']) if (f in b && (b[f] ?? '') !== (cur[f] ?? '')) changes[f] = b[f];
   let version = Number(b.version ?? cur.current_version ?? 0);
@@ -347,7 +354,7 @@ async function pmSchedule() {
   return {
     tasks: [...(p.items ?? [])].sort((a: J, b: J) => at(a.pm_task_id) - at(b.pm_task_id)).map((t: J) => {
       const od = num(t.days_overdue);
-      return { ...t, next_due: t.next_due_date ?? null, last: t.last_done_at ? { done_at: t.last_done_at, by: null } : null,
+      return { ...t, next_due: t.next_due_date ?? null, last: t.last_done_at ? { done_at: t.last_done_at, by: t.last_done_by ?? null, status: t.last_status ?? null, due_date: t.last_due_date ?? null } : null,
         state: t.next_due_date == null ? null : od! > 0 ? 'OVERDUE' : od! >= -1 ? 'DUE_SOON' : 'OK' };
     }),
     on_time_rate_pct: num(line?.on_time_pct),
@@ -482,10 +489,12 @@ const GET: [RegExp, Handler][] = [
   [/^sim\/clock$/, () => get('sim/clock')],
   [/^health$/, () => get('sim/clock').then((c) => ({ ok: true, run_id: c.run_id, clock: c }))],
   // 보고서·문서
-  [/^reports\/shift$/, async () => ({ reports: (await get('reports/shift')).map((r: J) => ({ ...r, partial: false })) })],
+  [/^reports\/shift$/, async () => ({ reports: (await get('reports/shift')).map((r: J) => ({ ...r, partial: !!r.in_progress })) })],
   [/^reports\/shift\/([^/]+)$/, (_q, _b, p) => shiftReport(decodeURIComponent(p[1]))],
   [/^reports\/daily$/, async () => ({ reports: await forbiddenAsEmpty(get('reports/daily'), [] as J[]) })],
   [/^reports\/daily\/([^/]+)$/, (_q, _b, p) => dailyReport(p[1])],
+  // 작업지시서·작업기록서·간이 기록 한 건의 수정 이력 (SCR-17, 2026-10-24 — 백엔드 모드에서 화면 안 revisions 대신 DB 버전)
+  [/^documents\/doc\/(WORK_ORDER|WORK_RECORD)\/([^/]+)$/, (_q, _b, p) => docRevisions(p[1], decodeURIComponent(p[2]))],
   [/^documents\/revisions$/, async () => {
     const r = await forbiddenAsEmpty(get('documents/revisions?limit=200'), { revisions: [], changes: {} } as J);
     return { revisions: (r.revisions ?? []).map((x: J) => ({ ...x, revision_id: String(x.revision_id) })),
@@ -529,8 +538,8 @@ const POST: [RegExp, Handler][] = [
   [/^inventory\/txns$/, (_q, b) => inventoryTxn(b)],
   [/^shipments$/, (_q, b) => shipmentCreate(b)],
   [/^settings$/, (_q, b) => settingsSave(b)],
-  // 비서가 다듬은 문장 (시연 서버의 llm_compose) — 백엔드에는 아직 없음: 준비 안 됨으로 답해 화면은 기본 문장을 쓴다
-  [/^assist\/[a-z-]+$/, async () => ({ ready: false })],
+  // 비서가 다듬은 문장 (2026-10-24): 백엔드가 시연 서버의 llm_compose에 묻는다 (기다리지 않음). 없거나 실패면 준비 안 됨 → 화면은 기본 문장
+  [/^assist\/([a-z-]+)$/, (_q, b, p) => post(`assist/${p[1]}`, b).catch(() => ({ ready: false }))],
 ];
 
 /** 공구 교체 사유 (백엔드 필수 칸): 사용률 90% 이상 → LIFE_90, 그 설비에 362·174 알람이 열려 있으면 그 알람, 나머지 OTHER */
@@ -555,5 +564,10 @@ export async function backendRoute(path: string, body?: unknown): Promise<any> {
   }
   throw new BackendErr('NOT_SUPPORTED', `백엔드 연결에 아직 없는 화면 기능이에요 (${body === undefined ? 'GET' : 'POST'} ${p})`, 404);
 }
+
+// backendDocs.ts(작업지시서·작업기록서·간이 기록·알림)가 같은 로그인으로 부르는 문
+export const backendCall = (method: string, path: string, body?: unknown) => call(method, path, body);
+export const backendLiveFrom = () => liveFrom();
+export const backendUserId = () => session?.userId ?? null;
 
 export const _test = { twin, events, replay, orders, toolReason, resetDerived, setSession: (s: typeof session) => { session = s; } };

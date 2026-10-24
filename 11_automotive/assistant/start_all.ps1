@@ -164,8 +164,13 @@ foreach ($name in 'MOM_DATABASE_URL', 'MOM_READONLY_DATABASE_URL') {
     if ($v.Contains('<') -or $v.Contains('>')) { Fail "$name 의 비밀번호 자리가 아직 <...> 그대로다 (DB 담당에게 받은 값으로 채운다)" }
 }
 # 공용 DB를 지키는 설정: MOM_RUN_WORKERS 기본값은 true(스케줄러·파일 감시가 돈다)라 줄이 없어도 위험하다
+# 2026-10-24: 화면 → 백엔드가 기본이 되면서, 10/1 중계를 받는 진행자 서버(MOM_SIM_SYNC=true)는 스케줄러도 돌린다 (교대 보고서 초안·시간 규칙 알림 — 같은 DB에 여러 대가 떠도 DB 잠금으로 한 번만 돈다)
 $workers = Get-EnvValue $BackendEnv 'MOM_RUN_WORKERS'
-if ($null -eq $workers -or @('false', '0', 'no', 'off') -notcontains $workers.ToLower()) { Fail 'backend\.env.supabase 에 MOM_RUN_WORKERS=false 가 있어야 한다 (줄이 없으면 기본값이 true라 공용 DB에서 스케줄러가 돈다)' }
+$sync = Get-EnvValue $BackendEnv 'MOM_SIM_SYNC'
+$syncOn = ($null -ne $sync) -and (@('true', '1', 'yes', 'on') -contains $sync.ToLower())
+$workersOff = ($null -ne $workers) -and (@('false', '0', 'no', 'off') -contains $workers.ToLower())
+if (-not $syncOn -and -not $workersOff) { Fail 'backend\.env.supabase 에 MOM_RUN_WORKERS=false 가 있어야 한다 (줄이 없으면 기본값이 true라 공용 DB에서 스케줄러가 돈다). 진행자 서버(MOM_SIM_SYNC=true)만 true 가능' }
+if ($syncOn) { Say "[알림] MOM_SIM_SYNC=true — 이 PC가 시연 진행자(10/1 중계를 공용 DB에 씀). 시연 서버를 켜면 공용 DB가 10/1 08:00 기준점으로 되돌아간다 (채팅 기록 포함). 스케줄러: $(if ($workersOff) { '꺼짐 — 교대 끝 보고서 초안이 안 생긴다. MOM_RUN_WORKERS=true 권장' } else { '켜짐' })" Yellow }
 $demo = Get-EnvValue $BackendEnv 'MOM_DEMO_MODE'
 if ($null -ne $demo -and @('true', '1', 'yes', 'on') -contains $demo.ToLower()) { Fail 'backend\.env.supabase 에 MOM_DEMO_MODE=true 다. 공용 DB에서는 false 여야 한다 (시연 되돌리기 같은 쓰기 API가 열린다)' }
 if ($Screen) {
@@ -284,12 +289,13 @@ if ($planAssistant -eq 'start') {
 if ($planSim -eq 'start') {
     $envS = $utf8.Clone()
     if ($LlmCompose) { $envS['MOM_LLM_COMPOSE'] = '1' }       # 시연 서버 프로세스에만 준다 (다른 서버·이 창에는 남지 않는다)
+    $envS['MOM_BACKEND_URL'] = $BackendUrl                     # DB 중계가 보낼 백엔드 (backend\.env.supabase 에 MOM_SIM_SYNC=true 일 때만 켜짐, 2026-10-24)
     $pS = Start-Proc 'sim_server' $SimPy @('tools\sim_server.py') $FrontendDir $envS 'sim_server' $SimPort
     Wait-Ready '시연 서버' $pS { [bool](Get-NetTCPConnection -State Listen -LocalPort $SimPort -ErrorAction SilentlyContinue) } (Join-Path $RunDir 'sim_server.err.log')
     if (-not $DryRun) { Say "시연 서버 준비 OK  http://127.0.0.1:$SimPort" Green }
 }
 if ($planScreen -eq 'start') {
-    $envW = @{}
+    $envW = @{ MOM_BACKEND_URL = $BackendUrl }                 # 화면 서버가 /api 를 이 백엔드로 넘긴다 (화면 → 백엔드가 기본, 2026-10-24 — next.config.mjs)
     if ($NewChat) { $envW['NEXT_PUBLIC_MOM_API'] = $BackendUrl }
     $nextBin = Join-Path $FrontendDir 'node_modules\next\dist\bin\next'
     $pW = Start-Proc 'screen' $NodeCmd.Source @($nextBin, 'dev', '-p', "$ScreenPort") $FrontendDir $envW 'next' $ScreenPort

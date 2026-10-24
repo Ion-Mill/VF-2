@@ -76,8 +76,66 @@ def daily_report_list(_: Actor = Depends(require("DAILY_REPORT", "VIEW")), db: D
 def shift_report(shift_id: str, _: Actor = Depends(require("SHIFT_REPORT", "VIEW")), db: Db = Depends(get_db)):
     """교대 보고서 (RPT-01): 생산(총 목표 = 목표 + 이월·실적·불량·가동률), 특이 사항, 인계 사항, 상태, 버전, 필수 정지 stops[]
     stops[] = 필수 정지마다 연결된 작업지시서 wo_no와 보고서 시점 상태 wo_status_at_report (2026-10-20, documents.sql report_stops)"""
-    row = must(db.one("documents.shift_report", shift_id=shift_id), "교대 보고서")
-    return {**row, **_report_sections(db, shift_id=shift_id, work_date=None)}
+    row = db.one("documents.shift_report", shift_id=shift_id)
+    if row is None:
+        # 아직 초안이 없는 교대(진행 중·막 끝남): 저장하지 않는 미리보기 (2026-10-24 — 화면 → 백엔드 전환, 시연 서버와 같게)
+        return must(_shift_preview(db, shift_id), "교대 보고서")
+    out = {**row, **_report_sections(db, shift_id=shift_id, work_date=None), "preview": False, "in_progress": False}
+    if (row.get("notable_text") or "").strip() == DRAFT_PLACEHOLDER:
+        out["notable_text"] = _notable_text(db, shift_id, out)
+    return out
+
+
+DRAFT_PLACEHOLDER = "(비서 문장 대기)"      # DB 초안(fn_create_shift_report_draft)의 특이 사항 자리 글
+
+
+def _shift_preview(db: Db, shift_id: str) -> dict | None:
+    """시작한 교대의 보고서 초안을 저장점 안에서 만들어 읽고 되돌린다 — DB에는 아무것도 남지 않는다 (알림·Cpk 판정·이월 포함).
+    교대가 끝나면 스케줄러가 진짜 초안을 만든다 (그때 확정 요청 알림)"""
+    st = db.one("documents.shift_started", shift_id=shift_id)
+    if not st or st["started"] not in (True, "t"):
+        return None
+    sp = db.conn.begin_nested()
+    try:
+        db.scalar("reports.shift_draft", shift_id=shift_id)
+        row = db.one("documents.shift_report", shift_id=shift_id)
+        if row is None:
+            return None
+        out = {**row, **_report_sections(db, shift_id=shift_id, work_date=None),
+               "preview": True, "in_progress": st["in_progress"] in (True, "t")}
+        out["notable_text"] = _notable_text(db, shift_id, out)
+        return out
+    finally:
+        sp.rollback()
+
+
+def _notable_text(db: Db, shift_id: str, r: dict) -> str:
+    """특이 사항 기본 문장 3~5개 (FR-PRD-02-07) — 시연 서버 shift_draft(frontend/tools/server_live.py)와 같은 다섯 문장.
+    비서(외부 LLM)가 다듬기 전의 기본 문장이다. 반장이 저장하면 화면에 보이던 이 문장이 그대로 저장된다"""
+    actual, total = int(r.get("actual_qty") or 0), int(r.get("target_qty") or 0)
+    s1 = f"실적 {actual}개 / 총 목표 {total}개 ({actual - total:+d}개)."
+    stops = sorted([x for x in r.get("stops") or [] if int(x.get("minutes") or 0) >= 5], key=lambda x: -int(x["minutes"] or 0))
+    if stops:
+        top = stops[0]
+        s2 = (f"필수 정지 {len(stops)}건, 합계 {sum(int(x['minutes'] or 0) for x in stops)}분 — 가장 긴 것 {top['equipment_id']} "
+              f"{top.get('reason_name') or top.get('reason_code')} {top['minutes']}분 (고장 손실 약 {top.get('loss_qty') or 0}개, 추정).")
+    else:
+        s2 = "필수 정지(고장 그룹 5분 이상) 없음."
+    bns = [b for b in r.get("bottleneck") or [] if b.get("cause_code") != "BASE"]
+    s3 = ("병목: " + ", ".join(f"{_hhmm(b.get('from_at'))} {b['process_code']} {b.get('cause_name') or b['cause_code']}" for b in bns) + ".") \
+        if bns else "병목은 기준 병목(OP-30) 그대로."
+    held = [h["lot_no"] for h in db.all("documents.report_holds", shift_id=shift_id)]
+    s4 = f"불량(폐기) {int(r.get('defect_qty') or 0)}개" + (f" (로트 보류: {', '.join(held)})" if held else "") + "."
+    by = {a["severity"]: a for a in db.all("documents.report_alarm_codes", shift_id=shift_id)}
+    warn, stop = by.get("WARN"), by.get("STOP")
+    s5 = (f"주의 알람 {warn['n']}건 ({warn['codes']})" if warn else "주의 알람 없음") + (f", 정지 등급 알람 {stop['n']}건." if stop else ".")
+    return " ".join([s1, s2, s3, s4, s5])
+
+
+def _hhmm(v) -> str:
+    if v is None:
+        return ""
+    return v.strftime("%H:%M") if hasattr(v, "strftime") else str(v)[11:16]
 
 
 @router.patch("/reports/shift/{shift_id}")
