@@ -90,6 +90,7 @@ def _llm_off(monkeypatch, tmp_path):
     monkeypatch.setenv("OBLIGE_CHECK", "1")      # "해야 할 일 꼴" 검사 끄기 실험 (2026-10-15): 시험 기본은 켜짐(지금 동작) — 끄는 시험은 안에서 명시
     monkeypatch.setenv("PURE_EXTERNAL", "0")     # 순수 외부 LLM 연결 (2026-10-15): 시험 기본은 꺼짐(지금 동작) — 켜는 시험은 안에서 명시
     monkeypatch.setenv("PURE_KEEP_SIGNALS", "0")
+    monkeypatch.setenv("PURE_COMPARE", "0")      # 비교 2번 (2026-10-23): 시험 기본은 꺼짐(1번) — 개발 PC의 .env가 다른 시험을 바꾸지 않게
     monkeypatch.setenv("PURE_TOPK", "8")
     monkeypatch.setenv("PURE_STYLE", "0")        # 순수 길 말투 바꾸기 (2026-10-15): 시험 기본은 꺼짐(지금 말투) — 켜는 시험은 안에서 명시
     monkeypatch.setenv("PURE_LAYOUT", "0")       # 순수 길 묶음 목록 형식 (2026-10-16): 시험 기본은 꺼짐(PURE_STYLE=1의 지금 형식) — 켜는 시험은 안에서 명시

@@ -167,3 +167,104 @@ def test_status_ask_is_remembered_once_when_followup_is_off():
     CS._status_prev_keep("U01", rec)
     assert CS._status_prev_take("U01", False) == rec
     assert CS._status_prev_take("U01", False) is None
+
+
+def test_period_word_yesterday_ignores_a_calendar_date():
+    from backend.services import lookup_turn as LT
+    start, end, _ = LT.period_window("어제 2026-10-20")
+    assert start.isoformat() == "2026-09-30" and end.isoformat() == "2026-09-30"
+    assert LT.period_window("2026-09-30")[:2] == (None, None)
+
+
+def test_all_equipment_words_are_the_six():
+    from backend.services import lookup_turn as LT
+    assert LT.equipment_scope("모든설비") == list(LT.SIX)
+    assert LT.equipment_scope("모든 설비") == list(LT.SIX)
+    assert LT.equipment_scope("") is None
+    assert LT.equipment_scope("VF2-01") == ["VF2-01"]
+
+
+def test_empty_equipment_does_not_run_status_stops_or_mttr():
+    from backend.services import lookup_turn as LT
+    ready, blocked = LT.prepare([
+        {"name": "가동상태", "equipment": "", "kind": "", "period": ""},
+        {"name": "정비 기한", "equipment": "", "kind": "", "period": ""},
+        {"name": "정지 횟수", "equipment": "", "kind": "", "period": "어제"},
+        {"name": "MTTR", "equipment": "", "kind": "", "period": ""},
+    ])
+    assert ready == []
+    assert blocked == ["equipment_status", "pm_due", "stops", "mttr"]
+
+
+def test_inventory_without_equipment_is_prepared():
+    from backend.services import lookup_turn as LT
+    ready, blocked = LT.prepare([{"name": "재고", "equipment": "", "kind": "", "period": ""}])
+    assert blocked == [] and ready[0]["name"] == "inventory" and ready[0]["equipment"] is None
+
+
+def test_a_question_alongside_a_lookup_does_not_run(monkeypatch):
+    from backend.services import lookup_turn as LT
+    assert LT.question_only({"question": "어느 설비인가요?", "lookups": [{"name": "정지 횟수", "equipment": "VF2-01", "kind": "", "period": "어제"}]}) == "어느 설비인가요?"
+    called = {}
+
+    def boom(*_a, **_k):
+        called["yes"] = True
+        return [], []
+
+    monkeypatch.setattr(LT, "execute", boom)
+    ready, _ = LT.prepare([{"name": "정지 횟수", "equipment": "VF2-01", "kind": "", "period": "어제"}])
+    assert ready and "yes" not in called
+
+
+def test_upper_sentence_drops_the_original_block():
+    from backend.services import lookup_turn as LT
+    text = "어제 멈춘 횟수를 말했어요.\n\n■ 원문 보기\n2026-09-30 VF2-01 손실 정지 35번 259분"
+    assert LT.upper_sentence(text) == "어제 멈춘 횟수를 말했어요."
+    safe = "순서는 이렇게예요.\n\n■ 안전 작업 (고정 서식 · AI 작성 아님)\n6.1 운전정지\n\n주의: 근거 안내이며 실행 지시가 아닙니다."
+    assert LT.upper_sentence(safe) == "순서는 이렇게예요."
+
+
+def test_yesterday_stop_query_uses_the_reference_date(v3):
+    from backend.services import lookup_turn as LT
+    ready, blocked = LT.prepare([{"name": "정지 횟수", "equipment": "VF2-01", "kind": "", "period": "어제"}])
+    assert blocked == []
+    texts, _ = LT.execute("MNT", ready, "어제 VF2-01 몇 번 멈췄어?")
+    assert texts and "2026-09-30" in texts[0] and "VF2-01" in texts[0]
+
+
+def test_two_lookups_both_run(v3):
+    from backend.services import lookup_turn as LT
+    ready, blocked = LT.prepare([
+        {"name": "정지 횟수", "equipment": "VF2-01", "kind": "", "period": "어제"},
+        {"name": "재고", "equipment": "", "kind": "", "period": ""},
+    ])
+    assert blocked == [] and len(ready) == 2
+    texts, _ = LT.execute("MNT", ready, "어제 VF2-01 몇 번 멈췄고 재고도 알려줘")
+    blob = " ".join(texts)
+    assert "2026-09-30" in blob and "재고 부족" in blob and "부족 30개" in blob and "멈췄고" not in blob
+
+
+def test_inventory_kind_is_the_only_item_name(v3):
+    from backend.services import lookup_turn as LT
+    ready, blocked = LT.prepare([{"name": "재고", "equipment": "", "kind": "알루미늄 봉재 6061", "period": ""}])
+    assert blocked == []
+    texts, _ = LT.execute("MNT", ready, "어제 VF2-01 몇 번 멈췄고 재고도 알려줘")
+    blob = " ".join(texts)
+    assert "알루미늄 봉재 6061" in blob and "멈췄고" not in blob and "브래킷" not in blob
+
+
+def test_all_equipment_run_state_queries_the_six(v3):
+    from backend.services import lookup_turn as LT
+    ready, blocked = LT.prepare([{"name": "가동 상태", "equipment": "모든설비", "kind": "", "period": ""}])
+    assert blocked == [] and ready[0]["equipment"] == list(LT.SIX)
+    texts, _ = LT.execute("MNT", ready, "모든 설비 가동 상태")
+    blob = " ".join(texts)
+    assert "VF2-01" in blob and "VF2-02" in blob
+
+
+def test_lookup_path_stays_off_when_the_llm_is_off(v3):
+    from backend.config import settings
+    from backend.services import lookup_turn as LT
+    q = "VF2-01 지금 상태 어때?"
+    assert LT.applies(q, A.parse(q), settings(), []) is False
+

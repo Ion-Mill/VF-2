@@ -23,6 +23,37 @@ def _unavailable(message: str, reason: str) -> AppError:
     return AppError(503, ASSISTANT_UNAVAILABLE, message, {"reason": reason})
 
 
+_PUBLIC_BASE = "비서가 지금 답하지 못합니다. 잠시 후 다시 시도해 주세요"
+_PUBLIC_TAILS = {
+    "Gemini가 바빠 503을 냈습니다.",
+    "Gemini가 응답 시간 안에 답을 주지 않았습니다.",
+    "Gemini 호출이 그 밖으로 실패했습니다.",
+}
+
+
+def public_assistant_message(message: str) -> str | None:
+    """비서가 화면에 내도 된다고 정한 문장만 통과시킨다. 그 밖은 연결 실패로 본다."""
+    if message == _PUBLIC_BASE:
+        return message
+    head, sep, tail = message.partition("\n")
+    if sep and head == _PUBLIC_BASE and tail in _PUBLIC_TAILS:
+        return message
+    return None
+
+
+def _http_error(e: urllib.error.HTTPError) -> AppError:
+    try:
+        body = json.loads(e.read().decode("utf-8"))
+        message = body.get("message") if isinstance(body, dict) else None
+    except (ValueError, OSError, AttributeError, UnicodeDecodeError):
+        message = None
+    if isinstance(message, str):
+        public = public_assistant_message(message)
+        if public:
+            return _unavailable(public, "ASSISTANT_MESSAGE")
+    return _unavailable("AI 비서가 응답하지 않음 — 기본 문구로 보여 준다", f"HTTP_{e.code}")
+
+
 def call(path: str, payload: dict[str, Any]) -> dict[str, Any]:
     s = get_settings()
     if not s.assistant_url:
@@ -34,6 +65,8 @@ def call(path: str, payload: dict[str, Any]) -> dict[str, Any]:
     try:
         with urllib.request.urlopen(req, timeout=s.assistant_timeout_seconds) as r:   # noqa: S310 (설정한 내부 주소만)
             data = json.loads(r.read().decode("utf-8"))
+    except urllib.error.HTTPError as e:
+        raise _http_error(e) from None
     except (urllib.error.URLError, TimeoutError, OSError, ValueError) as e:
         raise _unavailable("AI 비서가 응답하지 않음 — 기본 문구로 보여 준다", type(e).__name__) from None
     if not isinstance(data, dict):

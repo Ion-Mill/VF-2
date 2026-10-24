@@ -39,7 +39,10 @@ from backend.tools.query_tools import ToolInputError
 log = logging.getLogger("assistant")
 
 UNAVAILABLE_MESSAGE = "비서가 지금 답하지 못합니다. 잠시 후 다시 시도해 주세요"
-DENIED_ANSWER = "이 정보는 지금 역할로는 볼 수 없어요. 값은 알려 드리지 않습니다. 권한이 있는 담당자에게 물어봐 주세요."
+GEMINI_503_TAIL = "Gemini가 바빠 503을 냈습니다."
+GEMINI_TIMEOUT_TAIL = "Gemini가 응답 시간 안에 답을 주지 않았습니다."
+GEMINI_OTHER_TAIL = "Gemini 호출이 그 밖으로 실패했습니다."
+DENIED_ANSWER = "이 정보는 지금 역할로는 볼 수 없어요.\n값은 알려 드리지 않습니다.\n권한이 있는 담당자에게 물어봐 주세요."
 CONTEXT_KEYS = ("screen", "equipment_id", "alarm_key", "alarm_event_id", "new_chat")     # answer()가 보는 화면 문맥 칸 (그 밖의 칸은 버린다)
 
 
@@ -87,10 +90,24 @@ def _unauthorized(_, __):
     return JSONResponse(status_code=401, content={"code": "UNAUTHORIZED", "message": "서비스 키가 맞지 않음", "detail": {}})
 
 
+def public_failure(why: str) -> str:
+    """화면에 낼 실패 문장. 기본 문장에, Gemini 결과만 한 줄로 붙인다. 열쇠·본문·안쪽 경로는 넣지 않는다."""
+    gem = why.split("Gemini:", 1)[1] if "Gemini:" in why else ""
+    if "HTTP 503" in gem:
+        tail = GEMINI_503_TAIL
+    elif "응답 시간 초과" in gem:
+        tail = GEMINI_TIMEOUT_TAIL
+    elif gem.strip():
+        tail = GEMINI_OTHER_TAIL
+    else:
+        return UNAVAILABLE_MESSAGE
+    return UNAVAILABLE_MESSAGE + "\n" + tail
+
+
 @app.exception_handler(Unavailable)
 def _unavailable(_, exc: Unavailable):
     log.warning("비서 응답 실패: %s", exc.why)
-    return JSONResponse(status_code=503, content={"code": "ASSISTANT_UNAVAILABLE", "message": UNAVAILABLE_MESSAGE, "detail": {"retryable": True}})
+    return JSONResponse(status_code=503, content={"code": "ASSISTANT_UNAVAILABLE", "message": public_failure(str(exc.why or "")), "detail": {"retryable": True}})
 
 
 @app.exception_handler(WRS.AssistUnavailable)
@@ -165,6 +182,18 @@ def _prev_keep(user_id: str, rec: dict | None) -> None:
             _prev.pop(min(_prev, key=lambda k: _prev[k][0]), None)
 
 
+def _failure_line(e: BaseException) -> str:
+    """로그에 남길 실패 한 줄. 예외 메시지는 남기고, 열쇠·요청 본문처럼 보이는 긴 JSON은 남기지 않는다."""
+    reason = getattr(e, "reason", None)
+    text = reason if isinstance(reason, str) and reason else str(e)
+    low = text.lower()
+    if "sk-" in low or "bearer " in low:
+        text = "예외 메시지에 열쇠가 있어 남기지 않음"
+    elif text.count("{") or len(text) > 400:
+        text = (reason if isinstance(reason, str) else "")[:200] or type(e).__name__
+    return f"{type(e).__name__}: {text}"[:500]
+
+
 def _context(raw: dict[str, Any]) -> dict[str, str]:
     return {k: str(raw[k]) for k in CONTEXT_KEYS if raw.get(k) not in (None, "")}
 
@@ -201,7 +230,7 @@ def chat(req: ChatRequest) -> dict:
             keep_prev = C.settings().followup
             new_chat = ctx.get("new_chat") == "1"
             prev = _prev_take(req.user.user_id, new_chat) if keep_prev else _status_prev_take(req.user.user_id, new_chat)
-            a = answer(req.question, req.user.role_code, ctx, prev=prev, screen_text=req.screen_text)
+            a = answer(req.question, req.user.role_code, ctx, prev=prev, screen_text=req.screen_text, history=req.history)
             rec = a.pop("_followup", None)      # 화면·백엔드로 나가지 않는다
             status_rec = a.pop("_status_ask", None)
             if keep_prev:
@@ -209,9 +238,9 @@ def chat(req: ChatRequest) -> dict:
             elif status_rec:
                 _status_prev_keep(req.user.user_id, status_rec)
             if ext is not None:
-                miss = ext.material_failure()                        # 재료를 정하는 단계의 외부 호출 실패 → 오류 (다른 LLM으로 몰래 바꾸지 않는다)
+                miss = ext.material_failure()                        # 재료 단계가 Claude와 Gemini 재시도까지 실패하면 오류. 재시도는 호출부에서 이미 한 번 끝났다
                 if miss:
-                    raise Unavailable(f"external material failure: {miss[0]}")
+                    raise Unavailable(miss[1] or miss[0])
                 if ext.polish_failures():                            # 다듬는 단계 실패는 이미 정해진 재료(원문 줄·기본 문장)로 답한 것 — 기록만
                     log.info("외부 LLM 일부 단계 실패: %s", [j for j, _ in ext.polish_failures()])
         return to_backend(a)
@@ -225,7 +254,7 @@ def chat(req: ChatRequest) -> dict:
     except UnknownStatus as e:
         raise Unavailable(str(e)) from e
     except Exception as e:      # 답을 만들다 멈춤 (조회 도구 실패 포함) — 안쪽 사정은 로그에만
-        raise Unavailable(f"{type(e).__name__}") from e
+        raise Unavailable(_failure_line(e)) from e
 
 
 app.include_router(CMPS.router, dependencies=[Depends(service_key)])     # POST /compose/{kind} — 기본 문장 줄 다듬기 (같은 서비스 키)

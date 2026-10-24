@@ -28,7 +28,7 @@ H = {"X-Role": "SUP"}
 Q_ROUTE = "쿨런트가 뭐야?"                     # 분류(route) 단계를 부르는 질문 (ROUTE_POLICY=llm_guarded)
 Q_OPS = "어제 야간 VF2-01 몇 번 멈췄어?"       # 운영 질문 — 규칙으로 처리되고 문장 다듬기(phrase)만 LLM을 부른다 (ROUTE_POLICY=rescue)
 Q_ALARM = "552 알람 뜨면 어떻게 해?"           # 알람 번호 질문 — 규칙·카드만, LLM 안 부름
-SONNET = "claude-sonnet-5-5"
+HAIKU = "claude-haiku-5-5"
 
 
 class Runner:
@@ -101,8 +101,8 @@ def test_override_changes_settings_only_inside_the_request():
     with EXT.external_request("claude") as ext:
         s = settings()
         assert ext is not None and EXT.override() == "claude"
-        assert s.claude_app and s.llm_provider == "claude" and s.claude_model == SONNET and s.claude_effort == "medium" and s.claude_via == "cli"
-        assert s.llm_label == "외부 LLM(Claude Sonnet 5.5)" and s.read_s == 60 and s.budget_s == 120 and s.claude_cost_cap_usd == 0
+        assert s.claude_app and s.llm_provider == "claude" and s.claude_model == HAIKU and s.claude_effort == "medium" and s.claude_via == "api"
+        assert s.llm_label == "외부 LLM(Claude Haiku 5.5)" and s.read_s == 60 and s.budget_s == 120 and s.claude_cost_cap_usd == 0
     assert EXT.override() is None and not settings().claude_app and settings().llm_provider == "local"
 
 
@@ -142,7 +142,7 @@ def test_polish_stage_failure_answers_with_the_original_and_says_so(monkeypatch,
     r = post(Q_OPS, llm="claude")
     j = r.json()
     assert r.status_code == 200, j
-    assert j["llm"]["provider"] == "claude" and j["llm"]["label"] == "외부 LLM(Claude Sonnet 5.5)" and j["llm"]["calls"] >= 1
+    assert j["llm"]["provider"] == "claude" and j["llm"]["label"] == "외부 LLM(Claude Haiku 5.5)" and j["llm"]["calls"] >= 1
     assert j["llm"]["partial_failure"] and "원문" in j["external_note"]
     assert j["conclusion"] and j["status"] == "답변"
     assert env == []
@@ -168,7 +168,7 @@ def test_every_job_kind_goes_to_the_external_runner_when_chosen(env):
         payload = {"faithful": True, "problem": ""} if "faithful" in props else {"answer": "답이에요."}
         out = {"type": "result", "subtype": "success", "is_error": False, "duration_ms": 100, "duration_api_ms": 80, "num_turns": 1, "total_cost_usd": 0.01,
                "usage": {"input_tokens": 10, "output_tokens": 5, "cache_read_input_tokens": 0, "cache_creation_input_tokens": 0},
-               "modelUsage": {SONNET: {"inputTokens": 10}}, "structured_output": payload}
+               "modelUsage": {HAIKU: {"inputTokens": 10}}, "structured_output": payload}
         return SimpleNamespace(returncode=0, stdout=json.dumps(out, ensure_ascii=False), stderr="")
 
     CC.use_runner(run)
@@ -230,7 +230,7 @@ def test_health_reports_the_external_switch(monkeypatch):
     CC.use_runner(Runner())
     h = client.get("/api/health").json()
     ex = h["external_llm"]
-    assert ex["server_switch"] is True and ex["available"] is True and ex["model"] == SONNET and ex["label"] == "외부 LLM(Claude Sonnet 5.5)"
+    assert ex["server_switch"] is True and ex["available"] is True and ex["model"] == HAIKU and ex["label"] == "외부 LLM(Claude Haiku 5.5)"
     assert ex["effort"] == "medium" and ex["proc_limit"] == 8 and set(ex["counters"]) >= {"calls", "usd_est"}
     assert h["llm_status"]["flags"]["external_app"] is True
     monkeypatch.setenv("EXTERNAL_LLM_APP", "0")
