@@ -32,8 +32,13 @@ case "${1:-help}" in
   rollback)
     ref="${2:-$(cat .prev_ref 2>/dev/null || true)}"
     [[ -n "$ref" ]] || { echo "되돌릴 git 주소(커밋 또는 태그)를 주세요: ./mom.sh rollback <주소>"; exit 1; }
+    ROOT="$(git rev-parse --show-toplevel)"
     git checkout "$ref"
-    "$0" up
+    if [[ -f "$ROOT/11_automotive/deploy/mom.sh" ]]; then
+      bash "$ROOT/11_automotive/deploy/mom.sh" up
+    else
+      echo "이 주소($ref)에는 deploy/ 가 없다. 서버에 올릴 수 있는 비상용은 태그 emergency-1024-deploy 이다."; exit 1
+    fi
     ;;
   *) sed -n '2,2p' "$0" ;;
 esac

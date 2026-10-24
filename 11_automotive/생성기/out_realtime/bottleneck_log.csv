@@ -1,7 +1,0 @@
-bottleneck_log_id,changed_at,prev_process_code,new_process_code,cause_code,alarm_event_id,actual_qty,failure_loss_qty
-35,2026-10-01T08:58:00+09:00,OP-30,OP-30,C2,,1,0
-36,2026-10-01T10:28:00+09:00,OP-30,OP-30,BASE,,0,0
-37,2026-10-01T10:49:00+09:00,OP-30,OP-30,FAILURE,358,14,9.3
-38,2026-10-01T11:54:00+09:00,OP-30,OP-30,BASE,,4,0.7
-39,2026-10-01T13:38:00+09:00,OP-30,OP-50,C3,,39,0
-40,2026-10-01T20:49:00+09:00,OP-50,OP-30,BASE,,110,0
