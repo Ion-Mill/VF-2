@@ -17,6 +17,7 @@ import { rankOfAlert, rankOfNotice } from './Briefing';
 import RobotIcon from './RobotIcon';
 import { BackButton } from './ui';
 import EveThinking from './EveThinking';
+import { STATUS_KO } from './assistantStatus';
 import { PENDING_GIVEUP_MS, canStartNewChat, currentChat, isFocusRow, lastChatId, makeNewChatMark, mergeServerLog, resolvePending, sessionOf, settlePending, withNewChat, type FocusRef } from './chatLog';
 import { carryAlarm } from './carry';
 import { suggestChips } from './chips';
@@ -329,6 +330,7 @@ function Chat({ active, focus, headerSlot, onNewChat, ask, onAsked }: { active: 
   const [busy, setBusy] = useState(false);
   const inflight = useRef(new Set<number>());   // 이 화면이 지금 요청을 보내 둔 질문의 sentAt — 새로고침으로 끊긴 대기 줄(여기 없는 것)과 구분한다
   const [found, setFound] = useState(false);   // 답이 왔다 → 이브가 ✓ 를 띄운 뒤 답을 보여 줌 (사용자 요청 2026-10-21)
+  const [miss, setMiss] = useState(false);   // 문서에 없음·응답 없음이면 ✓ 대신 ✕ 하고 운다 (사용자 요청 2026-10-24)
   const input = useRef<HTMLInputElement>(null);
   // 마이크 (2026-10-20): 서버의 음성 스위치가 켜져 있을 때만 버튼이 보인다. 한 번 누르면 녹음 시작 → 다시 누르면 끝나고 글자로 바꿔 입력창에 **채우기만** 한다 (보내는 것은 사용자가 글자를 보고 직접)
   const [voice, setVoice] = useState<VoiceStatus>(VOICE_OFF);
@@ -389,10 +391,11 @@ function Chat({ active, focus, headerSlot, onNewChat, ask, onAsked }: { active: 
         : await api<{ answer: string; status: string; sources: ChatRow['sources']; series?: ChatRow['series'] }>('assistant/chat', { question: text, role, user_id: user.id, context: { screen, equipment_id: selected ? MACHINES[selected].eq : null } });
       row = { at, q: text, a: r.answer, status: r.status, sources: r.sources ?? [], series: r.series, ...('chatId' in r && typeof r.chatId === 'number' ? { chatId: r.chatId } : {}), ...(prevChatId !== null ? { prevChatId } : {}) };
     } catch (e) { row = { at, q: text, a: '비서 응답 없음 — ' + (e as Error).message, status: '응답 없음', sources: [], ...(prevChatId !== null ? { prevChatId } : {}) }; }
-    setFound(true); await new Promise((r) => setTimeout(r, 1100));   // 답하기 직전 ✓ 를 잠깐 보여 줌 (그동안 대기 줄은 그대로 — 새로고침돼도 되살리기가 처리)
+    const missed = row.status === STATUS_KO.NOT_IN_DOCS || row.status === STATUS_KO.NO_RESPONSE;
+    setMiss(missed); setFound(true); await new Promise((r) => setTimeout(r, missed ? 2400 : 1100));   // 답하기 직전 ✓ 를 잠깐 보여 줌, 우는 모습은 더 길게 (그동안 대기 줄은 그대로 — 새로고침돼도 되살리기가 처리)
     inflight.current.delete(sentAt);
     setLog((l) => settlePending(keep30(l), sentAt, row));
-    setBusy(false); setFound(false);
+    setBusy(false); setFound(false); setMiss(false);
   };
   // 새로고침으로 요청이 끊긴 대기 줄 되살리기: 서버 기록(백엔드 서버는 손님이 끊겨도 답을 끝까지 기록에 남긴다)에서 같은 질문의 새 답을 찾아 붙이고, 150초가 지나도 없으면 끊겼다고 알린다.
   // 백엔드를 안 쓰는 옛 길은 서버 기록이 없어 바로 알린다. 아래 waiting 동안 새 질문·[새 채팅]은 막는다
@@ -416,8 +419,11 @@ function Chat({ active, focus, headerSlot, onNewChat, ask, onAsked }: { active: 
   const ex = suggestChips({ role, onCard: screen === 'card' || screen === 'cards', alarmCode: cardCode ?? listCode, screen });   // 지침카드를 열었으면 그 알람·내 역할에 맞는 질문, 아니면 역할별 고정 말풍선. "이 화면 설명해 줘"는 정보판이 있는 화면만 (chips.ts)
   const body = useRef<HTMLDivElement>(null);
   useEffect(() => { if (ask && !waiting) { onAsked?.(); send(ask); } }, [ask, waiting]); // eslint-disable-line react-hooks/exhaustive-deps -- 작은 채팅창의 질문을 한 번 보냄 (답을 기다리는 중이면 끝난 뒤)
+  const toFocus = useRef(false);   // 눌러 연 줄로는 열 때·다시 보일 때만 간다. 질문을 보내면 이브가 나오는 맨 아래로 (사용자 요청 2026-10-24)
+  useEffect(() => { toFocus.current = true; }, [focus, active]);
   useEffect(() => {
-    const el = focus && body.current?.querySelector('[data-focus="1"]');
+    const el = toFocus.current && focus && body.current?.querySelector('[data-focus="1"]');
+    toFocus.current = false;
     if (el) el.scrollIntoView({ block: 'center' }); else if (body.current) body.current.scrollTop = body.current.scrollHeight;
   }, [log.length, waiting, focus, active]);   // active: 숨겼다 다시 보일 때도 맨 아래(또는 눌러 연 줄)로
   return (
@@ -431,7 +437,7 @@ function Chat({ active, focus, headerSlot, onNewChat, ask, onAsked }: { active: 
         <div className="ma-pad min-h-full" aria-live="polite">
           {today.length === 0 && !waiting && <EveHello />}
           {today.map((r, i) => <div key={i} data-at={r.at} {...(isFocusRow(r, focus) ? { 'data-focus': '1' } : {})} className={isFocusRow(r, focus) ? 'rounded-lg ring-2 ring-[#9DBCF4]' : ''}><Bubble r={r} meta={`${md(r.at)} ${hhmm(r.at)}`} openSource={openSource} role={role} /></div>)}
-          {waiting && <EveThinking found={found} />}
+          {waiting && <EveThinking found={found} miss={miss} />}
         </div>
       </div>
       <form className="ma-compose" onSubmit={(e) => { e.preventDefault(); if (!waiting) send(); }}>
