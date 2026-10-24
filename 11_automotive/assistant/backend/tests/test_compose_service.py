@@ -307,6 +307,28 @@ def test_guide_card_rejects_dropping_lockout_words_that_were_in_the_source():
     assert len(r.calls) == 2 and "안전 용어가 빠짐" in r.calls[1]["stdin"]
 
 
+CITE = [{"id": "g1", "text": "충돌이 확인되면 볼스크류 커플링 정렬도 본다 (§2.5 점검 8)"}]
+
+
+def test_guide_card_prompt_keeps_section_and_check_numbers():
+    from backend.llm.compose import system_prompt
+    text = system_prompt("guide_card")
+    assert "§2.5 점검 8" in text and "빼거나 풀어 쓰지 않고" in text
+
+
+def test_guide_card_keeps_section_numbers_already_in_the_step():
+    use({"lines": [{"id": "g1", "text": "충돌이 확인되면 볼스크류 커플링 정렬도를 본다 (§2.5 점검 8)"}]})
+    res = post("guide_card", CITE)
+    assert res.status_code == 200 and "2.5" in res.json()["lines"][0]["text"] and "8" in res.json()["lines"][0]["text"]
+
+
+def test_guide_card_rejects_dropping_section_numbers():
+    dropped = {"lines": [{"id": "g1", "text": "충돌이 확인되면 볼스크류 커플링 정렬도를 본다"}]}
+    r = use(dropped, dropped)
+    assert_503(post("guide_card", CITE))
+    assert len(r.calls) == 2 and "빠진 숫자" in r.calls[1]["stdin"]
+
+
 # ------------------------------------------------------------------ 설비 이름의 '#1'은 마크다운이 아니다 (실행 안내 검증 중 발견)
 def test_hash_in_equipment_name_is_not_treated_as_markdown_but_real_markdown_still_is():
     lines = [{"id": "title", "text": "VF-2 #1 알람 2075 (전류가 높은 증폭기) 점검"}, {"id": "symptom", "text": "서보 앰프가 큰 전류를 감지했다."}]
