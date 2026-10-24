@@ -44,7 +44,7 @@
       "op": "inject",
       "code": "S1",
       "retry_real_sec": 60,
-      "_note": "S1 VF2-01 충돌: 축 부하 급상승 → 108 → 994 → 992 → DOWN (자동 ×10)"
+      "_note": "S1 VF2-01 충돌: 축 부하 급상승 → 992(정지 등급 한 건) → DOWN (자동 ×10)"
     },
     {
       "wait_real_sec": 40,
