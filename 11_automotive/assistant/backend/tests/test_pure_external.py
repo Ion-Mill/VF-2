@@ -2,7 +2,7 @@
 
 진짜 `claude`도 로컬 AI 서버도 부르지 않는다 — 가짜 `claude` 실행기(`CC.use_runner`)와 로컬 쪽 가짜 전송(`C.use_transport`)만 쓴다.
 지키는 것: ① 끔(기본)이면 지금과 같다 ② 켬이어도 로컬 요청이면 지금과 같다 ③ 켬 + 외부 요청이면 분류 LLM 없이 조각 상위 K개 + 질문으로 Claude 1번
-④ 위험한 부탁·권한·화면 설명·불량 원인·이어 묻기는 켬이어도 지금 길 ⑤ PURE_KEEP_SIGNALS=0이면 알람 번호·날짜·설비·운영 낱말 길도 끄고 전부 순수 길,
+④ 위험한 부탁·권한·화면 설명·불량 원인·이어 묻기는 켬이어도 지금 길 ⑤ PURE_KEEP_SIGNALS=0이면 알람 길은 순수 길. 수량·설비 상태·안전 순서는 PURE_COMPARE=0(기본)에서 프로그램 길,
 =1이면 그 신호가 있는 질문은 예전 길 ⑥ 조각 번호 → 출처 변환·"문서에 없음" 모양·직전 대화 1번 ⑦ 실패는 자동 대체 없이 오류 ⑧ 답을 검사하지 않는다 ⑨ STEP_LOG.
 """
 import json
@@ -220,7 +220,7 @@ def test_response_shape_matches_the_written_answer_the_screen_already_draws():
     j = post(Q_DOC, llm="claude").json()
     first = search(Q_DOC, 8)[0][1]
     assert j["status"] == "답변" and j["conclusion"] == "쿨런트는 절삭유예요." and j["written"] is True
-    assert j["mode"] == "외부 LLM(Claude Sonnet 5.5) · 순수 연결 (검사 없음, 원문 출처 표기 차단만)"
+    assert j["mode"] == "외부 LLM(Claude Haiku 5.5) · 순수 연결 (검사 없음, 원문 출처 표기 차단만)"
     assert [e["cite"] for e in j["evidence"]] == [first.cite] and j["evidence"][0]["doc_no"] == first.doc_id and j["evidence"][0]["rev"] == first.revision
     assert j["steps"] == [] and j["current_data"] == [] and j["data_label"] is None and j["is_synthetic"] is False and j["related"] is None
     assert j["caution"] == "근거 안내이며 실행 지시가 아닙니다."
@@ -244,15 +244,24 @@ def test_dangerous_requests_are_refused_before_the_pure_path(monkeypatch, keep, 
     assert rn.calls == [] and j["llm"]["calls"] == 0 and j["evidence"] == []   # 순수 호출도 분류도 없다 — 거절이 먼저
 
 
-# ------------------------------------------------------------------ ⑤ (a) PURE_KEEP_SIGNALS=0: 알람·날짜·설비·운영 길을 모두 끄고 순수 길
-@pytest.mark.parametrize("q", [Q_ALARM_DOC, Q_ALARM, Q_OPS, Q_STOCK])
-def test_signals_off_sends_alarm_ops_and_stock_questions_to_the_pure_path(env, q):
+# ------------------------------------------------------------------ ⑤ (a) PURE_KEEP_SIGNALS=0: 알람 길은 순수 길. 수량(비교 1번 기본)은 프로그램 길
+@pytest.mark.parametrize("q", [Q_ALARM_DOC, Q_ALARM])
+def test_signals_off_sends_alarm_questions_to_the_pure_path(env, q):
     rn = runner()
     j = post(q, llm="claude").json()
     assert j["status"] == "답변"
     assert [c["props"] for c in rn.calls] == [PURE_PROPS]                 # 순수 호출 1번뿐: route도 줄 고르기도 알람 카드의 LLM도 없다
     assert j["steps"] == [] and j["current_data"] == [] and j["data_label"] is None and j["is_synthetic"] is False   # 알람 카드·운영 조회 없음
     assert "순수 연결" in j["mode"] and j["route"]["source"].startswith("순수") and env == []
+
+
+def test_signals_off_keeps_quantity_on_the_program_path(env):
+    """PURE_COMPARE=0(기본): 수량 질문은 신호 끔이어도 프로그램 길."""
+    rn = runner()
+    for q in (Q_OPS, Q_STOCK):
+        j = post(q, llm="claude").json()
+        assert j["status"] == "답변" and "순수" not in j["mode"]
+    assert rn.pure_calls() == []
 
 
 def test_signals_off_ignores_the_screen_alarm_context():
