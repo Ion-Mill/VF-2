@@ -38,7 +38,8 @@ from server_past import Past  # noqa: E402
 from llm_compose import Composer, sentences  # noqa: E402
 from db_relay import DbRelay  # noqa: E402
 
-PORT = 8765
+PORT = int(os.environ.get("MOM_SIM_PORT", "8765"))      # 도커에서만 바꾼다 (비상용 배포용 2026-10-24)
+HOST = os.environ.get("MOM_SIM_HOST", "127.0.0.1")
 TICK_SEC = 0.25
 NO_STREAM = {"sensor"}                      # 센서는 /api/line/twin 의 equipment[].sensor 로 (1분마다 2건이라 흐름에서 뺌)
 
@@ -791,7 +792,7 @@ def main():
     # Windows는 SO_REUSEADDR이면 같은 포트에 서버가 둘 떠서 요청이 엇갈린다 — 이미 떠 있으면 바로 멈춘다
     ThreadingHTTPServer.allow_reuse_address = os.name != "nt"
     try:
-        srv = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
+        srv = ThreadingHTTPServer((HOST, PORT), Handler)
     except OSError:
         sys.exit(f"포트 {PORT}에 시연 서버가 이미 떠 있습니다. 그 창을 끄거나 그대로 쓰세요.")
     print(f"준비 끝 — http://127.0.0.1:{PORT}  (시연 시각 {S.rt.clock()['sim_at']}, 배속 ×{S.rt.speed})  Ctrl+C로 끝")

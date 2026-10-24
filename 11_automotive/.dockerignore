@@ -1,0 +1,21 @@
+# 도커 빌드 문맥(11_automotive)에서 뺄 것 — 크기 때문에 (deploy/Dockerfile.* 가 쓴다)
+**/node_modules
+**/.next
+**/.venv
+**/__pycache__
+**/.pytest_cache
+.git
+시연영상
+비참고문서
+화면시안
+analysis
+data
+gemini
+docs
+backend/tests
+생성기/out_video
+생성기/out_realtime
+생성기/out_realtime_video
+생성기/out_live
+**/*.mp4
+**/*.zip
