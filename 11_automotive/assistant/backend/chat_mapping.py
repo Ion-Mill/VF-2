@@ -191,5 +191,5 @@ def role_gate(question: str, out_of_role: list[dict]) -> dict | None:
                 continue
         who = "와 ".join(f"{ROLE_KO.get(r, r)}({r})" for r in item.get("roles") or []) or "권한이 있는 사람"
         about = item.get("about") or "이 정보"
-        return {"answer": f"{about}은(는) {who}만 볼 수 있어요. 값은 알려 드리지 않습니다.", "sources": [], "related": [], "status": "OUT_OF_ROLE"}
+        return {"answer": f"{about}은(는) {who}만 볼 수 있어요.\n값은 알려 드리지 않습니다.", "sources": [], "related": [], "status": "OUT_OF_ROLE"}
     return None

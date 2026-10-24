@@ -7,7 +7,7 @@ import { createPortal } from 'react-dom';
 import { useApp } from './ctx';
 import { MACHINES } from './data';
 import { SIM, api, md, simIso, useLocal } from './live';
-import { SCREEN_CODE, VOICE_OFF, VoiceFail, askAssistant, backendChatEnabled, fetchChatLog, fetchVoiceStatus, transcribeAudio, type VoiceStatus } from './assistantApi';
+import { DISCONNECT_TEXT, SCREEN_CODE, VOICE_OFF, VoiceFail, askAssistant, backendChatEnabled, fetchChatLog, fetchVoiceStatus, transcribeAudio, type VoiceStatus } from './assistantApi';
 import { collectScreenText, isScreenQuestion } from './screenText';
 import { micSupported, useMic, voiceMessage } from './voiceInput';
 import { LEVEL_VIEW, alarmTitle, hhmm, type AlertRec, type Level, type Notice } from './model';
@@ -393,7 +393,7 @@ function Chat({ active, focus, headerSlot, onNewChat, ask, onAsked }: { active: 
     const via = backendChatEnabled();
     const tick = async () => {
       const server = via ? await fetchChatLog(user.id) : [];
-      if (live) setLog((l) => resolvePending(l, server, Date.now(), inflight.current, via ? PENDING_GIVEUP_MS : 0, { a: '연결이 끊겨 답을 받지 못했어요. 다시 질문해 주세요.', status: '응답 없음' }));
+      if (live) setLog((l) => resolvePending(l, server, Date.now(), inflight.current, via ? PENDING_GIVEUP_MS : 0, { a: DISCONNECT_TEXT, status: '응답 없음' }));
     };
     tick();
     const t = setInterval(tick, 4000);
