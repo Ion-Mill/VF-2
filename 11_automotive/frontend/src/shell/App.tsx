@@ -21,7 +21,7 @@ import Login from './Login';
 import Logo from './Logo';
 import Panels from './Panels';
 import HomeHud, { GLASS } from './HomeHud';
-import { BackButton, LockIcon, PageHead } from './ui';
+import { LockIcon, PageHead } from './ui';
 import Popup from './Popup';
 import SimPanel from './SimPanel';
 import SimpleRecordScreen from './SimpleRecordScreen';
@@ -44,16 +44,22 @@ const FactoryDashboard: any = dynamic(() => import('@/components/FactoryDashboar
 });
 
 const TITLE: Record<Screen, string> = {
-  line: '3D 라인 뷰', layout2d: '3D 라인 뷰 · 2D 배치도', field: '현장 모니터', cards: '지침카드', card: '지침카드', wo: '정비 작업지시서', wr: '작업기록서', sr: '간이 작업기록',
+  line: '3D 라인 뷰', layout2d: '3D 라인 뷰 · 2D 배치도', field: '현장 모니터', cards: '지침카드', card: '지침카드', wo: '작업지시서', wr: '작업기록서', sr: '간이 작업기록',
   docs: '문서함', replay: '다시 보기', shift: '교대 보고서', daily: '일일 보고서', revs: '수정 이력', lots: '로트 추적', quality: '검사 기록', qcap: '공정 능력 · 불량',
-  inventory: '재고', tools: '공구 수명', pm: '예방 정비 일정', idocs: '사내 문서', staff: '직원 관리', settings: '설정',
-};
+  inventory: '재고', tools: '공구 수명', pm: '예방 정비', idocs: '사내 문서', staff: '직원 관리', settings: '설정',
+}; // 제목 = 위 메뉴 이름 그대로 (화면 머리 통일안 2026-10-24)
 // 제목 밑 한 줄 설명 (화이트 카드 · 파스텔 블루 목업, 2026-10-21) — 없는 화면은 제목만
 const SUB: Partial<Record<Screen, string>> = {
   field: '설비를 누르면 3D 화면 아래에 설비 패널이 열립니다.', cards: '알람마다 나온 지침카드를 처리합니다.', docs: '작업지시서와 기록 문서를 찾아 확인합니다.',
   lots: '원자재부터 출하까지 한 로트가 지나온 길을 봅니다.', quality: '로트별 측정 결과와 부품 지도를 봅니다.', qcap: '측정값 전체로 공정 능력과 불량을 봅니다.',
   inventory: '공구 · 소모품 · 원자재 · 완제품 재고를 봅니다.', tools: '공구별 사용량과 교체 이력을 봅니다.', pm: '설비별 예방 정비 기한과 오늘 할 일을 봅니다.',
-  revs: '문서가 언제 누구에 의해 바뀌었는지 봅니다.', idocs: '사내 표준 문서를 찾아 봅니다.', staff: '직원 배치와 사람별 업무 기록을 봅니다 (관리자만).', settings: '알림 기준과 기준 값을 바꿉니다.',
+  revs: '문서가 언제 누구에 의해 바뀌었는지 봅니다.', idocs: '사내 표준 문서를 찾아 봅니다.', staff: '직원 배치와 사람별 업무 기록을 봅니다.', settings: '알림 기준과 기준 값을 바꿉니다.',
+  replay: '지난 시각으로 돌려 그때 라인을 봅니다.',
+};
+// 문서함은 고른 문서 이름이 제목, 설명도 문서마다 (문서 한 장을 열어도 같은 설명)
+const DOC_SUB: Record<string, string> = {
+  작업지시서: '정비 작업지시서를 찾아 확인합니다.', 작업기록서: '보전 담당이 쓴 작업기록서를 찾아 확인합니다.', '간이 작업기록': '작업자가 쓴 간이 작업기록을 찾아 확인합니다.',
+  '교대 보고서': '교대마다 만든 보고서를 찾아 확인합니다.', '일일 보고서': '하루 단위 보고서를 찾아 확인합니다.',
 };
 // 메뉴 (페이지구조 v3 5.1). 권한 없는 페이지는 흐리게 (N3) — 열 수 있는 역할 목록, 없으면 전원
 const MENU_V3: [string, Screen | 'home', Role[]?][] = [
@@ -95,9 +101,9 @@ const ZONES: [string, string[], MachineId[]][] = [['1·2공정', ['OP-10', 'OP-2
 // 왼쪽 메뉴 묶음 (사용자 요청 2026-10-19): 홈 / 생산(로트·현장) / 정비(정지·재생·예방 정비) / 품질 / 재고(공구) / 문서(+지침카드, 2026-10-20) / 설정.
 // 묶음 안 화면은 상단 바 가운데 탭으로 바꾼다. related = 그 묶음에서 열리는 다른 화면
 // row: true 이면 그 묶음의 하위 탭을 본문 위 가로 한 줄로 보인다 (생산). 위 유리 메뉴 펼침은 그대로다.
-const GROUPS: { label: string; row?: boolean; subs: [string, Screen, Role[]?, (string | null)?][]; related?: Screen[] }[] = [
+const GROUPS: { label: string; subs: [string, Screen, Role[]?, (string | null)?][]; related?: Screen[] }[] = [
   { label: '홈', subs: [['3D 라인', 'line']], related: ['layout2d'] },
-  { label: '생산', row: true, subs: [['로트 추적', 'lots'], ['현장 모니터', 'field']] },
+  { label: '생산', subs: [['로트 추적', 'lots'], ['현장 모니터', 'field']] },
   { label: '정비', subs: [['다시 보기', 'replay'], ['예방 정비', 'pm', ['MNT', 'SUP', 'MGR']]] },
   { label: '품질', subs: [['검사 기록', 'quality', ['OPR', 'SUP', 'MGR']], ['공정 능력 · 불량', 'qcap', ['SUP', 'MGR']]] },
   { label: '재고', subs: [['재고', 'inventory'], ['공구 수명', 'tools']] },
@@ -341,7 +347,6 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
   const [eveI, setEveI] = useState(0); // 홈 이브 알림 띠에서 보고 있는 알람 번호
   const [zone, setZone] = useState<string | null>(null);
   const curGroup = GROUPS.find((g) => g.subs.some(([, s2]) => s2 === screen) || g.related?.includes(screen));
-  const sideRow = !!curGroup?.row; // 가로 메뉴바(row) 묶음: 본문 맨 위 가로 바에 하위 탭을 보인다
   useEffect(() => { // 펼친 메뉴 바깥을 누르거나 Esc면 닫기
     if (!navOpen) return;
     const off = (e: Event) => { if (e instanceof KeyboardEvent ? e.key === 'Escape' : !(e.target as Element).closest?.('[data-nav]')) setNavOpen(null); };
@@ -527,17 +532,25 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
 
         {/* 이브 창(1안, 사용자 선택 2026-10-20): 창 모양·자리는 모든 화면 같음(오른쪽, 위 바 아래 ~ 이브 버튼 위). 홈은 3D 위에 뜨고, 다른 화면은 본문이 창 폭(420 + 오른쪽 24 + 간격 12)만큼 비켜 줌 */}
         <div className={`flex min-h-0 flex-1 flex-col ${curGroup?.label === '재고' || curGroup?.label === '문서' ? 'fs-up' : ''}`} style={{ paddingTop: home ? 0 : 88, paddingBottom: screen === 'layout2d' ? 64 : screen === 'field' ? 70 : 0, paddingRight: side && !home ? 456 : 0, transition: 'padding-right .25s ease' }}>
-        {/* 화면 머리 (디자인 통일 C안 2장): 회색 제목 띠 대신 PageHead. 생산 묶음은 가로 막대가 제목 자리를 대신한다 */}
-        {screen !== 'line' && screen !== 'layout2d' && screen !== 'replay' && !sideRow && <div className="shrink-0 bg-ground px-4 pt-3"><PageHead title={TITLE[screen]} sub={SUB[screen]} onBack={back} /></div>}
-        {sideRow && curGroup && (
-          <nav aria-label={curGroup.label} className="relative z-10 flex h-12 shrink-0 items-center gap-1.5 border-b border-line bg-white px-3">
-            <BackButton onClick={back} />
-            <span className="flex items-center pr-3 text-card font-bold text-ink-2">{curGroup.label}</span>
-            {curGroup.subs.map(([name, s2, roles]) => { const ok = !roles || roles.includes(role); const on = screen === s2; return (
-              <button key={name} disabled={!ok} onClick={() => go(s2)} title={ok ? undefined : '이 계정은 볼 수 없습니다'}
-                className={`flex h-10 items-center rounded-tile px-4 text-card font-bold disabled:cursor-not-allowed disabled:text-ink-3 ${on ? 'bg-brand-tint text-brand-ink' : 'text-ink-2 hover:bg-tile'}`}>{name}</button>); })}
-          </nav>
-        )}
+        {/* 화면 머리 통일안 (사용자 선택 2026-10-24, 시안: claude.ai 아티팩트 "화면 머리 통일안"): 홈 말고 모든 화면 = [←] · 묶음 이름 → 제목(메뉴 이름) → 설명 한 줄,
+            묶음 안 화면이 2개 이상이면 오른쪽에 탭. 문서는 하위가 많아 탭 없이 위 메뉴로 고르고 고른 문서 이름이 제목. 전에 생산만 쓰던 흰 가로 바 · 다시 보기 결론 띠 안 ← 는 없앰 */}
+        {screen !== 'line' && screen !== 'layout2d' && (() => {
+          const doc = screen === 'docs' ? (key ?? '작업지시서') : DOC_OF[screen];
+          const tabs = curGroup && curGroup.subs.length > 1 && curGroup.label !== '문서' ? curGroup.subs : null;
+          return (
+            <div className="shrink-0 bg-ground px-4 pt-3">
+              <PageHead title={screen === 'docs' ? doc : TITLE[screen]} sub={(doc && DOC_SUB[doc]) || SUB[screen]} onBack={back}
+                group={curGroup && <><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="text-ink-3"><path d={NAV_ICON[curGroup.label]} /></svg>{curGroup.label}</>}
+                right={tabs && (
+                  <nav aria-label={curGroup!.label} className="flex flex-wrap gap-1 rounded-tile border border-line bg-white p-1">
+                    {tabs.map(([name, s2, roles]) => { const ok = !roles || roles.includes(role); const on = screen === s2; return (
+                      <button key={name} disabled={!ok} onClick={() => go(s2)} title={ok ? undefined : '이 계정은 볼 수 없습니다'} aria-current={on ? 'page' : undefined}
+                        className={`flex h-10 items-center gap-1 whitespace-nowrap rounded-ctl px-4 text-[16px] font-bold disabled:cursor-not-allowed disabled:text-ink-3 ${on ? 'bg-brand-tint text-brand-ink' : 'text-ink-2 hover:bg-tile'}`}>{name}{!ok && <LockIcon />}</button>); })}
+                  </nav>
+                )} />
+            </div>
+          );
+        })()}
         <div className={`relative min-h-0 flex-1 overflow-hidden ${connected ? '' : 'grayscale-[0.6]'}`}>
           <div className="absolute overflow-hidden" style={{ ...stagePos, visibility: show3D ? 'visible' : 'hidden', opacity: show3D ? 1 : 0, pointerEvents: show3D ? 'auto' : 'none' }}>
             <FactoryDashboard embedded dataMode warnIds={[...new Set(open.filter((a) => a.level === '주의').map((a) => a.machine))]} layout={LAYOUT} quality="자동" introOnLoad={false} showCards={settings.cards} alarmText={alarmText} cardText={cardText}

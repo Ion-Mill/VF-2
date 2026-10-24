@@ -27,13 +27,16 @@ export function BackButton({ onClick }: { onClick: () => void }) {
   );
 }
 
-/** 화면 머리: [←] 제목 26 굵게 + 밑에 부제 한 줄 · 오른쪽 = 화면 전체 버튼(맨 끝 [닫기]) 또는 큰 갈래 탭 */
-export function PageHead({ title, sub, right, onBack }: { title: ReactNode; sub?: ReactNode; right?: ReactNode; onBack?: () => void }) {
+/** 화면 머리 (통일안, 사용자 선택 2026-10-24): [←] · 작은 묶음 이름 → 제목 26 굵게 → 부제 한 줄 · 오른쪽 = 같은 묶음 탭 또는 화면 전체 버튼.
+ *  글자는 px로 고정 — 재고 · 문서 묶음의 .fs-up(글자 한 단계 크게)이 머리까지 키우지 않게 */
+export function PageHead({ title, sub, right, onBack, group }: { title: ReactNode; sub?: ReactNode; right?: ReactNode; onBack?: () => void; group?: ReactNode }) {
   return (
-    <div className="flex min-h-11 flex-wrap items-end gap-x-3 gap-y-2 pt-2">
-      {onBack && <div className="self-center"><BackButton onClick={onBack} /></div>}
-      <div className="min-w-0"><h2 className="text-[26px] font-bold leading-tight tracking-[-.02em] text-ink">{title}</h2>
-        {sub && <div className="mt-0.5 text-small text-ink-2">{sub}</div>}</div>
+    <div className="flex min-h-11 flex-wrap items-center gap-x-3 gap-y-2 pt-2">
+      {onBack && <BackButton onClick={onBack} />}
+      <div className="min-w-0">
+        {group && <div className="flex items-center gap-1.5 text-[14px] font-semibold text-ink-2">{group}</div>}
+        <h2 className="text-[26px] font-bold leading-tight tracking-[-.02em] text-ink">{title}</h2>
+        {sub && <div className="mt-0.5 text-[15px] text-ink-2">{sub}</div>}</div>
       {right && <div className="ml-auto flex flex-wrap items-center gap-2">{right}</div>}
     </div>
   );

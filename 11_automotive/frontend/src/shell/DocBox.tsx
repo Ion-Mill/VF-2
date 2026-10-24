@@ -119,7 +119,7 @@ export default function DocBox() {
         </details>
 
         <div className={CARD.replace('mx-auto max-w-[1100px] ', '')}>
-          <div className="flex flex-wrap items-center gap-2"><h2 className="text-band font-bold">{tab}</h2>
+          <div className="flex flex-wrap items-center gap-2">{/* 문서 이름은 화면 머리 제목에 (통일안 2026-10-24) */}
             {(role === 'OPR' || role === 'MNT') && <button onClick={() => openAfter()} className={`${BTN} ml-auto`} title="알람 없이 먼저 한 일을 지난 시각으로 적어요">+ 사후 기록</button>}</div>
           {/* [2] 필터 — 한 줄 도구 막대 */}
           <div className="mt-3 flex flex-wrap items-center gap-2">

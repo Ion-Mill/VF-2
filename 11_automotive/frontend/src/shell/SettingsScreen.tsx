@@ -30,7 +30,6 @@ export function SettingsScreen() {
       <div className="mx-auto mb-3 max-w-[1440px]"><CBand spec={settingsBand({ repeat_days: Number(rules.repeat_days ?? 7), repeat_count: Number(rules.repeat_count ?? 3), target_risk_pct: Number(rules.target_risk_pct ?? 90) }, Object.values(draft).reduce((n: number, v) => n + (v && typeof v === 'object' ? Object.keys(v).length : 1), 0))} onAction={() => setConfirm(true)} /></div>
       <div className={`${CARD} mx-auto max-w-[1440px]`}>
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-card font-bold">설정</h2>
           <div className="flex flex-wrap gap-1">{TABS.map((t) => <button key={t} onClick={() => setTab(t)} className={`${BTN} ${tab === t ? '!border-brand !bg-tile' : ''}`}>{t}</button>)}<button onClick={back} className={BTN}>닫기</button></div>
         </div>
         <button onClick={() => go('staff')} className="mt-2 text-small font-semibold text-info hover:underline">사용자(직원 명단·담당 교대·공정)는 직원 관리에서 봅니다 ›</button>{/* 사용자 탭을 SCR-27로 옮김 (2026-10-23) */}
