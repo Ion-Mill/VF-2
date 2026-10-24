@@ -79,6 +79,9 @@ class Realtime:
         self.scen = json.load(io.open(ROOT / self.rt["scenarios_dir"] / self.rt["event_file"], encoding="utf-8"))
         # 측정 결과 파일 폴더. 시연 데이터 서버는 저장소 밖 폴더를 넘긴다 (out_realtime/cmm_drop은 리허설 결과라 커밋됨)
         self.drop_dir = drop_dir or ROOT / self.rt["out_dir"] / self.rt["cmm_drop_dir"]
+        self.on_op = None                    # 실제 시각 모드: 사람 조작이 생기면 부르는 함수 (서버가 파일에 저장, 2026-10-24)
+        self.locked = False                  # 실제 시각 모드(최종용): 시계·사건 조작 잠금
+        self._replaying = False
         self.force = self._t05_force()
         self.past = json.load(io.open(ROOT / self.cfg["run"]["out_dir"] / "manifest.json", encoding="utf-8"))["rows"]
         self.reset(log=False)
@@ -99,7 +102,7 @@ class Realtime:
         self.N = sim.cal.n_min                                   # 10/1 08:00 분 번호
         states = S4.state_arrays(sim)
         self.judge, self.past_bn = S4.judge_past(self.cfg, sim, states)
-        extend_calendar(sim.cal, self.cfg, days=1)               # 10/1 주간·야간 (10/2 08:00까지)
+        extend_calendar(sim.cal, self.cfg, days=int(self.rt.get("live_days", 1)))   # 실시간 근무일 (영상용 1일, 최종용 2일)
         sim.grow()
         # 10/1: 사람이 하는 일을 시뮬레이터가 대신하지 않음, 우연히 한도까지 가는 공구 없음
         sim.auto_holds = False
@@ -122,6 +125,7 @@ class Realtime:
         self.ms = 0                                              # 다음 분까지 쌓인 시뮬레이터 밀리초
         self.speed = self.rt["default_speed"]
         self.paused = False
+        self.locked = False
         self.events: list[dict] = []
         self.bn_rows: list[dict] = []
         self.sensor_min: dict[str, dict[int, dict]] = {"VF2-01": {}, "VF2-02": {}}
@@ -176,17 +180,24 @@ class Realtime:
                 "running_event": self.active["code"] if self.active else None,
                 "buttons_locked": self.active is not None, "finished": self.m >= self.end_m}
 
+    def _guard_locked(self):
+        if self.locked and not self._replaying:
+            raise ValueError("실제 시각으로 흐르는 모드(최종용)에서는 시계·사건 조작을 쓸 수 없어요")
+
     def set_speed(self, x: int):
+        self._guard_locked()
         if x not in self.rt["speeds"]:
             raise ValueError(f"배속은 {self.rt['speeds']} 중 하나")
         self.speed = x
         self._op("speed", value=x)
 
     def pause(self):
+        self._guard_locked()
         self.paused = True
         self._op("pause")
 
     def resume(self):
+        self._guard_locked()
         self.paused = False
         self._op("resume")
 
@@ -194,6 +205,7 @@ class Realtime:
 
     def skip(self, to: str = "TODAY_DAY_END"):
         """지금 → 오늘 주간 끝(shifts.DAY.end) 또는 야간 시작(shifts.NIGHT.start). 그 사이를 빠르게 만든다. 그 시각이 지났으면 시계는 그대로."""
+        self._guard_locked()
         to = self.LEGACY_SKIP.get(to, to)
         if to not in self.rt["skip_targets"]:
             raise ValueError(f"넘기기는 {self.rt['skip_targets']}만")
@@ -225,6 +237,7 @@ class Realtime:
     # ---------- 사건 버튼 (API-SIM-01) ----------
     def inject(self, code: str) -> dict:
         """사건 버튼. 누를 수 없으면 ValueError(이유). 돌려주는 값: 사건 정보."""
+        self._guard_locked()
         if code not in self.rt["buttons"]:
             raise ValueError(f"사건 버튼은 {self.rt['buttons']} 중 하나")
         why = self.button_state()[code]
@@ -271,6 +284,7 @@ class Realtime:
     def fire(self, kind: str) -> dict:
         """지금 분에 알람 하나를 일으킨다. warn = 주의 아무거나, stop = 고장(정지 등급) 아무거나, air = 120 공기압,
         maint = 고장 3분 뒤 보전 담당이 수리 정비(MAINT 20~40분, 사유는 그 고장)로 들어감. 누를 수 없으면 ValueError(이유)."""
+        self._guard_locked()
         if kind not in ("warn", "stop", "air", "maint"):
             raise ValueError("kind는 warn·stop·air·maint 중 하나")
         if self.paused or self.m >= self.end_m:
@@ -449,7 +463,7 @@ class Realtime:
             "next": next_lots if next_lots is not None else 2,
             "reason": reason or ("충돌 의심(992) 때 가공 중이던 로트 — 비서 의심 로트 제안" if crash
                                  else "반장 보류")})
-        self._op("hold_lot", lot_no=lot_no, by=by, trigger=trigger)
+        self._op("hold_lot", lot_no=lot_no, by=by, trigger=trigger, reason=reason, next_lots=next_lots)
 
     def release_lot(self, lot_no: str, by: str = "U10", approver: str = "U12"):
         """전수 검사로 판정이 끝난 보류 로트를 반장이 해제. 폐기가 있으면 관리자 승인을 같이 남김 (DOC-06 §4.1)."""
@@ -463,7 +477,7 @@ class Realtime:
             h["scrap_qty"], h["scrap_by"], h["scrap_approved_by"], h["scrap_approved_m"] = lot.scrap, by, approver, self.m
         self.sim._release(lot, self.m)
         h["released_by"] = by
-        self._op("release_lot", lot_no=lot_no, by=by)
+        self._op("release_lot", lot_no=lot_no, by=by, approver=approver)
 
     def record_tool_change(self, tool_id: str, by: str | None = None):
         """작업자가 화면에서 공구 교체를 기록 → 그 공구 사용량 0, SETUP 3~8분 (API-TOOL-02)."""
@@ -517,7 +531,7 @@ class Realtime:
                 self.active["alarm_ids"].append(e["id"])
             self._emit("alarm", at=t, alarm_event_id=e["id"], equipment_id=e["equipment_id"],
                        alarm_code=e["alarm_code"], severity=e["severity"], scenario_code=e.get("scenario"))
-            if e["severity"] in ("WARN", "STOP") and self.speed > self.rt["auto_slowdown_to"]:
+            if e["severity"] in ("WARN", "STOP") and not self.locked and self.speed > self.rt["auto_slowdown_to"]:
                 self.speed = self.rt["auto_slowdown_to"]          # 자동 감속 (설계서 4장)
                 self._emit("sim_clock", reason="auto_slowdown", speed=self.speed)
         self.prev_alarm = len(sim.alarm_events)
@@ -585,8 +599,13 @@ class Realtime:
         self.events.append(ev)
         return [ev]
 
+    LIVE_OPS = ("inject", "preview", "hold_lot", "release_lot", "tool_change", "confirm_work_record")   # 실제 시각 모드에서 저장·재실행하는 사람 조작
+
     def _op(self, op: str, **kw):
-        self.ops.append({"op": op, "sim_at": fmt_dt(self.now()), **kw})
+        entry = {"op": op, "sim_at": fmt_dt(self.now()), **kw}
+        self.ops.append(entry)
+        if self.on_op and self.locked and not self._replaying and op in self.LIVE_OPS:
+            self.on_op(dict(entry))
         self._emit("sim_clock", reason=op)
 
     # ---------- 대본 (리허설) ----------
@@ -622,6 +641,67 @@ class Realtime:
             self.confirm_work_record(s.get("equipment_id", "VF2-01"), by=s.get("by", "U07"))
         else:
             raise ValueError(f"모르는 조작: {op}")
+
+    # ---------- 실제 시각 모드 (최종용, 2026-10-24) ----------
+    def tick_wall(self, wall_now: datetime) -> list[dict]:
+        """시뮬레이터 시각을 실제 시각의 분까지 따라가게 한다 (켤 때 따라잡기도 이 함수). 달력 끝을 넘지 않는다."""
+        target = self.sim.cal.to_min(wall_now.astimezone(KST).replace(second=0, microsecond=0))
+        out = []
+        while self.m < min(target, self.end_m):
+            out += self._minute()
+        return out
+
+    def _replay_one(self, o: dict):
+        op = o["op"]
+        if op == "inject":
+            self.inject(o["scenario_code"])
+        elif op == "preview":
+            self.fire(o["kind"])
+        elif op == "hold_lot":
+            self.hold_lot(o["lot_no"], by=o.get("by", "U10"), reason=o.get("reason"), next_lots=o.get("next_lots"))
+        elif op == "release_lot":
+            self.release_lot(o["lot_no"], by=o.get("by", "U10"), approver=o.get("approver", "U12"))
+        elif op == "tool_change":
+            self.record_tool_change(o["tool_id"], by=o.get("by"))
+        elif op == "confirm_work_record":
+            self.confirm_work_record(o["equipment_id"], by=o.get("by", "U07"))
+
+    def start_live(self, wall_now: datetime, saved_ops: list[dict] | None = None) -> list[dict]:
+        """최종용: 미리 짠 오전 대본(rehearsal_script)을 끝까지 돌려 실시간 시작 시각(15:00)의 상태를 만들고,
+        저장해 둔 사람 조작을 그 시각에 그대로 다시 하고, 지금 실제 시각까지 따라잡는다. 그다음부터 배속 1, 조작은 잠긴다.
+        같은 대본·같은 조작이면 언제 켜도 같은 세계가 된다 (재시작 안전)."""
+        self.play(load_script(self.rt["rehearsal_script"]))
+        self.speed, self.paused, self.ms = 1, False, 0
+        self.locked = True
+        out = []
+        self._replaying = True
+        try:
+            for o in saved_ops or []:
+                target = self.sim.cal.to_min(datetime.fromisoformat(o["sim_at"]).astimezone(KST).replace(second=0, microsecond=0))
+                while self.m < min(target, self.end_m):
+                    out += self._minute()
+                try:
+                    self._replay_one(o)
+                except ValueError as e:
+                    self.ops.append({"op": "failed", "sim_at": fmt_dt(self.now()), "step": o["op"], "why": f"재실행 못 함: {e}"})
+        finally:
+            self._replaying = False
+        out += self.tick_wall(wall_now)
+        return out
+
+    def recover(self) -> dict:
+        """사건 복귀 (발표자 전용): 진행 중인 사건을 끝낸다. 기록은 그대로 둔다 (S1은 작업기록 확정, S3는 공구 교체 기록과 같은 효과)."""
+        ev = self.active
+        if ev is None:
+            raise ValueError("진행 중인 사건이 없어요")
+        if ev["code"] == "S1":
+            self.confirm_work_record(ev["equipment_id"], by="U07")
+        elif ev["code"] == "S3":
+            self.record_tool_change(ev["tool_id"], by="U02")
+        else:
+            raise ValueError("이 사건은 저절로 끝나요")
+        self.ops.append({"op": "recover", "sim_at": fmt_dt(self.now()), "code": ev["code"]})
+        return {"code": ev["code"], "equipment_id": ev["equipment_id"]}
 
     def run_to(self, hm: str) -> None:
         """시작일의 hm(예: "09:30")까지 흘려 보낸다. 이미 지났으면 그대로 (대본의 at)."""

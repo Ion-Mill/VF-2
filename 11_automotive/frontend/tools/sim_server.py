@@ -9,6 +9,7 @@ API명세서_v1 2.9 "생성기와 잇는 방법" [제안] 그대로: 서버가 R
 """
 from __future__ import annotations
 
+import hmac
 import io
 import json
 import os
@@ -17,7 +18,7 @@ import sys
 import threading
 import time
 import traceback
-from datetime import datetime
+from datetime import datetime, timedelta
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlparse
@@ -41,6 +42,7 @@ from db_relay import DbRelay  # noqa: E402
 PORT = int(os.environ.get("MOM_SIM_PORT", "8765"))      # 도커에서만 바꾼다 (start_all.ps1은 8765로 알고 있음)
 HOST = os.environ.get("MOM_SIM_HOST", "127.0.0.1")        # 도커 안에서는 0.0.0.0 (바깥에는 Caddy만 내놓는다)
 TICK_SEC = 0.25
+REQ = threading.local()                                    # 요청 하나의 머리글 값 (발표자 키)
 NO_STREAM = {"sensor"}                      # 센서는 /api/line/twin 의 equipment[].sensor 로 (1분마다 2건이라 흐름에서 뺌)
 
 
@@ -61,8 +63,20 @@ class State:
         self.alarms = json.loads(data.read_text(encoding="utf-8"))["alarms"] if data.exists() else {}
         print(f"실시간 모드 준비 중 ({self.cfg['realtime']['start'][5:10].replace('-', '/')} {self.cfg['realtime']['start'][11:16]}, 약 2초) …")
         self.rt = Realtime(self.cfg, self.M, drop_dir=GEN / "out_live" / self.cfg["realtime"]["cmm_drop_dir"])   # git 제외 폴더
-        self.live = Live(self.rt, self.P)
+        # 실제 시각 모드(최종용, 2026-10-24): 미리 짠 오전 대본으로 15:00 상태를 만들고, 저장해 둔 사람 조작을 다시 하고, 지금 실제 시각까지 따라잡는다.
+        # 서버를 다시 켜도 같은 세계가 된다 (회차 번호 run_id도 파일에 있어 그대로). MOM_PRETEND_NOW=2026-10-26T17:00 이면 그 시각에서 흐르는 것처럼 (리허설)
+        self.wall = self.cfg.get("profile", {}).get("clock") == "wall"
+        self.pretend = os.environ.get("MOM_PRETEND_NOW", "").strip()
+        self.pretend_offset = (datetime.fromisoformat(self.pretend).replace(tzinfo=KST) - datetime.now(KST)) if self.pretend else timedelta(0)
+        self.wall_file = GEN / "out_live" / f"wall_{self.cfg['profile']['name']}.json" if self.wall else None
         self.run_id = int(time.time())           # 서버를 다시 켜도 회차가 겹치지 않게 (브라우저 저장이 회차별, 2026-10-21)
+        if self.wall:
+            st = self._wall_load()
+            self.run_id = st["run_id"]
+            print(f"실제 시각 모드: 오전 대본으로 {self.cfg['profile']['live_start'][11:16]} 상태를 만들고 지금({self.wall_now():%m/%d %H:%M})까지 따라잡는 중 …")
+            self.rt.start_live(self.wall_now(), st["ops"])
+            self.rt.on_op = self._wall_save_op
+        self.live = Live(self.rt, self.P)
         self.seq = 0
         self.buf: list[dict] = []
         self.reports: dict[str, dict] = {}       # 교대 보고서 사람 수정·확정 (API-RPT-02·03·04)
@@ -80,6 +94,32 @@ class State:
         if self.relay and not self.relay.start():
             self.relay = None
         self._push(self.rt.events)
+
+    def wall_now(self) -> datetime:
+        """실제 시각(KST). 리허설용 MOM_PRETEND_NOW가 있으면 그 시각에서 흐르는 것처럼."""
+        return datetime.now(KST) + self.pretend_offset
+
+    def _wall_load(self) -> dict:
+        try:
+            st = json.loads(self.wall_file.read_text(encoding="utf-8"))
+            if isinstance(st.get("ops"), list) and isinstance(st.get("run_id"), int):
+                return st
+        except (OSError, ValueError):
+            pass
+        start = datetime.fromisoformat(self.cfg["profile"]["live_start"]).replace(tzinfo=KST)
+        return {"run_id": int(start.timestamp()), "ops": []}        # 처음 켤 때 회차 = 실시간 시작 시각 (다시 켜도 같다)
+
+    def _wall_write(self, st: dict):
+        self.wall_file.parent.mkdir(parents=True, exist_ok=True)
+        tmp = self.wall_file.with_suffix(".tmp")
+        tmp.write_text(json.dumps(st, ensure_ascii=False), encoding="utf-8")
+        tmp.replace(self.wall_file)
+
+    def _wall_save_op(self, entry: dict):
+        """사람 조작(공구 교체·작업기록 확정·로트 보류와 해제)을 파일에 남긴다 — 서버를 다시 켜면 같은 시각에 다시 한다."""
+        st = self._wall_load()
+        st["ops"].append(entry)
+        self._wall_write(st)
 
     def _relay_clock(self):
         with self.lock:
@@ -99,13 +139,19 @@ class State:
     def tick(self, dt):
         with self.lock:
             n0 = len(self.rt.events)
-            self.rt.tick(dt)
+            if self.wall:
+                self.rt.tick_wall(self.wall_now())
+            else:
+                self.rt.tick(dt)
             self._push(self.rt.events[n0:])
 
     def reset(self):
         with self.lock:
             n0 = len(self.rt.events)
             self.rt.reset()
+            if self.wall:                            # 처음으로(발표자 전용): 사람 조작은 지우고, 시각은 그대로 지금까지 따라잡는다
+                self.rt.start_live(self.wall_now(), [])
+                self._wall_write({"run_id": self.run_id + 1, "ops": []})
             if self.relay:
                 self.relay.reset()
             self.live = Live(self.rt, self.P)
@@ -177,7 +223,20 @@ def _route(method, p, q, body, rt, live, P):
     key = "/".join(p)
     # 시연 시계·사건 버튼 (API-SIM-01~03)
     if key == "health":
-        return {"ok": True, "run_id": S.run_id, "clock": rt.clock(), "llm_compose": COMPOSER.stats(), "profile": profile_info()}
+        return {"ok": True, "run_id": S.run_id, "clock": {**rt.clock(), **({"wall_now": fmt_dt(S.wall_now())} if S.wall else {})},
+                "llm_compose": COMPOSER.stats(), "profile": profile_info()}
+    if S.wall and method == "POST" and key.startswith("sim/"):
+        # 실제 시각으로 흐르는 최종용: 시계·사건 버튼은 없다. 사건 복귀·처음으로만, 발표자 키(MOM_PRESENTER_KEY)가 있을 때
+        if key not in ("sim/recover", "sim/reset"):
+            raise ApiError(403, "FORBIDDEN", "실제 시각으로 흐르는 모드에서는 시계·사건 조작을 쓸 수 없어요")
+        want, got = os.environ.get("MOM_PRESENTER_KEY", ""), getattr(REQ, "key", "") or ""
+        if not want or not hmac.compare_digest(want.encode("utf-8"), got.encode("utf-8")):
+            raise ApiError(403, "FORBIDDEN", "발표자 키가 필요해요")
+    if key == "sim/recover" and method == "POST":
+        try:
+            return {"recovered": rt.recover(), **rt.clock()}
+        except ValueError as e:
+            raise ApiError(409, "INVALID_STATE", str(e))
     if key == "sim/clock":
         if method == "POST":
             try:
@@ -683,7 +742,7 @@ def profile_info():
     p = cfg.get("profile", {})
     return {"name": p.get("name"), "clock_mode": "accelerated" if p.get("clock") == "accelerated" else "wall",
             "controls": p.get("controls", []), "history_start": cfg["period"]["start_date"], "history_end": p.get("history_end"),
-            "scripted_from": p.get("scripted_from"), "live_start": p.get("live_start") or cfg["realtime"]["start"],
+            "scripted_from": p.get("scripted_from"), "pretend": bool(S.pretend), "live_start": p.get("live_start") or cfg["realtime"]["start"],
             "shifts": {k: {"start": cfg["shifts"][k]["start"], "end": cfg["shifts"][k]["end"], "break": cfg["shifts"][k]["break"]} for k in ("DAY", "NIGHT")},
             "daily_report_latest": cfg["shifts"]["daily_report_draft"]["latest"]}
 
@@ -770,11 +829,12 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(data)))
         self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, X-Presenter-Key")
         self.end_headers()
         self.wfile.write(data)
 
     def _do(self, method):
+        REQ.key = self.headers.get("X-Presenter-Key", "")
         u = urlparse(self.path)
         body = {}
         if method == "POST":

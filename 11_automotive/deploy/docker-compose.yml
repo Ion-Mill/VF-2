@@ -36,6 +36,10 @@ services:
       MOM_PROFILE: ${MOM_PROFILE:-final}
       MOM_ASSISTANT_URL: http://assistant:8100
       MOM_LLM_COMPOSE: ${MOM_LLM_COMPOSE:-0}
+      MOM_PRESENTER_KEY: ${MOM_PRESENTER_KEY:-}   # 최종용에서 사건 복귀·처음으로를 부를 때 필요한 발표자 키 (비어 있으면 그 조작은 모두 거절)
+      MOM_PRETEND_NOW: ${MOM_PRETEND_NOW:-}       # 리허설용: 예) 2026-10-26T17:00 이면 그 시각에서 흐르는 것처럼. 발표 때는 비워 둔다
+    volumes:
+      - sim_live:/app/생성기/out_live            # 최종용의 사람 조작·회차 번호 (서버를 다시 켜도 같은 세계)
     env_file:
       - path: assistant.env        # MOM_ASSISTANT_KEY 만 쓴다 (문장 다듬기용)
         required: false
@@ -66,6 +70,7 @@ services:
       - whisper_models:/models
 
 volumes:
+  sim_live:
   caddy_data:
   caddy_config:
   whisper_models:

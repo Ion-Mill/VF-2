@@ -68,7 +68,7 @@ def test_realtime_same_script_same_result():
     from gen.realtime import Realtime, load_script
     cfg = load_config()
     m = load_masters(cfg)
-    script = load_script(cfg["realtime"]["rehearsal_script"])
+    script = load_script("리허설_버튼없음.json")                # 최종용의 rehearsal_script는 10/26 오전 사건(S1)이 들어 있어 버튼 없는 대본을 따로 쓴다
     a = Realtime(cfg, m)
     a.play(script)
     b = Realtime(cfg, m)
@@ -144,3 +144,33 @@ def test_realtime_preview_fire():
     assert seen[-1] == "MAINT" and "RUN" not in seen[seen.index("DOWN"):], seen
     assert fired["maint"]["equipment_id"] != fired["stop"]["equipment_id"]   # 이미 고장 난 설비는 피함
 
+
+def test_wall_clock_catch_up_lock_and_replay():
+    """최종용 실제 시각 모드 (2026-10-24): 오전 대본으로 15:00 상태를 만들고 지금까지 따라잡는다. 시계·사건 조작은 잠기고,
+    저장해 둔 사람 조작을 같은 시각에 다시 하면 다시 켠 세계가 같다 (재시작 안전)."""
+    from datetime import datetime
+    from gen.common import KST
+    from gen.realtime import Realtime
+    cfg = load_config(profile="final")
+    m = load_masters(cfg)
+    now = datetime(2026, 10, 26, 17, 0, tzinfo=KST)
+    a = Realtime(cfg, m)
+    a.start_live(now, [])
+    assert a.clock()["sim_at"] == "2026-10-26T17:00:00+09:00" and a.locked and a.speed == 1
+    for call in (lambda: a.set_speed(60), a.pause, lambda: a.skip("TODAY_DAY_END"), lambda: a.inject("S1"), lambda: a.fire("warn")):
+        try:
+            call()
+            assert False, "잠겨 있어야 한다"
+        except ValueError:
+            pass
+    saved = []
+    a.on_op = saved.append
+    a.tick_wall(datetime(2026, 10, 26, 17, 30, tzinfo=KST))
+    a.record_tool_change("VF2-02-T04", by="U07")
+    assert [o["op"] for o in saved] == ["tool_change"] and saved[0]["sim_at"] == "2026-10-26T17:30:00+09:00"
+    a.tick_wall(datetime(2026, 10, 26, 18, 0, tzinfo=KST))
+    b = Realtime(cfg, m)
+    b.start_live(datetime(2026, 10, 26, 18, 0, tzinfo=KST), saved)
+    key = lambda r: [(e["type"], e.get("at")) for e in r.events if e["type"] in ("alarm", "state_changed", "tool_change")]
+    assert a.clock() == b.clock() and key(a) == key(b)
+    assert [t.cum for mc in a.sim.mach.values() for t in mc.tools.values()] == [t.cum for mc in b.sim.mach.values() for t in mc.tools.values()]
