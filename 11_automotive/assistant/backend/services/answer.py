@@ -28,6 +28,7 @@ from backend.services import continuation as CONT   # 짧은 후속 질문의 �
 from backend.services import followup_v2 as FU2
 from backend.services import pure_external as PURE   # 순수 외부 LLM 연결 (2026-10-15, PURE_EXTERNAL — 시험용 복사본 전용)
 from backend.services import sensor as SN         # 센서 값 질문 이해·답 문장 (2026-10-19, 팀 백엔드 도구 sensor_trend)
+from backend.services import sim_clock
 from backend.services import steplog as SL
 from backend.services.routing import DOC_WORDS, Route, decide_route
 from backend.tools import query_tools as T
@@ -1383,11 +1384,16 @@ def parse(question: str) -> dict:
         shift = "N" if NIGHT_V2.search(q) else ("D" if DAY_V2.search(q) else None)
     if v3 and BOTH_SHIFTS_V3.search(q):  # "주야간 통틀어" → 교대를 정하지 않는다
         shift = None
+    anchor = sim_clock.anchor_date()
+    prev = sim_clock.previous_open()
     if "어제" in q or (v2 and YESTERDAY_V2.search(q)):
-        start = end = REF_DATE - timedelta(days=1)
+        start = end = anchor - timedelta(days=1)
     elif "오늘" in q:
-        start = end = REF_DATE
-    elif "지난 교대" in q:  # 기준 시각 10/1 08:00의 지난 교대 = 9/30 야간
+        start = end = anchor
+    elif prev is not None and sim_clock.PREV_SHIFT.search(q):
+        start = end = prev[0]
+        shift = prev[1]
+    elif "지난 교대" in q:  # 시계가 없으면 기준 시각 10/1 08:00의 지난 교대 = 9/30 야간
         start = end = REF_DATE - timedelta(days=1)
         shift = "N"
     m = re.search(r"(\d{1,2})\s*월\s*(\d{1,2})\s*일|(?<!\d)(\d{1,2})/(\d{1,2})(?!\d)", q)
@@ -1396,7 +1402,7 @@ def parse(question: str) -> dict:
         start = end = date(2026, mo, d)
     m = re.search(r"최근\s*(\d+)\s*일", q)
     if m:
-        end, start = REF_DATE - timedelta(days=1), REF_DATE - timedelta(days=int(m.group(1)))
+        end, start = anchor - timedelta(days=1), anchor - timedelta(days=int(m.group(1)))
     if v6 and start is None:  # 5차 L2: "지난달 18일" = 그날 (E4-040 — "지난달"이 한 달 전체로 정해 "18일"을 버렸다)
         md = LAST_MONTH_DAY_V6.search(q)
         last = REF_DATE.replace(day=1) - timedelta(days=1)   # 지난달 마지막 날
@@ -1985,7 +1991,7 @@ SHIFT_INTENTS_V28 = ("stops", "production", "kpi")
 def current_shift_scope_v28(role: str, p: dict) -> dict:
     if p.get("shift") or not CUR_SHIFT_V28.search(p.get("raw") or "") or not any(i in SHIFT_INTENTS_V28 for i in p["intents"]):
         return p
-    if p["start"] is not None and not (p["start"] == p["end"] == REF_DATE):   # 다른 날짜를 말했으면 건드리지 않는다
+    if p["start"] is not None and not (p["start"] == p["end"] == sim_clock.anchor_date()):   # 다른 날짜를 말했으면 건드리지 않는다
         return p
     cur = T.current_shift(role)
     return {**p, "start": cur[0], "end": cur[0], "shift": cur[1]} if cur else p
@@ -2454,16 +2460,11 @@ def merge_route(p: dict, r: dict) -> dict:
     if not q["equipment"]:
         q["equipment"] = list(r["equipment"])
     if q["start"] is None:
-        per = r["period"]
-        if per == "today":
-            q["start"] = q["end"] = REF_DATE
-        elif per == "yesterday":
-            q["start"] = q["end"] = REF_DATE - timedelta(days=1)
-        elif per == "last_shift":  # 기준 시각 10/1 08:00의 지난 교대 = 9/30 야간 (parse와 같음)
-            q["start"] = q["end"] = REF_DATE - timedelta(days=1)
-            q["shift"] = q["shift"] or "N"
-        elif per == "recent_7":
-            q["start"], q["end"] = REF_DATE - timedelta(days=7), REF_DATE - timedelta(days=1)
+        start, end, sh = sim_clock.named_period(r["period"])
+        if start is not None:
+            q["start"], q["end"] = start, end
+            if sh:
+                q["shift"] = q["shift"] or sh
     if q["shift"] is None and r["shift"] in ("D", "N"):
         q["shift"] = r["shift"]
     return q
@@ -3478,29 +3479,31 @@ def daily_report_inclusion_v29(question: str, p: dict) -> bool:
 
 
 def daily_report_inclusion_answer_v29(base: dict, question: str) -> dict:
+    ref = sim_clock.anchor_date()
+    day_a, day_b, night_a, night_b = sim_clock.hour_words()
     day = None
     m = re.search(r"(\d{1,2})\s*/\s*(\d{1,2})", question)
     if m:
         try:
-            day = date(REF_DATE.year, int(m.group(1)), int(m.group(2)))
+            day = date(ref.year, int(m.group(1)), int(m.group(2)))
         except ValueError:
             day = None
     if day is None and "어제" in question:
-        day = REF_DATE - timedelta(days=1)
-    today = f"{REF_DATE.month}/{REF_DATE.day}"
-    text = "일일 보고서의 날짜는 생산일(주간이 시작한 날)이고, 생산일은 그날 주간(08:00~17:00)과 그날 밤 야간(20:00~다음 날 05:00)이에요(팀이 정한 기준이에요)."
+        day = ref - timedelta(days=1)
+    today = f"{ref.month}/{ref.day}"
+    text = f"일일 보고서의 날짜는 생산일(주간이 시작한 날)이고, 생산일은 그날 주간({day_a}~{day_b})과 그날 밤 야간({night_a}~다음 날 {night_b})이에요(팀이 정한 기준이에요)."
     if day is not None:
         d = f"{day.month}/{day.day}"
-        text += f" 그래서 {d} 일일 보고서에는 {d} 08:00부터 다음 날 05:00 사이에 일어난 일만 들어가요."
-        if day < REF_DATE:
-            text += (f" 오늘({today}) 08:00 이후에 난 일(예: 오늘 뜬 알람)은 {d} 보고서가 아니라 오늘 생산일 보고서에 들어가고, 오늘 보고서는 오늘 야간이 끝난 다음 날 06:00에 만들어져요."
-                     f" 다만 오늘 05:00 전에 난 일이면 {d} 보고서에 들어가요.")
-        elif day == REF_DATE:
+        text += f" 그래서 {d} 일일 보고서에는 {d} {day_a}부터 다음 날 {night_b} 사이에 일어난 일만 들어가요."
+        if day < ref:
+            text += (f" 오늘({today}) {day_a} 이후에 난 일(예: 오늘 뜬 알람)은 {d} 보고서가 아니라 오늘 생산일 보고서에 들어가고, 오늘 보고서는 오늘 야간이 끝난 다음 날 06:00에 만들어져요."
+                     f" 다만 오늘 {night_b} 전에 난 일이면 {d} 보고서에 들어가요.")
+        elif day == ref:
             text += " 오늘 보고서는 오늘 야간이 끝난 다음 날 06:00에 만들어져서 아직 없어요."
         else:
             text += " 그 날짜는 아직 오지 않았어요."
     else:
-        text += (f" 오늘({today}) 08:00 이후에 난 일은 오늘 생산일 보고서에 들어가고, 그 보고서는 다음 날 06:00에 만들어져요. 어제 보고서에는 들어가지 않아요.")
+        text += (f" 오늘({today}) {day_a} 이후에 난 일은 오늘 생산일 보고서에 들어가고, 그 보고서는 다음 날 06:00에 만들어져요. 어제 보고서에는 들어가지 않아요.")
     ev = [_cite(c) for c in (_chunk("DOC-01", "3"), _chunk("DOC-01", "3.3")) if c]
     return {**base, "status": "답변", "mode": "규칙 (일일 보고서 생산일 기준 — 문서 고정 문구)", "conclusion": text, "evidence": ev,
             "caution": "근거 안내이며 실행 지시가 아닙니다.", "blocks": [{"kind": "text", "text": text}]}

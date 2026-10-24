@@ -110,3 +110,9 @@ def _llm_off(monkeypatch, tmp_path):
     monkeypatch.setenv("PURE_MODEL", "")             # 순수 길 본 답변 모델 (2026-10-19): 시험 기본은 Sonnet 모드(코드 기본은 Haiku, 여기서 빈 줄로 고정 — 기존 시험은 그대로 통과) — 켜는/기본값 시험은 안에서 명시. 개발 PC의 .env가 다른 시험을 바꾸지 않게
     for _k in ("MOM_EXTERNAL_LLM_OK", "ANTHROPIC_API_KEY", "MOM_USAGE_LEDGER"):
         monkeypatch.delenv(_k, raising=False)
+
+
+@pytest.fixture(autouse=True)
+def _no_sim_clock(monkeypatch):
+    """켜져 있는 시연 서버(8765)를 시험이 읽지 않게 한다. 시계가 필요한 시험만 이 함수를 다시 넣는다."""
+    monkeypatch.setattr("backend.services.sim_clock.current", lambda: None)

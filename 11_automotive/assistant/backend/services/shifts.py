@@ -81,3 +81,29 @@ def window(sid: str) -> tuple[datetime, datetime]:
 def name_of(sid: str) -> str:
     d, kind = _parts(sid)
     return f"{d.month}월 {d.day}일 {'주간 (08:00~17:00)' if kind == 'D' else '야간 (20:00~05:00)'}"
+
+
+def kind_at(t: datetime, day_start: int, night_start: int) -> tuple[date, str]:
+    """시연 근무(분). [night_start, 24시) = 그날 야간, [day_start, night_start) = 그날 주간(끝난 뒤 빈 시간도 그 주간),
+    [0, day_start) = 전날 야간(끝난 뒤 아침 빈 시간도 그 야간). 옛 shift_id_of(5시·17시)는 그대로 둔다."""
+    local = t.astimezone(KST) if t.tzinfo else t
+    minute = local.hour * 60 + local.minute
+    if minute >= night_start:
+        return local.date(), "N"
+    if minute >= day_start:
+        return local.date(), "D"
+    return local.date() - timedelta(days=1), "N"
+
+
+def prev_open(day: date, kind: str) -> tuple[date, str]:
+    """바로 앞 근무. 주간의 앞은 전날 야간, 야간의 앞은 그날 주간. 일요일에 시작하는 근무는 건너뛴다."""
+    d, k = day, kind
+    for _ in range(14):
+        if k == "N":
+            k = "D"
+        else:
+            d = d - timedelta(days=1)
+            k = "N"
+        if d.weekday() != 6:
+            return d, k
+    return d, k
