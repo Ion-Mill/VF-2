@@ -58,7 +58,7 @@ class Past:
         self.wr_parts = defaultdict(list)
         for x in r("work_record_part"):
             self.wr_parts[x["record_no"]].append(x)
-        self.pm_rows = r("pm_record")
+        self.pm_rows = r("pm_record")        # (아래 add_docs: 실시간 구간에 끝난 정지의 작업지시서·작업기록서를 지난 기록에 더한다)
         self.pm_last = {}
         for x in sorted(self.pm_rows, key=lambda x: x["done_at"] or ""):
             if x["done_at"]:
@@ -136,6 +136,18 @@ class Past:
         scored.sort(key=lambda x: -x[0])
         return [{"doc_no": d["doc_no"], "doc_name": d["doc_name"], "rev": d["rev"], "section": s["section"], "title": s["title"],
                  "snippet": snippet(s["text"])} for _, d, s in scored[:limit]]
+
+    def add_docs(self, docs: dict[str, list[dict]]):
+        """실시간 구간(최종용: 10/26 오전 대본)에 끝난 정지의 작업지시서·작업기록서를 지난 정비 기록에 더한다 (모두 글자 값).
+        생성기 gen/realtime.py _maint_docs 가 과거 기록과 같은 방식으로 만든 것 — 평가자 모두에게 같은 문서로 보인다 (2026-10-24)."""
+        self.work_orders += docs["maintenance_work_order"]
+        for x in docs["work_order_step"]:
+            self.wo_steps[x["wo_no"]].append(x)
+        self.work_records += docs["work_record"]
+        for x in docs["work_record_check"]:
+            self.wr_checks[x["record_no"]].append(x)
+        for x in docs["work_record_part"]:
+            self.wr_parts[x["record_no"]].append(x)
 
     # ---------- 알림 ----------
     def open_notifications(self, at_iso: str) -> list[dict]:

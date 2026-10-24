@@ -17,6 +17,57 @@ def _read(d: Path, name: str) -> pd.DataFrame:
     return pd.read_csv(d / f"{name}.csv", dtype=str, keep_default_na=False)
 
 
+def foreign_keys(T: dict, masters: dict) -> list[tuple]:
+    """외래 키 목록: (표, 칸, 가리키는 쪽 값 모음). run()과 check_links.py(과거 + 실시간 합친 데이터)가 같이 쓴다."""
+    shifts, po, lots, op, al = T["shift"], T["production_order"], T["production_lot"], T["operation_report"], T["alarm_event"]
+    wo, rv, nt = T["maintenance_work_order"], T["document_revision"], T["notification"]
+    users = {u["user_id"] for u in masters["app_user"]}
+    return [("production_lot", "order_no", set(po.order_no)), ("production_lot", "input_shift_id", set(shifts.shift_id)),
+          ("operation_report", "lot_no", set(lots.lot_no)), ("operation_report", "worker_user_id", users),
+          ("operation_report", "shift_id", set(shifts.shift_id)), ("alarm_event", "lot_no", set(lots.lot_no)),
+          ("tool_usage", "op_report_id", set(op.op_report_id)), ("tool_change", "changed_by", users),
+          ("defect_record", "lot_no", set(lots.lot_no)),
+          ("defect_record", "defect_code", {d["defect_code"] for d in masters["defect_code"]}),
+          ("pm_record", "pm_task_id", {p["pm_task_id"] for p in masters["pm_task"]}),
+          ("pm_record", "done_by", users), ("pm_record", "recorded_by", users),
+          ("work_record", "wo_no", set(wo.wo_no)), ("work_record", "alarm_event_id", set(al.alarm_event_id)),
+          ("work_order_step", "wo_no", set(wo.wo_no)), ("equipment_state_log", "alarm_event_id", set(al.alarm_event_id)),
+          ("equipment_state_log", "pm_record_id", set(T["pm_record"].pm_record_id)),
+          ("equipment_state_log", "reason_code", {d["reason_code"] for d in masters["downtime_reason"]}),
+          ("inspection_plan", "lot_no", set(lots.lot_no)), ("inspection_plan", "hold_id", set(T["lot_hold"].hold_id)),
+          ("lot_hold", "lot_no", set(lots.lot_no)), ("lot_hold", "related_alarm_event_id", set(al.alarm_event_id)),
+          ("lot_hold", "related_tool_id", {t["tool_id"] for t in masters["tool"]}),
+          ("lot_hold", "held_by", users), ("lot_hold", "released_by", users),
+          ("inventory_txn", "item_no", {i["item_no"] for i in masters["inventory_item"]}),
+          ("inventory_txn", "txn_by", users), ("inventory_txn", "pm_record_id", set(T["pm_record"].pm_record_id)),
+          ("inventory_txn", "tool_change_id", set(T["tool_change"].tool_change_id)),
+          ("inventory_txn", "lot_no", set(lots.lot_no)), ("inventory_txn", "fg_lot_no", set(lots.lot_no)),
+          ("inventory_txn", "material_lot_no", set(T["raw_material_lot"].material_lot_no)),
+          ("inventory_txn", "work_record_no", set(T["work_record"].record_no)),
+          ("inventory_txn", "shipment_no", set(T["shipment"].shipment_no)),
+          ("shipment_line", "shipment_no", set(T["shipment"].shipment_no)), ("shipment_line", "lot_no", set(lots.lot_no)),
+          ("bottleneck_log", "alarm_event_id", set(al.alarm_event_id)),
+          ("inspection_result", "lot_no", set(lots.lot_no)), ("inspection_result", "inspector_id", users),
+          ("inspection_result", "cmm_import_id", set(T["cmm_import"].cmm_import_id)),
+          ("cmm_import", "lot_no", set(lots.lot_no)),
+          ("defect_record", "result_id", set(T["inspection_result"].result_id)),
+          ("shift_report", "confirmed_by", users), ("daily_report", "confirmed_by", users),
+          ("document_revision", "author_user_id", users), ("document_revision_change", "revision_id", set(rv.revision_id)),
+          ("notification", "alarm_event_id", set(al.alarm_event_id)), ("notification", "processed_by", users),
+          ("notification", "lot_no", set(lots.lot_no)), ("notification", "tool_id", {t["tool_id"] for t in masters["tool"]}),
+          ("notification", "item_no", {i["item_no"] for i in masters["inventory_item"]}),
+          ("notification", "pm_task_id", {p["pm_task_id"] for p in masters["pm_task"]}), ("notification", "wo_no", set(wo.wo_no)),
+          ("notification", "bottleneck_log_id", set(T["bottleneck_log"].bottleneck_log_id)),
+          ("notification", "revision_id", set(rv.revision_id)),
+          ("notification", "result_id", set(T["inspection_result"].result_id)),
+          ("notification", "shift_id", set(shifts.shift_id)),
+          ("notification", "buffer_code", {b["buffer_code"] for b in masters["wip_buffer"]}),
+          ("notification", "prev_stage_notification_id", set(nt.notification_id)),
+          ("notification_recipient", "notification_id", set(nt.notification_id)),
+          ("notification_recipient", "user_id", users),
+          ("maintenance_work_order", "trigger_notification_id", set(nt.notification_id))]
+
+
 def run(cfg: dict, out_dir: Path, masters: dict) -> dict:
     T = {p.stem: _read(out_dir, p.stem) for p in sorted(out_dir.glob("*.csv")) if p.stem != "sensor_sample"}
     lines = []
@@ -506,51 +557,7 @@ def run(cfg: dict, out_dir: Path, masters: dict) -> dict:
         f"10분 최대 {int(per10.max())}건")
 
     # ---- 외래 키 ----
-    users = {u["user_id"] for u in masters["app_user"]}
-    fk = [("production_lot", "order_no", set(po.order_no)), ("production_lot", "input_shift_id", set(shifts.shift_id)),
-          ("operation_report", "lot_no", set(lots.lot_no)), ("operation_report", "worker_user_id", users),
-          ("operation_report", "shift_id", set(shifts.shift_id)), ("alarm_event", "lot_no", set(lots.lot_no)),
-          ("tool_usage", "op_report_id", set(op.op_report_id)), ("tool_change", "changed_by", users),
-          ("defect_record", "lot_no", set(lots.lot_no)),
-          ("defect_record", "defect_code", {d["defect_code"] for d in masters["defect_code"]}),
-          ("pm_record", "pm_task_id", {p["pm_task_id"] for p in masters["pm_task"]}),
-          ("pm_record", "done_by", users), ("pm_record", "recorded_by", users),
-          ("work_record", "wo_no", set(wo.wo_no)), ("work_record", "alarm_event_id", set(al.alarm_event_id)),
-          ("work_order_step", "wo_no", set(wo.wo_no)), ("equipment_state_log", "alarm_event_id", set(al.alarm_event_id)),
-          ("equipment_state_log", "pm_record_id", set(T["pm_record"].pm_record_id)),
-          ("equipment_state_log", "reason_code", {d["reason_code"] for d in masters["downtime_reason"]}),
-          ("inspection_plan", "lot_no", set(lots.lot_no)), ("inspection_plan", "hold_id", set(T["lot_hold"].hold_id)),
-          ("lot_hold", "lot_no", set(lots.lot_no)), ("lot_hold", "related_alarm_event_id", set(al.alarm_event_id)),
-          ("lot_hold", "related_tool_id", {t["tool_id"] for t in masters["tool"]}),
-          ("lot_hold", "held_by", users), ("lot_hold", "released_by", users),
-          ("inventory_txn", "item_no", {i["item_no"] for i in masters["inventory_item"]}),
-          ("inventory_txn", "txn_by", users), ("inventory_txn", "pm_record_id", set(T["pm_record"].pm_record_id)),
-          ("inventory_txn", "tool_change_id", set(T["tool_change"].tool_change_id)),
-          ("inventory_txn", "lot_no", set(lots.lot_no)), ("inventory_txn", "fg_lot_no", set(lots.lot_no)),
-          ("inventory_txn", "material_lot_no", set(T["raw_material_lot"].material_lot_no)),
-          ("inventory_txn", "work_record_no", set(T["work_record"].record_no)),
-          ("inventory_txn", "shipment_no", set(T["shipment"].shipment_no)),
-          ("shipment_line", "shipment_no", set(T["shipment"].shipment_no)), ("shipment_line", "lot_no", set(lots.lot_no)),
-          ("bottleneck_log", "alarm_event_id", set(al.alarm_event_id)),
-          ("inspection_result", "lot_no", set(lots.lot_no)), ("inspection_result", "inspector_id", users),
-          ("inspection_result", "cmm_import_id", set(T["cmm_import"].cmm_import_id)),
-          ("cmm_import", "lot_no", set(lots.lot_no)),
-          ("defect_record", "result_id", set(T["inspection_result"].result_id)),
-          ("shift_report", "confirmed_by", users), ("daily_report", "confirmed_by", users),
-          ("document_revision", "author_user_id", users), ("document_revision_change", "revision_id", set(rv.revision_id)),
-          ("notification", "alarm_event_id", set(al.alarm_event_id)), ("notification", "processed_by", users),
-          ("notification", "lot_no", set(lots.lot_no)), ("notification", "tool_id", {t["tool_id"] for t in masters["tool"]}),
-          ("notification", "item_no", {i["item_no"] for i in masters["inventory_item"]}),
-          ("notification", "pm_task_id", {p["pm_task_id"] for p in masters["pm_task"]}), ("notification", "wo_no", set(wo.wo_no)),
-          ("notification", "bottleneck_log_id", set(T["bottleneck_log"].bottleneck_log_id)),
-          ("notification", "revision_id", set(rv.revision_id)),
-          ("notification", "result_id", set(T["inspection_result"].result_id)),
-          ("notification", "shift_id", set(shifts.shift_id)),
-          ("notification", "buffer_code", {b["buffer_code"] for b in masters["wip_buffer"]}),
-          ("notification", "prev_stage_notification_id", set(nt.notification_id)),
-          ("notification_recipient", "notification_id", set(nt.notification_id)),
-          ("notification_recipient", "user_id", users),
-          ("maintenance_work_order", "trigger_notification_id", set(nt.notification_id))]
+    fk = foreign_keys(T, masters)
     badfk = []
     for tab, col, valid in fk:
         v = T[tab][col]

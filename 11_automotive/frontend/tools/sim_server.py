@@ -31,7 +31,7 @@ sys.path.insert(0, str(HERE))
 if hasattr(sys.stdout, "buffer"):
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", line_buffering=True)
 
-from gen.common import KST, fmt_dt, load_config, load_masters  # noqa: E402
+from gen.common import KST, _cell, fmt_dt, load_config, load_masters  # noqa: E402
 from gen.realtime import Realtime  # noqa: E402
 from server_assistant import answer  # noqa: E402
 from server_live import Live, iso  # noqa: E402
@@ -76,6 +76,8 @@ class State:
             print(f"실제 시각 모드: 오전 대본으로 {self.cfg['profile']['live_start'][11:16]} 상태를 만들고 지금({self.wall_now():%m/%d %H:%M})까지 따라잡는 중 …")
             self.rt.start_live(self.wall_now(), st["ops"])
             self.rt.on_op = self._wall_save_op
+            # 오전 대본에 끝난 정지(충돌)의 작업지시서·작업기록서를 지난 정비 기록에 — 평가자 모두에게 같은 문서
+            self.P.add_docs({k: [{c: _cell(v) for c, v in row.items()} for row in rows] for k, rows in self.rt._maint_docs().items()})
         self.live = Live(self.rt, self.P)
         self.seq = 0
         self.buf: list[dict] = []
@@ -240,8 +242,8 @@ def _route(method, p, q, body, rt, live, P):
         return {"ok": True, "run_id": S.run_id, "clock": {**rt.clock(), **({"wall_now": fmt_dt(S.wall_now())} if S.wall else {})},
                 "llm_compose": COMPOSER.stats(), "profile": profile_info()}
     if S.wall and method == "POST" and key.startswith("sim/"):
-        # 실제 시각으로 흐르는 최종용: 시계·사건 버튼은 없다. 사건 복귀·처음으로만, 발표자 키(MOM_PRESENTER_KEY)가 있을 때
-        if key not in ("sim/recover", "sim/reset"):
+        # 실제 시각으로 흐르는 최종용: 시계·사건 버튼·사건 복귀는 없다. 처음으로(발표자 전용)만, 발표자 키(MOM_PRESENTER_KEY)가 있을 때
+        if key != "sim/reset":
             raise ApiError(403, "FORBIDDEN", "실제 시각으로 흐르는 모드에서는 시계·사건 조작을 쓸 수 없어요")
         want, got = os.environ.get("MOM_PRESENTER_KEY", ""), getattr(REQ, "key", "") or ""
         if not want or not hmac.compare_digest(want.encode("utf-8"), got.encode("utf-8")):
@@ -354,8 +356,14 @@ def _route(method, p, q, body, rt, live, P):
     if key == "maint/pm-schedule":
         return live.pm()
     if key == "maint/history":
-        morning = [live.alarm_json(e) for e in rt.sim.alarm_events if e["id"] > rt.past["alarm_event"]
-                   and iso(live.to_dt(e["occurred_m"]))[:16] < S.cfg["profile"]["live_start"][:16]] if S.wall else []     # 최종용: 오전 대본의 알람은 지난 기록
+        # 최종용: 오전 대본의 알람은 지난 기록. 생성기 CSV(alarm_event.csv) 줄과 같은 칸 이름·글자 값으로 — 화면이 작업지시서의 알람 번호(글자)와 맞춘다
+        morning = [{"alarm_event_id": str(e["id"]), "equipment_id": e["equipment_id"], "alarm_code": e["alarm_code"],
+                    "severity_at_event": e["severity"], "occurred_at": iso(live.to_dt(e["occurred_m"])),
+                    "cleared_at": iso(live.to_dt(e["cleared_m"])) if e["cleared_m"] is not None else "",
+                    "lot_no": e.get("lot_no") or "", "prev_alarm_event_id": str(e["prev"]) if e.get("prev") else "",
+                    "is_injected": "true" if e.get("scenario") else "false", "scenario_code": e.get("scenario") or ""}
+                   for e in rt.sim.alarm_events if e["id"] > rt.past["alarm_event"]
+                   and iso(live.to_dt(e["occurred_m"]))[:16] < S.cfg["profile"]["live_start"][:16]] if S.wall else []
         return {"work_orders": P.work_orders, "steps": P.wo_steps, "work_records": P.work_records, "checks": P.wr_checks,
                 "parts": P.wr_parts, "alarms": P.alarms + morning}
     # 보고서 (API-RPT-01~05)

@@ -174,3 +174,35 @@ def test_wall_clock_catch_up_lock_and_replay():
     key = lambda r: [(e["type"], e.get("at")) for e in r.events if e["type"] in ("alarm", "state_changed", "tool_change")]
     assert a.clock() == b.clock() and key(a) == key(b)
     assert [t.cum for mc in a.sim.mach.values() for t in mc.tools.values()] == [t.cum for mc in b.sim.mach.values() for t in mc.tools.values()]
+
+
+def test_final_morning_crash_has_documents():
+    """최종용 10/26 오전 충돌: 작업지시서(승인 → 완료)·작업기록서(확정)·문서 버전·사용 부품이 과거 기록 뒤 번호로 생긴다 (2026-10-24)."""
+    from gen.realtime import Realtime, load_script
+    cfg = load_config(profile="final")
+    rt = Realtime(cfg, load_masters(cfg))
+    rt.play(load_script(cfg["realtime"]["rehearsal_script"]))
+    d = rt._maint_docs()
+    wo, wr = d["maintenance_work_order"], d["work_record"]
+    assert [w["wo_no"] for w in wo] == [f"MW-10{rt.past['maintenance_work_order'] + 1:02d}"]
+    assert wo[0]["status"] == "DONE" and wo[0]["approved_by"] == "U10" and wo[0]["approved_at"] > wo[0]["created_at"]
+    assert [r["wo_no"] for r in wr] == [wo[0]["wo_no"]] and wr[0]["confirmed_at"] == wr[0]["end_at"]       # 확정 = 복귀 시각
+    assert len(d["work_record_check"]) == 9 + len(d["work_order_step"]) and d["work_record_part"][0]["item_no"] == "TL-EM10"
+    keys = {(r["doc_type"], r["doc_key"]): 0 for r in d["document_revision"]}
+    for r in d["document_revision"]:
+        keys[(r["doc_type"], r["doc_key"])] += 1
+    assert keys[("WORK_ORDER", wo[0]["wo_no"])] == wo[0]["current_version"] + 1       # v0~current 빠짐없이 (DB 점검 R-35)
+    assert keys[("WORK_RECORD", wr[0]["record_no"])] == wr[0]["current_version"] + 1
+    inv = rt._inventory(None)                                   # 시연 서버의 재고 화면이 이 인자로 부른다 (2026-10-24 500 오류 재발 방지)
+    assert [x["work_record_no"] for x in inv if x["source_kind"] == "WORK_RECORD"] == [wr[0]["record_no"]]
+
+
+def test_links_between_documents_and_data(monkeypatch):
+    """check_links.py: 과거 + 실시간을 DB에 넣는 모양으로 합쳐 번호·외래 키·문서 연결을 본다 (결과 폴더가 있는 프로필만)."""
+    import check_links
+    for profile in ("final", "video"):
+        cfg = load_config(profile=profile)
+        if not ((ROOT / cfg["run"]["out_dir"] / "manifest.json").exists() and (ROOT / cfg["realtime"]["out_dir"] / "manifest.json").exists()):
+            continue                                          # out_video 는 깃에 없다
+        monkeypatch.setenv("MOM_PROFILE", profile)
+        assert check_links.main() == 0, profile

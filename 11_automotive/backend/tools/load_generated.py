@@ -226,6 +226,8 @@ def main():
     ap.add_argument("--realtime", action="store_true", help="10/1 리허설 기록(out_realtime)도 넣음")
     ap.add_argument("--sensor", action="store_true", help="센서 CSV도 같이 넣음 (기본은 뺌 — --sensor-only로 따로)")
     ap.add_argument("--sensor-only", action="store_true", help="센서 CSV만 넣음 (9월, --realtime이면 10/1도)")
+    ap.add_argument("--out-dir", default="out", help="과거 기록 폴더 이름 (기본 out). 프로필 도입 뒤: out_final | out_video (2026-10-24)")
+    ap.add_argument("--rt-dir", default="out_realtime", help="실시간 기록 폴더 이름 (기본 out_realtime). 프로필 도입 뒤: out_realtime_final | out_realtime_video")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--keep-going", action="store_true", help="진단용: 테이블마다 따로 넣고 실패를 모두 보고")
     a = ap.parse_args()
@@ -233,8 +235,8 @@ def main():
     BASE_DIR = os.path.abspath(a.gen_dir)
 
     masters_dir = os.path.join(a.gen_dir, "masters")
-    out_dir = os.path.join(a.gen_dir, "out")
-    rt_dir = os.path.join(a.gen_dir, "out_realtime")
+    out_dir = os.path.join(a.gen_dir, a.out_dir)
+    rt_dir = os.path.join(a.gen_dir, a.rt_dir)
     manifest, rows = read_manifest(out_dir)
     rt_manifest, rt_rows = read_manifest(rt_dir) if a.realtime else ({}, {})
 
