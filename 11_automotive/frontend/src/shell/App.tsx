@@ -318,6 +318,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
   const [side, setSide] = useState<EveTab | null>(null);
   const [bandOff, setBandOff] = useState<string[]>([]); // 알림 띠에서 닫은 주의 알람 (사용자 요청 2026-10-22, 긴급은 못 닫음)
   const [eveI, setEveI] = useState(0); // 홈 이브 알림 띠에서 보고 있는 알람 번호
+  useEffect(() => { setBandOff([]); setEveI(0); }, [runId]); // 시연을 처음으로 되돌리면(새 회차) 닫아 둔 주의 알람을 잊는다 — 알람 번호가 회차마다 같아서 안 지우면 새 알람이 띠에 안 뜬다 (2026-10-23)
   const [zone, setZone] = useState<string | null>(null);
   const curGroup = GROUPS.find((g) => g.subs.some(([, s2]) => s2 === screen) || g.related?.includes(screen));
   const sideRow = !!curGroup?.row; // 가로 메뉴바(row) 묶음: 본문 맨 위 가로 바에 하위 탭을 보인다

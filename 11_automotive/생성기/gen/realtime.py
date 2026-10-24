@@ -233,11 +233,9 @@ class Realtime:
         eq = sc["equipment_id"]
         mc = sim.mach[eq]
         ev = {"code": code, "equipment_id": eq, "start_m": m, "alarm_ids": []}
-        if code == "S1":                                        # 축 부하 급상승 → 108 → 994 → 992 → DOWN
+        if code == "S1":                                        # 축 부하 급상승 → 992 한 건(정지 등급) → DOWN
             ramp = sc["ramp_min"]
-            g1, g2 = (int(self.rr.integers(sc["gap_min"][0], sc["gap_min"][1] + 1)) for _ in range(2))
-            self._plan_alarm(PlannedAlarm(m + ramp, eq, sc["alarms"][0], "WARN", True,
-                                          chain=[(sc["alarms"][1], g1), (sc["alarms"][2], g2)], case="crash"))
+            self._plan_alarm(PlannedAlarm(m + ramp, eq, sc["alarms"][0], "STOP", True, case="crash"))
             sim.wait_confirm.add(eq)
             for k, peak in sc["axis_peak_pct"].items():
                 v0 = self.sensors[eq].last.get(k, 22.0)
@@ -447,7 +445,7 @@ class Realtime:
         self.sim.pending_holds.append({
             "at": self.m, "lot": lot, "alarm_id": alarm_id, "tool_id": None, "trigger": trigger, "held_by": by,
             "next": next_lots if next_lots is not None else 2,
-            "reason": reason or ("충돌 의심(108 → 994 → 992) 때 가공 중이던 로트 — 비서 의심 로트 제안" if crash
+            "reason": reason or ("충돌 의심(992) 때 가공 중이던 로트 — 비서 의심 로트 제안" if crash
                                  else "반장 보류")})
         self._op("hold_lot", lot_no=lot_no, by=by, trigger=trigger)
 

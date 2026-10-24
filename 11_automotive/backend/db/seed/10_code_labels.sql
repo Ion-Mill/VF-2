@@ -199,7 +199,7 @@ INSERT INTO code_label (code_group, code, name_ko, sort_order, source_ref) VALUE
   ('role.role_code', 'MNT', '보전 담당자', 2, '6.37'),
   ('role.role_code', 'SUP', '라인 반장', 3, '6.37'),
   ('role.role_code', 'MGR', '공장 관리자', 4, '6.37'),
-  ('alarm_event.scenario_code', 'S1', '충돌 의심 (메인, 고장) — VF2-01 108 → 994 → 992, 의심 로트(예시 LOT-2609-041-1) 보류', 1, '6.40'),
+  ('alarm_event.scenario_code', 'S1', '충돌 의심 (메인, 고장) — VF2-01 992 충돌, 의심 로트(예시 LOT-2609-041-1) 보류', 1, '6.40'),
   ('alarm_event.scenario_code', 'S2', '축 윤활 부족 — 2075 반복 (과거 기록, 사건 버튼 없음)', 2, '6.40'),
   ('alarm_event.scenario_code', 'S3', '공구 수명 — T05 사용률 90% 교체 알림 → (교체 안 하면) 362', 3, '6.40'),
   ('alarm_event.scenario_code', 'S4', '공기 압력 저하 — 120', 4, '6.40'),
