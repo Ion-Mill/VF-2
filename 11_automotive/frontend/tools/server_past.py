@@ -31,7 +31,8 @@ def num(v):
 class Past:
     def __init__(self, root: Path):
         """root = 11_automotive 폴더."""
-        out, ms = root / "생성기" / "out", root / "생성기" / "masters"
+        from gen.common import load_config      # 프로필(MOM_PROFILE)이 정한 기록 폴더 (out_video / out_final)
+        out, ms = root / "생성기" / load_config()["run"]["out_dir"], root / "생성기" / "masters"
         self.root = root
         r = lambda n: read(out / f"{n}.csv")
         self.shift_reports = r("shift_report")
@@ -57,7 +58,7 @@ class Past:
         self.wr_parts = defaultdict(list)
         for x in r("work_record_part"):
             self.wr_parts[x["record_no"]].append(x)
-        self.pm_rows = r("pm_record")
+        self.pm_rows = r("pm_record")        # (아래 add_docs: 실시간 구간에 끝난 정지의 작업지시서·작업기록서를 지난 기록에 더한다)
         self.pm_last = {}
         for x in sorted(self.pm_rows, key=lambda x: x["done_at"] or ""):
             if x["done_at"]:
@@ -136,9 +137,21 @@ class Past:
         return [{"doc_no": d["doc_no"], "doc_name": d["doc_name"], "rev": d["rev"], "section": s["section"], "title": s["title"],
                  "snippet": snippet(s["text"])} for _, d, s in scored[:limit]]
 
+    def add_docs(self, docs: dict[str, list[dict]]):
+        """실시간 구간(최종용: 10/26 오전 대본)에 끝난 정지의 작업지시서·작업기록서를 지난 정비 기록에 더한다 (모두 글자 값).
+        생성기 gen/realtime.py _maint_docs 가 과거 기록과 같은 방식으로 만든 것 — 평가자 모두에게 같은 문서로 보인다 (2026-10-24)."""
+        self.work_orders += docs["maintenance_work_order"]
+        for x in docs["work_order_step"]:
+            self.wo_steps[x["wo_no"]].append(x)
+        self.work_records += docs["work_record"]
+        for x in docs["work_record_check"]:
+            self.wr_checks[x["record_no"]].append(x)
+        for x in docs["work_record_part"]:
+            self.wr_parts[x["record_no"]].append(x)
+
     # ---------- 알림 ----------
     def open_notifications(self, at_iso: str) -> list[dict]:
-        """그 시각까지 처리 안 된 과거 알림 (10/1 08:00 브리핑·알림 탭의 처음 상태)."""
+        """그 시각까지 처리 안 된 과거 알림 (실시간 시작 시각 브리핑·알림 탭의 처음 상태)."""
         out = []
         for n in self.notifications:
             if n["raised_at"] <= at_iso and (n["is_processed"] != "true" or (n["processed_at"] or "") > at_iso):

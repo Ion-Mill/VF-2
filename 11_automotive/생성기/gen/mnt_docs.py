@@ -37,8 +37,13 @@ GROUP = {"992": "crash", "994": "servo", "991": "servo", "993": "servo", "103": 
          "966": "spindle", "2073": "lube", "552": "breaker"}
 
 
-def build_mnt(cfg, sim, masters, doc03, rng, pm_recs) -> dict[str, list[dict]]:
-    r = rng.stream("mnt")
+def build_mnt(cfg, sim, masters, doc03, rng, pm_recs, live_from_alarm: int | None = None, wo_offset: int = 0,
+              simple_offset: int = 0, now_dt=None) -> dict[str, list[dict]]:
+    """live_from_alarm 가 있으면 실시간 구간용 (2026-10-24): 그 번호보다 큰 알람 중 **끝난 것**(복귀·확정까지 간 것)만 문서로 만들고,
+    번호는 과거 기록 뒤(wo_offset·simple_offset)부터 이어 붙인다. 작업기록 확정 시각 = 알람이 풀린 시각(사람이 [확정]한 때),
+    반장 확인이 지금(now_dt)보다 뒤면 아직 확정 상태(CONFIRMED)로 둔다."""
+    live = live_from_alarm is not None
+    r = rng.stream("mnt-live" if live else "mnt")
     cal = sim.cal
     am = {x["alarm_code"]: x for x in masters["alarm_master"]}
     gm = {}
@@ -54,11 +59,13 @@ def build_mnt(cfg, sim, masters, doc03, rng, pm_recs) -> dict[str, list[dict]]:
         eq, code, sev = e["equipment_id"], e["alarm_code"], e["severity"]
         if e["id"] in prev_ids:
             continue                                  # 충돌 연쇄의 앞 알람 (108·994)
+        if live and (e["id"] <= live_from_alarm or e["cleared_m"] is None):
+            continue                                  # 실시간: 과거 알람과 아직 안 끝난 알람은 문서가 아직 없다
         if proc_of[eq] == "OP-30" and sev == "STOP":
             full_items.append((e["occurred_m"], "STOP", e))
     c2 = [e for e in sim.alarm_events if e.get("case") == "case2_stage2"]
     cc = [w for w in sim.maint_done if w["window"].kind == "CAUSE_CHECK"]
-    if len(c2) >= 4 and cc:
+    if not live and len(c2) >= 4 and cc:
         full_items.append((c2[3]["occurred_m"], "REPEAT", (c2[3], cc[0])))
     full_items.sort(key=lambda x: x[0])
 
@@ -66,8 +73,9 @@ def build_mnt(cfg, sim, masters, doc03, rng, pm_recs) -> dict[str, list[dict]]:
         sh = cal.shift_or_near(m)
         return sh, MNT_BY_SHIFT[sh.shift_type][int(r.integers(0, len(MNT_BY_SHIFT[sh.shift_type])))]
 
-    for n, (m0, kind, data) in enumerate(full_items, 1):
-        wo_no, rec_no = f"MW-09{n:02d}", f"MR-09{n:02d}"
+    mm = f"{cal.days[0]:%m}"                          # 번호의 월 두 자리 (MW-1001: 10월 1번째)
+    for n, (m0, kind, data) in enumerate(full_items, 1 + wo_offset):
+        wo_no, rec_no = f"MW-{mm}{n:02d}", f"MR-{mm}{n:02d}"
         if kind == "STOP":
             e = data
             sec = gm[e["alarm_code"]][0]
@@ -100,6 +108,8 @@ def build_mnt(cfg, sim, masters, doc03, rng, pm_recs) -> dict[str, list[dict]]:
         end_dt = cal.to_dt(end_m)
         confirmed = end_dt + timedelta(minutes=int(r.integers(5, 21)))
         checked = confirmed + timedelta(minutes=int(r.integers(30, 121)))
+        if live:
+            confirmed = end_dt                       # 사람이 [확정]을 누른 때 = 설비가 복귀한 때 (반장 확인 시각은 위에서 뽑은 값 그대로)
         wo.append({"wo_no": wo_no, "trigger_kind": trig, "alarm_event_id": alarm_id, "pm_record_id": None,
                    "trigger_notification_id": None, "equipment_id": data[0]["equipment_id"] if kind == "REPEAT"
                    else data["equipment_id"], "lot_no": lot, "created_at": created, "title": title,
@@ -119,6 +129,8 @@ def build_mnt(cfg, sim, masters, doc03, rng, pm_recs) -> dict[str, list[dict]]:
                    "repair_min": end_m - start_m, "safety_block_required": True, "status": "CHECKED",
                    "confirmed_by": mnt, "confirmed_at": confirmed, "checked_by": sh.supervisor,
                    "checked_at": checked, "current_version": 0})
+        if live and now_dt is not None and checked > now_dt:      # 반장 확인은 아직 안 한 때 — 작업기록서는 확정까지만
+            wr[-1].update({"status": "CONFIRMED", "checked_by": None, "checked_at": None})
         # 체크: 잠금·표지 작업 전 6단계 → 작업 순서 → 작업 후 3단계
         times = sorted(int(x) for x in r.integers(start_m, max(start_m + 1, end_m), len(stp) + 9))
         seq = 0
@@ -139,16 +151,18 @@ def build_mnt(cfg, sim, masters, doc03, rng, pm_recs) -> dict[str, list[dict]]:
                         "checked_at": cal.to_dt(times[6 + len(stp) + j])})
 
     # 간이 작업기록
-    k = 0
+    k = simple_offset
     for e in sim.alarm_events:
         eq, code, sev = e["equipment_id"], e["alarm_code"], e["severity"]
         proc = proc_of[eq]
         if sev == "GUIDE" or e["id"] in prev_ids:
             continue
+        if live and (e["id"] <= live_from_alarm or e["cleared_m"] is None):
+            continue
         if proc == "OP-30" and sev == "STOP":
             continue
         k += 1
-        rec_no = f"MR-S-09{k:02d}"
+        rec_no = f"MR-S-{mm}{k:02d}"
         sec = gm[code][0]
         d3 = doc03.get(sec, {})
         if proc == "OP-30":

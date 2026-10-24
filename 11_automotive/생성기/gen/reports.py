@@ -156,7 +156,8 @@ def build_reports(cfg, sim, masters, rng, ctx):
     daily = []
     by_id = {x["shift_id"]: x for x in shifts}
     end_day = cal.workdays[-1]
-    mgr_window = (8 * 60 + 30, 10 * 60)
+    ds_min = int(cfg["shifts"]["DAY"]["start"][:2]) * 60 + int(cfg["shifts"]["DAY"]["start"][3:5])
+    mgr_window = (ds_min + 30, ds_min + 120)          # 일일 보고서 확정 시간대: 주간 시작 30분~2시간 뒤
     for d in cal.workdays:
         day = by_id[f"{d.isoformat()}-D"]
         night = by_id[f"{d.isoformat()}-N"]
