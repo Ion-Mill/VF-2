@@ -619,7 +619,7 @@ def _route(method, p, q, body, rt, live, P):
         return {"ok": True}
     if key == "assist/work-order-text" and method == "POST":      # 화면이 만든 작업지시서의 제목·증상을 비서가 다듬어 뒀는지 묻는다 (기다리지 않는다)
         return work_order_text(body)
-    if key == "assist/guide-card-text" and method == "POST":      # 알람 지침카드 '먼저 할 일'을 비서가 쉽게 풀어 써 뒀는지 묻는다 (원문은 그대로, 풀어 쓴 것은 카드 아래에 따로)
+    if key == "assist/guide-card-text" and method == "POST":      # 알람 지침카드 '먼저 할 일'·'보전 담당자 단계'를 비서가 쉽게 풀어 써 뒀는지 묻는다 (part로 나눔)
         return guide_card_text(body)
     if key == "assist/briefing-text" and method == "POST":         # 브리핑 '먼저 챙길 일'을 순위 묶음별로 비서가 다듬어 뒀는지 묻는다 (기다리지 않는다, 준비된 묶음부터 받아 간다)
         return briefing_text(body)
@@ -708,13 +708,13 @@ def work_order_text(body):
 
 
 def guide_card_text(body):
-    """알람 지침카드의 '먼저 할 일'(DOC-03 ★ 줄)을 비서가 쉽게 풀어 쓴 줄. 준비 전·꺼짐·실패면 {"ready": False}.
-    원문 줄은 화면이 그대로 보이고, 이 줄은 카드 아래에 '참고용'으로 따로 붙는다. 알람 코드가 같으면 줄도 같아서 코드별로 한 번만 만든다."""
-    code, steps = str(body.get("code") or ""), body.get("steps")
-    if not re.fullmatch(r"[A-Za-z0-9._-]{1,12}", code) or not isinstance(steps, list) or not 1 <= len(steps) <= 12 \
+    """알람 지침카드의 점검 줄을 비서가 쉽게 풀어 쓴 줄. 준비 전·꺼짐·실패면 {"ready": False}.
+    part=steps(기본)는 '먼저 할 일', part=maint는 '보전 담당자 단계'. 알람 코드가 같아도 칸마다 따로 한 번만 만든다."""
+    code, steps, part = str(body.get("code") or ""), body.get("steps"), body.get("part") or "steps"
+    if part not in ("steps", "maint") or not re.fullmatch(r"[A-Za-z0-9._-]{1,12}", code) or not isinstance(steps, list) or not 1 <= len(steps) <= 12 \
             or any(not isinstance(s, str) or not s.strip() or len(s) > 600 for s in steps):
         raise ApiError(400, "VALIDATION", "알람 코드와 점검 순서 줄(1~12개)이 필요해요")
-    out = COMPOSER.polished("guide_card", code, [s.strip() for s in steps])
+    out = COMPOSER.polished("guide_card", f"{code}:{part}", [s.strip() for s in steps])
     return {"ready": True, "lines": out} if out else {"ready": False}
 
 
