@@ -260,6 +260,9 @@ class Realtime:
             sim.maint.append(w)
             sim.maint.sort(key=lambda x: x.start_m)
             ev["window"] = w
+        elif code == "S7":                                      # 알람 없이 작업자가 멈춤 (사유 없음) → 화면의 '기록 없는 정지' → 사후 기록
+            mc.holds.appendleft(Hold("IDLE", None, end=m + sc["idle_min"], wall=True))
+            ev["end_plan_m"] = m + sc["idle_min"]
         self.active = ev
         self.event_log.append(ev)
         self._op("inject", scenario_code=code, equipment_id=eq)
@@ -345,6 +348,9 @@ class Realtime:
             if done and done[0]["end_m"] <= m:
                 self._pm_records(done[0])
                 self._end_event("정비 끝 → 자동 복귀")
+        elif ev["code"] == "S7":
+            if m >= ev["end_plan_m"]:
+                self._end_event("작업자가 다시 돌림")
 
     def _pm_records(self, rec: dict):
         """S6 정비 실시 기록 (DRAFT — MNT가 화면에서 확인)과 소모품 사용 (설계서 7장 S6, DOC-04 4.1·4.4)."""

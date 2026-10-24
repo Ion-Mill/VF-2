@@ -11,7 +11,7 @@ import { askGuideCard } from './assistText';
 import { ALARMS, ROLE_NAME, SHIFT_NAME, USERS, applyAssignments, homeScreen, levelOfSev, type AlarmRec, type AlertRec, type Notice, type UserRec } from './model';
 import { derive, fromEvents, fromPast, groupPmPast, repeatOf, type RuleCtx } from './rules';
 import { LOCK } from './Safety';
-import { nextNo, pad, rev, type SimpleRecord, type WorkOrder, type WorkRecord } from './workflow';
+import { nextNo, pad, rev, type Downtime, type SimpleRecord, type WorkOrder, type WorkRecord } from './workflow';
 import { Eve, Robot, type EveTab } from './Eve';
 import Briefing from './Briefing';
 import CardScreen, { CardList } from './CardScreen';
@@ -168,6 +168,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
   const cmmF = useFetch<RuleCtx['cmm']>(connected ? 'inspection/cmm-imports' : null, 15000);
   const qualF = useFetch<RuleCtx['quality']>(connected ? 'quality/summary' : null, 30000);
   const setF = useFetch<{ rules: AppCtx['rules'] }>(connected ? 'settings' : null, 15000);
+  const downF = useFetch<{ downtimes: Downtime[] }>(connected ? 'downtimes' : null, 15000); // 기록 없는 정지 찾기 (FR-MNT-05-23)
   const rules = setF.data?.rules ?? { repeat_days: 7, repeat_count: 3, target_risk_pct: 90, repeat2_days: 7, burst: '1분 안 3번 이상', flood: '10분 10건 / 5건' };
 
   // ---------- 알람 기록 = 시뮬레이터 알람 이벤트 ----------
@@ -188,6 +189,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
     twin, inv: invF.data, pm: pmF.data as RuleCtx['pm'], wos, wrs, shiftReports: shiftF.data?.reports as RuleCtx['shiftReports'] ?? null,
     dailyReports: dailyF.data?.reports as RuleCtx['dailyReports'] ?? null, cmm: cmmF.data, quality: qualF.data, alerts,
     pastAlarms: (hist.data?.alarms ?? []).map((a) => ({ equipment_id: a.equipment_id, alarm_code: a.alarm_code, occurred_at: a.occurred_at })), notices, rules,
+    downtimes: downF.data?.downtimes ?? null, srs,
   });
   const addNotices = useCallback((ns: Notice[]) => {
     if (!ns.length) return;
@@ -287,7 +289,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
       if (resolve.length) setNotices((l) => (l.some((x) => resolve.includes(x.id) && !x.handled) ? l.map((x) => (resolve.includes(x.id) && !x.handled ? { ...x, handled: true, handledBy: '조건 풀림 (자동)', handledAt: simIso() } : x)) : l));
     }, 300);
     return () => clearTimeout(t);
-  }, [twin?.clock.sim_at, invF.data, pmF.data, shiftF.data, dailyF.data, cmmF.data, qualF.data, wos, wrs]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [twin?.clock.sim_at, invF.data, pmF.data, shiftF.data, dailyF.data, cmmF.data, qualF.data, downF.data, wos, wrs, srs]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ---------- 3D ----------
   const [replayFrame, setReplay] = useState<unknown | null>(null);
@@ -374,6 +376,19 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
     }
     if (nav) go('sr', no);
   }
+  // 사후 기록 (FR-MNT-05-16·17): 정지 구간 키(설비|시작|끝)로 열면 시각이 채워지고, 키 없이 열면(문서함) 설비·시각을 직접 고른다
+  function openAfter(stopKey?: string) {
+    let no = stopKey ? srs.find((r) => r.kind === 'after' && r.stopKey === stopKey)?.no : undefined;
+    if (!no) {
+      const [eq, start, end] = stopKey ? stopKey.split('|') : [];
+      const now = simIso(), m = (eq && ID_OF[eq as keyof typeof ID_OF]) || snapSel || 'vf1';
+      no = nextNo('MR-S', srs);
+      const r: SimpleRecord = { no, alertId: '', machine: m, kind: 'after', code: '', state: 'open', action: '', parts: [], lock: LOCK.map(() => false), memo: '', revisions: [],
+        stopKey, start: start || simIso(SIM.now() - 30 * 60000), end: end || now };
+      setSrs((l) => [...l, r]);
+    }
+    go('sr', no);
+  }
   const restoreMachine = async (m: MachineId) => {
     const eq = MACHINES[m].eq; if (!eq) return;
     try { await api('maint/work-records/confirm', { equipment_id: eq, by: user.id }); toast(`${eq} 복귀 — 작업기록서 확정 (시뮬레이터)`); }
@@ -388,7 +403,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
     addNotice: (n) => addNotices([n]),
     handleNotice: (id, plan) => setNotices((l) => l.map((x) => (x.id === id ? { ...x, handled: true, handledBy: user.name, handledAt: simIso(), plan } : x))),
     markAlert: (ids, by) => setHandledA((h) => ({ ...h, ...Object.fromEntries(ids.map((i) => [i, { by, ts: Date.now() }])) })),
-    screen, key, go, back, openCard, openWo, openRecord, openSimple: (id, kind) => openSimple(id, kind ?? 'alarm'),
+    screen, key, go, back, openCard, openWo, openRecord, openSimple: (id, kind) => openSimple(id, kind ?? 'alarm'), openAfter,
     openSource: (doc, sec) => setSource([doc, sec]), openReplay: (at) => go('replay', at),
     selectMachine: (m) => { if (m) api3d()?.select(m); else api3d()?.setView('front'); setSnapSel(m); }, selected: snapSel,
     toast, settings, setSettings,
@@ -426,7 +441,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
   };
   const openNotice = (n: Notice) => {
     const o = n.open; if (!o) return;
-    if (o.screen === 'wo' && o.key) openWo(o.key); else go(o.screen as Screen, o.key ?? null);
+    if (o.screen === 'wo' && o.key) openWo(o.key); else if (o.screen === 'after') openAfter(o.key); else go(o.screen as Screen, o.key ?? null);
   };
 
   // 글자 크기 3단계 (2.4 식: H = D × 0.0058, 픽셀 = H ÷ 한 픽셀 크기) — 화면 설정에서 모니터 크기·거리로 계산해 켠다

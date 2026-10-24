@@ -10,6 +10,7 @@ const EVENTS: [string, string, string][] = [
   ['S3', 'S3 공구', 'VF2-01 T05가 빨리 닳음 → 90% 교체 알림'],
   ['S4', 'S4 공기압', 'VF2-01 공기 압력이 서서히 떨어짐 → 120 (자동 복귀)'],
   ['S6', 'S6 정비', 'VF2-02 예방 정비 90분 → OP-30 1대 가동 → 재공 증가·병목'],
+  ['S7', 'S7 사후 기록', 'VF2-01 알람 없이 작업자가 25분 멈춤 → 기록 없는 정지 알림 → 사후 기록 (2026-10-24)'],
 ];
 const b = 'h-11 rounded-ctl border border-line px-3 text-small font-semibold hover:bg-tile disabled:text-ink-3';
 

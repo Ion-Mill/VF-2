@@ -74,7 +74,7 @@ export function ShiftReportScreen() {
   // 정비 줄: 오늘 화면에서 만든 작업지시서 · 확정된 간이 작업기록 · 9월 기록
   const rows: { label: string; node: ReactNode }[] = [];
   myWos.forEach((w) => { const wr = wrs.find((x) => x.woNo === w.no); const l = woLabel(w.state); rows.push({ label: l, node: <MRow key={w.no} st={stChip(l)} eq={`${MACHINES[w.machine].name} · ${w.code}`} tx={wr?.action || w.title} docs={<>{docBtn(w.no, () => openWo(w.no))}{wr && docBtn(wr.no, () => openRecord(w.no))}</>} /> }); });
-  srs.filter((s) => s.state === 'confirmed').forEach((s) => rows.push({ label: '처리', node: <MRow key={s.no} st={stChip('처리')} eq={`${MACHINES[s.machine].name} · ${s.code}`} tx={s.action} docs={docBtn(s.no, () => go('sr', s.no))} /> }));
+  srs.filter((s) => s.state === 'confirmed').forEach((s) => rows.push({ label: '처리', node: <MRow key={s.no} st={stChip('처리')} eq={`${MACHINES[s.machine].name} · ${s.code || '[사후]'}`} tx={s.action} docs={docBtn(s.no, () => go('sr', s.no))} /> }));
   pastWos.forEach((w) => { const rec = pastRecs.find((x) => x.wo_no === w.wo_no); const l = EN_ST[w.status] ?? w.status; const code = history?.alarms.find((x) => x.alarm_event_id === w.alarm_event_id)?.alarm_code; rows.push({ label: l, node: <MRow key={w.wo_no} st={stChip(l)} eq={`${w.equipment_id}${code ? ` · ${code}` : ''}`} tx={rec ? <>{rec.action}{rec.repair_min ? <> · <b className="font-mono">{rec.repair_min}</b>분</> : null}</> : w.title} docs={<>{docBtn(w.wo_no)}{rec && docBtn(rec.record_no)}</>} /> }); });
   pastRecs.filter((x) => !pastWos.some((w) => w.wo_no === x.wo_no)).forEach((x) => rows.push({ label: '처리', node: <MRow key={x.record_no} st={stChip('처리')} eq={x.equipment_id} tx={x.action} docs={docBtn(`${x.record_type === 'QUICK' ? '간이 ' : ''}${x.record_no}`)} /> }));
 

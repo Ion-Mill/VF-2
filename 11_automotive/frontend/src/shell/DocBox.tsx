@@ -1,7 +1,7 @@
 'use client';
 // SCR-18 문서함 — 작업지시서·작업기록서·간이 작업기록·교대·일일 보고서를 한곳에서 (9월 기록 + 10/1 화면에서 만든 것).
 import { useState } from 'react';
-import { CARD, PAGE, useApp } from './ctx';
+import { BTN, CARD, PAGE, useApp } from './ctx';
 import { Band } from './ui';
 import { docsBand } from './bands';
 import { LOCK } from './Safety';
@@ -19,7 +19,7 @@ function Sum({ a, b }: { a: string; b?: string }) {
 const WR_LABEL = { draft: '초안', editing: '수정 중', confirmed: '확정', checked: '확인됨' } as const;
 
 export default function DocBox() {
-  const { user, role, wos, wrs, srs, alerts, openWo, openRecord, go, history, shiftReports, dailyReports, pm, key } = useApp();
+  const { user, role, wos, wrs, srs, alerts, openWo, openRecord, openAfter, go, history, shiftReports, dailyReports, pm, key } = useApp();
   // 카테고리는 왼쪽 문서함 목록에서 고른다 (App, 페이지구조 v3) — 화면 키 = 카테고리 이름
   const tab: Tab = (['작업지시서', '작업기록서', '간이 작업기록', '교대 보고서', '일일 보고서'] as string[]).includes(key ?? '') ? (key as Tab) : '작업지시서';
   const [machine, setMachine] = useState('');
@@ -40,6 +40,7 @@ export default function DocBox() {
   if (role === 'SUP') {
     wos.filter((w) => w.state === 'draft' || w.state === 'editing').forEach((w) => { const m = minutesSince(w.created); todo.push({ text: `${m >= 120 ? '▲' : 'ⓘ'} 승인 대기 ${m}분 [${w.no}] ${MACHINES[w.machine].name} ${w.code}`, go: () => openWo(w.no), warn: m >= 120 }); });
     wrs.filter((r) => r.state === 'confirmed').forEach((r) => todo.push({ text: `ⓘ 확인 대기 작업기록서 [${r.no}]`, go: () => openRecord(r.woNo) }));
+    srs.filter((r) => r.kind === 'after' && r.state === 'confirmed' && !r.checkedBy).forEach((r) => todo.push({ text: `ⓘ 확인 대기 [사후] ${r.no} ${MACHINES[r.machine].name}`, go: () => go('sr', r.no) })); // FR-MNT-05-21
     (shiftReports ?? []).filter((r) => r.status !== 'CONFIRMED' && r.partial === false).forEach((r) => todo.push({ text: `ⓘ 미확정 교대 보고서 ${r.shift_id}`, go: () => go('shift', r.shift_id) }));
   }
   if (role === 'MGR') {
@@ -66,7 +67,8 @@ export default function DocBox() {
     rows = srs.filter((r) => role !== 'OPR' || r.savedBy === user.name || r.by === user.name || r.revisions.some((x) => x.by === user.name) || r.state === 'open')
       .map((r) => { const a = alerts.find((x) => x.id === r.alertId); return { r, a }; })
       .filter(({ r }) => (!machine || MACHINES[r.machine].name === machine) && (!code || r.code.includes(code)) && has(`${r.action} ${r.memo}`))
-      .map(({ r, a }) => ({ key: r.no, date: a?.time ?? '', go: () => go('sr', r.no), cells: [r.no, MACHINES[r.machine].name, r.code, md(a?.time), r.state === 'open' ? '작성 중' : '확정', `${r.kind === 'cause' ? '[원인 점검] ' : ''}${r.action || '—'}`] }));
+      .map(({ r, a }) => ({ key: r.no, date: a?.time ?? r.start ?? '', go: () => go('sr', r.no), cells: [r.no, MACHINES[r.machine].name, r.code || '—', md(a?.time ?? r.start),
+        r.state === 'open' ? '작성 중' : r.kind === 'after' ? (r.checkedBy ? '확인됨' : '확인 대기') : '확정', `${r.kind === 'cause' ? '[원인 점검] ' : r.kind === 'after' ? '[사후] ' : ''}${r.action || '—'}`] }));
   } else if (tab === '교대 보고서') {
     rows = [...(shiftReports ?? [])].reverse().filter((r) => has(String(r.notable_text))).map((r) => ({ key: r.shift_id, date: r.shift_id, warn: r.status !== 'CONFIRMED' && r.partial === false && old(r.end_at), go: () => go('shift', r.shift_id),
       cells: [r.shift_id, '라인', '—', md(r.shift_id), r.status === 'CONFIRMED' ? '확정' : r.status === 'AI_DRAFT' ? 'AI비서 초안' : '수정 중', `실적 ${r.actual_qty} / 총 목표 ${r.target_qty} · 불량 ${r.defect_qty}`] }));
@@ -117,7 +119,8 @@ export default function DocBox() {
         </details>
 
         <div className={CARD.replace('mx-auto max-w-[1100px] ', '')}>
-          <h2 className="text-band font-bold">{tab}</h2>
+          <div className="flex flex-wrap items-center gap-2"><h2 className="text-band font-bold">{tab}</h2>
+            {(role === 'OPR' || role === 'MNT') && <button onClick={() => openAfter()} className={`${BTN} ml-auto`} title="알람 없이 먼저 한 일을 지난 시각으로 적어요">+ 사후 기록</button>}</div>
           {/* [2] 필터 — 한 줄 도구 막대 */}
           <div className="mt-3 flex flex-wrap items-center gap-2">
             {stateOpts.length > 0 && <label className="flex items-center gap-1.5 text-body font-semibold text-ink-2">상태:<select value={state} onChange={(e) => setState(e.target.value)} className={pill}><option value="">전체</option>{stateOpts.map((x) => <option key={x}>{x}</option>)}</select></label>}

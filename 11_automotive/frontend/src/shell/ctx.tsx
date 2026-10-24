@@ -27,7 +27,7 @@ export interface AppCtx {
   putWo: (w: WorkOrder) => void; putWr: (w: WorkRecord) => void; putSr: (r: SimpleRecord) => void;
   addNotice: (n: Notice) => void; handleNotice: (id: string, plan?: string) => void; markAlert: (ids: string[], by: string) => void;
   screen: Screen; key: string | null; go: (s: Screen, key?: string | null) => void; back: () => void;
-  openCard: (alertId: string) => void; openWo: (no: string) => void; openRecord: (woNo: string, nav?: boolean) => void; openSimple: (alertId: string, kind?: 'alarm' | 'cause') => void;
+  openCard: (alertId: string) => void; openWo: (no: string) => void; openRecord: (woNo: string, nav?: boolean) => void; openSimple: (alertId: string, kind?: 'alarm' | 'cause') => void; openAfter: (stopKey?: string) => void;
   openSource: (doc: string, section: string) => void; openReplay: (atIso: string) => void;
   selectMachine: (m: MachineId | null) => void; selected: MachineId | null;
   toast: (msg: string) => void; settings: Settings; setSettings: (f: (s: Settings) => Settings) => void;
