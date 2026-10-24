@@ -10,8 +10,10 @@ import validate
 
 
 def test_calendar():
-    cal = build_calendar(load_config())
-    assert len(cal.workdays) == 26 and len(cal.shifts) == 52
+    cfg = load_config()
+    cal = build_calendar(cfg)
+    assert len(cal.workdays) == sum(1 for d in cal.days if d.weekday() != 6) and len(cal.shifts) == 2 * len(cal.workdays)
+    assert (cal.shifts[0].start.hour, cal.shifts[0].end.hour, cal.shifts[1].start.hour, cal.shifts[1].end.hour) == (9, 18, 21, 6)
     assert all(s.planned_min == 480 for s in cal.shifts)
 
 
@@ -51,17 +53,18 @@ def test_stage4_files_exist():
 
 
 def test_stage5_reports_and_notifications_exist():
-    """5단계 ③ 엔터티 6개: 교대 보고서 52, 일일 보고서 26, 문서 버전·바뀐 칸, 알림·받는 사람."""
+    """5단계 ③ 엔터티 6개: 교대 보고서(교대 수), 일일 보고서(근무일 수), 문서 버전·바뀐 칸, 알림·받는 사람."""
     cfg = load_config()
     out = ROOT / cfg["run"]["out_dir"]
     man = json.load(io.open(out / "manifest.json", encoding="utf-8"))
-    assert man["rows"]["shift_report"] == 52 and man["rows"]["daily_report"] == 26
+    cal = build_calendar(cfg)
+    assert man["rows"]["shift_report"] == len(cal.shifts) and man["rows"]["daily_report"] == len(cal.workdays)
     for e in ["document_revision", "document_revision_change", "notification", "notification_recipient"]:
         assert man["rows"].get(e, 0) > 0, e
 
 
 def test_realtime_same_script_same_result():
-    """실시간 모드: 같은 대본이면 사건·조작 기록이 같고, 되돌리기 뒤에도 10/1 08:00에서 같은 상태로 시작한다."""
+    """실시간 모드: 같은 대본이면 사건·조작 기록이 같고, 되돌리기 뒤에도 프로필의 실시간 시작 시각에서 같은 상태로 시작한다."""
     from gen.realtime import Realtime, load_script
     cfg = load_config()
     m = load_masters(cfg)
@@ -73,7 +76,7 @@ def test_realtime_same_script_same_result():
     assert a.events == b.events and a.clock() == b.clock()
     assert not any(e["type"] == "alarm" for e in a.events)      # 무작위 알람 없음
     a.reset()
-    assert a.clock()["sim_at"] == "2026-10-01T08:00:00+09:00" and a.prev_state == b.__class__(cfg, m).prev_state
+    assert a.clock()["sim_at"] == cfg["realtime"]["start"] + ":00+09:00" and a.prev_state == b.__class__(cfg, m).prev_state
 
 
 def test_wash_batch_one_lot_max_30():
@@ -109,14 +112,15 @@ def test_realtime_event_buttons_same_result():
 
 
 def test_realtime_skip_to_night_start():
-    """시연 넘기기: 17:00(주간 끝) 다음 20:00(야간 시작)으로 (2026-10-19)."""
+    """시연 넘기기: 오늘 주간 끝 다음 야간 시작으로 (2026-10-19). 옛 이름(TODAY_17:00·TODAY_20:00)도 받는다 (2026-10-24)."""
     from gen.realtime import Realtime
     cfg = load_config()
     a = Realtime(cfg, load_masters(cfg))
-    a.skip("TODAY_17:00")
-    assert a.clock()["sim_at"] == "2026-10-01T17:00:00+09:00"
+    day = cfg["realtime"]["start"][:10]
+    a.skip("TODAY_DAY_END")
+    assert a.clock()["sim_at"] == f"{day}T{cfg['shifts']['DAY']['end']}:00+09:00"
     a.skip("TODAY_20:00")
-    assert a.clock()["sim_at"] == "2026-10-01T20:00:00+09:00"
+    assert a.clock()["sim_at"] == f"{day}T{cfg['shifts']['NIGHT']['start']}:00+09:00"
 
 
 def test_realtime_preview_fire():

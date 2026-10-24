@@ -1,6 +1,6 @@
-"""과거 기록 모드: 2026-09-01 ~ 09-30 가상 운영 데이터를 out/에 만든다 (설계서 4장, 4단계 범위). 10/1 실시간 모드는 realtime.py.
+"""과거 기록 모드: 프로필(video | final)이 정한 기간의 가상 운영 데이터를 그 프로필의 out_dir에 만든다 (설계서 4장). 실시간 모드는 realtime.py.
 
-실행: .venv\\Scripts\\python generate.py
+실행: .venv\\Scripts\\python generate.py --profile video
 """
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ from gen import reports as RP
 from gen import quality as Q
 from gen import stage4 as S4
 from gen.calendar import SHIFT_COLS, WORK_DAY_COLS, shift_rows, work_day_rows
-from gen.common import Out, check_python, load_config, load_masters, write_manifest
+from gen.common import Out, check_python, load_config, load_masters, set_profile_from_args, write_manifest
 from gen.doc03 import load_doc03
 from gen.mnt_docs import CHK_COLS, STEP_COLS, WO_COLS, WOP_COLS, WR_COLS, WRP_COLS, build_mnt
 from gen.past import search_t05
@@ -25,6 +25,7 @@ STAGE = "5단계 ③: 과거 30일 + 측정값 판정 + 보고서·수정 이력
 
 def main():
     check_python()
+    set_profile_from_args()
     cfg = load_config()
     masters = load_masters(cfg)
     sim, rng, force = search_t05(cfg, masters)
@@ -91,7 +92,7 @@ def main():
     result = validate.run(cfg, out.dir, masters)
     write_manifest(cfg, out, STAGE, result, extra={"t05_force_m": force})
     t = sim.mach["VF2-01"].tools["T05"]
-    print(f"out/ {len(out.counts)}개 파일, VF2-01 T05 9/30 끝 {t.cum / t.limit * 100:.0f}%")
+    print(f"{cfg['run']['out_dir']}/ {len(out.counts)}개 파일, VF2-01 T05 기록 끝 {t.cum / t.limit * 100:.0f}%")
     print(f"점검: 통과 {result['passed']} / 실패 {result['failed']} / 참고 {result['warned']}")
     for line in result["lines"]:
         if line["result"] != "PASS":

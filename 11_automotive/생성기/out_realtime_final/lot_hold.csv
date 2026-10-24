@@ -1,0 +1,2 @@
+hold_id,lot_no,trigger_type,related_alarm_event_id,related_tool_id,hold_reason,held_by,held_at,enhanced_next_lots,released_by,released_at,scrap_proposed_qty,scrap_proposed_by,scrap_approved_by,scrap_approved_at,normal_resumed_by,normal_resumed_at,result
+4,LOT-2610-104-1,AI_SUSPECT,293,,충돌 의심(992) 때 가공 중이던 로트 — 비서 의심 로트 제안,U10,2026-10-26T11:50:00+09:00,2,,,,,,,,,IN_PROGRESS

@@ -11,6 +11,7 @@ import csv
 import hashlib
 import io
 import json
+import os
 import platform
 import sys
 from datetime import date, datetime, timedelta, timezone
@@ -25,10 +26,42 @@ KST = timezone(timedelta(hours=9))
 
 # ---------- 설정·기준 정보 ----------
 
-def load_config(path: Path | None = None) -> dict:
-    path = path or ROOT / "config.json"
-    with io.open(path, encoding="utf-8") as f:
-        return json.load(f)
+PROFILES = ("video", "final")
+
+
+def set_profile_from_args(argv: list[str] | None = None) -> list[str]:
+    """명령줄의 --profile video|final 을 환경변수 MOM_PROFILE에 넣고, 그 두 낱말을 뺀 나머지 인자를 돌려준다."""
+    args, rest, i = list(sys.argv[1:] if argv is None else argv), [], 0
+    while i < len(args):
+        if args[i] == "--profile" and i + 1 < len(args):
+            os.environ["MOM_PROFILE"] = args[i + 1]
+            i += 2
+        elif args[i].startswith("--profile="):
+            os.environ["MOM_PROFILE"] = args[i].split("=", 1)[1]
+            i += 1
+        else:
+            rest.append(args[i])
+            i += 1
+    return rest
+
+
+def _merge(base: dict, over: dict) -> dict:
+    """딕셔너리는 키별로 합치고, 그 밖의 값(목록 포함)은 통째로 바꾼다."""
+    out = dict(base)
+    for k, v in over.items():
+        out[k] = _merge(out[k], v) if isinstance(v, dict) and isinstance(out.get(k), dict) else v
+    return out
+
+
+def load_config(path: Path | None = None, profile: str | None = None) -> dict:
+    """config.json 위에 profiles/<profile>.json을 겹쳐 쓴다. 프로필은 인자 또는 환경변수 MOM_PROFILE (video | final) — 없으면 멈춘다."""
+    profile = profile or os.environ.get("MOM_PROFILE")
+    if profile not in PROFILES:
+        raise SystemExit(f"프로필이 필요합니다: --profile {' | '.join(PROFILES)} (또는 환경변수 MOM_PROFILE). 받은 값: {profile!r}")
+    with io.open(path or ROOT / "config.json", encoding="utf-8") as f:
+        cfg = json.load(f)
+    with io.open(ROOT / "profiles" / f"{profile}.json", encoding="utf-8") as f:
+        return _merge(cfg, json.load(f))
 
 
 def read_csv(path: Path) -> list[dict]:
@@ -162,7 +195,8 @@ def write_manifest(cfg: dict, out: Out, stage: str, validation: dict | None = No
         "stage": stage,
         "created_at": fmt_dt(datetime.now(KST)),
         "seed": cfg["run"]["seed"],
-        "config_sha256": sha256_of([ROOT / "config.json"]),
+        "profile": os.environ.get("MOM_PROFILE"),
+        "config_sha256": sha256_of([ROOT / "config.json", ROOT / "profiles" / f"{os.environ.get('MOM_PROFILE')}.json"]),
         "masters_sha256": sha256_of(list((ROOT / cfg["run"]["masters_dir"]).glob("*.csv"))),
         "python": platform.python_version(),
         "numpy": np.__version__,

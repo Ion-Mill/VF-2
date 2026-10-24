@@ -7,3 +7,8 @@ __pycache__/
 out/sensor_sample.csv
 # 시연 데이터 서버(frontend/tools/sim_server.py)가 시연 중 떨어뜨리는 측정 결과 파일 — 처음으로 되돌리면 비움
 out_live/
+
+# 프로필 도입(2026-10-24): 영상용 결과는 내 PC에서만 쓴다 (깃 제외). 최종용도 센서 값 CSV는 크기 때문에 제외 — 같은 seed로 generate.py --profile final을 돌리면 똑같이 나온다
+out_video/
+out_realtime_video/
+out_final/sensor_sample.csv

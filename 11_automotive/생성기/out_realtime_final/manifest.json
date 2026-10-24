@@ -1,0 +1,55 @@
+{
+  "mode": "realtime",
+  "seed": 20261006,
+  "start_at": "2026-10-26T09:00:00+09:00",
+  "now_at": "2026-10-26T15:00:00+09:00",
+  "speed": 10,
+  "paused": false,
+  "ops": 7,
+  "events": 998,
+  "scenario_events": [
+    {
+      "code": "S6",
+      "start_at": "2026-10-26T10:00:00+09:00",
+      "end_at": "2026-10-26T11:30:00+09:00"
+    },
+    {
+      "code": "S1",
+      "start_at": "2026-10-26T11:31:00+09:00",
+      "end_at": "2026-10-26T13:30:00+09:00"
+    }
+  ],
+  "cmm_drop_files": 24,
+  "rows": {
+    "alarm_event": 1,
+    "bottleneck_log": 4,
+    "cmm_import": 24,
+    "defect_record": 0,
+    "equipment_state_log": 100,
+    "inspection_plan": 5,
+    "inspection_result": 215,
+    "inventory_txn": 8,
+    "lot_hold": 1,
+    "operation_report": 12,
+    "pm_record": 16,
+    "production_lot": 5,
+    "production_order": 6,
+    "sensor_sample": 9660,
+    "tool_change": 3,
+    "tool_usage": 20,
+    "wip_log": 884
+  },
+  "id_after_past": {
+    "equipment_state_log": 7070,
+    "operation_report": 1101,
+    "bottleneck_log": 36,
+    "alarm_event": 292,
+    "tool_change": 123,
+    "inspection_result": 7645,
+    "cmm_import": 1010,
+    "defect_record": 34,
+    "pm_record": 279,
+    "inventory_txn": 621,
+    "lot_hold": 3
+  }
+}

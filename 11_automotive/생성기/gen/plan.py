@@ -24,22 +24,23 @@ class MaterialLot:
 
 
 def plan_material(cfg: dict, cal: Calendar, rng) -> list[MaterialLot]:
-    """9/1 시작 재고 = 안전 재고 200 + 1주 사용량 1,080 = 1,280개분 (기준정보_목록 6장 결정 3).
-    8월 마지막 주에 받은 로트 4개로 둔다. 가장 오래된 로트는 받은 수량을 200개분으로 둔다
-    (8월 투입 기록이 없으므로, 재고 거래의 9/1 시작 재고 = 받은 수량 합 = 1,280이 되게)."""
+    """기록 시작일 재고 = 안전 재고 200 + 1주 사용량 1,080 = 1,280개분 (기준정보_목록 6장 결정 3).
+    시작 직전 열흘 안(시작 11·8·6·4일 전)에 받은 로트 4개로 둔다. 가장 오래된 로트는 받은 수량을 200개분으로 둔다
+    (그 전 투입 기록이 없으므로, 재고 거래의 시작 재고 = 받은 수량 합 = 1,280이 되게). 번호는 받은 달 기준 MAT-yymm-NN."""
     m = cfg["material"]
     qty = m["qty_per_receipt"]
     lots: list[MaterialLot] = []
     r = rng.stream("material")
-    start_rows = [(date(2026, 8, 21), 200), (date(2026, 8, 24), qty), (date(2026, 8, 26), qty), (date(2026, 8, 28), qty)]
+    d0 = cal.days[0]
+    start_rows = [(d0 - timedelta(days=11), 200), (d0 - timedelta(days=8), qty), (d0 - timedelta(days=6), qty), (d0 - timedelta(days=4), qty)]
     for i, (d, rem) in enumerate(start_rows, 10):
-        lots.append(MaterialLot(f"MAT-2608-{i:02d}", d, rem, rem, f"SC-{d:%y%m%d}-{int(r.integers(100, 999))}",
+        lots.append(MaterialLot(f"MAT-{d:%y%m}-{i:02d}", d, rem, rem, f"SC-{d:%y%m%d}-{int(r.integers(100, 999))}",
                                 f"H{d:%y%m%d}{chr(65 + int(r.integers(0, 6)))}"))
     days = {WEEKDAY[w] for w in m["receipt_weekdays"]}
     k = 1
     for d in cal.days:
         if d.weekday() in days and d in set(cal.workdays):
-            lots.append(MaterialLot(f"MAT-2609-{k:02d}", d, qty, qty, f"SC-{d:%y%m%d}-{int(r.integers(100, 999))}",
+            lots.append(MaterialLot(f"MAT-{d:%y%m}-{k:02d}", d, qty, qty, f"SC-{d:%y%m%d}-{int(r.integers(100, 999))}",
                                     f"H{d:%y%m%d}{chr(65 + int(r.integers(0, 6)))}"))
             k += 1
     return lots
@@ -87,13 +88,13 @@ def plan_alarms(cfg: dict, cal: Calendar, masters: dict, rng) -> list[PlannedAla
                 return False
         return True
 
-    # 반복 알람 사례 ① VF2-02 2075 (9월 초 1번 + 마지막 주 3번, 세 번째 9/29 23:12)
+    # 반복 알람 사례 ① VF2-02 2075 (기간 초 1번 + 마지막 주 3번, 세 번째는 끝 하루 전 밤 23:12)
     for c in a["repeat_cases"]:
         if c["id"] == "case1_S2":
             ew = _work_minutes(cal, date.fromisoformat(c["early_window"][0]), date.fromisoformat(c["early_window"][1]))
             plan.append(PlannedAlarm(int(r.choice(ew)), c["equipment"], c["alarm"], sev[c["alarm"]], True, case=c["id"]))
             third = cal.to_min(datetime.fromisoformat(c["last_week_three"]["third_at"]).replace(tzinfo=KST))
-            lw = [m for m in _work_minutes(cal, date.fromisoformat(c["last_week_three"]["window_start"]), date(2026, 9, 28))
+            lw = [m for m in _work_minutes(cal, date.fromisoformat(c["last_week_three"]["window_start"]), cal.to_dt(third).date() - timedelta(days=1))
                   if third - W + 60 < m < third - 6 * 60]
             for m in sorted(r.choice(lw, 2, replace=False)):
                 plan.append(PlannedAlarm(int(m), c["equipment"], c["alarm"], sev[c["alarm"]], True, case=c["id"]))
@@ -197,20 +198,22 @@ def plan_maint(cfg: dict, cal: Calendar, masters: dict, rng) -> list[MaintWindow
     dur = int(r.integers(pp["monthly_session_min"][0], pp["monthly_session_min"][1] + 1))
     ids = [t["pm_task_id"] for t in tasks if t["equipment_id"] == "VF2-01" and t["cycle_code"] == "MONTHLY"]
     wins.append(MaintWindow("VF2-01", s, s + dur, "PM_MONTHLY", ids, due))
-    # VF2-02 매월 묶음: 9/1에 함 → 다음 기한 10/1 (시연 S6). 기한을 넘긴 2개(9/28·9/29)는 8월 말에 따로 했던 항목
+    # VF2-02 매월 묶음: 한 달 전에 함 → 다음 기한 = 실시간 시작일 (시연 S6). 한 달 전이 기록 기간 안일 때만 정비 구간을 만든다
+    # (기간 밖이면 pm.py가 시작 상태 기록으로만 둠). 기한을 넘긴 2개는 따로 했던 항목
     overdue = set(pp["overdue_due"])
     d1 = date.fromisoformat(pp["vf2_monthly_due"]["VF2-02"])
     d0 = date(d1.year, d1.month - 1, d1.day) if d1.month > 1 else date(d1.year - 1, 12, d1.day)
-    ms = _day_minutes(cal, d0, *pp["maint_start_window"])
-    s = int(r.choice(ms))
-    dur = int(r.integers(pp["monthly_session_min"][0], pp["monthly_session_min"][1] + 1))
-    ids = [t["pm_task_id"] for t in tasks if t["equipment_id"] == "VF2-02" and t["cycle_code"] == "MONTHLY"
-           and t["pm_task_id"] not in overdue]
-    wins.append(MaintWindow("VF2-02", s, s + dur, "PM_MONTHLY", ids, d0))
+    if d0 >= cal.days[0]:
+        ms = _day_minutes(cal, d0, *pp["maint_start_window"])
+        s = int(r.choice(ms))
+        dur = int(r.integers(pp["monthly_session_min"][0], pp["monthly_session_min"][1] + 1))
+        ids = [t["pm_task_id"] for t in tasks if t["equipment_id"] == "VF2-02" and t["cycle_code"] == "MONTHLY"
+               and t["pm_task_id"] not in overdue]
+        wins.append(MaintWindow("VF2-02", s, s + dur, "PM_MONTHLY", ids, d0))
     # 반복 알람 사례 ② 원인 점검 (9/15 주간, 수리 시간 범위 30~180분 안)
     c2 = next(c for c in cfg["alarms"]["repeat_cases"] if c["id"] == "case2_stage2")
     d = date.fromisoformat(c2["cause_check"][0])
-    ms = _day_minutes(cal, d, "09:00", "11:00")
+    ms = _day_minutes(cal, d, "10:00", "12:00")
     s = int(r.choice(ms))
     dur = int(r.integers(60, 121))
     wins.append(MaintWindow(c2["equipment"], s, s + dur, "CAUSE_CHECK", []))

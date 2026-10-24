@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from gen.common import ROOT, load_config, load_masters
+from gen.common import ROOT, load_config, load_masters, set_profile_from_args
 
 
 def _read(d: Path, name: str) -> pd.DataFrame:
@@ -168,7 +168,7 @@ def run(cfg: dict, out_dir: Path, masters: dict) -> dict:
     t5 = tu[tu.tool_id == "VF2-01-T05"].sort_values("recorded_at")
     t5_end = float(t5.cum_after.iloc[-1]) / 400 * 100 if len(t5) else -1
     lo_, hi_ = cfg["tools"]["end_state"].get("VF2-01-T05_pct_range", [92, 92])
-    add(f"9/30 끝 VF2-01 T05 사용률 {lo_}~{hi_}% (목표 90%, 10/1 브리핑 교체 권고 대상)", lo_ <= round(t5_end) <= hi_,
+    add(f"기록 끝 VF2-01 T05 사용률 {lo_}~{hi_}% (목표 90%, 시작 브리핑 교체 권고 대상)", lo_ <= round(t5_end) <= hi_,
         f"{t5_end:.0f}%")
 
     fm = full.merge(down[["alarm_event_id", "s", "e"]], on="alarm_event_id", how="inner")
@@ -309,7 +309,7 @@ def run(cfg: dict, out_dir: Path, masters: dict) -> dict:
     final = inv.groupby("item_no").q.sum()
     below = sorted(i for i, x in items.items() if x["category"] in ("TOOL", "CONSUMABLE")
                    and final.get(i, 0) < float(x["safety_stock"]))
-    add("9/30 끝 안전 재고 아래 품목 = 설정값 (축 윤활유·M6 탭)",
+    add("기록 끝 안전 재고 아래 품목 = 설정값 (축 윤활유·M6 탭)",
         below == sorted(cfg["inventory"]["below_safety_at_month_end"]), f"{below}")
     fg = inv[inv.source_kind == "LOT_PASS"].set_index("fg_lot_no")
     passed = lots[lots.status.isin(["PASSED", "RELEASED"])].set_index("lot_no")
@@ -352,7 +352,7 @@ def run(cfg: dict, out_dir: Path, masters: dict) -> dict:
     fgb = fgi.groupby("txn_at").q.sum().cumsum()
     add("완제품 재고 = 합격 합 − 출하 합 ± 조정, 음수 없음",
         bool((fgb >= 0).all()) and abs(fgb.iloc[-1] - fgi.q.sum()) < 1e-9
-        and set(fgi.txn_type) <= {"FG_IN", "SHIP_OUT", "ADJUST"}, f"9/30 끝 {fgb.iloc[-1]:.0f}개")
+        and set(fgi.txn_type) <= {"FG_IN", "SHIP_OUT", "ADJUST"}, f"기록 끝 {fgb.iloc[-1]:.0f}개")
 
     # ---- 4단계: 재공 선반·병목·센서 (설계서 5.15·5.18·5.19) ----
     w5 = T["wip_log"]
@@ -411,7 +411,7 @@ def run(cfg: dict, out_dir: Path, masters: dict) -> dict:
         f"{len(sr)}개, 상태 {sr.status.value_counts().to_dict()}")
     sh_end = dict(zip(shifts.shift_id, ts(shifts.end_at)))
     ca = ts(sr.confirmed_at) - sr.shift_id.map(sh_end)
-    add("교대 보고서 확정: 주간 17:00~17:30, 야간 05:00~06:00 [가상]",
+    add("교대 보고서 확정: 교대 끝 뒤 주간 5~30분, 야간 5~55분 [가상]",
         bool(((ca > pd.Timedelta(0)) & (ca <= pd.Timedelta(minutes=60))).all()),
         f"교대 끝 뒤 {int(ca.min().total_seconds() // 60)}~{int(ca.max().total_seconds() // 60)}분")
     dsum = sr.assign(d=sr.shift_id.str[:10]).groupby("d").actual_qty.apply(lambda x: x.astype(int).sum())
@@ -420,7 +420,7 @@ def run(cfg: dict, out_dir: Path, masters: dict) -> dict:
         len(dr) == int((wd.is_workday == "true").sum())
         and bool((dr.actual_qty.astype(int).values == dsum.loc[dr.work_date].values).all())
         and bool((dr.target_qty == "180").all()), f"{len(dr)}개")
-    add("일일 보고서: 9/30만 확정 대기(AI비서 초안 v0), 나머지 MGR 확정",
+    add("일일 보고서: 마지막 근무일만 확정 대기(AI비서 초안 v0), 나머지 MGR 확정",
         list(dr[dr.status != "CONFIRMED"].work_date) == cfg["reports"]["unconfirmed_daily_reports"]
         and bool((dr[dr.status == "CONFIRMED"].confirmed_by == "U12").all()), dr.status.value_counts().to_dict())
     oee = dr.oee_pct.astype(float)
@@ -490,13 +490,13 @@ def run(cfg: dict, out_dir: Path, masters: dict) -> dict:
         list(zip(r108.raised_at, r108.repeat_stage_status)))
     add("반복 알람은 위 두 사례뿐 (설계서 5.8 우연한 반복 막기)", len(rep) == 3, f"{len(rep)}건")
     dp = nt[nt.rule_code == "DAILY_REPORT_PENDING"]
-    add("일일 보고서 확정 요청 = 근무일마다 1건, 9/30 것만 처리 안 됨",
+    add("일일 보고서 확정 요청 = 근무일마다 1건, 마지막 근무일 것만 처리 안 됨",
         len(dp) == len(dr) and int((dp.is_processed == "false").sum()) == 1,
         f"{len(dp)}건, 처리 안 됨 {int((dp.is_processed == 'false').sum())}")
     sp = nt[nt.rule_code == "SHIFT_REPORT_PENDING"]
     add("교대 보고서 확정 요청 = 교대마다 1건, 모두 처리", len(sp) == len(sr) and bool((sp.is_processed == "true").all()))
     left = nt[nt.is_processed == "false"]
-    lines.append({"name": "9/30 끝에 남은 알림 (10/1 브리핑 재료, 참고)", "result": "PASS",
+    lines.append({"name": "기록 끝에 남은 알림 (시작 브리핑 재료, 참고)", "result": "PASS",
                   "detail": str(left.rule_code.value_counts().to_dict())})
     imp = nt.importance.value_counts(normalize=True).round(2).to_dict()
     add("알림 중요도 비율 (점검 목표 긴급 약 5%·주의 약 15%·참고 약 80%, DOC-07 10.3)",
@@ -583,6 +583,8 @@ def run_realtime(cfg: dict, rt_dir: Path, past_dir: Path, masters: dict) -> dict
     ts = lambda x: pd.to_datetime(x)
     ops = [json.loads(x) for x in open(rt_dir / "run_log.jsonl", encoding="utf-8")]
     start = ts(man["start_at"])
+    live = start.date()                                   # 실시간 시작일
+    live_s = live.isoformat()
     sl = T["equipment_state_log"].copy()
     bad = 0
     for eq, g in sl.groupby("equipment_id"):
@@ -590,7 +592,7 @@ def run_realtime(cfg: dict, rt_dir: Path, past_dir: Path, masters: dict) -> dict
         e = g.end_at.iloc[:-1].values
         bad += int((e != g.start_at.iloc[1:].values).sum()) + int(ts(g.start_at.iloc[0]) != start)
         bad += int(g.end_at.iloc[-1] != "")
-    add("설비 상태: 설비마다 10/1 08:00부터 빈틈·겹침 없이 이어짐 (마지막 구간은 진행 중)", bad == 0 and sl.equipment_id.nunique() == 6,
+    add("설비 상태: 설비마다 실시간 시작 시각부터 빈틈·겹침 없이 이어짐 (마지막 구간은 진행 중)", bad == 0 and sl.equipment_id.nunique() == 6,
         f"어긋남 {bad}")
     add("과거 기록 다음 번호부터 (상태 기록)", int(sl.state_log_id.astype(int).min()) == len(P["equipment_state_log"]) + 1)
     al = T["alarm_event"]
@@ -613,14 +615,14 @@ def run_realtime(cfg: dict, rt_dir: Path, past_dir: Path, masters: dict) -> dict
     lots_ok = set(P["production_lot"].lot_no) | set(T["production_lot"].lot_no)
     op = T["operation_report"]
     add("공정 실적의 로트가 과거 기록이나 새 로트에 있음", op.lot_no.isin(lots_ok).all())
-    add("공정 실적은 10/1 교대만", op.shift_id.str.startswith("2026-10-01").all(), op.shift_id.unique().tolist())
+    add("공정 실적은 실시간 시작일 교대만", op.shift_id.str.startswith(live_s).all(), op.shift_id.unique().tolist())
     o50 = op[op.process_code == "OP-50"]
-    day = int((o50[o50.shift_id == "2026-10-01-D"].gq.astype(int) + o50[o50.shift_id == "2026-10-01-D"].rq.astype(int)).sum())
-    lines.append({"name": "10/1 주간 실적 (참고, 사건에 따라 달라짐)", "result": "PASS" if 75 <= day <= 115 else "WARN",
+    day = int((o50[o50.shift_id == f"{live_s}-D"].gq.astype(int) + o50[o50.shift_id == f"{live_s}-D"].rq.astype(int)).sum())
+    lines.append({"name": "시작일 주간 실적 (참고, 사건에 따라 달라짐)", "result": "PASS" if 75 <= day <= 115 else "WARN",
                   "detail": f"{day}개"})
     po = T["production_order"]
     new_po = po[~po.order_no.isin(P["production_order"].order_no)]
-    add("10/1에 새로 만든 작업지시 번호는 PO-2610-", new_po.order_no.str.startswith("PO-2610-").all(), f"새 작업지시 {len(new_po)}개")
+    add(f"시작일에 새로 만든 작업지시 번호는 PO-{start:%y%m}-", new_po.order_no.str.startswith(f"PO-{start:%y%m}-").all(), f"새 작업지시 {len(new_po)}개")
     ss = pd.read_csv(rt_dir / "sensor_sample.csv")
     ss["t"] = ts(ss.sampled_at)
     rng_ = {x["sensor_code"]: x for x in masters["sensor_item"]}
@@ -652,14 +654,14 @@ def run_realtime(cfg: dict, rt_dir: Path, past_dir: Path, masters: dict) -> dict
         files == sorted(ci.file_name) and bool(nrow_ok) and not list(drop.glob("*.tmp")), f"파일 {len(files)}개")
     pm = T["pm_record"]
     mt = sl[sl.state_code == "MAINT"]
-    s6 = pm[pm.memo.fillna("").str.startswith("10/1 시연 S6")]
+    s6 = pm[pm.memo.fillna("").str.startswith(f"{live.month}/{live.day} 시연 S6")]
     add("S6 정비 기록: 초안(DRAFT), MAINT 구간에 첫 기록 연결", bool((s6.status == "DRAFT").all())
         and (len(s6) == 0 or bool((mt.pm_record_id != "").all())), f"정비 기록 {len(s6)}건")
     routine = pm[pm.memo.fillna("") == ""]
     task = {t["pm_task_id"]: t for t in masters["pm_task"]}
-    add("10/1 기한 매일·매주 점검: 그날 주간에 실시, 확정(CONFIRMED)", bool((routine.status == "CONFIRMED").all())
+    add("시작일 기한 매일·매주 점검: 그날 주간에 실시, 확정(CONFIRMED)", bool((routine.status == "CONFIRMED").all())
         and bool(routine.pm_task_id.map(lambda x: task[x]["cycle_code"] in ("DAILY", "WEEKLY")).all())
-        and bool(routine.done_at.str.startswith("2026-10-01").all()), f"일상 점검 {len(routine)}건")
+        and bool(routine.done_at.str.startswith(live_s).all()), f"일상 점검 {len(routine)}건")
     failed = [o for o in ops if o["op"] == "failed"]
     add("대본 조작이 모두 됨 (안 된 조작 0)", not failed, "; ".join(f"{o['step']}: {o['why']}" for o in failed))
     times = [o["sim_at"] for o in ops if o["op"] != "reset"]
@@ -680,6 +682,7 @@ def run_realtime(cfg: dict, rt_dir: Path, past_dir: Path, masters: dict) -> dict
 
 
 def main():
+    set_profile_from_args()
     cfg = load_config()
     res = run(cfg, ROOT / cfg["run"]["out_dir"], load_masters(cfg))
     for l in res["lines"]:

@@ -66,8 +66,9 @@ def build_mnt(cfg, sim, masters, doc03, rng, pm_recs) -> dict[str, list[dict]]:
         sh = cal.shift_or_near(m)
         return sh, MNT_BY_SHIFT[sh.shift_type][int(r.integers(0, len(MNT_BY_SHIFT[sh.shift_type])))]
 
+    mm = f"{cal.days[0]:%m}"                          # 번호의 월 두 자리 (MW-1001: 10월 1번째)
     for n, (m0, kind, data) in enumerate(full_items, 1):
-        wo_no, rec_no = f"MW-09{n:02d}", f"MR-09{n:02d}"
+        wo_no, rec_no = f"MW-{mm}{n:02d}", f"MR-{mm}{n:02d}"
         if kind == "STOP":
             e = data
             sec = gm[e["alarm_code"]][0]
@@ -148,7 +149,7 @@ def build_mnt(cfg, sim, masters, doc03, rng, pm_recs) -> dict[str, list[dict]]:
         if proc == "OP-30" and sev == "STOP":
             continue
         k += 1
-        rec_no = f"MR-S-09{k:02d}"
+        rec_no = f"MR-S-{mm}{k:02d}"
         sec = gm[code][0]
         d3 = doc03.get(sec, {})
         if proc == "OP-30":

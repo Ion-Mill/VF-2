@@ -1,14 +1,14 @@
 {
-  "_about": "실시간 모드 리허설 대본 (사건 버튼 없음, 2026-10-14 고침). wait_real_sec = 그 조작 전까지 흐르는 실제 초. realtime.py가 기다리지 않고 돌린다. 같은 대본이면 결과가 같다. T05는 10/1 08:00에 90%라 작업자가 교체를 기록한다 (안 하면 약 1시간 뒤 한도 → 362)",
+  "_about": "실시간 모드 리허설 대본 (사건 버튼 없음, 2026-10-14 고침). wait_real_sec = 그 조작 전까지 흐르는 실제 초. realtime.py가 기다리지 않고 돌린다. 같은 대본이면 결과가 같다. T05는 시작 시각에 90%라 작업자가 교체를 기록한다 (안 하면 약 1시간 뒤 한도 → 362)",
   "steps": [
-    {"wait_real_sec": 0, "op": "speed", "value": 60, "_note": "08:00 시작, 60배 (1초 = 1분)"},
-    {"wait_real_sec": 30, "op": "tool_change", "tool_id": "VF2-01-T05", "by": "U02", "_note": "08:30 브리핑의 교체 권고대로 T05 교체 기록"},
-    {"wait_real_sec": 90, "op": "pause", "_note": "10:00 일시정지 — AI 비서 브리핑 설명"},
+    {"wait_real_sec": 0, "op": "speed", "value": 60, "_note": "09:00 시작, 60배 (1초 = 1분)"},
+    {"wait_real_sec": 30, "op": "tool_change", "tool_id": "VF2-01-T05", "by": "U02", "_note": "09:30 브리핑의 교체 권고대로 T05 교체 기록"},
+    {"wait_real_sec": 90, "op": "pause", "_note": "11:00 일시정지 — AI 비서 브리핑 설명"},
     {"wait_real_sec": 30, "op": "resume"},
     {"wait_real_sec": 0, "op": "speed", "value": 10, "_note": "10배로 화면 보기"},
     {"wait_real_sec": 60, "op": "speed", "value": 180, "_note": "10분 지난 뒤 180배"},
-    {"wait_real_sec": 40, "op": "skip", "to": "TODAY_17:00", "_note": "약 12:10 → 17:00 넘기기 (교대 보고서 장면)"},
+    {"wait_real_sec": 40, "op": "skip", "to": "TODAY_DAY_END", "_note": "약 13:10 → 주간 끝 넘기기 (교대 보고서 장면)"},
     {"wait_real_sec": 0, "op": "speed", "value": 180},
-    {"wait_real_sec": 300, "op": "end", "_note": "야간 15시간 = 180배 300초 → 10/2 08:00에서 멈춤"}
+    {"wait_real_sec": 300, "op": "end", "_note": "야간 15시간 = 180배 300초 → 다음 날 09:00에서 멈춤"}
   ]
 }

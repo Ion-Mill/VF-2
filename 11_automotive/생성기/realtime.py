@@ -16,7 +16,7 @@ import argparse
 import sys
 import time
 
-from gen.common import ROOT, check_python, load_config, load_masters
+from gen.common import ROOT, check_python, load_config, load_masters, set_profile_from_args
 from gen.realtime import Realtime, load_script
 
 
@@ -150,7 +150,9 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--script", default=None)
     ap.add_argument("--live", action="store_true")
+    ap.add_argument("--profile", default=None)
     a = ap.parse_args()
+    set_profile_from_args(["--profile", a.profile] if a.profile else [])
     cfg = load_config()
     masters = load_masters(cfg)
     if not (ROOT / cfg["run"]["out_dir"] / "manifest.json").exists():
