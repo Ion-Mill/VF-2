@@ -38,7 +38,8 @@ from server_past import Past  # noqa: E402
 from llm_compose import Composer, sentences  # noqa: E402
 from db_relay import DbRelay  # noqa: E402
 
-PORT = 8765
+PORT = int(os.environ.get("MOM_SIM_PORT", "8765"))      # 도커에서만 바꾼다 (start_all.ps1은 8765로 알고 있음)
+HOST = os.environ.get("MOM_SIM_HOST", "127.0.0.1")        # 도커 안에서는 0.0.0.0 (바깥에는 Caddy만 내놓는다)
 TICK_SEC = 0.25
 NO_STREAM = {"sensor"}                      # 센서는 /api/line/twin 의 equipment[].sensor 로 (1분마다 2건이라 흐름에서 뺌)
 
@@ -58,7 +59,7 @@ class State:
         self.P = Past(ROOT)
         data = HERE / "data.json"
         self.alarms = json.loads(data.read_text(encoding="utf-8"))["alarms"] if data.exists() else {}
-        print("실시간 모드 준비 중 (10/1 08:00, 약 2초) …")
+        print(f"실시간 모드 준비 중 ({self.cfg['realtime']['start'][5:10].replace('-', '/')} {self.cfg['realtime']['start'][11:16]}, 약 2초) …")
         self.rt = Realtime(self.cfg, self.M, drop_dir=GEN / "out_live" / self.cfg["realtime"]["cmm_drop_dir"])   # git 제외 폴더
         self.live = Live(self.rt, self.P)
         self.run_id = int(time.time())           # 서버를 다시 켜도 회차가 겹치지 않게 (브라우저 저장이 회차별, 2026-10-21)
@@ -147,7 +148,7 @@ _CSV = {}
 def read_csv_once(name):
     if name not in _CSV:
         from server_past import read
-        _CSV[name] = read(GEN / "out" / f"{name}.csv")
+        _CSV[name] = read(GEN / S.cfg["run"]["out_dir"] / f"{name}.csv")
     return _CSV[name]
 
 
@@ -176,7 +177,7 @@ def _route(method, p, q, body, rt, live, P):
     key = "/".join(p)
     # 시연 시계·사건 버튼 (API-SIM-01~03)
     if key == "health":
-        return {"ok": True, "run_id": S.run_id, "clock": rt.clock(), "llm_compose": COMPOSER.stats()}
+        return {"ok": True, "run_id": S.run_id, "clock": rt.clock(), "llm_compose": COMPOSER.stats(), "profile": profile_info()}
     if key == "sim/clock":
         if method == "POST":
             try:
@@ -335,7 +336,7 @@ def _route(method, p, q, body, rt, live, P):
         return cur
     if key == "reports/daily":
         rows = [with_memo(daily_with_llm({**r, **S.daily.get(r["work_date"], {})})) for r in P.daily_reports]     # 목록을 읽을 때 아직 확정 안 된 초안(9/30)의 문장 준비가 미리 시작된다
-        ld = live_daily("2026-10-01")
+        ld = live_daily(live_date())
         if ld:
             rows.append(with_memo({**ld, **S.daily.get(ld["work_date"], {})}))
         return {"reports": rows}
@@ -671,8 +672,24 @@ def briefing_text(body):
     return {"ready": all(o["ready"] for o in out), "groups": out}
 
 
+def live_date():
+    """실시간 시작일(YYYY-MM-DD) — 프로필이 정함 (영상용 10/24, 최종용 10/26)."""
+    return fmt_dt(S.rt.sim.cal.to_dt(S.rt.N))[:10]
+
+
+def profile_info():
+    """/api/health 의 profile: 화면이 날짜·교대 문구와 조작판을 이 값으로 정한다 (2026-10-24, 1024_팀원별_요청.md 4장)."""
+    cfg = S.cfg
+    p = cfg.get("profile", {})
+    return {"name": p.get("name"), "clock_mode": "accelerated" if p.get("clock") == "accelerated" else "wall",
+            "controls": p.get("controls", []), "history_start": cfg["period"]["start_date"], "history_end": p.get("history_end"),
+            "scripted_from": p.get("scripted_from"), "live_start": p.get("live_start") or cfg["realtime"]["start"],
+            "shifts": {k: {"start": cfg["shifts"][k]["start"], "end": cfg["shifts"][k]["end"], "break": cfg["shifts"][k]["break"]} for k in ("DAY", "NIGHT")},
+            "daily_report_latest": cfg["shifts"]["daily_report_draft"]["latest"]}
+
+
 def live_daily(d, with_llm=True):
-    """10/1 일일 보고서 AI비서 초안: 야간 교대 보고서가 확정되면 그 즉시, 아니면 다음 날 06:00 (UI설계서 4.3, FR-PRD-04-01)."""
+    """실시간 시작일 일일 보고서 AI비서 초안: 야간 교대 보고서가 확정되면 그 즉시, 아니면 다음 날 shifts.daily_report_draft.latest(지금 07:00) (UI설계서 4.3, FR-PRD-04-01)."""
     rt, live = S.rt, S.live
     cal = rt.sim.cal
     day = next((s for s in cal.shifts if s.shift_id == f"{d}-D"), None)
@@ -680,7 +697,8 @@ def live_daily(d, with_llm=True):
     if not day or not night or d < fmt_dt(cal.to_dt(rt.N))[:10]:
         return None
     nrep = S.reports.get(night.shift_id, {})
-    six = night.end.replace(hour=6, minute=0)
+    latest = S.cfg["shifts"]["daily_report_draft"]["latest"]
+    six = night.end.replace(hour=int(latest[:2]), minute=int(latest[3:5]))
     if not (nrep.get("status") == "CONFIRMED" or rt.now() >= six):
         return None
     a, b = cal.to_min(day.start), min(cal.to_min(night.end), rt.m)
@@ -702,7 +720,7 @@ def live_daily(d, with_llm=True):
     return {"work_date": d, "status": "AI_DRAFT", "target_qty": 180, "actual_qty": (dr.get("actual_qty") or 0) + (nr.get("actual_qty") or 0),
             "defect_qty": (dr.get("defect_qty") or 0) + (nr.get("defect_qty") or 0), "oee_pct": k["oee_pct"], "failure_loss_qty": round(fl, 1),
             "speed_loss_qty": round(spd, 1), "issues_summary": issues, "confirmed_by": None, "confirmed_at": None, "current_version": 0,
-            "created_by": "야간 교대 보고서 확정 즉시" if nrep.get("status") == "CONFIRMED" else "06:00 (야간 미확정)"}
+            "created_by": "야간 교대 보고서 확정 즉시" if nrep.get("status") == "CONFIRMED" else f"{latest} (야간 미확정)"}
 
 
 def quality_summary(P, rt):
@@ -791,10 +809,10 @@ def main():
     # Windows는 SO_REUSEADDR이면 같은 포트에 서버가 둘 떠서 요청이 엇갈린다 — 이미 떠 있으면 바로 멈춘다
     ThreadingHTTPServer.allow_reuse_address = os.name != "nt"
     try:
-        srv = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
+        srv = ThreadingHTTPServer((HOST, PORT), Handler)
     except OSError:
         sys.exit(f"포트 {PORT}에 시연 서버가 이미 떠 있습니다. 그 창을 끄거나 그대로 쓰세요.")
-    print(f"준비 끝 — http://127.0.0.1:{PORT}  (시연 시각 {S.rt.clock()['sim_at']}, 배속 ×{S.rt.speed})  Ctrl+C로 끝")
+    print(f"준비 끝 — http://{HOST}:{PORT}  (시연 시각 {S.rt.clock()['sim_at']}, 배속 ×{S.rt.speed})  Ctrl+C로 끝")
     try:
         srv.serve_forever()
     except KeyboardInterrupt:

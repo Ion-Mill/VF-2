@@ -31,7 +31,8 @@ def num(v):
 class Past:
     def __init__(self, root: Path):
         """root = 11_automotive 폴더."""
-        out, ms = root / "생성기" / "out", root / "생성기" / "masters"
+        from gen.common import load_config      # 프로필(MOM_PROFILE)이 정한 기록 폴더 (out_video / out_final)
+        out, ms = root / "생성기" / load_config()["run"]["out_dir"], root / "생성기" / "masters"
         self.root = root
         r = lambda n: read(out / f"{n}.csv")
         self.shift_reports = r("shift_report")
@@ -138,7 +139,7 @@ class Past:
 
     # ---------- 알림 ----------
     def open_notifications(self, at_iso: str) -> list[dict]:
-        """그 시각까지 처리 안 된 과거 알림 (10/1 08:00 브리핑·알림 탭의 처음 상태)."""
+        """그 시각까지 처리 안 된 과거 알림 (실시간 시작 시각 브리핑·알림 탭의 처음 상태)."""
         out = []
         for n in self.notifications:
             if n["raised_at"] <= at_iso and (n["is_processed"] != "true" or (n["processed_at"] or "") > at_iso):
