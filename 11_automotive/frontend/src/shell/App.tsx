@@ -337,6 +337,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
   const [acct, setAcct] = useState(false);
   const [side, setSide] = useState<EveTab | null>(null);
   const [bandOff, setBandOff] = useState<string[]>([]); // 알림 띠에서 닫은 주의 알람 (사용자 요청 2026-10-22, 긴급은 못 닫음)
+  const [ctlOpen, setCtlOpen] = useState(true); // 홈 3D 조작 줄 접기·펴기 (사용자 요청 2026-10-24)
   const [eveI, setEveI] = useState(0); // 홈 이브 알림 띠에서 보고 있는 알람 번호
   const [zone, setZone] = useState<string | null>(null);
   const curGroup = GROUPS.find((g) => g.subs.some(([, s2]) => s2 === screen) || g.related?.includes(screen));
@@ -571,12 +572,15 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
                 {home ? (
                 <div className="pointer-events-auto absolute left-5 top-[92px] flex flex-row gap-1 rounded-stage border border-line bg-white p-1.5 shadow-card">{/* 홈: 왼쪽 위 가로 줄 (시안 C 확정, 2026-10-20) */}
                   {(() => { const sb = 'h-12 w-14 rounded-card text-card font-semibold text-ink-2 hover:bg-tile'; return (<>
+                    {ctlOpen && <>
                     <span className="flex h-12 w-14 items-center justify-center rounded-card bg-brand-tint text-card font-bold text-brand-ink" aria-current="true">3D</span>
                     <button onClick={() => go('layout2d')} className={sb}>2D</button>
                     <button onClick={() => { api3d()?.setView('front'); setSnapSel(null); }} className={sb}>전체</button>
                     <button onClick={() => api3d()?.setView('top')} className={sb}>위</button>
                     <button onClick={() => api3d()?.nav('zoom', 0.85)} className={`${sb} text-title`} aria-label="확대">+</button>
                     <button onClick={() => api3d()?.nav('zoom', 1.18)} className={`${sb} text-title`} aria-label="축소">−</button>
+                    </>}
+                    <button onClick={() => setCtlOpen((o) => !o)} className="h-12 w-10 rounded-card text-title font-semibold text-ink-2 hover:bg-tile" aria-expanded={ctlOpen} aria-label={ctlOpen ? '3D 조작 줄 접기' : '3D 조작 줄 펴기'} title={ctlOpen ? '접기' : '펴기'}>{ctlOpen ? '‹' : '›'}</button>
                   </>); })()}
                 </div>
                 ) : screen === 'field' ? (

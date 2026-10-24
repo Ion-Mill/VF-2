@@ -40,7 +40,7 @@ const TAG_COLOR: Record<Tone, string> = { red: 'text-[#b4282d]', amber: 'text-[#
 const SUM_BOX = 'flex min-w-0 flex-col gap-1.5 rounded-2xl border border-[#dbe5f3] bg-[#ffffff] px-3 py-3';
 const SUM_HEAD = 'flex items-center gap-1.5 whitespace-nowrap text-[15px] font-extrabold';
 const SUM_NOTE = 'text-[14px] leading-snug text-[#4b4766]';
-const SUM_NUM = 'whitespace-nowrap font-mono text-[28px] font-extrabold leading-none tracking-[-.02em]';
+const SUM_NUM = 'mt-auto whitespace-nowrap font-mono text-[28px] font-extrabold leading-none tracking-[-.02em]';
 type CheckBase = { userId: string; shiftId: string; runId: number | null };
 function Board({ todos, sum, lockout, onOpenLast, aiNote, check }: { todos: Todo[]; sum: Summary; lockout: string[]; onOpenLast?: () => void; aiNote?: React.ReactNode; check: CheckBase }) {
   // 체크 저장 (2026-10-20): 이 브라우저(시연 회차별)에 늘 남기고, 백엔드가 있으면 같이 보낸다. 열 때 서버 값이 오면 서버 것을 따른다 (briefChecks.ts)
@@ -74,16 +74,15 @@ function Board({ todos, sum, lockout, onOpenLast, aiNote, check }: { todos: Todo
       <div className="grid grid-cols-2 gap-2">
         <div className={SUM_BOX}>
           <span className={SUM_HEAD}><SecIcon title="생산" size={26} />이번 교대 목표</span>
-          <span aria-hidden="true" className="text-[13px]">&nbsp;</span>{/* 오른쪽 칸의 날짜 줄만큼 띄워 큰 숫자 높이를 맞춘다 */}
           <b className={SUM_NUM}>{sum.target}<span className="text-[16px]">개</span></b>
-          <span className={SUM_NOTE}>이월 {sum.carry} · 작업지시 {sum.orders}<br />예방 정비 {sum.pm}</span>
+          <span className={SUM_NOTE}>이월 {sum.carry}<br />작업지시 {sum.orders}<br />예방 정비 {sum.pm}</span>{/* 오른쪽 칸과 3줄씩 맞춘다 */}
         </div>
         <div className={SUM_BOX}>
           <span className={SUM_HEAD}><SecIcon title="이력" size={26} />지난 교대</span>
           {sum.last ? (<>
-            <span className="flex items-center gap-1.5 text-[13px] text-[#6b6683]">{sum.last.label}<span className="whitespace-nowrap rounded-md bg-[#eef3fa] px-1.5 text-[12px] font-bold text-[#2a55b8]">{sum.last.confirmed ? '확정' : '잠정'}</span></span>
             <b className={SUM_NUM}>{sum.last.good ?? '—'}<span className="text-[16px] text-[#6b6683]">/{sum.last.target}</span></b>
             <span className={SUM_NOTE}>양품 {sum.last.good ?? '—'} · 불량 {sum.last.defect}
+              <br /><span className="inline-flex items-center gap-1.5">{sum.last.label}<span className="rounded-md bg-[#eef3fa] px-1.5 text-[12px] font-bold text-[#2a55b8]">{sum.last.confirmed ? '확정' : '잠정'}</span></span>
               {onOpenLast && <><br /><button onClick={onOpenLast} className="font-semibold text-[#2a55b8] underline">보고서 열기</button></>}</span>
           </>) : <span className={SUM_NOTE}>보고서 없음</span>}
         </div>
