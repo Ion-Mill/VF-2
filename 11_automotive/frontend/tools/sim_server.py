@@ -93,7 +93,18 @@ class State:
         self.relay = DbRelay.from_env(self._relay_clock)
         if self.relay and not self.relay.start():
             self.relay = None
-        self._push(self.rt.events)
+        self._boot_events(self.rt.events)
+
+    def _boot_events(self, evs):
+        """켤 때(또는 처음으로 뒤) 한꺼번에 만들어진 사건. 영상용은 시작 시각부터라 그대로 화면 흐름에 넣는다.
+        실제 시각 모드(최종용)는 오전 대본·따라잡기로 만든 **지난 사건**이라 화면 흐름에 넣지 않는다 — 넣으면 화면이 접속할 때
+        이미 끝난 오전 충돌 알람(992)을 방금 난 긴급 알림처럼 띄운다 (2026-10-24). 공용 DB 중계에는 실시간 시작 시각 이후 것만 보낸다."""
+        if not self.wall:
+            self._push(evs)
+            return
+        if self.relay:
+            start = self.cfg["profile"]["live_start"]
+            self.relay.feed([e for e in evs if (e.get("at") or "") >= start])
 
     def wall_now(self) -> datetime:
         """실제 시각(KST). 리허설용 MOM_PRETEND_NOW가 있으면 그 시각에서 흐르는 것처럼."""
@@ -162,7 +173,10 @@ class State:
             self.ships.clear()
             self.pm_open.clear()
             COMPOSER.clear()                         # 비서가 다듬어 둔 문장도 새 회차에 가져가지 않는다
-            self._push(self.rt.events[n0:] if len(self.rt.events) > n0 else self.rt.events)
+            if self.wall:
+                self.buf.clear()                     # 번호(seq)는 이어 가고 내용만 비움 — 지난 알림이 다시 뜨지 않게
+            else:
+                self._push(self.rt.events[n0:] if len(self.rt.events) > n0 else self.rt.events)
 
 
 S: State | None = None
@@ -273,6 +287,10 @@ def _route(method, p, q, body, rt, live, P):
     # 3D 라인 뷰·생산 (API-LINE-01~07)
     if key == "line/twin":
         t = live.twin()
+        if S.wall:
+            # 최종용: 실시간 시작 전(오전 대본)에 난 알람은 '지난 기록'이다. 지금 알람 목록에 두면 화면이 접속할 때마다 이미 끝난 오전 충돌을
+            # 처리 안 된 긴급 알람처럼 띄우고 작업지시서 초안을 새로 만든다 (처리 표시는 브라우저마다 따로 저장되므로). 지난 기록(maint/history)으로 옮긴다
+            t["alarms"] = [a for a in t["alarms"] if a["occurred_at"][:16] >= S.cfg["profile"]["live_start"][:16]]
         t["run_id"] = S.run_id
         t["production"] = live.production()
         t["kpi"] = live.kpi()
@@ -336,8 +354,10 @@ def _route(method, p, q, body, rt, live, P):
     if key == "maint/pm-schedule":
         return live.pm()
     if key == "maint/history":
+        morning = [live.alarm_json(e) for e in rt.sim.alarm_events if e["id"] > rt.past["alarm_event"]
+                   and iso(live.to_dt(e["occurred_m"]))[:16] < S.cfg["profile"]["live_start"][:16]] if S.wall else []     # 최종용: 오전 대본의 알람은 지난 기록
         return {"work_orders": P.work_orders, "steps": P.wo_steps, "work_records": P.work_records, "checks": P.wr_checks,
-                "parts": P.wr_parts, "alarms": P.alarms}
+                "parts": P.wr_parts, "alarms": P.alarms + morning}
     # 보고서 (API-RPT-01~05)
     if key == "reports/shift":
         live_ids = [s.shift_id for s in rt.sim.cal.shifts if s.work_date >= rt.sim.cal.to_dt(rt.N).date()]
