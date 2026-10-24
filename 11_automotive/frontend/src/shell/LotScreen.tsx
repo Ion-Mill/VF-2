@@ -196,10 +196,10 @@ export function LotScreen() {
             {/* [3] 수량 */}
             <section className={card}>
               <CardHead d={D_BOX} title="수량" right={<button onClick={() => go('quality', lot)} className="h-9 rounded-ctl border border-line bg-white px-3 text-small font-semibold text-ink-2 hover:border-brand-line hover:text-brand-ink">검사 기록 보기</button>} />
-              <QtyRow icon='<path d="M12 3v12M7 10l5 5 5-5M4 21h16"/>' label="투입" segs={[[L.input_qty, '']]} total={L.input_qty} num={`${L.input_qty}`} />
-              <QtyRow icon='<circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/>' label="OP-50 판정" segs={[[L.gauge_pass_qty ?? 0, ''], [fail, 'bg-crit']]} total={L.input_qty} num={`${(L.gauge_pass_qty ?? 0) + fail} / ${L.input_qty}`} sub={`합격 ${L.gauge_pass_qty ?? 0}, 불합격 ${fail}`} />
+              <QtyRow icon='<path d="M12 3v12M7 10l5 5 5-5M4 21h16"/>' label="투입" tone="input" segs={[[L.input_qty, '']]} total={L.input_qty} num={`${L.input_qty}`} />
+              <QtyRow icon='<circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/>' label="OP-50 판정" tone="judge" segs={[[L.gauge_pass_qty ?? 0, ''], [fail, 'bg-crit']]} total={L.input_qty} num={`${(L.gauge_pass_qty ?? 0) + fail} / ${L.input_qty}`} sub={`합격 ${L.gauge_pass_qty ?? 0}, 불합격 ${fail}`} />
               <QtyRow icon='<path d="M3 9h18l-2-5H5zM5 9v11h14V9M9 20v-6h6v6"/>' label="완제품 입고" segs={[[L.fg_qty, '']]} total={L.input_qty} num={`${L.fg_qty}`} sub={L.on_hold ? `보류 ${L.input_qty - L.scrap_qty}` : undefined} outline={L.on_hold} />
-              <QtyRow icon='<path d="M3 6h11v10H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>' label="출하" segs={[[shipped, '']]} total={L.input_qty} num={`${shipped}`} sub={blocked ? '출하 금지' : ships.map((s) => `${s.shipment_no} ${md(s.shipped_at)}`).join(', ') || undefined} />
+              <QtyRow icon='<path d="M3 6h11v10H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/>' label="출하" tone="ship" segs={[[shipped, '']]} total={L.input_qty} num={`${shipped}`} sub={blocked ? '출하 금지' : ships.map((s) => `${s.shipment_no} ${md(s.shipped_at)}`).join(', ') || undefined} />
             </section>
 
             {/* [4] 보류 · 해제 · 폐기 */}
@@ -235,11 +235,14 @@ export function LotScreen() {
 }
 
 // 수량 한 줄: 아이콘 칸 + 이름(줄바꿈 없음) | 옅은 파랑 막대(불합격 = 빨강) | 숫자
-function QtyRow({ icon, label, segs, total, num, sub, outline }: { icon: string; label: string; segs: [number, string][]; total: number; num: string; sub?: string; outline?: boolean }) {
+// 단계마다 색 (2026-10-24): [막대, 아이콘 칸 바탕, 아이콘] — 테마 공정·상태 색 계열, 막대는 한 단계 옅은 파스텔
+const QTY_TONE = { input: ['bg-[#a9b6c8]', 'bg-op4', 'text-op4-i'], judge: ['bg-[#7fd3a4]', 'bg-ok-bg', 'text-ok'], fg: ['bg-[#8fb0f0]', 'bg-brand-tint', 'text-brand'], ship: ['bg-[#7cc6d4]', 'bg-op1', 'text-op1-i'] } as const; // 막대는 파스텔 (사용자 요청 2026-10-24)
+function QtyRow({ icon, label, segs, total, num, sub, outline, tone = 'fg' }: { icon: string; label: string; segs: [number, string][]; total: number; num: string; sub?: string; outline?: boolean; tone?: keyof typeof QTY_TONE }) {
+  const [bar, tileBg, tileFg] = QTY_TONE[tone];
   return (
     <div className="grid grid-cols-[168px_1fr_112px] items-center gap-4 border-t border-line-soft py-3">
-      <span className="flex items-center gap-2.5 whitespace-nowrap text-body font-semibold"><span className="inline-flex h-8 w-8 items-center justify-center rounded-[9px] bg-brand-tint text-brand"><Svg d={icon} size={16} /></span>{label}</span>
-      <div className={`flex h-2.5 gap-0.5 overflow-hidden rounded-full bg-track ${outline ? 'outline outline-2 outline-offset-2 outline-ink' : ''}`}>{segs.filter(([n]) => n > 0).map(([n, c], i) => <div key={i} className={`h-full ${c || 'bg-brand-line'}`} style={{ width: `${(n / Math.max(total, 1)) * 100}%` }} />)}</div>
+      <span className="flex items-center gap-2.5 whitespace-nowrap text-body font-semibold"><span className={`inline-flex h-8 w-8 items-center justify-center rounded-[9px] ${tileBg} ${tileFg}`}><Svg d={icon} size={16} /></span>{label}</span>
+      <div className={`flex h-2.5 gap-0.5 overflow-hidden rounded-full bg-track ${outline ? 'outline outline-2 outline-offset-2 outline-ink' : ''}`}>{segs.filter(([n]) => n > 0).map(([n, c], i) => <div key={i} className={`h-full ${c || bar}`} style={{ width: `${(n / Math.max(total, 1)) * 100}%` }} />)}</div>
       <div className="text-right"><b className="font-mono text-band">{num}</b>{sub && <div className="text-[13px] text-ink-3">{sub}</div>}</div>
     </div>);
 }
