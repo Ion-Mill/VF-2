@@ -40,7 +40,7 @@ export default function DocBox() {
   if (role === 'SUP') {
     wos.filter((w) => w.state === 'draft' || w.state === 'editing').forEach((w) => { const m = minutesSince(w.created); todo.push({ text: `${m >= 120 ? '▲' : 'ⓘ'} 승인 대기 ${m}분 [${w.no}] ${MACHINES[w.machine].name} ${w.code}`, go: () => openWo(w.no), warn: m >= 120 }); });
     wrs.filter((r) => r.state === 'confirmed').forEach((r) => todo.push({ text: `ⓘ 확인 대기 작업기록서 [${r.no}]`, go: () => openRecord(r.woNo) }));
-    srs.filter((r) => r.kind === 'after' && r.state === 'confirmed' && !r.checkedBy).forEach((r) => todo.push({ text: `ⓘ 확인 대기 [사후] ${r.no} ${MACHINES[r.machine].name}`, go: () => go('sr', r.no) })); // FR-MNT-05-21
+    srs.filter((r) => r.kind === 'after' && r.state === 'confirmed' && !r.checkedBy).forEach((r) => todo.push({ text: `ⓘ 확인 대기 [선조치] ${r.no} ${MACHINES[r.machine].name}`, go: () => go('sr', r.no) })); // FR-MNT-05-21
     (shiftReports ?? []).filter((r) => r.status !== 'CONFIRMED' && r.partial === false).forEach((r) => todo.push({ text: `ⓘ 미확정 교대 보고서 ${r.shift_id}`, go: () => go('shift', r.shift_id) }));
   }
   if (role === 'MGR') {
@@ -68,7 +68,7 @@ export default function DocBox() {
       .map((r) => { const a = alerts.find((x) => x.id === r.alertId); return { r, a }; })
       .filter(({ r }) => (!machine || MACHINES[r.machine].name === machine) && (!code || r.code.includes(code)) && has(`${r.action} ${r.memo}`))
       .map(({ r, a }) => ({ key: r.no, date: a?.time ?? r.start ?? '', go: () => go('sr', r.no), cells: [r.no, MACHINES[r.machine].name, r.code || '—', md(a?.time ?? r.start),
-        r.state === 'open' ? '작성 중' : r.kind === 'after' ? (r.checkedBy ? '확인됨' : '확인 대기') : '확정', `${r.kind === 'cause' ? '[원인 점검] ' : r.kind === 'after' ? '[사후] ' : ''}${r.action || '—'}`] }));
+        r.state === 'open' ? '작성 중' : r.kind === 'after' ? (r.checkedBy ? '확인됨' : '확인 대기') : '확정', `${r.kind === 'cause' ? '[원인 점검] ' : r.kind === 'after' ? '[선조치] ' : ''}${r.action || '—'}`] }));
   } else if (tab === '교대 보고서') {
     rows = [...(shiftReports ?? [])].reverse().filter((r) => has(String(r.notable_text))).map((r) => ({ key: r.shift_id, date: r.shift_id, warn: r.status !== 'CONFIRMED' && r.partial === false && old(r.end_at), go: () => go('shift', r.shift_id),
       cells: [r.shift_id, '라인', '—', md(r.shift_id), r.status === 'CONFIRMED' ? '확정' : r.status === 'AI_DRAFT' ? 'AI비서 초안' : '수정 중', `실적 ${r.actual_qty} / 총 목표 ${r.target_qty} · 불량 ${r.defect_qty}`] }));
@@ -120,7 +120,7 @@ export default function DocBox() {
 
         <div className={CARD.replace('mx-auto max-w-[1100px] ', '')}>
           <div className="flex flex-wrap items-center gap-2">{/* 문서 이름은 화면 머리 제목에 (통일안 2026-10-24) */}
-            {(role === 'OPR' || role === 'MNT') && <button onClick={() => openAfter()} className={`${BTN} ml-auto`} title="알람 없이 먼저 한 일을 지난 시각으로 적어요">+ 사후 기록</button>}</div>
+            {(role === 'OPR' || role === 'MNT') && <button onClick={() => openAfter()} className={`${BTN} ml-auto`} title="알람 없이 먼저 한 일을 지난 시각으로 적어요">+ 선조치 기록</button>}</div>
           {/* [2] 필터 — 한 줄 도구 막대 */}
           <div className="mt-3 flex flex-wrap items-center gap-2">
             {stateOpts.length > 0 && <label className="flex items-center gap-1.5 text-body font-semibold text-ink-2">상태:<select value={state} onChange={(e) => setState(e.target.value)} className={pill}><option value="">전체</option>{stateOpts.map((x) => <option key={x}>{x}</option>)}</select></label>}

@@ -33,7 +33,7 @@ export interface WorkRecord {
 export interface SimpleRecord {
   no: string; alertId: string; machine: MachineId; kind: 'alarm' | 'cause' | 'after'; state: 'open' | 'confirmed'; action: string; parts: { item: string; qty: number }[];
   lock: boolean[]; memo: string; by?: string; savedBy?: string; revisions: Revision[]; code: string;
-  // 사후 기록 (kind 'after', FR-MNT-05-16~22): 알람 없이 먼저 한 일을 지난 시각으로. alertId·code는 비움
+  // 선조치 기록 (kind 'after', FR-MNT-05-16~22): 알람 없이 먼저 한 일을 지난 시각으로. alertId·code는 비움
   stopKey?: string; start?: string; end?: string; urgent?: string; urgentText?: string;
   lockDone?: boolean; lockSkip?: string; checkedBy?: string; checkedAt?: string;
 }

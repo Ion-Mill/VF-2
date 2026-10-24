@@ -106,9 +106,11 @@ export default function SimpleRecordScreen({ no }: { no: string }) {
   );
 }
 
-// 사후 기록 (사후작업기록 초안 4.2·4.3, FR-MNT-05-16~22) — 알람 없이 먼저 한 일을 지난 시각으로 적고, 확정하면 반장이 확인해야 끝난다.
+// 선조치 기록 (사후작업기록 초안 4.2·4.3, FR-MNT-05-16~22) — 알람 없이 먼저 한 일을 지난 시각으로 적고, 확정하면 반장이 확인해야 끝난다.
 // 1차(2026-10-24): 사진·이브 메모 정리·교대 보고서 연결은 아직 없음
-const AFTER_ACTS = ['칩·이물 걷어냄', '공구 점검·교체', '조임·청소', '누설·흘림 막음', '설정·조건 바꿈', '기타 → 메모']; // [가상] 알람이 없어 고장 대응 안내 조치 목록 대신 쓰는 일반 조치
+// 한 일 = 일 범위 둘 [가상] (고장 대응 매뉴얼 DOC-03 점검 순서의 작업자 줄 · 보전 줄 기준, 2026-10-24). 보전 범위는 보전 담당에게만 보이고, 고르면 보전만 확정
+const OPR_ACTS = ['칩·이물 걷어냄', '절삭유·윤활유 보충', '도어 밖에서 부딪힘·손상 확인', '공구 상태 확인·교체', '보전 담당을 부름', '기타 → 메모'];
+const MNT_ACTS = ['볼스크류·리니어 가이드 점검', '커플링 정렬 확인', '서보 모터·케이블·커넥터 점검 (저항 측정)', '서보 앰프 냉각 팬·단자 조임 점검', '주축 점검 (벨트·드로바·공구 균형)', '축 윤활 장치 점검 (압력·체크밸브·누설)', '공압·센서 점검·교체', '부품 교체'];
 function AfterRecord({ rec }: { rec: SimpleRecord }) {
   const { putSr, user, role, back, go, toast, reloadInv, inv } = useApp();
   const [v, setV] = useState<SimpleRecord>(rec);
@@ -116,7 +118,9 @@ function AfterRecord({ rec }: { rec: SimpleRecord }) {
   const [note, setNote] = useState('');
   const done = rec.state === 'confirmed', checked = !!rec.checkedBy;
   const canEdit = (role === 'OPR' || role === 'MNT') && !done;
-  const heavy = v.lockDone === true || v.parts.length > 0;     // 잠금·표지를 했거나 부품을 쓴 일은 보전 담당만 확정 (FR-MNT-05-20)
+  const mntWork = MNT_ACTS.includes(v.action);
+  const heavy = mntWork || v.lockDone === true || v.parts.length > 0;     // 보전 범위 일 · 잠금·표지를 했거나 부품을 쓴 일은 보전 담당만 확정 (FR-MNT-05-20)
+  const showMnt = role === 'MNT' || mntWork;
   const who = role === 'MNT' || (role === 'OPR' && !heavy);
   const lockN = v.lock.filter(Boolean).length;
   const start = v.start ?? '', end = v.end ?? '';
@@ -131,10 +135,10 @@ function AfterRecord({ rec }: { rec: SimpleRecord }) {
   const cmp = (x: SimpleRecord) => ({ ...x, machine: MACHINES[x.machine].name, urgent: URGENT.find(([c]) => c === x.urgent)?.[1] ?? '', lockDone: x.lockDone === undefined ? '' : x.lockDone ? '했다' : '안 했다',
     parts: x.parts.map((p) => `${inv?.items.find((i) => i.item_no === p.item)?.item_name ?? p.item} ×${p.qty}`), lock: `${x.lock.filter(Boolean).length}/${LOCK.length}` }) as unknown as Record<string, unknown>;
   const changes = diff(cmp(rec), cmp(v), names);
-  const save = () => { if (!changes.length) { toast('바뀐 내용 없음'); return; } putSr({ ...v, savedBy: v.savedBy ?? user.name, revisions: rev(rec.revisions, rec.revisions.length ? '수정' : '처음 저장', user.name, role, changes) }); toast(`사후 기록 ${rec.no} 저장`); };
+  const save = () => { if (!changes.length) { toast('바뀐 내용 없음'); return; } putSr({ ...v, savedBy: v.savedBy ?? user.name, revisions: rev(rec.revisions, rec.revisions.length ? '수정' : '처음 저장', user.name, role, changes) }); toast(`선조치 기록 ${rec.no} 저장`); };
   const doConfirm = async () => {
     putSr({ ...v, state: 'confirmed', by: user.name, revisions: rev(rec.revisions, '확정', user.name, role, changes) });
-    for (const p of v.parts) { try { await api('inventory/txns', { role, user_id: user.id, item_no: p.item, txn_type: 'USE', qty: p.qty, memo: `사후 기록 ${rec.no}` }); } catch (e) { toast((e as Error).message); } }
+    for (const p of v.parts) { try { await api('inventory/txns', { role, user_id: user.id, item_no: p.item, txn_type: 'USE', qty: p.qty, memo: `선조치 기록 ${rec.no}` }); } catch (e) { toast((e as Error).message); } }
     reloadInv();
     setNote(`확정 · 반장 확인을 기다려요${v.parts.length ? ` · 재고 ${v.parts.length}건 차감` : ''}`);
   };
@@ -143,12 +147,12 @@ function AfterRecord({ rec }: { rec: SimpleRecord }) {
   const box = 'h-11 rounded-ctl border border-line px-3 text-card disabled:bg-tile';
   return (
     <DocPage>
-      <DocHead title={<>사후 기록 <span className="font-mono">{rec.no}</span></>}
+      <DocHead title={<>선조치 기록 <span className="font-mono">{rec.no}</span></>}
         right={<><Steps list={['입력', '확정', '반장 확인']} cur={checked ? 2 : done ? 1 : 0} />{(role !== 'OPR' || rec.savedBy === user.name || rec.by === user.name) && <button onClick={() => go('revs', `SR:${rec.no}`)} className={BTN}>수정 이력</button>}<button onClick={printDoc} className={BTN}>인쇄</button><button onClick={back} className={BTN}>닫기</button></>} />
-      <Band tone="warn" title={<>[사후] {MACHINES[v.machine].name} · 작업 <span className="font-mono">{hm(start)}~{hm(end)}</span> ({mins > 0 ? `${mins}분` : '시각 확인'})</>}
+      <Band tone="warn" title={<>[선조치] {MACHINES[v.machine].name} · 작업 <span className="font-mono">{hm(start)}~{hm(end)}</span> ({mins > 0 ? `${mins}분` : '시각 확인'})</>}
         desc="알람 없이 먼저 한 일을 지난 시각으로 적어요. 확정하면 반장이 확인해야 끝나요."
         chips={<>
-          <Chip tone="warn">사후</Chip>
+          <Chip tone="warn">선조치</Chip>
           <Chip mono>작업 {md(start)} {hm(start)}~{hm(end)}</Chip>
           <Chip mono>{written ? `작성 ${md(written)} ${hm(written)}` : '작성 전'}</Chip>
           <Chip tone="solid-warn">확정: {heavy ? '보전 담당자' : '작업자 · 보전 담당자'}</Chip>
@@ -173,9 +177,13 @@ function AfterRecord({ rec }: { rec: SimpleRecord }) {
         <input aria-label="이유 한 줄" disabled={!canEdit} value={v.urgentText ?? ''} onChange={(e) => setSet('urgentText', e.target.value)} placeholder="한 줄 (예: 칩이 감겨 공구가 부러질 것 같았음)" className={`${box} mt-2 w-full`} />
       </Sec>
       <Sec title="한 일">
-        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">{AFTER_ACTS.map((o) => (
-          <label key={o} className={`flex min-h-[52px] items-center gap-3 rounded-tile border px-3 text-card ${v.action === o ? 'border-ink bg-tile font-semibold' : 'border-line bg-white'} ${canEdit ? 'cursor-pointer' : ''}`}>
-            <input type="radio" className="h-5 w-5 accent-ink" disabled={!canEdit} checked={v.action === o} onChange={() => setSet('action', o)} />{o}</label>))}</div>
+        {([['작업자 범위', OPR_ACTS], ...(showMnt ? [['보전 범위 · 보전 담당이 확정', MNT_ACTS]] : [])] as [string, string[]][]).map(([head, list]) => (
+          <div key={head} className="mb-3">
+            <div className="mb-1.5 text-small font-semibold text-ink-2">{head}</div>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">{list.map((o) => (
+              <label key={o} className={`flex min-h-[52px] items-center gap-3 rounded-tile border px-3 text-card ${v.action === o ? 'border-ink bg-tile font-semibold' : 'border-line bg-white'} ${canEdit ? 'cursor-pointer' : ''}`}>
+                <input type="radio" className="h-5 w-5 accent-ink" disabled={!canEdit} checked={v.action === o} onChange={() => setSet('action', o)} />{o}</label>))}</div>
+          </div>))}
         <label className="mt-2 block text-small font-semibold text-ink-2">메모<textarea disabled={!canEdit} value={v.memo} onChange={(e) => setSet('memo', e.target.value)} rows={2} placeholder="소리 나서 멈추고 칩 엉킨 거 걷어냄. 공구는 이상 없음" className="mt-1 w-full rounded-ctl border border-line px-3 py-2 text-card font-normal text-ink disabled:bg-tile" /></label>
       </Sec>
       <Sec title="잠금·표지" right={v.lockDone ? <LockHead value={v.lock} onChange={(l) => setSet('lock', l)} disabled={!canEdit} /> : undefined}>
@@ -197,13 +205,13 @@ function AfterRecord({ rec }: { rec: SimpleRecord }) {
       <Acts>
         {canEdit && <button onClick={save} className={BTN}>저장</button>}
         {canEdit && who && <button disabled={!ready} onClick={() => setConfirm(true)} className={DARK}>확정</button>}
-        {canEdit && !who && <Chip>확정: 보전 담당자 (잠금·표지·부품이 있는 일)</Chip>}
+        {canEdit && !who && <Chip>확정: 보전 담당자 ({mntWork ? '보전 범위 일' : '잠금·표지·부품이 있는 일'})</Chip>}
         {done && !checked && role === 'SUP' && <button onClick={doCheck} className={DARK}>반장 확인</button>}
         {done && <Chip><LockIcon /> 확정 · {rec.by}</Chip>}
         {!canEdit && !done && RO}
       </Acts>
       {note && <p className="rounded-ctl bg-tile px-3 py-2 text-body font-semibold">{note}</p>}
-      {confirm && <ConfirmBox title="사후 기록을 확정할까요?" okLabel="확정" body={`확정하면 반장에게 확인 요청이 가요.${v.lockDone === false ? ' 잠금·표지를 안 한 이유가 빨간 줄로 남아요.' : ''}${v.parts.length ? ' 사용한 소모품은 재고에서 빠집니다.' : ''}`}
+      {confirm && <ConfirmBox title="선조치 기록을 확정할까요?" okLabel="확정" body={`확정하면 반장에게 확인 요청이 가요.${v.lockDone === false ? ' 잠금·표지를 안 한 이유가 빨간 줄로 남아요.' : ''}${v.parts.length ? ' 사용한 소모품은 재고에서 빠집니다.' : ''}`}
         onOk={() => { setConfirm(false); void doConfirm(); }} onCancel={() => setConfirm(false)} />}
     </DocPage>
   );

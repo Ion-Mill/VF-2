@@ -260,7 +260,7 @@ class Realtime:
             sim.maint.append(w)
             sim.maint.sort(key=lambda x: x.start_m)
             ev["window"] = w
-        elif code == "S7":                                      # 알람 없이 작업자가 멈춤 (사유 없음) → 화면의 '기록 없는 정지' → 사후 기록
+        elif code == "S7":                                      # 알람 없이 작업자가 멈춤 (사유 없음) → 화면의 '기록 없는 정지' → 선조치 기록
             mc.holds.appendleft(Hold("IDLE", None, end=m + sc["idle_min"], wall=True))
             ev["end_plan_m"] = m + sc["idle_min"]
         self.active = ev

@@ -10,7 +10,7 @@
 | 최종본 조사 근거 | R1 `docs/line/3D_설비규격/3D_설비규격_조사.md` (설비 크기·공장 배치), R2 `docs/background/데이터보관/데이터보관기간_조사.md` (보관 기간), R3 `docs/quality/CMM_자동입력/CMM_자동입력_조사.md` (CMM 자동 입력), R4 `docs/production/운영기준_근거/병목조치_반복알람_우선순위_조사.md` (반복 알람 2단계·보고 순위·필수 정지), R5 `docs/production/운영기준_근거/완제품_재고담당_현장화면_조사.md` (완제품·출하·재고 담당·06:00) |
 | 다음 문서 | 물리 ERD, AI 비서 설계 (기획서 18장 3·5번). API 명세서·테스트 계획서는 작성 완료 ([API명세서_v1.md](API명세서_v1.md), [테스트계획서_v1.md](테스트계획서_v1.md)) |
 | 엔터티 수 | **60개** (8개 주제 영역. 2026-10-13 `chat_log` 채팅 기록, 2026-10-24 `work_record_photo` 작업기록 사진 추가) |
-| 코드 목록·관계·규칙 | 코드 목록 **55개** (6.1~6.55, 6.55 = 2026-10-24 급했던 이유), 관계 **129개** (1~129, 126 = 2026-10-23 직원 배치, 127~129 = 2026-10-24 사후 작업기록), 규칙 **R-01~R-88** — R-20은 쓰지 않는 번호라 번호 규칙 87개 + 보조 규칙 4개(R-06a·R-24a·R-31a·R-45a) = **91개** |
+| 코드 목록·관계·규칙 | 코드 목록 **55개** (6.1~6.55, 6.55 = 2026-10-24 급했던 이유), 관계 **129개** (1~129, 126 = 2026-10-23 직원 배치, 127~129 = 2026-10-24 선조치 기록), 규칙 **R-01~R-88** — R-20은 쓰지 않는 번호라 번호 규칙 87개 + 보조 규칙 4개(R-06a·R-24a·R-31a·R-45a) = **91개** |
 
 > 이 문서는 **논리 모델만** 다룬다: 엔터티, 속성, 키(PK/FK), 관계, 카디널리티, 필수 여부, 값의 뜻, 코드 목록. DB 제품·물리 자료형·인덱스·파티션은 정하지 않는다 → **물리 ERD에서 [선택 필요: 기술 회의]**.
 > 기획서 12.4와 설계서 5장의 이름이 다르면 **설계서 5장 이름**을 쓰고 10장 대응표에 적는다. 최종본에서 더한 엔터티·속성 이름은 **2026-10-07 변경 명세 4장 이름**(모든 문서 공통)을 쓴다. ("변경 명세"는 2026-10-07 최종본 작업 때 쓴 내부 메모로 이 폴더에 없다. 결정은 [26.10.06_회의결과_수정사항.md](26.10.06_회의결과_수정사항.md)와 이 문서 3·5장에 반영되어 있다.)
@@ -163,7 +163,7 @@
 | H | **사용자·권한·알림** | `app_user` 사용자, `role` 역할, `role_permission` 역할별 권한, `notification` 알림, `notification_recipient` 알림 받는 사람, `notification_rule` 알림 규칙 | 6 | AST-01·02·03, 권한 |
 | | **합계** | | **60** | |
 
-- 굵은 글씨 8개는 **최종본에서 더한 엔터티**다 (2026-10-06 회의 D-02·D-14·D-17, 변경 명세 4장 6개 + 2026-10-13 팀 회의(AI 비서 사이드바·알림 전달)의 `chat_log` 1개 + 2026-10-24 사후 작업기록의 `work_record_photo` 1개). v1의 52개는 이름·번호를 바꾸지 않았다.
+- 굵은 글씨 8개는 **최종본에서 더한 엔터티**다 (2026-10-06 회의 D-02·D-14·D-17, 변경 명세 4장 6개 + 2026-10-13 팀 회의(AI 비서 사이드바·알림 전달)의 `chat_log` 1개 + 2026-10-24 선조치 기록의 `work_record_photo` 1개). v1의 52개는 이름·번호를 바꾸지 않았다.
 
 ---
 
@@ -173,7 +173,7 @@
 
 - 그림을 읽기 쉽게 하려고 **`app_user`와의 관계(작성자·확정자·승인자 등 `~_by` 칸)와 `notification`의 선택 연결**은 뺐다. 모두 7장 관계 정의표에 있다.
 - `document_revision`은 일곱 종류 문서(최종본에서 출하 기록 추가) 중 **하나만** 가리킨다 (8장 R-35).
-- 최종본에서 더한 관계(7장 107~125)는 그림 맨 아래에 모아 두었다. 125 `app_user` → `chat_log`(채팅 기록, 2026-10-13)는 `~_by` 칸이 아니라서 그림에 넣었다. 2026-10-24 사후 작업기록의 127(정지 구간 → 작업기록서)·128(작업기록서 → 사진)도 맨 아래에 있다 (129 사진을 올린 사람은 `~_by` 칸이라 뺌).
+- 최종본에서 더한 관계(7장 107~125)는 그림 맨 아래에 모아 두었다. 125 `app_user` → `chat_log`(채팅 기록, 2026-10-13)는 `~_by` 칸이 아니라서 그림에 넣었다. 2026-10-24 선조치 기록의 127(정지 구간 → 작업기록서)·128(작업기록서 → 사진)도 맨 아래에 있다 (129 사진을 올린 사람은 `~_by` 칸이라 뺌).
 
 ```mermaid
 erDiagram
@@ -286,7 +286,7 @@ erDiagram
     notification |o--o| work_record : "원인 점검 간이 기록"
     shipment ||--|{ document_revision : "버전"
     app_user ||--o{ chat_log : "채팅 기록"
-    equipment_state_log |o--o{ work_record : "사후 기록 정지 구간"
+    equipment_state_log |o--o{ work_record : "선조치 기록 정지 구간"
     work_record ||--o{ work_record_photo : "사진 최대 3장"
 ```
 
@@ -668,8 +668,8 @@ erDiagram
         datetime end_at "끝"
         decimal repair_min "수리 시간 분"
         bool safety_block_required "잠금·표지 블록 필요"
-        bool after_the_fact "사후 기록 (2026-10-24)"
-        int state_log_id FK "정지 구간, 사후 기록"
+        bool after_the_fact "선조치 기록 (2026-10-24)"
+        int state_log_id FK "정지 구간, 선조치 기록"
         code urgent_reason_code "급했던 이유"
         longtext urgent_reason_text "이유 한 줄"
         longtext loto_skip_reason "잠금·표지 안 한 이유"
@@ -753,7 +753,7 @@ erDiagram
     pm_task ||--o{ pm_record : "실시 기록"
     notification |o--o| maintenance_work_order : "원인 점검 작업지시서"
     notification |o--o| work_record : "원인 점검 간이 기록"
-    equipment_state_log |o--o{ work_record : "사후 기록 정지 구간"
+    equipment_state_log |o--o{ work_record : "선조치 기록 정지 구간"
     work_record ||--o{ work_record_photo : "사진 최대 3장"
 ```
 
@@ -1834,9 +1834,9 @@ erDiagram
 
 | 항목 | 내용 |
 |---|---|
-| 설명 | 실제로 한 정비 기록. **작업기록서**(작업지시서 1건마다 1건)와 **간이 작업기록**(주의 등급 알람, 다른 공정 알람마다 1건, 그리고 최종본에서 **다른 공정 반복 알람 2단계의 원인 점검 요청마다 1건**) 두 종류. 2026-10-24부터 **사후 기록**(알람 없이 먼저 한 일을 지난 시각으로 적는 간이 작업기록, `after_the_fact` 참)도 간이 작업기록으로 남긴다 (`화면시안/재기획/사후작업기록_페이지구성_초안.md` 3장) |
-| 쓰는 요구사항 | FR-MNT-05-01~13·15, **FR-MNT-05-16~27** (사후 기록, 2026-10-24), FR-PRD-01-22·26, FR-MNT-02-10, FR-MNT-03-11, FR-AST-02-03·18·20·21, FR-AST-03-01, FR-PRD-02-06·13, FR-PRD-04-05·11 |
-| 대략 건수 | 작업기록서 30일 **약 5~9건** (작업지시서와 같은 수, 설계서_최종본 5.11). 간이 작업기록은 주의 등급 알람 수만큼 (설계서 5.8 빈도). 사후 기록은 값 없음 (9월 과거 데이터에는 없고 시연 사건으로만 생김 [가상]) |
+| 설명 | 실제로 한 정비 기록. **작업기록서**(작업지시서 1건마다 1건)와 **간이 작업기록**(주의 등급 알람, 다른 공정 알람마다 1건, 그리고 최종본에서 **다른 공정 반복 알람 2단계의 원인 점검 요청마다 1건**) 두 종류. 2026-10-24부터 **선조치 기록**(알람 없이 먼저 한 일을 지난 시각으로 적는 간이 작업기록, `after_the_fact` 참)도 간이 작업기록으로 남긴다 (`화면시안/재기획/사후작업기록_페이지구성_초안.md` 3장) |
+| 쓰는 요구사항 | FR-MNT-05-01~13·15, **FR-MNT-05-16~27** (선조치 기록, 2026-10-24), FR-PRD-01-22·26, FR-MNT-02-10, FR-MNT-03-11, FR-AST-02-03·18·20·21, FR-AST-03-01, FR-PRD-02-06·13, FR-PRD-04-05·11 |
+| 대략 건수 | 작업기록서 30일 **약 5~9건** (작업지시서와 같은 수, 설계서_최종본 5.11). 간이 작업기록은 주의 등급 알람 수만큼 (설계서 5.8 빈도). 선조치 기록은 값 없음 (9월 과거 데이터에는 없고 시연 사건으로만 생김 [가상]) |
 | 출처 | 설계서 5.11, 기획서 MNT-05·5.2, 기획서 12.4 `work_record` |
 
 | 속성(영문) | 한국어 이름 | 논리 형식 | 키 | 필수 | 값·규칙 | 출처 |
@@ -1844,26 +1844,26 @@ erDiagram
 | record_no | 기록 번호 | 문자 | PK | ○ | 작업기록서 `MR-0901`, 간이 작업기록 `MR-S-0901` | 설계서 5.11 |
 | record_type | 종류 | 코드 | | ○ | 6.14 (작업기록서 / 간이 작업기록) | 설계서 5.11 |
 | wo_no | 작업지시서 | 문자 | FK, UK | 조건 | → maintenance_work_order. **작업기록서면 필수**, 간이면 비움 | 설계서 5.11 |
-| alarm_event_id | 알람 | 정수 | FK, UK | 조건 | → alarm_event. **간이면 필수, 단 원인 점검·사후 기록은 비움** (2026-10-24, FR-MNT-05-16). 작업기록서는 작업지시서의 알람과 같음 (반복 알람 2단계 작업지시서는 비움) | 기획서 5.2 |
+| alarm_event_id | 알람 | 정수 | FK, UK | 조건 | → alarm_event. **간이면 필수, 단 원인 점검·선조치 기록은 비움** (2026-10-24, FR-MNT-05-16). 작업기록서는 작업지시서의 알람과 같음 (반복 알람 2단계 작업지시서는 비움) | 기획서 5.2 |
 | cause_check_notification_id | 원인 점검 요청 알림 | 정수 | FK, UK | 조건 | → notification (규칙 CAUSE_CHECK_REQUEST). **다른 공정(OP-10·20·40·50) 반복 알람 2단계의 원인 점검 간이 기록이면 필수**, 그 밖은 비움. 확정하면 2단계 알림이 자동 처리 (R-70) [제안: 칸] | R4 3.2, D-09, FR-AST-02-18 |
 | equipment_id | 설비 | 문자 | FK | ○ | → equipment. 작업지시서·알람과 같음 | FR-MNT-05-03 |
 | lot_no | 로트 | 문자 | FK | — | → production_lot | FR-MNT-05-03 |
 | cause | 원인 | 긴 문자 | | 조건 | 고장 대응 안내에 **적힌 원인** 중에서. AI비서 초안 → MNT 확정. 작업기록서 확정 때 필수 | 설계서 5.11 [실제 원인] |
 | action | 조치 | 긴 문자 | | ○ | 같은 안내의 조치 문장. 간이는 작업자가 고른 조치 | 설계서 5.11 |
 | worker_memo | 작업자 메모 | 긴 문자 | | — | 일부러 대충 쓴 말투 (AI비서 초안 정리 시험용) | 설계서 5.11 |
-| start_at | 시작 시각 | 날짜시각 | | ○ | 사후 기록은 **지난 시각만** (미래·진행 중 불가). 정지 구간에서 열면 구간 시작 시각이 자동으로 들어가고, 구간 밖으로 넘기면 주의 표시만 (2026-10-24) | FR-MNT-05-08·18 |
+| start_at | 시작 시각 | 날짜시각 | | ○ | 선조치 기록은 **지난 시각만** (미래·진행 중 불가). 정지 구간에서 열면 구간 시작 시각이 자동으로 들어가고, 구간 밖으로 넘기면 주의 표시만 (2026-10-24) | FR-MNT-05-08·18 |
 | end_at | 끝 시각 | 날짜시각 | | 조건 | 확정 때 필수 | FR-MNT-05-08 |
 | repair_min | 수리 시간 | 소수 | | 조건 | 분. 작업기록서는 **DOWN 구간 길이와 같음 (오차 1분 이내)**, 30~180분 | 설계서 5.11·9장 |
-| safety_block_required | 잠금·표지 블록 필요 | 참·거짓 | | ○ | 작업기록서, 다른 공정 정지 등급의 간이 기록, DOC-05 §2.4 "보충용 2점 잠금" 줄이 붙는 간이 기록(예: 2075)이면 참 → 9개 체크 필수. **사후 기록**은 잠금·표지가 필요한 일이면 참 — "했다"면 9개 체크, "안 했다"면 체크 대신 `loto_skip_reason` 필수 (2026-10-24) | FR-MNT-05-05·13·15·19, DOC-05 §2.4·§7 |
-| after_the_fact | 사후 기록 | 참·거짓 | | ○ | 기본 거짓. **알람 없이 먼저 한 일을 나중에 연 간이 작업기록이면 참** (record_type = SIMPLE, 번호 `MR-S-` 그대로, 화면에 [사후] 꼬리표). 알람이 떴는데 늦게 쓴 기록은 거짓 그대로 — 꼬리표 없이 알람 시각·작성 시각만 나란히 보인다 (작성 시각 = `document_revision` v0 저장 시각, 새 칸 없음) (2026-10-24) [제안] | FR-MNT-05-16·25 |
-| state_log_id | 정지 구간 | 정수 | FK | 조건 | → equipment_state_log. 사후 기록을 **정지 구간에서 열었으면 채움**(작업 시각 자동), 설비를 돌린 채 한 일이면 비움. 사후 기록이 아니면 비움. "기록 없는 정지" 판정에 씀 (6.36 UNRECORDED_STOP) (2026-10-24) [제안] | FR-MNT-05-16·17·23·24 |
-| urgent_reason_code | 급했던 이유 | 코드 | | 조건 | 6.55 (안전 위험 / 고장 번짐 막기 / 품질 이상 / 그 밖). **사후 기록이면 확정 때 필수** [제안], 그 밖은 비움 (2026-10-24) | FR-MNT-05-18 |
-| urgent_reason_text | 이유 한 줄 | 긴 문자 | | — | 사후 기록의 이유 한 줄 (선택) (2026-10-24) | FR-MNT-05-18 |
-| loto_skip_reason | 잠금·표지 안 한 이유 | 긴 문자 | | 조건 | 사후 기록에서 잠금·표지가 필요한 일(safety_block_required 참)인데 **안 했으면 필수**. 넣으면 9개 체크 없이 확정할 수 있고, 확인 화면에 빨간 줄로 보인다 (2026-10-24) | FR-MNT-05-19 |
+| safety_block_required | 잠금·표지 블록 필요 | 참·거짓 | | ○ | 작업기록서, 다른 공정 정지 등급의 간이 기록, DOC-05 §2.4 "보충용 2점 잠금" 줄이 붙는 간이 기록(예: 2075)이면 참 → 9개 체크 필수. **선조치 기록**은 잠금·표지가 필요한 일이면 참 — "했다"면 9개 체크, "안 했다"면 체크 대신 `loto_skip_reason` 필수 (2026-10-24) | FR-MNT-05-05·13·15·19, DOC-05 §2.4·§7 |
+| after_the_fact | 선조치 기록 | 참·거짓 | | ○ | 기본 거짓. **알람 없이 먼저 한 일을 나중에 연 간이 작업기록이면 참** (record_type = SIMPLE, 번호 `MR-S-` 그대로, 화면에 [선조치] 꼬리표). 알람이 떴는데 늦게 쓴 기록은 거짓 그대로 — 꼬리표 없이 알람 시각·작성 시각만 나란히 보인다 (작성 시각 = `document_revision` v0 저장 시각, 새 칸 없음) (2026-10-24) [제안] | FR-MNT-05-16·25 |
+| state_log_id | 정지 구간 | 정수 | FK | 조건 | → equipment_state_log. 선조치 기록을 **정지 구간에서 열었으면 채움**(작업 시각 자동), 설비를 돌린 채 한 일이면 비움. 선조치 기록이 아니면 비움. "기록 없는 정지" 판정에 씀 (6.36 UNRECORDED_STOP) (2026-10-24) [제안] | FR-MNT-05-16·17·23·24 |
+| urgent_reason_code | 급했던 이유 | 코드 | | 조건 | 6.55 (안전 위험 / 고장 번짐 막기 / 품질 이상 / 그 밖). **선조치 기록이면 확정 때 필수** [제안], 그 밖은 비움 (2026-10-24) | FR-MNT-05-18 |
+| urgent_reason_text | 이유 한 줄 | 긴 문자 | | — | 선조치 기록의 이유 한 줄 (선택) (2026-10-24) | FR-MNT-05-18 |
+| loto_skip_reason | 잠금·표지 안 한 이유 | 긴 문자 | | 조건 | 선조치 기록에서 잠금·표지가 필요한 일(safety_block_required 참)인데 **안 했으면 필수**. 넣으면 9개 체크 없이 확정할 수 있고, 확인 화면에 빨간 줄로 보인다 (2026-10-24) | FR-MNT-05-19 |
 | status | 상태 | 코드 | | ○ | 6.15. 과거 기록은 모두 확정 | 기획서 5.1, 설계서 5.16 |
-| confirmed_by | 확정자 | 문자 | FK | 조건 | 작업기록서 = MNT. 간이: 주의 등급 = OPR 또는 MNT, **다른 공정 정지 등급 = MNT만** (OPR은 입력·저장만), **원인 점검 간이 기록 = MNT** (원인 점검 요청을 받는 사람, R4 3.2), **사후 기록 = OPR 또는 MNT, 단 잠금·표지를 했거나 부품을 쓴 사후 기록은 MNT만** (2026-10-24, FR-MNT-05-20) | 기획서 13.1, FR-MNT-05-13, UI설계서 9장 #5, DOC-02 3장 "누가" |
-| confirmed_at | 확정 시각 | 날짜시각 | | 조건 | 확정 뒤 MTTR·정지 원인 다시 계산, 재고 차감. **사후 기록**은 재고 차감 + 이어진 정지 구간에 정지 사유 **추천**(`reason_suggested_code`, 확정은 SUP)만 하고 MTTR·MTBF에는 넣지 않음 (2026-10-24) | FR-MNT-05-10·22 |
-| checked_by | 확인자 | 문자 | FK | 조건 | SUP만 — 작업기록서와 **사후 간이 작업기록**. 사후 기록은 확인까지 가야 끝난다 (확인 필수, 2026-10-24). 그 밖의 간이 작업기록은 비움 | FR-MNT-05-09·21 |
+| confirmed_by | 확정자 | 문자 | FK | 조건 | 작업기록서 = MNT. 간이: 주의 등급 = OPR 또는 MNT, **다른 공정 정지 등급 = MNT만** (OPR은 입력·저장만), **원인 점검 간이 기록 = MNT** (원인 점검 요청을 받는 사람, R4 3.2), **선조치 기록 = OPR 또는 MNT, 단 보전 범위 일을 했거나, 잠금·표지를 했거나, 부품을 쓴 선조치 기록은 MNT만** (2026-10-24, FR-MNT-05-20) | 기획서 13.1, FR-MNT-05-13, UI설계서 9장 #5, DOC-02 3장 "누가" |
+| confirmed_at | 확정 시각 | 날짜시각 | | 조건 | 확정 뒤 MTTR·정지 원인 다시 계산, 재고 차감. **선조치 기록**은 재고 차감 + 이어진 정지 구간에 정지 사유 **추천**(`reason_suggested_code`, 확정은 SUP)만 하고 MTTR·MTBF에는 넣지 않음 (2026-10-24) | FR-MNT-05-10·22 |
+| checked_by | 확인자 | 문자 | FK | 조건 | SUP만 — 작업기록서와 **선조치 간이 작업기록**. 선조치 기록은 확인까지 가야 끝난다 (확인 필수, 2026-10-24). 그 밖의 간이 작업기록은 비움 | FR-MNT-05-09·21 |
 | checked_at | 확인 시각 | 날짜시각 | | — | — | FR-MNT-05-09 |
 | current_version | 현재 버전 | 정수 | | ○ | 0 = AI비서 초안 (간이 작업기록은 AI비서 초안이 없어 0 = 사람이 처음 저장한 것) | 기획서 4.5, FR-AST-03-02 |
 
@@ -1910,7 +1910,7 @@ erDiagram
 
 | 항목 | 내용 |
 |---|---|
-| 설명 | 간이 작업기록·작업기록서에 붙인 사진. **선택 첨부, 기록 하나에 최대 3장**. 사후 기록이 아닌 기록에도 붙일 수 있다 [제안]. 사진은 보기만 하고 글씨를 읽지 않으며, **이브(외부 LLM)로 보내지 않는다** (NFR-SEC-08 보내도 되는 자료에 사진이 없음) |
+| 설명 | 간이 작업기록·작업기록서에 붙인 사진. **선택 첨부, 기록 하나에 최대 3장**. 선조치 기록이 아닌 기록에도 붙일 수 있다 [제안]. 사진은 보기만 하고 글씨를 읽지 않으며, **이브(외부 LLM)로 보내지 않는다** (NFR-SEC-08 보내도 되는 자료에 사진이 없음) |
 | 쓰는 요구사항 | FR-MNT-05-26, NFR-SEC-08 |
 | 대략 건수 | 값 없음 (9월 과거 데이터에는 없음) |
 | 출처 | `화면시안/재기획/사후작업기록_페이지구성_초안.md` 3.1 (Q10 확정: 선택 첨부·최대 3장). 표 모양은 [제안] |
@@ -2771,7 +2771,7 @@ erDiagram
 | 코드 | 이름 | 번호 형식 | 언제 | 출처 |
 |---|---|---|---|---|
 | FULL | 작업기록서 | MR-0901 | OP-30 정지 등급 알람의 작업지시서 1건마다 | 설계서 5.11 |
-| SIMPLE | 간이 작업기록 | MR-S-0901 | OP-30 주의 등급 알람, OP-10·20·40·50의 정지·주의 등급 알람마다. **최종본: 다른 공정 반복 알람 2단계의 원인 점검 요청마다** (cause_check_notification_id, 확정 = MNT). **2026-10-24: 사후 기록**(알람 없이 먼저 한 일, `after_the_fact` 참)도 SIMPLE — 번호 `MR-S-` 그대로, 화면에 [사후] 꼬리표만 | 설계서 5.11, 기획서 5.2, R4 3.2, FR-MNT-05-16 |
+| SIMPLE | 간이 작업기록 | MR-S-0901 | OP-30 주의 등급 알람, OP-10·20·40·50의 정지·주의 등급 알람마다. **최종본: 다른 공정 반복 알람 2단계의 원인 점검 요청마다** (cause_check_notification_id, 확정 = MNT). **2026-10-24: 선조치 기록**(알람 없이 먼저 한 일, `after_the_fact` 참)도 SIMPLE — 번호 `MR-S-` 그대로, 화면에 [선조치] 꼬리표만 | 설계서 5.11, 기획서 5.2, R4 3.2, FR-MNT-05-16 |
 
 ### 6.15 작업기록서 상태 (`work_record.status`)
 
@@ -2780,10 +2780,10 @@ erDiagram
 | AI_DRAFT | AI비서 초안 | 비서 (작업지시서 + 메모 정리) | ○ | — (조치를 고름) | 기획서 MNT-05 |
 | EDITING | 수정 중 | MNT / 간이는 OPR·MNT | ○ | ○ | 같음 |
 | CONFIRMED | 확정 | MNT / 간이: 주의 등급 OPR·MNT, 다른 공정 정지 등급 MNT만 | ○ | ○ | 기획서 13.1, UI설계서 9장 #5 |
-| CHECKED | 확인 | SUP | ○ | — (**사후 기록만 ○**, 2026-10-24) | 기획서 5.1·13.1, FR-MNT-05-21 |
+| CHECKED | 확인 | SUP | ○ | — (**선조치 기록만 ○**, 2026-10-24) | 기획서 5.1·13.1, FR-MNT-05-21 |
 
 - 간이 작업기록에는 **AI비서 초안 단계를 두지 않는다** — 작업자가 DOC-03 조치 선택지에서 골라 확정한다 (기획서 5.2, UI설계서 SCR-13, FR-MNT-05-13). 첫 저장 버전이 v0(사람).
-- 간이 작업기록은 확인 단계 없이 확정(CONFIRMED)에서 끝나지만, **사후 간이 작업기록**(`after_the_fact` 참)은 승인 없이 먼저 한 일이라 **SUP 확인(CHECKED)까지 가야 끝난다** (2026-10-24, FR-MNT-05-21). 확정되면 SUP에게 AFTER_RECORD_CHECK_WAIT 알림 (6.36).
+- 간이 작업기록은 확인 단계 없이 확정(CONFIRMED)에서 끝나지만, **선조치 간이 작업기록**(`after_the_fact` 참)은 승인 없이 먼저 한 일이라 **SUP 확인(CHECKED)까지 가야 끝난다** (2026-10-24, FR-MNT-05-21). 확정되면 SUP에게 AFTER_RECORD_CHECK_WAIT 알림 (6.36).
 - 작업기록서가 확인(CHECKED) 뒤 확정 후 수정되면 확인 표시가 풀려 SUP가 다시 확인한다 [제안] (FR-AST-03-06).
 
 ### 6.16 보고서 상태 (`shift_report.status`, `daily_report.status`)
@@ -3043,7 +3043,7 @@ erDiagram
 | REPEAT_ALARM_2 | 반복 알람 2단계 "지난 조치 효과 없음" (최종본) | 1단계 조치 계획을 저장한 뒤 7일 안에 같은 설비·같은 알람이 다시 남 (R-70) → MNT·SUP. 관련 정보: 1단계 조치 계획 원문 + 그 뒤 발생 기록 + 같은 알람의 발생·조치 이력. **OP-30이면 원인 점검 작업지시서 AI비서 초안 제안**, 다른 공정이면 DOC-03 §3 간이 대응 근거 + 원인 점검 요청(CAUSE_CHECK_REQUEST) | 주의 (등급은 DOC-02 심각도에서 나오므로 주의 유지) | alarm_event, equipment, notification (prev_stage) | R4 3.2, DOC-07 §10.4, DOC-03 §1.4, FR-AST-02-18 |
 | CAUSE_CHECK_REQUEST | 원인 점검 요청 (다른 공정, 최종본) | 다른 공정(OP-10·20·40·50)의 반복 알람 2단계 → **MNT에게** 원인 점검 요청. 결과는 간이 작업기록 | 주의 (2단계와 같게) [제안] | equipment, alarm_event, notification (prev_stage = 2단계 알림) | R4 3.2, DOC-03 §1.4, FR-AST-02-18 |
 | UNRECORDED_STOP | 기록 없는 정지 (2026-10-24) | 정지 구간(`equipment_state_log`, RUN이 아닌 구간)이 셋을 모두 만족: ① 길이 **5분 이상** (순간 정지 기준과 같게) ② 그 시간과 겹치는 작업기록서·간이 작업기록·예방 정비 실시 기록이 없음 ③ DOWN이거나, IDLE인데 정지 사유가 비었거나 고장(F) 그룹. SETUP·MAINT·자동으로 붙은 BLOCKED(M 그룹)는 뺌 → **그 설비 담당 OPR·MNT·SUP**. 교대 끝 1시간 전까지 처리 안 되면 **같은 알림의 중요도를 주의로 올림** (새 알림을 만들지 않음) [제안] | 참고 → 주의 (교대 끝 1시간 전) | equipment, shift (정지 구간은 notification에 칸이 없어 related_info에 구간 시각을 적고, 처리 판정은 프로그램이 그 설비·시각의 equipment_state_log로 다시 함 [제안]) | 사후작업기록 초안 3.3·4.4 (Q3·Q9), FR-AST-02-20, FR-MNT-05-23 |
-| AFTER_RECORD_CHECK_WAIT | 사후 기록 확인 대기 (2026-10-24) | 사후 간이 작업기록(`after_the_fact` 참)이 확정됨 → **반장(SUP)** 에게 확인 요청 | 참고 | equipment, document_revision (그 사후 기록의 확정 버전 — notification에 작업기록서 칸이 없어 DAILY_REPORT_PENDING처럼 이 칸을 씀 [제안]) | 사후작업기록 초안 4.4 (Q6), FR-AST-02-21, FR-MNT-05-21 |
+| AFTER_RECORD_CHECK_WAIT | 선조치 기록 확인 대기 (2026-10-24) | 선조치 간이 작업기록(`after_the_fact` 참)이 확정됨 → **반장(SUP)** 에게 확인 요청 | 참고 | equipment, document_revision (그 선조치 기록의 확정 버전 — notification에 작업기록서 칸이 없어 DAILY_REPORT_PENDING처럼 이 칸을 씀 [제안]) | 사후작업기록 초안 4.4 (Q6), FR-AST-02-21, FR-MNT-05-21 |
 | TARGET_RISK | 목표 미달 위험 | 예측 실적 < 총 목표(목표 + 이월, R-88)의 90% (이월 0이면 81개). 교대 시작 1시간 뒤부터, 교대에 처음 1번 [가상] | 주의 | shift | DOC-07 8장·10.1 |
 | BOTTLENECK_MOVE | 병목 발생·이동 | 병목 공정이 바뀜. 관련 정보 = **DOC-07 §7.5의 해당 원인 조치 줄** (비서는 제안만, 조치는 SUP — R-84) | 주의 | bottleneck_log | DOC-07 10.1·§7.5, FR-AST-02-19 |
 | WIP_WARN | 재공 경고 | 공정 사이 재공이 경고 기준(`warn_over_qty`) 초과 — 20개, WIP-20-30은 한도 30 도달 (WIP-30-40 제외). 재공 위치마다 교대에 처음 1번 [가상] | 주의 | buffer_code | DOC-07 7.2·10.1 |
@@ -3071,7 +3071,7 @@ erDiagram
 - **묶기 규칙**(새 알림 종류가 아님): 같은 설비·같은 알람이 1분 안에 3번 이상 → 1건으로 묶고 `repeat_count`를 올린다. 10분에 10건 넘으면 `is_flood` 참, 10분에 5건 아래로 내려가면 푼다 (DOC-07 10.2·10.3).
 - **오래된 알림**: 24시간 넘게 처리 안 된 주의 알림은 새 알림을 만들지 않고 보고 순위 **0-1**(잠금·표지 다음)로 올린다 (DOC-07 10.2·§10.5, R4 4.3).
 - 반복 알람 1·2단계를 셀 때는 묶기(1분 안 3번)를 **먼저** 적용한다 (R-70).
-- 사후 작업기록 알림 2종(2026-10-24): UNRECORDED_STOP은 ② 목록(고장·확인 알림), AFTER_RECORD_CHECK_WAIT은 ③ 말풍선(문서 알림)으로 보낸다 [제안] — 요구사항 FR-AST-02-20·21, UI설계서 SCR-07과 같음. UNRECORDED_STOP만 처음 중요도(참고)가 나중에 주의로 바뀌는 규칙이다 — 올린 뒤의 보고 순위는 3(주의). 교대 보고서 확정 때 남은 건수를 경고로 보이지만 확정을 막지는 않는다 (FR-PRD-02-13).
+- 선조치 기록 알림 2종(2026-10-24): UNRECORDED_STOP은 ② 목록(고장·확인 알림), AFTER_RECORD_CHECK_WAIT은 ③ 말풍선(문서 알림)으로 보낸다 [제안] — 요구사항 FR-AST-02-20·21, UI설계서 SCR-07과 같음. UNRECORDED_STOP만 처음 중요도(참고)가 나중에 주의로 바뀌는 규칙이다 — 올린 뒤의 보고 순위는 3(주의). 교대 보고서 확정 때 남은 건수를 경고로 보이지만 확정을 막지는 않는다 (FR-PRD-02-13).
 - CMM 알림 3종의 중요도: 판정 불일치는 R3이 "주의 알림"으로 적음. 파일 오류·결과 미수신은 R3에 중요도가 없어 주의로 [제안] (품질 묶음, 보고 순위 3).
 - 지표 카드 주의(가동률 60% 미만 등)는 화면 표시이고 알림 규칙이 아니다 (DOC-07 10.1 "지표 카드 주의").
 - 의심 로트 제안은 알림 종류가 아니다 (6.8 아래, FR-PRD-05-05).
@@ -3086,8 +3086,8 @@ erDiagram
 | REPEAT_ALARM | 사람 | MNT 또는 SUP, process_memo(조치 계획 한 줄) 필수 |
 | REPEAT_ALARM_2 | 자동 | 원인 점검 작업기록서 확정 (OP-30, 계기에 2단계가 있는 작업지시서의 짝) / 원인 점검 간이 작업기록 확정 (다른 공정). 확정 뒤 7일 재발 없으면 "효과 확인"으로 닫힘 (R-70) |
 | CAUSE_CHECK_REQUEST | 자동 | 원인 점검 간이 작업기록(cause_check_notification_id) 확정 (MNT) |
-| UNRECORDED_STOP | 자동 | 그 구간과 겹치는 사후 기록(또는 간이 작업기록·작업기록서)을 **저장**, 또는 정지 사유를 조작(O)·계획(P) 그룹으로 넣음 — 판정 조건을 벗어나면 처리 (2026-10-24) |
-| AFTER_RECORD_CHECK_WAIT | 자동 | SUP가 그 사후 기록을 확인 (`work_record.checked_by`, 상태 CHECKED) (2026-10-24) |
+| UNRECORDED_STOP | 자동 | 그 구간과 겹치는 선조치 기록(또는 간이 작업기록·작업기록서)을 **저장**, 또는 정지 사유를 조작(O)·계획(P) 그룹으로 넣음 — 판정 조건을 벗어나면 처리 (2026-10-24) |
+| AFTER_RECORD_CHECK_WAIT | 자동 | SUP가 그 선조치 기록을 확인 (`work_record.checked_by`, 상태 CHECKED) (2026-10-24) |
 | CMM_FILE_ERROR | 자동 | 그 부품 결과가 다시 출력된 파일(성공) 또는 수동 입력으로 기록됨 (반장이 확인) [제안] |
 | CMM_JUDGE_MISMATCH | 자동 | 반장이 그 측정값을 확인 (check_status = 반장 확인) |
 | CMM_NO_RESULT | 자동 | 결과 파일이 들어오거나 수동 입력 기록 저장 (반장 확인) [제안] |
@@ -3325,7 +3325,7 @@ erDiagram
 
 ### 6.55 급했던 이유 (`work_record.urgent_reason_code`) — 2026-10-24
 
-사후 기록(알람 없이 먼저 한 일)에서 왜 플랫폼보다 일을 먼저 했는지 고른다 (FR-MNT-05-18).
+선조치 기록(알람 없이 먼저 한 일)에서 왜 플랫폼보다 일을 먼저 했는지 고른다 (FR-MNT-05-18).
 
 | 코드 | 이름 | 예 | 출처 |
 |---|---|---|---|
@@ -3475,7 +3475,7 @@ erDiagram
 | 124 | 출하의 버전 | shipment | document_revision (doc_type SHIPMENT + doc_key) | 1 : 1..N | 관계 93과 같은 규칙 (버전은 일곱 종류 중 하나만 가리킴, R-35) |
 | 125 | 사용자의 채팅 기록 | app_user | chat_log (user_id) | 1 : 0..N | 사용자(로그인 아이디)마다 따로 저장, 본인 기록만 봄 [제안], 30일 지나면 삭제 (6.53) |
 | 126 | 직원 배치의 버전 (2026-10-23) | app_user | document_revision (doc_type APP_USER + doc_key) | 1 : 0..N | 배치를 바꿀 때만 생김. 고친 사람은 MGR만 (FR-USR-01-04·05) |
-| 127 | 사후 기록의 정지 구간 (2026-10-24) | equipment_state_log | work_record (state_log_id) | 0..1 : 0..N | 사후 기록(`after_the_fact` 참)을 정지 구간에서 열었을 때만. 설비를 돌린 채 한 일·사후가 아닌 기록은 비움. 같은 설비여야 함 (FR-MNT-05-16·23) |
+| 127 | 선조치 기록의 정지 구간 (2026-10-24) | equipment_state_log | work_record (state_log_id) | 0..1 : 0..N | 선조치 기록(`after_the_fact` 참)을 정지 구간에서 열었을 때만. 설비를 돌린 채 한 일·선조치가 아닌 기록은 비움. 같은 설비여야 함 (FR-MNT-05-16·23) |
 | 128 | 작업기록서의 사진 (2026-10-24) | work_record | work_record_photo (record_no) | 1 : 0..3 | 선택 첨부, 최대 3장. 확정 뒤에는 더하거나 빼지 못함 [제안] (FR-MNT-05-26) |
 | 129 | 사진을 올린 사람 (2026-10-24) | app_user | work_record_photo (uploaded_by) | 1 : 0..N | 그 기록을 쓸 수 있는 OPR·MNT (FR-MNT-05-26) |
 
@@ -3544,7 +3544,7 @@ erDiagram
 
 | # | 규칙 | 지키는 곳 | 출처 |
 |---|---|---|---|
-| R-32 | 작업기록서(그리고 다른 공정 정지 등급·"보충용 2점 잠금" 줄의 간이 기록)는 **잠금·표지 9개 체크가 모두 끝나야 확정**. 확정 = MNT (간이: 주의 등급 OPR·MNT, 다른 공정 정지 등급 MNT만), 확인 = SUP. 작업기록서가 확정되면 짝 작업지시서가 완료 (6.13). **사후 기록**(2026-10-24)은 이미 끝난 일이라 잠금·표지를 "안 했다"면 9개 체크 대신 안 한 이유(`loto_skip_reason`)를 넣고 확정할 수 있다 — 확인 화면에 빨간 줄, 잠금·표지를 했거나 부품을 쓴 사후 기록은 MNT만 확정, 확인 = SUP 필수 | work_record.safety_block_required·status·confirmed_by·loto_skip_reason, work_record_check (LOTO 9행), maintenance_work_order.status | FR-MNT-05-05·09·13·15·19·20·21, FR-MNT-03-02, NFR-SAFE-03 |
+| R-32 | 작업기록서(그리고 다른 공정 정지 등급·"보충용 2점 잠금" 줄의 간이 기록)는 **잠금·표지 9개 체크가 모두 끝나야 확정**. 확정 = MNT (간이: 주의 등급 OPR·MNT, 다른 공정 정지 등급 MNT만), 확인 = SUP. 작업기록서가 확정되면 짝 작업지시서가 완료 (6.13). **선조치 기록**(2026-10-24)은 이미 끝난 일이라 잠금·표지를 "안 했다"면 9개 체크 대신 안 한 이유(`loto_skip_reason`)를 넣고 확정할 수 있다 — 확인 화면에 빨간 줄, 보전 범위 일을 했거나, 잠금·표지를 했거나, 부품을 쓴 선조치 기록은 MNT만 확정, 확인 = SUP 필수 | work_record.safety_block_required·status·confirmed_by·loto_skip_reason, work_record_check (LOTO 9행), maintenance_work_order.status | FR-MNT-05-05·09·13·15·19·20·21, FR-MNT-03-02, NFR-SAFE-03 |
 | R-33 | 정지 등급의 지침카드·작업지시서·(다른 공정) 간이 작업기록에는 DOC-05 §7 블록(6+3단계, 고전압 대기, 보호구)이 반드시 붙고 **누구도 지울 수 없다**. 고전압 대기 문구는 OP-30 설비만. 블록은 AI가 쓰거나 고치지 않는다 | maintenance_work_order.safety_block_doc_rev·has_high_voltage_notice, 6.19 | DOC-05 §7, FR-MNT-03-06~08, FR-AST-COM-13, NFR-SAFE-02 |
 | R-34 | 작업기록서 확정 → 사용 부품만큼 재고 사용 거래 생성, MTTR·정지 원인 다시 계산 | inventory_txn (WORK_RECORD), work_record.confirmed_at | FR-MNT-05-10, FR-PRD-01-26 |
 | R-31a | 작업지시서 상태는 6.13 순서로. 담당자가 비면 승인 안 됨. 승인 전 진행 중 불가. 승인은 SUP만, 비서는 지정·승인 안 함 | maintenance_work_order.status·assignee_user_id·approved_by | FR-MNT-03-02·14, FR-AST-COM-10 |
@@ -3645,7 +3645,7 @@ erDiagram
 | MNT-03 정비 작업지시서 | FR-MNT-03-01~14 | maintenance_work_order, work_order_step, work_order_part, document_revision | alarm_event, notification (2단계 계기), isolation_point, equipment, work_record, inventory_item, app_user |
 | MNT-04 예방 정비 일정 | FR-MNT-04-01~10 | pm_record, pm_task, inventory_txn, equipment_state_log (MAINT 구간), document_revision | equipment, inventory_item, app_user |
 | MNT-05 작업기록서 | FR-MNT-05-01~15 | work_record, work_record_check, work_record_part, inventory_txn, document_revision | maintenance_work_order, work_order_step, alarm_event, inventory_item, equipment_state_log |
-| 사후 작업기록 (2026-10-24) | FR-MNT-05-16~27, FR-AST-02-20·21, FR-PRD-02-13, FR-PRD-04-11 | work_record (after_the_fact, state_log_id, urgent_reason_code·text, loto_skip_reason, checked_by), **work_record_photo**, work_record_check, work_record_part, inventory_txn, equipment_state_log (reason_suggested_code — 추천만, 확정은 SUP), notification (UNRECORDED_STOP, AFTER_RECORD_CHECK_WAIT), document_revision | equipment, downtime_reason, pm_record, shift, shift_report, daily_report, inventory_item, app_user, internal_doc (DOC-03 원인) |
+| 선조치 기록 (2026-10-24) | FR-MNT-05-16~27, FR-AST-02-20·21, FR-PRD-02-13, FR-PRD-04-11 | work_record (after_the_fact, state_log_id, urgent_reason_code·text, loto_skip_reason, checked_by), **work_record_photo**, work_record_check, work_record_part, inventory_txn, equipment_state_log (reason_suggested_code — 추천만, 확정은 SUP), notification (UNRECORDED_STOP, AFTER_RECORD_CHECK_WAIT), document_revision | equipment, downtime_reason, pm_record, shift, shift_report, daily_report, inventory_item, app_user, internal_doc (DOC-03 원인) |
 | INV-01 재고·출하 | FR-INV-01-01~13 | inventory_item, inventory_txn, raw_material_lot (원자재 입고·입고 검사 상태), shipment, shipment_line, document_revision | work_record_part, pm_record, tool_change, production_lot, production_order, lot_hold, role |
 | ML-01 공구 수명 | FR-ML-01-01~08 | tool, tool_usage, tool_change | tool_type, operation_report, alarm_event (362·174) |
 | QLT-01 검사 기록·불량 집계 | FR-QLT-01-01~22 | inspection_plan, inspection_result, defect_record, inspection_item (Cpk 전수 표시), cmm_import, notification (CMM 알림) | production_lot, lot_hold, defect_code, equipment (CMM-01), app_user |
@@ -3766,7 +3766,7 @@ erDiagram
 - 개수 맞추기: 기획서 12.4 30개 (`shift_target` → `shift`) + `sensor_sample` 1개 + 새 엔터티 21개 = **52개** (v1).
 - 최종본: 52개 + 2026-10-06 회의로 더한 6개 (`plant_layout`, `layout_object`, `equipment_part_shape`, `shipment`, `shipment_line`, `cmm_import`) = **58개**. 새 엔터티 이름은 변경 명세 4장 이름(모든 문서 공통)을 쓴다. (기획서_최종본 12.4에는 이 6개가 모두 들어 있다.) 기획서 12.4에 이 6개가 없으면 이 문서 이름을 따른다.
 - 2026-10-13 팀 회의 (AI 비서 사이드바·알림 전달): 58개 + `chat_log` 채팅 기록 1개 = **59개**. 기획서 12.4에 `chat_log`가 없으면 이 문서 이름을 따른다.
-- 2026-10-24 사후 작업기록: 59개 + `work_record_photo` 작업기록 사진 1개 = **60개** (현재). 기획서 12.4에 없으면 이 문서 이름을 따른다.
+- 2026-10-24 선조치 기록: 59개 + `work_record_photo` 작업기록 사진 1개 = **60개** (현재). 기획서 12.4에 없으면 이 문서 이름을 따른다.
 
 ---
 
@@ -3857,6 +3857,7 @@ erDiagram
 | 최종본 수정 (작업지시서 승인은 반장만, 2026-10-22) | 2026-10-22 | 엔터티·속성·관계 수 그대로 (글만 고침). `maintenance_work_order.approved_by` 는 반장만. `cancelled_by`·`approved_as_proxy` 계산에 쓰는 역할 비교·상태 코드 CANCELLED 는 칸으로 남기고, 새 취소 권한은 없다. (`구현_중_수정사항/1022_수정간단내용.md` 6장) | 문서 담당 |
 | 최종본 수정 (직원 관리 USR-01, 2026-10-23) | 2026-10-23 | 엔터티·속성 수 그대로, 관계 125 → 126개(맨 위 요약 줄도), 코드 목록 수 그대로(6.17에 값 하나). 6.17 문서 종류에 **APP_USER(직원 배치)** — 관리자가 배치를 바꾸면 `document_revision`에 사람마다 새 버전(문서 아님, FR-AST-03-01 7종 그대로). `doc_type`·`doc_key` 설명, 7장 관계 126(app_user → document_revision), 9장 추적표 USR-01 줄 (`구현_중_수정사항/1023_수정간단내용.md` 7장) | 프론트엔드 |
 | 최종본 수정 (사후 작업기록, 2026-10-24) | 2026-10-24 | 근거: `화면시안/재기획/사후작업기록_페이지구성_초안.md` (Q1~Q11 답, 2026-10-23). **엔터티 59 → 60개** (D 정비 8 → 9, 새 5.D.9 `work_record_photo` 작업기록 사진 — 기록 하나에 최대 3장, 외부 LLM으로 보내지 않음. 번호는 5.D.7·8을 바꾸지 않으려고 뒤에 붙임), **코드 목록 54 → 55개** (새 6.55 급했던 이유 SAFETY·SPREAD·QUALITY·OTHER [가상]), **관계 126 → 129개** (127 equipment_state_log → work_record, 128 work_record → work_record_photo, 129 app_user → work_record_photo), 규칙 수 그대로 (R-32에 사후 기록 잠금·표지 안 함 + 이유 문장). `work_record` 칸 5개 (`after_the_fact`, `state_log_id`, `urgent_reason_code`, `urgent_reason_text`, `loto_skip_reason`), `alarm_event_id` 규칙 "간이면 필수, 단 원인 점검·사후 기록은 비움", `checked_by` = 작업기록서와 사후 간이 작업기록, `confirmed_by`·`confirmed_at`·`start_at`·`safety_block_required` 설명. 6.14 SIMPLE에 사후 기록(번호 MR-S 그대로), 6.15 사후 간이 작업기록은 SUP 확인(CHECKED)까지. 6.36 알림 규칙 **25 → 27행** (UNRECORDED_STOP 기록 없는 정지 참고 → 교대 끝 1시간 전 주의, AFTER_RECORD_CHECK_WAIT 사후 기록 확인 대기)과 처리 표 2줄, `notification.importance` 올림 예외. 4.0·4.4 그림, 3장 묶음표, 9장 추적표 "사후 작업기록" 줄(FR-MNT-05-16~27, FR-AST-02-20·21, FR-PRD-02-13, FR-PRD-04-11)·엔터티 → 요구사항 표, 10장 개수 | 프론트엔드 |
+| 최종본 수정 (선조치 기록, 2026-10-24) | 2026-10-24 | 선조치 기록 고침 (2026-10-24, 사용자 요청): 이름 '사후 기록' → **선조치 기록**(사후 작업지시서 → 긴급 작업지시서). 한 일 목록을 **작업자 범위**(칩·이물, 절삭유·윤활유, 도어 밖 손상 확인, 공구, 보전 부름, 기타)와 **보전 범위**(볼스크류·가이드, 커플링, 서보 모터·케이블, 서보 앰프, 주축, 축 윤활, 공압·센서, 부품 교체 — DOC-03 점검 순서의 보전 줄 기준 [가상])로 나눔. 보전 범위는 MNT에게만 보이고, 고르면 MNT만 확정. 긴급 작업지시서 자동 생성(OP-30 보전 범위만)은 **보류**. work_record.confirmed_by 조건·R-32에 보전 범위 더함. 표·열 그대로 |
 
 **문서끼리 다르던 점과 이 문서의 선택**
 

@@ -382,7 +382,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
     }
     if (nav) go('sr', no);
   }
-  // 사후 기록 (FR-MNT-05-16·17): 정지 구간 키(설비|시작|끝)로 열면 시각이 채워지고, 키 없이 열면(문서함) 설비·시각을 직접 고른다
+  // 선조치 기록 (FR-MNT-05-16·17): 정지 구간 키(설비|시작|끝)로 열면 시각이 채워지고, 키 없이 열면(문서함) 설비·시각을 직접 고른다
   function openAfter(stopKey?: string) {
     let no = stopKey ? srs.find((r) => r.kind === 'after' && r.stopKey === stopKey)?.no : undefined;
     if (!no) {

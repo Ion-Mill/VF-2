@@ -17,7 +17,7 @@ export const RULE_NAME: Record<string, string> = {
   PM_RECORD_CHECK: '예방 정비 실시 기록 확인', DAILY_REPORT_PENDING: '일일 보고서 확정 요청', DOC_REVISED: '문서 수정', SPC_OUT: '관리도 이상',
   SHIFT_REPORT_PENDING: '교대 보고서 확정 요청', CMM_FILE_ERROR: 'CMM 결과 파일 오류', CMM_JUDGE_MISMATCH: 'CMM 판정 불일치', CMM_NO_RESULT: 'CMM 결과 미수신',
   ALARM_STOP: '알람 발생 (정지)', ALARM_WARN: '알람 발생 (주의)', ALARM_GUIDE: '알람 발생 (조작 안내)',
-  UNRECORDED_STOP: '기록 없는 정지', AFTER_RECORD_CHECK_WAIT: '사후 기록 확인 대기', // 사후 작업기록 (FR-AST-02-20·21, 2026-10-24)
+  UNRECORDED_STOP: '기록 없는 정지', AFTER_RECORD_CHECK_WAIT: '선조치 기록 확인 대기', // 선조치 기록 (FR-AST-02-20·21, 2026-10-24)
 };
 // 보고 순위 (gen/reports.py RANK와 같음): 2 생산 위험 / 3 주의 / 4 참고
 const RANK_OF: Record<string, string> = {
@@ -204,17 +204,17 @@ export function derive(c: RuleCtx): { add: Notice[]; resolve: string[] } {
     const out = (it.out ?? []).filter((i) => !it.values || it.values[i].at >= from);
     if (out.length) add.push(mk('SPC_OUT', `${it.item_seq}:${it.values?.[out[out.length - 1]].at ?? `${it.n}:${out[out.length - 1]}`}`, `${it.item_name} 관리도 ±3σ 밖 점 ${out.length}개 — 다음 부품 바로 측정`, ['SUP'], { open: { screen: 'quality' } }));
   });
-  // 기록 없는 정지 (FR-AST-02-20): 사후 기록을 저장하면(확정 전이라도) 처리됨. 교대 끝 1시간 전 주의로 올리기는 2차
+  // 기록 없는 정지 (FR-AST-02-20): 선조치 기록을 저장하면(확정 전이라도) 처리됨. 교대 끝 1시간 전 주의로 올리기는 2차
   (c.downtimes ?? []).filter(isUnrecordedStop).forEach((d) => {
     const key = stopKeyOf(d), eq = d.equipment_id as Eq, m = ID_OF[eq];
     if (c.srs.some((r) => r.kind === 'after' && r.stopKey === key && r.revisions.length)) { resolve.push(`UNRECORDED_STOP:${key}`); return; }
-    if (m) add.push(mk('UNRECORDED_STOP', key, `${eq} ${d.start_at.slice(11, 16)}~${d.end_at!.slice(11, 16)} (${d.minutes}분) 정지, 기록이 없어요 — 사후 기록을 써 주세요`, ['OPR', 'MNT', 'SUP'],
+    if (m) add.push(mk('UNRECORDED_STOP', key, `${eq} ${d.start_at.slice(11, 16)}~${d.end_at!.slice(11, 16)} (${d.minutes}분) 정지, 기록이 없어요 — 선조치 기록을 써 주세요`, ['OPR', 'MNT', 'SUP'],
       { machine: m, open: { screen: 'after', key } }));
   });
-  // 사후 기록 확인 대기 (FR-AST-02-21): 사후 기록이 확정되면 반장에게, 반장이 확인하면 처리됨
+  // 선조치 기록 확인 대기 (FR-AST-02-21): 선조치 기록이 확정되면 반장에게, 반장이 확인하면 처리됨
   c.srs.filter((r) => r.kind === 'after' && r.state === 'confirmed').forEach((r) => {
     if (r.checkedBy) resolve.push(`AFTER_RECORD_CHECK_WAIT:${r.no}`);
-    else add.push(mk('AFTER_RECORD_CHECK_WAIT', r.no, `사후 기록 ${r.no} (${MACHINES[r.machine].name} ${r.start?.slice(11, 16) ?? ''}~${r.end?.slice(11, 16) ?? ''}) 확인해 주세요`, ['SUP'], { machine: r.machine, open: { screen: 'sr', key: r.no } }));
+    else add.push(mk('AFTER_RECORD_CHECK_WAIT', r.no, `선조치 기록 ${r.no} (${MACHINES[r.machine].name} ${r.start?.slice(11, 16) ?? ''}~${r.end?.slice(11, 16) ?? ''}) 확인해 주세요`, ['SUP'], { machine: r.machine, open: { screen: 'sr', key: r.no } }));
   });
   return { add, resolve };
 }
