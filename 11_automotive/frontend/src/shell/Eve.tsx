@@ -15,6 +15,7 @@ import { alarmSentence } from './alarmText';
 import { useAlarmText } from './assistText';
 import { rankOfAlert, rankOfNotice } from './Briefing';
 import RobotIcon from './RobotIcon';
+import { BackButton } from './ui';
 import EveThinking from './EveThinking';
 import { PENDING_GIVEUP_MS, canStartNewChat, currentChat, isFocusRow, lastChatId, makeNewChatMark, mergeServerLog, resolvePending, sessionOf, settlePending, withNewChat, type FocusRef } from './chatLog';
 import { carryAlarm } from './carry';
@@ -218,7 +219,7 @@ function AlertsTab({ onNotice }: { onNotice: (n: Notice) => void }) {
   // 알림 폭주: 10분 안 10건 넘으면 띠 (DOC-07 10.3)
   const recent = alerts.filter((a) => SIM.now() - a.ts < 600000).length;
   const chip = (on: boolean) => `h-9 whitespace-nowrap rounded-full border px-3 text-[12px] font-semibold ${on ? 'border-[#9DBCF4] bg-[#9DBCF4] text-[#1A1F23]' : 'border-slate-300'}`;
-  const ab = 'h-11 rounded-full border border-slate-300 px-4 text-[14px] font-semibold hover:bg-slate-50 disabled:text-slate-400';
+  const ab = 'h-11 rounded-full border border-slate-300 bg-white px-4 text-[14px] font-semibold hover:bg-slate-50 disabled:text-slate-400';
   const title = (it: Item) => (it.kind === 'a' ? `${MACHINES[it.a.machine].name} ${alarmTitle(it.a.alarm, it.a.code)}${it.n > 1 ? ` ×${it.n}` : ''}` : it.x.ruleName);
   const level = (it: Item) => (it.kind === 'a' ? it.a.level : it.x.level);
   const at = (it: Item) => (it.kind === 'a' ? it.a.time : it.x.at);
@@ -228,8 +229,11 @@ function AlertsTab({ onNotice }: { onNotice: (n: Notice) => void }) {
     const lv = level(cur), done = handledOf(cur);
     return (
       <div className="flex flex-col gap-3">
-        <button onClick={() => { setOpenId(null); setPlan(''); }} className="w-fit text-[18px] font-semibold underline">← 목록</button>
-        <div className="rounded-xl border-l-[6px] bg-white/5 p-3" style={{ borderColor: BAR[lv] }}>
+        <div className="flex items-center gap-2">
+          <BackButton onClick={() => { setOpenId(null); setPlan(''); }} />
+          <span className="text-[14px] font-medium tracking-[-.01em] text-ink-2">목록</span>
+        </div>
+        <div className="rounded-xl border border-l-[6px] border-line bg-white p-3 shadow-[0_1px_3px_rgba(27,42,65,.08)]" style={{ borderLeftColor: BAR[lv] }}>
           <div className="text-[12px] font-semibold" style={{ color: TONE[lv] }}>{LEVEL_VIEW[lv].icon} {lv} · {md(at(cur))} {hhmm(at(cur))} · {done ? '처리됨' : '처리 안 됨'}</div>
           <b className="mt-1 block text-[17px] leading-snug">{title(cur)}</b>
           {cur.kind === 'a' ? (<>

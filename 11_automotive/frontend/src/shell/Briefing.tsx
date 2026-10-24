@@ -3,7 +3,7 @@
 // 지난 교대·인계 사항 = 지난 교대 보고서(생성기·서버), 먼저 챙길 일 = 인계 사항 + 지금 처리 안 된 알람·알림 (2.5 보고 순위).
 // 보고 항목은 프로그램 목록이다 (순서·건수는 프로그램 몫). 지난 교대 요약은 교대 보고서 문장을 그대로 쓰므로, 비서가 켜져 있으면 비서가 다듬은 문장이 보인다.
 // 먼저 챙길 일의 항목 문장은 비서가 다듬은 것이 준비되면 그것을 보이고(순위 묶음별, '비서 정리'), 준비 전·꺼짐·실패·탈락은 프로그램 문구 그대로다. [원문 보기]로 언제나 프로그램 문구를 본다 (팀 2026-10-19, 기본 꺼짐 NEXT_PUBLIC_MOM_BRIEFING_LLM=1). 4b 카드에 붙임 (2026-10-20)
-import { LockIcon } from './ui';
+import { LockIcon, SecIcon } from './ui';
 import { useEffect, useRef, useState } from 'react';
 import { backendChatEnabled, fetchBriefChecks, saveBriefCheck } from './assistantApi';
 import { checkScope, fromServerKeys, serverKey, serverShift, toggleKey } from './briefChecks';
@@ -36,9 +36,11 @@ type Summary = {
   last: { label: string; good: number | null; target: number; defect: number; confirmed: boolean } | null;
 };
 const TAG_COLOR: Record<Tone, string> = { red: 'text-[#b4282d]', amber: 'text-[#9a5b00]', soon: 'text-[#6b6683]' };
-const SUM_BOX = 'flex min-w-0 flex-col gap-0.5 rounded-2xl border border-[#dbe5f3] bg-[#ffffff] px-3.5 py-2.5';
-const SUM_LABEL = 'whitespace-nowrap text-[12.5px] font-bold text-[#6b6683]';
-const SUM_NOTE = 'text-[12.5px] leading-snug text-[#4b4766]';
+// 교대 요약 카드 (사용자 선택 2026-10-24): 좌우 반반, 칸 안은 위에서 아래로 = 소제목(아이콘 칸 + 굵은 제목) → 큰 숫자 → 설명 줄
+const SUM_BOX = 'flex min-w-0 flex-col gap-1.5 rounded-2xl border border-[#dbe5f3] bg-[#ffffff] px-3 py-3';
+const SUM_HEAD = 'flex items-center gap-1.5 whitespace-nowrap text-[15px] font-extrabold';
+const SUM_NOTE = 'text-[14px] leading-snug text-[#4b4766]';
+const SUM_NUM = 'whitespace-nowrap font-mono text-[28px] font-extrabold leading-none tracking-[-.02em]';
 type CheckBase = { userId: string; shiftId: string; runId: number | null };
 function Board({ todos, sum, lockout, onOpenLast, aiNote, check }: { todos: Todo[]; sum: Summary; lockout: string[]; onOpenLast?: () => void; aiNote?: React.ReactNode; check: CheckBase }) {
   // 체크 저장 (2026-10-20): 이 브라우저(시연 회차별)에 늘 남기고, 백엔드가 있으면 같이 보낸다. 열 때 서버 값이 오면 서버 것을 따른다 (briefChecks.ts)
@@ -71,15 +73,18 @@ function Board({ todos, sum, lockout, onOpenLast, aiNote, check }: { todos: Todo
       <p className="m-0 px-0.5 text-[13.5px] text-[#6b6683]"><b className="text-[#1f1b33]">{sum.shift}</b> · <span className="font-mono">{sum.asOf}</span> 기준</p>
       <div className="grid grid-cols-2 gap-2">
         <div className={SUM_BOX}>
-          <span className={SUM_LABEL}>이번 교대 목표</span>
-          <b className="font-mono text-[18px] leading-tight">{sum.target}개</b>
+          <span className={SUM_HEAD}><SecIcon title="생산" size={26} />이번 교대 목표</span>
+          <span aria-hidden="true" className="text-[13px]">&nbsp;</span>{/* 오른쪽 칸의 날짜 줄만큼 띄워 큰 숫자 높이를 맞춘다 */}
+          <b className={SUM_NUM}>{sum.target}<span className="text-[16px]">개</span></b>
           <span className={SUM_NOTE}>이월 {sum.carry} · 작업지시 {sum.orders}<br />예방 정비 {sum.pm}</span>
         </div>
         <div className={SUM_BOX}>
-          <span className={SUM_LABEL}>지난 교대{sum.last && ` · ${sum.last.label}`}</span>
+          <span className={SUM_HEAD}><SecIcon title="이력" size={26} />지난 교대</span>
           {sum.last ? (<>
-            <span className="flex items-center gap-1.5"><b className="font-mono text-[18px] leading-tight">{sum.last.good ?? '—'} / {sum.last.target}</b><span className="whitespace-nowrap rounded-md bg-[#eef3fa] px-1.5 text-[11.5px] font-bold text-[#4b4766]">{sum.last.confirmed ? '확정' : '잠정'}</span></span>
-            <span className={SUM_NOTE}>양품 · 불량 {sum.last.defect}<br />{onOpenLast && <button onClick={onOpenLast} className="font-semibold text-[#2a55b8] underline">보고서 열기</button>}</span>
+            <span className="flex items-center gap-1.5 text-[13px] text-[#6b6683]">{sum.last.label}<span className="whitespace-nowrap rounded-md bg-[#eef3fa] px-1.5 text-[12px] font-bold text-[#2a55b8]">{sum.last.confirmed ? '확정' : '잠정'}</span></span>
+            <b className={SUM_NUM}>{sum.last.good ?? '—'}<span className="text-[16px] text-[#6b6683]">/{sum.last.target}</span></b>
+            <span className={SUM_NOTE}>양품 {sum.last.good ?? '—'} · 불량 {sum.last.defect}
+              {onOpenLast && <><br /><button onClick={onOpenLast} className="font-semibold text-[#2a55b8] underline">보고서 열기</button></>}</span>
           </>) : <span className={SUM_NOTE}>보고서 없음</span>}
         </div>
       </div>
