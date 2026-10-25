@@ -153,7 +153,7 @@ def test_llm_disabled_sends_nothing_and_is_503(monkeypatch):
 
 
 # ------------------------------------------------------------------ 사람·계정 글은 나가지 않는다 (T-NFR-SEC-08-1)
-@pytest.mark.parametrize("leak", ["담당 U07 점검", "보전 담당 1 점검", "사번: E12345 점검", "비밀번호: hunter22 점검", "Bearer abcdef1234567890 점검"])
+@pytest.mark.parametrize("leak", ["담당 U07 점검", "이도윤 점검", "사번: E12345 점검", "비밀번호: hunter22 점검", "Bearer abcdef1234567890 점검"])
 def test_material_with_people_or_account_info_is_not_sent(leak):
     r = use(GOOD)
     assert_503(post(lines=[{"id": "s1", "text": f"실적 87개. {leak}."}]))

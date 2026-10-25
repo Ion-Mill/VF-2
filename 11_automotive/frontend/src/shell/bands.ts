@@ -133,7 +133,7 @@ export const NO_LOCKOUT_PREFIX = '잠금·표지 중인 설비 없음';
 export function shiftBand(r: { status: string; actual_qty: number; target_qty: number; defect_qty?: number }, hand: { rank: string; items: string[] }[], mandatoryStops: number, confirmedText?: string): BandSpec {
   const pct = r.target_qty ? (r.actual_qty / r.target_qty) * 100 : null;
   const prod = `실적 ${fmtFrac(r.actual_qty, r.target_qty)} (${fmtPct(pct)}) · ${mandatoryStops ? `필수 정지 ${mandatoryStops}건` : '필수 정지 없음'}`;
-  if (r.status !== 'CONFIRMED') return { tone: 'draft', title: '교대 보고서 — 확정 대기', desc: prod, action: '확정', actionLock: true };
+  if (r.status !== 'CONFIRMED' && r.status !== 'REVISED') return { tone: 'draft', title: '교대 보고서 — 확정 대기', desc: prod, action: '확정', actionLock: true };
   for (const k of RANK_ORDER.slice(0, 4)) { // 0 · 0-1 · 1 · 2 (3 주의 · 4 참고는 띠에 안 올림)
     const xs = (hand.find((g) => g.rank === k)?.items ?? []).filter((x) => !x.startsWith(NO_LOCKOUT_PREFIX));
     if (xs.length) return { tone: RANK_TONE[k], title: `인계 ${RANK_NAME[k]} ${xs.length}건 — ${xs[0].slice(0, 30)}`, desc: prod };
@@ -147,7 +147,7 @@ export function shiftBand(r: { status: string; actual_qty: number; target_qty: n
 export function dailyBand(r: { status: string; work_date: string; actual_qty: number; target_qty: number; oee_pct: number | null }, canConfirm: boolean, firstIssue?: string): BandSpec {
   const sum = `실적 ${fmtFrac(r.actual_qty, r.target_qty)} · OEE ${fmtPct(r.oee_pct)}`;
   const d = `${Number(r.work_date.slice(5, 7))}/${Number(r.work_date.slice(8, 10))}`;
-  if (r.status !== 'CONFIRMED') return { tone: 'draft', title: `${d} 일일 보고서 — 확정 대기`, desc: sum, action: canConfirm ? '확정' : undefined, actionLock: true };
+  if (r.status !== 'CONFIRMED' && r.status !== 'REVISED') return { tone: 'draft', title: `${d} 일일 보고서 — 확정 대기`, desc: sum, action: canConfirm ? '확정' : undefined, actionLock: true };
   return firstIssue ? { tone: 'warn', title: firstIssue.slice(0, 30), desc: sum } : { tone: 'ok', title: sum };
 }
 

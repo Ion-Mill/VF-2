@@ -3,7 +3,7 @@ export const GENERATED = {
  "users": [
   {
    "id": "U01",
-   "name": "작업자 주간 1",
+   "name": "김하늘",
    "role": "OPR",
    "shift": "DAY",
    "procs": [
@@ -13,7 +13,7 @@ export const GENERATED = {
   },
   {
    "id": "U02",
-   "name": "작업자 주간 2",
+   "name": "이서연",
    "role": "OPR",
    "shift": "DAY",
    "procs": [
@@ -22,7 +22,7 @@ export const GENERATED = {
   },
   {
    "id": "U03",
-   "name": "작업자 주간 3",
+   "name": "박준호",
    "role": "OPR",
    "shift": "DAY",
    "procs": [
@@ -32,7 +32,7 @@ export const GENERATED = {
   },
   {
    "id": "U04",
-   "name": "작업자 야간 1",
+   "name": "최민재",
    "role": "OPR",
    "shift": "NIGHT",
    "procs": [
@@ -42,7 +42,7 @@ export const GENERATED = {
   },
   {
    "id": "U05",
-   "name": "작업자 야간 2",
+   "name": "정유진",
    "role": "OPR",
    "shift": "NIGHT",
    "procs": [
@@ -51,7 +51,7 @@ export const GENERATED = {
   },
   {
    "id": "U06",
-   "name": "작업자 야간 3",
+   "name": "강태윤",
    "role": "OPR",
    "shift": "NIGHT",
    "procs": [
@@ -61,42 +61,42 @@ export const GENERATED = {
   },
   {
    "id": "U07",
-   "name": "보전 담당 1",
+   "name": "이도윤",
    "role": "MNT",
    "shift": "DAY",
    "procs": []
   },
   {
    "id": "U08",
-   "name": "보전 담당 2",
+   "name": "한지훈",
    "role": "MNT",
    "shift": "DAY",
    "procs": []
   },
   {
    "id": "U09",
-   "name": "보전 담당 3",
+   "name": "오세린",
    "role": "MNT",
    "shift": "NIGHT",
    "procs": []
   },
   {
    "id": "U10",
-   "name": "반장 주간",
+   "name": "박서준",
    "role": "SUP",
    "shift": "DAY",
    "procs": []
   },
   {
    "id": "U11",
-   "name": "반장 야간",
+   "name": "윤가은",
    "role": "SUP",
    "shift": "NIGHT",
    "procs": []
   },
   {
    "id": "U12",
-   "name": "공장 관리자",
+   "name": "장현우",
    "role": "MGR",
    "shift": "DAY",
    "procs": []

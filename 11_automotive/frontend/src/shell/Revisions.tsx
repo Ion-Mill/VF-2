@@ -49,7 +49,7 @@ export function RevisionsScreen() {
     const shown = list.filter((x) => !type || (TYPE[x.doc_type] ?? x.doc_type) === type);
     return (
       <DocPage width={1440}>
-        <DocHead title="수정 이력" sub="모든 문서 · 최근 순" right={<><button onClick={printDoc} className={BTN}>인쇄</button><button onClick={back} className={BTN}>닫기</button></>} />
+        <div className="flex justify-end gap-2 pt-2"><button onClick={printDoc} className={BTN}>인쇄</button><button onClick={back} className={BTN}>닫기</button></div>{/* 제목은 화면 머리에 있어 뺌 */}
         {role !== 'OPR' && <CBand spec={revsBand(list[0] && { at: `${md(list[0].created_at)} ${hm(list[0].created_at)}`, doc: TYPE[list[0].doc_type] ?? list[0].doc_type, no: list[0].doc_key, who: list[0].author_kind === 'AI' ? '비서' : userName(list[0].author_user_id), ver: `v${list[0].version_no}` })} />}{/* 디자인 통일 C안: 결론 띠 (bands.ts revsBand) */}
         {role === 'OPR' ? blocked('작업자는 자기가 쓴 간이 작업기록의 이력만 볼 수 있습니다') : (<>
           <div className="flex flex-wrap gap-1.5">{['', ...types].map((t) => <button key={t || '전체'} onClick={() => setType(t)} className={`h-9 rounded-full border px-3 text-small font-semibold ${type === t ? 'border-brand-line bg-brand-tint text-brand-ink' : 'border-line bg-white'}`}>{t || '전체'}</button>)}</div>

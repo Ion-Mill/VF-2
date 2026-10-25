@@ -46,7 +46,7 @@ export default function HomeHud() {
   const whyText = why === 'oee'
     ? <>가동률 = 가동 {kp.apt_min}분 ÷ 계획 {kp.pbt_min}분 · 성능 = 7.0분 × 생산 {kp.pq}개 ÷ 가동 {kp.apt_min}분 · 양품률 = 양품 {kp.good_qty} ÷ 생산 {kp.pq} (DOC-07 §6.2){kp.oee_pct == null ? ' — 생산 기록이 쌓이면 계산돼요' : ''}</>
     : <>손실 {Math.round(p.loss_qty)}개 = 고장(멈춤) <b className="text-crit">{Math.round(p.failure_loss_qty)}개</b> + 속도(느림) <b className="text-warn">{Math.round(p.speed_loss_qty)}개</b> · 순간 정지 {p.short_stops.count}건 {p.short_stops.minutes}분 (추정)</>;
-  const band = alerts.some((a) => !a.handled && a.level !== '참고' && !(a.level === '주의' && bandOff.includes(a.id))); // App 이브 알림 띠(top 92, 높이 56)가 있으면 그 아래로 (2026-10-22)
+  const band = alerts.some((a) => !a.handled && a.level !== '참고' && !(a.level === '주의' && bandOff.includes(a.id))); // App 이브 알림 띠(top 92, 높이 62)가 있으면 그 아래로 (2026-10-22, 높이 2026-10-24)
   const sideCard = (selected && selected !== 'inf') || user.role === 'MNT'; // 오른쪽 위 카드: 설비를 눌렀을 때 · 보전 담당 (작업지시는 아래 정보판)
 
   return (<>
@@ -98,7 +98,7 @@ export default function HomeHud() {
     )}
 
     {/* 오른쪽 위 카드: 설비를 누르면 그 설비, 보전 담당은 정비 현황 */}
-    {sideCard && !more && <section className={`pointer-events-auto absolute right-5 ${band ? 'top-[160px]' : 'top-[92px]'} z-10 flex max-h-[calc(100%-260px)] w-[440px] flex-col rounded-stage p-5 ${GLASS}`}>
+    {sideCard && !more && <section className={`pointer-events-auto absolute right-5 ${band ? 'top-[166px]' : 'top-[92px]'} z-10 flex max-h-[calc(100%-260px)] w-[440px] flex-col rounded-stage p-5 ${GLASS}`}>
       {selected && selected !== 'inf' ? <MachineCard id={selected} onClose={() => selectMachine(null)} /> : user.role === 'MNT' ? (<>
         <div className={`flex items-baseline justify-between ${pmFold ? '' : 'mb-3'}`}><button onClick={() => setPmFold((f) => !f)} aria-expanded={!pmFold} className="flex items-baseline gap-2 text-band font-bold text-ink">정비 현황{pmFold && open.length > 0 && <span className="text-body font-semibold text-ink-2">{open.length}건</span>}<span className="text-[13px] text-ink-2">{pmFold ? '▸' : '▾'}</span></button><button onClick={() => go('pm')} className="text-body text-ink-2 hover:text-ink">예방 정비 ›</button></div>
         {!pmFold && <div className="min-h-0 overflow-y-auto">

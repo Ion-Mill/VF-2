@@ -111,10 +111,12 @@ export function LotScreen() {
                 {L.status === 'IN_PROCESS' ? <span className="relative flex h-2.5 w-2.5"><span className="absolute inline-flex h-full w-full rounded-full bg-current opacity-60 motion-safe:animate-ping" /><span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-current" /></span> : <span className="h-2.5 w-2.5 rounded-full bg-current" />}
                 {word}
               </span>
-              {blocked ? <span className={`${big} bg-white text-warn shadow-[inset_0_0_0_1.5px_currentColor]`}><LockIcon size={16} /> 출하 금지</span>
-                : <span className={`${big} bg-white text-ok shadow-[inset_0_0_0_1.5px_currentColor]`}><span className="h-2.5 w-2.5 rounded-full bg-ok-dot" />출하 가능</span>}
               {extra && extra !== word && <span className={`${tag} ${band.tone === 'crit' ? 'bg-crit-bg text-crit' : 'bg-warn-bg text-warn'}`}>{band.tone === 'crit' ? '⚠' : '▲'} {extra}</span>}
-              {now && <span className="ml-auto flex items-center gap-1.5 text-small text-ink-3"><i className="h-2 w-2 rounded-full bg-ok-dot" />실시간, {md(now)} {hm(now)} 기준</span>}
+              <div className="ml-auto flex items-center gap-3">
+                {now && <span className="flex items-center gap-1.5 text-small text-ink-3"><i className="h-2 w-2 rounded-full bg-ok-dot" />실시간, {md(now)} {hm(now)} 기준</span>}
+                {blocked ? <span className={`${big} bg-white text-warn shadow-[inset_0_0_0_1.5px_currentColor]`}><LockIcon size={16} /> 출하 금지</span>
+                  : <span className={`${big} bg-white text-ok shadow-[inset_0_0_0_1.5px_currentColor]`}><span className="h-2.5 w-2.5 rounded-full bg-ok-dot" />출하 가능</span>}
+              </div>
             </div>
             <h1 className="mt-4 font-mono text-[42px] font-bold leading-tight tracking-[-.03em] text-ink">{L.lot_no}</h1>
             <p className="mt-1 flex flex-wrap gap-x-6 gap-y-1 text-small text-ink-2">

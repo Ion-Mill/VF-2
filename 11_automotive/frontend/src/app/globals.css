@@ -92,6 +92,10 @@ h1,h2,h3{letter-spacing:-.01em;}
 /* 다시 보기 카드: 가공 = 흐르는 빛 (2026-10-17) */
 @keyframes rpSheen{0%{transform:translateX(-150%) rotate(20deg)}100%{transform:translateX(450%) rotate(20deg)}}
 .rp-sheen{animation:rpSheen 3.2s ease-in-out infinite}
+/* 다시 보기 카드: 고장 = 테두리 바깥 맥박 (J안, 2026-10-25) */
+@keyframes rpRing{0%,100%{box-shadow:0 0 0 2px rgba(216,57,75,.45)}50%{box-shadow:0 0 0 9px rgba(216,57,75,0)}}
+.rp-ring{animation:rpRing 1s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.rp-ring{animation:none}}
 
 /* 3D 카드 이브 띠 상태색 빛: 숨 쉬듯 (2026-10-18) */
 @keyframes eveGlow{0%,100%{opacity:.55}50%{opacity:1}}

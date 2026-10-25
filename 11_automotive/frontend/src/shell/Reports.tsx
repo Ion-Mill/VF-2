@@ -100,8 +100,8 @@ export function ShiftReportScreen() {
           <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4 print:grid-cols-4">
             <Kpi label="실적" value={actual} unit="개" tone="main" />
             <Kpi label="총 목표" value={target} unit="개" />
-            <Kpi label={actual >= target ? '초과' : '남은 수량'} value={Math.abs(target - actual)} unit="개" tone={actual >= target ? 'ok' : 'bad'} />
-            <Kpi label="불량" value={r.defect_qty} unit="개" />
+            <Kpi label={actual >= target ? '초과' : '남은 수량'} value={Math.abs(target - actual)} unit="개" tone={actual >= target ? 'ok' : 'warn'} />
+            <Kpi label="불량" value={r.defect_qty} unit="개" tone={Number(r.defect_qty) > 0 ? 'bad' : undefined} />{/* 남은 수량은 주황, 불량은 빨강 (사용자 요청 2026-10-25) */}
           </div>
           <div><Bar pct={pct} outline /><div className="mt-1 text-small text-ink-2">목표 대비 <b className="font-mono text-ink">{pct}%</b></div></div>
           <div className="flex flex-wrap items-baseline gap-x-5 gap-y-1 text-small text-ink-2"><b className="text-ink">가동률</b>
@@ -177,7 +177,7 @@ function prodText(x: string): ReactNode {
 
 export function DailyReportScreen() {
   const { key, dailyReports, shiftReports, back, user, role, go, toast, reloadReports, inv, wos, wrs, history, twin, openWo, openRecord } = useApp();
-  const pending = (dailyReports ?? []).filter((r) => r.status !== 'CONFIRMED').map((r) => r.work_date).sort();
+  const pending = (dailyReports ?? []).filter((r) => r.status !== 'CONFIRMED' && r.status !== 'REVISED').map((r) => r.work_date).sort();
   const d = key ?? pending[0] ?? (dailyReports ?? []).map((r) => r.work_date).sort().pop() ?? '';
   const f = useFetch<Record<string, any>>(d ? `reports/daily/${d}` : null, 0, [d]);
   const lots = useFetch<{ lots: Record<string, any>[] }>(d ? 'lots' : null, 0, [d]);
@@ -243,15 +243,16 @@ export function DailyReportScreen() {
             return (
               <div className="grid grid-cols-2 gap-2.5 md:grid-cols-5 print:grid-cols-5">
                 <Kpi field="실적" label="실적" value={actual} unit="개" sub={`목표 ${target}개`} tone="main" />
-                <div className="flex min-w-0 flex-col gap-1.5 rounded-tile border border-line bg-white px-3 py-2">
+                {/* 주간 / 야간: 막대 대신 숫자 두 개 (사용자 요청 2026-10-25) */}
+                <div className="flex min-w-0 flex-col rounded-tile border border-line bg-white px-4 py-3">
                   <span data-summary-field="주간 / 야간" className="text-small text-ink-2">주간 / 야간</span>
-                  {sum > 0 ? <div className="mt-auto flex h-8 overflow-hidden whitespace-nowrap rounded-tile text-small font-semibold" role="img" aria-label={`주간 ${dq}개, 야간 ${nq}개`}>
-                    <span data-summary-field="주간" className="flex min-w-0 items-center bg-brand px-2 text-white" style={{ width: `${(dq / sum) * 100}%` }}>주간 {dq}</span>
-                    <span data-summary-field="야간" className="flex min-w-0 items-center bg-tile px-2 text-ink" style={{ width: `${(nq / sum) * 100}%` }}>야간 {nq}{night?.status !== 'CONFIRMED' ? ' (잠정)' : ''}</span>
-                  </div> : <span data-summary-field="주간 / 야간" className="text-body text-ink-2">—</span>}
+                  {sum > 0 ? <span className="whitespace-nowrap font-mono text-num font-bold tabular-nums text-ink" aria-label={`주간 ${dq}개, 야간 ${nq}개`}>
+                    <span data-summary-field="주간">{dq}</span><small className="mx-1 font-sans text-body font-normal text-ink-3">/</small><span data-summary-field="야간">{nq}</span><small className="ml-1 font-sans text-body font-normal text-ink-2">개</small>
+                  </span> : <span data-summary-field="주간 / 야간" className="text-body text-ink-2">—</span>}
+                  {sum > 0 && night?.status !== 'CONFIRMED' && <span className="text-small text-ink-2">야간 잠정</span>}
                 </div>
                 <Kpi field={gap} label={gap} value={Math.abs(target - actual)} unit="개" tone={actual >= target ? 'ok' : 'bad'} />
-                <Kpi field="불량" label="불량" value={r.defect_qty} unit="개" />
+                <Kpi field="불량" label="불량" value={r.defect_qty} unit="개" tone={Number(r.defect_qty) > 0 ? 'bad' : undefined} />{/* 불량이 있으면 빨강 (사용자 요청 2026-10-25) */}
                 <Kpi field="OEE (라인)" label="OEE (라인)" value={r.oee_pct} unit="%" />
               </div>
             );
@@ -291,7 +292,7 @@ export function DailyReportScreen() {
             ['오늘 사용', <>{Object.entries(txns.filter((t) => t.txn_type === 'USE').reduce((m: Record<string, number>, t) => { m[t.item_no] = (m[t.item_no] ?? 0) + Number(t.qty_change); return m; }, {})).map(([k, v]) => <Chip key={k}>{inv?.items.find((i) => i.item_no === k)?.item_name ?? k} {v}</Chip>)}</>],
             ['재고 부족', <>{(inv?.items ?? []).filter((i) => i.low).map((i) => <Chip key={i.item_no} tone="warn">{i.item_name} — 안전 재고({i.safety_stock}) 이하</Chip>)}</>],
             ['완제품', <><Chip>BRK-A100 입고(합격) {fg.in}</Chip><Chip>출하 {fg.ship}</Chip><Chip>조정 {fg.adj}</Chip><Chip>보류 수량 {inv?.held_lot_qty ?? '—'}</Chip></>],
-          ].map(([k, v]) => <div key={k as string} className="flex flex-wrap items-center gap-1.5"><b className="min-w-[64px] text-small">{k}</b>{v}</div>)}
+          ].map(([k, v]) => <div key={k as string} className="grid grid-cols-[76px_minmax(0,1fr)] gap-x-2"><b className="flex h-[26px] items-center text-small">{k}</b><div className="flex flex-wrap items-center gap-1.5">{v}</div></div>)}{/* 이름 칸을 고정해 칩이 두 줄이 돼도 같은 자리에서 시작 (사용자 요청 2026-10-25) */}
         </div>
       </Sec>
       {role === 'MGR' && !confirmed ? <Sec title="관리자 메모"><input aria-label="관리자 메모" value={memo} onChange={(e) => setMemo(e.target.value)} placeholder="예: 공구 재고 주문 확인" className="h-11 w-full rounded-ctl border border-line px-3" /></Sec>

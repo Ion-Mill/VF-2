@@ -6,10 +6,9 @@
 // - 켜는 스위치: 환경변수 NEXT_PUBLIC_MOM_API (백엔드 주소, 예 http://127.0.0.1:8000). **없으면 꺼짐** — 채팅은 지금처럼 시연 서버의 규칙 답(live.ts api())을 쓴다.
 //   바꾸면 `npm run dev`를 다시 켠다 (빌드할 때 글자로 박힌다). 백엔드의 MOM_CORS_ORIGINS에 이 화면 주소(localhost:3000)가 있어야 한다.
 // - 브라우저가 백엔드를 직접 부르므로 화면 서버(Next) 프록시의 30초 제한을 받지 않는다 (외부 LLM 답은 20초 넘게 걸릴 수 있다).
-// - 로그인: 채팅할 때 사용자 ID로 백엔드 /api/auth/login을 해서 토큰을 받는다 (화면 로그인은 그대로 — 거기는 화면 안에서 비교만 한다).
-//   토큰은 **메모리에만** 둔다 (새로고침하면 다음 질문에서 조용히 다시 받는다). 시연 비밀번호는 Login.tsx의 DEMO_PW.
+// - 로그인: 화면 로그인(Login.tsx → loginBackend)이 백엔드 /api/auth/login으로 받은 토큰을 채팅도 같이 쓴다 (2026-10-23).
+//   토큰은 **메모리에만** 둔다. 새로고침·계정 바꾸기·토큰 만료 뒤에는 다음 질문에서 시연 비밀번호(DEMO_PW)로 조용히 다시 받는다.
 // - 실패는 명세대로 "응답 없음" — 옛 규칙 답으로 몰래 바꿔 주지 않는다 (숫자가 엇갈리지 않게).
-import { DEMO_PW } from './Login';
 import { buildAskContext } from './carry';
 import { STATUS_KO } from './assistantStatus';
 import { itemKeysOf } from './briefChecks';
@@ -33,7 +32,11 @@ export const SCREEN_CODE: Record<string, string> = {
   pm: 'SCR-23', idocs: 'SCR-24', settings: 'SCR-25',
 };
 
+// 시연용: 모든 계정 비밀번호 0000 (사용자 결정 2026-10-15). 로그인 화면의 자동 입력도 이 값을 쓴다
+export const DEMO_PW = '0000';
+
 const tokens = new Map<string, string>();          // 사용자 ID → 토큰 (메모리만)
+const LOGIN_TIMEOUT_MS = 10_000;
 
 class Http extends Error { constructor(public status: number) { super(`HTTP ${status}`); } }
 
@@ -51,13 +54,24 @@ async function post(path: string, body: unknown, token?: string, timeoutMs = ASK
   } finally { clearTimeout(timer); }
 }
 
+/** 백엔드 로그인 (AUTH-01). 받은 토큰을 채팅이 같이 쓰게 둔다. 'bad' = 아이디·비밀번호 틀림(401), 'down' = 연결 안 됨·다른 오류 */
+export async function loginBackend(userId: string, password: string): Promise<'ok' | 'bad' | 'down'> {
+  try {
+    const j = await post('/api/auth/login', { user_id: userId, password }, undefined, LOGIN_TIMEOUT_MS);
+    if (typeof j?.access_token !== 'string') return 'down';
+    tokens.set(userId, j.access_token);
+    return 'ok';
+  } catch (e) {
+    return e instanceof Http && e.status === 401 ? 'bad' : 'down';
+  }
+}
+
 async function tokenFor(userId: string, fresh = false): Promise<string> {
   const have = tokens.get(userId);
   if (have && !fresh) return have;
-  const j = await post('/api/auth/login', { user_id: userId, password: DEMO_PW });
-  if (typeof j?.access_token !== 'string') throw new Error('토큰 없음');
-  tokens.set(userId, j.access_token);
-  return j.access_token;
+  // shortcut: 다시 받을 때 시연 비밀번호를 쓴다, 계정마다 비밀번호가 달라지면 401 때 로그인 화면으로 보낸다
+  if (await loginBackend(userId, DEMO_PW) !== 'ok') throw new Error('로그인 실패');
+  return tokens.get(userId)!;
 }
 
 export const forgetTokens = () => tokens.clear();

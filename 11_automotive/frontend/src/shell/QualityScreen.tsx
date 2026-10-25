@@ -393,7 +393,7 @@ function TolBar({ it, q, v, card }: { it: R; q?: R; v: number | null; card?: boo
   const pj = judge(it, v), out = q?.ucl != null && v != null && (v > q.ucl || v < q.lcl);
   const k = String(it.item_seq), c = ITEM_COLOR[k];
   const bar = (
-    <div className="relative h-3 rounded bg-brand-tint">
+    <div className={`relative h-3 rounded ${card ? 'bg-white shadow-[inset_0_0_0_1px_rgba(15,23,42,.18)]' : 'bg-brand-tint'}`}>{/* 카드는 파스텔 바탕이라 흰 막대 + 얇은 선으로 구분 (2026-10-25) */}
       {lsl != null && <span className="absolute -top-1 h-5 w-[2px] bg-ink" style={{ left: pos(lsl) }} />}<span className="absolute -top-1 h-5 w-[2px] bg-ink" style={{ left: pos(usl) }} />
       {q?.ucl != null && <><span className="absolute top-0 h-3 border-l border-dashed border-slate-500" style={{ left: pos(q.ucl) }} />{lsl != null && <span className="absolute top-0 h-3 border-l border-dashed border-slate-500" style={{ left: pos(q.lcl) }} />}</>}
       {v != null && <span className={`absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white ${pj === 'FAIL' ? 'bg-crit' : out ? 'bg-warn-mark' : 'bg-ink'}`} style={{ left: pos(v) }} />}

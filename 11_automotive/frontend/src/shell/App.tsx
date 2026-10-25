@@ -8,7 +8,7 @@ import { ID_OF, LAYOUT, LEGEND, MACHINES, type Role } from './data';
 import { Ctx, DEFAULT_SETTINGS, type AppCtx, type History, type Inv, type Screen, type Settings } from './ctx';
 import { api, md, SIM, simIso, tsOf, useFetch, useLive, useLocal, usePersist, type SimEvent } from './live';
 import { askGuideCard } from './assistText';
-import { ALARMS, ROLE_NAME, SHIFT_NAME, USERS, applyAssignments, homeScreen, levelOfSev, type AlarmRec, type AlertRec, type Notice, type UserRec } from './model';
+import { ALARMS, ROLE_NAME, USERS, applyAssignments, homeScreen, levelOfSev, type AlarmRec, type AlertRec, type Notice, type UserRec } from './model';
 import { derive, fromEvents, fromPast, groupPmPast, repeatOf, type RuleCtx } from './rules';
 import { LOCK } from './Safety';
 import { nextNo, pad, rev, type Downtime, type SimpleRecord, type WorkOrder, type WorkRecord } from './workflow';
@@ -99,7 +99,7 @@ function screenFromUrl(role: Role): [Screen, string | null] {
 // 현장 화면 공정 묶음 = 작업자 1명의 담당 구역 (app_user.csv home_process_code, 사용자 선택 2026-10-19)
 const ZONES: [string, string[], MachineId[]][] = [['1·2공정', ['OP-10', 'OP-20'], ['saw', 'mil']], ['3공정', ['OP-30'], ['vf1', 'vf2']], ['4·5공정', ['OP-40', 'OP-50'], ['wsh', 'cmm']]];
 // 왼쪽 메뉴 묶음 (사용자 요청 2026-10-19): 홈 / 생산(로트·현장) / 정비(정지·재생·예방 정비) / 품질 / 재고(공구) / 문서(+지침카드, 2026-10-20) / 설정.
-// 묶음 안 화면은 상단 바 가운데 탭으로 바꾼다. related = 그 묶음에서 열리는 다른 화면
+// 묶음 안 화면은 위 메뉴 펼침으로 바꾼다. related = 그 묶음에서 열리는 다른 화면
 // row: true 이면 그 묶음의 하위 탭을 본문 위 가로 한 줄로 보인다 (생산). 위 유리 메뉴 펼침은 그대로다.
 const GROUPS: { label: string; subs: [string, Screen, Role[]?, (string | null)?][]; related?: Screen[] }[] = [
   { label: '홈', subs: [['3D 라인', 'line']], related: ['layout2d'] },
@@ -140,6 +140,21 @@ export default function App() {
   if (!ready) return null;
   if (!user) return <Login onLogin={setUser} />;
   return <Frame key="session" user={user} setUser={setUser} />;
+}
+
+// 위쪽 막대 (사용자 요청 2026-10-24): 교대 = 주간 밝은 칩 + 해 · 야간 진한 칩 + 달 + 시간대, 교대 밖은 '교대 대기'(2026-10-25 사용자 선택, 전 '교대 사이'). 계정 = 역할 칩 + 이름 + 작업자 담당 공정
+const ROLE_CHIP: Record<Role, [string, string]> = { OPR: ['작업자', 'bg-brand-tint text-brand-ink'], MNT: ['보전', 'bg-op3 text-op3-t'], SUP: ['반장', 'bg-op1 text-op1-t'], MGR: ['관리자', 'bg-ink text-white'] };
+const RoleChip = ({ role }: { role: Role }) => <span className={`rounded-md px-1.5 py-0.5 text-small font-bold ${ROLE_CHIP[role][1]}`}>{ROLE_CHIP[role][0]}</span>;
+const procLabel = (u: UserRec) => (u.role === 'OPR' && u.procs.length ? `${[...u.procs].sort().map((c) => Number(c.slice(3)) / 10).join('·')}공정` : '');   // OP-10·OP-20 → 1·2공정
+function ShiftChip({ type, start, end, now, finished }: { type: 'DAY' | 'NIGHT'; start: string; end: string; now: string; finished: boolean }) {
+  const off = now < start || now >= end, day = type === 'DAY';
+  // 시뮬레이터는 10/1 08:00부터 하루치만 돈다 — 다음 날 08:00에 끝나면 다음 주간 교대가 없어 '교대 대기'로 남던 것 (2026-10-25)
+  if (finished) return <span className="rounded-tile border border-dashed border-line px-2.5 py-1 text-card font-semibold text-ink-3" title="시연 하루가 끝났어요. 시연 조작판의 [처음으로]를 누르세요">시연 끝</span>;
+  if (off) return <span className="rounded-tile border border-dashed border-line px-2.5 py-1 text-card font-semibold text-ink-3">교대 대기</span>;
+  const icon = day
+    ? <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#e8930c" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2" fill="#ffc43d" /><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6" /></svg>
+    : <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z" fill="#ffd36a" /></svg>;
+  return <span className={`inline-flex items-center gap-1.5 rounded-tile px-2.5 py-1 text-card font-bold ${day ? 'border border-line bg-white text-ink' : 'bg-[#26315a] text-white'}`}>{icon}{day ? '주간' : '야간'}<span className={`font-semibold ${day ? 'text-ink-2' : 'text-white/75'}`}>{start.slice(11, 13)}–{end.slice(11, 13)}</span></span>;
 }
 
 function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) => void }) {
@@ -491,7 +506,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
           </nav>
           <span className={`ml-auto flex items-center gap-2.5 whitespace-nowrap ${connected ? 'text-ink' : 'text-ink-3'}`}>
             {twin ? (<>
-              <span className="rounded-tile bg-brand-tint px-2.5 py-1 text-card font-bold text-brand-ink">{twin.clock.sim_at >= twin.shift.end_at ? '휴무' : SHIFT_NAME[twin.shift.shift_type]}</span>
+              <ShiftChip type={twin.shift.shift_type} start={twin.shift.start_at} end={twin.shift.end_at} now={twin.clock.sim_at} finished={twin.clock.finished} />
               <b className="font-mono text-title font-semibold max-[1200px]:hidden">{md(twin.clock.sim_at)}</b>
               <b className="font-mono text-title">{twin.clock.sim_at.slice(11, 16)}</b>
             </>) : <b className="font-mono text-title">--:--</b>}
@@ -499,11 +514,11 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
           <div className="ml-3 flex items-center gap-1">{/* 계정·시연·설정 묶음 (시안 3a) */}
           <div className="relative">
             <button onClick={() => { setAcct((o) => !o); setDemo(false); setSetOpen(false); }} className="flex h-11 items-center gap-1.5 whitespace-nowrap rounded-tile px-3 text-card font-semibold hover:bg-white/70">
-              {user.name} <span className="text-small text-ink-3" aria-hidden="true">▾</span>
+              <RoleChip role={user.role} />{user.name}{procLabel(user) && <span className="text-small font-medium text-ink-2">{procLabel(user)}</span>} <span className="text-small text-ink-3" aria-hidden="true">▾</span>
             </button>
             {acct && (
-              <div className="absolute right-0 top-[52px] z-30 max-h-[70vh] w-[220px] overflow-y-auto rounded-tile border border-line bg-white py-1 shadow-lg">
-                {USERS.map((u) => <button key={u.id} onClick={() => { setAcct(false); setUser(u); }} className={`flex h-11 w-full items-center px-4 text-left text-body hover:bg-tile ${u.id === user.id ? 'font-bold text-brand-ink' : ''}`}>{u.name}</button>)}
+              <div className="absolute right-0 top-[52px] z-30 w-[220px] rounded-tile border border-line bg-white py-1 shadow-lg">{/* 계정 바꾸기 목록은 뺐다 — 다른 계정은 로그아웃 뒤 아이디 로그인 (사용자 요청 2026-10-24) */}
+                <div className="px-4 py-2.5"><div className="text-body font-bold">{user.name}</div><div className="text-small text-ink-2">{ROLE_NAME[user.role]} {user.role} · {user.id}{procLabel(user) && ` · ${procLabel(user)}`}</div></div>
                 <button onClick={() => setUser(null)} className="flex h-11 w-full items-center border-t border-line-soft px-4 text-left text-body text-ink-2 hover:bg-tile">로그아웃</button>
               </div>
             )}
@@ -533,21 +548,13 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
         {/* 이브 창(1안, 사용자 선택 2026-10-20): 창 모양·자리는 모든 화면 같음(오른쪽, 위 바 아래 ~ 이브 버튼 위). 홈은 3D 위에 뜨고, 다른 화면은 본문이 창 폭(420 + 오른쪽 24 + 간격 12)만큼 비켜 줌 */}
         <div className={`flex min-h-0 flex-1 flex-col ${curGroup?.label === '재고' || curGroup?.label === '문서' ? 'fs-up' : ''}`} style={{ paddingTop: home ? 0 : 88, paddingBottom: screen === 'layout2d' ? 64 : screen === 'field' ? 70 : 0, paddingRight: side && !home ? 456 : 0, transition: 'padding-right .25s ease' }}>
         {/* 화면 머리 통일안 (사용자 선택 2026-10-24, 시안: claude.ai 아티팩트 "화면 머리 통일안"): 홈 말고 모든 화면 = [←] · 묶음 이름 → 제목(메뉴 이름) → 설명 한 줄,
-            묶음 안 화면이 2개 이상이면 오른쪽에 탭. 문서는 하위가 많아 탭 없이 위 메뉴로 고르고 고른 문서 이름이 제목. 전에 생산만 쓰던 흰 가로 바 · 다시 보기 결론 띠 안 ← 는 없앰 */}
+            같은 묶음 화면 바꾸기는 위 메뉴로만 (오른쪽 탭은 위 메뉴와 겹쳐 뺌, 사용자 요청 2026-10-25). 문서는 고른 문서 이름이 제목. 전에 생산만 쓰던 흰 가로 바 · 다시 보기 결론 띠 안 ← 는 없앰 */}
         {screen !== 'line' && screen !== 'layout2d' && (() => {
           const doc = screen === 'docs' ? (key ?? '작업지시서') : DOC_OF[screen];
-          const tabs = curGroup && curGroup.subs.length > 1 && curGroup.label !== '문서' ? curGroup.subs : null;
           return (
             <div className="shrink-0 bg-ground px-4 pt-3">
               <PageHead title={screen === 'docs' ? doc : TITLE[screen]} sub={(doc && DOC_SUB[doc]) || SUB[screen]} onBack={back}
-                group={curGroup && <><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="text-ink-3"><path d={NAV_ICON[curGroup.label]} /></svg>{curGroup.label}</>}
-                right={tabs && (
-                  <nav aria-label={curGroup!.label} className="flex flex-wrap gap-1 rounded-tile border border-line bg-white p-1">
-                    {tabs.map(([name, s2, roles]) => { const ok = !roles || roles.includes(role); const on = screen === s2; return (
-                      <button key={name} disabled={!ok} onClick={() => go(s2)} title={ok ? undefined : '이 계정은 볼 수 없습니다'} aria-current={on ? 'page' : undefined}
-                        className={`flex h-10 items-center gap-1 whitespace-nowrap rounded-ctl px-4 text-[16px] font-bold disabled:cursor-not-allowed disabled:text-ink-3 ${on ? 'bg-brand-tint text-brand-ink' : 'text-ink-2 hover:bg-tile'}`}>{name}{!ok && <LockIcon />}</button>); })}
-                  </nav>
-                )} />
+                group={curGroup && <><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="text-ink-3"><path d={NAV_ICON[curGroup.label]} /></svg>{curGroup.label}</>} />
             </div>
           );
         })()}
@@ -561,14 +568,15 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
               {eveRgb && <div className="eve-glow pointer-events-none absolute inset-0 z-[5]" style={{ boxShadow: `inset 0 0 0 2px rgba(${eveRgb},.55), inset 0 60px 80px -40px rgba(${eveRgb},.35)` }} />}
               {bandCur && (() => { const crit = bandCur.level === '긴급', a = bandCur.alarm; return (
                 // 이브 알림 띠 — 10/18 내용 그대로(알람 코드집 규칙 문장), 모양만 화이트 카드 테마 + 긴급 빨강 · 주의 노랑 테두리 (사용자 요청 2026-10-21)
-                <div className={`pointer-events-auto absolute left-[400px] right-5 top-[92px] z-10 flex h-14 items-center gap-2.5 rounded-card border-2 bg-white pl-3 pr-2 text-body shadow-card ${crit ? 'border-crit' : 'border-warn-mark'}`} role="status">
+                // 자리 = 왼쪽 3D 조작 줄 끝 + 12 (펼침 434 · 접음 74), 높이 = 조작 줄과 같은 62 — 겹치지 않게 (사용자 요청 2026-10-24)
+                <div className={`pointer-events-auto absolute ${ctlOpen ? 'left-[446px]' : 'left-[86px]'} right-5 top-[92px] z-10 flex h-[62px] items-center gap-2.5 rounded-card border-2 bg-white pl-3 pr-2 text-body shadow-card ${crit ? 'border-crit' : 'border-warn-mark'}`} role="status">
                   <Robot size={34} />{/* 이브가 알려 주는 띠 — 얼굴은 이브 창 머리와 같은 그림 (사용자 요청 2026-10-22) */}
-                  <span className={`inline-flex h-8 shrink-0 items-center gap-1.5 rounded-ctl px-3 font-bold ${crit ? 'bg-crit-bg text-crit' : 'bg-warn-bg text-warn'}`}><i className={`h-2 w-2 rounded-full bg-current ${crit ? 'band-ping-fast' : 'band-ping'}`} />
+                  <span className={`inline-flex h-9 shrink-0 items-center gap-1.5 rounded-ctl px-3 text-card font-bold ${crit ? 'bg-crit-bg text-crit' : 'bg-warn-bg text-warn'}`}><i className={`h-2 w-2 rounded-full bg-current ${crit ? 'band-ping-fast' : 'band-ping'}`} />
                     {/* 점 맥박 + 경고 아이콘 (시안 B, 2026-10-24) — 띠 테두리는 그대로 */}
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                       {crit ? <path d="M7.86 2h8.28L22 7.86v8.28L16.14 22H7.86L2 16.14V7.86zM12 8v4M12 16h.01" /> : <path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" />}
                     </svg>{bandCur.level}</span>
-                  <span className="min-w-0 flex-1 truncate text-ink-2"><b className="font-bold text-ink">{MACHINES[bandCur.machine].name} {(a?.nameKo ?? '알람').replace(/\s*\([A-Z0-9 ._/-]+\)/, '')}({bandCur.code})</b> {Math.max(1, Math.round((SIM.now() - bandCur.ts) / 60000))}분째예요. {a?.steps[0] ? `먼저: ${a.steps[0]}` : a?.easy ?? '지침카드를 확인해 주세요.'}</span>
+                  <span className="min-w-0 flex-1 truncate text-band text-ink-2"><b className="font-bold text-ink">{MACHINES[bandCur.machine].name} {(a?.nameKo ?? '알람').replace(/\s*\([A-Z0-9 ._/-]+\)/, '')}({bandCur.code})</b> {Math.max(1, Math.round((SIM.now() - bandCur.ts) / 60000))}분째예요. {a?.steps[0] ? `먼저: ${a.steps[0]}` : a?.easy ?? '지침카드를 확인해 주세요.'}</span>
                   <span className="inline-flex h-8 shrink-0 items-center whitespace-nowrap rounded-ctl border border-line px-2.5 text-small text-ink-2" title="알람 코드집으로 만든 문장">근거 · {a?.doc03[0] ?? 'DOC-02 알람 코드집'}</span>
                   {bandList.length > 1 && <button onClick={() => setEveI((i) => i + 1)} className="shrink-0 px-1 text-small tabular-nums text-ink-3 hover:text-ink" aria-label="다음 알람">{(eveI % bandList.length) + 1} / {bandList.length} ›</button>}
                   <button onClick={() => openCard(bandCur.id)} className="h-10 shrink-0 rounded-ctl bg-brand px-4 font-semibold text-white hover:bg-brand-ink">지침카드</button>

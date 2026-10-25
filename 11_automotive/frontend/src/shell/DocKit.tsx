@@ -84,11 +84,11 @@ export function Fold({ summary, children, open }: { summary: ReactNode; children
     </details>
   );
 }
-export function Kpi({ label, value, unit, sub, tone, field }: { label: ReactNode; value: ReactNode; unit?: ReactNode; sub?: ReactNode; tone?: 'main' | 'bad' | 'ok'; field?: string }) {
+export function Kpi({ label, value, unit, sub, tone, field }: { label: ReactNode; value: ReactNode; unit?: ReactNode; sub?: ReactNode; tone?: 'main' | 'bad' | 'warn' | 'ok'; field?: string }) {
   return (
     <div data-summary-field={field} className="flex min-w-0 flex-col rounded-tile border border-line bg-white px-4 py-3">{/* 흰 칸 + 선 (main도 같은 칸, 강조는 결론 띠) */}
       <span className="text-small text-ink-2">{label}</span>
-      <span className={`font-mono text-num font-bold tabular-nums ${tone === 'bad' ? 'text-crit' : tone === 'ok' ? 'text-ok' : 'text-ink'}`}>{value}{unit && <small className="ml-1 font-sans text-body font-normal text-ink-2">{unit}</small>}</span>
+      <span className={`font-mono text-num font-bold tabular-nums ${tone === 'bad' ? 'text-crit' : tone === 'warn' ? 'text-warn' : tone === 'ok' ? 'text-ok' : 'text-ink'}`}>{value}{unit && <small className="ml-1 font-sans text-body font-normal text-ink-2">{unit}</small>}</span>
       {sub && <span className="text-small text-ink-2">{sub}</span>}
     </div>
   );
