@@ -30,6 +30,7 @@ class Clock:
     day_end: int
     night_start: int
     night_end: int
+    history_start: date | None = None      # 운영 기록이 시작된 날 (profile.history_start). 없으면 기준 시각의 날짜
 
 
 def _minutes(text: object) -> int | None:
@@ -74,7 +75,12 @@ def parse_health(doc: object) -> Clock | None:
         return None
     if at.tzinfo is None:
         at = at.replace(tzinfo=KST)
-    return Clock(at.astimezone(KST), day_start, day_end, night_start, night_end)
+    hs = profile.get("history_start") if isinstance(profile, dict) else None
+    try:
+        history_start = date.fromisoformat(hs[:10]) if isinstance(hs, str) else None
+    except ValueError:
+        history_start = None
+    return Clock(at.astimezone(KST), day_start, day_end, night_start, night_end, history_start)
 
 
 def fetch(url: str) -> Clock | None:
@@ -106,6 +112,36 @@ def anchor_date() -> date:
 
         return date.fromisoformat(REFERENCE_AT[:10])
     return live.at.date()
+
+
+def _old_reference_day() -> date:
+    from backend.config import REFERENCE_AT
+
+    return date.fromisoformat(REFERENCE_AT[:10])
+
+
+def data_period() -> tuple[date, date]:
+    """운영 기록이 있는 기간 (처음, 마지막). 시계가 있으면 profile.history_start(없으면 기준 시각의 날짜)부터 오늘까지,
+    시계가 없으면 옛 9월 데이터 기간 9/1~9/30 (옛 시연 서버·시험). 2026-10-25: 공용 DB가 10월 데이터로 바뀌었는데 비서가 9월만 알았다."""
+    live = current()
+    if live is None:
+        return date(2026, 9, 1), date(2026, 9, 30)
+    return (live.history_start or _old_reference_day()), live.at.date()
+
+
+def default_end() -> date:
+    """기간을 말하지 않은 조회의 끝: 데이터가 있는 마지막 끝난 날 = 어제(시계 없음: 옛 9/30 = 기준 시각 전날). 어제가 기록 시작 전이면 시작일."""
+    live = current()
+    if live is None:
+        return date(2026, 9, 30)
+    start, _ = data_period()
+    return max(live.at.date() - timedelta(days=1), start)
+
+
+def default_range(days: int = 30) -> tuple[date, date]:
+    """기간을 말하지 않은 조회의 기본 기간: default_end()까지 days일, 기록 시작 전으로는 가지 않는다."""
+    end = default_end()
+    return max(end - timedelta(days=days - 1), data_period()[0]), end
 
 
 def hour_words() -> tuple[str, str, str, str]:
