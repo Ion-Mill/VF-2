@@ -44,7 +44,7 @@ export default function SimPanel({ twin, refresh, toast, api3d, onClose }: { twi
   // 넘기기 이름은 시각 대신 TODAY_DAY_END · TODAY_NIGHT_START (생성기 realtime.py, 2026-10-24)
   const skipTo = twin?.shift.shift_type === 'DAY' ? (off ? { to: 'TODAY_NIGHT_START', at: nightStart, ok: '야간 교대 시작' } : { to: 'TODAY_DAY_END', at: dayEnd, ok: '남은 주간 교대를 만듦' }) : null;
   const clockCtl = has('speed') || has('pause') || has('skip') || has('reset');
-  const fxs = ctl.length ? ([['night', '야간'], ['explode', '분해 보기'], ['holo', '홀로그램'], ['heat', '열화상'], ['flow', '흐름선']] as const) : [];   // 최종용은 오프닝·제품 투어만
+  const fxs = ctl.length ? ([['night', '야간'], ['explode', '분해 보기'], ['holo', '홀로그램'], ['heat', '열화상'], ['flow', '흐름선']] as const) : [];   // 최종용은 제품 투어만 (오프닝은 로그인해 들어올 때 저절로, 2026-10-25)
   const toggle = (k: string) => { const n = !fx[k]; setFx({ ...fx, [k]: n }); api3d()?.setState((s: any) => (k === 'night' || k === 'explode' ? { [k]: n } : { layers: { ...s.layers, [k]: n } })); };
   return (
     <div className="absolute right-0 top-[48px] z-30 w-[400px] rounded-tile border border-line bg-white p-3 text-small shadow-lg">
@@ -83,7 +83,6 @@ export default function SimPanel({ twin, refresh, toast, api3d, onClose }: { twi
       </>}
       <div className={`mb-1 border-line-soft font-bold ${ctl.length || devReset ? 'mt-3 border-t pt-2' : ''}`}>원본 3D 연출 (설계서에 없음)</div>
       <div className="flex flex-wrap gap-1">
-        <button onClick={() => { onClose(); api3d()?.startIntro(); }} className={b}>오프닝</button>
         <button onClick={() => { onClose(); api3d()?.startTour(); }} className={b}>제품 투어</button>
         {fxs.map(([k, l]) => (
           <button key={k} onClick={() => toggle(k)} className={`${b} ${fx[k] ? '!border-brand !bg-brand text-white' : ''}`}>{l}</button>

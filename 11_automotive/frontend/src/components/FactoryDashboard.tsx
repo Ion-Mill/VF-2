@@ -523,7 +523,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
       lastW = w; lastH = h;
       if ((w < 1180) !== this.state.narrow) this.setState({ narrow: w < 1180 });
       renderer.setSize(w, h); if (composer) { composer.setPixelRatio(renderer.getPixelRatio()); composer.setSize(w, h); } camera.aspect = w / h; camera.updateProjectionMatrix();
-      if (!viewSet) { viewSet = true; this.setView(this.state.view, true); if (EMB) { this.maxDist = camera.position.distanceTo(controls.target) * 1.03; controls.maxDistance = this.maxDist; this.entry(); } }
+      if (!viewSet) { viewSet = true; this.setView(this.state.view, true); if (EMB) { this.maxDist = camera.position.distanceTo(controls.target) * 1.03; controls.maxDistance = this.maxDist; if (!this.intro) this.entry(); } } // 오프닝이 돌면 들어오기 카메라는 건너뜀
     };
     this.ro = new ResizeObserver(fit); this.ro.observe(host);
     fit();

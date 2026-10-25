@@ -130,6 +130,7 @@ const btn = 'h-11 rounded-ctl border border-line bg-white px-3 text-body font-se
 const SESSION_USER = 'brk-session-user';
 export default function App() {
   const [user, setUserRaw] = useState<UserRec | null>(null);
+  const [intro, setIntro] = useState(false); // 로그인 화면에서 막 들어왔을 때만 3D 오프닝 (새로고침으로 다시 들어온 때는 안 함, 사용자 요청 2026-10-25)
   const [ready, setReady] = useState(false); // 서버 그리기 때는 저장소를 못 읽어서, 읽기 전에는 로그인 화면을 잠깐도 보이지 않는다
   useEffect(() => {
     let u: UserRec | undefined;
@@ -145,8 +146,8 @@ export default function App() {
     setUserRaw(u);
   };
   if (!ready) return null;
-  if (!user) return <Login onLogin={setUser} />;
-  return <Frame key="session" user={user} setUser={setUser} />;
+  if (!user) return <Login onLogin={(u) => { setIntro(true); setUser(u); }} />;
+  return <Frame key="session" user={user} setUser={setUser} intro={intro} />;
 }
 
 // 위쪽 막대 (사용자 요청 2026-10-24): 교대 = 주간 밝은 칩 + 해 · 야간 진한 칩 + 달 + 시간대, 교대 밖은 '교대 대기'(2026-10-25 사용자 선택, 전 '교대 사이'). 계정 = 역할 칩 + 이름 + 작업자 담당 공정
@@ -164,7 +165,7 @@ function ShiftChip({ type, start, end, now, finished }: { type: 'DAY' | 'NIGHT';
   return <span className={`inline-flex items-center gap-1.5 rounded-tile px-2.5 py-1 text-card font-bold ${day ? 'border border-line bg-white text-ink' : 'bg-[#26315a] text-white'}`}>{icon}{day ? '주간' : '야간'}<span className={`font-semibold ${day ? 'text-ink-2' : 'text-white/75'}`}>{start.slice(11, 13)}–{end.slice(11, 13)}</span></span>;
 }
 
-function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) => void }) {
+function Frame({ user, setUser, intro }: { user: UserRec; setUser: (u: UserRec | null) => void; intro: boolean }) {
   const live = useLive();
   const { twin, connected } = live;
   const runId = twin?.run_id ?? null;
@@ -644,7 +645,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
         })()}
         <div ref={bodyRef} className={`relative min-h-0 flex-1 overflow-hidden ${connected ? '' : 'grayscale-[0.6]'}`}>
           <div className="absolute overflow-hidden" style={{ ...stagePos, visibility: show3D ? 'visible' : 'hidden', opacity: show3D ? 1 : 0, pointerEvents: show3D ? 'auto' : 'none' }}>
-            <FactoryDashboard embedded dataMode warnIds={[...new Set(open.filter((a) => a.level === '주의').map((a) => a.machine))]} layout={LAYOUT} quality="자동" introOnLoad={false} showCards={settings.cards} alarmText={alarmText} cardText={cardText}
+            <FactoryDashboard embedded dataMode warnIds={[...new Set(open.filter((a) => a.level === '주의').map((a) => a.machine))]} layout={LAYOUT} quality="자동" introOnLoad={intro && home} showCards={settings.cards} alarmText={alarmText} cardText={cardText}
               cmmCard={cmmCard} bigTags={screen === 'field'} scenario="정상 가동" onReady={onReady}
               onSnapshot={(s: { sel: MachineId | null }) => setSnapSel(s.sel)} onSelect={(id: MachineId) => setSnapSel(id)}
               onFail={(why: string) => { setFail3d(why); setScreen((s0) => (s0 === 'line' ? 'layout2d' : s0)); }} />
