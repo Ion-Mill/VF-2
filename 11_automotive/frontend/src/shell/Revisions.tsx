@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { BTN, useApp } from './ctx';
 import { hm, md, useFetch } from './live';
 import { userName } from './model';
+import { backendMode } from './backendApi';
 import type { Revision } from './workflow';
 import { Chip, DocHead, DocPage, Sec } from './DocKit';
 
@@ -21,7 +22,10 @@ export function RevisionsScreen() {
   const { key, wos, wrs, srs, back, role, user, go } = useApp();
   const [kind, id] = (key ?? ':').split(':');
   const all = useFetch<{ revisions: Record<string, any>[]; changes: Record<string, Record<string, string>[]> }>('documents/revisions');
-  const one = useFetch<Record<string, any>>(kind === 'SHIFT' ? `reports/shift/${id}` : kind === 'DAILY' ? `reports/daily/${id}` : null, 0, [key]);
+  // 백엔드 모드(기본): 작업지시서·작업기록서·간이 기록의 이력도 DB 버전에서 (화면 안 revisions는 비어 있음, 2026-10-24)
+  const docPath = backendMode() && (kind === 'WO' || kind === 'WR' || kind === 'SR')
+    ? `documents/doc/${kind === 'WO' ? 'WORK_ORDER' : 'WORK_RECORD'}/${encodeURIComponent(kind === 'WR' ? (wrs.find((w) => w.woNo === id || w.no === id)?.no ?? id) : id)}` : null;
+  const one = useFetch<Record<string, any>>(kind === 'SHIFT' ? `reports/shift/${id}` : kind === 'DAILY' ? `reports/daily/${id}` : docPath, 0, [key, docPath]);
   const [sel, setSel] = useState(0);
   const [type, setType] = useState('');
 
@@ -29,7 +33,7 @@ export function RevisionsScreen() {
   if (kind === 'WO') revs = wos.find((w) => w.no === id)?.revisions ?? [];
   if (kind === 'WR') revs = wrs.find((w) => w.no === id)?.revisions ?? [];
   if (kind === 'SR') revs = srs.find((w) => w.no === id)?.revisions ?? [];
-  if (SRV[kind] && one.data) {
+  if ((SRV[kind] || docPath) && one.data) {
     const ch = one.data.changes ?? {};
     revs = (one.data.revisions ?? []).map((x: Record<string, any>) => ({
       v: Number(x.version_no), kind: x.author_kind === 'AI' ? 'AI비서 초안' : x.status_after === 'CONFIRMED' ? (x.reason ? '확정 후 수정' : '확정') : '수정',

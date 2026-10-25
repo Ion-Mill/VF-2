@@ -115,7 +115,8 @@ EXPECTED = {
 
 # 로그인만 보는 API (처리기 안에서 시연 모드·MGR 등을 따로 본다)
 LOGIN_ONLY = {"/api/auth/login", "/api/auth/logout", "/api/demo/role", "/api/me", "/api/codes", "/api/dataset",
-              "/api/sim/clock", "/api/sim/inject", "/api/sim/reset", "/api/sim/fire", "/api/stream/events"}
+              "/api/sim/clock", "/api/sim/inject", "/api/sim/reset", "/api/sim/fire", "/api/stream/events",
+              "/api/assist/{kind}"}     # 비서가 다듬은 문장 묻기 (2026-10-24) — 문장만, 운영 데이터를 바꾸지 않음
 
 
 class TestRoleMatrix(unittest.TestCase):

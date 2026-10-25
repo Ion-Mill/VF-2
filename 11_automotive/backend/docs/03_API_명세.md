@@ -331,3 +331,15 @@
 | `POST /api/tools/{id}/change` | 시뮬레이터가 교체 (`via: simulator`) | 그대로 (OPR·MNT) |
 
 시뮬레이터에 연결하지 못하면 503 `INVALID_STATE` "시뮬레이터(시연 서버)에 연결하지 못함". 시뮬레이터가 거절하면 그 상태·코드·문장 그대로.
+
+### 7-1. 화면 → 백엔드가 기본 (2026-10-24, `docs/09_화면_백엔드_연결_설계.md`)
+
+| 주소 | 바뀐 것 | 권한 |
+|---|---|---|
+| `GET /api/line/twin?full=true` | 결과를 `MOM_TWIN_CACHE_SECONDS`(기본 1초) 동안 모두가 같이 씀(고치는 동안은 바로 앞 값). 로그인은 **토큰만** 확인(역할은 토큰 안 값, 권한표 60초 기억) — DB 연결을 잡지 않음. 칸 `sim_control`(이 사용자가 시연 조작 가능한지) | LINE·FIELD 보기 (그대로) |
+| `GET /api/reports/shift` | 시작했지만 초안이 없는 교대(최근 2일)를 미리보기 줄로 함께 — `preview`, `in_progress` | 그대로 |
+| `GET /api/reports/shift/{id}` | 초안이 없으면 DB 저장점 안에서 초안을 만들어 읽고 되돌린 **미리보기**(`preview: true`, DB에 안 남음). 특이 사항이 `(비서 문장 대기)`면 기본 문장 5개(실적·필수 정지·병목·불량·알람) | 그대로 |
+| `POST /api/assist/{kind}` (새) | 비서가 다듬은 문장이 준비됐는지 (`work-order-text`·`guide-card-text`·`briefing-text`·`alarm-text`) — 시연 서버 llm_compose에 물음, 없거나 실패면 `{ready: false}` | 로그인 |
+| `POST /api/sim/clock·inject·reset·fire` | `MOM_SIM_CONTROL_USERS`(쉼표, 비우면 누구나)에 없으면 403 `FORBIDDEN` (`reason: SIM_CONTROL`) | 로그인 + 진행자 |
+
+설정 더함: `MOM_SIM_CONTROL_USERS`, `MOM_TWIN_CACHE_SECONDS`(0 = 끔), `MOM_SCHEDULER_SECONDS`(기본 60, 진행자 5). 접근 기록 쓰기·가상 표시 읽기는 요청과 다른 작은 연결 줄(`db.side_engine`, 1+1)을 쓴다 — 여러 명 접속 때 같은 줄을 서로 기다리다 막히던 것을 없앰.

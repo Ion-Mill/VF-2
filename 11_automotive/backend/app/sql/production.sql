@@ -152,7 +152,10 @@ SELECT l.*, p.gauge_pass_qty, p.gauge_fail_qty,
        (SELECT min(r.start_at) FROM operation_report r WHERE r.lot_no = l.lot_no) AS first_in_at,
        (SELECT to_jsonb(h) FROM (SELECT hold_id, trigger_type AS trigger, hold_reason AS reason, held_by, held_at, released_by, released_at,
                                         scrap_proposed_qty AS scrap_qty
-                                   FROM lot_hold WHERE lot_no = l.lot_no ORDER BY held_at DESC LIMIT 1) h) AS hold,
+                                   FROM lot_hold
+                                  -- 그 로트의 보류, 없으면 그 보류 때문에 검사 강화된 다음 로트의 계기 보류 (inspection_plan.hold_id — 시연 서버와 같게, 2026-10-24)
+                                  WHERE lot_no = l.lot_no OR (hold_id = p.hold_id AND NOT EXISTS (SELECT 1 FROM lot_hold o WHERE o.lot_no = l.lot_no))
+                                  ORDER BY held_at DESC LIMIT 1) h) AS hold,
        (SELECT coalesce(jsonb_agg(jsonb_build_object('shipment_no', s.shipment_no, 'customer_code', s.customer_code, 'shipped_at', s.shipped_at,
                                                      'qty', sl.qty) ORDER BY s.shipped_at), '[]'::jsonb)
           FROM shipment_line sl JOIN shipment s USING (shipment_no) WHERE sl.lot_no = l.lot_no) AS shipments

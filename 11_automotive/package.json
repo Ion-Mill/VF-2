@@ -1,9 +1,10 @@
 {
   "name": "mom-monorepo",
   "private": true,
-  "description": "MOM 모노레포: npm run dev = 시연 데이터 서버(:8765) + 화면(Next :3000), npm run dev:full = 백엔드(FastAPI :8000)까지",
+  "description": "MOM 모노레포: npm run dev = 백엔드(FastAPI :8000) + 시연 데이터 서버(:8765, 가짜 공장) + 화면(Next :3000) — 화면 → 백엔드 → DB가 기본 (2026-10-24). 예전 길(화면 → 시연 서버)은 frontend/.env.local 에 NEXT_PUBLIC_MOM_BACKEND=0 + npm run dev:sim-web",
   "scripts": {
-    "dev": "concurrently -k -n sim,web -c magenta,green \"npm:dev:sim\" \"npm:dev:web\"",
+    "dev": "concurrently -k -n api,sim,web -c blue,magenta,green \"npm:dev:api\" \"npm:dev:sim\" \"npm:dev:web\"",
+    "dev:sim-web": "concurrently -k -n sim,web -c magenta,green \"npm:dev:sim\" \"npm:dev:web\"",
     "dev:full": "concurrently -k -n api,sim,web -c blue,magenta,green \"npm:dev:api\" \"npm:dev:sim\" \"npm:dev:web\"",
     "dev:api": "node scripts/py.mjs api",
     "dev:sim": "node scripts/py.mjs sim",

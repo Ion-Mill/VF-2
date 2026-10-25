@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import json
 import os
+from pathlib import Path
 import threading
 import time
 import urllib.error
@@ -38,6 +39,19 @@ ORDER = ["production_order", "production_lot", "inspection_plan", "alarm_event",
 
 # snap(last_sig) → (sig, run_id, tables | None). 상태가 그대로(sig == last_sig)면 tables = None (표를 다시 만들지 않음)
 Snap = Callable[[object], tuple[object, int, "dict[str, tuple[list[str], list[tuple]]] | None"]]
+
+
+def backend_env() -> dict[str, str]:
+    """backend/<MOM_ENV_FILE>(기본 .env.supabase)의 KEY=값 줄 (값은 로그에 쓰지 않는다)"""
+    name = os.environ.get("MOM_ENV_FILE", "").strip() or ".env.supabase"
+    f = Path(__file__).resolve().parents[2] / "backend" / name
+    out: dict[str, str] = {}
+    if f.exists():
+        for line in f.read_text(encoding="utf-8").splitlines():
+            if "=" in line and not line.lstrip().startswith("#"):
+                k, _, v = line.partition("=")
+                out[k.strip()] = v.strip().strip('"').strip("'")
+    return out
 
 
 class DbRelay:
@@ -64,8 +78,18 @@ class DbRelay:
     def from_env(cls, clock_fn: Callable[[], dict], snap_fn: Snap, base_fn: Callable[[], dict] | None = None,
                  log=print) -> "DbRelay | None":
         url, key = os.environ.get("MOM_DB_RELAY_URL", "").strip(), os.environ.get("MOM_INGEST_KEY", "").strip()
-        if not url:
+        if url.lower() in ("off", "0", "false"):
             return None
+        if not url:
+            # 2026-10-24 (화면 → 백엔드가 기본): 주소를 따로 안 줘도 백엔드 환경 파일이 중계를 받겠다고(MOM_SIM_SYNC=true) 하면 켠다.
+            #   파일 = backend/<MOM_ENV_FILE, 기본 .env.supabase> (npm run dev:api와 같은 파일), 백엔드 주소 = MOM_BACKEND_URL (기본 :8000)
+            env = backend_env()
+            if env.get("MOM_SIM_SYNC", "").lower() not in ("1", "true", "yes", "on") and \
+                    env.get("MOM_DEMO_MODE", "").lower() not in ("1", "true", "yes", "on"):
+                return None
+            url = os.environ.get("MOM_BACKEND_URL", "").strip() or "http://127.0.0.1:8000"
+            key = key or env.get("MOM_INGEST_KEY", "")
+            log(f"[DB 중계] 백엔드 환경 파일이 중계를 받음(MOM_SIM_SYNC) → {url}")
         if not key:
             log("[DB 중계] 꺼짐 — MOM_INGEST_KEY가 없음")
             return None

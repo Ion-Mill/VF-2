@@ -20,6 +20,7 @@ export default function SimPanel({ twin, refresh, toast, api3d, onClose }: { twi
     try { await api(path, body); toast(ok); refresh(); } catch (e) { toast((e as Error).message); }
   };
   const c = twin?.clock;
+  const locked = c?.can_control === false;      // 시연 조작은 진행자만 (백엔드 MOM_SIM_CONTROL_USERS, 2026-10-24)
   // 교대가 끝난 뒤(17:00~20:00, 05:00~)는 휴무(계획 정지) — 설비가 다 서 있어 배속을 바꿔도 3D가 안 움직인다
   const off = !!twin && !!c && c.sim_at >= twin.shift.end_at;
   const skipTo = twin?.shift.shift_type === 'DAY' ? (off ? '20:00' : '17:00') : null;
@@ -32,7 +33,7 @@ export default function SimPanel({ twin, refresh, toast, api3d, onClose }: { twi
         {EVENTS.map(([code, label, sub]) => {
           const why = twin?.buttons[code];
           return (
-            <button key={code} disabled={!twin || !!why} onClick={() => call('sim/inject', { scenario_code: code }, `${label} 시작`)}
+            <button key={code} disabled={!twin || !!why || locked} onClick={() => call('sim/inject', { scenario_code: code }, `${label} 시작`)}
               className="flex min-h-[48px] flex-col items-start rounded-ctl border border-line px-3 py-1 text-left hover:bg-tile disabled:bg-tile disabled:text-ink-3">
               <span className="font-bold">{label}</span>
               <span className="text-small">{why ? `잠김 — ${why}` : sub}</span>
@@ -42,11 +43,12 @@ export default function SimPanel({ twin, refresh, toast, api3d, onClose }: { twi
       </div>
       <div className="mt-3 border-t border-line-soft pt-2 font-bold">시연 시계 {c ? `· ${c.sim_at.slice(11, 16)} ×${c.speed}${c.paused ? ' ⏸' : ''}` : ''}</div>
       <div className="mt-1 flex flex-wrap gap-1">
-        {[180, 60, 10, 1].map((s) => <button key={s} disabled={!twin} onClick={() => call('sim/clock', { speed: s }, `배속 ×${s}`)} className={`${b} ${c?.speed === s ? 'border-brand bg-tile' : ''}`}>×{s}</button>)}
-        <button disabled={!twin} onClick={() => call('sim/clock', { paused: !c?.paused }, c?.paused ? '다시 시작' : '일시정지 — 3D 움직임도 멈춤')} className={b}>{c?.paused ? '▶ 다시 시작' : '⏸ 일시정지'}</button>
-        <button disabled={!skipTo} onClick={() => call('sim/clock', { skip: `TODAY_${skipTo}` }, skipTo === '17:00' ? '17:00으로 넘김 — 남은 주간 교대를 만듦' : '20:00으로 넘김 — 야간 교대 시작')} className={b}>{skipTo ? `${skipTo}으로` : '넘기기 없음'}</button>
-        <button disabled={!twin} onClick={() => setReset(true)} className={b}>처음으로</button>
+        {[180, 60, 10, 1].map((s) => <button key={s} disabled={!twin || locked} onClick={() => call('sim/clock', { speed: s }, `배속 ×${s}`)} className={`${b} ${c?.speed === s ? 'border-brand bg-tile' : ''}`}>×{s}</button>)}
+        <button disabled={!twin || locked} onClick={() => call('sim/clock', { paused: !c?.paused }, c?.paused ? '다시 시작' : '일시정지 — 3D 움직임도 멈춤')} className={b}>{c?.paused ? '▶ 다시 시작' : '⏸ 일시정지'}</button>
+        <button disabled={!skipTo || locked} onClick={() => call('sim/clock', { skip: `TODAY_${skipTo}` }, skipTo === '17:00' ? '17:00으로 넘김 — 남은 주간 교대를 만듦' : '20:00으로 넘김 — 야간 교대 시작')} className={b}>{skipTo ? `${skipTo}으로` : '넘기기 없음'}</button>
+        <button disabled={!twin || locked} onClick={() => setReset(true)} className={b}>처음으로</button>
       </div>
+      {locked && <p className="mt-1 rounded bg-tile px-2 py-1 text-small font-semibold text-ink-2">시연 조작(사건·시계·처음으로)은 진행자만 할 수 있습니다. 모두가 같은 공장을 봅니다.</p>}
       {off && <p className="mt-1 rounded bg-warn-bg px-2 py-1 text-small font-semibold text-[#7a4b00]">{skipTo ? '휴무 (야간 20:00 시작)' : '휴무'} — 설비가 모두 서 있어 배속을 바꿔도 라인이 움직이지 않습니다. {skipTo ? '[20:00으로]를 누르면 바로 시작합니다.' : '[처음으로]를 누르세요.'}</p>}
       <p className="mt-1 text-small text-ink-2">사건 알람이 뜨면 시뮬레이터가 스스로 ×10으로 감속합니다 (API-SIM-02). 다음 날 06:00 넘기기는 없음.</p>
       <div className="mb-1 mt-3 border-t border-line-soft pt-2 font-bold">원본 3D 연출 (설계서에 없음)</div>

@@ -75,8 +75,9 @@ def relay(fake, sim):
     return DbRelay("http://127.0.0.1:8000", "k", lambda: CLOCK, sim.snap, lambda: BASE, post=fake, log=lambda *_: None)
 
 
-def test_off_unless_url_and_key(monkeypatch):
+def test_off_unless_url_and_key(monkeypatch, tmp_path):
     sim = Sim()
+    monkeypatch.setenv("MOM_ENV_FILE", str(tmp_path / "없음.env"))       # 이 PC의 backend/.env.supabase 와 상관없이
     monkeypatch.setenv("MOM_DB_RELAY_URL", "http://127.0.0.1:8020")
     monkeypatch.setenv("MOM_INGEST_KEY", "k")
     assert DbRelay.from_env(lambda: CLOCK, sim.snap, log=lambda *_: None) is not None
@@ -86,6 +87,24 @@ def test_off_unless_url_and_key(monkeypatch):
     assert DbRelay.from_env(lambda: CLOCK, sim.snap, log=lambda *_: None) is None
     monkeypatch.setenv("MOM_INGEST_KEY", "k")
     monkeypatch.delenv("MOM_DB_RELAY_URL")
+    assert DbRelay.from_env(lambda: CLOCK, sim.snap, log=lambda *_: None) is None
+
+
+def test_auto_from_backend_env(monkeypatch, tmp_path):
+    """주소를 안 줘도 백엔드 환경 파일이 중계를 받으면(MOM_SIM_SYNC=true) 켠다 — 키도 그 파일에서 (2026-10-24)"""
+    sim = Sim()
+    env = tmp_path / "backend.env"
+    env.write_text("MOM_SIM_SYNC=true\nMOM_INGEST_KEY=k2\n", encoding="utf-8")
+    monkeypatch.setenv("MOM_ENV_FILE", str(env))
+    monkeypatch.delenv("MOM_DB_RELAY_URL", raising=False)
+    monkeypatch.delenv("MOM_INGEST_KEY", raising=False)
+    monkeypatch.setenv("MOM_BACKEND_URL", "http://127.0.0.1:8020")
+    r = DbRelay.from_env(lambda: CLOCK, sim.snap, log=lambda *_: None)
+    assert r is not None and r.url == "http://127.0.0.1:8020" and r.key == "k2"
+    monkeypatch.setenv("MOM_DB_RELAY_URL", "off")                          # 끄기
+    assert DbRelay.from_env(lambda: CLOCK, sim.snap, log=lambda *_: None) is None
+    monkeypatch.delenv("MOM_DB_RELAY_URL")
+    env.write_text("MOM_SIM_SYNC=false\nMOM_INGEST_KEY=k2\n", encoding="utf-8")   # 공용 DB를 보기만 하는 팀원 = 꺼짐
     assert DbRelay.from_env(lambda: CLOCK, sim.snap, log=lambda *_: None) is None
 
 
