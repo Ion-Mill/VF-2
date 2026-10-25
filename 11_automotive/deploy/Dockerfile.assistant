@@ -13,6 +13,8 @@ COPY 가상사내문서 /srv/가상사내문서
 COPY 생성기/masters /srv/생성기/masters
 COPY 생성기/scenarios /srv/생성기/scenarios
 COPY 생성기/config.json /srv/생성기/config.json
+# 알람 기준표를 읽는 저장소(csv_repo)는 생성기/out/alarm_event.csv 가 없으면 만들어지지 않아 알람 질문이 실패한다 (센서 원본은 .dockerignore 로 뺌)
+COPY 생성기/out /srv/생성기/out
 COPY assistant/ /srv/assistant/
 WORKDIR /srv/assistant
 EXPOSE 8100
