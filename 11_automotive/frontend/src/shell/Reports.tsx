@@ -192,13 +192,14 @@ export function DailyReportScreen() {
   const stops: Record<string, any>[] = r.stops ?? [];
   const al: Record<string, any>[] = r.alarms ?? [];
   const cnt = (s: string) => al.filter((x) => x.severity === s).length;
-  const { items, memo: savedMemo } = splitIssues(r.issues_summary);
+  const { items, memo: textMemo } = splitIssues(r.issues_summary);
+  const savedMemo = String(r.memo ?? '').trim() || textMemo; // DB에서 읽으면 메모가 따로 칸(memo)에 있다 (2026-10-23)
   const inDay = (iso?: string) => !!iso && r.range && iso >= r.range[0] && iso < r.range[1];
   const lotDay = (lots.data?.lots ?? []).filter((l) => inDay(l.judged_at) || l.input_shift_id?.startsWith(d));
   const txns = (inv?.past_txns ?? []).filter((t) => inDay(t.txn_at));
   const prev = (dailyReports ?? []).filter((x) => x.work_date < d && x.status === 'CONFIRMED').map((x) => x.work_date).sort().pop();
   const fg = { start: 0, in: 0, ship: 0, adj: 0 };
-  txns.filter((t) => t.item_no === 'FG-BRK-A100').forEach((t) => { const q = Number(t.qty_change); if (t.txn_type === 'FG_IN') fg.in += q; else if (t.txn_type === 'SHIP') fg.ship -= q; else fg.adj += q; });
+  txns.filter((t) => t.item_no === 'FG-BRK-A100').forEach((t) => { const q = Number(t.qty_change); if (t.txn_type === 'FG_IN') fg.in += q; else if (t.txn_type === 'SHIP' || t.txn_type === 'SHIP_OUT') fg.ship -= q; else fg.adj += q; }); // SHIP_OUT = DB 거래 이름 (9월 기록, 2026-10-23)
   // 목표는 서버가 보내는 값(설정에서 바꿀 수 있음), 없을 때만 180. 초과/부족은 칸 이름과 색으로 보이고 숫자에는 기호를 붙이지 않는다 (2026-10-20)
   const target = Number(r.target_qty ?? 180) || 180, actual = Number(r.actual_qty ?? 0) || 0, pct = Math.round((actual / target) * 1000) / 10;
   const rep = Object.entries(al.reduce((m: Record<string, number>, x) => { const k = `${x.equipment_id} ${x.alarm_code}`; m[k] = (m[k] ?? 0) + 1; return m; }, {})).filter(([, n]) => n >= 3);

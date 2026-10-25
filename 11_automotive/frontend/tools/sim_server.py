@@ -1,7 +1,7 @@
 """시연 데이터 서버 — 생성기 실시간 모드(10/1)와 과거 기록(9월)을 화면에 내준다.
 
 API명세서_v1 2.9 "생성기와 잇는 방법" [제안] 그대로: 서버가 Realtime 객체를 만들고 실제 시간마다 tick(초)를 부른다.
-서버 방식(프레임워크·DB)은 [선택 필요: 기술 회의] — 여기서는 Python 표준 라이브러리만 쓴다 (생성기 가상환경 그대로).
+서버 방식(프레임워크·DB)은 [선택 필요: 기술 회의] — 여기서는 Python 표준 라이브러리만 쓴다 (생성기 가상환경 그대로, 9월 기록 DB 읽기만 psycopg — server_past.py).
 
 실행 (데이터적용본 폴더에서):
   ..\\생성기\\.venv\\Scripts\\python tools\\sim_server.py        → http://127.0.0.1:8765
@@ -58,7 +58,7 @@ class State:
         self.cfg = load_config()
         self.M = load_masters(self.cfg)
         print("과거 기록 읽는 중 …")
-        self.P = Past(ROOT)
+        self.P = self._read_past()
         data = HERE / "data.json"
         self.alarms = json.loads(data.read_text(encoding="utf-8"))["alarms"] if data.exists() else {}
         print(f"실시간 모드 준비 중 ({self.cfg['realtime']['start'][5:10].replace('-', '/')} {self.cfg['realtime']['start'][11:16]}, 약 2초) …")
@@ -76,8 +76,7 @@ class State:
             print(f"실제 시각 모드: 오전 대본으로 {self.cfg['profile']['live_start'][11:16]} 상태를 만들고 지금({self.wall_now():%m/%d %H:%M})까지 따라잡는 중 …")
             self.rt.start_live(self.wall_now(), st["ops"])
             self.rt.on_op = self._wall_save_op
-            # 오전 대본에 끝난 정지(충돌)의 작업지시서·작업기록서를 지난 정비 기록에 — 평가자 모두에게 같은 문서
-            self.P.add_docs({k: [{c: _cell(v) for c, v in row.items()} for row in rows] for k, rows in self.rt._maint_docs().items()})
+            self._wall_docs()
         self.live = Live(self.rt, self.P)
         self.seq = 0
         self.buf: list[dict] = []
@@ -91,8 +90,10 @@ class State:
                             "target_risk_pct": 90, "repeat2_days": 7}
         self.settings_log: list[dict] = []
         self.connected_at = time.time()
-        # 백엔드 DB 중계 (2026-10-20, 기본 꺼짐 — db_relay.py 머리 주석. 로컬 Docker 백엔드에서만 켜진다)
-        self.relay = DbRelay.from_env(self._relay_clock)
+        # 백엔드 DB 중계 (2026-10-20, 기본 꺼짐 — db_relay.py 머리 주석)
+        #   2026-10-23: 10/1 기록 표 전부를 바뀐 줄만, [처음으로](run_id가 바뀜)·서버 켤 때 DB도 시연 기준점으로.
+        #   "DB 1개 = 공장 1개" — 백엔드가 MOM_SIM_SYNC=true면 그 DB(공용 Supabase 포함)에 쌓는다
+        self.relay = DbRelay.from_env(self._relay_clock, self._relay_snap, self._relay_base)
         if self.relay and not self.relay.start():
             self.relay = None
         self._boot_events(self.rt.events)
@@ -100,13 +101,15 @@ class State:
     def _boot_events(self, evs):
         """켤 때(또는 처음으로 뒤) 한꺼번에 만들어진 사건. 영상용은 시작 시각부터라 그대로 화면 흐름에 넣는다.
         실제 시각 모드(최종용)는 오전 대본·따라잡기로 만든 **지난 사건**이라 화면 흐름에 넣지 않는다 — 넣으면 화면이 접속할 때
-        이미 끝난 오전 충돌 알람(992)을 방금 난 긴급 알림처럼 띄운다 (2026-10-24). 공용 DB 중계에는 실시간 시작 시각 이후 것만 보낸다."""
+        이미 끝난 오전 충돌 알람(992)을 방금 난 긴급 알림처럼 띄운다 (2026-10-24). DB 중계는 사건이 아니라 표(Realtime.tables)를
+        보내므로 여기서 따로 넘기지 않는다 (2026-10-25 합침)."""
         if not self.wall:
             self._push(evs)
-            return
-        if self.relay:
-            start = self.cfg["profile"]["live_start"]
-            self.relay.feed([e for e in evs if (e.get("at") or "") >= start])
+
+    def _wall_docs(self):
+        """오전 대본에 끝난 정지(충돌)의 작업지시서·작업기록서를 지난 정비 기록에 — 평가자 모두에게 같은 문서.
+        [처음으로]에서 과거 기록을 다시 읽으면 빠지므로 그때도 다시 더한다."""
+        self.P.add_docs({k: [{c: _cell(v) for c, v in row.items()} for row in rows] for k, rows in self.rt._maint_docs().items()})
 
     def wall_now(self) -> datetime:
         """실제 시각(KST). 리허설용 MOM_PRETEND_NOW가 있으면 그 시각에서 흐르는 것처럼."""
@@ -134,9 +137,24 @@ class State:
         st["ops"].append(entry)
         self._wall_write(st)
 
+    def _read_past(self):
+        # 9월 기록 = 백엔드 DB (2026-10-23, 못 쓰면 생성기 out/ CSV — server_past.py 머리 주석). 10/1 시작 전 기록만
+        return Past(ROOT, cutoff=datetime.fromisoformat(self.cfg["realtime"]["start"]).replace(tzinfo=KST))
+
     def _relay_clock(self):
         with self.lock:
             return self.rt.clock()
+
+    def _relay_snap(self, last_sig):
+        """DB 중계용 (중계 스레드가 부름): 시뮬레이터 상태가 앞과 같으면 표를 다시 만들지 않는다 (회차·분·사건·조작 수로 봄)"""
+        with self.lock:
+            sig = (self.run_id, self.rt.m, len(self.rt.events), len(self.rt.ops))
+            return sig, self.run_id, (None if sig == last_sig else self.rt.tables())
+
+    def _relay_base(self):
+        """DB 중계용: 시뮬레이터 시작점 (되돌릴 때 DB 기준점과 비교 — 생성기 Realtime.baseline)"""
+        with self.lock:
+            return self.rt.baseline()
 
     def _push(self, evs):
         for e in evs:
@@ -144,8 +162,6 @@ class State:
                 continue
             self.seq += 1
             self.buf.append({"seq": self.seq, **json.loads(json.dumps(e, ensure_ascii=False, default=str))})
-        if self.relay:
-            self.relay.feed(evs)
         if len(self.buf) > 5000:
             del self.buf[: len(self.buf) - 5000]
 
@@ -167,6 +183,9 @@ class State:
                 self._wall_write({"run_id": self.run_id + 1, "ops": []})
             if self.relay:
                 self.relay.reset()
+            self.P = self._read_past()               # [처음으로] = DB에서 9월 기록을 다시 읽는다 (그사이 DB에서 고친 것도 반영)
+            if self.wall:
+                self._wall_docs()
             self.live = Live(self.rt, self.P)
             self.run_id += 1
             self.reports.clear()
@@ -204,16 +223,6 @@ def sim_min(q: dict, key: str, default: int) -> int:
     return S.rt.sim.cal.to_min(datetime.fromisoformat(v).astimezone(KST))
 
 
-_CSV = {}
-
-
-def read_csv_once(name):
-    if name not in _CSV:
-        from server_past import read
-        _CSV[name] = read(GEN / S.cfg["run"]["out_dir"] / f"{name}.csv")
-    return _CSV[name]
-
-
 def user_name(uid):
     u = S.P.users.get(uid or "")
     return u["user_name"] if u else uid
@@ -240,7 +249,7 @@ def _route(method, p, q, body, rt, live, P):
     # 시연 시계·사건 버튼 (API-SIM-01~03)
     if key == "health":
         return {"ok": True, "run_id": S.run_id, "clock": {**rt.clock(), **({"wall_now": fmt_dt(S.wall_now())} if S.wall else {})},
-                "llm_compose": COMPOSER.stats(), "profile": profile_info()}
+                "llm_compose": COMPOSER.stats(), "profile": profile_info(), "past_source": P.source}
     if S.wall and method == "POST" and key.startswith("sim/"):
         # 실제 시각으로 흐르는 최종용: 시계·사건 버튼·사건 복귀는 없다. 처음으로(발표자 전용)만, 발표자 키(MOM_PRESENTER_KEY)가 있을 때
         if key != "sim/reset":
@@ -476,8 +485,7 @@ def _route(method, p, q, body, rt, live, P):
         lots = live.lots()
         for l in lots:
             l["shipped"] = ship.get(l["lot_no"], {"qty": 0, "shipments": []})
-        mats = {m["material_lot_no"]: m for m in read_csv_once("raw_material_lot")}
-        return {"lots": lots, "suspect_lot": rt.suspect_lot(), "past_holds": P.holds, "materials": mats,
+        return {"lots": lots, "suspect_lot": rt.suspect_lot(), "past_holds": P.holds, "materials": P.materials,
                 "reports": [{k: x[k] for k in ("lot_no", "process_code", "equipment_id", "worker_user_id", "shift_id", "start_m", "end_m", "pq", "gq", "rq", "sq")}
                             | {"start_at": iso(rt.sim.cal.to_dt(x["start_m"])), "end_at": iso(rt.sim.cal.to_dt(x["end_m"] + 1))} for x in rt.sim.reports.values()
                             if x["lot_no"] == (q.get("lot") or [""])[0]],

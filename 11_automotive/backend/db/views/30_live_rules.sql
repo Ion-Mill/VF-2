@@ -204,10 +204,15 @@ END $$;
 --   app/sql/quality.sql cpk와 같은 식 (전체 값 — 설비별은 참고용)
 CREATE OR REPLACE FUNCTION fn_item_cpk(p_product_code text, p_item_seq int, OUT n int, OUT cpk numeric)
 LANGUAGE sql STABLE AS $$
-    WITH v AS (
-        SELECT r.measured_value AS x, r.measured_value - lag(r.measured_value) OVER (ORDER BY r.measured_at, r.result_id) AS mr
+    -- 최근 측정값 50개 (DOC-06 §5.1 ④ "특성마다 최근 측정값 50개", 관리도 점과 같은 범위 — 2026-10-23, 전에는 전체 값)
+    WITH recent AS (
+        SELECT r.measured_value AS x, r.measured_at, r.result_id
           FROM v_inspection_result r
          WHERE r.product_code = p_product_code AND r.item_seq = p_item_seq AND r.use_for_judgement AND r.measured_value IS NOT NULL
+           AND r.measured_at <= app_now()
+         ORDER BY r.measured_at DESC, r.result_id DESC LIMIT 50
+    ), v AS (
+        SELECT x, x - lag(x) OVER (ORDER BY measured_at, result_id) AS mr FROM recent
     )
     SELECT count(v.x)::int,
            CASE WHEN count(v.x) < 50 THEN NULL

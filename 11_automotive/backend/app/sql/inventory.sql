@@ -106,3 +106,26 @@ SELECT fn_tool_change(:tool_id, :actor, :reason, CAST(:alarm_event_id AS bigint)
 -- 품목 관리 역할·종류 (서버가 OWNED_ITEMS 범위를 먼저 확인 — DB R-77이 한 번 더)
 -- name: item_meta
 SELECT item_no, category, owner_role FROM inventory_item WHERE item_no = :item_no;
+
+-- ---------- 재고·공구 화면 한 번에 (2026-10-23, 화면 → 백엔드 전환 C2 — SCR-21·22) ----------
+-- 실시간 구간 시작 때 재고 (그때 이미 부족한 품목은 9월에 알림이 나갔으므로 화면이 다시 알리지 않음)
+-- name: stock_at
+SELECT item_no, coalesce(sum(qty_change), 0) AS qty FROM inventory_txn WHERE txn_at < CAST(:at AS timestamptz) GROUP BY item_no;
+
+-- name: txns_since
+SELECT * FROM inventory_txn WHERE txn_at >= CAST(:since AS timestamptz) AND txn_at <= app_now() ORDER BY txn_at, txn_id;
+
+-- name: txns_before
+SELECT * FROM (SELECT * FROM inventory_txn WHERE txn_at < CAST(:before AS timestamptz) ORDER BY txn_at DESC, txn_id DESC
+                LIMIT CAST(:limit AS int)) x ORDER BY txn_at, txn_id;
+
+-- name: tool_changes_since
+SELECT tool_change_id, tool_id, changed_at, changed_by, cum_before, change_reason FROM tool_change
+ WHERE changed_at >= CAST(:since AS timestamptz) AND changed_at <= app_now() ORDER BY changed_at;
+
+-- name: tool_changes_before
+SELECT * FROM (SELECT tool_change_id, tool_id, changed_at, changed_by, cum_before, change_reason FROM tool_change
+                WHERE changed_at < CAST(:before AS timestamptz) ORDER BY changed_at DESC LIMIT CAST(:limit AS int)) x ORDER BY changed_at;
+
+-- name: shipment_lines_all
+SELECT shipment_no, lot_no, qty, lot_passed_at FROM shipment_line ORDER BY shipment_no, lot_passed_at, lot_no;

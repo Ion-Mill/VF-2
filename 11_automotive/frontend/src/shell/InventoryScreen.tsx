@@ -18,7 +18,7 @@ const GROUPS: [string, string][] = [['절삭 공구', 'SUP 관리 · 사용 = �
 const groupOf = (i: R) => (i.category === 'TOOL' ? '절삭 공구' : i.category === 'RAW' || i.category === 'MATERIAL' ? '원자재' : isFG(i) ? '완제품' : '정비 소모품');
 // 원자재 입고 검사 4가지 (6061-T6 봉재) — shortcut: 결과는 브라우저에만 저장, 서버 API 생기면 옮김
 const IN_CHECKS: [string, string][] = [['성적서 EN 10204 3.1 받음', '공급사 밀시트'], ['로트 코드 일치', '성적서 히트·배치 번호 = 입고품 표시'], ['성분 범위 안', 'KS D 6763 6061 — Mg 0.80~1.20 · Si 0.40~0.80 · Cu 0.15~0.40 등'], ['기계적 성질 최소값 이상', '압출봉 T6 — 인장 260 · 항복 240 N/mm² · 연신율 10%']];
-const TXN: Record<string, string> = { IN: '입고', USE: '사용', ADJUST: '조정', FG_IN: '합격 입고', SHIP: '출하', RECEIVE: '입고' };
+const TXN: Record<string, string> = { IN: '입고', USE: '사용', ADJUST: '조정', FG_IN: '합격 입고', SHIP: '출하', SHIP_OUT: '출하', RECEIVE: '입고', RECEIPT: '입고' }; // SHIP_OUT·RECEIPT = DB 거래 이름 (9월 기록·백엔드, 2026-10-23)
 const box = 'rounded-card border border-line bg-white p-5 shadow-card';
 const tabBtn = (on: boolean) => `h-14 rounded-tile border px-7 text-band font-bold ${on ? 'border-brand-line bg-brand-tint text-brand-ink' : 'border-line bg-white text-ink'}`;
 // 할 일 버튼 — 누른 것(열린 입력 칸)만 파란색
@@ -62,7 +62,7 @@ export function InventoryScreen() {
     .sort((a, b) => String(b.txn_at).localeCompare(String(a.txn_at)) || Number(b.txn_id ?? 0) - Number(a.txn_id ?? 0)).slice(0, 60);
   // 오늘(10/1 08:00 뒤) 품목별로 쓴 양 — 한눈에 보기에 지금 재고와 함께 보임 (사용자 요청 2026-10-21)
   const usedToday: Record<string, number> = {};
-  inv.live_txns.forEach((t) => { const q = Number(t.qty_change); if (q < 0 && t.txn_type !== 'SHIP' && t.txn_type !== 'ADJUST') usedToday[String(t.item_no)] = (usedToday[String(t.item_no)] ?? 0) - q; });
+  inv.live_txns.forEach((t) => { const q = Number(t.qty_change); if (q < 0 && t.txn_type !== 'SHIP' && t.txn_type !== 'SHIP_OUT' && t.txn_type !== 'ADJUST') usedToday[String(t.item_no)] = (usedToday[String(t.item_no)] ?? 0) - q; });
   const name = (no: string) => inv.items.find((i) => i.item_no === no)?.item_name ?? no;
   const allLots = lots.data?.lots ?? [];
   const left = (l: R) => l.fg_qty - (l.shipped?.qty ?? 0);

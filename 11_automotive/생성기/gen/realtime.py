@@ -23,7 +23,7 @@ from . import quality as Q
 from . import records as R
 from . import stage4 as S4
 from .calendar import extend_calendar
-from .common import KST, ROOT, Out, _cell, at, fmt_dt, load_config, load_masters
+from .common import KST, ROOT, MemOut, Out, _cell, at, fmt_dt, load_config, load_masters
 from . import reports as RP
 from .calendar import SHIFT_COLS, WORK_DAY_COLS, shift_rows, work_day_rows
 from .doc03 import load_doc03
@@ -38,6 +38,9 @@ SENSORS = ["SpindleLoadPct", "SpindleMotorTemp", "AirPressure", "Xload", "Yload"
 NOISE = {"SpindleLoadPct": 4.0, "Xload": 3.0, "Yload": 3.0, "Zload": 3.0, "AirPressure": 0.3,
          "SpindleMotorTemp": 0.05, "DcVolt": 1.0}
 MS_PER_MIN = 60_000
+# 번호를 시뮬레이터가 이어 붙이는 표 (9월 마지막 번호 다음부터 — manifest id_after_past)
+ID_TABLES = ("equipment_state_log", "operation_report", "bottleneck_log", "alarm_event", "tool_change", "inspection_result",
+             "cmm_import", "defect_record", "pm_record", "inventory_txn", "lot_hold")
 
 
 class SensorLive:
@@ -743,11 +746,49 @@ class Realtime:
     # ---------- 기록 내보내기 ----------
     def export(self, out_dir: Path | None = None) -> dict:
         """10/1 08:00 ~ 지금 기록을 ERD 칸 모양 CSV로 (번호는 과거 기록 뒤에 이어 붙임). DB에는 추가·덮어쓰기."""
-        cfg, sim, N, now_m, past = self.cfg, self.sim, self.N, self.m, self.past
+        cfg, sim, N, past = self.cfg, self.sim, self.N, self.past
         out = Out(cfg)
         out.dir = Path(out_dir) if out_dir else ROOT / self.rt["out_dir"]
         out.dir.mkdir(exist_ok=True)
         out.clear()
+        cal = sim.cal
+        self._write_tables(out)
+        # 사건·조작 기록
+        with io.open(out.dir / "events.jsonl", "w", encoding="utf-8", newline="\n") as f:
+            for e in self.events:
+                f.write(json.dumps(e, ensure_ascii=False, default=str) + "\n")
+        with io.open(out.dir / "run_log.jsonl", "w", encoding="utf-8", newline="\n") as f:
+            for o in self.ops:
+                f.write(json.dumps(o, ensure_ascii=False) + "\n")
+        man = {"mode": "realtime", "seed": cfg["run"]["seed"], "start_at": fmt_dt(cal.to_dt(N)),
+               "now_at": fmt_dt(self.now()), "speed": self.speed, "paused": self.paused,
+               "ops": len(self.ops), "events": len(self.events),
+               "scenario_events": [{"code": e["code"], "start_at": fmt_dt(cal.to_dt(e["start_m"])),
+                                    "end_at": fmt_dt(cal.to_dt(e["end_m"])) if e.get("end_m") is not None else None}
+                                   for e in self.event_log],
+               "cmm_drop_files": len(list(self.drop_dir.glob("*.csv"))),
+               "rows": dict(sorted(out.counts.items())),
+               "id_after_past": self.baseline()["id_after"]}
+        with io.open(out.dir / "manifest.json", "w", encoding="utf-8", newline="\n") as f:
+            json.dump(man, f, ensure_ascii=False, indent=2)
+            f.write("\n")
+        return man
+
+    def baseline(self) -> dict:
+        """시작점: 10/1 08:00과 그때 표마다 마지막 번호 (시뮬레이터는 그다음 번호부터 씀). DB 중계가 [처음으로] 때 DB 기준점과 같은지
+        확인하는 데 쓴다 (2026-10-23 — 10/1 뒤 기록을 DB에 채우거나 실제 시간으로 바꾸면 기준점과 이 값을 함께 옮긴다)"""
+        return {"start_at": fmt_dt(self.sim.cal.to_dt(self.N)),
+                "id_after": {k: self.past[k] for k in ID_TABLES}}
+
+    def tables(self) -> dict[str, tuple[list[str], list[tuple]]]:
+        """export()가 CSV로 쓰는 것과 같은 표를 메모리로 (시연 서버 → DB 중계, 2026-10-23). 칸 값은 CSV 글자 그대로.
+        여러 번 불러도 같은 상태면 같은 값이다 (5초 센서 난수를 매번 새로 만듦). 시뮬레이터 상태는 바꾸지 않는다."""
+        out = MemOut()
+        self._write_tables(out)
+        return out.tables
+
+    def _write_tables(self, out: Out) -> None:
+        cfg, sim, N, now_m, past = self.cfg, self.sim, self.N, self.m, self.past
         cal = sim.cal
         # 근무일·교대: 실시간 날짜 것 (과거 기록 period 뒤). 실시간 기록의 shift_id가 가리키는 행이라 DB에 먼저 있어야 한다 (2026-10-24)
         last_past = date.fromisoformat(cfg["period"]["end_date"])
@@ -852,28 +893,6 @@ class Realtime:
                   S4.bottleneck_rows(sim, self.bn_rows, now_m, id_start=past["bottleneck_log"] + 1))
         # 센서: 1분 평균, 주의·정지 등급 알람 앞뒤 30분은 5초 (A안)
         out.write_tuples("sensor_sample", S4.COLS["sensor_sample"], self._sensor_rows(new_al, now_m))
-        # 사건·조작 기록
-        with io.open(out.dir / "events.jsonl", "w", encoding="utf-8", newline="\n") as f:
-            for e in self.events:
-                f.write(json.dumps(e, ensure_ascii=False, default=str) + "\n")
-        with io.open(out.dir / "run_log.jsonl", "w", encoding="utf-8", newline="\n") as f:
-            for o in self.ops:
-                f.write(json.dumps(o, ensure_ascii=False) + "\n")
-        man = {"mode": "realtime", "seed": cfg["run"]["seed"], "start_at": fmt_dt(cal.to_dt(N)),
-               "now_at": fmt_dt(self.now()), "speed": self.speed, "paused": self.paused,
-               "ops": len(self.ops), "events": len(self.events),
-               "scenario_events": [{"code": e["code"], "start_at": fmt_dt(cal.to_dt(e["start_m"])),
-                                    "end_at": fmt_dt(cal.to_dt(e["end_m"])) if e.get("end_m") is not None else None}
-                                   for e in self.event_log],
-               "cmm_drop_files": len(list(self.drop_dir.glob("*.csv"))),
-               "rows": dict(sorted(out.counts.items())),
-               "id_after_past": {k: past[k] for k in ("equipment_state_log", "operation_report", "bottleneck_log",
-                                                      "alarm_event", "tool_change", "inspection_result", "cmm_import",
-                                                      "defect_record", "pm_record", "inventory_txn", "lot_hold")}}
-        with io.open(out.dir / "manifest.json", "w", encoding="utf-8", newline="\n") as f:
-            json.dump(man, f, ensure_ascii=False, indent=2)
-            f.write("\n")
-        return man
 
     def _maint_docs(self) -> dict[str, list[dict]]:
         """실시간에 끝난 OP-30 정지 알람의 작업지시서(승인)·작업기록서(확정). gen/mnt_docs.py와 같은 만드는 방식 (시연 서버는 이것을
@@ -967,7 +986,7 @@ class Realtime:
         step, code = S4.sec_step(self.cfg)
         per = 60 // step
         rows = []
-        r = self.rng.stream("rt-sensor-sec")
+        r = self.rng.fresh("rt-sensor-sec")             # 내보낼 때마다 같은 값 (DB 중계가 여러 번 부름)
         for eq, mins in self.sensor_min.items():
             sec = set()
             for e in alarms:

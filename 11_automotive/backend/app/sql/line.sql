@@ -21,7 +21,7 @@ SELECT equipment_id, process_code, model, size_x_mm, size_y_mm, size_z_mm, cente
 SELECT * FROM v_equipment_now ORDER BY process_code, equipment_id;
 
 -- name: wip_latest
-SELECT DISTINCT ON (w.buffer_code) w.buffer_code, w.logged_at, w.wip_qty, w.soak_shelf_qty, b.limit_qty, b.warn_over_qty,
+SELECT DISTINCT ON (w.buffer_code) w.buffer_code, w.logged_at, w.wip_qty, w.soak_shelf_qty, b.limit_qty, b.warn_over_qty, b.warn_enabled,
        b.warn_enabled AND w.wip_qty > b.warn_over_qty AS is_warn, w.wip_qty >= b.limit_qty AS is_full
   FROM wip_log w JOIN wip_buffer b USING (buffer_code)
  WHERE w.logged_at <= app_now()
@@ -54,7 +54,7 @@ SELECT h.hour_start, least(h.hour_start + interval '1 hour', s.end_at) AS hour_e
  GROUP BY h.hour_start, s.end_at ORDER BY h.hour_start;
 
 -- name: replay_states
-SELECT equipment_id, state_code, start_at, end_at, warn_marker, reason_code
+SELECT equipment_id, state_code, start_at, end_at, warn_marker, reason_code, reason_suggested_code, alarm_event_id
   FROM equipment_state_log
  WHERE start_at < CAST(:to AS timestamptz) AND coalesce(end_at, 'infinity') > CAST(:from AS timestamptz)
  ORDER BY start_at;
@@ -75,3 +75,75 @@ UNION ALL
 SELECT 'BOTTLENECK', bottleneck_log_id, NULL, new_process_code, changed_at FROM bottleneck_log
  WHERE changed_at BETWEEN CAST(:from AS timestamptz) AND CAST(:to AS timestamptz)
 ORDER BY at;
+
+-- ---------- 화면 전체 트윈 (GET /api/line/twin?full=true, 2026-10-23 화면 → 백엔드 전환 C2) ----------
+-- 실시간 구간 시작 = 생성기 데이터 끝 다음 날 08:00 (시연: 10/1 08:00). 생성기 데이터가 없으면 지금부터 24시간 전
+-- name: live_from
+SELECT coalesce((SELECT ((period_to + 1) + time '08:00') AT TIME ZONE 'Asia/Seoul' FROM dataset_info WHERE id = 1 AND period_to IS NOT NULL),
+                app_now() - interval '24 hours') AS live_from;
+
+-- 설비별 지금 센서 값 (센서 항목마다 지금 시각까지의 마지막 값)
+-- name: sensor_latest
+SELECT e.equipment_id, i.sensor_code, x.value, x.sampled_at
+  FROM equipment e CROSS JOIN sensor_item i
+ CROSS JOIN LATERAL (SELECT s.value, s.sampled_at FROM sensor_sample s
+                      WHERE s.equipment_id = e.equipment_id AND s.sensor_code = i.sensor_code AND s.sampled_at <= app_now()
+                      ORDER BY s.sampled_at DESC LIMIT 1) x
+ WHERE e.has_sensor
+ ORDER BY e.equipment_id, i.sensor_code;
+
+-- 교대 시작 ~ 지금 설비별 멈춘 분(DOWN·IDLE·BLOCKED·SETUP)과 고장 손실(고장 그룹 5분 이상 ÷ 기준 사이클, 추정 — 시연 서버 twin과 같은 식)
+-- name: shift_equipment_stops
+SELECT l.equipment_id,
+       round(sum(extract(epoch FROM least(coalesce(l.end_at, 'infinity'), app_now(), s.end_at) - greatest(l.start_at, s.start_at)) / 60)
+             FILTER (WHERE l.state_code IN ('DOWN', 'IDLE', 'BLOCKED', 'SETUP'))::numeric, 0)::int AS stop_min,
+       round(coalesce(sum(extract(epoch FROM least(coalesce(l.end_at, 'infinity'), app_now(), s.end_at) - greatest(l.start_at, s.start_at)) / 60
+                          / nullif(CASE WHEN e.equipment_id = 'WSH-01' THEN e.batch_time_min / nullif(e.batch_qty, 0) ELSE e.std_cycle_min END, 0))
+             FILTER (WHERE r.reason_group = 'FAILURE' AND l.state_code IN ('DOWN', 'IDLE')
+                       AND least(coalesce(l.end_at, 'infinity'), app_now(), s.end_at) - greatest(l.start_at, s.start_at) >= interval '5 minutes'), 0)::numeric, 1) AS loss_qty
+  FROM shift s
+  JOIN equipment_state_log l ON l.start_at < least(s.end_at, app_now()) AND coalesce(l.end_at, 'infinity') > s.start_at
+  JOIN equipment e USING (equipment_id)
+  LEFT JOIN downtime_reason r ON r.reason_code = coalesce(l.reason_code, l.reason_suggested_code)
+ WHERE s.shift_id = :shift_id
+ GROUP BY l.equipment_id;
+
+-- 설비별 지금 상태의 사유(사람이 넣은 것이 없으면 제안 사유)·이름
+-- name: equipment_reason_now
+SELECT DISTINCT ON (l.equipment_id) l.equipment_id, coalesce(l.reason_code, l.reason_suggested_code) AS reason_code, r.reason_name
+  FROM equipment_state_log l LEFT JOIN downtime_reason r ON r.reason_code = coalesce(l.reason_code, l.reason_suggested_code)
+ WHERE l.start_at <= app_now()
+ ORDER BY l.equipment_id, l.start_at DESC;
+
+-- 오늘(주간 시작부터) OP-50 합격 수 = 완제품으로 나간 수
+-- name: done_today
+SELECT coalesce(sum(o.gq + o.rq), 0)::int AS done_today
+  FROM operation_report o JOIN shift s USING (shift_id)
+ WHERE o.process_code = 'OP-50' AND o.end_at <= app_now()
+   AND s.work_date = (SELECT work_date FROM shift WHERE start_at <= app_now() ORDER BY start_at DESC LIMIT 1);
+
+-- 마지막 측정값 24개 (CMM 카드)
+-- name: last_measure
+SELECT lot_no, part_seq, item_seq, position, measured_value, judgement, measured_at
+  FROM inspection_result WHERE measured_value IS NOT NULL AND measured_at <= app_now()
+ ORDER BY measured_at DESC, result_id DESC LIMIT 24;
+
+-- 실시간 구간 병목 바뀜 (화면 알림 "병목 이동"의 재료 — 시각은 DB 기록 그대로)
+-- name: bottleneck_since
+SELECT b.bottleneck_log_id, b.changed_at, b.new_process_code AS process_code, b.cause_code, b.prev_process_code
+  FROM bottleneck_log b WHERE b.changed_at >= CAST(:since AS timestamptz) AND b.changed_at <= app_now() ORDER BY b.changed_at;
+
+-- 다시 보기: 구간 안 병목 (구간 시작 바로 앞 1줄 포함 — 처음 병목을 알도록)
+-- name: replay_bottleneck
+(SELECT changed_at, new_process_code AS process_code, cause_code, prev_process_code FROM bottleneck_log
+  WHERE changed_at < CAST(:from AS timestamptz) ORDER BY changed_at DESC LIMIT 1)
+UNION ALL
+(SELECT changed_at, new_process_code, cause_code, prev_process_code FROM bottleneck_log
+  WHERE changed_at >= CAST(:from AS timestamptz) AND changed_at < CAST(:to AS timestamptz) ORDER BY changed_at)
+ORDER BY changed_at;
+
+-- 다시 보기: 완제품이 나온 시각 (OP-50 실적 줄의 끝 시각 × 합격 수)
+-- name: replay_done
+SELECT end_at, (gq + rq)::int AS qty FROM operation_report
+ WHERE process_code = 'OP-50' AND end_at >= CAST(:from AS timestamptz) AND end_at < CAST(:to AS timestamptz) AND gq + rq > 0
+ ORDER BY end_at;

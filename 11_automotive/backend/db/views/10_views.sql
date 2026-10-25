@@ -288,32 +288,38 @@ WITH seg AS (
     SELECT shift_id, equipment_id, sum(pq) AS pq, sum(gq) AS gq, sum(rq) AS rq, sum(sq) AS sq
       FROM operation_report GROUP BY 1, 2
 )
+-- 계획 가동 시간 (R-44): 끝난 교대 = 480분 − 정비. **진행 중인 교대 = 지금까지 지난 근무 분(휴식 제외) − 정비** (2026-10-23 —
+--   교대 중간에 480분 전체로 나누면 가동률·OEE가 교대 초반에 0에 가깝게 보여서. 끝난 교대·보고서 값은 그대로). 시작 전 교대 = 0
 SELECT s.shift_id, s.work_date, s.shift_type, e.equipment_id, e.process_code,
        s.planned_time_min,
-       round(s.planned_time_min - coalesce(t.maint_min, 0), 2)                     AS pbt_min,
+       round(p.plan_min - coalesce(t.maint_min, 0), 2)                             AS pbt_min,
        round(coalesce(t.run_min, 0), 2) AS run_min, round(coalesce(t.down_min, 0), 2) AS down_min,
        round(coalesce(t.maint_min, 0), 2) AS maint_min,
        coalesce(q.pq, 0) AS pq, coalesce(q.gq, 0) AS gq, coalesce(q.rq, 0) AS rq, coalesce(q.sq, 0) AS sq,
-       round(100 * coalesce(t.run_min, 0) / nullif(s.planned_time_min - coalesce(t.maint_min, 0), 0), 1) AS availability_pct,
+       round(100 * coalesce(t.run_min, 0) / nullif(p.plan_min - coalesce(t.maint_min, 0), 0), 1) AS availability_pct,
        round(100 * e.std_cycle_min * q.pq / nullif(t.run_min, 0), 1)               AS performance_pct,
        round(100 * (q.gq + q.rq)::numeric / nullif(q.pq, 0), 1)                    AS quality_pct,
-       round(100 * (coalesce(t.run_min, 0) / nullif(s.planned_time_min - coalesce(t.maint_min, 0), 0))
+       round(100 * (coalesce(t.run_min, 0) / nullif(p.plan_min - coalesce(t.maint_min, 0), 0))
                  * (e.std_cycle_min * q.pq / nullif(t.run_min, 0))
-                 * ((q.gq + q.rq)::numeric / nullif(q.pq, 0)), 1)                  AS oee_pct
+                 * ((q.gq + q.rq)::numeric / nullif(q.pq, 0)), 1)                  AS oee_pct,
+       round(p.plan_min, 2)                                                        AS planned_so_far_min
   FROM shift s
+ CROSS JOIN LATERAL (SELECT CASE WHEN app_now() >= s.end_at THEN s.planned_time_min::numeric
+                                 WHEN app_now() <= s.start_at THEN 0::numeric
+                                 ELSE least(s.planned_time_min, fn_work_minutes(s.start_at, app_now())) END AS plan_min) p
  CROSS JOIN equipment e
   LEFT JOIN t ON t.shift_id = s.shift_id AND t.equipment_id = e.equipment_id
   LEFT JOIN q ON q.shift_id = s.shift_id AND q.equipment_id = e.equipment_id
  WHERE e.is_active;
 
--- 라인 OEE (R-44: OP-30 2대 합, 계획 가동 시간 = 480분 × 2대 — 한 대의 예방 정비는 빼지 않음)
+-- 라인 OEE (R-44: OP-30 2대 합, 계획 가동 시간 = 480분 × 2대 — 한 대의 예방 정비는 빼지 않음. 진행 중 교대는 지금까지 지난 근무 분 × 2대)
 CREATE OR REPLACE VIEW v_shift_line_oee AS
 SELECT k.shift_id, k.work_date, k.shift_type,
-       sum(k.planned_time_min) AS line_pbt_min, sum(k.run_min) AS run_min, sum(k.pq) AS pq,
-       round(100 * sum(k.run_min) / nullif(sum(k.planned_time_min), 0), 1) AS availability_pct,
+       round(sum(k.planned_so_far_min))::bigint AS line_pbt_min, sum(k.run_min) AS run_min, sum(k.pq) AS pq,
+       round(100 * sum(k.run_min) / nullif(sum(k.planned_so_far_min), 0), 1) AS availability_pct,
        round(100 * sum(e.std_cycle_min * k.pq) / nullif(sum(k.run_min), 0), 1) AS performance_pct,
        round(100 * sum(k.gq + k.rq)::numeric / nullif(sum(k.pq), 0), 1) AS quality_pct,
-       round(100 * (sum(k.run_min) / nullif(sum(k.planned_time_min), 0))
+       round(100 * (sum(k.run_min) / nullif(sum(k.planned_so_far_min), 0))
                  * (sum(e.std_cycle_min * k.pq) / nullif(sum(k.run_min), 0))
                  * (sum(k.gq + k.rq)::numeric / nullif(sum(k.pq), 0)), 1) AS oee_pct
   FROM v_shift_equipment_kpi k JOIN equipment e USING (equipment_id)
