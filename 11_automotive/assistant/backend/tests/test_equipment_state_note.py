@@ -89,6 +89,8 @@ def test_note_lists_each_machine_and_only_the_stopped_ones_get_time_and_alarm():
     assert "- VF2-02 (OP-30): 대기 (07:20부터)" in note and "- WSH-01 (OP-40): 막힘 (07:20부터)" in note
     assert "- SAW-01 (OP-10): 가공 중\n" in note and "- CMM-01 (OP-50): 가공 중\n" in note
     assert note.rstrip().endswith("이 값을 쓰지 않는다.") and "insufficient는 false" in note
+    assert "'시연 화면 시계 2026-10-25 09:00 기준'을 위 글자 그대로(연도 포함)" in note and "{clock}" not in note      # 시계 글자를 박아 둔다 (연도 오기 방지)
+    assert "대기인 설비를 '가동 중'이라고 부르지 않고" in note
 
 
 def test_tool_is_none_when_off_or_unreadable_and_denied_without_line_view(monkeypatch):

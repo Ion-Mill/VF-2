@@ -3743,8 +3743,8 @@ def equipment_state_question_v36(question: str, p: dict) -> bool:
 
 EQS_WHY_V36 = "설비 상태 질문 — 시연 서버의 지금 설비 상태 값을 재료로 함께 준 문서 길 (지시문 방식)"
 EQS_RULES_V36 = ("[이 값 쓰는 법] 질문이 지금 설비가 어떤 상태인지, 고장 난·멈춘·막힌 설비가 어디인지를 묻는 말이면 위 값으로 답한다. 이 경우 사내 문서 조각에 답이 없어도 insufficient는 false다. "
-                 "값에 없는 설비·시각·원인은 말하지 않는다 (알람 번호의 뜻은 문서 조각에 있을 때만 말한다). 답의 첫 문장에 '시연 화면 시계 ○○ 기준'을 밝힌다. "
-                 "고장 정지·막힘 설비를 먼저 말하고 가동 중인 설비는 한 줄로 묶는다. 지난 기록·횟수·이력은 이 값에 없으므로 그런 말이면 이 채팅이 아직 읽지 못한다고 말한다. "
+                 "값에 없는 설비·시각·원인은 말하지 않는다 (알람 번호의 뜻은 문서 조각에 있을 때만 말한다). 답의 첫 문장에 '시연 화면 시계 {clock} 기준'을 위 글자 그대로(연도 포함) 밝힌다. "
+                 "고장 정지·막힘 설비를 먼저 말하고, 나머지 설비는 값에 적힌 상태별로 한 줄로 묶는다 (대기인 설비를 '가동 중'이라고 부르지 않고, 값에 적힌 상태 이름 그대로 쓴다). 지난 기록·횟수·이력은 이 값에 없으므로 그런 말이면 이 채팅이 아직 읽지 못한다고 말한다. "
                  "질문이 이 값과 상관없는 문서 질문이면 이 값을 쓰지 않는다.")
 
 
@@ -3759,7 +3759,8 @@ def equipment_states_note_v36(r: dict) -> str:
             extra = ([_bn_since_text_v35(s["since"], sim_at)] if s.get("since") else []) + ([f"열린 알람 {s['open_alarm_code']}"] if s.get("open_alarm_code") else [])
             text += f" ({', '.join(extra)})" if extra else ""
         lines.append(text)
-    return f"[지금 설비 상태 — 시연 서버가 준 값, {sim_at[:10]} {sim_at[11:16]} 기준 시연 화면 시계]\n" + "\n".join(lines) + "\n" + EQS_RULES_V36
+    clock = f"{sim_at[:10]} {sim_at[11:16]}"      # 연도까지 글자 그대로 — Claude가 연도를 틀리게 쓴 적이 있다 (2026 → 2025, 2026-10-25 시험)
+    return f"[지금 설비 상태 — 시연 서버가 준 값, {clock} 기준 시연 화면 시계]\n" + "\n".join(lines) + "\n" + EQS_RULES_V36.replace("{clock}", clock)
 
 
 KPI_DATED_WORDS_V21 = re.compile(r"OEE|가동률|성능|양품|지표|효율|KPI", re.I)
