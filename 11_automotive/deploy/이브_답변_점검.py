@@ -6,7 +6,8 @@
   - 질문은 U12(공장 관리자)로 /api/assistant/chat에 보낸다: 화면과 같은 길(백엔드 → 비서 → Claude). 질문마다 외부 Claude 요금이
     조금 들고, 질문·답이 공용 DB chat_log에 U12 기록으로 남는다(사용자가 묻는 것과 같다).
   - 판정: 정답의 숫자·이름이 답 글자 안에 있으면 "맞음", 없으면 "확인 필요"(말을 바꿔 썼을 수 있으니 사람이 본다).
-  - 환경 변수: DRY=1 이면 정답만 뽑고 묻지 않는다. ONLY=1,4,7 이면 그 번호만.
+  - 환경 변수: DRY=1 이면 정답만 뽑고 묻지 않는다. ONLY=1,4,7 이면 그 번호만. SET=발표 이면 발표용 질문 18개
+    (docker compose exec -T -e SET=발표 backend python - < 이브_답변_점검.py). 숫자로 가릴 수 없는 문서 질문은 "사람이 봄".
 답이 어느 길로 갔는지는 이어서 이브 컨테이너에서 이브_답변_출처.py.
 """
 import json
@@ -27,6 +28,7 @@ STATE_KO = {"RUN": ("가공", "가동"), "IDLE": ("대기",), "DOWN": ("고장",
             "MAINT": ("정비",), "BLOCKED": ("막힘",)}
 ONLY = {int(x) for x in os.environ.get("ONLY", "").split(",") if x.strip().isdigit()}
 DRY = os.environ.get("DRY") == "1"
+SET = os.environ.get("SET", "").strip()      # "발표" = 발표용 후보 질문 (서버 시험에서 맞게 나온 말투)
 
 
 def nums(x) -> list[str]:
@@ -173,7 +175,53 @@ def gather(db: Db) -> tuple[datetime, list[dict]]:
         cases.append({"q": f"{lot[0]['lot_no']} 판정 났어?", "kind": "DB·로트",
                       "truth": f"{lot[0]['lot_no']} {lot[0]['status']} 투입 {lot[0]['input_qty']} 불량 {lot[0]['scrap_qty']}",
                       "must": [[lot[0]["lot_no"]]]})
-    return now, cases
+    if SET != "발표":
+        return now, cases
+
+    # 발표용 후보 (2026-10-25): 서버 시험에서 맞게 나온 말투만 — 지금·직전 교대·최근 N일·설비/알람 번호를 넣는다.
+    # "10월 24일"처럼 날짜를 콕 집거나 조건 없이 넓게 묻는 말투는 빼 둔다(발표 뒤에 고칠 것: 날짜 읽기, 되묻기, 진행 중 작업지시)
+    pick = {c["q"]: c for c in cases}
+    demo = [pick[q] for q in ("지금 설비 상태 알려줘", "VF2-02 상태 어때?", "병목 어디야?") if q in pick]
+    h = now.hour
+    cur = f"{today}-D" if 9 <= h < 18 else (f"{today}-N" if h >= 21 else (f"{yday}-N" if h < 6 else None))  # 최종용 교대 09~18 · 21~06
+    recent = run("production", from_date=str(today - timedelta(days=10)), to_date=str(today))
+    prev = [r for r in recent if cur is None or r["shift_id"] < cur]
+    if prev:
+        p0 = max(prev, key=lambda r: r["shift_id"])
+        demo.append({"q": "직전 교대 생산 실적 몇 개야?", "kind": "DB·생산",
+                     "truth": f"{p0['shift_id']} 실적 {p0['actual_qty']} / 목표 {p0['total_target_qty']}", "must": [nums(p0["actual_qty"])]})
+    demo += [c for c in cases if c["kind"] == "DB·알람(번호)"]
+    n2075 = alarm_n(iso(today - timedelta(days=7)), iso(today), "2075")
+    demo.append({"q": "최근 7일 2075 알람 몇 번 떴어?", "kind": "DB·알람(번호)",
+                 "truth": alarm_truth(f"{today - timedelta(days=7)}~{yday} 2075", n2075), "must": [nums(n2075[0])]})
+    demo += [pick[q] for q in ("VF2-02 MTTR 얼마야?", "최근 7일 VF2-02 정지 원인 뭐가 제일 많아?") if q in pick]
+    k7 = run("kpi", from_date=str(today - timedelta(days=7)), to_date=str(yday), equipment_id="VF2-02")
+    if k7:
+        o = [float(r["oee_pct"]) for r in k7 if r["oee_pct"] is not None]
+        demo.append({"q": "최근 7일 VF2-02 OEE 얼마야?", "kind": "DB·지표 (사람이 봄)",
+                     "truth": f"교대 {len(k7)}개, 교대별 OEE {min(o):g}~{max(o):g}% — 기간 합산 값은 백엔드 계산이라 범위 안인지 본다" if o else "값 없음",
+                     "must": []})
+    demo += [pick[q] for q in ("VF2-02 공구 수명 얼마나 남았어?", "VF2-01 공기 압력 지금 얼마야?") if q in pick]
+    s2 = run("sensor_trend", equipment_id="VF2-02", minutes=60)
+    out = [r for r in s2 if r["is_out_of_normal"]]
+    demo.append({"q": "VF2-02 센서 중에 정상 범위 벗어난 거 있어?", "kind": "DB·센서",
+                 "truth": ", ".join(f"{r['sensor_name']} {r['last_value']}{r['unit']}" for r in out) or f"없음 (센서 {len(s2)}개 모두 정상 범위)",
+                 "must": [[r["sensor_name"]] for r in out] or [["없", "정상"]]})
+    demo += [c for c in cases if c["kind"] == "DB·로트"]
+    if wr:
+        demo.append({"q": "VF2-02 최근 작업기록 알려줘", "kind": "DB·작업기록",
+                     "truth": f"가장 최근 {wr[0]['record_no']} ({wr[0]['confirmed_at']}) 알람 {wr[0]['alarm_code']} — {wr[0]['action']}",
+                     "must": [[wr[0]["record_no"]]]})
+    # "VF2-02 예방 정비 기한 다가오는 거 있어?"는 뺐다 (2026-10-26 서버 시험: 넘긴 것만 보고 다가오는 것은 "정보 없음" — 발표 뒤 고칠 것)
+    m6 =[r for r in run("inventory") if "M6 탭" == r["item_name"]]
+    if m6:
+        demo.append({"q": "M6 탭 재고 얼마나 있어?", "kind": "DB·재고",
+                     "truth": f"M6 탭 {float(m6[0]['on_hand_qty']):g}{m6[0]['unit']} (안전 재고 {float(m6[0]['safety_stock']):g}, 부족 {m6[0]['is_low']})",
+                     "must": [nums(m6[0]["on_hand_qty"])]})
+    demo += [{"q": "2075 알람 뜨면 어떻게 해?", "kind": "사내 문서", "truth": "DOC-03 윤활 점검 순서", "must": [["윤활"]]},
+             {"q": "필수 정지가 뭐야?", "kind": "사내 문서 (사람이 봄)", "truth": "DOC-07 정의 그대로인지", "must": []},
+             {"q": "반복 알람 2단계가 뭐야?", "kind": "사내 문서 (사람이 봄)", "truth": "DOC-07·DOC-03 기준 그대로인지", "must": []}]
+    return now, demo
 
 
 def ask(tok: str, q: str) -> dict:
@@ -190,7 +238,7 @@ def main():
         conn.rollback()
     print(f"시연 시계 {now:%Y-%m-%d %H:%M} 기준 · 질문 {len(cases)}개{' (DRY: 묻지 않음)' if DRY else ''}\n")
     tok = create_token("U12", "MGR", get_settings().jwt_secret, 30)
-    tally = {"맞음": 0, "확인 필요": 0, "오류": 0}
+    tally = {"맞음": 0, "확인 필요": 0, "사람이 봄": 0, "오류": 0}
     for i, c in enumerate(cases, 1):
         if ONLY and i not in ONLY:
             continue
@@ -203,7 +251,7 @@ def main():
             ans = (d.get("answer") or "").replace("\n", " ")
             flat = ans.replace(",", "")
             ok = all(any(m in flat for m in group) for group in c["must"] if group) if c["must"] else None
-            mark = "맞음" if ok else "확인 필요"
+            mark = "사람이 봄" if ok is None else ("맞음" if ok else "확인 필요")
             tally[mark] += 1
             print(f"    이브({d.get('status')}): {ans[:300]}\n    판정: {mark}\n")
         except Exception as e:  # noqa: BLE001
