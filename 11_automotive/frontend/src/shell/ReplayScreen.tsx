@@ -7,7 +7,7 @@ import { SecIcon, ToneTag } from './ui';
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useApp } from "./ctx";
 import { CAUSE_KO, LAYOUT, SHIFT_H, STATE_VIEW, hh, stateOf } from "./data";
-import { EQS, SIM, hm, md, simIso, useFetch, type Eq } from "./live";
+import { EQS, SIM, hm, md, simIso, useFetch, useProfile, type Eq } from "./live";
 import { ALARMS } from "./model";
 
 interface Seg {
@@ -145,6 +145,7 @@ const LANE_PX = 40; // 막대 굵기 최대값 (자리가 모자라면 같이 �
 
 export function ReplayScreen() {
   const { key, setReplay, twin } = useApp();
+  const profile = useProfile(); // 날짜 고르기 시작 = 기록 시작일 (2026-10-25)
   const center = key ?? simIso(SIM.now() - 30 * 60000);
   const sh0 = shiftOf(Date.parse(center));
   const [from, setFrom] = useState(toLocalInput(simIso(sh0.a)));
@@ -712,7 +713,7 @@ export function ReplayScreen() {
                         type="date"
                         aria-label="날짜"
                         value={draft.d}
-                        min="2026-09-01"
+                        min={profile?.history_start}
                         max={simIso().slice(0, 10)}
                         onChange={(e) =>
                           setDraft((x) => ({ ...x, d: e.target.value }))

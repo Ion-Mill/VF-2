@@ -101,7 +101,7 @@ export function QualityScreen({ cap = false }: { cap?: boolean }) { // cap: 공�
   const enhPast = enhancedLots.length === 0, enhRows = enhPast ? allLots.filter((x) => x.enhanced).slice(-6) : enhancedLots;
   const lastHold = [...(lotsF.data?.past_holds ?? [])].filter((h) => h.normal_resumed_at).pop();
   const fileOf = (x: R) => { const m = String(x.file_name ?? '').match(/(LOT-\d{4}-\d{3}-\d)_(\d{3})/); return m ? `${m[1].slice(-5)} · ${Number(m[2])}` : x.file_name; };
-  const todayFiles = (cmm.data?.imports ?? []).filter((x) => String(x.received_at).startsWith('2026-10-01')).slice(0, 12);
+  const todayFiles = (cmm.data?.imports ?? []).filter((x) => String(x.received_at).startsWith(twin?.clock.sim_at?.slice(0, 10) ?? '')).slice(0, 12);   // 오늘 = 시연 시계 날짜
 
   // ===== 작업자(OPR) 태블릿 화면 (사용자 시안 2026-10-16): 단계 표시 · 게이지/외관 큰 버튼 · CMM 결과 · 로트 진행 · 다음 부품 =====
   if (isOpr) {

@@ -279,7 +279,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
       // 정지 알람: 같은 설비에 끝나지 않은 작업지시서가 있으면 새로 안 만든다 (연쇄 108 → 994 → 992는 한 건). 저장된 목록을 읽은 뒤의 값(w)으로 봐야
       // 페이지를 새로 열 때 목록을 읽기 전에 검사해서 같은 사건 초안이 여러 개 생기지 않는다 (2026-10-22)
       if (trigger === 'STOP_ALARM' && w.some((x) => x.machine === a.machine && x.state !== 'done' && x.state !== 'cancelled')) return w;
-      const no = `MW-${pad(950 + w.length)}`;
+      const no = `MW-${pad(Number(simIso().slice(5, 7)) * 100 + 50 + w.length)}`;   // 그 달 기록 번호(MW-1001~) 뒤 50번부터 — 10월 = MW-1050 (2026-10-25)
       const wo: WorkOrder = {
         no, alertId: a.id, machine: a.machine, code: a.code, created: a.time, state: 'draft', version: 0, trigger, lot: a.lot,
         title: trigger === 'REPEAT_2' ? `${MACHINES[a.machine].name} 알람 ${a.code} 반복 — 원인 점검 (2단계)` : `${MACHINES[a.machine].name} 알람 ${a.code} (${al.nameKo.replace(/\(.*\)/, '')}) 점검`,
