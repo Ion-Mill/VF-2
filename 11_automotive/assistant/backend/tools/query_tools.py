@@ -16,6 +16,8 @@ from datetime import date, datetime, timedelta, timezone
 from backend.config import DATA_LABEL, REFERENCE_AT, settings
 from backend.repositories import backend_tools as BT
 from backend.services import metrics as M
+from backend.services import shifts as SH
+from backend.services import sim_clock
 from backend.tools import sim_live
 
 EQUIPMENT = {"SAW-01", "MIL-01", "VF2-01", "VF2-02", "WSH-01", "CMM-01"}
@@ -56,8 +58,12 @@ def _range(start: date, end: date, shift: str | None) -> str:
     return f"{start} ~ {end}" + (f" {SHIFT_KO.get(shift, shift)}" if shift else "")
 
 
-def _dt(day: date, hour: int = 0) -> str:
-    return datetime(day.year, day.month, day.day, hour, tzinfo=KST).isoformat()
+def _dt(day: date, hour: int = 0, minute: int = 0) -> str:
+    return datetime(day.year, day.month, day.day, hour, minute, tzinfo=KST).isoformat()
+
+
+def _at(day: date, minutes: int) -> str:
+    return _dt(day, minutes // 60, minutes % 60)
 
 
 def _date_chunks(start: date, end: date) -> list[tuple[date, date]]:
@@ -71,12 +77,18 @@ def _date_chunks(start: date, end: date) -> list[tuple[date, date]]:
 
 
 def _windows(start: date, end: date, shift: str | None) -> list[tuple[str, str]]:
-    """[시작, 끝) 시각 구간들. 교대를 정하면 날마다 교대 시간대만 (주간 08~17, 야간 20~다음 날 05 — 가상데이터설계서 5.2)."""
+    """[시작, 끝) 시각 구간들. 교대를 정하면 날마다 교대 시간대만. 시연 시계가 있으면 그 근무, 없으면 주간 08~17, 야간 20~다음 날 05."""
     if shift is None:
         return [(_dt(a), _dt(b + timedelta(days=1))) for a, b in _date_chunks(start, end)]
+    live = sim_clock.current()
     out, d = [], start
     while d <= end:
-        out.append((_dt(d, 8), _dt(d, 17)) if shift == "D" else (_dt(d, 20), _dt(d + timedelta(days=1), 5)))
+        if live is None:
+            out.append((_dt(d, 8), _dt(d, 17)) if shift == "D" else (_dt(d, 20), _dt(d + timedelta(days=1), 5)))
+        elif shift == "D":
+            out.append((_at(d, live.day_start), _at(d, live.day_end)))
+        else:
+            out.append((_at(d, live.night_start), _at(d + timedelta(days=1), live.night_end)))
         d += timedelta(days=1)
     return out
 
@@ -116,8 +128,11 @@ def equipment_status(role, equipment_id=None):
 
 
 def current_shift(role) -> tuple[date, str] | None:
-    """백엔드 업무 시각(app_now)으로 가장 최근에 시작한 교대 (교대가 시작된 날짜, "D"|"N"). 시각을 못 얻으면 None.
-    20시 이후 = 그날 야간, 8~20시 = 그날 주간(17~20시는 방금 끝난 주간), 0~8시 = 전날 야간(5~8시는 방금 끝난 야간) — 교대 시간대는 `_windows`와 같다."""
+    """가장 최근에 시작한 교대 (교대가 시작된 날짜, "D"|"N"). 시연 시계가 있으면 그 시각·근무.
+    없으면 백엔드 업무 시각(app_now): 20시 이후 = 그날 야간, 8~20시 = 그날 주간, 0~8시 = 전날 야간. 시각을 못 얻으면 None."""
+    live = sim_clock.current()
+    if live is not None:
+        return SH.kind_at(live.at, live.day_start, live.night_start)
     try:
         now = datetime.fromisoformat(str(equipment_status(role)["as_of"]))
     except Exception:   # noqa: BLE001 — 시계를 못 얻으면 부른 쪽이 지금 동작(하루 전체) 그대로 간다

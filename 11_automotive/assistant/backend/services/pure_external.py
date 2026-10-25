@@ -31,7 +31,7 @@ SCHEMA = {"type": "object", "additionalProperties": False, "required": ["answer"
 
 SYSTEM = (
     "너는 자동차 부품 절삭가공 라인의 사내 문서 도우미다. 사용자 메시지의 [사내 문서 조각]에 적힌 내용만으로 [질문]에 답한다.\n"
-    "1. 쉬운 한국어로, 되도록 해요체로 답한다. 필요한 만큼만 쓰고 마크다운 기호(**, #, | 등)는 쓰지 않는다.\n"
+    "1. 쉬운 한국어로, 되도록 해요체로 답한다. 문장이 끝나면 줄을 바꾼다. 필요한 만큼만 쓰고 마크다운 기호(**, #, | 등)는 쓰지 않는다.\n"
     "2. 조각에 있는 내용만 쓴다. 조각에 답이 없으면 insufficient를 true로 하고 answer에는 \"문서에 없음\"이라고만 쓴다. "
     "조각에 없는 내용을 짐작이나 일반 상식으로 채우지 않는다.\n"
     "3. 숫자, 알람 기준값, 부품번호, 차단기 번호 같은 값은 조각에 적힌 그대로만 쓴다. 지어내거나 바꾸지 않는다. "
@@ -62,7 +62,7 @@ _CHAT_HEAD = """
 옆자리 선배가 질문한 사람에게 직접 설명해 주듯이 말한다. 문서 문장을 그대로 옮겨 적지 말고, 질문이 알고 싶은 것에 맞춰 이해한 대로 풀어서 말한다.
 
 [말투와 짜임]
-1. 해요체로 쓴다("~예요", "~해요"). "~합니다"와 섞지 않는다. 쉬운 낱말로, 한 문장에 한 가지만 담는다.
+1. 해요체로 쓴다("~예요", "~해요"). "~합니다"와 섞지 않는다. 쉬운 낱말로, 한 문장에 한 가지만 담고, 문장이 끝나면 줄을 바꾼다.
 2. opening: 질문에 바로 답하는 결론을 1~2문장으로 쓴다. "문서에 나온 것은", "문서에 따르면"처럼 문서를 주어로 삼아 시작하지 않는다.
 3. points: 이유·확인할 것·순서가 셋 이상이면 한 항목에 한 가지씩 나눠 담는다(화면이 번호 목록으로 보여 주므로 항목 안에 번호, "첫째", 기호를 쓰지 않는다). 둘 이하이면 비워 두고 opening에 쓴다. 한 항목은 1~2문장.
 4. closing: 꼭 필요한 주의나 이어서 알아 두면 좋은 것만 0~2문장으로 쓴다. 없으면 빈 문자열.
@@ -237,13 +237,13 @@ def compose(raw: dict) -> dict:
 
 
 def join_conclusion(opening: str, points: list[str], closing: str) -> str:
-    """[한 문단으로 보기]·이어 묻기 기억·로그에 쓰는 글: `opening 1) … 2) … closing` (빈 부분은 건너뛴다)."""
+    """이어 묻기 기억·로그·안전 순서 위 글: 머리 문장, 단계, 마무리를 각각 줄로 잇는다 (빈 부분은 건너뛴다)."""
     parts = [opening] if opening else []
     if points:
-        parts.append(" ".join(f"{i}) {p}" for i, p in enumerate(points, 1)))
+        parts.append("\n".join(f"{i}) {p}" for i, p in enumerate(points, 1)))
     if closing:
         parts.append(closing)
-    return " ".join(parts)
+    return "\n".join(parts)
 
 
 def compose_layout(raw: dict) -> list[dict]:
@@ -716,11 +716,18 @@ def context(question: str, k: int, s: Settings) -> list[tuple[float, Chunk]]:
     return hits
 
 
-def build_messages(question: str, chunks: list[Chunk], prev: dict | None = None, system: str = SYSTEM) -> list[dict]:
-    """요청 글: ① 시스템 지시 ② (있으면) 바로 앞 질문·답 1번 ③ 번호 붙인 조각들 ④ 질문. 사용자 메시지 하나.
-    system을 안 주면 지금 SYSTEM (PURE_STYLE 끔 = 요청 글이 지금과 한 글자도 다르지 않다)."""
+def build_messages(question: str, chunks: list[Chunk], prev: dict | None = None, system: str = SYSTEM,
+                   history: list | None = None) -> list[dict]:
+    """요청 글: ① 시스템 지시 ② (있으면) 바로 앞 질문·답 1번, 또는 최근 대화 ③ 번호 붙인 조각들 ④ 질문. 사용자 메시지 하나.
+    system을 안 주면 지금 SYSTEM (PURE_STYLE 끔 = 요청 글이 지금과 한 글자도 다르지 않다).
+    history가 있으면 최근 대화(질문과 위 문장만)를 쓰고 prev는 쓰지 않는다."""
     parts = []
-    if prev and prev.get("question") and prev.get("conclusion"):
+    if history:
+        from backend.services.lookup_turn import history_turns, _history_block
+        block = _history_block(history_turns(history))
+        if block:
+            parts.append(block + "\n앞 대화의 숫자는 이번 조각에 없으면 다시 말하지 않는다.")
+    elif prev and prev.get("question") and prev.get("conclusion"):
         pq, pa = str(prev["question"]), str(prev["conclusion"])
         parts.append("[바로 앞 대화]\n앞 질문: " + (pq if len(pq) <= PREV_Q_MAX else pq[:PREV_Q_MAX] + "…")
                      + "\n앞 답: " + (pa if len(pa) <= PREV_A_MAX else pa[:PREV_A_MAX] + "…(이하 생략)"))
@@ -729,10 +736,10 @@ def build_messages(question: str, chunks: list[Chunk], prev: dict | None = None,
     return [{"role": "system", "content": system}, {"role": "user", "content": "\n\n".join(parts)}]
 
 
-def ask(question: str, chunks: list[Chunk], prev: dict | None, s: Settings, ops_note: bool = False, retry_note: bool = False, fixed_note: str | None = None) -> dict:
+def ask(question: str, chunks: list[Chunk], prev: dict | None, s: Settings, ops_note: bool = False, retry_note: bool = False, fixed_note: str | None = None, history: list | None = None) -> dict:
     """외부 Claude 1번 호출. 돌려주는 값: {"answer", "insufficient", "cited_raw"(받은 그대로), "raw"(받은 JSON), "ms", "sent_chars"}.
     연결·시간 초과·형식 오류·빈 답은 ExternalLlmFailure로 올린다 — 자동으로 로컬·다른 길로 돌아가지 않는다(앱 입구가 EXTERNAL_LLM_UNAVAILABLE로 끝냄).
-    PURE_STYLE=1이면 새 지시문·스키마·max_tokens로 부르고 "answer"는 `opening 1) … 2) … closing`을 이은 글이며, "style": True와 "opening"·"points"·"closing" 부품이 더해진다
+    PURE_STYLE=1이면 새 지시문·스키마·max_tokens로 부르고 "answer"는 머리 문장·단계·마무리를 줄로 이은 글이며, "style": True와 "opening"·"points"·"closing" 부품이 더해진다
     (insufficient면 points·closing은 비우고 opening 한 문장만 — opening이 비어 있으면 짧은 고정 문구). 끔이면 위 계약 그대로(키도 늘지 않는다).
     PURE_STYLE=1 + PURE_LAYOUT=1이면 새 지시문·스키마(sections)·max_tokens(MAX_TOKENS_LAYOUT)로 부르고 "answer"는 `join_layout` 글이며, "style": True·"layout": True와 "sections" 부품이 더해진다
     (opening·points·closing 키는 만들지 않는다. insufficient면 sections는 모든 묶음 text를 이은 한 묶음 — 글이 없으면 짧은 고정 문구)."""
@@ -740,7 +747,8 @@ def ask(question: str, chunks: list[Chunk], prev: dict | None, s: Settings, ops_
     layout = style and bool(s.pure_layout)
     messages = build_messages(question, chunks, prev, system_for(s) + ("\n\n" + ASK_ONLY_NOTE if (s.ask_only and layout) else "")   # ASK_ONLY(2026-10-21): 묻는 것에만 답하고 묶음은 3개 이내
                               + ("\n\n" + RULE_OPS_NOTE if ops_note else "")   # ops_note: PURE_RULE로 문서 길에 온 질문에만
-                              + ("\n\n" + PARTIAL_NOTE if s.pure_retry else "") + ("\n\n" + RETRY_NOTE if retry_note else "") + ("\n\n" + fixed_note if fixed_note else ""))   # PURE_RETRY=1: 첫 호출에 한 줄, 넓게 다시 본 호출에 한 줄 더
+                              + ("\n\n" + PARTIAL_NOTE if s.pure_retry else "") + ("\n\n" + RETRY_NOTE if retry_note else "") + ("\n\n" + fixed_note if fixed_note else ""),   # PURE_RETRY=1: 첫 호출에 한 줄, 넓게 다시 본 호출에 한 줄 더
+                              history=history)
     sent = sum(len(m["content"]) for m in messages)
     t0 = time.perf_counter()
     try:

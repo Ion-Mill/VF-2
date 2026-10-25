@@ -3,7 +3,7 @@
 - `client.chat_json`이 `LLM_PROVIDER=claude`일 때만 여기로 넘긴다. 기본(local)은 이 파일을 부르지 않는다.
 - 방식 둘 (`MOM_CLAUDE_VIA`): **cli**(기본) = 이 PC의 Claude Code(`claude -p`, 구독 로그인 — `claude_cli.py`), **api** = Anthropic API(`ANTHROPIC_API_KEY`).
 - 앱(8000)은 쓰지 않는다. 시험용 복사본의 비교 평가에서만 켜진다: 환경변수 `MOM_EXTERNAL_LLM_OK=1`(config가 os.environ에서만 읽음)과
-  `MOM_USAGE_LEDGER`(사용량 기록 경로, `usage_<이름>.jsonl`)가 있어야 하고, api는 `ANTHROPIC_API_KEY`(os.environ에서만 — `.env`·`LLM_API_KEY`·평가 모드 환경에는 두지 않는다),
+  `MOM_USAGE_LEDGER`(사용량 기록 경로, `usage_<이름>.jsonl`)가 있어야 하고, api는 `ANTHROPIC_API_KEY`(프로세스 환경 변수가 있으면 그것, 없으면 이 폴더 `.env`. `LLM_API_KEY`는 쓰지 않는다),
   cli는 `claude` 실행 파일이 있어야 한다.
 - 같은 서명·같은 예외(`LlmUnavailable`·`LlmBadOutput`)로 돌려주어 부른 쪽 코드(jobs.py·followup_v2.py)는 그대로다.
 - 5.5 계열은 temperature·top_p 같은 샘플링과 seed가 없다 → 보내지 않는다(결과가 매번 조금 다를 수 있어 평가는 2번 반복한다).
@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import dataclasses
 import json
+import logging
 import os
 import subprocess
 import threading
@@ -24,11 +25,14 @@ from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
 
-from backend.config import Settings, settings
+from backend.config import Settings, anthropic_api_key, settings
 from backend.llm import claude_cli as CLI
 from backend.llm import deadline as DL
 from backend.llm import external as EXT
+from backend.llm import gemini_client as G
 from backend.llm.client import LlmBadOutput, LlmUnavailable
+
+log = logging.getLogger("assistant")
 from backend.privacy import outbound_guard as OG
 
 # 1M 토큰당 달러 (입력, 출력). 출처: claude-api skill 표(2026-10-06 캐시) — api는 실제 청구를 Anthropic Console에서 확인한다.
@@ -41,7 +45,7 @@ PRICES: dict[str, tuple[float, float]] = {
 CONTINUE_JOB = "continue"   # 짧은 후속 질문의 이어짐 판단 (services/continuation.JOB — 같은 까닭으로 글자로 둔다). 재료 단계(MATERIAL_JOBS)가 아니라 실패해도 지금 동작으로 간다. PURE_MODEL(Haiku)로 부른다
 PURE_ANSWER_JOB = "pure_answer"   # 순수 길 본 답변의 작업 이름 (services/pure_external.JOB — import하면 순환이라 글자로 두고 시험이 같은지 단정한다). PURE_MODEL은 이 호출에만 쓰인다
 SCREEN_SUMMARY_JOB = "screen_summary"   # 화면 정보판 요약 (services/screen_summary.JOB). 본 답과 같이 PURE_MODEL(Haiku)로 부른다
-MIN_MAX_TOKENS = 1500   # api: 생각 토큰이 max_tokens를 같이 쓴다 — 로컬용 120·300 같은 값이면 "길이 초과"로 잘린다
+MIN_MAX_TOKENS = 16000   # api: 생각 토큰이 max_tokens를 같이 쓴다. 1500이면 문서 답(모터케이블 저항)이 stop_reason max_tokens로 잘렸다 (2026-10-24)
 BREAK_S = 30.0
 TIMEOUT_TRIPS = 2
 LIMIT_TRIPS = 3         # cli: 사용 한도·속도 제한 오류가 연속 3번이면 이 프로세스에서는 더 부르지 않는다 (한도를 끝까지 태우지 않음)
@@ -114,8 +118,8 @@ def gate_problem(s: Settings) -> str | None:
     사용자 결정: 기록 안 남김·사용 상한 없음. 평가 경로(claude_app 아님)는 예전과 똑같이 셋 다 요구한다."""
     if not s.claude_app and os.environ.get("MOM_EXTERNAL_LLM_OK") != "1":
         return "외부 LLM 잠금: 비교 실험 전용(MOM_EXTERNAL_LLM_OK=1 없음)"
-    if s.claude_via == "api":
-        if not os.environ.get("ANTHROPIC_API_KEY") and _injected is None:
+    if s.claude_via == "api" and _runner is None:
+        if not anthropic_api_key() and _injected is None:
             return "ANTHROPIC_API_KEY 없음"
     elif _runner is None and CLI.find_bin() is None:
         return "claude 실행 파일 없음 (MOM_CLAUDE_BIN 또는 Cursor·VS Code 확장 폴더)"
@@ -330,7 +334,10 @@ def _client(s: Settings, read: float):
                 import anthropic  # 지연 import — 패키지가 없어도 앱은 그대로 돈다
             except ImportError as e:
                 raise LlmUnavailable("anthropic 패키지 없음") from e
-            c = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"], max_retries=2,
+            key = anthropic_api_key()
+            if not key:
+                raise LlmUnavailable("ANTHROPIC_API_KEY 없음")
+            c = anthropic.Anthropic(api_key=key, max_retries=2,
                                     timeout=anthropic.Timeout(read, connect=max(s.connect_s, 5.0)))
             _real[key] = c
         return c
@@ -341,6 +348,7 @@ def chat_json_claude(messages: list[dict], schema: dict, name: str, max_tokens: 
     """`client.chat_json`과 같은 서명·같은 결과. grammar는 쓰지 않는다(코드 검사가 대신 막는다).
     앱 스위치 요청(s.claude_app, 2026-10-15)이면 외부 호출 실패를 요청 단위로 남기고, 재료를 정하는 단계(route·select·verify)의 실패는
     ExternalLlmFailure로 올려 앱 입구가 오류로 끝내게 한다(최종기획서 4.3절). 그 밖의 단계는 예전처럼 LlmUnavailable을 던져 부른 쪽의 폴백이 쓴다.
+    채팅 앱의 API 경로만, 그 실패 한 번에 Gemini를 부른다(2026-10-24). Gemini 안에서 HTTP 503·응답 시간 초과만 한 번 더 한다. 평가 경로의 cli와 시험의 가짜 실행기는 그대로다.
     재료 단계에서는 형식 오류(LlmBadOutput)도 실패로 센다 — 안 그러면 jobs.py가 규칙 답으로 조용히 돌아가 "외부 LLM이 답함"이라는 표시가 거짓이 된다."""
     s = s or settings()
     if s.claude_app:
@@ -348,15 +356,30 @@ def chat_json_claude(messages: list[dict], schema: dict, name: str, max_tokens: 
     try:
         return _chat_json_claude(messages, schema, name, max_tokens, s, grammar)
     except (LlmUnavailable, LlmBadOutput) as e:
-        if s.claude_app:
-            EXT.note_failure(name, str(e))
-            if name in EXT.MATERIAL_JOBS:
-                raise EXT.ExternalLlmFailure(name, str(e)) from e
+        if s.claude_app and s.claude_via == "api" and _runner is None:
+            try:
+                EXT.note_call()
+                out = G.chat_json(messages, schema, name, s)
+            except (LlmUnavailable, LlmBadOutput) as g:
+                _fail(s, name, f"{e} / Gemini: {g}")
+                if name in EXT.MATERIAL_JOBS:
+                    raise EXT.ExternalLlmFailure(name, f"{e} / Gemini: {g}") from g
+                raise
+            log.info("Claude 호출 실패 후 Gemini가 답함: job=%s claude=%s", name, type(e).__name__)
+            return out
+        _fail(s, name, str(e))
+        if s.claude_app and name in EXT.MATERIAL_JOBS:
+            raise EXT.ExternalLlmFailure(name, str(e)) from e
         raise
 
 
+def _fail(s: Settings, name: str, reason: str) -> None:
+    if s.claude_app:
+        EXT.note_failure(name, reason)
+
+
 def _chat_json_claude(messages: list[dict], schema: dict, name: str, max_tokens: int, s: Settings, grammar: str | None) -> dict:
-    if name in (PURE_ANSWER_JOB, CONTINUE_JOB, SCREEN_SUMMARY_JOB) and s.claude_app and s.pure_model:   # PURE_MODEL(2026-10-19): 이 호출만 다른 모델. 화면 요약도 같다. 설정 복사본을 바꿔 쓰므로 잠금·--model·기록·모델 불일치 검사가 모두 같은 값을 본다. 노력은 그대로
+    if name in (PURE_ANSWER_JOB, CONTINUE_JOB, SCREEN_SUMMARY_JOB, "lookup_decide", "lookup_write") and s.claude_app and s.pure_model:   # PURE_MODEL(2026-10-19): 이 호출만 다른 모델. 화면 요약·조회 도구도 같다. 설정 복사본을 바꿔 쓰므로 잠금·--model·기록·모델 불일치 검사가 모두 같은 값을 본다. 노력은 그대로
         s = dataclasses.replace(s, claude_model=s.pure_model)
     bad = gate_problem(s)
     if bad:
@@ -377,7 +400,8 @@ def _chat_json_claude(messages: list[dict], schema: dict, name: str, max_tokens:
         read = t
     messages, _ = OG.scrub_messages(messages)   # NFR-SEC-08: 사람 이름·사용자 ID·사원 번호·계정 정보는 밖으로 나가기 직전에 가린다 (외부 호출은 모두 여기를 지난다)
     system = "\n\n".join(m["content"] for m in messages if m["role"] == "system")
-    out = (_call_cli if s.claude_via == "cli" else _call_api)(s, messages, system, schema, name, max_tokens, read)
+    # 채팅 앱은 API다. 시험이 가짜 claude 실행기를 끼운 경우에만 그 실행기를 쓴다 (실제 서버는 실행기를 끼우지 않는다).
+    out = (_call_cli if (s.claude_via == "cli" or _runner is not None) else _call_api)(s, messages, system, schema, name, max_tokens, read)
     if not isinstance(out, dict):
         raise LlmBadOutput("JSON 객체 아님")
     out, n_trim = trim_diag(out, schema)

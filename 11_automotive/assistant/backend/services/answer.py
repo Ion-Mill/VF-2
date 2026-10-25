@@ -28,6 +28,7 @@ from backend.services import continuation as CONT   # 짧은 후속 질문의 �
 from backend.services import followup_v2 as FU2
 from backend.services import pure_external as PURE   # 순수 외부 LLM 연결 (2026-10-15, PURE_EXTERNAL — 시험용 복사본 전용)
 from backend.services import sensor as SN         # 센서 값 질문 이해·답 문장 (2026-10-19, 팀 백엔드 도구 sensor_trend)
+from backend.services import sim_clock
 from backend.services import steplog as SL
 from backend.services.routing import DOC_WORDS, Route, decide_route
 from backend.tools import query_tools as T
@@ -1304,6 +1305,18 @@ def inventory_unknown_subject_v22(question: str) -> str | None:
     return " ".join(out[-2:]) or None
 
 
+def _short_line_v22(i: dict) -> str:
+    """부족 목록 한 줄. 부족분(안전 재고 − 현재 재고)은 프로그램이 계산한다. 안전 재고가 없으면 차이를 만들지 않는다."""
+    on = float(i.get("on_hand") or 0)
+    unit = str(i.get("unit") or "")
+    base = f"{i.get('name')} {on:g}{unit} (안전 재고 {i.get('safety_stock')}"
+    sf = i.get("safety_stock")
+    if sf in (None, ""):
+        return base + ")"
+    diff = round(float(sf) - on, 3)
+    return base + f", 부족 {diff:g}{unit})"
+
+
 def _qty_v22(v: float, unit: str) -> str:
     """수량 글자 — 영문 단위(L)는 띄우고(3.6 L) 한글 단위(개)는 붙인다(2개)."""
     return f"{v:g} {unit}" if unit.isascii() and unit else f"{v:g}{unit}"
@@ -1371,11 +1384,16 @@ def parse(question: str) -> dict:
         shift = "N" if NIGHT_V2.search(q) else ("D" if DAY_V2.search(q) else None)
     if v3 and BOTH_SHIFTS_V3.search(q):  # "주야간 통틀어" → 교대를 정하지 않는다
         shift = None
+    anchor = sim_clock.anchor_date()
+    prev = sim_clock.previous_open()
     if "어제" in q or (v2 and YESTERDAY_V2.search(q)):
-        start = end = REF_DATE - timedelta(days=1)
+        start = end = anchor - timedelta(days=1)
     elif "오늘" in q:
-        start = end = REF_DATE
-    elif "지난 교대" in q:  # 기준 시각 10/1 08:00의 지난 교대 = 9/30 야간
+        start = end = anchor
+    elif prev is not None and sim_clock.PREV_SHIFT.search(q):
+        start = end = prev[0]
+        shift = prev[1]
+    elif "지난 교대" in q:  # 시계가 없으면 기준 시각 10/1 08:00의 지난 교대 = 9/30 야간
         start = end = REF_DATE - timedelta(days=1)
         shift = "N"
     m = re.search(r"(\d{1,2})\s*월\s*(\d{1,2})\s*일|(?<!\d)(\d{1,2})/(\d{1,2})(?!\d)", q)
@@ -1384,7 +1402,7 @@ def parse(question: str) -> dict:
         start = end = date(2026, mo, d)
     m = re.search(r"최근\s*(\d+)\s*일", q)
     if m:
-        end, start = REF_DATE - timedelta(days=1), REF_DATE - timedelta(days=int(m.group(1)))
+        end, start = anchor - timedelta(days=1), anchor - timedelta(days=int(m.group(1)))
     if v6 and start is None:  # 5차 L2: "지난달 18일" = 그날 (E4-040 — "지난달"이 한 달 전체로 정해 "18일"을 버렸다)
         md = LAST_MONTH_DAY_V6.search(q)
         last = REF_DATE.replace(day=1) - timedelta(days=1)   # 지난달 마지막 날
@@ -1973,7 +1991,7 @@ SHIFT_INTENTS_V28 = ("stops", "production", "kpi")
 def current_shift_scope_v28(role: str, p: dict) -> dict:
     if p.get("shift") or not CUR_SHIFT_V28.search(p.get("raw") or "") or not any(i in SHIFT_INTENTS_V28 for i in p["intents"]):
         return p
-    if p["start"] is not None and not (p["start"] == p["end"] == REF_DATE):   # 다른 날짜를 말했으면 건드리지 않는다
+    if p["start"] is not None and not (p["start"] == p["end"] == sim_clock.anchor_date()):   # 다른 날짜를 말했으면 건드리지 않는다
         return p
     cur = T.current_shift(role)
     return {**p, "start": cur[0], "end": cur[0], "shift": cur[1]} if cur else p
@@ -2051,7 +2069,7 @@ def ops_answer(role: str, p: dict, needs: list[str] | None = None,
                 r["empty"] = not r["rows"]
             data.append(r)
             short = [i for i in r["rows"] if i["short"] == "true"]
-            items = [f"{i['name']} {float(i['on_hand']):g}{i['unit']} (안전 재고 {i['safety_stock']})" for i in short]
+            items = [_short_line_v22(i) for i in short]
             texts.append("재고 부족: " + (", ".join(items) or "없음"))
             add("재고 부족", items, texts[-1], r)
         elif intent == "tool_life":
@@ -2442,16 +2460,11 @@ def merge_route(p: dict, r: dict) -> dict:
     if not q["equipment"]:
         q["equipment"] = list(r["equipment"])
     if q["start"] is None:
-        per = r["period"]
-        if per == "today":
-            q["start"] = q["end"] = REF_DATE
-        elif per == "yesterday":
-            q["start"] = q["end"] = REF_DATE - timedelta(days=1)
-        elif per == "last_shift":  # 기준 시각 10/1 08:00의 지난 교대 = 9/30 야간 (parse와 같음)
-            q["start"] = q["end"] = REF_DATE - timedelta(days=1)
-            q["shift"] = q["shift"] or "N"
-        elif per == "recent_7":
-            q["start"], q["end"] = REF_DATE - timedelta(days=7), REF_DATE - timedelta(days=1)
+        start, end, sh = sim_clock.named_period(r["period"])
+        if start is not None:
+            q["start"], q["end"] = start, end
+            if sh:
+                q["shift"] = q["shift"] or sh
     if q["shift"] is None and r["shift"] in ("D", "N"):
         q["shift"] = r["shift"]
     return q
@@ -3466,29 +3479,31 @@ def daily_report_inclusion_v29(question: str, p: dict) -> bool:
 
 
 def daily_report_inclusion_answer_v29(base: dict, question: str) -> dict:
+    ref = sim_clock.anchor_date()
+    day_a, day_b, night_a, night_b = sim_clock.hour_words()
     day = None
     m = re.search(r"(\d{1,2})\s*/\s*(\d{1,2})", question)
     if m:
         try:
-            day = date(REF_DATE.year, int(m.group(1)), int(m.group(2)))
+            day = date(ref.year, int(m.group(1)), int(m.group(2)))
         except ValueError:
             day = None
     if day is None and "어제" in question:
-        day = REF_DATE - timedelta(days=1)
-    today = f"{REF_DATE.month}/{REF_DATE.day}"
-    text = "일일 보고서의 날짜는 생산일(주간이 시작한 날)이고, 생산일은 그날 주간(08:00~17:00)과 그날 밤 야간(20:00~다음 날 05:00)이에요(팀이 정한 기준이에요)."
+        day = ref - timedelta(days=1)
+    today = f"{ref.month}/{ref.day}"
+    text = f"일일 보고서의 날짜는 생산일(주간이 시작한 날)이고, 생산일은 그날 주간({day_a}~{day_b})과 그날 밤 야간({night_a}~다음 날 {night_b})이에요(팀이 정한 기준이에요)."
     if day is not None:
         d = f"{day.month}/{day.day}"
-        text += f" 그래서 {d} 일일 보고서에는 {d} 08:00부터 다음 날 05:00 사이에 일어난 일만 들어가요."
-        if day < REF_DATE:
-            text += (f" 오늘({today}) 08:00 이후에 난 일(예: 오늘 뜬 알람)은 {d} 보고서가 아니라 오늘 생산일 보고서에 들어가고, 오늘 보고서는 오늘 야간이 끝난 다음 날 06:00에 만들어져요."
-                     f" 다만 오늘 05:00 전에 난 일이면 {d} 보고서에 들어가요.")
-        elif day == REF_DATE:
+        text += f" 그래서 {d} 일일 보고서에는 {d} {day_a}부터 다음 날 {night_b} 사이에 일어난 일만 들어가요."
+        if day < ref:
+            text += (f" 오늘({today}) {day_a} 이후에 난 일(예: 오늘 뜬 알람)은 {d} 보고서가 아니라 오늘 생산일 보고서에 들어가고, 오늘 보고서는 오늘 야간이 끝난 다음 날 06:00에 만들어져요."
+                     f" 다만 오늘 {night_b} 전에 난 일이면 {d} 보고서에 들어가요.")
+        elif day == ref:
             text += " 오늘 보고서는 오늘 야간이 끝난 다음 날 06:00에 만들어져서 아직 없어요."
         else:
             text += " 그 날짜는 아직 오지 않았어요."
     else:
-        text += (f" 오늘({today}) 08:00 이후에 난 일은 오늘 생산일 보고서에 들어가고, 그 보고서는 다음 날 06:00에 만들어져요. 어제 보고서에는 들어가지 않아요.")
+        text += (f" 오늘({today}) {day_a} 이후에 난 일은 오늘 생산일 보고서에 들어가고, 그 보고서는 다음 날 06:00에 만들어져요. 어제 보고서에는 들어가지 않아요.")
     ev = [_cite(c) for c in (_chunk("DOC-01", "3"), _chunk("DOC-01", "3.3")) if c]
     return {**base, "status": "답변", "mode": "규칙 (일일 보고서 생산일 기준 — 문서 고정 문구)", "conclusion": text, "evidence": ev,
             "caution": "근거 안내이며 실행 지시가 아닙니다.", "blocks": [{"kind": "text", "text": text}]}
@@ -3757,6 +3772,14 @@ def _status_named_v29(text: str) -> list[str]:
     return list(dict.fromkeys(m.group(1).upper() for m in EQUIP_RE_V5.finditer(text or "")))
 
 
+def status_llm_context(prev: dict | None) -> bool:
+    """앞 답이 설비·종류 빈칸 되묻기인가. 비교 2번이면 프로그램이 질문을 붙이지 않고 이 앞 대화를 LLM이 읽는다."""
+    if not prev or prev.get("status") != "확인 필요":
+        return False
+    conc = (prev.get("conclusion") or "").strip()
+    return bool(_STATUS_ASK_EQUIP_V29.search(conc) or _STATUS_ASK_KIND_V29.search(conc))
+
+
 def status_follow_v29(question: str, p: dict, prev: dict | None) -> str | None:
     """바로 앞 상태 되묻기에 한 번 붙이는 질문. 설비만 물은 답에는 설비 이름·모든 설비.
     종류만 물은 답에는 가동 상태·정비 기한, 그 답에 적힌 설비 이름, 전부다.
@@ -3834,11 +3857,42 @@ def period_notes_v21(question: str, p: dict, ops_texts: list[str]) -> list[str]:
     return []
 
 
+_QTY_INTENTS = frozenset({"production", "inventory", "alarm_count", "kpi", "tool_life", "stops"})
+
+
+def _compare_live_kind(p: dict, question: str) -> str | None:
+    """비교 1번이 프로그램에 남기는 질문. 안전 순서는 고정 서식이 붙는 질문이다. 규칙·고장 절차 문서 질문은 수량이 아니다."""
+    if question and FB.select(question):
+        return "안전 순서"
+    intents = set(p.get("intents") or [])
+    if "equipment_status" in intents:
+        return "설비 상태"
+    if intents & _QTY_INTENTS:
+        if question and (PURE.rule_question(question, p) or PURE.rule_question_wide(question, p) or PURE.fault_question(question, p)):
+            return None
+        return "수량"
+    return None
+
+
+def _program_safety_order(base: dict, keys: list[str]) -> dict:
+    """비교 1번 안전 순서. LLM을 부르지 않고 고정 서식만 낸다."""
+    return {**base, "status": "답변", "mode": "안전 순서 (프로그램 고정 서식)", "conclusion": FB.FALLBACK_LEAD,
+            "blocks": [{"kind": "lead", "text": FB.FALLBACK_LEAD}] + FB.blocks(keys),
+            "fixed_block": {"keys": keys, "fallback": False}, "caution": PURE_CAUTION_SAFETY_V19}
+
+
 def pure_scope_v19(p: dict, s, question: str = "") -> str | None:
     """이 질문이 순수 외부 LLM 길로 가나 — 가는 까닭 글, 아니면 None. (권한·화면 설명·위험한 부탁·불량 원인·이어 묻기는 이 함수보다 앞에서 이미 처리됐다.)
-    PURE_KEEP_SIGNALS=0(기본): 알람 번호·날짜·설비·운영 낱말 신호가 있어도 전부 순수 길.
-    PURE_KEEP_SIGNALS=1: 규칙이 그 신호를 하나라도 찾은 질문은 기존 길(알람 카드·운영 조회) 그대로, 하나도 못 찾은 질문만 순수 길. (예외: PURE_SAFETY=1이고 신호가 설비 이름뿐인 안전 질문은 문서 질문이라 순수 길 — 안전망을 거친다.)"""
+    PURE_COMPARE=0(기본, 1번): 수량·설비 상태·안전 순서는 신호가 없어도 프로그램 길.
+    PURE_COMPARE=1(2번): 그 셋도 순수 길. 문서에 없어도 프로그램 길로 되돌리지 않는다.
+    PURE_KEEP_SIGNALS=0(기본): 그 셋이 아닌 질문은 알람 번호·날짜·설비·운영 낱말 신호가 있어도 전부 순수 길.
+    PURE_KEEP_SIGNALS=1: 규칙이 그 신호를 하나라도 찾은 질문은 기존 길(알람 카드·운영 조회) 그대로, 하나도 못 찾은 질문만 순수 길. (예외: PURE_SAFETY=1이고 신호가 설비 이름뿐인 안전 질문은 문서 질문이라 순수 길 — 안전망을 거친다. 안전 순서는 1번에서 이 예외보다 먼저 프로그램 길이다.)"""
     if not PURE.enabled(s):
+        return None
+    kind = _compare_live_kind(p, question)
+    if kind:
+        if getattr(s, "pure_compare", False):
+            return f"비교 2번 — {kind}도 순수 길 (PURE_COMPARE=1)"
         return None
     if not s.pure_keep_signals:
         return "신호 끔(PURE_KEEP_SIGNALS=0) — 알람 번호·날짜·설비·운영 낱말 길을 거치지 않고 순수 길로"
@@ -3883,14 +3937,15 @@ def _pure_layout_blocks_v20(sections: list[dict], written: bool) -> list[dict]:
     return blocks
 
 
-def _pure_answer_v19(question: str, p: dict, base: dict, s, memo: dict, prev: dict | None, why: str) -> dict:
+def _pure_answer_v19(question: str, p: dict, base: dict, s, memo: dict, prev: dict | None, why: str, history: list | None = None) -> dict:
     """순수 외부 LLM 길의 답. 외부 호출이 실패하면 ExternalLlmFailure가 그대로 올라가 앱 입구가 EXTERNAL_LLM_UNAVAILABLE로 끝낸다 (자동 대체 없음)."""
     k = s.pure_topk
     style = bool(s.pure_style)   # 말투 바꾸기 (PURE_STYLE=1): 지시문·스키마·응답 조립만 다르다. 끄면 아래 모든 줄이 지금과 같다
     layout = style and bool(s.pure_layout)   # 묶음 목록 형식 (PURE_LAYOUT=1, PURE_STYLE=1일 때만): 답을 sections로 받아 묶음마다 블록 하나씩. 끄면 PURE_STYLE=1의 지금 조립 그대로
     hits = PURE.context(question, k, s)         # PURE_EXPAND=1이면 상위 조각의 아래 절을 더한다 ("잠금 표지 순서" 결함 수정). 끄면 retrieve()와 같다
     chunks = [c for _, c in hits]
-    safety_guard = bool(s.pure_safety) and PURE.is_safety(question) and why not in (PURE.RULE_WHY, PURE.FAULT_WHY)   # 안전 질문(규칙 질문 라우팅으로 온 "안전 재고" 같은 말은 제외 — 그 질문은 "문서에 없음"이면 기존 길로 되돌려야 한다): DOC-05를 통째로 받았고, 그래도 답이 없으면 "문서에 없다"고 하지 않는다 (PURE_SAFETY=1)
+    compare2 = why.startswith("비교 2번")   # PURE_COMPARE=1: 수량·설비 상태·안전 순서. 호출은 한 번이고, 프로그램 문장·고정 서식으로 바꾸지 않는다
+    safety_guard = (not compare2) and bool(s.pure_safety) and PURE.is_safety(question) and why not in (PURE.RULE_WHY, PURE.FAULT_WHY)   # 안전 질문(규칙 질문 라우팅으로 온 "안전 재고" 같은 말은 제외 — 그 질문은 "문서에 없음"이면 기존 길로 되돌려야 한다): DOC-05를 통째로 받았고, 그래도 답이 없으면 "문서에 없다"고 하지 않는다 (PURE_SAFETY=1)
     mode = f"{s.pure_label} · {PURE_MODE_V19}"   # PURE_MODEL이 있으면 실제로 부른 모델 이름 (비면 llm_label과 같은 글자)
     traces: list[dict] = []
     retrieval = {"mode": "bm25", "dense_used": False, "reason": None, "pure": True, "top_k": k, "chunk_ids": [c.chunk_id for c in chunks]}
@@ -3915,10 +3970,10 @@ def _pure_answer_v19(question: str, p: dict, base: dict, s, memo: dict, prev: di
             SL.step("종료 사유", 결과="답 없음", 까닭="낱말 검색 결과가 없어 Claude를 부르지 않음")
         return {**base, "status": "문서에 없음", "mode": f"{mode} — 검색 결과가 없어 Claude를 부르지 않음", "retrieval": retrieval,
                 "llm_trace": traces, "conclusion": PURE_NO_DOC_CHAT_V19 if style else PURE_NO_DOC_V19}
-    fixed_keys = FB.select(question) if getattr(s, "fixed_block", False) else []   # FIXED_BLOCK: 이 질문에 맞는 고정 서식 (0~2개)
-    got = PURE.ask(question, chunks, prev, s, ops_note=(why in (PURE.RULE_WHY, PURE.FAULT_WHY)), **({"fixed_note": FB.reference_note(fixed_keys)} if fixed_keys else {}))
+    fixed_keys = [] if compare2 else (FB.select(question) if getattr(s, "fixed_block", False) else [])   # FIXED_BLOCK: 이 질문에 맞는 고정 서식 (0~2개). 비교 2번은 붙이지 않는다
+    got = PURE.ask(question, chunks, prev, s, ops_note=(why in (PURE.RULE_WHY, PURE.FAULT_WHY)), history=history, **({"fixed_note": FB.reference_note(fixed_keys)} if fixed_keys else {}))
     traces.append({"job": PURE.JOB, "used": True, "reason": None, "tries": 1, "ms": got["ms"]})
-    if got["insufficient"] and s.pure_retry and not safety_guard and why not in (PURE.RULE_WHY, PURE.FAULT_WHY):   # PURE_RETRY=1: 첫 호출이 "조각에 답이 없다"고 했다 — 정답 조각이 상위 조각 밖(검색 9~50위)이라 못 본 것일 수 있어 더 넓게 한 번 다시 묻는다. 안전 질문·규칙 질문 경로는 제외
+    if got["insufficient"] and s.pure_retry and not safety_guard and not compare2 and why not in (PURE.RULE_WHY, PURE.FAULT_WHY):   # PURE_RETRY=1: 첫 호출이 "조각에 답이 없다"고 했다 — 정답 조각이 상위 조각 밖(검색 9~50위)이라 못 본 것일 수 있어 더 넓게 한 번 다시 묻는다. 안전 질문·규칙 질문·비교 2번 경로는 제외
         wide_hits = PURE.context(question, s.pure_retry_topk, s)
         wide_chunks = [c for _, c in wide_hits]
         have = {c.chunk_id for c in chunks}
@@ -3926,7 +3981,7 @@ def _pure_answer_v19(question: str, p: dict, base: dict, s, memo: dict, prev: di
             ext = EXT.current()
             failed_before = len(ext.failures) if ext is not None else 0
             try:
-                got2 = PURE.ask(question, wide_chunks, prev, s, retry_note=True, **({"fixed_note": FB.reference_note(fixed_keys)} if fixed_keys else {}))
+                got2 = PURE.ask(question, wide_chunks, prev, s, retry_note=True, history=history, **({"fixed_note": FB.reference_note(fixed_keys)} if fixed_keys else {}))
             except EXT.ExternalLlmFailure:   # 재시도는 오류를 새로 만들지 않는다 — 첫 결과("문서에 없음")를 그대로 낸다 (실패 기록도 이 호출 몫만 지운다)
                 got2 = None
                 if ext is not None:
@@ -4340,7 +4395,7 @@ def _with_ctx_note(a: dict, code: str) -> dict:
     return a
 
 
-def answer(question: str, role: str, context: dict | None = None, prev: dict | None = None, screen_text: str | None = None) -> dict:
+def answer(question: str, role: str, context: dict | None = None, prev: dict | None = None, screen_text: str | None = None, history: list | None = None) -> dict:
     """질문 하나에 답한다. 한 답 전체의 LLM 시간 예산을 하나로 센다 (2026-10-10 계획 3단계 B).
     FOLLOWUP=1이면 prev(서버가 기억한 바로 앞 답의 기록)를 받아 이어 묻기에 쓰고, 답에 내부 칸 `_followup`(이 답의 기록)을 붙인다 —
     부른 쪽(app.py·평가)이 빼서 기억에 두고, 화면에는 보내지 않는다 (2026-10-12).
@@ -4351,7 +4406,7 @@ def answer(question: str, role: str, context: dict | None = None, prev: dict | N
                    context=context, has_prev=prev is not None) if s0.step_log else None
     try:
         with answer_deadline(s0.budget_s):
-            a = _answer(question, role, context, prev=prev, memo=memo, screen_text=screen_text)
+            a = _answer(question, role, context, prev=prev, memo=memo, screen_text=screen_text, history=history)
             focus = carry_focus(question) if memo.get("ctx_alarm_note") else None
             if focus is None and s0.alarm_chain and s0.ask_only and memo.get("ctx_alarm_note"):
                 focus = alarm_focus_v23(question)   # 이어받은 알람도 묻는 칸만 ("뭘해야해?"는 "해야"가 점검 순서를 묻는 말)
@@ -4428,7 +4483,7 @@ def _continue_answer_v22(question: str, role: str, context: dict | None, prev: d
     return out
 
 
-def _answer(question: str, role: str, context: dict | None = None, prev: dict | None = None, memo: dict | None = None, screen_text: str | None = None) -> dict:
+def _answer(question: str, role: str, context: dict | None = None, prev: dict | None = None, memo: dict | None = None, screen_text: str | None = None, history: list | None = None) -> dict:
     memo = {} if memo is None else memo
     try:
         require(role, "chat")
@@ -4546,7 +4601,16 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
         if SL.on():
             SL.step("1 규칙 판정", 결과="보고서 작성·확정 여부 질문 — 규칙이 production 확정 여부로 답하거나 안내 (Claude 호출 없음)")
         return report_status_answer_v33(base, role, question, p)
-    followed = status_follow_v29(question, p, prev)   # 상태 되묻기 직후 한 번 (FOLLOWUP과 따로, 2026-10-22)
+    from backend.services import lookup_turn as LT
+    if LT.applies(question, p, s, history):   # 외부 Claude 채팅: 수량·설비 상태·안전 순서는 1번·2번이 같은 도구 길. 프로그램 되묻기를 앞에 두지 않는다
+        if SL.on():
+            SL.step("1 규칙 판정", 결과="조회 도구 길 — 질문 또는 이미 있는 조회 (PURE_COMPARE로 나누지 않음)")
+        return LT.run(question, role, p, base, s, history, memo)
+    llm_turn = bool(getattr(s, "pure_compare", False)) and status_llm_context(prev)   # LLM이 꺼진 시험·비교 2번 중간 수정. 위 도구 길이 켜지면 이 줄에 오지 않는다
+    if llm_turn:
+        if SL.on():
+            SL.step("1 규칙 판정", 결과="상태 되묻기 — 앞 질문·답을 LLM이 읽음 (프로그램이 질문을 붙이지 않음)")
+    followed = None if llm_turn else status_follow_v29(question, p, prev)   # 상태 되묻기 직후 한 번 (FOLLOWUP과 따로, 2026-10-22). 순수 LLM이 켜진 되묻기 답은 건너뛴다
     if followed:
         if SL.on():
             SL.step("1 규칙 판정", 결과="상태 되묻기 이어받기 — 앞 질문에 빠진 칸을 붙여 다시 답함", 이어받은질문=followed)
@@ -4557,7 +4621,7 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
         inner = _answer(followed, role, context, prev=None, memo=memo, screen_text=screen_text)
         inner["question"] = question
         return with_askback_note_v21(inner, (prev or {}).get("question") or "", added)
-    gap = status_gap_v29(question, p)
+    gap = None if llm_turn else status_gap_v29(question, p)
     if gap is not None:
         if gap.get("ask"):
             if SL.on():
@@ -4580,7 +4644,7 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
             new_q = f"{merged[0]} {merged[1]}"
             memo["record_question"] = new_q
             return with_askback_note_v21({**_answer(new_q, role, context, prev=None, memo=memo), "question": question}, merged[0], merged[1])
-    if not pure_drop and equipment_only_v21(question, p):   # 아니면 무엇을 볼지 안내한다 (안전 안내도, 엉뚱한 문서 줄도 아니다)
+    if not llm_turn and not pure_drop and equipment_only_v21(question, p):   # 아니면 무엇을 볼지 안내한다 (안전 안내도, 엉뚱한 문서 줄도 아니다). 상태 되묻기의 다음 말은 LLM이 읽는다
         if SL.on():
             SL.step("1 규칙 판정", 결과="설비 이름뿐인 글 — 규칙이 안내 (Claude 호출 없음)", 설비=p["equipment"])
         return equipment_only_answer_v21(base, p)
@@ -4593,13 +4657,19 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
             SL.step("1 규칙 판정", 결과="품목 이름뿐인 질문 — 규칙이 되묻기 (ASK_ONLY, Claude 호출 없음)", 품목=topic)
         return item_askback_v23(base, topic)
     pure_why = pure_scope_v19(p, s, question)
+    if pure_why is None and PURE.enabled(s) and not getattr(s, "pure_compare", False) and question:
+        safety_keys = FB.select(question)
+        if safety_keys:   # 비교 1번: 안전 순서는 순수 길에 넣지 않고 고정 서식으로 답한다
+            if SL.on():
+                SL.step("1 규칙 판정", 결과="안전 순서 — 프로그램 고정 서식 (PURE_COMPARE=0)", 서식=safety_keys)
+            return _program_safety_order(base, safety_keys)
     if pure_why:
         memo_before = dict(memo)
         rule_route = pure_why in (PURE.RULE_WHY, PURE.FAULT_WHY, PURE.POLICY_WHY)   # 규칙 질문·고장 대응 질문·알람 정책 질문:문서에 없음/호출 실패면 원래 기존 길로 되돌린다
         ext = EXT.current()
         failed_before = len(ext.failures) if ext is not None else 0
         try:
-            out = _pure_answer_v19(question, p, base, s, memo, prev, pure_why)
+            out = _pure_answer_v19(question, p, base, s, memo, prev, pure_why, history)
         except EXT.ExternalLlmFailure:
             if not rule_route:
                 raise

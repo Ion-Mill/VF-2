@@ -1,0 +1,6 @@
+lot_no,plan_mode,enhance_reason,hold_id,gauge_pass_qty,gauge_fail_qty,judgement,judged_at
+LOT-2610-103-2,NORMAL,,,12,0,PASS,2026-10-26T09:10:00+09:00
+LOT-2610-104-1,ENHANCED,HOLD_LOT,4,7,0,,
+LOT-2610-105-1,ENHANCED,NEXT_LOT,4,0,0,,
+LOT-2610-105-2,ENHANCED,NEXT_LOT,4,0,0,,
+LOT-2610-106-1,NORMAL,,,0,0,,

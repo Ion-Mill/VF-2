@@ -1,10 +1,10 @@
-"""실시간 모드: 10/1 08:00부터 9/30 끝 상태를 이어받아 1분씩 돌린다 (설계서 4장·7장, API-SIM-01·02·03).
+"""실시간 모드: 프로필의 실시간 시작 시각부터 기록 끝 상태를 이어받아 1분씩 돌린다 (설계서 4장·7장, API-SIM-01·02·03).
 
 - 무작위 알람 없음. 사건은 버튼(inject: S1·S3·S4·S6)으로만 넣는다 (scenarios/사건버튼.json).
 - 사람이 하는 일은 시뮬레이터가 대신하지 않는다: 로트 보류·해제, 공구 교체 기록, 작업기록서 확정(고장 복귀).
   화면(서버)이 hold_lot · release_lot · record_tool_change · confirm_work_record 를 부른다.
 - 측정기(CMM-01)가 부품을 잴 때마다 결과 파일(CSV)을 공유 폴더 흉내 폴더에 떨어뜨린다 (설계서 5.15 [제안]).
-- 시계: 배속(180·60·10·1), 일시정지·다시 시작, 지금 → 17:00(주간 끝) 또는 20:00(야간 시작) 넘기기, 처음으로 되돌리기. 사건 알람이 뜨면 ×10으로 감속.
+- 시계: 배속(180·60·10·1), 일시정지·다시 시작, 지금 → 주간 끝 또는 야간 시작 넘기기, 처음으로 되돌리기. 사건 알람이 뜨면 ×10으로 감속.
 - 서버·화면 연결 방식은 [선택 필요: 기술 회의]. tick()이 돌려주는 사건 = 실시간 사건(API-STR-01).
 - 같은 seed + 같은 조작 순서 = 같은 결과 (리허설용).
 """
@@ -24,6 +24,10 @@ from . import records as R
 from . import stage4 as S4
 from .calendar import extend_calendar
 from .common import KST, ROOT, MemOut, Out, _cell, at, fmt_dt, load_config, load_masters
+from . import reports as RP
+from .calendar import SHIFT_COLS, WORK_DAY_COLS, shift_rows, work_day_rows
+from .doc03 import load_doc03
+from .mnt_docs import CHK_COLS, STEP_COLS, WO_COLS, WOP_COLS, WR_COLS, WRP_COLS, build_mnt
 from .flow import MNT_BY_SHIFT, OPR_BY_PROC, Hold
 from .past import run_once, search_t05
 from .pm import PROC, next_due
@@ -82,6 +86,9 @@ class Realtime:
         self.scen = json.load(io.open(ROOT / self.rt["scenarios_dir"] / self.rt["event_file"], encoding="utf-8"))
         # 측정 결과 파일 폴더. 시연 데이터 서버는 저장소 밖 폴더를 넘긴다 (out_realtime/cmm_drop은 리허설 결과라 커밋됨)
         self.drop_dir = drop_dir or ROOT / self.rt["out_dir"] / self.rt["cmm_drop_dir"]
+        self.on_op = None                    # 실제 시각 모드: 사람 조작이 생기면 부르는 함수 (서버가 파일에 저장, 2026-10-24)
+        self.locked = False                  # 실제 시각 모드(최종용): 시계·사건 조작 잠금
+        self._replaying = False
         self.force = self._t05_force()
         self.past = json.load(io.open(ROOT / self.cfg["run"]["out_dir"] / "manifest.json", encoding="utf-8"))["rows"]
         self.reset(log=False)
@@ -102,7 +109,7 @@ class Realtime:
         self.N = sim.cal.n_min                                   # 10/1 08:00 분 번호
         states = S4.state_arrays(sim)
         self.judge, self.past_bn = S4.judge_past(self.cfg, sim, states)
-        extend_calendar(sim.cal, self.cfg, days=1)               # 10/1 주간·야간 (10/2 08:00까지)
+        extend_calendar(sim.cal, self.cfg, days=int(self.rt.get("live_days", 1)))   # 실시간 근무일 (영상용 1일, 최종용 2일)
         sim.grow()
         # 10/1: 사람이 하는 일을 시뮬레이터가 대신하지 않음, 우연히 한도까지 가는 공구 없음
         sim.auto_holds = False
@@ -125,6 +132,7 @@ class Realtime:
         self.ms = 0                                              # 다음 분까지 쌓인 시뮬레이터 밀리초
         self.speed = self.rt["default_speed"]
         self.paused = False
+        self.locked = False
         self.events: list[dict] = []
         self.bn_rows: list[dict] = []
         self.sensor_min: dict[str, dict[int, dict]] = {"VF2-01": {}, "VF2-02": {}}
@@ -179,29 +187,38 @@ class Realtime:
                 "running_event": self.active["code"] if self.active else None,
                 "buttons_locked": self.active is not None, "finished": self.m >= self.end_m}
 
+    def _guard_locked(self):
+        if self.locked and not self._replaying:
+            raise ValueError("실제 시각으로 흐르는 모드(최종용)에서는 시계·사건 조작을 쓸 수 없어요")
+
     def set_speed(self, x: int):
+        self._guard_locked()
         if x not in self.rt["speeds"]:
             raise ValueError(f"배속은 {self.rt['speeds']} 중 하나")
         self.speed = x
         self._op("speed", value=x)
 
     def pause(self):
+        self._guard_locked()
         self.paused = True
         self._op("pause")
 
     def resume(self):
+        self._guard_locked()
         self.paused = False
         self._op("resume")
 
-    def skip(self, to: str = "TODAY_17:00"):
-        """지금 → 오늘 17:00(주간 끝) 또는 20:00(야간 시작). 그 사이를 빠르게 만든다. 그 시각이 지났으면 시계는 그대로."""
+    LEGACY_SKIP = {"TODAY_17:00": "TODAY_DAY_END", "TODAY_20:00": "TODAY_NIGHT_START"}      # 시각이 이름에 박혀 있던 옛 이름 (2026-10-24 전)
+
+    def skip(self, to: str = "TODAY_DAY_END"):
+        """지금 → 오늘 주간 끝(shifts.DAY.end) 또는 야간 시작(shifts.NIGHT.start). 그 사이를 빠르게 만든다. 그 시각이 지났으면 시계는 그대로."""
+        self._guard_locked()
+        to = self.LEGACY_SKIP.get(to, to)
         if to not in self.rt["skip_targets"]:
             raise ValueError(f"넘기기는 {self.rt['skip_targets']}만")
-        hour = {"TODAY_17:00": 17, "TODAY_20:00": 20}.get(to)
-        if hour is None:
-            raise ValueError(f"넘기기는 {self.rt['skip_targets']}만")
+        hm = self.cfg["shifts"]["DAY"]["end"] if to == "TODAY_DAY_END" else self.cfg["shifts"]["NIGHT"]["start"]
         day = self.sim.cal.shift_or_near(self.m).work_date
-        target = self.sim.cal.to_min(datetime(day.year, day.month, day.day, hour, 0, tzinfo=KST))
+        target = self.sim.cal.to_min(at(day, hm))
         start = self.now()
         out = []
         while self.m < min(target, self.end_m):
@@ -227,6 +244,7 @@ class Realtime:
     # ---------- 사건 버튼 (API-SIM-01) ----------
     def inject(self, code: str) -> dict:
         """사건 버튼. 누를 수 없으면 ValueError(이유). 돌려주는 값: 사건 정보."""
+        self._guard_locked()
         if code not in self.rt["buttons"]:
             raise ValueError(f"사건 버튼은 {self.rt['buttons']} 중 하나")
         why = self.button_state()[code]
@@ -236,11 +254,9 @@ class Realtime:
         eq = sc["equipment_id"]
         mc = sim.mach[eq]
         ev = {"code": code, "equipment_id": eq, "start_m": m, "alarm_ids": []}
-        if code == "S1":                                        # 축 부하 급상승 → 108 → 994 → 992 → DOWN
+        if code == "S1":                                        # 축 부하 급상승 → 992 한 건(정지 등급) → DOWN
             ramp = sc["ramp_min"]
-            g1, g2 = (int(self.rr.integers(sc["gap_min"][0], sc["gap_min"][1] + 1)) for _ in range(2))
-            self._plan_alarm(PlannedAlarm(m + ramp, eq, sc["alarms"][0], "WARN", True,
-                                          chain=[(sc["alarms"][1], g1), (sc["alarms"][2], g2)], case="crash"))
+            self._plan_alarm(PlannedAlarm(m + ramp, eq, sc["alarms"][0], "STOP", True, case="crash"))
             sim.wait_confirm.add(eq)
             for k, peak in sc["axis_peak_pct"].items():
                 v0 = self.sensors[eq].last.get(k, 22.0)
@@ -259,7 +275,7 @@ class Realtime:
         elif code == "S6":                                      # VF2-02 예방 정비 90분 (계획 정비, 알람 없음)
             tasks = [t["pm_task_id"] for t in self.M["pm_task"] if t["equipment_id"] == eq
                      and t["cycle_code"] == "MONTHLY" and t["on_calendar"] == "true"]
-            w = MaintWindow(eq, m, m + sc["maint_min"], "PM_MONTHLY", tasks, date.fromisoformat(sc["due_date"]))
+            w = MaintWindow(eq, m, m + sc["maint_min"], "PM_MONTHLY", tasks, date.fromisoformat(self.cfg["sim"]["pm_plan"]["vf2_monthly_due"][eq]))
             sim.maint.append(w)
             sim.maint.sort(key=lambda x: x.start_m)
             ev["window"] = w
@@ -275,6 +291,7 @@ class Realtime:
     def fire(self, kind: str) -> dict:
         """지금 분에 알람 하나를 일으킨다. warn = 주의 아무거나, stop = 고장(정지 등급) 아무거나, air = 120 공기압,
         maint = 고장 3분 뒤 보전 담당이 수리 정비(MAINT 20~40분, 사유는 그 고장)로 들어감. 누를 수 없으면 ValueError(이유)."""
+        self._guard_locked()
         if kind not in ("warn", "stop", "air", "maint"):
             raise ValueError("kind는 warn·stop·air·maint 중 하나")
         if self.paused or self.m >= self.end_m:
@@ -352,6 +369,7 @@ class Realtime:
     def _pm_records(self, rec: dict):
         """S6 정비 실시 기록 (DRAFT — MNT가 화면에서 확인)과 소모품 사용 (설계서 7장 S6, DOC-04 4.1·4.4)."""
         cal, w = self.sim.cal, rec["window"]
+        live_day = cal.to_dt(self.N).date()               # 실시간 시작일
         done_at = cal.to_dt(rec["end_m"])
         sh = cal.shift_or_near(rec["end_m"])
         mnt = "U07" if sh.shift_type == "DAY" else "U09"
@@ -366,7 +384,7 @@ class Realtime:
             self.pm_rows.append({"pm_record_id": rid, "pm_task_id": tid, "due_date": overdue.get(tid, w.due),
                                  "done_at": done_at, "done_by": mnt, "recorded_by": mnt,
                                  "result": "REFILLED" if t["default_item_no"] else "NORMAL", "measured_value": None,
-                                 "measured_unit": None, "memo": "10/1 시연 S6 정비" + (" — 기한 넘긴 항목 보충 (S2 해결)"
+                                 "measured_unit": None, "memo": f"{live_day.month}/{live_day.day} 시연 S6 정비" + (" — 기한 넘긴 항목 보충 (S2 해결)"
                                                                                   if tid in overdue else ""),
                                  "status": "DRAFT", "current_version": 0})
             q = {"CS-WLUB": self.rr.uniform(0.5, 0.9), "CS-SLUB": self.rr.uniform(0.2, 0.3)}.get(t["default_item_no"])
@@ -376,8 +394,8 @@ class Realtime:
         rec["pm_record_id"] = first
 
     def _plan_routine_pm(self) -> list[tuple[int, str, date]]:
-        """10/1이 기한인 매일·매주 점검을 9월처럼 그날 오전에 한다 (gen/pm.py와 같은 시간대: 작업자 08:05~09:30, 보전 08:30~11:30).
-        안 하면 10/2 00:00에 "기한 넘김"이 된다. 매월 항목은 S6 정비, 기한 넘긴 2개(S2)는 시연 장면이라 뺀다."""
+        """시작일이 기한인 매일·매주 점검을 과거처럼 그날 오전에 한다 (gen/pm.py와 같은 시간대: 작업자 09:05~10:30, 보전 09:30~12:30).
+        안 하면 다음 날 00:00에 "기한 넘김"이 된다. 매월 항목은 S6 정비, 기한 넘긴 2개(S2)는 시연 장면이라 뺀다."""
         last: dict[str, str] = {}
         with io.open(ROOT / self.cfg["run"]["out_dir"] / "pm_record.csv", encoding="utf-8") as f:
             for r in csv.DictReader(f):
@@ -394,7 +412,7 @@ class Realtime:
             due = next_due(date.fromisoformat(last[tid]), t["cycle_code"])
             if due > day:
                 continue
-            hm = ("08:05", "09:30") if t["default_role"] == "OPR" else ("08:30", "11:30")
+            hm = ("09:05", "10:30") if t["default_role"] == "OPR" else ("09:30", "12:30")
             ms = [m for m in range(cal.to_min(at(day, hm[0])), cal.to_min(at(day, hm[1]))) if cal.is_work(m)]
             plan.append((int(self.pm_rng.choice(ms)), tid, due))
         return sorted(plan)
@@ -450,9 +468,9 @@ class Realtime:
         self.sim.pending_holds.append({
             "at": self.m, "lot": lot, "alarm_id": alarm_id, "tool_id": None, "trigger": trigger, "held_by": by,
             "next": next_lots if next_lots is not None else 2,
-            "reason": reason or ("충돌 의심(108 → 994 → 992) 때 가공 중이던 로트 — 비서 의심 로트 제안" if crash
+            "reason": reason or ("충돌 의심(992) 때 가공 중이던 로트 — 비서 의심 로트 제안" if crash
                                  else "반장 보류")})
-        self._op("hold_lot", lot_no=lot_no, by=by, trigger=trigger)
+        self._op("hold_lot", lot_no=lot_no, by=by, trigger=trigger, reason=reason, next_lots=next_lots)
 
     def release_lot(self, lot_no: str, by: str = "U10", approver: str = "U12"):
         """전수 검사로 판정이 끝난 보류 로트를 반장이 해제. 폐기가 있으면 관리자 승인을 같이 남김 (DOC-06 §4.1)."""
@@ -466,7 +484,7 @@ class Realtime:
             h["scrap_qty"], h["scrap_by"], h["scrap_approved_by"], h["scrap_approved_m"] = lot.scrap, by, approver, self.m
         self.sim._release(lot, self.m)
         h["released_by"] = by
-        self._op("release_lot", lot_no=lot_no, by=by)
+        self._op("release_lot", lot_no=lot_no, by=by, approver=approver)
 
     def record_tool_change(self, tool_id: str, by: str | None = None):
         """작업자가 화면에서 공구 교체를 기록 → 그 공구 사용량 0, SETUP 3~8분 (API-TOOL-02)."""
@@ -520,7 +538,7 @@ class Realtime:
                 self.active["alarm_ids"].append(e["id"])
             self._emit("alarm", at=t, alarm_event_id=e["id"], equipment_id=e["equipment_id"],
                        alarm_code=e["alarm_code"], severity=e["severity"], scenario_code=e.get("scenario"))
-            if e["severity"] in ("WARN", "STOP") and self.speed > self.rt["auto_slowdown_to"]:
+            if e["severity"] in ("WARN", "STOP") and not self.locked and self.speed > self.rt["auto_slowdown_to"]:
                 self.speed = self.rt["auto_slowdown_to"]          # 자동 감속 (설계서 4장)
                 self._emit("sim_clock", reason="auto_slowdown", speed=self.speed)
         self.prev_alarm = len(sim.alarm_events)
@@ -588,8 +606,13 @@ class Realtime:
         self.events.append(ev)
         return [ev]
 
+    LIVE_OPS = ("inject", "preview", "hold_lot", "release_lot", "tool_change", "confirm_work_record")   # 실제 시각 모드에서 저장·재실행하는 사람 조작
+
     def _op(self, op: str, **kw):
-        self.ops.append({"op": op, "sim_at": fmt_dt(self.now()), **kw})
+        entry = {"op": op, "sim_at": fmt_dt(self.now()), **kw}
+        self.ops.append(entry)
+        if self.on_op and self.locked and not self._replaying and op in self.LIVE_OPS:
+            self.on_op(dict(entry))
         self._emit("sim_clock", reason=op)
 
     # ---------- 대본 (리허설) ----------
@@ -602,7 +625,7 @@ class Realtime:
         elif op == "resume":
             self.resume()
         elif op == "skip":
-            self.skip(s.get("to", "TODAY_17:00"))
+            self.skip(s.get("to", "TODAY_DAY_END"))
         elif op == "reset":
             self.reset()
         elif op == "inject":
@@ -626,10 +649,82 @@ class Realtime:
         else:
             raise ValueError(f"모르는 조작: {op}")
 
+    # ---------- 실제 시각 모드 (최종용, 2026-10-24) ----------
+    def tick_wall(self, wall_now: datetime) -> list[dict]:
+        """시뮬레이터 시각을 실제 시각의 분까지 따라가게 한다 (켤 때 따라잡기도 이 함수). 달력 끝을 넘지 않는다."""
+        target = self.sim.cal.to_min(wall_now.astimezone(KST).replace(second=0, microsecond=0))
+        out = []
+        while self.m < min(target, self.end_m):
+            out += self._minute()
+        return out
+
+    def _replay_one(self, o: dict):
+        op = o["op"]
+        if op == "inject":
+            self.inject(o["scenario_code"])
+        elif op == "preview":
+            self.fire(o["kind"])
+        elif op == "hold_lot":
+            self.hold_lot(o["lot_no"], by=o.get("by", "U10"), reason=o.get("reason"), next_lots=o.get("next_lots"))
+        elif op == "release_lot":
+            self.release_lot(o["lot_no"], by=o.get("by", "U10"), approver=o.get("approver", "U12"))
+        elif op == "tool_change":
+            self.record_tool_change(o["tool_id"], by=o.get("by"))
+        elif op == "confirm_work_record":
+            self.confirm_work_record(o["equipment_id"], by=o.get("by", "U07"))
+
+    def start_live(self, wall_now: datetime, saved_ops: list[dict] | None = None) -> list[dict]:
+        """최종용: 미리 짠 오전 대본(rehearsal_script)을 끝까지 돌려 실시간 시작 시각(15:00)의 상태를 만들고,
+        저장해 둔 사람 조작을 그 시각에 그대로 다시 하고, 지금 실제 시각까지 따라잡는다. 그다음부터 배속 1, 조작은 잠긴다.
+        같은 대본·같은 조작이면 언제 켜도 같은 세계가 된다 (재시작 안전)."""
+        self.play(load_script(self.rt["rehearsal_script"]))
+        self.speed, self.paused, self.ms = 1, False, 0
+        self.locked = True
+        out = []
+        self._replaying = True
+        try:
+            for o in saved_ops or []:
+                target = self.sim.cal.to_min(datetime.fromisoformat(o["sim_at"]).astimezone(KST).replace(second=0, microsecond=0))
+                while self.m < min(target, self.end_m):
+                    out += self._minute()
+                try:
+                    self._replay_one(o)
+                except ValueError as e:
+                    self.ops.append({"op": "failed", "sim_at": fmt_dt(self.now()), "step": o["op"], "why": f"재실행 못 함: {e}"})
+        finally:
+            self._replaying = False
+        out += self.tick_wall(wall_now)
+        return out
+
+    def recover(self) -> dict:
+        """사건 복귀 (영상용 시연 서버의 조작, 최종용에서는 막힘): 진행 중인 사건을 끝낸다. 기록은 그대로 둔다 (S1은 작업기록 확정, S3는 공구 교체 기록과 같은 효과)."""
+        ev = self.active
+        if ev is None:
+            raise ValueError("진행 중인 사건이 없어요")
+        if ev["code"] == "S1":
+            self.confirm_work_record(ev["equipment_id"], by="U07")
+        elif ev["code"] == "S3":
+            self.record_tool_change(ev["tool_id"], by="U02")
+        else:
+            raise ValueError("이 사건은 저절로 끝나요")
+        self.ops.append({"op": "recover", "sim_at": fmt_dt(self.now()), "code": ev["code"]})
+        return {"code": ev["code"], "equipment_id": ev["equipment_id"]}
+
+    def run_to(self, hm: str) -> None:
+        """시작일의 hm(예: "09:30")까지 흘려 보낸다. 이미 지났으면 그대로 (대본의 at)."""
+        cal = self.sim.cal
+        target = cal.to_min(at(cal.to_dt(self.N).date(), hm))
+        while self.m < min(target, self.end_m):
+            self._minute()
+        self.ms = 0
+
     def play(self, script: dict) -> None:
         """대본: [{"wait_real_sec": 실제 초, "op": ..., "retry_real_sec": 실제 초}] 를 기다리지 않고 돌린다.
+        "at": "HH:MM" 이 있으면 그 단계 전에 시작일의 그 시각까지 먼저 흘려 보낸다 (미리 짜 두는 사건 대본, 2026-10-24).
         retry_real_sec가 있으면 조작이 안 될 때(설비 가공 중 아님 등) 1초씩 흘려 보내며 다시 시도한다."""
         for s in script["steps"]:
+            if s.get("at"):
+                self.run_to(s["at"])
             w = float(s.get("wait_real_sec", 0))
             while w > 0:                                         # 1초씩 (실제 서버의 갱신 주기와 비슷하게)
                 self.tick(min(1.0, w))
@@ -695,6 +790,10 @@ class Realtime:
     def _write_tables(self, out: Out) -> None:
         cfg, sim, N, now_m, past = self.cfg, self.sim, self.N, self.m, self.past
         cal = sim.cal
+        # 근무일·교대: 실시간 날짜 것 (과거 기록 period 뒤). 실시간 기록의 shift_id가 가리키는 행이라 DB에 먼저 있어야 한다 (2026-10-24)
+        last_past = date.fromisoformat(cfg["period"]["end_date"])
+        out.write("work_day", WORK_DAY_COLS, [r for r in work_day_rows(cal, cfg) if r["work_date"] > last_past])
+        out.write("shift", SHIFT_COLS, [r for r in shift_rows(cal) if r["work_date"] > last_past])
         maint_pm = {id(r): r.get("pm_record_id") for r in sim.maint_done}
         # 설비 상태: 10/1 08:00에 걸친 구간은 08:00부터. 아직 안 끝난 구간은 end_at 비움
         rows = []
@@ -723,6 +822,16 @@ class Realtime:
             r["is_injected"] = e.get("scenario") is not None
             r["scenario_code"] = e.get("scenario")
         out.write("alarm_event", R.COLS["alarm_event"], arows)
+        # 작업지시서·작업기록서: 실시간에 끝난 OP-30 정지 알람마다 (과거 기록과 같은 방식, 번호는 과거 뒤에 이어 붙임, 2026-10-24)
+        docs = self._maint_docs()
+        out.write("maintenance_work_order", WO_COLS, docs["maintenance_work_order"])
+        out.write("work_order_step", STEP_COLS, docs["work_order_step"], sort_key=lambda x: (x["wo_no"], x["step_no"]))
+        out.write("work_order_part", WOP_COLS, docs["work_order_part"])
+        out.write("work_record", WR_COLS, docs["work_record"], sort_key=lambda x: x["record_no"])
+        out.write("work_record_check", CHK_COLS, docs["work_record_check"], sort_key=lambda x: (x["record_no"], x["check_seq"]))
+        out.write("work_record_part", WRP_COLS, docs["work_record_part"])
+        out.write("document_revision", RP.REV_COLS, docs["document_revision"])
+        out.write("document_revision_change", RP.CHG_COLS, docs["document_revision_change"])
         # 재공: 5분 (알람·병목 앞뒤 30분 1분)
         centers = [e["occurred_m"] for e in new_al if e["severity"] in ("WARN", "STOP")] + [r["m"] for r in self.bn_rows]
         win = cfg["record_interval"]["around_event_window_min"]
@@ -737,7 +846,7 @@ class Realtime:
                               "interval_type": "MIN1" if one else "MIN5"})
         out.write("wip_log", R.COLS["wip_log"], wrows)
         # 공정 실적: 10/1 교대 것만 (번호 이어 붙임)
-        reps = sorted([(k, v) for k, v in sim.reports.items() if v["start_m"] >= N or k[3] >= "2026-10-01"],
+        reps = sorted([(k, v) for k, v in sim.reports.items() if v["start_m"] >= N or k[3] >= sim.cal.to_dt(N).date().isoformat()],
                       key=lambda kv: (kv[1]["start_m"], kv[1]["equipment_id"], kv[1]["lot_no"]))
         rep_ids, orows = {}, []
         for i, (key, r) in enumerate(reps, past["operation_report"] + 1):
@@ -778,15 +887,67 @@ class Realtime:
         # 예방 정비 기록 (S6)·재고 거래
         out.write("pm_record", ["pm_record_id", "pm_task_id", "due_date", "done_at", "done_by", "recorded_by", "result",
                                 "measured_value", "measured_unit", "memo", "status", "current_version"], self.pm_rows)
-        out.write("inventory_txn", S4.COLS["inventory_txn"], self._inventory(rep_ids))
+        out.write("inventory_txn", S4.COLS["inventory_txn"], self._inventory(rep_ids, docs))
         # 병목 기록
         out.write("bottleneck_log", S4.COLS["bottleneck_log"],
                   S4.bottleneck_rows(sim, self.bn_rows, now_m, id_start=past["bottleneck_log"] + 1))
         # 센서: 1분 평균, 주의·정지 등급 알람 앞뒤 30분은 5초 (A안)
         out.write_tuples("sensor_sample", S4.COLS["sensor_sample"], self._sensor_rows(new_al, now_m))
 
-    def _inventory(self, rep_ids) -> list[dict]:
-        """10/1 재고 거래: 공구 교체(충돌로 부러진 공구 빼고), 정비 소모품(S6), 원자재 로트 투입, 완제품 합격 입고."""
+    def _maint_docs(self) -> dict[str, list[dict]]:
+        """실시간에 끝난 OP-30 정지 알람의 작업지시서(승인)·작업기록서(확정). gen/mnt_docs.py와 같은 만드는 방식 (시연 서버는 이것을
+        '지난 정비 기록'으로 내려준다). 번호는 과거 기록 뒤: MW-/MR- 는 과거 작업지시서 수 다음, MR-S- 는 과거 간이 기록 수 다음."""
+        key = (self.m, tuple((e["id"], e["cleared_m"]) for e in self.sim.alarm_events if e["id"] > self.past["alarm_event"]))
+        if getattr(self, "_docs_cache", (None, None))[0] == key:           # 시연 서버가 재고 화면을 부를 때마다 다시 만들지 않게 (분마다 한 번)
+            return self._docs_cache[1]
+        with io.open(ROOT / self.cfg["run"]["out_dir"] / "work_record.csv", encoding="utf-8", newline="") as f:
+            simple = sum(1 for x in csv.DictReader(f) if x["record_no"].startswith("MR-S-"))
+        docs = build_mnt(self.cfg, self.sim, self.M, load_doc03(), self.rng, [], live_from_alarm=self.past["alarm_event"],
+                         wo_offset=self.past["maintenance_work_order"], simple_offset=simple, now_dt=self.now())
+        # 문서 버전(document_revision): 과거 기록과 같은 모양 — 작업지시서 v0 AI 초안 → v1 담당이 고쳐 저장, 작업기록서(정식)
+        # v0 AI 초안 → 약 60% v1 사람이 고침, 간이는 v0. 문서마다 v0~current_version이 빠짐없이 있어야 한다 (R-35). 번호는 과거 뒤.
+        rr = self.rng.stream("revisions-live")
+        share = self.cfg["reports"].get("revised_share", 0.6)
+        revs, chg = [], []
+        rid0 = self.past["document_revision"]
+
+        def add(doc_type, key, ver, kind, who, at, status, content, changes=()):
+            rid = rid0 + len(revs) + 1
+            revs.append({"revision_id": rid, "doc_type": doc_type, "doc_key": key, "version_no": ver, "author_kind": kind,
+                         "author_user_id": who, "created_at": at, "reason": None, "status_after": status,
+                         "content_snapshot": RP._snap(content), "internal_doc_rev": None})
+            for f, before, after in changes:
+                chg.append({"revision_id": rid, "field_name": f, "before_value": before, "after_value": after})
+
+        for w in docs["maintenance_work_order"]:
+            v0 = {k: w[k] for k in ("wo_no", "title", "symptom", "equipment_id", "lot_no")}
+            add("WORK_ORDER", w["wo_no"], 0, "AI", None, w["created_at"], "AI_DRAFT", v0)
+            save = min(w["created_at"] + timedelta(minutes=int(rr.integers(3, 16))), w["approved_at"] - timedelta(minutes=1))
+            after = w["symptom"] + " (현장 확인: 알람 이력과 같음)"
+            add("WORK_ORDER", w["wo_no"], 1, "HUMAN", w["assignee_user_id"], save, "EDITING", dict(v0, symptom=after),
+                changes=[("증상", w["symptom"], after)])
+            w["current_version"] = 1
+        for x in docs["work_record"]:
+            base = {k: x[k] for k in ("record_no", "cause", "action", "worker_memo", "repair_min")}
+            if x["record_type"] == "FULL":
+                add("WORK_RECORD", x["record_no"], 0, "AI", None, x["end_at"] - timedelta(minutes=1), "AI_DRAFT", base)
+                if rr.random() < share:
+                    c2 = "확인 결과: " + x["cause"]
+                    a2 = x["action"] + " 조치 뒤 시운전 10분 이상 없음."
+                    add("WORK_RECORD", x["record_no"], 1, "HUMAN", x["confirmed_by"], x["confirmed_at"], "CONFIRMED",
+                        dict(base, cause=c2, action=a2), changes=[("원인", x["cause"], c2), ("조치", x["action"], a2)])
+                    x["cause"], x["action"], x["current_version"] = c2, a2, 1
+            else:
+                add("WORK_RECORD", x["record_no"], 0, "HUMAN", x["confirmed_by"], x["confirmed_at"], "CONFIRMED", base)
+        for p in self.pm_rows:                                   # 예방 정비 기록(S6·일상 점검): v0 = 사람이 처음 저장 (과거 기록과 같음)
+            add("PM_RECORD", str(p["pm_record_id"]), 0, "HUMAN", p["recorded_by"], p["done_at"], p["status"],
+                {k: p[k] for k in ("pm_task_id", "due_date", "done_at", "result", "measured_value", "memo")})
+        docs["document_revision"], docs["document_revision_change"] = revs, chg
+        self._docs_cache = (key, docs)
+        return docs
+
+    def _inventory(self, rep_ids, docs=None) -> list[dict]:
+        """실시간 재고 거래: 공구 교체(충돌로 부러진 공구 빼고), 작업기록서 사용 부품, 정비 소모품(S6), 원자재 로트 투입, 완제품 합격 입고."""
         sim, cal, N = self.sim, self.sim.cal, self.N
         tt = {x["item_no"]: int(x["deduct_qty_per_change"]) for x in self.M["tool_type"]}
         titem = {x["tool_id"]: x["item_no"] for x in self.M["tool"]}
@@ -798,6 +959,13 @@ class Realtime:
                 tx.append({"item_no": it, "txn_type": "USE", "qty_change": -tt[it], "txn_at": cal.to_dt(c["changed_m"]),
                            "txn_by": c["changed_by"], "source_kind": "TOOL_CHANGE", "tool_change_id": i})
         tx += list(self.pm_inv)
+        docs = docs or self._maint_docs()
+        wr = {w["record_no"]: w for w in docs["work_record"]}
+        for p in docs["work_record_part"]:                       # 부러진 엔드밀 등 작업기록서에 쓴 부품 (과거 기록과 같은 방식)
+            w = wr[p["record_no"]]
+            tx.append({"item_no": p["item_no"], "txn_type": "USE", "qty_change": -float(p["qty"]), "txn_at": w["confirmed_at"],
+                       "txn_by": w["confirmed_by"], "source_kind": "WORK_RECORD", "work_record_no": p["record_no"],
+                       "work_record_item_no": p["item_no"]})
         for lot in sim.lots:
             first = min(p.start["OP-10"] for p in lot.parts)
             if first >= N:

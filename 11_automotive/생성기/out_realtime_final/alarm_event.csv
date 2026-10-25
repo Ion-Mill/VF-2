@@ -1,0 +1,2 @@
+alarm_event_id,equipment_id,alarm_code,severity_at_event,occurred_at,cleared_at,lot_no,prev_alarm_event_id,is_injected,scenario_code
+293,VF2-01,992,STOP,2026-10-26T11:34:00+09:00,2026-10-26T13:30:00+09:00,LOT-2610-104-1,,true,S1

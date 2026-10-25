@@ -64,7 +64,7 @@ def answer(q: str, role: str, ctx: dict, live, P, alarms: dict) -> dict:
             mins = rt.sensor_min.get(e, {})
             ks = sorted(mins)[-60:]
             if not ks:
-                lines.append(f"{e}: 아직 10/1 센서 기록이 없어요.")
+                lines.append(f"{e}: 아직 센서 기록이 없어요.")
                 continue
             last = mins[ks[-1]]
             parts = []

@@ -1,0 +1,4 @@
+hold_id,lot_no,trigger_type,related_alarm_event_id,related_tool_id,hold_reason,held_by,held_at,enhanced_next_lots,released_by,released_at,scrap_proposed_qty,scrap_proposed_by,scrap_approved_by,scrap_approved_at,normal_resumed_by,normal_resumed_at,result
+1,LOT-2610-002-1,INSPECTION_FAIL,,VF2-01-T05,"측정 불합격 (DIM-04) — 보류 검토 로트, 남은 부품 전수 측정, 원인 후보 공구 VF2-01-T05",U10,2026-10-01T17:28:00+09:00,1,U10,2026-10-02T15:18:00+09:00,1,U10,U12,2026-10-02T14:59:00+09:00,U10,2026-10-02T15:35:00+09:00,RELEASED
+2,LOT-2610-052-1,INSPECTION_FAIL,,VF2-02-T04,"측정 불합격 (DIM-02) — 보류 검토 로트, 남은 부품 전수 측정, 원인 후보 공구 VF2-02-T04",U11,2026-10-13T21:58:00+09:00,1,U10,2026-10-14T14:11:00+09:00,1,U11,U12,2026-10-14T14:03:00+09:00,U10,2026-10-14T14:32:00+09:00,RELEASED
+3,LOT-2610-060-1,AI_SUSPECT,170,,충돌 의심(108 → 994 → 992) 때 가공 중이던 로트 — 비서 의심 로트 제안,U10,2026-10-15T16:09:00+09:00,2,U10,2026-10-16T16:02:00+09:00,2,U11,U12,2026-10-16T15:52:00+09:00,U10,2026-10-16T16:14:00+09:00,RELEASED

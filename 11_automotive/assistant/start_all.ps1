@@ -17,6 +17,8 @@
 .PARAMETER NewChat        -Screen 과 같이 쓴다. 이브 채팅 탭을 새 비서에 잇는다 (켜는 화면 프로세스에만 NEXT_PUBLIC_MOM_API 를 준다. frontend\.env.local 은 만들지 않는다).
 .PARAMETER LlmCompose     -Screen 과 같이 쓴다. 시연 서버를 켤 때 MOM_LLM_COMPOSE=1 을 그 프로세스에만 준다 — 교대·일일 보고서 문장, 작업지시서 제목·증상, 지침카드 "먼저 할 일" 풀이를 비서(외부 Claude)가 다듬는다.
                   이 옵션 없이 켜면 시연 서버의 문장 다듬기는 꺼진다(기본). 이미 켜져 있는 시연 서버에는 적용되지 않는다 (환경변수는 켤 때 읽는다) — 끄고 다시 켠다.
+.PARAMETER Profile        -Screen 과 같이 쓸 때 **꼭 필요**: video(영상용, 10/24 09:00 시작) | final(최종용, 10/26). 시연 서버가 읽을 기록과 시계를 정한다
+                  (생성기\profiles\*.json). 이미 켜져 있는 시연 서버가 다른 프로필이면 멈춘다 — 먼저 stop_all.ps1 로 끈다.
 .PARAMETER CheckDb        켜기 전에 공용 DB 접속 점검(읽기만)을 먼저 한다.
 .PARAMETER WaitSeconds    준비될 때까지 기다리는 최대 시간 (기본 60초)
 .PARAMETER DryRun         아무것도 켜지 않고 무엇을 할지만 보여 준다 (설정 점검은 한다).
@@ -24,7 +26,9 @@
 .EXAMPLE
   .\11_automotive\assistant\start_all.ps1
 .EXAMPLE
-  .\11_automotive\assistant\start_all.ps1 -Screen -NewChat
+  .\11_automotive\assistant\start_all.ps1 -Screen -NewChat -Profile video
+.EXAMPLE
+  .\11_automotive\assistant\start_all.ps1 -Screen -Profile final
 .EXAMPLE
   .\11_automotive\assistant\start_all.ps1 -Screen -LlmCompose
 .EXAMPLE
@@ -35,6 +39,7 @@ param(
     [int]$BackendPort = 8020,
     [int]$AssistantPort = 8100,
     [switch]$Screen,
+    [ValidateSet('video', 'final')][string]$Profile,
     [int]$ScreenPort = 3000,
     [switch]$NewChat,
     [switch]$LlmCompose,
@@ -57,7 +62,7 @@ $BackendEnv = Join-Path $BackendDir '.env.supabase'
 $AssistantEnv = Join-Path $AssistantDir '.env'
 $RunDir = Join-Path $AssistantDir '.run'
 $PidFile = Join-Path $RunDir 'pids.json'
-$SimPort = 8765          # frontend\tools\sim_server.py 안에 박혀 있다 (바꿀 수 없다)
+$SimPort = 8765          # 이 스크립트는 8765로 켠다 (sim_server.py 는 MOM_SIM_PORT 로 바꿀 수 있지만 도커에서만 쓴다)
 
 $Started = New-Object System.Collections.ArrayList     # 이번 실행에서 켠 것 (실패하면 되돌린다)
 
@@ -138,6 +143,8 @@ function Test-Url([string]$Url, [hashtable]$Headers = @{}) {
 
 # ---------------------------------------------------------------- 1. 설정 점검 (읽기만)
 Say '== 1. 설정 점검 (읽기만) ==' Cyan
+if ($Screen -and [string]::IsNullOrEmpty($Profile)) { Fail '-Screen 을 쓰려면 -Profile video 또는 -Profile final 이 필요하다 (시연 서버가 읽을 기록과 시계를 정한다. 영상용 = video, 최종용 = final).' }
+if (-not $Screen -and -not [string]::IsNullOrEmpty($Profile)) { Say '[주의] -Profile 은 -Screen 과 같이 쓸 때만 쓰인다 (백엔드·비서는 프로필과 무관). 무시한다.' Yellow }
 foreach ($f in @(
         @{ Path = $BackendPy; Hint = '백엔드 가상환경이 없다 — 실행_안내.md 4-1' },
         @{ Path = $AssistantPy; Hint = '비서 가상환경이 없다 — 실행_안내.md 4-1' },
@@ -198,6 +205,16 @@ if ($Screen) {
     $planSim = Resolve-Port '시연 서버' $SimPort { param($l) $l.FullCmd -like '*sim_server*' }
     $planScreen = Resolve-Port '화면' $ScreenPort { param($l) $l.FullCmd -like '*next*' }
     if ($NewChat -and $planScreen -eq 'reuse') { Say '[주의] 이미 켜져 있는 화면에는 -NewChat 이 적용되지 않는다 (환경변수는 화면을 켤 때 읽는다). 화면을 끄고 다시 켜거나 frontend\.env.local 을 쓴다.' Yellow }
+}
+# 이미 켜져 있는 시연 서버의 프로필이 다르면 멈춘다 (GET 만). 프로필이 없는 옛 서버도 멈춘다
+if ($Screen -and $planSim -eq 'reuse') {
+    $runProfile = $null
+    try {
+        $h0 = Invoke-WebRequest -Uri "http://127.0.0.1:$SimPort/api/health" -UseBasicParsing -TimeoutSec 3
+        $pj = ($h0.Content | ConvertFrom-Json).PSObject.Properties['profile']
+        if ($pj) { $runProfile = $pj.Value.name }
+    } catch { }
+    if ($runProfile -ne $Profile) { Fail "이미 켜져 있는 시연 서버의 프로필이 '$(if ($runProfile) { $runProfile } else { '없음(옛 서버)' })' 이고, 요청은 '$Profile' 이다. stop_all.ps1 로 끄고 다시 켠다." }
 }
 # 시연 서버의 문장 다듬기(MOM_LLM_COMPOSE) 상태 — 요약에 보인다: on | off | unknown (-LlmCompose 를 쓴 때만)
 $simCompose = $null
@@ -282,7 +299,7 @@ if ($planAssistant -eq 'start') {
     if (-not $DryRun) { Say "비서 준비 OK  $AssistantUrl" Green }
 }
 if ($planSim -eq 'start') {
-    $envS = $utf8.Clone()
+    $envS = $utf8.Clone(); $envS['MOM_PROFILE'] = $Profile
     if ($LlmCompose) { $envS['MOM_LLM_COMPOSE'] = '1' }       # 시연 서버 프로세스에만 준다 (다른 서버·이 창에는 남지 않는다)
     $pS = Start-Proc 'sim_server' $SimPy @('tools\sim_server.py') $FrontendDir $envS 'sim_server' $SimPort
     Wait-Ready '시연 서버' $pS { [bool](Get-NetTCPConnection -State Listen -LocalPort $SimPort -ErrorAction SilentlyContinue) } (Join-Path $RunDir 'sim_server.err.log')
@@ -303,7 +320,7 @@ Say ($(if ($DryRun) { '== 예행 연습 끝 (아무것도 켜지 않았다) ==' 
 Say "  백엔드   $BackendUrl/docs   [$(Get-PlanLabel $planBackend)]"
 Say "  비서     $AssistantUrl   [$(Get-PlanLabel $planAssistant)]  (밖에 열지 않는다. 확인할 때는 X-Service-Key 헤더가 필요하다)"
 if ($Screen) {
-    Say "  시연서버 http://127.0.0.1:$SimPort   [$(Get-PlanLabel $planSim)]"
+    Say "  시연서버 http://127.0.0.1:$SimPort   [$(Get-PlanLabel $planSim)]  프로필 $Profile"
     if ($LlmCompose) {
         if ($simCompose -eq 'on') {
             $state = $(if ($planSim -ne 'start') { '이미 켜져 있음' } elseif ($DryRun) { '켤 예정' } else { '켜짐' })
