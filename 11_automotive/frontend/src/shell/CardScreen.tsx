@@ -12,6 +12,9 @@ import { useGuideCardText } from './assistText';
 import { Band as CBand } from './ui';
 import { cardsBand } from './bands';
 
+// 비서 정리 칸의 안내 글줄과 "원문(DOC-03) 보기"를 보일지. 숨김 (사용자 지시, 2026-10-25). true로 바꾸면 되돌아온다.
+const SHOW_PLAIN_NOTE = false;
+
 const SEV_KO: Record<string, string> = { STOP: '정지', WARN: '주의', GUIDE: '조작 안내' };
 
 // 시안(2026-10-20): 결론 띠 → 먼저 할 일(큰 번호) → 보전 단계(펼침) → 생산 영향 숫자 → 안전 고정 서식. 지난 기록(표)·출처는 접음.
@@ -74,8 +77,10 @@ export default function CardScreen({ alertId }: { alertId: string }) {
           {assisted ? (
             <div className="flex flex-col gap-2">
               <NumList items={assisted} big />
-              <p className="text-small text-ink-2">비서(외부 LLM)가 쉬운 말로 다듬은 글입니다. 원문과 다르면 원문(DOC-03)을 따릅니다.</p>
-              <details className="text-body"><summary className="cursor-pointer font-semibold text-ink-2">원문(DOC-03) 보기</summary><div className="mt-2 rounded-tile border border-line p-3"><NumList items={a.steps} /></div></details>
+              {SHOW_PLAIN_NOTE && <>
+                <p className="text-small text-ink-2">비서(외부 LLM)가 쉬운 말로 다듬은 글입니다. 원문과 다르면 원문(DOC-03)을 따릅니다.</p>
+                <details className="text-body"><summary className="cursor-pointer font-semibold text-ink-2">원문(DOC-03) 보기</summary><div className="mt-2 rounded-tile border border-line p-3"><NumList items={a.steps} /></div></details>
+              </>}
             </div>
           ) : a.steps.length ? <NumList items={a.steps} big /> : <span className="text-body text-ink-2">{a.doc03.join(' · ') || '해당 절 없음'}</span>}
         </Sec>
@@ -83,8 +88,10 @@ export default function CardScreen({ alertId }: { alertId: string }) {
           {maintAssisted ? (
             <div className="flex flex-col gap-2">
               <NumList items={maintAssisted} start={a.steps.length + 1} big />
-              <p className="text-small text-ink-2">비서(외부 LLM)가 쉬운 말로 다듬은 글입니다. 원문과 다르면 원문(DOC-03)을 따릅니다.</p>
-              <details className="text-body"><summary className="cursor-pointer font-semibold text-ink-2">원문(DOC-03) 보기</summary><div className="mt-2 rounded-tile border border-line p-3"><NumList items={a.maint} start={a.steps.length + 1} /></div></details>
+              {SHOW_PLAIN_NOTE && <>
+                <p className="text-small text-ink-2">비서(외부 LLM)가 쉬운 말로 다듬은 글입니다. 원문과 다르면 원문(DOC-03)을 따릅니다.</p>
+                <details className="text-body"><summary className="cursor-pointer font-semibold text-ink-2">원문(DOC-03) 보기</summary><div className="mt-2 rounded-tile border border-line p-3"><NumList items={a.maint} start={a.steps.length + 1} /></div></details>
+              </>}
             </div>
           ) : <NumList items={a.maint} start={a.steps.length + 1} />}
         </Sec>}
