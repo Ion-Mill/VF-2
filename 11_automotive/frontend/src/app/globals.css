@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-html,body{margin:0;height:100%;background:#f5f8fc;}
+html,body{margin:0;height:100%;background:#e6ebf2;}
 a{color:#2a55b8;}
 a:hover{color:#1f4596;}
 canvas{outline:none;display:block;}
@@ -67,7 +67,6 @@ h1,h2,h3{letter-spacing:-.01em;}
 /* 이브 메뉴 4개를 크게 (사용자 요청 2026-10-21) — 위젯 기본 48px 동그라미·13px 글자 */
 .ma-menu { gap: 16px; }
 .ma-menu-item { gap: 12px; }
-.ma-menu-label { height: 40px; padding: 0 18px; border-radius: 20px; font-size: 16px; }
 .ma-menu-icon { width: 64px; height: 64px; }
 .ma-menu-badge { min-width: 24px; height: 24px; border-radius: 12px; font-size: 12px; }
 /* 어두운 창 안의 기존 탭 내용 (밝은 화면용 Tailwind 색) */
@@ -93,6 +92,10 @@ h1,h2,h3{letter-spacing:-.01em;}
 /* 다시 보기 카드: 가공 = 흐르는 빛 (2026-10-17) */
 @keyframes rpSheen{0%{transform:translateX(-150%) rotate(20deg)}100%{transform:translateX(450%) rotate(20deg)}}
 .rp-sheen{animation:rpSheen 3.2s ease-in-out infinite}
+/* 다시 보기 카드: 고장 = 테두리 바깥 맥박 (J안, 2026-10-25) */
+@keyframes rpRing{0%,100%{box-shadow:0 0 0 2px rgba(216,57,75,.45)}50%{box-shadow:0 0 0 9px rgba(216,57,75,0)}}
+.rp-ring{animation:rpRing 1s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.rp-ring{animation:none}}
 
 /* 3D 카드 이브 띠 상태색 빛: 숨 쉬듯 (2026-10-18) */
 @keyframes eveGlow{0%,100%{opacity:.55}50%{opacity:1}}
@@ -105,9 +108,9 @@ h1,h2,h3{letter-spacing:-.01em;}
 .ma-panel .ma-panel-title{font-size:18px}
 .ma-panel .ma-icon-btn{width:40px;height:40px;border-radius:50%;background:#fff;color:#3a4a61;box-shadow:0 1px 3px rgba(27,42,65,.12)}
 .ma-panel .ma-icon-btn:hover,.ma-panel .hover\:bg-slate-50:hover,.ma-panel .hover\:bg-slate-100:hover,.ma-panel .hover\:bg-white\/10:hover{background:rgba(30,70,150,.06)}
-.ma-panel .ma-tabs{margin:0 14px 4px;padding:5px;border:0;background:#fff;border-radius:999px;gap:4px;box-shadow:0 1px 3px rgba(27,42,65,.08)}
-.ma-panel .ma-tab{height:40px;border:0;border-radius:999px;font-size:14px;color:#3a4a61}
-.ma-panel .ma-tab[aria-selected="true"]{background:#1b2a41;color:#fff;border:0}
+.ma-panel .ma-tabs{margin:0 14px 2px;padding:3px;border:0;background:#fff;border-radius:999px;gap:2px;box-shadow:0 1px 3px rgba(27,42,65,.08)}
+.ma-panel .ma-tab{height:32px;display:inline-flex;align-items:center;justify-content:center;gap:5px;border:0;border-radius:999px;font-size:13px;color:#56667d} /* 작게 · 아이콘 + 이름, 고른 탭은 그 탭 색(Eve.tsx TAB_COLOR) (사용자 요청 2026-10-23) */
+.ma-panel .ma-tab[aria-selected="true"]{font-weight:700;border:0}
 .ma-panel .ma-tab-badge{background:none;color:#e5484d;min-width:0;height:auto;padding:0;font-size:14px}
 .ma-panel .border-slate-200,.ma-panel .border-slate-300,.ma-panel .border-white\/25{border-color:#dbe5f3}
 .ma-panel select,.ma-panel input:not(.ma-input){background:#fff;color:#1b2a41}
@@ -141,9 +144,8 @@ h1,h2,h3{letter-spacing:-.01em;}
 .ma-panel .ma-voice-note{margin:0 6px 8px;text-align:center;font-size:12.5px;line-height:1.45;color:#56667d}
 
 /* 이브 창 시안 2 · 보통 바이올렛 (사용자 선택 2026-10-21): 퓨어 실버 창 + 연보라 테두리. 보라는 링크·칩·선택 탭 점·체크 칸·[보기] 테두리에만 (위 시안 4b의 연보라 바탕을 덮음) */
-.ma-panel{background:linear-gradient(180deg,#ffffff 0%,#f5f8fc 100%)!important;border:2px solid #cbdcfb;box-shadow:0 20px 50px rgba(28,37,48,.16);--ma-panel-line:#e3e9f2}
+.ma-panel{background:linear-gradient(180deg,#e8edf5 0%,#dfe6f0 100%)!important; /* 안의 흰 카드와 구분되게 한 단계 어둡게 (사용자 요청 2026-10-23) */border:2px solid #9fb4d6;box-shadow:0 24px 50px -12px rgba(27,42,65,.32),0 2px 6px rgba(27,42,65,.06); /* 회청 화면 바탕과 구분되게 테두리 진하게 · 그림자 깊게 (시안 B, 2026-10-24) */--ma-panel-line:#e3e9f2}
 .ma-panel .border-slate-200,.ma-panel .border-slate-300,.ma-panel .border-white\/25{border-color:#e3e9f2}
-.ma-panel .ma-tab[aria-selected="true"]::after{content:'';display:inline-block;width:6px;height:6px;margin-left:8px;border-radius:50%;background:#9dbcf4;vertical-align:middle}
 .ma-panel .ma-check{appearance:none;-webkit-appearance:none;margin:0;border:1.5px solid #c7d6f5;border-radius:8px;background:#fff;cursor:pointer}
 .ma-panel .ma-check:checked{border-color:#1b2a41;background:#1b2a41 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7'/%3E%3C/svg%3E") center/16px no-repeat}
 .ma-panel .ma-check:focus-visible{outline:2px solid #3d6fe0;outline-offset:2px}
@@ -157,3 +159,39 @@ h1,h2,h3{letter-spacing:-.01em;}
 .fs-up .text-title { font-size: 24px; }
 .fs-up .text-\[12px\] { font-size: 13px; }
 .fs-up .text-\[13px\] { font-size: 14px; }
+
+/* 문서 인쇄 (2026-10-23): 화면 캡처가 아니라 문서 틀(DocKit DocPage의 data-print)만 A4에 이어서 찍는다.
+   문서로 가는 길(조상)은 높이 고정·스크롤 숨김을 풀고, 나머지(위 바·3D·이브·알림)는 숨긴다 */
+@media print {
+  @page { size: A4; margin: 10mm; }
+  html, body { height: auto !important; background: #fff !important; }
+  body *:not(:has([data-print])):not([data-print]):not([data-print] *) { display: none !important; }
+  body :has([data-print]), [data-print] { display: block !important; position: static !important; height: auto !important; min-height: 0 !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; background: #fff !important; }
+  /* 폭 1000px로 놓고 줄여 찍음 — 배율은 [인쇄] 버튼(DocKit printDoc)이 한 장에 맞춰 넣고, Ctrl+P면 폭만 맞춤(0.718). 종이 폭에선 md·lg 칸이 안 켜지므로 문서 화면에 print: 칸을 같이 둠 */
+  [data-print] > div { max-width: none !important; width: 1000px !important; zoom: var(--print-zoom, .718); }
+  /* 글자만 있는 버튼 = 인쇄·닫기·저장 같은 조작 → 숨김. 칩을 감싼 버튼(주간·야간 확정, 수정 이력 버전)은 내용이라 남김 */
+  [data-print] button:not(:has(*)), [data-print] select { display: none !important; }
+  [data-print] .shadow-card { box-shadow: none !important; }
+  [data-print] section, [data-print] tr, [data-print] li { break-inside: avoid; }
+  [data-print] h2, [data-print] h3 { break-after: avoid; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; } /* 상태 칩 옅은 바탕색 유지 */
+}
+/* 이브 말풍선 색 (사용자 요청 2026-10-23): 위험도가 있으면 그 색(⚠ 긴급 = crit, ▲ 주의 = warn), 나머지 소식은 흰 카드 + 파스텔 블루(brand). 값은 tailwind.config.ts 토큰 */
+.ma-toast.is-crit,.ma-toast.is-warn,.ma-toast.is-info{-webkit-backdrop-filter:none;backdrop-filter:none}
+.ma-toast.is-crit{background:#fdecee;color:#7a1522;border:2px solid #e5484d;box-shadow:0 16px 36px rgba(194,48,66,.28)}
+.ma-toast.is-crit .ma-toast-time{color:#c23042}
+.ma-toast.is-crit .ma-btn-primary{background:#c23042;color:#fff}
+.ma-toast.is-crit .ma-btn-ghost{background:#fff;border-color:#f6c9cf;color:#c23042}
+.ma-toast.is-warn{background:#fff3e3;color:#5c3306;border:2px solid #e0a300;box-shadow:0 16px 36px rgba(163,90,12,.22)}
+.ma-toast.is-warn .ma-toast-time{color:#a35a0c}
+.ma-toast.is-warn .ma-btn-primary{background:#a35a0c;color:#fff}
+.ma-toast.is-warn .ma-btn-ghost{background:#fff;border-color:#f6d6a8;color:#a35a0c}
+.ma-toast.is-info{background:#fff;color:#1b2a41;border:1px solid #cbdcfb;box-shadow:0 16px 36px rgba(27,42,65,.18)}
+.ma-toast.is-info .ma-toast-time{color:#2a55b8}
+.ma-toast.is-info .ma-btn-primary{background:#3d6fe0;color:#fff}
+.ma-toast.is-info .ma-btn-ghost{background:#fff;border-color:#e3e9f2;color:#3a4a61}
+/* 홈 이브 알림 띠 상태 점 맥박 (시안 B, 2026-10-24): 주의 1.6초 · 긴급 1초, 동작 줄이기면 멈춤 */
+@keyframes bandPing{0%{box-shadow:0 0 0 0 currentColor}70%,100%{box-shadow:0 0 0 7px transparent}}
+.band-ping{animation:bandPing 1.6s ease-out infinite}
+.band-ping-fast{animation:bandPing 1s ease-out infinite}
+@media (prefers-reduced-motion:reduce){.band-ping,.band-ping-fast{animation:none}}

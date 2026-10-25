@@ -33,6 +33,8 @@ export async function backendLogin(userId: string, password: string): Promise<vo
   resetDerived();
 }
 export function backendLogout() { session = null; resetDerived(); }
+/** 이 사용자의 화면 로그인 토큰 (이브 채팅이 같이 쓴다, assistantApi.ts) */
+export const backendToken = (userId: string) => (session?.userId === userId ? session.token : null);
 
 async function call(method: string, path: string, body?: unknown): Promise<any> {
   if (!session) throw new BackendErr('UNAUTHORIZED', '로그인이 필요합니다', 401);

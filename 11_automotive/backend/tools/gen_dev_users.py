@@ -15,13 +15,13 @@ from app.domain.passwords import hash_password  # noqa: E402
 
 # (user_id, 이름, 역할, 교대, 공정, 두 번째 공정) — 생성기 masters/app_user.csv (설계서 5.17: OPR 6, MNT 3, SUP 2, MGR 1)
 USERS = [
-    ("U01", "작업자 주간 1", "OPR", "DAY", "OP-10", "OP-20"), ("U02", "작업자 주간 2", "OPR", "DAY", "OP-30", None),
-    ("U03", "작업자 주간 3", "OPR", "DAY", "OP-50", "OP-40"), ("U04", "작업자 야간 1", "OPR", "NIGHT", "OP-10", "OP-20"),
-    ("U05", "작업자 야간 2", "OPR", "NIGHT", "OP-30", None), ("U06", "작업자 야간 3", "OPR", "NIGHT", "OP-50", "OP-40"),
-    ("U07", "보전 담당 1", "MNT", "DAY", None, None), ("U08", "보전 담당 2", "MNT", "DAY", None, None),
-    ("U09", "보전 담당 3", "MNT", "NIGHT", None, None),
-    ("U10", "반장 주간", "SUP", "DAY", None, None), ("U11", "반장 야간", "SUP", "NIGHT", None, None),
-    ("U12", "공장 관리자", "MGR", "DAY", None, None),
+    ("U01", "김하늘", "OPR", "DAY", "OP-10", "OP-20"), ("U02", "이서연", "OPR", "DAY", "OP-30", None),
+    ("U03", "박준호", "OPR", "DAY", "OP-50", "OP-40"), ("U04", "최민재", "OPR", "NIGHT", "OP-10", "OP-20"),
+    ("U05", "정유진", "OPR", "NIGHT", "OP-30", None), ("U06", "강태윤", "OPR", "NIGHT", "OP-50", "OP-40"),
+    ("U07", "이도윤", "MNT", "DAY", None, None), ("U08", "한지훈", "MNT", "DAY", None, None),
+    ("U09", "오세린", "MNT", "NIGHT", None, None),
+    ("U10", "박서준", "SUP", "DAY", None, None), ("U11", "윤가은", "SUP", "NIGHT", None, None),
+    ("U12", "장현우", "MGR", "DAY", None, None),
 ]
 
 

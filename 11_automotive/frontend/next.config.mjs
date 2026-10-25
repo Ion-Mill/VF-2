@@ -6,6 +6,8 @@ const backend = process.env.NEXT_PUBLIC_MOM_BACKEND !== '0';
 const target = backend
   ? (process.env.MOM_BACKEND_URL ?? 'http://127.0.0.1:8000')
   : (process.env.SIM_SERVER ?? 'http://127.0.0.1:8765');
+// /sim-api/* 는 늘 시연 서버로 — 조작판이 프로필(/api/health의 profile)을 백엔드 없이 직접 읽는다 (2026-10-25, 1024_팀원별_요청.md 4장)
+const sim = process.env.SIM_SERVER ?? 'http://127.0.0.1:8765';
 
 const nextConfig = {
   reactStrictMode: false, // 3D 장면이 개발 모드에서 두 번 만들어지는 것을 막음
@@ -13,7 +15,10 @@ const nextConfig = {
   // 비서(외부 LLM) 답은 130초까지 걸릴 수 있다 — 화면 서버가 넘기는 요청을 30초(기본)에 끊지 않게
   experimental: { proxyTimeout: 150_000 },
   async rewrites() {
-    return [{ source: '/api/:path*', destination: `${target.replace(/\/+$/, '')}/api/:path*` }];
+    return [
+      { source: '/sim-api/:path*', destination: `${sim.replace(/\/+$/, '')}/api/:path*` },
+      { source: '/api/:path*', destination: `${target.replace(/\/+$/, '')}/api/:path*` },
+    ];
   },
 };
 export default nextConfig;

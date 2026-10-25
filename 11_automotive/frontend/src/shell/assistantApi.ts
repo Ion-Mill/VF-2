@@ -6,11 +6,11 @@
 // - 켜는 스위치: 환경변수 NEXT_PUBLIC_MOM_API (백엔드 주소, 예 http://127.0.0.1:8000). **없으면 꺼짐** — 채팅은 지금처럼 시연 서버의 규칙 답(live.ts api())을 쓴다.
 //   바꾸면 `npm run dev`를 다시 켠다 (빌드할 때 글자로 박힌다). 백엔드의 MOM_CORS_ORIGINS에 이 화면 주소(localhost:3000)가 있어야 한다.
 // - 브라우저가 백엔드를 직접 부르므로 화면 서버(Next) 프록시의 30초 제한을 받지 않는다 (외부 LLM 답은 20초 넘게 걸릴 수 있다).
-// - 로그인: 채팅할 때 사용자 ID로 백엔드 /api/auth/login을 해서 토큰을 받는다 (화면 로그인은 그대로 — 거기는 화면 안에서 비교만 한다).
-//   토큰은 **메모리에만** 둔다 (새로고침하면 다음 질문에서 조용히 다시 받는다). 시연 비밀번호는 Login.tsx의 DEMO_PW.
+// - 로그인: 화면 로그인(Login.tsx → backendApi.backendLogin)이 받은 토큰을 채팅도 같이 쓴다 (2026-10-23, 2026-10-25 main 합칠 때 backendApi로 옮김).
+//   토큰은 **메모리에만** 둔다. 그 토큰이 없거나 만료되면 다음 질문에서 시연 비밀번호(Login.tsx DEMO_PW)로 조용히 다시 받는다.
 // - 실패는 명세대로 "응답 없음" — 옛 규칙 답으로 몰래 바꿔 주지 않는다 (숫자가 엇갈리지 않게).
 import { DEMO_PW } from './Login';
-import { backendMode } from './backendApi';
+import { backendMode, backendToken } from './backendApi';
 import { buildAskContext } from './carry';
 import { STATUS_KO } from './assistantStatus';
 import { itemKeysOf } from './briefChecks';
@@ -55,7 +55,7 @@ async function post(path: string, body: unknown, token?: string, timeoutMs = ASK
 }
 
 async function tokenFor(userId: string, fresh = false): Promise<string> {
-  const have = tokens.get(userId);
+  const have = tokens.get(userId) ?? backendToken(userId);   // 화면 로그인 토큰을 먼저 쓴다
   if (have && !fresh) return have;
   const j = await post('/api/auth/login', { user_id: userId, password: DEMO_PW });
   if (typeof j?.access_token !== 'string') throw new Error('토큰 없음');

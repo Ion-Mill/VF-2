@@ -101,7 +101,7 @@ export function QualityScreen({ cap = false }: { cap?: boolean }) { // cap: 공�
   const enhPast = enhancedLots.length === 0, enhRows = enhPast ? allLots.filter((x) => x.enhanced).slice(-6) : enhancedLots;
   const lastHold = [...(lotsF.data?.past_holds ?? [])].filter((h) => h.normal_resumed_at).pop();
   const fileOf = (x: R) => { const m = String(x.file_name ?? '').match(/(LOT-\d{4}-\d{3}-\d)_(\d{3})/); return m ? `${m[1].slice(-5)} · ${Number(m[2])}` : x.file_name; };
-  const todayFiles = (cmm.data?.imports ?? []).filter((x) => String(x.received_at).startsWith('2026-10-01')).slice(0, 12);
+  const todayFiles = (cmm.data?.imports ?? []).filter((x) => String(x.received_at).startsWith(twin?.clock.sim_at?.slice(0, 10) ?? '')).slice(0, 12);   // 오늘 = 시연 시계 날짜
 
   // ===== 작업자(OPR) 태블릿 화면 (사용자 시안 2026-10-16): 단계 표시 · 게이지/외관 큰 버튼 · CMM 결과 · 로트 진행 · 다음 부품 =====
   if (isOpr) {
@@ -393,7 +393,7 @@ function TolBar({ it, q, v, card }: { it: R; q?: R; v: number | null; card?: boo
   const pj = judge(it, v), out = q?.ucl != null && v != null && (v > q.ucl || v < q.lcl);
   const k = String(it.item_seq), c = ITEM_COLOR[k];
   const bar = (
-    <div className="relative h-3 rounded bg-brand-tint">
+    <div className={`relative h-3 rounded ${card ? 'bg-white shadow-[inset_0_0_0_1px_rgba(15,23,42,.18)]' : 'bg-brand-tint'}`}>{/* 카드는 파스텔 바탕이라 흰 막대 + 얇은 선으로 구분 (2026-10-25) */}
       {lsl != null && <span className="absolute -top-1 h-5 w-[2px] bg-ink" style={{ left: pos(lsl) }} />}<span className="absolute -top-1 h-5 w-[2px] bg-ink" style={{ left: pos(usl) }} />
       {q?.ucl != null && <><span className="absolute top-0 h-3 border-l border-dashed border-slate-500" style={{ left: pos(q.ucl) }} />{lsl != null && <span className="absolute top-0 h-3 border-l border-dashed border-slate-500" style={{ left: pos(q.lcl) }} />}</>}
       {v != null && <span className={`absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white ${pj === 'FAIL' ? 'bg-crit' : out ? 'bg-warn-mark' : 'bg-ink'}`} style={{ left: pos(v) }} />}

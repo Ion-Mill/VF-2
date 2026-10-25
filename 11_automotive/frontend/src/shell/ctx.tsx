@@ -8,7 +8,7 @@ import type { AlertRec, Notice, UserRec } from './model';
 import type { SimpleRecord, WorkOrder, WorkRecord } from './workflow';
 
 export type Screen = 'line' | 'layout2d' | 'field' | 'cards' | 'card' | 'wo' | 'wr' | 'sr' | 'docs' | 'replay' | 'shift' | 'daily' | 'revs'
-  | 'lots' | 'quality' | 'qcap' | 'inventory' | 'tools' | 'pm' | 'idocs' | 'settings';
+  | 'lots' | 'quality' | 'qcap' | 'inventory' | 'tools' | 'pm' | 'idocs' | 'staff' | 'settings';
 
 export interface Settings { bloom: boolean; sound: boolean; cards: boolean; monitorInch: number; distanceM: number; fontScale: boolean; autoReturnSec: number }
 export const DEFAULT_SETTINGS: Settings = { bloom: true, sound: true, cards: false, monitorInch: 55, distanceM: 3, fontScale: false, autoReturnSec: 90 };
@@ -27,7 +27,7 @@ export interface AppCtx {
   putWo: (w: WorkOrder) => void; putWr: (w: WorkRecord) => void; putSr: (r: SimpleRecord) => void;
   addNotice: (n: Notice) => void; handleNotice: (id: string, plan?: string) => void; markAlert: (ids: string[], by: string) => void;
   screen: Screen; key: string | null; go: (s: Screen, key?: string | null) => void; back: () => void;
-  openCard: (alertId: string) => void; openWo: (no: string) => void; openRecord: (woNo: string, nav?: boolean) => void; openSimple: (alertId: string, kind?: 'alarm' | 'cause') => void;
+  openCard: (alertId: string) => void; openWo: (no: string) => void; openRecord: (woNo: string, nav?: boolean) => void; openSimple: (alertId: string, kind?: 'alarm' | 'cause') => void; openAfter: (stopKey?: string) => void;
   openSource: (doc: string, section: string) => void; openReplay: (atIso: string) => void;
   selectMachine: (m: MachineId | null) => void; selected: MachineId | null;
   toast: (msg: string) => void; settings: Settings; setSettings: (f: (s: Settings) => Settings) => void;
@@ -52,5 +52,5 @@ export const useApp = () => {
 // 디자인 통일 C안 (2026-10-20): 값만 먼저 토큰으로 — 화면을 ui.tsx 부품(Btn·Page·Sec)으로 바꾸면서 지운다
 export const BTN = 'h-11 rounded-ctl border border-line bg-white px-4 text-body font-semibold text-ink hover:bg-tile disabled:cursor-not-allowed disabled:bg-track disabled:text-bar disabled:hover:bg-track';
 export const DARK = 'h-11 rounded-ctl bg-brand px-4 text-body font-semibold text-white hover:bg-brand-ink disabled:cursor-not-allowed disabled:bg-track disabled:text-bar';
-export const PAGE = 'absolute inset-0 overflow-y-auto bg-ground p-4';
+export const PAGE = 'absolute inset-0 overflow-y-auto bg-ground p-4 [scrollbar-gutter:stable]'; // 스크롤바 자리를 늘 비워 둠 — 긴 화면 · 짧은 화면 카드 폭이 10px씩 달라지지 않게 (2026-10-25)
 export const CARD = 'rounded-card border border-line bg-white p-4 shadow-card';

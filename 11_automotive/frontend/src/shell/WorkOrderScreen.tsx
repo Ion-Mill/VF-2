@@ -11,7 +11,7 @@ import { md, minsSince, simIso } from './live';
 import { ALARMS, USERS, hhmm, machineLabel, userName } from './model';
 import { ConfirmBox, SafeTag, SafetyBlock, safetySrc } from './Safety';
 import { WO_STEPS, diff, rev, type WorkOrder } from './workflow';
-import { Acts, Band, Chip, DocHead, DocPage, Fold, InfoRow, NumList, RO, Sec, SrcFold, Steps } from './DocKit';
+import { Acts, Band, Chip, DocHead, DocPage, Fold, InfoRow, NumList, printDoc, RO, Sec, SrcFold, Steps } from './DocKit';
 import { WorkRecordPanel } from './WorkRecordScreen';
 
 export default function WorkOrderScreen({ no, focusRecord }: { no: string; focusRecord?: boolean }) {
@@ -69,7 +69,7 @@ export default function WorkOrderScreen({ no, focusRecord }: { no: string; focus
     <DocPage>
       <DocHead title={<>정비 작업지시서 <span className="font-mono">{wo.no}</span></>}
         right={wo.state === 'cancelled' ? <Chip tone="crit">취소됨</Chip> : <Steps list={WO_STEPS.map(([k, label]) => (k === 'draft' ? `${label} v0` :k === 'editing' && k === wo.state ? `${label} v${wo.version}` : label))} cur={idx} />} />
-      <InfoRow right={<><button onClick={() => go('revs', `WO:${wo.no}`)} className={BTN}>수정 이력 v{wo.version}</button><button onClick={() => window.print()} className={BTN}>인쇄</button><button onClick={back} className={BTN}>닫기</button></>}>
+      <InfoRow right={<><button onClick={() => go('revs', `WO:${wo.no}`)} className={BTN}>수정 이력 v{wo.version}</button><button onClick={printDoc} className={BTN}>인쇄</button><button onClick={back} className={BTN}>닫기</button></>}>
         {!locked && wo.state !== 'cancelled' && <Chip tone={wait >= 120 ? 'warn' : 'mute'}>{wait >= 120 ? '▲ ' : wait >= 30 ? 'ⓘ ' : ''}승인 대기 {wait}분</Chip>}
         {locked && wo.state !== 'cancelled' && !reviseOpen && <Chip><LockIcon /> 잠김</Chip>}
       </InfoRow>

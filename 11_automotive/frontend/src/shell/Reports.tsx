@@ -6,14 +6,14 @@
 import { LockIcon } from './ui';
 import { useState, type ReactNode } from 'react';
 import { BTN, CARD, DARK, PAGE, useApp } from './ctx';
-import { CAUSE_KO, MACHINES } from './data';
+import { CAUSE_KO, MACHINES, SHIFT_H, hh } from './data';
 import { RANK_NAME, RANK_ORDER, userName } from './model';
 import { api, hm, md, simIso, useFetch } from './live';
 import { parseHandover } from './Briefing';
 import { NO_LOCKOUT, handoverCount } from './reportLabels';
 import { ConfirmBox } from './Safety';
 import { WO_STEPS } from './workflow';
-import { Acts, Bar, Chip, DocHead, DocPage, Fold, InfoRow, Kpi, RankRow, ReportLine, ReportLines, RO, Sec, Steps, type Tone } from './DocKit';
+import { Acts, Bar, Chip, DocHead, DocPage, Fold, InfoRow, Kpi, printDoc, RankRow, ReportLine, ReportLines, RO, Sec, Steps, type Tone } from './DocKit';
 
 const ST: Record<string, string> = { AI_DRAFT: 'AI비서 초안', EDITING: '수정 중', CONFIRMED: '확정' };
 // 9월 기록의 영어 상태 → 한글
@@ -74,7 +74,7 @@ export function ShiftReportScreen() {
   // 정비 줄: 오늘 화면에서 만든 작업지시서 · 확정된 간이 작업기록 · 9월 기록
   const rows: { label: string; node: ReactNode }[] = [];
   myWos.forEach((w) => { const wr = wrs.find((x) => x.woNo === w.no); const l = woLabel(w.state); rows.push({ label: l, node: <MRow key={w.no} st={stChip(l)} eq={`${MACHINES[w.machine].name} · ${w.code}`} tx={wr?.action || w.title} docs={<>{docBtn(w.no, () => openWo(w.no))}{wr && docBtn(wr.no, () => openRecord(w.no))}</>} /> }); });
-  srs.filter((s) => s.state === 'confirmed').forEach((s) => rows.push({ label: '처리', node: <MRow key={s.no} st={stChip('처리')} eq={`${MACHINES[s.machine].name} · ${s.code}`} tx={s.action} docs={docBtn(s.no, () => go('sr', s.no))} /> }));
+  srs.filter((s) => s.state === 'confirmed').forEach((s) => rows.push({ label: '처리', node: <MRow key={s.no} st={stChip('처리')} eq={`${MACHINES[s.machine].name} · ${s.code || '[선조치]'}`} tx={s.action} docs={docBtn(s.no, () => go('sr', s.no))} /> }));
   pastWos.forEach((w) => { const rec = pastRecs.find((x) => x.wo_no === w.wo_no); const l = EN_ST[w.status] ?? w.status; const code = history?.alarms.find((x) => x.alarm_event_id === w.alarm_event_id)?.alarm_code; rows.push({ label: l, node: <MRow key={w.wo_no} st={stChip(l)} eq={`${w.equipment_id}${code ? ` · ${code}` : ''}`} tx={rec ? <>{rec.action}{rec.repair_min ? <> · <b className="font-mono">{rec.repair_min}</b>분</> : null}</> : w.title} docs={<>{docBtn(w.wo_no)}{rec && docBtn(rec.record_no)}</>} /> }); });
   pastRecs.filter((x) => !pastWos.some((w) => w.wo_no === x.wo_no)).forEach((x) => rows.push({ label: '처리', node: <MRow key={x.record_no} st={stChip('처리')} eq={x.equipment_id} tx={x.action} docs={docBtn(`${x.record_type === 'QUICK' ? '간이 ' : ''}${x.record_no}`)} /> }));
 
@@ -89,7 +89,7 @@ export function ShiftReportScreen() {
         right={<Steps list={['AI_DRAFT', 'EDITING', 'CONFIRMED'].map((s) => `${ST[s]}${r.status === s ? ` v${ver}` : ''}`)} cur={['AI_DRAFT', 'EDITING', 'CONFIRMED'].indexOf(r.status)} />} />
       <InfoRow right={<>
         <select aria-label="교대" value={sid} onChange={(e) => go('shift', e.target.value)} className="h-11 rounded-ctl border border-line bg-white px-2 text-body">{[...(shiftReports ?? [])].reverse().map((x) => <option key={x.shift_id}>{x.shift_id}</option>)}</select>
-        <button onClick={() => go('revs', `SHIFT:${sid}`)} className={BTN}>수정 이력</button><button onClick={() => window.print()} className={BTN}>인쇄</button><button onClick={back} className={BTN}>닫기</button>
+        <button onClick={() => go('revs', `SHIFT:${sid}`)} className={BTN}>수정 이력</button><button onClick={printDoc} className={BTN}>인쇄</button><button onClick={back} className={BTN}>닫기</button>
       </>}>
         {confirmed ? <Chip tone="ok"><LockIcon /> 확정 {userName(r.confirmed_by)} {r.confirmed_at ? `${md(r.confirmed_at)} ${hm(r.confirmed_at)}` : ''}</Chip> : <span className="font-semibold text-ink-2">ⓘ 확정 전</span>}
         {r.partial && <Chip tone="acc">교대 진행 중</Chip>}
@@ -97,18 +97,18 @@ export function ShiftReportScreen() {
 
       <Sec title="생산" right={<Chip tone={pct < 90 ? 'warn' : 'ok'}>목표 대비 {pct}%</Chip>}>
         <div className="flex flex-col gap-3">
-          <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4">
+          <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4 print:grid-cols-4">
             <Kpi label="실적" value={actual} unit="개" tone="main" />
             <Kpi label="총 목표" value={target} unit="개" />
-            <Kpi label={actual >= target ? '초과' : '남은 수량'} value={Math.abs(target - actual)} unit="개" tone={actual >= target ? 'ok' : 'bad'} />
-            <Kpi label="불량" value={r.defect_qty} unit="개" />
+            <Kpi label={actual >= target ? '초과' : '남은 수량'} value={Math.abs(target - actual)} unit="개" tone={actual >= target ? 'ok' : 'warn'} />
+            <Kpi label="불량" value={r.defect_qty} unit="개" tone={Number(r.defect_qty) > 0 ? 'bad' : undefined} />{/* 남은 수량은 주황, 불량은 빨강 (사용자 요청 2026-10-25) */}
           </div>
           <div><Bar pct={pct} outline /><div className="mt-1 text-small text-ink-2">목표 대비 <b className="font-mono text-ink">{pct}%</b></div></div>
           <div className="flex flex-wrap items-baseline gap-x-5 gap-y-1 text-small text-ink-2"><b className="text-ink">가동률</b>
             {['VF2-01', 'VF2-02'].map((m) => <span key={m}>{m} <b className="ml-1 font-mono text-title font-semibold text-ink">{r.availability?.[m] ?? '—'}</b>%</span>)}</div>
         </div>
       </Sec>
-      <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-2 print:grid-cols-2">
         <Sec title="필수 정지" right={<Chip tone={stops.length ? 'crit' : 'ok'}>{stops.length}건 · {stopMin}분</Chip>}>
           {stops.length ? stops.map((s, i) => { const w = myWos.find((x) => x.alertId === `a-${s.alarm_event_id}`) ?? null; const pw = pastWos.find((x) => x.alarm_event_id && x.alarm_event_id === String(s.alarm_event_id)) ?? pastWos.find((x) => x.equipment_id === s.equipment_id && x.created_at >= s.start_at && x.created_at <= s.end_at); return (
             <div key={i} className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-t border-dashed border-line py-2 text-body first:border-t-0">
@@ -177,7 +177,7 @@ function prodText(x: string): ReactNode {
 
 export function DailyReportScreen() {
   const { key, dailyReports, shiftReports, back, user, role, go, toast, reloadReports, inv, wos, wrs, history, twin, openWo, openRecord } = useApp();
-  const pending = (dailyReports ?? []).filter((r) => r.status !== 'CONFIRMED').map((r) => r.work_date).sort();
+  const pending = (dailyReports ?? []).filter((r) => r.status !== 'CONFIRMED' && r.status !== 'REVISED').map((r) => r.work_date).sort();
   const d = key ?? pending[0] ?? (dailyReports ?? []).map((r) => r.work_date).sort().pop() ?? '';
   const f = useFetch<Record<string, any>>(d ? `reports/daily/${d}` : null, 0, [d]);
   const lots = useFetch<{ lots: Record<string, any>[] }>(d ? 'lots' : null, 0, [d]);
@@ -219,14 +219,14 @@ export function DailyReportScreen() {
   const prodItems = items.filter((x) => x.rank === '생산');
   const urgItems = stops.length ? [] : items.filter((x) => x.rank === '긴급');
   const warnItems = items.filter((x) => x.rank === '주의'), refItems = items.filter((x) => x.rank === '참고');
-  const probGrid = 'grid grid-cols-[76px_minmax(0,1fr)_76px] items-center gap-x-3 gap-y-1 border-t border-dashed border-line py-2.5 text-body first:border-t-0 md:grid-cols-[76px_minmax(0,1fr)_84px_minmax(0,1.1fr)_40px]';
+  const probGrid = 'grid grid-cols-[76px_minmax(0,1fr)_76px] items-center gap-x-3 gap-y-1 border-t border-dashed border-line py-2.5 text-body first:border-t-0 md:grid-cols-[76px_minmax(0,1fr)_84px_minmax(0,1.1fr)_40px] print:grid-cols-[76px_minmax(0,1fr)_84px_minmax(0,1.1fr)_40px]';
 
   return (
     <DocPage width={1100}>
-      <DocHead title="일일 보고서" sub={`${md(d)} · 생산일 08:00 ~ 다음 날 05:00`} right={<Steps list={['AI비서 초안', '확정']} cur={confirmed ? 1 : 0} />} />
+      <DocHead title="일일 보고서" sub={`${md(d)} · 생산일 ${hh(SHIFT_H.dayStart)}:00 ~ 다음 날 ${hh(SHIFT_H.nightEnd)}:00`} right={<Steps list={['AI비서 초안', '확정']} cur={confirmed ? 1 : 0} />} />
       <InfoRow right={<>
         <select aria-label="날짜" value={d} onChange={(e) => go('daily', e.target.value)} className="h-11 rounded-ctl border border-line bg-white px-2 text-body">{[...(dailyReports ?? [])].reverse().map((x) => <option key={x.work_date}>{x.work_date}</option>)}</select>
-        <button onClick={() => go('revs', `DAILY:${d}`)} className={BTN}>수정 이력</button><button onClick={() => window.print()} className={BTN}>인쇄</button><button onClick={back} className={BTN}>닫기</button>
+        <button onClick={() => go('revs', `DAILY:${d}`)} className={BTN}>수정 이력</button><button onClick={printDoc} className={BTN}>인쇄</button><button onClick={back} className={BTN}>닫기</button>
       </>}>
         <button onClick={() => go('shift', `${d}-D`)}><Chip tone={day?.status === 'CONFIRMED' ? 'ok' : 'warn'}>주간 {day?.status === 'CONFIRMED' ? <><LockIcon /> 확정</> : 'ⓘ 미확정'}</Chip></button>
         <button onClick={() => go('shift', `${d}-N`)}><Chip tone={night?.status === 'CONFIRMED' ? 'ok' : 'warn'}>야간 {night?.status === 'CONFIRMED' ? <><LockIcon /> 확정</> : 'ⓘ 미확정'}</Chip></button>
@@ -242,17 +242,18 @@ export function DailyReportScreen() {
             const dq = Number(day?.actual_qty ?? 0) || 0, nq = Number(night?.actual_qty ?? 0) || 0, sum = dq + nq;
             const gap = actual >= target ? '초과' : '부족';
             return (
-              <div className="grid grid-cols-2 gap-2.5 md:grid-cols-5">
+              <div className="grid grid-cols-2 gap-2.5 md:grid-cols-5 print:grid-cols-5">
                 <Kpi field="실적" label="실적" value={actual} unit="개" sub={`목표 ${target}개`} tone="main" />
-                <div className="flex min-w-0 flex-col gap-1.5 rounded-tile border border-line bg-white px-3 py-2">
+                {/* 주간 / 야간: 막대 대신 숫자 두 개 (사용자 요청 2026-10-25) */}
+                <div className="flex min-w-0 flex-col rounded-tile border border-line bg-white px-4 py-3">
                   <span data-summary-field="주간 / 야간" className="text-small text-ink-2">주간 / 야간</span>
-                  {sum > 0 ? <div className="mt-auto flex h-8 overflow-hidden whitespace-nowrap rounded-tile text-small font-semibold" role="img" aria-label={`주간 ${dq}개, 야간 ${nq}개`}>
-                    <span data-summary-field="주간" className="flex min-w-0 items-center bg-brand px-2 text-white" style={{ width: `${(dq / sum) * 100}%` }}>주간 {dq}</span>
-                    <span data-summary-field="야간" className="flex min-w-0 items-center bg-tile px-2 text-ink" style={{ width: `${(nq / sum) * 100}%` }}>야간 {nq}{night?.status !== 'CONFIRMED' ? ' (잠정)' : ''}</span>
-                  </div> : <span data-summary-field="주간 / 야간" className="text-body text-ink-2">—</span>}
+                  {sum > 0 ? <span className="whitespace-nowrap font-mono text-num font-bold tabular-nums text-ink" aria-label={`주간 ${dq}개, 야간 ${nq}개`}>
+                    <span data-summary-field="주간">{dq}</span><small className="mx-1 font-sans text-body font-normal text-ink-3">/</small><span data-summary-field="야간">{nq}</span><small className="ml-1 font-sans text-body font-normal text-ink-2">개</small>
+                  </span> : <span data-summary-field="주간 / 야간" className="text-body text-ink-2">—</span>}
+                  {sum > 0 && night?.status !== 'CONFIRMED' && <span className="text-small text-ink-2">야간 잠정</span>}
                 </div>
                 <Kpi field={gap} label={gap} value={Math.abs(target - actual)} unit="개" tone={actual >= target ? 'ok' : 'bad'} />
-                <Kpi field="불량" label="불량" value={r.defect_qty} unit="개" />
+                <Kpi field="불량" label="불량" value={r.defect_qty} unit="개" tone={Number(r.defect_qty) > 0 ? 'bad' : undefined} />{/* 불량이 있으면 빨강 (사용자 요청 2026-10-25) */}
                 <Kpi field="OEE (라인)" label="OEE (라인)" value={r.oee_pct} unit="%" />
               </div>
             );
@@ -262,18 +263,18 @@ export function DailyReportScreen() {
       </div>
 
       <Sec title="오늘의 문제" right={<><Chip tone="crit">고장 손실 약 {r.failure_loss_qty}개</Chip><Chip tone="warn">속도 손실 약 {r.speed_loss_qty}개</Chip><Chip>추정</Chip></>}>
-        <div className="hidden grid-cols-[76px_minmax(0,1fr)_84px_minmax(0,1.1fr)_40px] gap-3 pb-1 text-small text-ink-2 md:grid"><span>문제</span><span /><span className="text-right">생산 피해</span><span>처리</span><span /></div>
-        {safeItems.map((x) => <div key={x.text} className={probGrid}><Chip tone="solid-crit"><LockIcon /> 안전</Chip><span className="col-span-2 md:col-span-4"><ReportLine text={x.text} /></span></div>)}
+        <div className="hidden grid-cols-[76px_minmax(0,1fr)_84px_minmax(0,1.1fr)_40px] gap-3 pb-1 text-small text-ink-2 md:grid print:grid"><span>문제</span><span /><span className="text-right">생산 피해</span><span>처리</span><span /></div>
+        {safeItems.map((x) => <div key={x.text} className={probGrid}><Chip tone="solid-crit"><LockIcon /> 안전</Chip><span className="col-span-2 md:col-span-4 print:col-span-4"><ReportLine text={x.text} /></span></div>)}
         {[...stops].sort((a, b) => b.loss_qty - a.loss_qty).map((s, i) => (
           <div key={i} className={probGrid}>
             <Chip tone="solid-crit">⚠ 긴급</Chip>
             <span><b>{s.equipment_id}</b> · {s.reason_name} <b className="font-mono">{s.minutes}</b>분 <span className="text-small text-ink-2">{md(s.start_at)} {hm(s.start_at)}</span></span>
             <span className="text-right font-mono text-title font-semibold text-crit">−{s.loss_qty}<small className="ml-0.5 font-sans text-small font-normal text-ink-2">개</small></span>
-            <span className="col-span-3 flex flex-wrap items-center gap-1.5 md:col-span-1">{fixOf(s)}</span>
-            <button onClick={() => go('replay', s.start_at)} aria-label={`다시 보기 ${md(s.start_at)} ${hm(s.start_at)}`} className="hidden h-9 rounded-ctl border border-line bg-white text-small hover:bg-tile md:block">▶</button>
+            <span className="col-span-3 flex flex-wrap items-center gap-1.5 md:col-span-1 print:col-span-1">{fixOf(s)}</span>
+            <button onClick={() => go('replay', s.start_at)} aria-label={`다시 보기 ${md(s.start_at)} ${hm(s.start_at)}`} className="hidden h-9 rounded-ctl border border-line bg-white text-small hover:bg-tile md:block print:block">▶</button>
           </div>))}
-        {urgItems.map((x) => <div key={x.text} className={probGrid}><Chip tone="solid-crit">⚠ 긴급</Chip><span className="col-span-2 md:col-span-4"><ReportLine text={x.text} /></span></div>)}
-        {prodItems.map((x) => <div key={x.text} className={probGrid}><Chip tone="warn">▲ 생산</Chip><span className="col-span-2 md:col-span-4">{prodText(x.text)}</span></div>)}
+        {urgItems.map((x) => <div key={x.text} className={probGrid}><Chip tone="solid-crit">⚠ 긴급</Chip><span className="col-span-2 md:col-span-4 print:col-span-4"><ReportLine text={x.text} /></span></div>)}
+        {prodItems.map((x) => <div key={x.text} className={probGrid}><Chip tone="warn">▲ 생산</Chip><span className="col-span-2 md:col-span-4 print:col-span-4">{prodText(x.text)}</span></div>)}
         {safeItems.length + stops.length + urgItems.length + prodItems.length === 0 && <span className="text-body text-ink-2">긴급 · 생산 문제 없음</span>}
         {(warnItems.length > 0 || refItems.length > 0) && <div className="mt-2"><Fold summary={`주의 ${warnItems.length}건 · 참고 ${refItems.length}건`}>
           {warnItems.length > 0 && <RankRow left={<Chip>주의</Chip>}><div className="flex flex-col gap-1.5">{warnItems.map((x) => <ReportLine key={x.text} text={x.text} />)}</div></RankRow>}
@@ -292,7 +293,7 @@ export function DailyReportScreen() {
             ['오늘 사용', <>{Object.entries(txns.filter((t) => t.txn_type === 'USE').reduce((m: Record<string, number>, t) => { m[t.item_no] = (m[t.item_no] ?? 0) + Number(t.qty_change); return m; }, {})).map(([k, v]) => <Chip key={k}>{inv?.items.find((i) => i.item_no === k)?.item_name ?? k} {v}</Chip>)}</>],
             ['재고 부족', <>{(inv?.items ?? []).filter((i) => i.low).map((i) => <Chip key={i.item_no} tone="warn">{i.item_name} — 안전 재고({i.safety_stock}) 이하</Chip>)}</>],
             ['완제품', <><Chip>BRK-A100 입고(합격) {fg.in}</Chip><Chip>출하 {fg.ship}</Chip><Chip>조정 {fg.adj}</Chip><Chip>보류 수량 {inv?.held_lot_qty ?? '—'}</Chip></>],
-          ].map(([k, v]) => <div key={k as string} className="flex flex-wrap items-center gap-1.5"><b className="min-w-[64px] text-small">{k}</b>{v}</div>)}
+          ].map(([k, v]) => <div key={k as string} className="grid grid-cols-[76px_minmax(0,1fr)] gap-x-2"><b className="flex h-[26px] items-center text-small">{k}</b><div className="flex flex-wrap items-center gap-1.5">{v}</div></div>)}{/* 이름 칸을 고정해 칩이 두 줄이 돼도 같은 자리에서 시작 (사용자 요청 2026-10-25) */}
         </div>
       </Sec>
       {role === 'MGR' && !confirmed ? <Sec title="관리자 메모"><input aria-label="관리자 메모" value={memo} onChange={(e) => setMemo(e.target.value)} placeholder="예: 공구 재고 주문 확인" className="h-11 w-full rounded-ctl border border-line px-3" /></Sec>
