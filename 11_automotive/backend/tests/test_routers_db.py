@@ -21,7 +21,7 @@ os.environ.setdefault("MOM_CMM_PROCESSED_DIR", tempfile.mkdtemp(prefix="mom-cmm-
 from app import security  # noqa: E402
 from app.errors import AppError  # noqa: E402
 from app.routers import (alarms, assistant, auth, documents, ingest, inventory, line, maintenance,  # noqa: E402
-                         master, notifications, production, qr, quality)
+                         master, notifications, production, qr, quality, staff)
 from tests.psqldb import PsqlDb, PsqlError, clone_db, drop_db  # noqa: E402
 
 PSQL = os.environ.get("MOM_TEST_PSQL")
@@ -58,11 +58,12 @@ class RouterFlows(unittest.TestCase):
         r = self.db.one("common.user_public", user_id=user_id)
         return security.User(r["user_id"], r["user_name"], r["role_code"], r["home_process_code"] or None)
 
-    def call(self, fn, user_id=None, **kw):
-        """처리기에 걸린 권한 의존성을 그 사용자로 실제로 통과시킨 뒤 처리기를 부른다"""
+    def call(self, fn, as_user=None, **kw):
+        """처리기에 걸린 권한 의존성을 그 사용자(as_user)로 실제로 통과시킨 뒤 처리기를 부른다.
+        처리기 인자 user_id(직원 관리 API)와 겹치지 않게 as_user (2026-10-25)"""
         name, dep = permission_dep(fn)
         if name:
-            kw[name] = dep(self.user(user_id), self.db)
+            kw[name] = dep(self.user(as_user), self.db)
         if "db" in inspect.signature(fn).parameters:
             kw["db"] = self.db
         for pname, p in inspect.signature(fn).parameters.items():   # Query(...) 기본값 채우기
@@ -70,9 +71,9 @@ class RouterFlows(unittest.TestCase):
                 kw[pname] = p.default.default
         return fn(**kw)
 
-    def denied(self, fn, user_id, **kw):
+    def denied(self, fn, as_user, **kw):
         with self.assertRaises(AppError) as e:
-            self.call(fn, user_id, **kw)
+            self.call(fn, as_user, **kw)
         self.assertEqual(e.exception.status, 403)
 
     # ---------------------------------------------------------------
@@ -630,6 +631,117 @@ class RouterFlows(unittest.TestCase):
                          body=maintenance.PmEndIn(result="REFILLED", measured_value=1.5, measured_unit="L"))
         self.assertEqual((done["result"], done["status"]), ("REFILLED", "DRAFT"))
         self.assertIsNone(self.db.one("maintenance.pm_open_maint", pm_record_id=st["pm_record_id"]))
+
+    def test_17_staff(self):
+        """직원 관리 (API-USR-01~05, 2026-10-25): MGR만, 업무 기록 = 기존 표의 "누가" 칸, 고치면 사람마다 수정 이력(APP_USER).
+        직원을 바꾸므로 맨 끝에 둔다 (이름 순서로 test_099 뒤)"""
+        self.db._run("SELECT fn_sim_set('SIM', '2026-09-15 13:30+09', 1, true)", quiet=True)
+        sql = lambda q: self.db._run(q, quiet=True).splitlines()[1]     # noqa: E731 (CSV 머리 줄 다음 값)
+        # ① 명단 (USR-01): MGR만, 12명 · 숫자 4칸 · 지금 근무 · 배치표
+        self.denied(staff.staff_list, "U10", period="7d")
+        got = self.call(staff.staff_list, "U12", period="7d")
+        self.assertEqual((len(got["users"]), got["shift"]["shift_id"], got["shift"]["on"]), (12, "2026-09-15-D", True))
+        u = {x["user_id"]: x for x in got["users"]}
+        self.assertEqual((u["U02"]["on_shift"], u["U05"]["on_shift"]), (True, False))      # 주간 근무 중 / 야간
+        self.assertEqual([k["label"] for k in u["U07"]["kpis"]], ["맡은 작업지시", "작업기록 확정", "수리 시간 합계", "예방 정비 실시"])
+        pq = int(sql("SELECT coalesce(sum(pq), 0) FROM operation_report WHERE worker_user_id = 'U03' "
+                     "AND start_at BETWEEN app_now() - interval '7 days' AND app_now()"))
+        self.assertEqual(u["U03"]["kpis"][0]["value"], pq)                                  # 기록 표의 그 사람 합계와 같음 (14:10 실적은 아직)
+        self.assertEqual((len(got["board"]), got["empty"]), (7, []))
+        self.assertEqual(self.call(staff.staff_list, "U12", period="today")["from"].isoformat()[:19], "2026-09-15T00:00:00")
+        self.assertLessEqual(self.call(staff.staff_list, "U12", period="all")["from"].isoformat()[:10], "2026-09-14")
+        # ② 직원 상세 (USR-02): 최근 한 일 = 최신이 위, 개수 = 숫자 칸과 같은 기록
+        act = self.call(staff.staff_activity, "U12", user_id="U02", period="7d", size=2)
+        prod = int(sql("SELECT count(*) FROM operation_report WHERE worker_user_id = 'U02' AND start_at <= app_now()"))
+        self.assertEqual((act["user"]["user_name"], len(act["items"]), act["kpis"][0]["value"]), ("이서연", 2, int(sql(
+            "SELECT sum(pq) FROM operation_report WHERE worker_user_id = 'U02' AND start_at <= app_now()"))))
+        self.assertGreaterEqual(act["total"], prod)
+        self.assertGreaterEqual(act["items"][0]["at"], act["items"][1]["at"])                # 최신이 위
+        everything = self.call(staff.staff_activity, "U12", user_id="U02", period="7d", size=500)
+        self.assertEqual((len(everything["items"]), sum(1 for i in everything["items"] if i["kind"] == "prod")), (act["total"], prod))
+        self.denied(staff.staff_activity, "U07", user_id="U02", period="7d")
+        with self.assertRaises(AppError) as e:
+            self.call(staff.staff_activity, "U12", user_id="U99", period="7d")
+        self.assertEqual(e.exception.status, 404)
+        # ③ 배치 바꾸기 (USR-03): 한 사람이라도 틀리면 아무것도 안 바뀜, 바꾸면 사람마다 수정 이력 → MGR만 봄
+        change = lambda **kw: staff.AssignIn(changes=[staff.AssignChange(**c) for c in kw["changes"]], reason=kw.get("reason"))   # noqa: E731
+        self.denied(staff.staff_assign, "U10", body=change(changes=[{"user_id": "U02", "home_shift_type": "NIGHT"}]))
+        for bad, reason in (([{"user_id": "U05", "procs": ["OP-30", "OP-40"]}, {"user_id": "U01", "procs": ["OP-10", "OP-20", "OP-30"]}], "PROCESS"),
+                            ([{"user_id": "U07", "procs": ["OP-10"]}], "PROCESS_ROLE"),
+                            ([{"user_id": "U02", "home_shift_type": "DAY"}], "NO_CHANGE")):
+            with self.subTest(reason=reason), self.assertRaises(AppError) as e:
+                self.call(staff.staff_assign, "U12", body=change(changes=bad))
+            self.assertEqual((e.exception.status, e.exception.detail.get("reason")), (422, reason))
+        self.assertEqual(sql("SELECT coalesce(home_process_code_2, '-') FROM app_user WHERE user_id = 'U05'"), "-")   # 앞 사람도 안 바뀜
+        out = self.call(staff.staff_assign, "U12", body=change(changes=[{"user_id": "U02", "home_shift_type": "NIGHT", "procs": ["OP-30", "OP-40"]}],
+                                                               reason="야간 보강"))
+        self.assertEqual([c["user_id"] for c in out["changed"]], ["U02"])
+        self.assertIn("U02", {r["row"]: r["cells"] for r in out["board"]}["OP-40"]["NIGHT"])
+        self.assertIn("주간 OP-30", out["empty"])                                            # 주간 OP-30 담당이 0명이 됨
+        rid = out["changed"][0]["revision_id"]
+        rev = self.call(documents.revision, "U12", revision_id=rid)
+        self.assertEqual((rev["doc_type"], rev["doc_key"], rev["reason"], rev["status_after"]), ("APP_USER", "U02", "야간 보강", "ACTIVE"))
+        self.assertIn("home_process_code_2", str(rev["changes"]))
+        self.assertIn("APP_USER", [r["doc_type"] for r in self.call(documents.revisions_recent, "U12", limit=20)["revisions"]])
+        self.assertNotIn("APP_USER", [r["doc_type"] for r in self.call(documents.revisions_recent, "U10", limit=20)["revisions"]])
+        self.denied(documents.revision, "U10", revision_id=rid)
+        self.assertEqual(sql("SELECT home_shift_type || ' ' || home_process_code_2 FROM app_user WHERE user_id = 'U02'"),
+                         "NIGHT OP-40")                                                         # 바로 적용 (FR-USR-01-06)
+        # ④ 직원 추가 (USR-04): 다음 번호, 비밀번호는 해시만 (응답·이력에 원문 없음), 같은 아이디는 409
+        new = staff.StaffIn(user_name="새 작업자", role_code="OPR", home_shift_type="DAY", procs=["OP-20"], password="newpass99")
+        self.denied(staff.staff_create, "U10", body=new)
+        made = self.call(staff.staff_create, "U12", body=new)
+        self.assertEqual((made["user"]["user_id"], made["version_no"]), ("U13", 0))
+        self.assertNotIn("newpass99", str(made))
+        self.assertEqual(sql("SELECT count(*) FROM document_revision_change WHERE after_value LIKE '%newpass99%' "
+                             "OR before_value LIKE '%newpass99%'"), "0")
+        self.assertEqual(sql(f"SELECT reason FROM document_revision WHERE revision_id = {made['revision_id']}"), "직원 추가")
+        tok = auth.login(auth.LoginIn(user_id="U13", password="newpass99"), REQ, self.db)
+        self.assertEqual((tok.role_code, tok.process_codes), ("OPR", ["OP-20"]))
+        with self.assertRaises(AppError) as e:
+            self.call(staff.staff_create, "U12", body=staff.StaffIn(user_id="U13", user_name="중복", role_code="MNT",
+                                                                   home_shift_type="DAY", password="newpass99"))
+        self.assertEqual((e.exception.status, e.exception.detail.get("reason")), (409, "DUPLICATE"))
+        # ⑤ 정보 고치기 (USR-05): 사용 중지 → 로그인·이미 받은 토큰 막힘, 명단에서 빠짐(include_inactive면 맨 뒤), 다시 사용
+        off = self.call(staff.staff_update, "U12", user_id="U13", body=staff.StaffPatch(is_active=False, reason="퇴사"))
+        self.assertEqual((off["user"]["is_active"] in (False, "f"), off["version_no"]), (True, 1))
+        with self.assertRaises(AppError):
+            auth.login(auth.LoginIn(user_id="U13", password="newpass99"), REQ, self.db)
+        with self.assertRaises(AppError) as e:
+            security.current_user("Bearer " + tok.access_token, self.db)
+        self.assertEqual(e.exception.status, 401)
+        self.assertNotIn("U13", [x["user_id"] for x in self.call(staff.staff_list, "U12", period="7d")["users"]])
+        self.assertEqual(self.call(staff.staff_list, "U12", period="7d", include_inactive=True)["users"][-1]["user_id"], "U13")
+        with self.assertRaises(AppError) as e:
+            self.call(staff.staff_assign, "U12", body=change(changes=[{"user_id": "U13", "home_shift_type": "NIGHT"}]))
+        self.assertEqual(e.exception.detail.get("reason"), "INACTIVE")
+        self.call(staff.staff_update, "U12", user_id="U13", body=staff.StaffPatch(is_active=True, password="another99"))
+        self.assertEqual(auth.login(auth.LoginIn(user_id="U13", password="another99"), REQ, self.db).user_id, "U13")
+        moved = self.call(staff.staff_update, "U12", user_id="U13", body=staff.StaffPatch(role_code="SUP"))   # 공정 두 칸 비움
+        self.assertEqual((moved["user"]["role_code"], moved["user"]["home_process_code"] or None), ("SUP", None))   # 시험 psql은 NULL = ""
+        for uid, body, reason in (("U12", staff.StaffPatch(is_active=False), "SELF"), ("U12", staff.StaffPatch(role_code="SUP"), "SELF"),
+                                  ("U13", staff.StaffPatch(user_name="윤가은2", role_code="SUP"), None),
+                                  ("U13", staff.StaffPatch(role_code="SUP"), "NO_CHANGE"), ("U13", staff.StaffPatch(password="1234"), "PASSWORD")):
+            if reason is None:
+                self.call(staff.staff_update, "U12", user_id=uid, body=body)
+                continue
+            with self.subTest(reason=reason), self.assertRaises(AppError) as e:
+                self.call(staff.staff_update, "U12", user_id=uid, body=body)
+            self.assertEqual(e.exception.detail.get("reason"), reason)
+        self.denied(staff.staff_update, "U10", user_id="U13", body=staff.StaffPatch(user_name="x"))
+        # ⑥ 설정 사용자 고치기(SET-03)도 같은 길 — 확인·수정 이력
+        set3 = self.call(master.user_update, "U12", body=master.UserIn(user_id="U13", home_shift_type="NIGHT"))
+        self.assertEqual((set3["user"]["home_shift_type"], set3["version_no"]), ("NIGHT", 5))
+        with self.assertRaises(AppError) as e:
+            self.call(master.user_update, "U12", body=master.UserIn(user_id="U13", home_process_code="OP-10"))
+        self.assertEqual(e.exception.detail.get("reason"), "PROCESS_ROLE")
+        # 로그인한 누구나 보는 직원 목록 (GET /api/users): 새 직원·바뀐 배치가 보이고, 숫자·로그인 시각은 없음
+        pub = {x["user_id"]: x for x in staff.users_public(self.user("U02"), self.db)["users"]}
+        self.assertEqual((pub["U13"]["role_code"], pub["U02"]["home_shift_type"], len(pub)), ("SUP", "NIGHT", 13))
+        self.assertNotIn("last_login_at", pub["U02"])
+        # 직원 상세의 "문서 수정"에 직원 배치 고친 것도 들어감 (U12가 고친 수정 이력)
+        mine = self.call(staff.staff_activity, "U12", user_id="U12", period="today")
+        self.assertIn("문서 수정 · 직원 배치 U13", " ".join(i["text"] for i in mine["items"]))
 
 
 if __name__ == "__main__":

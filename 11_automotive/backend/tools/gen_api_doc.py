@@ -16,10 +16,10 @@ os.environ.setdefault("MOM_JWT_SECRET", "doc-only")
 
 import app.main as main  # noqa: E402
 from app.routers import (alarms, assistant, auth, documents, ingest, inventory, line, maintenance,  # noqa: E402
-                         master, notifications, production, qr, quality, stream)
+                         master, notifications, production, qr, quality, staff, stream)
 
 MODULES = [auth, master, line, alarms, notifications, stream, production, maintenance, inventory, qr, quality, documents,
-           assistant, ingest]
+           staff, assistant, ingest]
 
 
 def who(router, fn, route=None) -> str:

@@ -113,6 +113,8 @@ class TestPermissionMatrix(unittest.TestCase):
         ("QUALITY", "INPUT",              "○", "-", "-", "-"),     # 측정 담당 작업자 (처리기가 OP-50 확인)
         ("QUALITY", "CHECK",              "-", "-", "○", "-"),
         ("SETTINGS", "SETTING",           "-", "-", "-", "○"),
+        ("STAFF", "VIEW",                 "-", "-", "-", "○"),     # 직원 관리 (2026-10-25, NFR-SEC-04)
+        ("STAFF", "EDIT",                 "-", "-", "-", "○"),
     ]
 
     def test_matrix(self):
@@ -142,6 +144,8 @@ class TestPermissionMatrix(unittest.TestCase):
         daily = {"table": "document_revision", "op": "INSERT", "id": "2026-09-15", "doc_type": "DAILY_REPORT"}
         self.assertEqual(visible_events(daily, "OPR", t), [])
         self.assertEqual(visible_events(daily, "MNT", t), ["document_changed"])
+        staff = {"table": "document_revision", "op": "INSERT", "id": "U02", "doc_type": "APP_USER"}   # 직원 배치 (2026-10-25)
+        self.assertEqual([r for r in ("OPR", "MNT", "SUP", "MGR") if visible_events(staff, r, t)], ["MGR"])
         full = {"table": "work_record", "op": "UPDATE", "id": "MR-0901", "status": "CONFIRMED"}
         self.assertEqual(visible_events(full, "OPR", t), ["kpi_updated"])                  # 정식 기록은 못 봄
         simple = dict(full, id="MR-S-0901")

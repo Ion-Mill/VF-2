@@ -18,6 +18,9 @@ EXPECTED = {
     ("GET", "/api/settings/users"): "...M", ("PATCH", "/api/settings/users"): "...M",
     ("GET", "/api/settings/notification-rules"): "...M", ("PATCH", "/api/settings/notification-rules"): "...M",
     ("POST", "/api/sim/snapshot"): "...M",
+    # 직원 관리 (API명세서 USR-01~03 "G", 1025 백엔드 요청 3장 USR-04·05 [제안]) — 보기·바꾸기 모두 MGR만 (NFR-SEC-04)
+    ("GET", "/api/staff"): "...M", ("GET", "/api/staff/{user_id}/activity"): "...M",
+    ("PATCH", "/api/staff/assignments"): "...M", ("POST", "/api/staff"): "...M", ("PATCH", "/api/staff/{user_id}"): "...M",
     # 3D 라인 뷰·생산 (LINE-01~07 전)
     ("GET", "/api/line/layout"): ALL, ("GET", "/api/line/twin"): ALL, ("GET", "/api/replay"): ALL,
     ("GET", "/api/production/target"): ALL, ("GET", "/api/production/orders"): ALL,
@@ -116,7 +119,8 @@ EXPECTED = {
 # 로그인만 보는 API (처리기 안에서 시연 모드·MGR 등을 따로 본다)
 LOGIN_ONLY = {"/api/auth/login", "/api/auth/logout", "/api/demo/role", "/api/me", "/api/codes", "/api/dataset",
               "/api/sim/clock", "/api/sim/inject", "/api/sim/reset", "/api/sim/fire", "/api/stream/events",
-              "/api/assist/{kind}"}     # 비서가 다듬은 문장 묻기 (2026-10-24) — 문장만, 운영 데이터를 바꾸지 않음
+              "/api/assist/{kind}",     # 비서가 다듬은 문장 묻기 (2026-10-24) — 문장만, 운영 데이터를 바꾸지 않음
+              "/api/users"}             # 직원 이름·배치 목록 (2026-10-25) — 화면 이름 표시·배치 바로 적용, 숫자·기록 없음
 
 
 class TestRoleMatrix(unittest.TestCase):

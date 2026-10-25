@@ -14,8 +14,7 @@ from ..config import get_settings
 from ..db import Db, get_db
 from ..errors import AppError
 from ..security import Actor, User, current_user, require, require_any
-from ..services import sim_link
-from .common import changed
+from ..services import sim_link, staff
 
 router = APIRouter(prefix="/api", tags=["기준 정보·설정·시연"])
 
@@ -73,14 +72,17 @@ class UserIn(BaseModel):
     role_code: str | None = Field(None, pattern="^(OPR|MNT|SUP|MGR)$")
     home_shift_type: str | None = Field(None, pattern="^(DAY|NIGHT)$")
     home_process_code: str | None = None
-    home_process_code_2: str | None = None   # 두 번째 담당 공정 (OPR만, 2026-10-10)
+    home_process_code_2: str | None = None   # 두 번째 담당 공정 (OPR만, 2026-10-10). 비우려면 ""
     is_active: bool | None = None      # 퇴사·중지 = false (행은 지우지 않음, 6.53 #20)
 
 
 @router.patch("/settings/users")
-def user_update(body: UserIn, _: Actor = Depends(require("SETTINGS", "SETTING")), db: Db = Depends(get_db)):
-    """사용자·역할 고치기 (MGR, SET-03). 권한 표는 다음 요청부터 (60초 캐시)"""
-    return changed(db.exec("settings.user_update", **body.model_dump()), "사용자")
+def user_update(body: UserIn, actor: Actor = Depends(require("SETTINGS", "SETTING")), db: Db = Depends(get_db)):
+    """사용자·역할 고치기 (MGR, SET-03). 보낸 칸만. 2026-10-25부터 직원 관리 정보 고치기(PATCH /api/staff/{user_id}, USR-05)와 같은 길 —
+    역할·담당 공정·자기 자신·관리자 0명 확인, 사람마다 수정 이력(APP_USER), 돌려주는 값도 같음. 비밀번호는 USR-05.
+    직원 관리 페이지가 생겨 설정의 사용자 탭은 그쪽으로 옮김 (FR-USR-01-12)"""
+    change = body.model_dump(exclude_none=True)
+    return staff.update_user(db, actor.user_id, change.pop("user_id"), change)
 
 
 # ---------------- 시연 (SIM-01·02, NFR-DATA-10·11) ----------------

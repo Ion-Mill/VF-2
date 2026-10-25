@@ -3,6 +3,7 @@
 """
 from __future__ import annotations
 
+import logging
 import time
 from dataclasses import dataclass
 from typing import Callable
@@ -15,6 +16,8 @@ from .db import Db, get_db, side_engine
 from .domain.permissions import PermissionTable
 from .domain.tokens import decode_token
 from .errors import AppError
+
+log = logging.getLogger("mom.security")
 
 
 @dataclass(frozen=True)
@@ -75,10 +78,37 @@ def current_user(authorization: str | None = Header(default=None), db: Db = Depe
     return User(row["user_id"], row["user_name"], row["role_code"], row["home_process_code"], row.get("home_process_code_2") or None)
 
 
+_user_state_cache: tuple[float, dict[str, tuple[str, bool]]] | None = None
+USER_STATE_TTL_SECONDS = 60
+
+
+def user_states_side() -> dict[str, tuple[str, bool]]:
+    """사용자마다 (역할, 사용 중) — 60초 기억 (2026-10-25). 기억이 지났으면 작은 연결 줄(db.side_engine)로 다시 읽는다.
+    읽지 못하면 앞 값 (처음이면 빈 표 = 막지 않음) — 1초마다 부르는 3D 라인 뷰가 DB 한 번 실패로 멈추지 않게"""
+    global _user_state_cache
+    if _user_state_cache is not None and time.monotonic() - _user_state_cache[0] <= USER_STATE_TTL_SECONDS:
+        return _user_state_cache[1]
+    try:
+        with side_engine().connect() as conn:
+            rows = Db(conn).all("common.user_states")
+    except Exception:
+        log.exception("사용자 상태를 읽지 못함 — 앞 값으로 확인")
+        return _user_state_cache[1] if _user_state_cache else {}
+    _user_state_cache = (time.monotonic(), {r["user_id"]: (r["role_code"], bool(r["is_active"])) for r in rows})
+    return _user_state_cache[1]
+
+
+def reset_user_state_cache() -> None:
+    """직원 사용 중지·역할 변경 뒤 (app/services/staff.py). 다른 서버 프로세스는 60초 안에 따라온다"""
+    global _user_state_cache
+    _user_state_cache = None
+
+
 def token_user(authorization: str | None = Header(default=None)) -> User:
-    """DB를 읽지 않는 로그인 확인 (2026-10-24): 토큰 서명·만료와 토큰 안의 역할만 본다.
+    """요청마다 DB를 읽지 않는 로그인 확인 (2026-10-24): 토큰 서명·만료와 토큰 안의 역할.
     1초마다 모든 화면이 부르는 /api/line/twin 전용 — 여기서 요청마다 DB 연결을 잡으면 접속자가 많을 때 연결 줄이 막힌다.
-    읽기만 하는 주소에만 쓴다 (사용 중지·역할 변경은 다음 로그인부터 반영). 바꾸는 주소는 지금처럼 current_user"""
+    사용 중지·역할 변경은 60초 기억한 사용자 상태(user_states_side)로 막는다 (2026-10-25, 1025 직원 관리 요청 3장 —
+    이미 받은 토큰도 막기): 사용 중지됐거나 역할이 토큰과 다르면 401 → 다시 로그인. 바꾸는 주소는 지금처럼 current_user"""
     if not authorization or not authorization.lower().startswith("bearer "):
         raise AppError(401, "UNAUTHORIZED", "로그인 필요")
     try:
@@ -87,6 +117,9 @@ def token_user(authorization: str | None = Header(default=None)) -> User:
         raise AppError(401, "UNAUTHORIZED", "로그인이 만료됐거나 올바르지 않음") from None
     if not claims.get("role"):
         raise AppError(401, "UNAUTHORIZED", "로그인이 만료됐거나 올바르지 않음")
+    state = user_states_side().get(claims["sub"])      # 기억에 없으면(방금 만든 직원) 토큰을 믿는다 — 우리가 서명한 토큰
+    if state is not None and (not state[1] or state[0] != claims["role"]):
+        raise AppError(401, "UNAUTHORIZED", "사용 중지됐거나 역할이 바뀐 사용자 — 다시 로그인")
     return User(claims["sub"], claims["sub"], claims["role"])
 
 

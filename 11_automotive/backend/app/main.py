@@ -6,6 +6,7 @@
   /api/lots                로트 (LOT)         /api/inspection·quality            품질 (QLT)
   /api/inventory·shipments·raw-lots·tools  재고·출하·공구 (INV·TOOL)
   /api/settings            설정 (SET)         /api/sim                           시연 (SIM)
+  /api/staff               직원 관리 (USR)
   /api/stream/events       실시간 (STR)
   명세서 밖 (서버끼리): /api/ingest (설비 데이터, 서비스 키), /api/assistant/tools·drafts (AI 비서 서비스, 서비스 키)
 """
@@ -31,7 +32,7 @@ from .domain import synthetic
 from .domain.tokens import decode_token
 from .realtime import broadcaster
 from .routers import (alarms, assistant, auth, documents, ingest, inventory, line, maintenance, master, notifications,
-                      production, qr, quality, stream)
+                      production, qr, quality, staff, stream)
 from .workers import cmm_watcher, scheduler
 
 log = logging.getLogger("mom")
@@ -60,7 +61,7 @@ app.add_middleware(CORSMiddleware, allow_origins=get_settings().cors_origins, al
                    allow_methods=["*"], allow_headers=["*"])
 
 for r in (auth, master, line, alarms, notifications, stream, production, maintenance, inventory, qr, quality, documents,
-          assistant, ingest):
+          staff, assistant, ingest):
     app.include_router(r.router)
 
 WRITE_METHODS = {"POST", "PUT", "PATCH", "DELETE"}

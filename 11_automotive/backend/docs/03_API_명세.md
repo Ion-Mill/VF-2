@@ -87,7 +87,7 @@
 ## 4. 엔드포인트 목록
 
 <!-- BEGIN:api -->
-<!-- tools/gen_api_doc.py 가 만든 표 (146개). -->
+<!-- tools/gen_api_doc.py 가 만든 표 (146개 + 직원 관리 6개 = 152개 — 2026-10-25 직원 관리 줄만 손으로 넣음. 표 전체를 다시 만들면 손으로 덧붙인 설명이 사라지니 비교 뒤에). -->
 | 방법 | 경로 | 권한 (role_permission target·action) | 설명 |
 |---|---|---|---|
 | POST | `/api/auth/login` | 없음 | 아이디·비밀번호 로그인 → JWT. 실패도 접근 기록에 남는다 |
@@ -100,7 +100,7 @@
 | GET | `/api/settings/targets` | `SETTINGS·SETTING` | 교대 목표(90)·하루 목표(180) — 지금 교대와 다가오는 교대 (SET-02). 총 목표 = 목표 + 이월 (R-88) |
 | PATCH | `/api/settings/targets` | `SETTINGS·SETTING` | 목표 바꾸기 (MGR, SET-02). 아직 시작하지 않은 교대·근무일에만 — 지난·진행 중 값은 그대로. 야간 이월을 다시 계산한다 |
 | GET | `/api/settings/users` | `SETTINGS·SETTING` | 사용자·역할 목록 (SET-03, NFR-SEC-04). 비밀번호 해시는 내보내지 않는다 |
-| PATCH | `/api/settings/users` | `SETTINGS·SETTING` | 사용자·역할 고치기 (MGR, SET-03). 권한 표는 다음 요청부터 (60초 캐시) |
+| PATCH | `/api/settings/users` | `SETTINGS·SETTING` | 사용자·역할 고치기 (MGR, SET-03). 보낸 칸만. 2026-10-25부터 직원 관리 정보 고치기(PATCH /api/staff/{user_id}, USR-05)와 같은 길 — |
 | GET | `/api/sim/clock` | 로그인 | 시연 시계 지금 값 (app_now) |
 | POST | `/api/sim/clock` | 로그인 | 시연 시계 배속·일시정지·넘기기 (API-SIM-02, NFR-DATA-10). 시연 모드에서는 누구나 배속·일시정지·주간 끝 넘기기, |
 | POST | `/api/sim/inject` | 로그인 | 시연 사건 넣기 (SIM-01, NFR-DATA-11) — 알람 1건을 '주입' 표시로 기록 (알림·반복 알람 판정은 실제와 같게). |
@@ -215,6 +215,12 @@
 | GET | `/api/internal-docs/{doc_no}` | `INTERNAL_DOC·VIEW` | 사내 문서 1건 (Rev·승인 정보) |
 | GET | `/api/internal-docs/{doc_no}/sections/{section}` | `INTERNAL_DOC·VIEW` | 출처 요약 카드·팝업 (DOCS-01, R-85): 문서 이름·번호·개정·절 제목 + 앞 2~3줄(card) 또는 그 절 본문(full). |
 | POST | `/api/internal-docs/{doc_no}/revisions/{rev}/approve` | `INTERNAL_DOC·APPROVE` | 사내 문서 개정 승인 (DOCS-02, MGR, R-52): 새 현행판 + 문서 버전 + 관련 역할 전체에게 문서 수정 알림 |
+| GET | `/api/users` | 로그인 | 직원 이름·역할·배치 목록 — 로그인한 누구나 (2026-10-25, 시연 서버 /api/users와 같은 모양 `{users}`). |
+| GET | `/api/staff` | `STAFF·VIEW` | 직원 명단 + 지금 교대 + 사람마다 역할별 숫자 4칸 + 배치표 + 담당 0명 공정 칸 (USR-01, FR-USR-01-01~03·07·09) |
+| GET | `/api/staff/{user_id}/activity` | `STAFF·VIEW` | 직원 상세: 숫자 4칸(합계만, 양품률만 비율) + 최근 한 일 (최신이 위, 누르면 열 화면·키). USR-02, FR-USR-01-07·08 |
+| PATCH | `/api/staff/assignments` | `STAFF·EDIT` | 배치 바꾸기 (USR-03, 여러 명 한 번에, FR-USR-01-04~06): 담당 교대·담당 공정. 같은 역할만 그 줄(공정 = OPR), 담당 공정 2개까지 — |
+| POST | `/api/staff` | `STAFF·EDIT` | 직원 추가 (USR-04 [제안]): 수정 이력 v0 "직원 추가". 아이디가 이미 있으면 409 INVALID_STATE(DUPLICATE), |
+| PATCH | `/api/staff/{user_id}` | `STAFF·EDIT` | 직원 정보 고치기 (USR-05 [제안]): 보낸 칸만. 지금 로그인한 관리자는 자기 자신을 사용 중지하거나 MGR이 아닌 역할로 바꾸지 |
 | GET | `/api/assistant/tools` | 서비스 키 `assistant` | 이 사용자가 쓸 수 있는 도구의 JSON Schema (LLM 도구 정의에 그대로) |
 | POST | `/api/assistant/tools/{name}` | 서비스 키 `assistant` | 조회 도구 실행 (읽기 전용). 대신 묻는 사용자의 권한으로 거르고 접근 기록에 남긴다 |
 | GET | `/api/assistant/docs` | 서비스 키 `assistant` | 사내 문서 조각 전체(현행 개정만, 문서 목록 포함) — 비서가 시작할 때 한 번 읽는다(`DOCS_SOURCE=db`). 읽기 전용 연결, 접근 기록 없음 (2026-10-25) |
@@ -292,8 +298,10 @@
 | QLT-01~05 | `GET·POST /api/inspection/results`, `…/{id}/select`, `GET /api/inspection/cmm-imports`, `GET /api/quality/summary` | quality.* | POST는 게이지·외관(judgement) 또는 수동 입력(measured_value) |
 | INV-01~05 | `GET /api/inventory`, `POST /api/inventory/txns`, `POST /api/raw-lots/{no}/inspect`, `GET·POST /api/shipments`·`PATCH /{no}`, `PATCH /api/inventory/items/{no}/safety-stock` | inventory.* | 출하 등록은 `lines`·`confirm`까지 한 번에 |
 | TOOL-01·02 | `GET /api/tools`, `POST /api/tools/{id}/change` | inventory.tools·tool_change | |
-| SET-01~03 | `GET·PATCH /api/settings/notification-rules·targets·users` | notifications.rules·rule_update, master.targets*·users* | PATCH 본문에 `rule_code`·`user_id`. 목표는 아직 시작 안 한 교대·근무일만 |
+| SET-01~03 | `GET·PATCH /api/settings/notification-rules·targets·users` | notifications.rules·rule_update, master.targets*·users* | PATCH 본문에 `rule_code`·`user_id`. 목표는 아직 시작 안 한 교대·근무일만. 사용자 PATCH는 2026-10-25부터 USR-05와 같은 길(확인·수정 이력, 돌려주는 값 `{user, revision_id, version_no}`) |
 | SIM-01·02 | `POST /api/sim/inject`, `POST /api/sim/clock` | master.inject·set_sim_clock | inject는 `scenario_code`(S1·S3·S4·S6·S7, 2026-10-25 S7 더함) 필수 |
+| USR-01~03 | `GET /api/staff`, `GET /api/staff/{user_id}/activity`, `PATCH /api/staff/assignments` | staff.staff_list·staff_activity·staff_assign (`services/staff.py`) | 2026-10-25. 명세서 밖으로 `GET /api/users`(로그인한 누구나, 이름·역할·담당 교대·공정·사용 중만 — 화면 이름 표시·배치 바로 적용, 시연 서버 `users`와 같은 모양) 더함. 기간 `period` = `today`·`7d`(처음)·`30d`·`sep`(9월, 옛 값)·**`all`(기록 전체, 더함)**. 명단은 사용 중인 직원만(`include_inactive=true`면 사용 중지도 맨 뒤). 배치 바꾸기는 `procs`(목록, 화면 모양)도 받음. 업무 기록 = 기존 표의 "누가" 칸 (`sql/staff.sql events`) — 설정 변경 숫자는 접근 기록(실제 시각)에서 |
+| USR-04·05 [제안] | `POST /api/staff`, `PATCH /api/staff/{user_id}` | staff.staff_create·staff_update | 2026-10-25 (`구현_중_수정사항/1025_직원관리_백엔드_요청.md` 3장, 팀 결정 "A·B 다 한다" — API명세서_v1에는 아직 없음). 지우기 없음(사용 중지). 비밀번호 최소 `MOM_PASSWORD_MIN_LENGTH`(기본 8 [선택 필요]). 중복 아이디 409 `INVALID_STATE`(`DUPLICATE`), 규칙 위반 422 `VALIDATION`(`SELF`·`LAST_MGR`·`PROCESS_ROLE`·`PROCESS`·`SHIFT`·`PASSWORD`·`NO_CHANGE`). 고치면 사람마다 수정 이력 `APP_USER`. SET-03 PATCH도 같은 길 |
 | SIM-03 | `POST /api/sim/reset` | master.sim_reset | 시연 모드만. 시연 기준점으로 되돌리고 시연 시계를 그 시각에 멈춤 (설정·계정·접속 기록은 그대로). 기준점은 목업·생성기 적재 뒤 자동, 바꾸기는 `POST /api/sim/snapshot`(MGR) |
 
 **명세서보다 더한 것 (명세서 주소 체계 안에 둠):** `GET /api/alarms`·`/{id}`, `GET /api/kpi/stops`, `GET /api/lots/{no}`·`POST …/judge`, `GET /api/holds`, `POST /api/maint/work-orders`·`/work-records`(만들기)·`…/checks/{seq}`·`…/parts`·`…/check`, `GET·PATCH /api/maint/pm-records/{id}`·`…/confirm`, `POST /api/reports/daily/{date}/revise`, `GET /api/documents/revisions/{id}`, `GET /api/internal-docs`·`/{doc_no}`, `GET·POST /api/inspection/instructions`·`…/start`, `POST /api/inspection/cmm-imports`(올리기), `GET /api/quality/cpk`·`/defects`, `GET /api/inventory/{no}/txns`, `POST /api/raw-lots`(원자재 입고), `GET /api/shipments/candidates`·`/{no}`, `PUT·DELETE /api/shipments/{no}/lines/{lot}`, `POST /api/shipments/{no}/confirm`, `GET /api/tools/{id}/changes`, `GET /api/codes`·`/dataset`·`/sim/clock`·`/admin/retention`, `POST /api/sim/snapshot`. 서버끼리: `/api/ingest/*`, `/api/assistant/tools·drafts·notifications/*` (서비스 키).

@@ -17,6 +17,9 @@ class Settings(BaseModel):
     db_max_overflow: int = 10
     jwt_secret: str = ""
     jwt_minutes: int = 12 * 60
+    # 직원 추가·비밀번호 다시 정하기(API-USR-04·05)의 비밀번호 최소 길이 [선택 필요: 팀 결정, 2026-10-25] —
+    #   지금 시연 비밀번호(8자)보다 짧지 않게. [참고] 개인정보 안전성 확보조치 기준 해설서의 "3종류 이상 조합 8자리"
+    password_min_length: int = 8
     # 시뮬레이터·AI 비서 서비스가 부르는 API의 키 (사람 로그인과 따로)
     ingest_key: str = ""
     assistant_key: str = ""

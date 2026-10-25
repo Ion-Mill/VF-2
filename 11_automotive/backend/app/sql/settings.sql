@@ -28,13 +28,4 @@ SELECT count(fn_refresh_carry_over(work_date))::int AS refreshed FROM shift WHER
 SELECT user_id, user_name, role_code, home_shift_type, home_process_code, home_process_code_2, is_active, created_at, last_login_at
   FROM app_user ORDER BY role_code, user_id;
 
--- 사용자 고치기 (비밀번호는 여기서 바꾸지 않음 — tools/gen_dev_users.py, 로그인 방식은 [선택 필요: 기술 회의])
--- name: user_update
-UPDATE app_user
-   SET user_name = coalesce(CAST(:user_name AS varchar), user_name),
-       role_code = coalesce(CAST(:role_code AS varchar), role_code),
-       home_shift_type = coalesce(CAST(:home_shift_type AS varchar), home_shift_type),
-       home_process_code = coalesce(CAST(:home_process_code AS varchar), home_process_code),
-       home_process_code_2 = coalesce(CAST(:home_process_code_2 AS varchar), home_process_code_2),
-       is_active = coalesce(CAST(:is_active AS boolean), is_active)
- WHERE user_id = :user_id;
+-- 사용자 고치기(SET-03 PATCH)는 2026-10-25부터 직원 관리와 같은 길 — app/services/staff.py update_user, app/sql/staff.sql user_set
