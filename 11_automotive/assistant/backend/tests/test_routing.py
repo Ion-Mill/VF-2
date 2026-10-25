@@ -69,7 +69,7 @@ def test_request_guard_returns_no_data(v2):
 def test_screen_alarm_context_first(monkeypatch):
     ctx = {"screen": "SCR-09", "alarm_key": "2075"}
     old = A.answer("이 알람 몇 번 났어?", "SUP", ctx)
-    assert old["status"] == "문서에 없음"                                          # 예전 버그 (기록)
+    assert old["status"] == "답변" and "알람 2075" not in old["conclusion"]      # 옛 파서는 화면 알람을 안 쓴다. 번호 없는 "몇 번"은 이제 기간 전체 건수로 답한다 (예전엔 "문서에 없음" 버그, 2026-10-25 AWS 점검 보고)
     monkeypatch.setenv("PARSE_V2", "1")
     a = A.answer("이 알람 몇 번 났어?", "SUP", ctx)
     assert a["status"] == "답변" and "알람 2075" in a["conclusion"] and a["current_data"]

@@ -74,13 +74,14 @@ _DECIDE_SYSTEM = """너는 자동차 부품 절삭가공 라인의 비서다.
 한 턴에는 질문과 조회 중 하나만 한다. 뜻이 안 정해지면 question에 질문만 쓰고 lookups는 빈 배열로 둔다. 뜻이 정해지면 question은 빈 문자열이다.
 조회 name은 생산, OEE, MTTR, 공구 수명, 알람 횟수, 정지 횟수, 재고, 가동 상태, 정비 기한만 쓴다. 새 조회는 만들지 않는다.
 equipment는 설비 이름(SAW-01, MIL-01, VF2-01, VF2-02, WSH-01, CMM-01), 모든 설비, 또는 빈 문자열이다. 모든설비는 모든 설비와 같고, 가동상태는 가동 상태와 같다.
-period는 어제·오늘·지난 N일·이번 교대·직전 교대 같은 기간 말이다. 달력 날짜는 쓰지 않는다. 이번 말에 기간이 없어도 앞 대화의 기간 말을 period에 넣는다.
+period는 어제·오늘·지난 N일·이번 교대·직전 교대·이번 달·10월 같은 기간 말이다. 10월 23일처럼 일까지 적은 달력 날짜는 쓰지 않는다. 이번 말에 기간이 없어도 앞 대화의 기간 말을 period에 넣는다.
 kind는 고장·알람 번호처럼 종류를 좁히는 말이다. 없으면 빈 문자열이다. 재고는 품목이 있으면 kind에 그 품목 이름만 넣고, 품목이 없으면 kind를 비운다. 한 질문에 조회가 둘이면 lookups에 둘 다 넣는다.
 재고처럼 설비 없이 되는 조회는 equipment를 비운다. 가동 상태·정비 기한·정지 횟수·MTTR은 설비 이름이 없으면 조회하지 말고 설비 이름을 질문한다.
+알람 횟수는 알람 번호나 설비 이름이 없어도 조회한다 (기간 안 전체 건수). 번호가 없다고 되묻지 않고, 설비를 말하지 않았으면 equipment는 모든 설비로 둔다.
 앞 대화의 숫자는 어떤 질문인지 푸는 데만 쓰고, 그 숫자를 답으로 다시 말하지 않는다. 마크다운 기호는 쓰지 않는다."""
 
 _WRITE_SYSTEM = """이번 조회 결과의 숫자만 말한다. 결과에 없는 숫자는 만들지 않는다. 앞 대화의 숫자도 이번 결과에 없으면 다시 말하지 않는다.
-해요체로 짧게 풀어 쓴다. 문장이 끝나면 줄을 바꾼다. 조회 문장을 그대로 베끼지 않는다. 재고 원문에 부족 수량이 있으면 그 숫자를 마지막에 말한다. 원문에 없는 부족 수량은 계산해 만들지 않는다. 마크다운 기호는 쓰지 않는다."""
+해요체로 짧게 풀어 쓴다. 문장이 끝나면 줄을 바꾼다. 조회 문장을 그대로 베끼지 않는다. 알람 건수 원문의 첫 줄에 합계('알람 N건', 뒤에 설비별 건수가 괄호로 있을 수 있다)가 있으면 첫 문장에 그 합계를 말하고 설비별 건수를 이어 말한다 (합계는 원문의 숫자를 그대로 쓰고 직접 더하지 않는다). 재고 원문에 부족 수량이 있으면 그 숫자를 마지막에 말한다. 원문에 없는 부족 수량은 계산해 만들지 않는다. 마크다운 기호는 쓰지 않는다."""
 
 _ASK_SYSTEM = """조회는 실행하지 않았다. 빠진 것(설비 이름 또는 알람 번호)만 질문한다. 문장이 끝나면 줄을 바꾼다. 숫자를 만들지 않는다. 마크다운 기호는 쓰지 않는다."""
 
@@ -146,6 +147,17 @@ def period_window(period: str) -> tuple[date | None, date | None, str | None]:
         end = ref - timedelta(days=1)
         start = end - timedelta(days=max(n, 1) - 1)
         return start, end, shift
+    # 달 말 (2026-10-25 AWS 점검 보고): "이번 달"·"10월"은 그 달 중 운영 기록이 있는 기간 (시계 없음이면 9월만 — 예전 동작). 일까지 적은 달력 날짜는 위 _CALENDAR가 이미 지웠다
+    from backend.services.answer import month_in_data_period
+    if re.search(r"이번\s*달|이번달|금월", text):
+        got = month_in_data_period(ref.month)
+        if got is not None:
+            return got[0], got[1], shift
+    m = re.search(r"(?<!\d)(\d{1,2})\s*월", text)
+    if m and 1 <= int(m.group(1)) <= 12:
+        got = month_in_data_period(int(m.group(1)))
+        if got is not None:
+            return got[0], got[1], shift
     return None, None, shift
 
 
@@ -215,14 +227,18 @@ def prepare(lookups: list) -> tuple[list[dict], list[str]]:
         if name in NEED_EQUIPMENT and not scope:
             blocked.append(name)
             continue
-        if name == "alarm_count" and not _CODE.search(kind):
-            blocked.append(name)
-            continue
+        # 알람 번호가 없는 알람 건수 질문("어제 알람 몇 건이야/몇 번 떴어?")은 막지 않는다 — 기간 안 알람 전체 건수를 설비별로 더해 답한다 (2026-10-25 AWS 점검 보고. 전에는 설비·번호를 되물었다)
         if name == "oee" and not scope:
             blocked.append(name)
             continue
-        start, end, shift = period_window(str(item.get("period") or ""))
-        ready.append({"name": name, "equipment": scope, "kind": kind, "start": start, "end": end, "shift": shift})
+        period = str(item.get("period") or "")
+        start, end, shift = period_window(period)
+        outside = None
+        if start is None:     # "9월"처럼 달 이름을 말했는데 그 달이 운영 기록 밖이면, 기본 기간(다른 달)을 조용히 대신 쓰지 않고 기록 밖이라고 알린다
+            mm = re.search(r"(?<!\d)(\d{1,2})\s*월", _CALENDAR.sub(" ", period))
+            if mm and 1 <= int(mm.group(1)) <= 12:
+                outside = f"{int(mm.group(1))}월"
+        ready.append({"name": name, "equipment": scope, "kind": kind, "start": start, "end": end, "shift": shift, "outside": outside})
     return ready, blocked
 
 
@@ -245,7 +261,7 @@ def _one(role: str, item: dict, eq: str | None, user_question: str) -> tuple[lis
     alarms = []
     if intent == "alarm_count":
         code = _alarm_code(item.get("kind") or "")
-        alarms = [{"control": "", "axis": "", "code": code, "sub": ""}]
+        alarms = [{"control": "", "axis": "", "code": code, "sub": ""}] if code else []      # 번호가 없으면 비워 둔다 → ops_answer가 기간 안 전체 건수로 답한다
     p = {
         "intents": [intent],
         "equipment": [eq] if eq else [],
@@ -265,8 +281,14 @@ def execute(role: str, ready: list[dict], user_question: str = "") -> tuple[list
     texts, data = [], []
     seen_status_all = False
     for item in ready:
+        if item.get("outside"):
+            from backend.services.answer import period_text
+            texts.append(f"확인 필요 — 물으신 기간({item['outside']})은 가상 데이터 기간({period_text()}) 밖이라 운영 기록이 없습니다.")
+            continue
         if item["name"] in ONCE or not item["equipment"]:
             targets = [None]
+        elif item["name"] == "alarm_count" and len(item["equipment"]) >= len(SIX):
+            targets = [None]      # 모든 설비의 알람 건수는 한 번 조회해 합계 줄(총 N건 + 설비별)을 만든다 — 여섯 줄로 나누면 합계를 아무도 말하지 못한다 (2026-10-25)
         elif item["name"] == "equipment_status" and item["equipment"] and len(item["equipment"]) > 1:
             if seen_status_all:
                 continue
