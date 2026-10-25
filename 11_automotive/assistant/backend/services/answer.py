@@ -3620,6 +3620,83 @@ def report_status_answer_v33(base: dict, role: str, question: str, p: dict) -> d
     return {**base, **meta, "status": "답변", "mode": "규칙 (보고서 확정 여부 — 운영 조회, Claude 호출 없음)", "conclusion": text, "blocks": [{"kind": "text", "text": text}]}
 
 
+# 지금 병목이 어디인지 (2026-10-25 분석 "병목질문_분석"): 낱말표에 병목이 없고 병목을 읽는 도구도 없어 문서 길로 가 "현재 값은 찾지 못했어요"(12초·5만 자)로 끝났다.
+# 병목 판단은 시연 서버가 DOC-07 §7.3 규칙으로 이미 하고(`bottleneck_log`와 같은 값), 프로그램이 그 결과를 읽어 문장으로 옮긴다 (Claude 호출 없음).
+# 지금 값은 SENSOR_LIVE=1일 때 시연 서버 값으로 답하고, 못 읽으면 "못 읽었다"고 안내한다. 지난 병목·이동 기록은 읽는 곳이 없어 안내만 한다.
+# 뜻·원인·조치·판단 규칙 질문("병목이 뭐야?", "병목은 어떻게 판단해?")은 건드리지 않는다 — 문서 길이 맞게 답한다.
+BN_WORD_V35 = re.compile(r"병목")
+BN_STUCK_V35 = re.compile(r"막(?:혀|히는|힌)")
+BN_STUCK_PLACE_V35 = re.compile(r"라인|공정")
+BN_NOW_V35 = re.compile(r"지금|현재|요즘|방금|아직|실시간")
+BN_WHERE_V35 = re.compile(r"어디|어느|어떤\s*공정|몇\s*번\s*공정|OP-\d{2}", re.I)
+BN_STATE_V35 = re.compile(r"언제부터|풀렸|풀린|해소|생겼|생겨|걸렸|걸려\s*있|사라졌")
+BN_DOC_HARD_V35 = re.compile(r"어떻게|방법|조치|해결|풀어|풀려면|풀지|판단|기준|규칙|왜|누가|누구|차이|달라|뜻|정의|설명|요약|종류|예방|줄이|막으려|언제\s*(?:떠|뜨|울려|나와)")
+BN_DOC_SOFT_V35 = re.compile(r"뭐야|뭔가요|뭔데|무엇|무슨|원인")      # 지금/현재 말이 함께 있으면 값 질문 ("지금 병목 원인이 뭐야?"), 없으면 뜻 질문
+BN_LOSS_V35 = re.compile(r"잃|몇\s*개|개수|갯수|수량")      # "손실" 낱말만으로는 걸지 않는다 ("병목은 속도 손실이야 고장 손실이야?"는 뜻 질문)
+BN_PAST_V35 = re.compile(r"어제|그제|엊그제|그저께|전날|지난|이전|예전|작년|며칠|\d+\s*월|\d+/\d+|야간|주간|몇\s*번|몇\s*차례|횟수|바뀌|바뀐|옮겨|옮긴|이동|기록|이력|내역|목록|변경|추이|추세|그래프|처음|마지막")
+BN_TODAY_V35 = re.compile(r"오늘|이번\s*(?:교대|주|달)|교대")      # 지금 말이 없으면 오늘 하루·교대 전체를 묻는 말 — 지난 값
+BN_CAUSE_KO_V35 = {"BASE": "기준 병목", "C1": "원인 ① 사이클 시간 증가 (공구 마모)", "C2": "원인 ② OP-30 1대만 가동", "C3": "원인 ③ 검사 강화",
+                   "C4": "원인 ④ 묶음 대기", "FAILURE": "고장"}      # 백엔드 DB 함수 fn_bottleneck_cause_ko와 같은 말
+BN_PAST_NOTE_V35 = ("확인 필요 — 지난 병목(어제·이번 교대·몇 번 바뀌었는지·이동 기록)은 이 채팅에서 아직 읽지 못해요(문서에 없는 게 아니라 채팅이 아직 못 읽는 일이에요). "
+                    "교대 보고서(SCR-15)의 [5] 병목·속도 손실 칸이나 다시 보기(SCR-06)에서 확인해 주세요. 병목이 무엇이고 어떻게 판단하는지는 문서로 설명해 드릴 수 있어요.")
+BN_UNREAD_NOTE_V35 = ("확인 필요 — 지금 병목은 이 채팅이 시연 서버에서 읽지 못했어요(문서에 없는 게 아니라 값을 못 읽은 거예요). "
+                      "3D 라인 뷰에서 주황 테두리와 '병목' 글자가 붙은 공정이 지금 병목이에요. 병목이 무엇이고 어떻게 판단하는지는 문서로 설명해 드릴 수 있어요.")
+
+
+def bottleneck_kind_v35(question: str, p: dict) -> str | None:
+    """병목 값 질문의 갈래 — "now"(지금 병목), "past"(지난 병목·이동 기록), "loss"(병목으로 잃은 개수), 아니면 None (뜻·규칙 질문 포함, 문서 길).
+    알람·로트·작업지시나 다른 운영 의도가 잡힌 질문은 그쪽 길이 먼저라 건드리지 않는다."""
+    if (p["intents"] and p["intents"] != ["alarm_count"]) or p["alarms"] or p.get("lot") or p.get("order"):   # "병목이 몇 번 바뀌었어?"의 "몇 번"이 알람 횟수로 잡히는 설정이 있다
+        return None
+    named = bool(BN_WORD_V35.search(question))
+    if not named and not (BN_STUCK_V35.search(question) and BN_STUCK_PLACE_V35.search(question) and BN_WHERE_V35.search(question)):
+        return None
+    if BN_DOC_HARD_V35.search(question):
+        return None
+    now = bool(BN_NOW_V35.search(question))
+    past = bool(BN_PAST_V35.search(question)) or (not now and bool(BN_TODAY_V35.search(question)))
+    if BN_DOC_SOFT_V35.search(question) and not now and not past:
+        return None
+    loss = named and bool(BN_LOSS_V35.search(question))
+    if not (now or past or loss or BN_WHERE_V35.search(question) or BN_STATE_V35.search(question)):
+        return None
+    if loss:
+        return "loss"
+    return "past" if past else "now"
+
+
+def _bn_since_text_v35(since: str | None, sim_at: str) -> str:
+    if not since:
+        return ""
+    return f"{since[11:16]}부터" if since[:10] == sim_at[:10] else f"{int(since[5:7])}/{int(since[8:10])} {since[11:16]}부터"
+
+
+def bottleneck_now_answer_v35(base: dict, role: str, p: dict) -> dict:
+    """지금 병목 공정·원인·시작 시각을 시연 서버 값으로 답한다 (Claude 호출 없음). 값을 못 읽으면 못 읽었다고 알린다."""
+    r = T.bottleneck_now(role)
+    if r is None:
+        return {**base, "status": "확인 필요", "mode": "규칙 (지금 병목 — 시연 서버를 읽지 못함, 고정 안내)", "conclusion": BN_UNREAD_NOTE_V35,
+                "blocks": [{"kind": "text", "text": BN_UNREAD_NOTE_V35}]}
+    row, sim_at = r["rows"][0], r["as_of"]
+    proc, cause = row["process_code"], row["cause_code"]
+    where = f"{sim_at[:10]} {sim_at[11:16]} 기준, 시연 화면 시계"
+    since = _bn_since_text_v35(row.get("since_at"), sim_at)
+    if cause == "BASE":
+        text = f"지금 병목은 {proc}이에요 ({where}). 병목 판단 규칙에 맞는 다른 공정이 없어서 기준 병목({proc})으로 표시돼요."
+        text += f" {since} 이 상태예요." if since else ""
+        text += " 따로 병목 원인으로 잡힌 것(공구 마모·OP-30 1대 가동·검사 강화)은 없어요." if "원인" in (p.get("raw") or "") else ""
+    else:
+        text = f"지금 병목은 {proc}이에요 ({where}). 병목 원인: {BN_CAUSE_KO_V35.get(cause, cause)}." + (f" {since} 이어지고 있어요." if since else "")
+    eqs = list(p.get("equipment") or [])
+    mine = row.get("equipment_process") or {}
+    if len(eqs) == 1 and eqs[0] in mine:
+        text += f" {eqs[0]}{'는' if eqs[0][-1] in '2459' else '은'} {mine[eqs[0]]} 공정이라 " + ("지금 병목에 해당해요." if mine[eqs[0]] == proc else "지금 병목이 아니에요.")
+    meta = {"current_data": [{k: r[k] for k in ("tool", "range", "as_of", "label", "is_synthetic")}], "data_label": DATA_LABEL, "is_synthetic": True}
+    ev = [_cite(c) for c in (_chunk("DOC-07", "7.3"),) if c]
+    return {**base, **meta, "status": "답변", "mode": "규칙 (지금 병목 — 시연 서버 값, Claude 호출 없음)", "conclusion": text, "evidence": ev,
+            "blocks": [{"kind": "text", "text": text}]}
+
+
 KPI_DATED_WORDS_V21 = re.compile(r"OEE|가동률|성능|양품|지표|효율|KPI", re.I)
 KPI_30D_ONLY_V21 = re.compile(r"MTTR|MTBF|평균\s*수리|평균\s*고장", re.I)
 NO_DATE_NOTE_V21 = "기간을 정하지 않아 9월 한 달(9/1~9/30) 값이에요. 날짜를 말씀해 주시면 그날 값을 드려요 (예: '어제', '오늘')."
@@ -4581,6 +4658,15 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
 
     # 순수 외부 LLM 연결 (PURE_EXTERNAL, 2026-10-15): 위 단계(권한·화면 설명·위험한 부탁 거절·불량 원인·이어 묻기)에서 걸러지지 않은 질문은
     # 알람 카드·운영 조회·LLM 질문 분류를 거치지 않고 "낱말 검색 상위 조각 + 질문 → 외부 Claude 1번 → 답 그대로"로 답한다.
+    bn_kind = bottleneck_kind_v35(question, p)
+    if bn_kind:   # 병목 값 질문 (2026-10-25): 지금 병목은 시연 서버 값으로, 지난 병목·잃은 개수는 못 읽는다고 알린다 (Claude 호출 없음). 뜻·규칙 질문은 여기 오지 않는다
+        if SL.on():
+            SL.step("1 규칙 판정", 결과="병목 값 질문 — 규칙이 답함 (Claude 호출 없음)", 갈래=bn_kind)
+        if bn_kind == "loss":
+            return {**base, "status": "확인 필요", "mode": "규칙", "conclusion": SPEED_LOSS_NOTE_V24}
+        if bn_kind == "past":
+            return {**base, "status": "확인 필요", "mode": "규칙", "conclusion": BN_PAST_NOTE_V35}
+        return bottleneck_now_answer_v35(base, role, p)
     if speed_loss_unread_v24(question, p):   # 속도 손실 개수 (2026-10-21): "문서에 없음" 대신 못 읽는다는 사실과 볼 곳을 알린다 (Claude 호출 없음)
         if SL.on():
             SL.step("1 규칙 판정", 결과="속도 손실 개수 질문 — 채팅이 아직 못 읽음, 규칙이 안내 (Claude 호출 없음)")
