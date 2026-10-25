@@ -1,15 +1,19 @@
 -- =====================================================================
 -- 35_live_calc.sql — 실시간 계산 도우미 (2026-10-20 요구사항 대조 상·중 보강, 구현_중_수정사항 1020 36장)
---   근무 분: 교대 안 시간 − 휴식 1시간 (주간 12:00~13:00, 야간 00:00~01:00 [가상: 2026-10-08] — v_shift_progress와 같음).
---   교대 사이(17:00~20:00·05:00~08:00)와 근무일 아닌 날은 라인 정지 → 0
+--   근무 분: 교대 안 시간 − 휴식 1시간 (교대 시작 4시간 뒤부터 1시간 [가상: 2026-10-08] — v_shift_progress와 같음).
+--     2026-10-25: 시각을 박지 않고 shift.start_at에서 계산 — 교대 08~17/20~05(휴식 12:00·00:00)와 09~18/21~06(13:00·01:00,
+--     생성기 config shifts.break) 모두 맞다
+--   교대 사이와 근무일 아닌 날은 라인 정지 → 0
 --   쓰는 곳: 속도 손실(병목 구간 계획 수), 로트 예상 완료 시각(납기 지연 위험)
 -- =====================================================================
 
--- 교대 하나의 휴식 시작 시각
+-- 교대 하나의 휴식 시작 시각 = 그 교대 시작 + 4시간 (교대 행이 없으면 옛 고정값 주간 12:00·야간 00:00)
 CREATE OR REPLACE FUNCTION fn_shift_break_start(p_shift_type text, p_work_date date) RETURNS timestamptz
-LANGUAGE sql IMMUTABLE AS $$
-    SELECT CASE WHEN p_shift_type = 'DAY' THEN (p_work_date + time '12:00') AT TIME ZONE 'Asia/Seoul'
-                ELSE (p_work_date + 1 + time '00:00') AT TIME ZONE 'Asia/Seoul' END;
+LANGUAGE sql STABLE AS $$
+    SELECT coalesce(
+        (SELECT s.start_at + interval '4 hours' FROM shift s WHERE s.work_date = p_work_date AND s.shift_type = p_shift_type),
+        CASE WHEN p_shift_type = 'DAY' THEN (p_work_date + time '12:00') AT TIME ZONE 'Asia/Seoul'
+             ELSE (p_work_date + 1 + time '00:00') AT TIME ZONE 'Asia/Seoul' END);
 $$;
 
 -- [p_from, p_to) 안의 근무 분 (교대 안, 휴식 뺌)

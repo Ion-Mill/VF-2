@@ -43,7 +43,9 @@ def build_mnt(cfg, sim, masters, doc03, rng, pm_recs, live_from_alarm: int | Non
     번호는 과거 기록 뒤(wo_offset·simple_offset)부터 이어 붙인다. 작업기록 확정 시각 = 알람이 풀린 시각(사람이 [확정]한 때),
     반장 확인이 지금(now_dt)보다 뒤면 아직 확정 상태(CONFIRMED)로 둔다."""
     live = live_from_alarm is not None
-    r = rng.stream("mnt-live" if live else "mnt")
+    # 실시간은 부를 때마다 처음 난수부터 (2026-10-25): 시연 서버가 1분마다 다시 만들어도 같은 문서 — stream이면 이어서 뽑아
+    # 담당자·승인 시각이 바뀌고, DB 중계가 확정 문서를 고치려다 R-35에 막혔다. 값은 처음 한 번 부른 것(out_realtime_*)과 같다
+    r = rng.fresh("mnt-live") if live else rng.stream("mnt")
     cal = sim.cal
     am = {x["alarm_code"]: x for x in masters["alarm_master"]}
     gm = {}

@@ -102,7 +102,7 @@
 | GET | `/api/settings/users` | `SETTINGS·SETTING` | 사용자·역할 목록 (SET-03, NFR-SEC-04). 비밀번호 해시는 내보내지 않는다 |
 | PATCH | `/api/settings/users` | `SETTINGS·SETTING` | 사용자·역할 고치기 (MGR, SET-03). 권한 표는 다음 요청부터 (60초 캐시) |
 | GET | `/api/sim/clock` | 로그인 | 시연 시계 지금 값 (app_now) |
-| POST | `/api/sim/clock` | 로그인 | 시연 시계 배속·일시정지·넘기기 (API-SIM-02, NFR-DATA-10). 시연 모드에서는 누구나 배속·일시정지·17:00 넘기기, |
+| POST | `/api/sim/clock` | 로그인 | 시연 시계 배속·일시정지·넘기기 (API-SIM-02, NFR-DATA-10). 시연 모드에서는 누구나 배속·일시정지·주간 끝 넘기기, |
 | POST | `/api/sim/inject` | 로그인 | 시연 사건 넣기 (SIM-01, NFR-DATA-11) — 알람 1건을 '주입' 표시로 기록 (알림·반복 알람 판정은 실제와 같게). |
 | POST | `/api/sim/reset` | 로그인 | 시연 데이터 처음으로 (SIM-03, 시연 모드만): 운영 데이터를 시연 기준점으로 되돌리고 시연 시계를 그 시각에 멈춘다. |
 | POST | `/api/sim/snapshot` | `SETTINGS·SETTING` | 시연 기준점 만들기 (시연 모드, MGR): 지금 운영 데이터를 SIM-03의 "처음"으로 삼는다. |
@@ -235,7 +235,7 @@
 | POST | `/api/ingest/lots/{lot_no}/arrived` | 서비스 키 `ingest` | 로트가 OP-50에 도착 → 검사 대기 |
 | POST | `/api/ingest/cmm` | 서비스 키 `ingest` | CMM 결과 파일 내용 (공유 폴더 대신 API로 보낼 때) |
 | POST | `/api/ingest/clock` | 서비스 키 `ingest` | 시연 시계를 시뮬레이터 시계에 맞춘다 (팀과 논의/비서_시뮬레이터_DB_연결_논의 3-1 "서비스 키로 부르는 시계 입구", 2026-10-20). |
-| POST | `/api/ingest/sync` | 서비스 키 `ingest` | 시뮬레이터 10/1 기록을 표째로 DB에 맞춘다 (시연 서버 DB 중계, 2026-10-23 — app/services/sim_sync.py). |
+| POST | `/api/ingest/sync` | 서비스 키 `ingest` | 시뮬레이터 실시간 기록을 표째로 DB에 맞춘다 (시연 서버 DB 중계, 2026-10-23 — app/services/sim_sync.py). 2026-10-25: 표 25개까지(작업지시서·작업기록서·문서 버전 8개 더함 — 최종용 오전 사건 문서만 옴), jsonb 칸은 JSON 값으로, 이미 확정된 작업기록서와 함께 온 알람의 알림은 그 확정으로 처리. `/api/sim/clock`의 `skip`은 `TODAY_DAY_END`·`TODAY_NIGHT_START`(그날 교대에서 시각, 옛 `TODAY_17:00`·`TODAY_20:00`도 받음). |
 | POST | `/api/ingest/reset` | 서비스 키 `ingest` | 시연 데이터 처음으로 (시연 서버 [처음으로]·켤 때, 2026-10-23): 운영 데이터를 시연 기준점으로 되돌리고 그 뒤 센서 값을 지운다 |
 <!-- END:api -->
 

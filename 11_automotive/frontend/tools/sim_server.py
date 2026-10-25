@@ -33,6 +33,8 @@ if hasattr(sys.stdout, "buffer"):
 
 from gen.common import KST, _cell, fmt_dt, load_config, load_masters  # noqa: E402
 from gen.realtime import Realtime  # noqa: E402
+from gen.mnt_docs import CHK_COLS, STEP_COLS, WO_COLS, WOP_COLS, WR_COLS, WRP_COLS  # noqa: E402
+from gen.reports import CHG_COLS, REV_COLS  # noqa: E402
 from server_assistant import answer  # noqa: E402
 from server_live import Live, iso  # noqa: E402
 from server_past import Past  # noqa: E402
@@ -93,6 +95,7 @@ class State:
         # 백엔드 DB 중계 (2026-10-20, 기본 꺼짐 — db_relay.py 머리 주석)
         #   2026-10-23: 10/1 기록 표 전부를 바뀐 줄만, [처음으로](run_id가 바뀜)·서버 켤 때 DB도 시연 기준점으로.
         #   "DB 1개 = 공장 1개" — 백엔드가 MOM_SIM_SYNC=true면 그 DB(공용 Supabase 포함)에 쌓는다
+        self._relay_docs = None                  # (회차, 오전 사건 문서) — _relay_tables
         self.relay = DbRelay.from_env(self._relay_clock, self._relay_snap, self._relay_base)
         if self.relay and not self.relay.start():
             self.relay = None
@@ -149,7 +152,50 @@ class State:
         """DB 중계용 (중계 스레드가 부름): 시뮬레이터 상태가 앞과 같으면 표를 다시 만들지 않는다 (회차·분·사건·조작 수로 봄)"""
         with self.lock:
             sig = (self.run_id, self.rt.m, len(self.rt.events), len(self.rt.ops))
-            return sig, self.run_id, (None if sig == last_sig else self.rt.tables())
+            return sig, self.run_id, (None if sig == last_sig else self._relay_tables(self.rt.tables()))
+
+    def _relay_tables(self, tabs):
+        """DB 중계로 보낼 표 (2026-10-25). 작업지시서·작업기록서·문서 버전은 DB(백엔드)가 주인이라 보통은 보내지 않는다 —
+        새 정지 알람이 들어가면 DB가 초안을 만든다. 단 최종용(실제 시각)의 미리 짠 오전 사건(실시간 시작 전에 생긴 문서:
+        MW-1009 승인·완료, MR-1009 확정과 문서 버전)은 끝난 기록이라 그대로 보낸다 — [처음으로]·켤 때 DB를 기준점으로 되돌린 뒤에도
+        평가자 모두에게 같은 문서가 보이게 (시연 서버 화면의 _wall_docs와 같은 문서)."""
+        tabs = {k: v for k, v in tabs.items() if k not in DOC_TABLES}
+        recs = set()
+        if self.wall:
+            if self._relay_docs is None or self._relay_docs[0] != self.run_id:
+                self._relay_docs = (self.run_id, self._morning_docs())
+            tabs.update(self._relay_docs[1])
+            cols, rows = tabs["work_record"]
+            recs = {r[cols.index("record_no")] for r in rows}
+        # 작업기록서 사용 부품의 재고 거래도 같은 까닭으로 보내지 않는다 — 백엔드가 작업기록서를 확정할 때 직접 뺀다(R-34).
+        # 보내면 DB에 없는 작업기록서 부품을 가리켜 외래 키 오류이고, 있으면 두 번 빠진다. 오전 사건 문서의 것만 보냄
+        if "inventory_txn" in tabs:
+            cols, rows = tabs["inventory_txn"]
+            ks, kr = cols.index("source_kind"), cols.index("work_record_no")
+            tabs["inventory_txn"] = (cols, [r for r in rows if r[ks] != "WORK_RECORD" or r[kr] in recs])
+        return tabs
+
+    def _morning_docs(self):
+        """오전 사건 문서를 회차마다 한 번만 고른다 — 실시간 시작 뒤 정지 문서가 더 생겨도 이미 보낸 확정 문서가 바뀌지 않게."""
+        docs = self.rt._maint_docs()
+        start = datetime.fromisoformat(self.cfg["profile"]["live_start"]).replace(tzinfo=KST)
+
+        def before(v):
+            return v is not None and (v if isinstance(v, datetime) else datetime.fromisoformat(str(v))) < start
+        wo = [w for w in docs["maintenance_work_order"] if before(w["created_at"])]
+        wos = {w["wo_no"] for w in wo}
+        wr = [x for x in docs["work_record"] if (x.get("wo_no") in wos if x.get("wo_no") else before(x["start_at"]))]
+        recs = {x["record_no"] for x in wr}
+        keys = {("WORK_ORDER", k) for k in wos} | {("WORK_RECORD", k) for k in recs}
+        rev = [r for r in docs["document_revision"] if (r["doc_type"], r["doc_key"]) in keys]
+        rids = {r["revision_id"] for r in rev}
+        pick = {"maintenance_work_order": wo, "work_order_step": [x for x in docs["work_order_step"] if x["wo_no"] in wos],
+                "work_order_part": [x for x in docs["work_order_part"] if x["wo_no"] in wos], "work_record": wr,
+                "work_record_check": [x for x in docs["work_record_check"] if x["record_no"] in recs],
+                "work_record_part": [x for x in docs["work_record_part"] if x["record_no"] in recs],
+                "document_revision": rev,
+                "document_revision_change": [x for x in docs["document_revision_change"] if x["revision_id"] in rids]}
+        return {t: (list(DOC_COLS[t]), [tuple(_cell(r.get(c)) for c in DOC_COLS[t]) for r in rows]) for t, rows in pick.items()}
 
     def _relay_base(self):
         """DB 중계용: 시뮬레이터 시작점 (되돌릴 때 DB 기준점과 비교 — 생성기 Realtime.baseline)"""
@@ -201,6 +247,12 @@ class State:
 
 
 S: State | None = None
+# DB 중계로 보낼 수 있는 문서 표와 칸 (생성기 export와 같은 칸 — State._relay_tables)
+DOC_COLS = {"maintenance_work_order": [c for c in WO_COLS if c != "trigger_kind"],   # 계기는 DB가 계산 (v_work_order)
+            "work_order_step": STEP_COLS, "work_order_part": WOP_COLS, "work_record": WR_COLS,
+            "work_record_check": CHK_COLS, "work_record_part": WRP_COLS, "document_revision": REV_COLS,
+            "document_revision_change": CHG_COLS}
+DOC_TABLES = set(DOC_COLS)
 COMPOSER = Composer(run_id=lambda: S.run_id if S else 0)    # 비서 문장 다듬기 (llm_compose.py) — MOM_LLM_COMPOSE=1일 때만 움직인다, 기다리지 않는다
 
 

@@ -77,9 +77,12 @@ SELECT 'BOTTLENECK', bottleneck_log_id, NULL, new_process_code, changed_at FROM 
 ORDER BY at;
 
 -- ---------- 화면 전체 트윈 (GET /api/line/twin?full=true, 2026-10-23 화면 → 백엔드 전환 C2) ----------
--- 실시간 구간 시작 = 생성기 데이터 끝 다음 날 08:00 (시연: 10/1 08:00). 생성기 데이터가 없으면 지금부터 24시간 전
+-- 실시간 구간 시작 = 생성기 데이터 끝 뒤 첫 교대 시작 (영상용 10/24 09:00, 최종용 10/26 09:00, 옛 9월 데이터 10/1 08:00).
+-- 그 교대가 아직 없으면 데이터 끝 다음 날 08:00, 생성기 데이터가 없으면 지금부터 24시간 전
 -- name: live_from
-SELECT coalesce((SELECT ((period_to + 1) + time '08:00') AT TIME ZONE 'Asia/Seoul' FROM dataset_info WHERE id = 1 AND period_to IS NOT NULL),
+SELECT coalesce((SELECT coalesce((SELECT min(s.start_at) FROM shift s WHERE s.work_date > d.period_to),
+                                 ((period_to + 1) + time '08:00') AT TIME ZONE 'Asia/Seoul')
+                   FROM dataset_info d WHERE id = 1 AND period_to IS NOT NULL),
                 app_now() - interval '24 hours') AS live_from;
 
 -- 설비별 지금 센서 값 (센서 항목마다 지금 시각까지의 마지막 값)

@@ -24,12 +24,12 @@ SELECT s.shift_id FROM shift s
    AND NOT EXISTS (SELECT 1 FROM document_revision v WHERE v.doc_type = 'SHIFT_REPORT' AND v.doc_key = s.shift_id)
  ORDER BY s.end_at;
 
--- 06:00이 지났는데 전날 일일 보고서가 없으면 그 날짜 (야간 교대는 다음 날 05:00에 끝남)
+-- 전날 생산일의 마지막 교대(야간)가 끝나고 1시간이 지났는데 일일 보고서가 없으면 그 날짜 (설계서 R-72 "늦어도":
+-- 교대 08~17/20~05면 06:00, 09~18/21~06이면 07:00 — 2026-10-25부터 시각을 박지 않고 shift.end_at에서 계산)
 -- name: daily_due
 SELECT d.work_date FROM (
-    SELECT CAST(app_now() AT TIME ZONE 'Asia/Seoul' AS date) - 1 AS work_date,
-           CAST(app_now() AT TIME ZONE 'Asia/Seoul' AS time) >= time '06:00' AS after_six) d
- WHERE d.after_six AND EXISTS (SELECT 1 FROM shift s WHERE s.work_date = d.work_date)
+    SELECT CAST(app_now() AT TIME ZONE 'Asia/Seoul' AS date) - 1 AS work_date) d
+ WHERE app_now() >= (SELECT max(s.end_at) FROM shift s WHERE s.work_date = d.work_date) + interval '1 hour'
    AND NOT EXISTS (SELECT 1 FROM daily_report r WHERE r.work_date = d.work_date)
    AND NOT EXISTS (SELECT 1 FROM document_revision v WHERE v.doc_type = 'DAILY_REPORT' AND v.doc_key = d.work_date::text);
 
