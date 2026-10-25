@@ -17,7 +17,7 @@ from backend.tests.test_alarm_causes import APP_ON
 from backend.tools import query_tools as T
 from backend.tools import sim_live
 
-HAIKU = "claude-haiku-5-5"      # 앱의 외부 요청은 Haiku 5.5로 부른다 (config.py claude_model) — 가짜 실행기도 그 이름으로 답한다
+HAIKU = "claude-haiku-5-5"      # 앱의 외부 요청은 Haiku 5.5 + 노력 단계 medium으로 부른다 (config.py claude_model·claude_effort) — 가짜 실행기도 그 이름으로 답하고, 받은 명령줄의 모델·노력 단계를 시험이 확인한다
 
 
 def eq(proc, state, since="2026-10-25T07:20:00+09:00", alarm=None):
@@ -53,7 +53,7 @@ class Runner:
         self.calls = []
 
     def __call__(self, cmd, stdin_text, timeout):
-        self.calls.append({"system": cmd[cmd.index("--system-prompt") + 1], "user": stdin_text})
+        self.calls.append({"system": cmd[cmd.index("--system-prompt") + 1], "user": stdin_text, "model": cmd[cmd.index("--model") + 1], "effort": cmd[cmd.index("--effort") + 1]})
         payload = {"answer": "시연 화면 시계 2026-10-25 09:00 기준, VF2-01이 고장 정지예요.", "cited": [], "insufficient": False}
         out = {"type": "result", "subtype": "success", "is_error": False, "duration_ms": 100, "duration_api_ms": 80, "num_turns": 1, "total_cost_usd": 0.01,
                "usage": {"input_tokens": 10, "output_tokens": 5, "cache_read_input_tokens": 0, "cache_creation_input_tokens": 0},
@@ -105,6 +105,7 @@ def test_tool_is_none_when_off_or_unreadable_and_denied_without_line_view(monkey
 # ------------------------------------------------------------------ Claude 요청에 실리는지 (가짜 실행기)
 def test_the_values_and_rules_go_into_the_claude_system_prompt():
     a, r = ask_external("고장은 어디야?")
+    assert (r.calls[0]["model"], r.calls[0]["effort"]) == (HAIKU, "medium")      # 앱 외부 요청 = Haiku 5.5 medium
     assert len(r.calls) == 1 and "[지금 설비 상태 — 시연 서버가 준 값" in r.calls[0]["system"] and "VF2-01 (OP-30): 고장 정지" in r.calls[0]["system"]
     assert a["status"] == "답변" and a["conclusion"].startswith("시연 화면 시계") and a["is_synthetic"] and a["current_data"][0]["tool"] == "설비 상태 조회"
 
