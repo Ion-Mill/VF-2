@@ -265,7 +265,11 @@ function Start-Proc([string]$Name, [string]$Exe, [string[]]$ArgList, [string]$Cw
     try {
         $p = Start-Process -FilePath $Exe -ArgumentList $quoted -WorkingDirectory $Cwd -WindowStyle Hidden -PassThru -RedirectStandardOutput $log -RedirectStandardError $err
     } finally {
-        foreach ($k in $saved.Keys) { [Environment]::SetEnvironmentVariable($k, $saved[$k], 'Process') }
+        # 원래 없던 변수는 지운다. SetEnvironmentVariable($k, $null)은 PowerShell이 $null을 ''로 바꿔 "빈 값"으로 남겨, 뒤이어 켜는 서버가 빈 MOM_ASSISTANT_URL 등을 물려받는다 (2026-10-25)
+        foreach ($k in $saved.Keys) {
+            if ($null -eq $saved[$k]) { Remove-Item -LiteralPath "Env:$k" -ErrorAction SilentlyContinue }
+            else { [Environment]::SetEnvironmentVariable($k, $saved[$k], 'Process') }
+        }
     }
     [void]$Started.Add([pscustomobject]@{ Name = $Name; Pid = $p.Id; Port = $Port; Marker = $Marker; StartTime = $p.StartTime.ToString('o'); Log = $log })
     Save-Pids
