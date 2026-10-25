@@ -10,8 +10,10 @@ import validate
 
 
 def test_calendar():
-    cal = build_calendar(load_config())
-    assert len(cal.workdays) == 26 and len(cal.shifts) == 52
+    cfg = load_config()
+    cal = build_calendar(cfg)
+    assert len(cal.workdays) == sum(1 for d in cal.days if d.weekday() != 6) and len(cal.shifts) == 2 * len(cal.workdays)
+    assert (cal.shifts[0].start.hour, cal.shifts[0].end.hour, cal.shifts[1].start.hour, cal.shifts[1].end.hour) == (9, 18, 21, 6)
     assert all(s.planned_min == 480 for s in cal.shifts)
 
 
@@ -51,21 +53,22 @@ def test_stage4_files_exist():
 
 
 def test_stage5_reports_and_notifications_exist():
-    """5단계 ③ 엔터티 6개: 교대 보고서 52, 일일 보고서 26, 문서 버전·바뀐 칸, 알림·받는 사람."""
+    """5단계 ③ 엔터티 6개: 교대 보고서(교대 수), 일일 보고서(근무일 수), 문서 버전·바뀐 칸, 알림·받는 사람."""
     cfg = load_config()
     out = ROOT / cfg["run"]["out_dir"]
     man = json.load(io.open(out / "manifest.json", encoding="utf-8"))
-    assert man["rows"]["shift_report"] == 52 and man["rows"]["daily_report"] == 26
+    cal = build_calendar(cfg)
+    assert man["rows"]["shift_report"] == len(cal.shifts) and man["rows"]["daily_report"] == len(cal.workdays)
     for e in ["document_revision", "document_revision_change", "notification", "notification_recipient"]:
         assert man["rows"].get(e, 0) > 0, e
 
 
 def test_realtime_same_script_same_result():
-    """실시간 모드: 같은 대본이면 사건·조작 기록이 같고, 되돌리기 뒤에도 10/1 08:00에서 같은 상태로 시작한다."""
+    """실시간 모드: 같은 대본이면 사건·조작 기록이 같고, 되돌리기 뒤에도 프로필의 실시간 시작 시각에서 같은 상태로 시작한다."""
     from gen.realtime import Realtime, load_script
     cfg = load_config()
     m = load_masters(cfg)
-    script = load_script(cfg["realtime"]["rehearsal_script"])
+    script = load_script("리허설_버튼없음.json")                # 최종용의 rehearsal_script는 10/26 오전 사건(S1)이 들어 있어 버튼 없는 대본을 따로 쓴다
     a = Realtime(cfg, m)
     a.play(script)
     b = Realtime(cfg, m)
@@ -73,7 +76,7 @@ def test_realtime_same_script_same_result():
     assert a.events == b.events and a.clock() == b.clock()
     assert not any(e["type"] == "alarm" for e in a.events)      # 무작위 알람 없음
     a.reset()
-    assert a.clock()["sim_at"] == "2026-10-01T08:00:00+09:00" and a.prev_state == b.__class__(cfg, m).prev_state
+    assert a.clock()["sim_at"] == cfg["realtime"]["start"] + ":00+09:00" and a.prev_state == b.__class__(cfg, m).prev_state
 
 
 def test_wash_batch_one_lot_max_30():
@@ -109,14 +112,15 @@ def test_realtime_event_buttons_same_result():
 
 
 def test_realtime_skip_to_night_start():
-    """시연 넘기기: 17:00(주간 끝) 다음 20:00(야간 시작)으로 (2026-10-19)."""
+    """시연 넘기기: 오늘 주간 끝 다음 야간 시작으로 (2026-10-19). 옛 이름(TODAY_17:00·TODAY_20:00)도 받는다 (2026-10-24)."""
     from gen.realtime import Realtime
     cfg = load_config()
     a = Realtime(cfg, load_masters(cfg))
-    a.skip("TODAY_17:00")
-    assert a.clock()["sim_at"] == "2026-10-01T17:00:00+09:00"
+    day = cfg["realtime"]["start"][:10]
+    a.skip("TODAY_DAY_END")
+    assert a.clock()["sim_at"] == f"{day}T{cfg['shifts']['DAY']['end']}:00+09:00"
     a.skip("TODAY_20:00")
-    assert a.clock()["sim_at"] == "2026-10-01T20:00:00+09:00"
+    assert a.clock()["sim_at"] == f"{day}T{cfg['shifts']['NIGHT']['start']}:00+09:00"
 
 
 def test_realtime_preview_fire():
@@ -140,3 +144,65 @@ def test_realtime_preview_fire():
     assert seen[-1] == "MAINT" and "RUN" not in seen[seen.index("DOWN"):], seen
     assert fired["maint"]["equipment_id"] != fired["stop"]["equipment_id"]   # 이미 고장 난 설비는 피함
 
+
+def test_wall_clock_catch_up_lock_and_replay():
+    """최종용 실제 시각 모드 (2026-10-24): 오전 대본으로 15:00 상태를 만들고 지금까지 따라잡는다. 시계·사건 조작은 잠기고,
+    저장해 둔 사람 조작을 같은 시각에 다시 하면 다시 켠 세계가 같다 (재시작 안전)."""
+    from datetime import datetime
+    from gen.common import KST
+    from gen.realtime import Realtime
+    cfg = load_config(profile="final")
+    m = load_masters(cfg)
+    now = datetime(2026, 10, 26, 17, 0, tzinfo=KST)
+    a = Realtime(cfg, m)
+    a.start_live(now, [])
+    assert a.clock()["sim_at"] == "2026-10-26T17:00:00+09:00" and a.locked and a.speed == 1
+    for call in (lambda: a.set_speed(60), a.pause, lambda: a.skip("TODAY_DAY_END"), lambda: a.inject("S1"), lambda: a.fire("warn")):
+        try:
+            call()
+            assert False, "잠겨 있어야 한다"
+        except ValueError:
+            pass
+    saved = []
+    a.on_op = saved.append
+    a.tick_wall(datetime(2026, 10, 26, 17, 30, tzinfo=KST))
+    a.record_tool_change("VF2-02-T04", by="U07")
+    assert [o["op"] for o in saved] == ["tool_change"] and saved[0]["sim_at"] == "2026-10-26T17:30:00+09:00"
+    a.tick_wall(datetime(2026, 10, 26, 18, 0, tzinfo=KST))
+    b = Realtime(cfg, m)
+    b.start_live(datetime(2026, 10, 26, 18, 0, tzinfo=KST), saved)
+    key = lambda r: [(e["type"], e.get("at")) for e in r.events if e["type"] in ("alarm", "state_changed", "tool_change")]
+    assert a.clock() == b.clock() and key(a) == key(b)
+    assert [t.cum for mc in a.sim.mach.values() for t in mc.tools.values()] == [t.cum for mc in b.sim.mach.values() for t in mc.tools.values()]
+
+
+def test_final_morning_crash_has_documents():
+    """최종용 10/26 오전 충돌: 작업지시서(승인 → 완료)·작업기록서(확정)·문서 버전·사용 부품이 과거 기록 뒤 번호로 생긴다 (2026-10-24)."""
+    from gen.realtime import Realtime, load_script
+    cfg = load_config(profile="final")
+    rt = Realtime(cfg, load_masters(cfg))
+    rt.play(load_script(cfg["realtime"]["rehearsal_script"]))
+    d = rt._maint_docs()
+    wo, wr = d["maintenance_work_order"], d["work_record"]
+    assert [w["wo_no"] for w in wo] == [f"MW-10{rt.past['maintenance_work_order'] + 1:02d}"]
+    assert wo[0]["status"] == "DONE" and wo[0]["approved_by"] == "U10" and wo[0]["approved_at"] > wo[0]["created_at"]
+    assert [r["wo_no"] for r in wr] == [wo[0]["wo_no"]] and wr[0]["confirmed_at"] == wr[0]["end_at"]       # 확정 = 복귀 시각
+    assert len(d["work_record_check"]) == 9 + len(d["work_order_step"]) and d["work_record_part"][0]["item_no"] == "TL-EM10"
+    keys = {(r["doc_type"], r["doc_key"]): 0 for r in d["document_revision"]}
+    for r in d["document_revision"]:
+        keys[(r["doc_type"], r["doc_key"])] += 1
+    assert keys[("WORK_ORDER", wo[0]["wo_no"])] == wo[0]["current_version"] + 1       # v0~current 빠짐없이 (DB 점검 R-35)
+    assert keys[("WORK_RECORD", wr[0]["record_no"])] == wr[0]["current_version"] + 1
+    inv = rt._inventory(None)                                   # 시연 서버의 재고 화면이 이 인자로 부른다 (2026-10-24 500 오류 재발 방지)
+    assert [x["work_record_no"] for x in inv if x["source_kind"] == "WORK_RECORD"] == [wr[0]["record_no"]]
+
+
+def test_links_between_documents_and_data(monkeypatch):
+    """check_links.py: 과거 + 실시간을 DB에 넣는 모양으로 합쳐 번호·외래 키·문서 연결을 본다 (결과 폴더가 있는 프로필만)."""
+    import check_links
+    for profile in ("final", "video"):
+        cfg = load_config(profile=profile)
+        if not ((ROOT / cfg["run"]["out_dir"] / "manifest.json").exists() and (ROOT / cfg["realtime"]["out_dir"] / "manifest.json").exists()):
+            continue                                          # out_video 는 깃에 없다
+        monkeypatch.setenv("MOM_PROFILE", profile)
+        assert check_links.main() == 0, profile

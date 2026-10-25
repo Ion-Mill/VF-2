@@ -20,6 +20,8 @@ else PY=python; fi
 export PYTHONUTF8=1 PGCLIENTENCODING=${PGCLIENTENCODING:-UTF8}   # Windows 콘솔 코드 페이지(CP949)와 섞이지 않게
 : "${GEN_DIR:?GEN_DIR = 생성기 폴더 (masters/ out/)}"
 : "${DOCS_DIR:?DOCS_DIR = 11_automotive 폴더 (가상사내문서/)}"
+# 2026-10-24: 프로필 폴더. 최종용 GEN_OUT_DIR=out_final GEN_RT_DIR=out_realtime_final, 영상용 out_video·out_realtime_video (안 주면 옛 out·out_realtime)
+OUT_DIR_OPT="--out-dir ${GEN_OUT_DIR:-out} --rt-dir ${GEN_RT_DIR:-out_realtime}"
 SENSOR=0; REALTIME=0; KEEP=0
 for a in "$@"; do
   case "$a" in --sensor) SENSOR=1 ;; --realtime) REALTIME=1 ;; --keep) KEEP=1 ;; *) echo "모르는 옵션 $a"; exit 2 ;; esac
@@ -44,7 +46,7 @@ if [[ "$(psql -X -tA -c "SELECT loaded_at IS NOT NULL FROM dataset_info WHERE id
   echo "== 3. (건너뜀) 생성기 데이터가 이미 있음 ($(psql -X -tA -c "SELECT loaded_at FROM dataset_info WHERE id = 1")) — 처음부터 다시 하려면 빈 DB에서"
 else
   echo "== 3. 생성기 데이터 (기준 정보 + 9월$([[ $REALTIME == 1 ]] && echo ' + 10/1 리허설'))"
-  "$PY" tools/load_generated.py "$GEN_DIR" --psql "$PSQL_CMD" $([[ $REALTIME == 1 ]] && echo --realtime)
+  "$PY" tools/load_generated.py "$GEN_DIR" --psql "$PSQL_CMD" $OUT_DIR_OPT $([[ $REALTIME == 1 ]] && echo --realtime)
 fi
 echo "== 4. 사내 문서 조각"
 "$PY" tools/load_docs.py "$DOCS_DIR" --psql "$PSQL_CMD"
@@ -59,7 +61,7 @@ if [[ $SENSOR == 1 && "$(psql -X -tA -c "SELECT EXISTS (SELECT 1 FROM sensor_sam
   echo "== 7. (건너뜀) 센서가 이미 있음"
 elif [[ $SENSOR == 1 ]]; then
   echo "== 7. 센서 (따로)"
-  "$PY" tools/load_generated.py "$GEN_DIR" --psql "$PSQL_CMD" --sensor-only $([[ $REALTIME == 1 ]] && echo --realtime)
+  "$PY" tools/load_generated.py "$GEN_DIR" --psql "$PSQL_CMD" --sensor-only $OUT_DIR_OPT $([[ $REALTIME == 1 ]] && echo --realtime)
 fi
 psql -X -tA -c "SELECT 'DB 크기 ' || pg_size_pretty(pg_database_size(current_database()))"
 echo "완료"

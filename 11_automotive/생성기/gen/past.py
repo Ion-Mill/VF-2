@@ -1,4 +1,4 @@
-"""과거 기록 모드 시간 흐름 (9/1 ~ 10/1 08:00). generate.py와 실시간 모드(realtime)가 같이 쓴다."""
+"""과거 기록 모드 시간 흐름 (프로필의 기록 시작일 ~ 실시간 시작 시각). generate.py와 실시간 모드(realtime)가 같이 쓴다."""
 from __future__ import annotations
 
 from .calendar import build_calendar
@@ -23,12 +23,12 @@ def _t05_parts(sim) -> int:
 
 
 def search_t05(cfg, masters):
-    """9/30 끝 VF2-01 T05가 목표 90%(10/1 브리핑 교체 권고 대상)가 되게 마지막 교체 시각을 찾는다 (같은 seed로 여러 번 돎).
+    """기록 끝 VF2-01 T05가 목표 90%(시작 브리핑 교체 권고 대상)가 되게 마지막 교체 시각을 찾는다 (같은 seed로 여러 번 돎).
     교체 한 번이 그 뒤 흐름(셋업 시간·부품 순서)을 바꿔 결과가 91·93처럼 건너뛰므로, 정확히 목표가 안 나오면
     허용 범위(config tools.end_state, 기본 90~94%) 안의 첫 값을 쓴다. 찾는 순서가 정해져 있어 누가 돌려도 같다.
     돌려주는 값: (sim, rng, 교체 시각 분 또는 [분, 셋업 분] 또는 None)."""
     es = cfg["tools"]["end_state"]
-    target = es["VF2-01-T05_pct_at_0930_end"]
+    target = es["VF2-01-T05_pct_at_end"]
     lo_pct, hi_pct = es.get("VF2-01-T05_pct_range", [target, target])
     sim, rng = run_once(cfg, masters)
     t = sim.mach["VF2-01"].tools["T05"]

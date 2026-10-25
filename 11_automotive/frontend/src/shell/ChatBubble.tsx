@@ -32,13 +32,31 @@ export function FixedFold({ title, fold, rest, defaultOpen = false }: { title: s
   );
 }
 
-/** 일반 답의 "■ 제목" 덩어리 — 제목은 알람 카드와 같은 보라색 굵은 소제목(■ 기호는 그리지 않는다), 아래 글은 줄바꿈 그대로. 안전 고정 서식 덩어리는 접는다(FixedFold) */
+/** 수량·설비 상태 조회의 프로그램 원문. 제목 줄이 버튼이고 처음에는 접힌다. 안전 고정 서식 접기와는 따로다 */
+export function OrigFold({ body, defaultOpen = false }: { body: string; defaultOpen?: boolean }) {
+  const uid = useId();
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <section aria-labelledby={`${uid}-h`} className="flex flex-col gap-2">
+      <h3 id={`${uid}-h`} className={HEADING}>
+        <button type="button" aria-expanded={open} aria-controls={`${uid}-b`} onClick={() => setOpen((v) => !v)} className="cursor-pointer text-left font-bold focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600">
+          {open ? '▾ 원문 보기' : '▸ 원문 보기'}
+        </button>
+      </h3>
+      <div id={`${uid}-b`} hidden={!open}>{open && body !== '' && <p className={`ma-msg-bot ${WRAP}`}>{body}</p>}</div>
+    </section>
+  );
+}
+
+/** 일반 답의 "■ 제목" 덩어리 — 제목은 알람 카드와 같은 보라색 굵은 소제목(■ 기호는 그리지 않는다), 아래 글은 줄바꿈 그대로. 안전 고정 서식 덩어리는 접는다(FixedFold). 조회 원문은 `원문 보기`로 접는다 */
 function PlainAnswer({ sections }: { sections: PlainSection[] }) {
   const uid = useId();
   return (
     <div className="flex flex-col gap-4">
       {sections.map((s, i) => s.title === null
         ? <p key={i} className={`ma-msg-bot ${WRAP}`}>{s.body}</p>
+        : s.title === '원문 보기'
+        ? <OrigFold key={i} body={s.body} />
         : s.title.startsWith(FIXED_TITLE)
         ? <FixedFold key={i} title={s.title} {...splitFixedBody(s.body)} />
         : (
@@ -66,7 +84,6 @@ function PlainSources({ sources, openSource }: { sources: ChatRow['sources']; op
               {s.doc_name} {s.doc_no} {s.rev} §{s.section}
             </button>
           ))}
-          <span className="w-full text-slate-500">모두 가상 사내 문서예요</span>   {/* 답 본문에서 "가상 기준"을 빼는 대신 여기서 한 번 밝힌다 (2026-10-21) */}
         </div>
       )}
     </div>

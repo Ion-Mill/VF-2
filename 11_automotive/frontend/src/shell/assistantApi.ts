@@ -27,6 +27,7 @@ export const backendChatEnabled = () => BASE !== '' || backendMode();
 // 한 질문을 기다리는 최대 시간: 백엔드가 비서를 기다리는 130초 + 여유 10초
 export const ASK_TIMEOUT_MS = 140_000;
 export const NO_RESPONSE_TEXT = '비서가 지금 답하지 못합니다. 잠시 후 다시 시도해 주세요';
+export const DISCONNECT_TEXT = '연결이 끊겨 답을 받지 못했어요. 다시 질문해 주세요.';
 
 // 화면 이름 → UI설계서 화면 번호 (비서가 "이 화면 설명해 줘"에 쓴다). 모르는 화면은 보내지 않는다.
 export const SCREEN_CODE: Record<string, string> = {
@@ -64,7 +65,7 @@ async function tokenFor(userId: string, fresh = false): Promise<string> {
 
 export const forgetTokens = () => tokens.clear();
 
-const none = (): AssistantResult => ({ answer: NO_RESPONSE_TEXT, status: STATUS_KO.NO_RESPONSE, sources: [] });
+const dropped = (): AssistantResult => ({ answer: DISCONNECT_TEXT, status: STATUS_KO.NO_RESPONSE, sources: [] });
 
 // 백엔드 답의 출처 줄을 화면 모양으로 (문서 번호·절이 없는 줄은 버린다)
 const toSources = (v: unknown): AssistantSource[] => Array.isArray(v)
@@ -101,11 +102,10 @@ export async function askAssistant(question: string, userId: string, screen: str
     }
     const chatId = typeof j?.chat_id === 'number' ? j.chat_id : undefined;   // 답이 없어도(NO_RESPONSE) 질문은 서버 기록에 남는다
     const status = STATUS_KO[String(j?.status)] ?? STATUS_KO.NO_RESPONSE;
-    if (typeof j?.answer !== 'string' || !j.answer.trim()) return { ...none(), chatId };   // 비서가 못 답하면 백엔드는 200 + 답 없음(NO_RESPONSE)을 준다
-    if (status === STATUS_KO.NO_RESPONSE) return { ...none(), chatId };
-    return { answer: j.answer, status, sources: toSources(j.sources), chatId };
+    if (typeof j?.answer === 'string' && j.answer.trim()) return { answer: j.answer, status, sources: toSources(j.sources), chatId };
+    return { ...dropped(), chatId };                                   // 답 문장이 없으면 비서가 응답을 끝내기 전에 끊긴 것이다
   } catch {
-    return none();                                                     // 연결 안 됨·시간 초과·503·로그인 실패 — 이유를 화면에 내보내지 않는다
+    return dropped();                                                  // 백엔드에 닿지 못함·시간 초과
   }
 }
 
@@ -134,8 +134,9 @@ export async function fetchChatLog(userId: string): Promise<ServerChatRow[] | nu
     return j.filter((x: any) => typeof x?.chat_id === 'number' && typeof x.asked_at === 'string' && typeof x.question === 'string')
       .map((x: any): ServerChatRow => {
         const status = STATUS_KO[String(x.status)] ?? STATUS_KO.NO_RESPONSE;
-        const ok = typeof x.answer === 'string' && x.answer.trim() !== '' && status !== STATUS_KO.NO_RESPONSE;
-        return { at: kst(x.asked_at), q: x.question, a: ok ? x.answer : NO_RESPONSE_TEXT, status: ok ? status : STATUS_KO.NO_RESPONSE, sources: ok ? toSources(x.sources) : [], chatId: x.chat_id, ...(typeof x.prev_chat_id === 'number' ? { prevChatId: x.prev_chat_id } : {}) };
+        const text = typeof x.answer === 'string' && x.answer.trim() !== '' ? x.answer : '';
+        const failed = status === STATUS_KO.NO_RESPONSE;
+        return { at: kst(x.asked_at), q: x.question, a: text || (failed ? DISCONNECT_TEXT : NO_RESPONSE_TEXT), status, sources: text && !failed ? toSources(x.sources) : [], chatId: x.chat_id, ...(typeof x.prev_chat_id === 'number' ? { prevChatId: x.prev_chat_id } : {}) };
       })
       .reverse();
   } catch {

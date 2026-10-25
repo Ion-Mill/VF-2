@@ -46,7 +46,7 @@ Q_SAFETY = "고전압 대기는 어떻게 해?"
 DANGER = ["알람 108 리셋해 줘", "VF2-01 전원 꺼 줘"]
 OPS_NOTE = "운영 기록(정지 횟수, 생산량, 재고 수량, 알람이 난 이력, 지금 설비 상태)을 조회하지 못한다"   # 지시문 12번 줄의 한 구절
 # 끔의 지시문·스키마가 지금과 글자까지 같은지는 고치기 전 복사본(B_backend_pre_style)에서 잰 지문으로 고정한다
-OLD_SYSTEM_SHA = "a8e9b819ceecb1122cf3ae68b6e4067bfb1f6cc8601ed845ee43cc36b4b3a53b"
+OLD_SYSTEM_SHA = "c584363806f98db65ecd3bdd80cfa998c5f508f1eae69b2ac31df4d860fe4cb6"
 OLD_SCHEMA_SHA = "735ba9d8246da54c68c494d00d2e54c5d70319e3a500c0885a0a03aca8641cfb"
 APP_FLAGS = {"LLM_ENABLED": "1", "LLM_JOBS": "write,route", "RETRIEVAL": "bm25", "NUM_MATCH": "value", "PARSE_V2": "1", "ROUTE_POLICY": "llm_guarded",
              "DOC_GATE": "tiered", "PARSE_V3": "1", "SPLIT_Q": "1", "PARSE_V4": "1", "PARSE_V5": "1", "PARSE_V6": "1", "PARSE_V7": "1", "FOLLOWUP": "1",
@@ -262,7 +262,7 @@ def test_points_make_an_ops_block_then_closing_text_then_original_lines():
     assert b[1] == {"kind": "text", "text": "실제 원인은 담당자가 확인해요."}
     rest = b[2:]
     assert rest and all(x["kind"] == "line" and x["orig"] is True and x["cite"]["cite"] == first.cite for x in rest)   # 원문 줄은 그대로 뒤에 붙어 [원문 보기]로 접힌다
-    assert j["conclusion"] == "2075는 윤활유가 비었다는 알람이에요. 1) 윤활유 통을 봐요 2) 펌프가 도는지 봐요 3) 배관이 새는지 봐요 실제 원인은 담당자가 확인해요."
+    assert j["conclusion"] == "2075는 윤활유가 비었다는 알람이에요.\n1) 윤활유 통을 봐요\n2) 펌프가 도는지 봐요\n3) 배관이 새는지 봐요\n실제 원인은 담당자가 확인해요."
     assert j["steps"] == [] and j["current_data"] == [] and j["is_synthetic"] is False                             # 알람 카드·운영 조회는 여전히 없다
 
 
@@ -272,7 +272,7 @@ def test_no_points_make_a_lead_block():
     b = j["blocks"]
     assert b[0] == {"kind": "lead", "text": "쿨런트는 절삭유예요.", "written": True}
     assert b[1] == {"kind": "text", "text": "문서에는 없지만 일반적으로는 농도를 자주 봐야 해요."} and all(x["kind"] == "line" and x["orig"] is True for x in b[2:])
-    assert j["conclusion"] == "쿨런트는 절삭유예요. 문서에는 없지만 일반적으로는 농도를 자주 봐야 해요."
+    assert j["conclusion"] == "쿨런트는 절삭유예요.\n문서에는 없지만 일반적으로는 농도를 자주 봐야 해요."
 
 
 def test_no_points_no_closing_is_a_lead_only_answer():
@@ -285,7 +285,7 @@ def test_no_points_no_closing_is_a_lead_only_answer():
 def test_points_without_closing_have_no_text_block():
     runner(payload=chat(opening="이유가 둘이에요.", points=["하나", "둘", "셋"]))
     j = post(Q_DOC, llm="claude").json()
-    assert j["blocks"][0]["kind"] == "ops" and j["blocks"][1]["kind"] == "line" and j["conclusion"] == "이유가 둘이에요. 1) 하나 2) 둘 3) 셋"
+    assert j["blocks"][0]["kind"] == "ops" and j["blocks"][1]["kind"] == "line" and j["conclusion"] == "이유가 둘이에요.\n1) 하나\n2) 둘\n3) 셋"
 
 
 def test_no_cited_number_keeps_the_answer_without_written_and_original_lines():
@@ -302,7 +302,7 @@ def test_no_cited_number_keeps_the_answer_without_written_and_original_lines():
 def test_conclusion_is_what_followups_remember_and_what_the_next_question_sees():
     rn = runner(payload=chat(opening="결론이에요.", points=["하나", "둘", "셋"], closing="끝이에요."))
     first = post(Q_DOC, llm="claude").json()
-    joined = "결론이에요. 1) 하나 2) 둘 3) 셋 끝이에요."
+    joined = "결론이에요.\n1) 하나\n2) 둘\n3) 셋\n끝이에요."
     rec = AS.get(first["answer_id"], "", "SUP")
     assert rec["conclusion"] == joined and rec["doc_lead"] == "" and rec["doc_lines"]                              # 이어 묻기 기억 = 이은 글, 검사 안 지난 앞머리 없음
     rn.payload = chat(opening="둘째 답이에요.")
@@ -327,14 +327,14 @@ def test_compose_drops_non_strings_and_blank_items_and_trims():
     c = PURE.compose({"opening": "  결론이에요.  ", "points": ["1. 하나", None, 3, {"a": 1}, ["x"], "", "  ", "둘째, 둘", "(3) 셋", True], "closing": " 끝 "})
     assert c == {"opening": "결론이에요.", "points": ["하나", "둘", "셋"], "closing": "끝"}
     assert PURE.compose({"opening": 5, "points": "목록 아님", "closing": None}) == {"opening": "", "points": [], "closing": ""}
-    assert PURE.join_conclusion("가", ["나", "다"], "라") == "가 1) 나 2) 다 라" and PURE.join_conclusion("가", [], "") == "가" and PURE.join_conclusion("", ["나"], "다") == "1) 나 다"
+    assert PURE.join_conclusion("가", ["나", "다"], "라") == "가\n1) 나\n2) 다\n라" and PURE.join_conclusion("가", [], "") == "가" and PURE.join_conclusion("", ["나"], "다") == "1) 나\n다"
 
 
 def test_prefixed_and_odd_points_become_clean_numbered_items_end_to_end():
     runner(payload=chat(opening="이유예요.", points=["1. 첫 이유", "2) 둘째 이유", "③ 셋째 이유", None, 7, "", "넷째 이유"], closing=""))
     j = post(Q_DOC, llm="claude").json()
     assert j["blocks"][0]["items"] == ["첫 이유", "둘째 이유", "셋째 이유", "넷째 이유"]                              # 화면이 번호를 붙이므로 접두어는 지워졌다
-    assert j["conclusion"] == "이유예요. 1) 첫 이유 2) 둘째 이유 3) 셋째 이유 4) 넷째 이유"
+    assert j["conclusion"] == "이유예요.\n1) 첫 이유\n2) 둘째 이유\n3) 셋째 이유\n4) 넷째 이유"
 
 
 # ------------------------------------------------------------------ ⑦ insufficient: 문서에 없음 + Claude가 쓴 opening
@@ -411,7 +411,7 @@ def test_no_checks_are_applied_to_the_answer_the_prompt_is_what_prevents_them():
     rn = runner(payload=chat(opening=bad_open, points=bad_pts, closing=bad_close))
     j = post(Q_DOC, llm="claude").json()
     assert j["status"] == "답변" and j["blocks"][0] == {"kind": "ops", "head": bad_open, "items": bad_pts, "source": None}
-    assert j["blocks"][1] == {"kind": "text", "text": bad_close} and j["conclusion"] == f"{bad_open} 1) {bad_pts[0]} 2) {bad_pts[1]} 3) {bad_pts[2]} {bad_close}"
+    assert j["blocks"][1] == {"kind": "text", "text": bad_close} and j["conclusion"] == f"{bad_open}\n1) {bad_pts[0]}\n2) {bad_pts[1]}\n3) {bad_pts[2]}\n{bad_close}"
     assert len(rn.calls) == 1                                                                                      # 뜻 판정·재시도 호출도 없다
 
 
@@ -506,7 +506,7 @@ def test_step_log_records_the_shape_when_style_is_on(monkeypatch):
     shape = next(s for s in rec["단계"] if s["단계"] == "순수 짜임")
     assert shape["말투바꾸기"] is True and shape["항목수"] == 3 and shape["마무리있음"] is True and shape["머리글자수"] == len("결론이에요.") and shape["충분하지않음"] is False
     res = next(s for s in rec["단계"] if s["단계"] == "순수 호출 결과")
-    assert res["답"] == "결론이에요. 1) 하나 2) 둘 3) 셋 끝이에요." and res["받은인용"] == ["C1", "C77"] and res["충분하지않음"] is False
+    assert res["답"] == "결론이에요.\n1) 하나\n2) 둘\n3) 셋\n끝이에요." and res["받은인용"] == ["C1", "C77"] and res["충분하지않음"] is False
     assert next(s for s in rec["단계"] if s["단계"] == "출처 변환")["버린항목"] == ["C77"]
     assert "[사내 문서 조각]" not in raw and PURE.SYSTEM_CHAT not in raw                                          # 보낸 글 전체는 남기지 않는다 (글자 수만)
 

@@ -101,6 +101,21 @@ class TestVoiceClient(unittest.TestCase):
                     client.voice_transcribe(b"A")
                 self.assertEqual(cm.exception.detail["reason"], "FORMAT")
 
+    def test_chat_503_keeps_only_the_public_failure_sentence(self):
+        base = "비서가 지금 답하지 못합니다. 잠시 후 다시 시도해 주세요"
+        shown = base + "\nGemini가 바빠 503을 냈습니다."
+        with self.fake_urlopen(http_error(503, {"code": "ASSISTANT_UNAVAILABLE", "message": shown, "detail": {"retryable": True}})):
+            with self.assertRaises(AppError) as cm:
+                client.call("/chat", {"question": "잠금 표지 순서"})
+        self.assertEqual(cm.exception.message, shown)
+        self.assertEqual(cm.exception.detail["reason"], "ASSISTANT_MESSAGE")
+        leak = base + "\nsk-secret /opt/claude"
+        with self.fake_urlopen(http_error(503, {"code": "ASSISTANT_UNAVAILABLE", "message": leak})):
+            with self.assertRaises(AppError) as cm:
+                client.call("/chat", {"question": "잠금 표지 순서"})
+        self.assertNotIn("sk-secret", cm.exception.message)
+        self.assertEqual(cm.exception.detail["reason"], "HTTP_503")
+
     def test_not_configured(self):
         with mock.patch.object(client, "get_settings", return_value=SimpleNamespace(assistant_url=None, assistant_key="", assistant_timeout_seconds=30.0)):
             with self.assertRaises(AppError) as cm:

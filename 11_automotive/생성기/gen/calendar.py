@@ -1,6 +1,6 @@
 """② 달력과 교대 (설계서 5.2·5.3, ERD 5.A.5 work_day·5.A.6 shift).
 
-시간은 '분 번호'로 다룬다: T0 = 2026-09-01 00:00 KST 부터 1분마다 1씩.
+시간은 '분 번호'로 다룬다: T0 = 기록 시작일(프로필의 period.start_date) 00:00 KST 부터 1분마다 1씩.
 """
 from __future__ import annotations
 
@@ -28,7 +28,7 @@ class Shift:
 @dataclass
 class Calendar:
     t0: datetime
-    t_end: datetime                       # 과거 기록 끝 (10/1 08:00)
+    t_end: datetime                       # 과거 기록 끝 (프로필의 realtime.start, 예: 10/24 09:00)
     days: list[date]
     workdays: list[date]
     shifts: list[Shift]
@@ -68,10 +68,11 @@ def build_calendar(cfg: dict) -> Calendar:
     p, s, tg = cfg["period"], cfg["shifts"], cfg["targets"]
     start, end = date.fromisoformat(p["start_date"]), date.fromisoformat(p["end_date"])
     closed = {WEEKDAY[w] for w in p["closed_weekdays"]}
-    closed_dates = {date.fromisoformat(x) for x in p["closed_dates"]}
+    closed_dates = {date.fromisoformat(x) for x in p.get("closed_dates", [])}
     days = list(daterange(start, end))
     workdays = [d for d in days if d.weekday() not in closed and d not in closed_dates]
-    assert len(workdays) == p["work_days"], (len(workdays), p["work_days"])
+    if "work_days" in p:
+        assert len(workdays) == p["work_days"], (len(workdays), p["work_days"])
 
     sup = {"DAY": "U10", "NIGHT": "U11"}      # app_user.csv: 반장 주간 U10, 반장 야간 U11
     shifts: list[Shift] = []
@@ -93,7 +94,7 @@ def build_calendar(cfg: dict) -> Calendar:
     assert len(shifts) == 2 * len(workdays)
 
     t0 = datetime(start.year, start.month, start.day, tzinfo=KST)
-    t_end = at(end + timedelta(days=1), cfg["realtime"]["start"][11:16])   # 10/1 08:00
+    t_end = at(end + timedelta(days=1), cfg["realtime"]["start"][11:16])   # 기록 끝 = 마지막 날 다음 날의 실시간 시작 시각
     cal = Calendar(t0=t0, t_end=t_end, days=days, workdays=workdays, shifts=shifts)
     n = cal.n_min
     cal.minute_shift = [-1] * n

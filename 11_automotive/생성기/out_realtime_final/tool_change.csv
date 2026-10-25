@@ -1,0 +1,4 @@
+tool_change_id,tool_id,changed_at,changed_by,cum_before,change_reason,related_alarm_event_id
+124,VF2-01-T05,2026-10-26T09:30:00+09:00,U02,360,LIFE_90,
+125,VF2-01-T02,2026-10-26T13:30:00+09:00,U02,90,BROKEN,293
+126,VF2-02-T02,2026-10-26T14:16:00+09:00,U02,192.5,LIFE_90,

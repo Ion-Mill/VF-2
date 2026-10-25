@@ -9,6 +9,7 @@ API명세서_v1 2.9 "생성기와 잇는 방법" [제안] 그대로: 서버가 R
 """
 from __future__ import annotations
 
+import hmac
 import io
 import json
 import os
@@ -17,7 +18,7 @@ import sys
 import threading
 import time
 import traceback
-from datetime import datetime
+from datetime import datetime, timedelta
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlparse
@@ -30,7 +31,7 @@ sys.path.insert(0, str(HERE))
 if hasattr(sys.stdout, "buffer"):
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", line_buffering=True)
 
-from gen.common import KST, fmt_dt, load_config, load_masters  # noqa: E402
+from gen.common import KST, _cell, fmt_dt, load_config, load_masters  # noqa: E402
 from gen.realtime import Realtime  # noqa: E402
 from server_assistant import answer  # noqa: E402
 from server_live import Live, iso  # noqa: E402
@@ -38,8 +39,10 @@ from server_past import Past  # noqa: E402
 from llm_compose import Composer, sentences  # noqa: E402
 from db_relay import DbRelay  # noqa: E402
 
-PORT = 8765
+PORT = int(os.environ.get("MOM_SIM_PORT", "8765"))      # 도커에서만 바꾼다 (start_all.ps1은 8765로 알고 있음)
+HOST = os.environ.get("MOM_SIM_HOST", "127.0.0.1")        # 도커 안에서는 0.0.0.0 (바깥에는 Caddy만 내놓는다)
 TICK_SEC = 0.25
+REQ = threading.local()                                    # 요청 하나의 머리글 값 (발표자 키)
 NO_STREAM = {"sensor"}                      # 센서는 /api/line/twin 의 equipment[].sensor 로 (1분마다 2건이라 흐름에서 뺌)
 
 
@@ -58,10 +61,23 @@ class State:
         self.P = self._read_past()
         data = HERE / "data.json"
         self.alarms = json.loads(data.read_text(encoding="utf-8"))["alarms"] if data.exists() else {}
-        print("실시간 모드 준비 중 (10/1 08:00, 약 2초) …")
+        print(f"실시간 모드 준비 중 ({self.cfg['realtime']['start'][5:10].replace('-', '/')} {self.cfg['realtime']['start'][11:16]}, 약 2초) …")
         self.rt = Realtime(self.cfg, self.M, drop_dir=GEN / "out_live" / self.cfg["realtime"]["cmm_drop_dir"])   # git 제외 폴더
-        self.live = Live(self.rt, self.P)
+        # 실제 시각 모드(최종용, 2026-10-24): 미리 짠 오전 대본으로 15:00 상태를 만들고, 저장해 둔 사람 조작을 다시 하고, 지금 실제 시각까지 따라잡는다.
+        # 서버를 다시 켜도 같은 세계가 된다 (회차 번호 run_id도 파일에 있어 그대로). MOM_PRETEND_NOW=2026-10-26T17:00 이면 그 시각에서 흐르는 것처럼 (리허설)
+        self.wall = self.cfg.get("profile", {}).get("clock") == "wall"
+        self.pretend = os.environ.get("MOM_PRETEND_NOW", "").strip()
+        self.pretend_offset = (datetime.fromisoformat(self.pretend).replace(tzinfo=KST) - datetime.now(KST)) if self.pretend else timedelta(0)
+        self.wall_file = GEN / "out_live" / f"wall_{self.cfg['profile']['name']}.json" if self.wall else None
         self.run_id = int(time.time())           # 서버를 다시 켜도 회차가 겹치지 않게 (브라우저 저장이 회차별, 2026-10-21)
+        if self.wall:
+            st = self._wall_load()
+            self.run_id = st["run_id"]
+            print(f"실제 시각 모드: 오전 대본으로 {self.cfg['profile']['live_start'][11:16]} 상태를 만들고 지금({self.wall_now():%m/%d %H:%M})까지 따라잡는 중 …")
+            self.rt.start_live(self.wall_now(), st["ops"])
+            self.rt.on_op = self._wall_save_op
+            self._wall_docs()
+        self.live = Live(self.rt, self.P)
         self.seq = 0
         self.buf: list[dict] = []
         self.reports: dict[str, dict] = {}       # 교대 보고서 사람 수정·확정 (API-RPT-02·03·04)
@@ -80,7 +96,46 @@ class State:
         self.relay = DbRelay.from_env(self._relay_clock, self._relay_snap, self._relay_base)
         if self.relay and not self.relay.start():
             self.relay = None
-        self._push(self.rt.events)
+        self._boot_events(self.rt.events)
+
+    def _boot_events(self, evs):
+        """켤 때(또는 처음으로 뒤) 한꺼번에 만들어진 사건. 영상용은 시작 시각부터라 그대로 화면 흐름에 넣는다.
+        실제 시각 모드(최종용)는 오전 대본·따라잡기로 만든 **지난 사건**이라 화면 흐름에 넣지 않는다 — 넣으면 화면이 접속할 때
+        이미 끝난 오전 충돌 알람(992)을 방금 난 긴급 알림처럼 띄운다 (2026-10-24). DB 중계는 사건이 아니라 표(Realtime.tables)를
+        보내므로 여기서 따로 넘기지 않는다 (2026-10-25 합침)."""
+        if not self.wall:
+            self._push(evs)
+
+    def _wall_docs(self):
+        """오전 대본에 끝난 정지(충돌)의 작업지시서·작업기록서를 지난 정비 기록에 — 평가자 모두에게 같은 문서.
+        [처음으로]에서 과거 기록을 다시 읽으면 빠지므로 그때도 다시 더한다."""
+        self.P.add_docs({k: [{c: _cell(v) for c, v in row.items()} for row in rows] for k, rows in self.rt._maint_docs().items()})
+
+    def wall_now(self) -> datetime:
+        """실제 시각(KST). 리허설용 MOM_PRETEND_NOW가 있으면 그 시각에서 흐르는 것처럼."""
+        return datetime.now(KST) + self.pretend_offset
+
+    def _wall_load(self) -> dict:
+        try:
+            st = json.loads(self.wall_file.read_text(encoding="utf-8"))
+            if isinstance(st.get("ops"), list) and isinstance(st.get("run_id"), int):
+                return st
+        except (OSError, ValueError):
+            pass
+        start = datetime.fromisoformat(self.cfg["profile"]["live_start"]).replace(tzinfo=KST)
+        return {"run_id": int(start.timestamp()), "ops": []}        # 처음 켤 때 회차 = 실시간 시작 시각 (다시 켜도 같다)
+
+    def _wall_write(self, st: dict):
+        self.wall_file.parent.mkdir(parents=True, exist_ok=True)
+        tmp = self.wall_file.with_suffix(".tmp")
+        tmp.write_text(json.dumps(st, ensure_ascii=False), encoding="utf-8")
+        tmp.replace(self.wall_file)
+
+    def _wall_save_op(self, entry: dict):
+        """사람 조작(공구 교체·작업기록 확정·로트 보류와 해제)을 파일에 남긴다 — 서버를 다시 켜면 같은 시각에 다시 한다."""
+        st = self._wall_load()
+        st["ops"].append(entry)
+        self._wall_write(st)
 
     def _read_past(self):
         # 9월 기록 = 백엔드 DB (2026-10-23, 못 쓰면 생성기 out/ CSV — server_past.py 머리 주석). 10/1 시작 전 기록만
@@ -113,16 +168,24 @@ class State:
     def tick(self, dt):
         with self.lock:
             n0 = len(self.rt.events)
-            self.rt.tick(dt)
+            if self.wall:
+                self.rt.tick_wall(self.wall_now())
+            else:
+                self.rt.tick(dt)
             self._push(self.rt.events[n0:])
 
     def reset(self):
         with self.lock:
             n0 = len(self.rt.events)
             self.rt.reset()
+            if self.wall:                            # 처음으로(발표자 전용): 사람 조작은 지우고, 시각은 그대로 지금까지 따라잡는다
+                self.rt.start_live(self.wall_now(), [])
+                self._wall_write({"run_id": self.run_id + 1, "ops": []})
             if self.relay:
                 self.relay.reset()
             self.P = self._read_past()               # [처음으로] = DB에서 9월 기록을 다시 읽는다 (그사이 DB에서 고친 것도 반영)
+            if self.wall:
+                self._wall_docs()
             self.live = Live(self.rt, self.P)
             self.run_id += 1
             self.reports.clear()
@@ -131,7 +194,10 @@ class State:
             self.ships.clear()
             self.pm_open.clear()
             COMPOSER.clear()                         # 비서가 다듬어 둔 문장도 새 회차에 가져가지 않는다
-            self._push(self.rt.events[n0:] if len(self.rt.events) > n0 else self.rt.events)
+            if self.wall:
+                self.buf.clear()                     # 번호(seq)는 이어 가고 내용만 비움 — 지난 알림이 다시 뜨지 않게
+            else:
+                self._push(self.rt.events[n0:] if len(self.rt.events) > n0 else self.rt.events)
 
 
 S: State | None = None
@@ -182,7 +248,20 @@ def _route(method, p, q, body, rt, live, P):
     key = "/".join(p)
     # 시연 시계·사건 버튼 (API-SIM-01~03)
     if key == "health":
-        return {"ok": True, "run_id": S.run_id, "clock": rt.clock(), "llm_compose": COMPOSER.stats(), "past_source": P.source}
+        return {"ok": True, "run_id": S.run_id, "clock": {**rt.clock(), **({"wall_now": fmt_dt(S.wall_now())} if S.wall else {})},
+                "llm_compose": COMPOSER.stats(), "profile": profile_info(), "past_source": P.source}
+    if S.wall and method == "POST" and key.startswith("sim/"):
+        # 실제 시각으로 흐르는 최종용: 시계·사건 버튼·사건 복귀는 없다. 처음으로(발표자 전용)만, 발표자 키(MOM_PRESENTER_KEY)가 있을 때
+        if key != "sim/reset":
+            raise ApiError(403, "FORBIDDEN", "실제 시각으로 흐르는 모드에서는 시계·사건 조작을 쓸 수 없어요")
+        want, got = os.environ.get("MOM_PRESENTER_KEY", ""), getattr(REQ, "key", "") or ""
+        if not want or not hmac.compare_digest(want.encode("utf-8"), got.encode("utf-8")):
+            raise ApiError(403, "FORBIDDEN", "발표자 키가 필요해요")
+    if key == "sim/recover" and method == "POST":
+        try:
+            return {"recovered": rt.recover(), **rt.clock()}
+        except ValueError as e:
+            raise ApiError(409, "INVALID_STATE", str(e))
     if key == "sim/clock":
         if method == "POST":
             try:
@@ -219,6 +298,10 @@ def _route(method, p, q, body, rt, live, P):
     # 3D 라인 뷰·생산 (API-LINE-01~07)
     if key == "line/twin":
         t = live.twin()
+        if S.wall:
+            # 최종용: 실시간 시작 전(오전 대본)에 난 알람은 '지난 기록'이다. 지금 알람 목록에 두면 화면이 접속할 때마다 이미 끝난 오전 충돌을
+            # 처리 안 된 긴급 알람처럼 띄우고 작업지시서 초안을 새로 만든다 (처리 표시는 브라우저마다 따로 저장되므로). 지난 기록(maint/history)으로 옮긴다
+            t["alarms"] = [a for a in t["alarms"] if a["occurred_at"][:16] >= S.cfg["profile"]["live_start"][:16]]
         t["run_id"] = S.run_id
         t["production"] = live.production()
         t["kpi"] = live.kpi()
@@ -282,8 +365,16 @@ def _route(method, p, q, body, rt, live, P):
     if key == "maint/pm-schedule":
         return live.pm()
     if key == "maint/history":
+        # 최종용: 오전 대본의 알람은 지난 기록. 생성기 CSV(alarm_event.csv) 줄과 같은 칸 이름·글자 값으로 — 화면이 작업지시서의 알람 번호(글자)와 맞춘다
+        morning = [{"alarm_event_id": str(e["id"]), "equipment_id": e["equipment_id"], "alarm_code": e["alarm_code"],
+                    "severity_at_event": e["severity"], "occurred_at": iso(live.to_dt(e["occurred_m"])),
+                    "cleared_at": iso(live.to_dt(e["cleared_m"])) if e["cleared_m"] is not None else "",
+                    "lot_no": e.get("lot_no") or "", "prev_alarm_event_id": str(e["prev"]) if e.get("prev") else "",
+                    "is_injected": "true" if e.get("scenario") else "false", "scenario_code": e.get("scenario") or ""}
+                   for e in rt.sim.alarm_events if e["id"] > rt.past["alarm_event"]
+                   and iso(live.to_dt(e["occurred_m"]))[:16] < S.cfg["profile"]["live_start"][:16]] if S.wall else []
         return {"work_orders": P.work_orders, "steps": P.wo_steps, "work_records": P.work_records, "checks": P.wr_checks,
-                "parts": P.wr_parts, "alarms": P.alarms}
+                "parts": P.wr_parts, "alarms": P.alarms + morning}
     # 보고서 (API-RPT-01~05)
     if key == "reports/shift":
         live_ids = [s.shift_id for s in rt.sim.cal.shifts if s.work_date >= rt.sim.cal.to_dt(rt.N).date()]
@@ -341,7 +432,7 @@ def _route(method, p, q, body, rt, live, P):
         return cur
     if key == "reports/daily":
         rows = [with_memo(daily_with_llm({**r, **S.daily.get(r["work_date"], {})})) for r in P.daily_reports]     # 목록을 읽을 때 아직 확정 안 된 초안(9/30)의 문장 준비가 미리 시작된다
-        ld = live_daily("2026-10-01")
+        ld = live_daily(live_date())
         if ld:
             rows.append(with_memo({**ld, **S.daily.get(ld["work_date"], {})}))
         return {"reports": rows}
@@ -536,7 +627,7 @@ def _route(method, p, q, body, rt, live, P):
         return {"ok": True}
     if key == "assist/work-order-text" and method == "POST":      # 화면이 만든 작업지시서의 제목·증상을 비서가 다듬어 뒀는지 묻는다 (기다리지 않는다)
         return work_order_text(body)
-    if key == "assist/guide-card-text" and method == "POST":      # 알람 지침카드 '먼저 할 일'을 비서가 쉽게 풀어 써 뒀는지 묻는다 (원문은 그대로, 풀어 쓴 것은 카드 아래에 따로)
+    if key == "assist/guide-card-text" and method == "POST":      # 알람 지침카드 '먼저 할 일'·'보전 담당자 단계'를 비서가 쉽게 풀어 써 뒀는지 묻는다 (part로 나눔)
         return guide_card_text(body)
     if key == "assist/briefing-text" and method == "POST":         # 브리핑 '먼저 챙길 일'을 순위 묶음별로 비서가 다듬어 뒀는지 묻는다 (기다리지 않는다, 준비된 묶음부터 받아 간다)
         return briefing_text(body)
@@ -625,13 +716,13 @@ def work_order_text(body):
 
 
 def guide_card_text(body):
-    """알람 지침카드의 '먼저 할 일'(DOC-03 ★ 줄)을 비서가 쉽게 풀어 쓴 줄. 준비 전·꺼짐·실패면 {"ready": False}.
-    원문 줄은 화면이 그대로 보이고, 이 줄은 카드 아래에 '참고용'으로 따로 붙는다. 알람 코드가 같으면 줄도 같아서 코드별로 한 번만 만든다."""
-    code, steps = str(body.get("code") or ""), body.get("steps")
-    if not re.fullmatch(r"[A-Za-z0-9._-]{1,12}", code) or not isinstance(steps, list) or not 1 <= len(steps) <= 12 \
+    """알람 지침카드의 점검 줄을 비서가 쉽게 풀어 쓴 줄. 준비 전·꺼짐·실패면 {"ready": False}.
+    part=steps(기본)는 '먼저 할 일', part=maint는 '보전 담당자 단계'. 알람 코드가 같아도 칸마다 따로 한 번만 만든다."""
+    code, steps, part = str(body.get("code") or ""), body.get("steps"), body.get("part") or "steps"
+    if part not in ("steps", "maint") or not re.fullmatch(r"[A-Za-z0-9._-]{1,12}", code) or not isinstance(steps, list) or not 1 <= len(steps) <= 12 \
             or any(not isinstance(s, str) or not s.strip() or len(s) > 600 for s in steps):
         raise ApiError(400, "VALIDATION", "알람 코드와 점검 순서 줄(1~12개)이 필요해요")
-    out = COMPOSER.polished("guide_card", code, [s.strip() for s in steps])
+    out = COMPOSER.polished("guide_card", f"{code}:{part}", [s.strip() for s in steps])
     return {"ready": True, "lines": out} if out else {"ready": False}
 
 
@@ -676,8 +767,24 @@ def briefing_text(body):
     return {"ready": all(o["ready"] for o in out), "groups": out}
 
 
+def live_date():
+    """실시간 시작일(YYYY-MM-DD) — 프로필이 정함 (영상용 10/24, 최종용 10/26)."""
+    return fmt_dt(S.rt.sim.cal.to_dt(S.rt.N))[:10]
+
+
+def profile_info():
+    """/api/health 의 profile: 화면이 날짜·교대 문구와 조작판을 이 값으로 정한다 (2026-10-24, 1024_팀원별_요청.md 4장)."""
+    cfg = S.cfg
+    p = cfg.get("profile", {})
+    return {"name": p.get("name"), "clock_mode": "accelerated" if p.get("clock") == "accelerated" else "wall",
+            "controls": p.get("controls", []), "history_start": cfg["period"]["start_date"], "history_end": p.get("history_end"),
+            "scripted_from": p.get("scripted_from"), "pretend": bool(S.pretend), "live_start": p.get("live_start") or cfg["realtime"]["start"],
+            "shifts": {k: {"start": cfg["shifts"][k]["start"], "end": cfg["shifts"][k]["end"], "break": cfg["shifts"][k]["break"]} for k in ("DAY", "NIGHT")},
+            "daily_report_latest": cfg["shifts"]["daily_report_draft"]["latest"]}
+
+
 def live_daily(d, with_llm=True):
-    """10/1 일일 보고서 AI비서 초안: 야간 교대 보고서가 확정되면 그 즉시, 아니면 다음 날 06:00 (UI설계서 4.3, FR-PRD-04-01)."""
+    """실시간 시작일 일일 보고서 AI비서 초안: 야간 교대 보고서가 확정되면 그 즉시, 아니면 다음 날 shifts.daily_report_draft.latest(지금 07:00) (UI설계서 4.3, FR-PRD-04-01)."""
     rt, live = S.rt, S.live
     cal = rt.sim.cal
     day = next((s for s in cal.shifts if s.shift_id == f"{d}-D"), None)
@@ -685,7 +792,8 @@ def live_daily(d, with_llm=True):
     if not day or not night or d < fmt_dt(cal.to_dt(rt.N))[:10]:
         return None
     nrep = S.reports.get(night.shift_id, {})
-    six = night.end.replace(hour=6, minute=0)
+    latest = S.cfg["shifts"]["daily_report_draft"]["latest"]
+    six = night.end.replace(hour=int(latest[:2]), minute=int(latest[3:5]))
     if not (nrep.get("status") == "CONFIRMED" or rt.now() >= six):
         return None
     a, b = cal.to_min(day.start), min(cal.to_min(night.end), rt.m)
@@ -707,7 +815,7 @@ def live_daily(d, with_llm=True):
     return {"work_date": d, "status": "AI_DRAFT", "target_qty": 180, "actual_qty": (dr.get("actual_qty") or 0) + (nr.get("actual_qty") or 0),
             "defect_qty": (dr.get("defect_qty") or 0) + (nr.get("defect_qty") or 0), "oee_pct": k["oee_pct"], "failure_loss_qty": round(fl, 1),
             "speed_loss_qty": round(spd, 1), "issues_summary": issues, "confirmed_by": None, "confirmed_at": None, "current_version": 0,
-            "created_by": "야간 교대 보고서 확정 즉시" if nrep.get("status") == "CONFIRMED" else "06:00 (야간 미확정)"}
+            "created_by": "야간 교대 보고서 확정 즉시" if nrep.get("status") == "CONFIRMED" else f"{latest} (야간 미확정)"}
 
 
 def quality_summary(P, rt):
@@ -757,11 +865,12 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(data)))
         self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, X-Presenter-Key")
         self.end_headers()
         self.wfile.write(data)
 
     def _do(self, method):
+        REQ.key = self.headers.get("X-Presenter-Key", "")
         u = urlparse(self.path)
         body = {}
         if method == "POST":
@@ -796,10 +905,10 @@ def main():
     # Windows는 SO_REUSEADDR이면 같은 포트에 서버가 둘 떠서 요청이 엇갈린다 — 이미 떠 있으면 바로 멈춘다
     ThreadingHTTPServer.allow_reuse_address = os.name != "nt"
     try:
-        srv = ThreadingHTTPServer(("127.0.0.1", PORT), Handler)
+        srv = ThreadingHTTPServer((HOST, PORT), Handler)
     except OSError:
         sys.exit(f"포트 {PORT}에 시연 서버가 이미 떠 있습니다. 그 창을 끄거나 그대로 쓰세요.")
-    print(f"준비 끝 — http://127.0.0.1:{PORT}  (시연 시각 {S.rt.clock()['sim_at']}, 배속 ×{S.rt.speed})  Ctrl+C로 끝")
+    print(f"준비 끝 — http://{HOST}:{PORT}  (시연 시각 {S.rt.clock()['sim_at']}, 배속 ×{S.rt.speed})  Ctrl+C로 끝")
     try:
         srv.serve_forever()
     except KeyboardInterrupt:

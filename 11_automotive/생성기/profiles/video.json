@@ -1,0 +1,35 @@
+{
+  "_about": "영상용 프로필 (2026-10-24). 기록 10/1~10/23, 시연은 10/24(토) 09:00부터 가속 시계. 기준 config.json 위에 겹쳐 쓴다 (딕셔너리는 키별로 합치고 목록은 통째로 바꿈). 시연 서버: 로컬 DB만",
+  "profile": {
+    "name": "video",
+    "clock": "accelerated",
+    "history_end": "2026-10-23",
+    "live_start": "2026-10-24T09:00",
+    "controls": ["speed", "pause", "skip", "buttons", "reset"]
+  },
+  "run": { "out_dir": "out_video" },
+  "period": { "start_date": "2026-10-01", "end_date": "2026-10-23" },
+  "realtime": { "start": "2026-10-24T09:00", "out_dir": "out_realtime_video" },
+  "alarms": {
+    "repeat_cases": [
+      { "id": "case1_S2", "equipment": "VF2-02", "alarm": "2075", "stage": 1,
+        "early_window": ["2026-10-01", "2026-10-07"],
+        "last_week_three": { "third_at": "2026-10-22T23:12", "window_start": "2026-10-16" },
+        "action_plan_saved": false, "no_recur_on": "2026-10-23" },
+      { "id": "case2_stage2", "equipment": "VF2-02", "alarm": "108", "stage": 2,
+        "occurrences": [["2026-10-08", "DAY"], ["2026-10-09", "NIGHT"], ["2026-10-10", "DAY"], ["2026-10-14", "DAY"]],
+        "cause_check": ["2026-10-15", "DAY"], "close_check_until": "2026-10-22" }
+    ]
+  },
+  "maintenance": { "overdue_for_demo": { "must_due": "2026-10-21" } },
+  "sim": {
+    "crash_chain": { "window": ["2026-10-07", "2026-10-16"] },
+    "pm_plan": {
+      "vf2_monthly_due": { "VF2-01": ["2026-10-08", "2026-10-21"], "VF2-02": "2026-10-24" },
+      "overdue_due": { "PM-VF2-02-2.3-01": "2026-10-21", "PM-VF2-02-2.3-07": "2026-10-22" }
+    }
+  },
+  "inventory": { "fg_stocktake_adjust": { "date": "2026-10-23" } },
+  "shipment": { "first_date": "2026-10-02" },
+  "reports": { "unconfirmed_daily_reports": ["2026-10-23"] }
+}

@@ -1,3 +1,0 @@
-defect_record_id,lot_no,process_code,defect_code,qty,disposition,result_id,found_at,recorded_by
-44,LOT-2609-128-1,OP-50,DIM-02,1,SCRAP,10024,2026-10-01T15:22:00+09:00,U03
-45,LOT-2610-001-1,OP-50,SUR-03,1,REWORK,,2026-10-01T23:54:00+09:00,U06

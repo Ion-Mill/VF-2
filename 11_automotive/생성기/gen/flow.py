@@ -844,7 +844,7 @@ class Sim:
                 if self.auto_holds:
                     self.pending_holds.append({"at": m + int(self.rh.integers(15, 46)), "lot": lot,
                                                "alarm_id": ev["id"], "tool_id": None, "next": 2,
-                                               "reason": "충돌 의심(108 → 994 → 992) 때 가공 중이던 로트 — 비서 의심 로트 제안"})
+                                               "reason": f"충돌 의심({'108 → 994 → 992' if p.prev_event else '992'}) 때 가공 중이던 로트 — 비서 의심 로트 제안"})
             return
 
     def _shift_checks(self, m: int):

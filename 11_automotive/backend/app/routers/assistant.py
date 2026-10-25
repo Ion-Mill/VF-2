@@ -153,8 +153,9 @@ def chat(body: ChatIn, request: Request, actor: Actor = Depends(require("ASSISTA
     except AppError as e:
         if e.code != "ASSISTANT_UNAVAILABLE":
             raise
-        out = {"answer": None, "sources": [], "related": [], "status": "NO_RESPONSE",
-               "reason": (e.detail or {}).get("reason") if isinstance(e.detail, dict) else None}
+        reason = (e.detail or {}).get("reason") if isinstance(e.detail, dict) else None
+        shown = e.message if reason == "ASSISTANT_MESSAGE" else None
+        out = {"answer": shown, "sources": [], "related": [], "status": "NO_RESPONSE", "reason": reason}
     chat_id = db.scalar("assistant.chat_insert", user_id=actor.user_id, screen_context=body.context or None,
                         question=body.question, answer=out["answer"], sources=out["sources"] or None,
                         status=out["status"], prev_chat_id=body.prev_chat_id)

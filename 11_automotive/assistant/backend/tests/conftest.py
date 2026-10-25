@@ -90,6 +90,7 @@ def _llm_off(monkeypatch, tmp_path):
     monkeypatch.setenv("OBLIGE_CHECK", "1")      # "해야 할 일 꼴" 검사 끄기 실험 (2026-10-15): 시험 기본은 켜짐(지금 동작) — 끄는 시험은 안에서 명시
     monkeypatch.setenv("PURE_EXTERNAL", "0")     # 순수 외부 LLM 연결 (2026-10-15): 시험 기본은 꺼짐(지금 동작) — 켜는 시험은 안에서 명시
     monkeypatch.setenv("PURE_KEEP_SIGNALS", "0")
+    monkeypatch.setenv("PURE_COMPARE", "0")      # 비교 2번 (2026-10-23): 시험 기본은 꺼짐(1번) — 개발 PC의 .env가 다른 시험을 바꾸지 않게
     monkeypatch.setenv("PURE_TOPK", "8")
     monkeypatch.setenv("PURE_STYLE", "0")        # 순수 길 말투 바꾸기 (2026-10-15): 시험 기본은 꺼짐(지금 말투) — 켜는 시험은 안에서 명시
     monkeypatch.setenv("PURE_LAYOUT", "0")       # 순수 길 묶음 목록 형식 (2026-10-16): 시험 기본은 꺼짐(PURE_STYLE=1의 지금 형식) — 켜는 시험은 안에서 명시
@@ -109,3 +110,9 @@ def _llm_off(monkeypatch, tmp_path):
     monkeypatch.setenv("PURE_MODEL", "")             # 순수 길 본 답변 모델 (2026-10-19): 시험 기본은 Sonnet 모드(코드 기본은 Haiku, 여기서 빈 줄로 고정 — 기존 시험은 그대로 통과) — 켜는/기본값 시험은 안에서 명시. 개발 PC의 .env가 다른 시험을 바꾸지 않게
     for _k in ("MOM_EXTERNAL_LLM_OK", "ANTHROPIC_API_KEY", "MOM_USAGE_LEDGER"):
         monkeypatch.delenv(_k, raising=False)
+
+
+@pytest.fixture(autouse=True)
+def _no_sim_clock(monkeypatch):
+    """켜져 있는 시연 서버(8765)를 시험이 읽지 않게 한다. 시계가 필요한 시험만 이 함수를 다시 넣는다."""
+    monkeypatch.setattr("backend.services.sim_clock.current", lambda: None)
