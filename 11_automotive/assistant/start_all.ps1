@@ -265,7 +265,11 @@ function Start-Proc([string]$Name, [string]$Exe, [string[]]$ArgList, [string]$Cw
     try {
         $p = Start-Process -FilePath $Exe -ArgumentList $quoted -WorkingDirectory $Cwd -WindowStyle Hidden -PassThru -RedirectStandardOutput $log -RedirectStandardError $err
     } finally {
-        foreach ($k in $saved.Keys) { [Environment]::SetEnvironmentVariable($k, $saved[$k], 'Process') }
+        # 원래 없던 변수는 지운다. SetEnvironmentVariable($k, $null)은 PowerShell이 $null을 ''로 바꿔 "빈 값"으로 남겨, 뒤이어 켜는 서버가 빈 MOM_ASSISTANT_URL 등을 물려받는다 (2026-10-25)
+        foreach ($k in $saved.Keys) {
+            if ($null -eq $saved[$k]) { Remove-Item -LiteralPath "Env:$k" -ErrorAction SilentlyContinue }
+            else { [Environment]::SetEnvironmentVariable($k, $saved[$k], 'Process') }
+        }
     }
     [void]$Started.Add([pscustomobject]@{ Name = $Name; Pid = $p.Id; Port = $Port; Marker = $Marker; StartTime = $p.StartTime.ToString('o'); Log = $log })
     Save-Pids
@@ -318,6 +322,7 @@ if ($planSim -eq 'start') {
     $envS = $utf8.Clone(); $envS['MOM_PROFILE'] = $Profile
     if ($LlmCompose) { $envS['MOM_LLM_COMPOSE'] = '1' }       # 시연 서버 프로세스에만 준다 (다른 서버·이 창에는 남지 않는다)
     $envS['MOM_BACKEND_URL'] = $BackendUrl                     # DB 중계가 보낼 백엔드 (backend\.env.supabase 에 MOM_SIM_SYNC=true 일 때만 켜짐, 2026-10-24)
+    if ($LocalDb) { $envS['MOM_ENV_FILE'] = $BackendEnvName }  # 시연 서버(DB 중계)가 읽는 백엔드 설정 파일 = backend\.env. 안 주면 공용 설정(.env.supabase)을 읽어 중계가 켜지지 않는다 (2026-10-25)
     $pS = Start-Proc 'sim_server' $SimPy @('tools\sim_server.py') $FrontendDir $envS 'sim_server' $SimPort
     Wait-Ready '시연 서버' $pS { [bool](Get-NetTCPConnection -State Listen -LocalPort $SimPort -ErrorAction SilentlyContinue) } (Join-Path $RunDir 'sim_server.err.log')
     if (-not $DryRun) { Say "시연 서버 준비 OK  http://127.0.0.1:$SimPort" Green }
