@@ -40,7 +40,8 @@ class PermissionTable:
 
 # 문서 종류 → 보기 권한 대상 (13.1). 작업기록서는 정식(WORK_RECORD) / 간이(WORK_RECORD_SIMPLE, 번호 MR-S-…)로 나눈다
 DOC_VIEW_TARGET = {"SHIFT_REPORT": "SHIFT_REPORT", "DAILY_REPORT": "DAILY_REPORT", "WORK_ORDER": "WORK_ORDER",
-                   "PM_RECORD": "PM_RECORD", "SHIPMENT": "SHIPMENT", "INTERNAL_DOC": "INTERNAL_DOC"}
+                   "PM_RECORD": "PM_RECORD", "SHIPMENT": "SHIPMENT", "INTERNAL_DOC": "INTERNAL_DOC",
+                   "APP_USER": "STAFF"}     # 직원 배치·정보 수정 이력 = 직원 관리 보기 권한 (MGR만, 2026-10-25)
 SIMPLE_RECORD_PREFIX = "MR-S-"
 
 

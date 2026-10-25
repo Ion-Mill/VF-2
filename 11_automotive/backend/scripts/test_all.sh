@@ -12,8 +12,8 @@ echo "== 1. DB 시험 (db/tests)"
 echo "== 2. 이름 붙은 쿼리 PREPARE (app/sql)"
 python3 tools/check_queries.py --psql "$PSQL_BASE -d mom_test"
 
-echo "== 3. 파이썬 시험 (DB 없이: CSV 읽기·QR 읽기·비밀번호·토큰·권한·역할×API 기대표·도구·쿼리 호출 정적 확인)"
-python3 -m unittest tests.test_cmm_csv tests.test_domain tests.test_qr tests.test_static_calls tests.test_role_matrix
+echo "== 3. 파이썬 시험 (DB 없이: CSV 읽기·QR 읽기·비밀번호·토큰·권한·역할×API 기대표·도구·쿼리 호출 정적 확인·직원 관리 규칙)"
+python3 -m unittest tests.test_cmm_csv tests.test_domain tests.test_qr tests.test_static_calls tests.test_role_matrix tests.test_staff
 
 echo "== 4. 파이썬 시험 (DB로: 서비스·라우터 처리기 흐름)"
 MOM_TEST_PSQL="$PSQL_BASE" python3 -m unittest tests.test_services_db tests.test_routers_db

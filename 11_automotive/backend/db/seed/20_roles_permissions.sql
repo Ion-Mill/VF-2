@@ -71,6 +71,8 @@ INSERT INTO role_permission (role_code, target, action, scope) VALUES
   ('OPR','QUALITY','INPUT','ALL'), ('MNT','QUALITY','VIEW','ALL'),
   ('SUP','KPI','VIEW','ALL'), ('MNT','KPI','VIEW','ALL'), ('OPR','KPI','VIEW','ALL'),
   ('MGR','SETTINGS','SETTING','ALL'),
+  -- 직원 관리 (2026-10-25, API-USR-01~05, NFR-SEC-04): 바꾸기는 MGR만, 보기는 아래 R-76 VIEW. 수정 이력의 APP_USER도 이 보기 권한
+  ('MGR','STAFF','EDIT','ALL'),
   ('SUP','PRODUCTION','VIEW','ALL'), ('SUP','PRODUCTION','INPUT','ALL'), ('OPR','PRODUCTION','VIEW','ALL'),
   ('OPR','PRODUCTION','INPUT','ALL'), ('MNT','PRODUCTION','VIEW','ALL');
 

@@ -153,6 +153,9 @@ BEGIN
         WHEN 'INTERNAL_DOC' THEN SELECT status INTO v FROM internal_doc WHERE doc_no = p_doc_key;
         WHEN 'PM_RECORD'    THEN SELECT status INTO v FROM pm_record WHERE pm_record_id = p_doc_key::bigint;
         WHEN 'SHIPMENT'     THEN SELECT status INTO v FROM shipment WHERE shipment_no = p_doc_key;
+        -- 직원 배치·정보 (2026-10-25, API-USR-03~05): 잠기는 상태가 없어 사유 없이 고친다
+        WHEN 'APP_USER'     THEN SELECT CASE WHEN is_active THEN 'ACTIVE' ELSE 'INACTIVE' END INTO v
+                                   FROM app_user WHERE user_id = p_doc_key;
         ELSE RAISE EXCEPTION '문서 종류 % 없음', p_doc_type USING ERRCODE = '22023';
     END CASE;
     RETURN v;

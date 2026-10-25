@@ -46,5 +46,6 @@ INSERT INTO code_label (code_group, code, name_ko, sort_order, source_ref) VALUE
   ('notification_rule.rule_code', 'WO_APPROVAL_REQUEST', '작업지시서 승인 요청 (2026-10-20)', 26, '물리 추가'),
   ('notification_rule.rule_code', 'WR_CONFIRM_PENDING', '작업기록서 확정 전 (2026-10-20)', 27, '물리 추가'),
   ('notification_rule.rule_code', 'WR_CHECK_REQUEST', '작업기록서 확인 요청 (2026-10-20)', 28, '물리 추가'),
-  ('notification_rule.rule_code', 'PM_RECORD_CHECK', '예방 정비 실시 기록 확인 (2026-10-20)', 29, '물리 추가')
+  ('notification_rule.rule_code', 'PM_RECORD_CHECK', '예방 정비 실시 기록 확인 (2026-10-20)', 29, '물리 추가'),
+  ('document_revision.doc_type', 'APP_USER', '직원 배치 (직원 관리, 2026-10-25)', 8, 'FR-USR-01-05')
 ON CONFLICT (code_group, code) DO UPDATE SET name_ko = EXCLUDED.name_ko, sort_order = EXCLUDED.sort_order;
