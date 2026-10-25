@@ -318,6 +318,7 @@ if ($planSim -eq 'start') {
     $envS = $utf8.Clone(); $envS['MOM_PROFILE'] = $Profile
     if ($LlmCompose) { $envS['MOM_LLM_COMPOSE'] = '1' }       # 시연 서버 프로세스에만 준다 (다른 서버·이 창에는 남지 않는다)
     $envS['MOM_BACKEND_URL'] = $BackendUrl                     # DB 중계가 보낼 백엔드 (backend\.env.supabase 에 MOM_SIM_SYNC=true 일 때만 켜짐, 2026-10-24)
+    if ($LocalDb) { $envS['MOM_ENV_FILE'] = $BackendEnvName }  # 시연 서버(DB 중계)가 읽는 백엔드 설정 파일 = backend\.env. 안 주면 공용 설정(.env.supabase)을 읽어 중계가 켜지지 않는다 (2026-10-25)
     $pS = Start-Proc 'sim_server' $SimPy @('tools\sim_server.py') $FrontendDir $envS 'sim_server' $SimPort
     Wait-Ready '시연 서버' $pS { [bool](Get-NetTCPConnection -State Listen -LocalPort $SimPort -ErrorAction SilentlyContinue) } (Join-Path $RunDir 'sim_server.err.log')
     if (-not $DryRun) { Say "시연 서버 준비 OK  http://127.0.0.1:$SimPort" Green }
