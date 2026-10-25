@@ -1,0 +1,9 @@
+{
+  "name": "mom-demo-video",
+  "private": true,
+  "description": "시연영상 촬영·편집 도구 (앱과 별개, 2026-10-23)",
+  "scripts": {},
+  "dependencies": {
+    "playwright": "^1.64.1"
+  }
+}
