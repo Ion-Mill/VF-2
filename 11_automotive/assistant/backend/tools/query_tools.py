@@ -396,3 +396,36 @@ TOOLS = {
     "lots": lots, "work_orders": work_orders, "work_records": work_records, "pm_due": pm_due,
     "tool_life": tool_life, "inventory": inventory, "sensor_trend": sensor_trend,
 }
+
+
+# ---------------------------------------------------------------- 지금 병목 (시연 서버 값, 2026-10-25)
+def bottleneck_now(role):
+    """지금 병목 공정·원인·시작 시각을 시연 서버(`GET /api/line/twin`)에서 읽는다. SENSOR_LIVE=1일 때만이고, 못 읽으면 None —
+    부른 쪽(answer.py)이 "아직 못 읽어요" 안내로 답한다. 공용 DB에는 병목을 읽는 비서 도구가 없고 DB 시계도 시연 시계를 따라가지 않아 DB 값으로 되돌아가지 않는다.
+    권한은 설비 상태와 같은 라인 보기(LINE_VIEW) — `equipment_status`가 허용된 역할만 (DB를 부르지 않는다)."""
+    if not BT.is_allowed("equipment_status"):
+        raise BT.ToolDenied("equipment_status")
+    cfg = settings()
+    if not cfg.sensor_live:
+        return None
+    got = sim_live.fetch_bottleneck(cfg.sim_server_url)
+    if got is None:
+        return None
+    sim_at = got.pop("sim_at")
+    return _result("병목 조회", [got], "지금 (시연 화면 시계)", as_of=sim_at, live=True)
+
+
+# ---------------------------------------------------------------- 지금 설비 상태 전체 (시연 서버 값, 2026-10-25)
+def equipment_states_now(role):
+    """설비 6대의 지금 상태(상태·시작 시각·열린 알람·공정)를 시연 서버에서 읽는다. SENSOR_LIVE=1일 때만이고 못 읽으면 None — 부른 쪽은 예전 길 그대로 간다.
+    Claude에게 재료로 줄 값이다 (지시문 방식). 권한은 설비 상태와 같은 라인 보기(LINE_VIEW), DB를 부르지 않는다."""
+    if not BT.is_allowed("equipment_status"):
+        raise BT.ToolDenied("equipment_status")
+    cfg = settings()
+    if not cfg.sensor_live:
+        return None
+    got = sim_live.fetch_states(cfg.sim_server_url, None)
+    if not got:
+        return None
+    sim_at, rows = got
+    return _result("설비 상태 조회", rows, "지금 (시연 화면 시계)", as_of=sim_at, live=True)

@@ -1,7 +1,7 @@
 'use client';
 // SCR-18 문서함 — 작업지시서·작업기록서·간이 작업기록·교대·일일 보고서를 한곳에서 (9월 기록 + 10/1 화면에서 만든 것).
 import { useState } from 'react';
-import { CARD, PAGE, useApp } from './ctx';
+import { BTN, CARD, PAGE, useApp } from './ctx';
 import { Band } from './ui';
 import { docsBand } from './bands';
 import { LOCK } from './Safety';
@@ -12,14 +12,24 @@ import { WO_STEPS, minutesSince } from './workflow';
 type Tab = '작업지시서' | '작업기록서' | '간이 작업기록' | '교대 보고서' | '일일 보고서';
 // 9월 기록의 영어 상태 → 한글
 const EN_ST: Record<string, string> = { DONE: '완료', COMPLETED: '완료', IN_PROGRESS: '진행 중', OPEN: '대기', CANCELLED: '취소됨', CONFIRMED: '확정', CHECKED: '확인됨' };
-const stTone = (st: string) => (/초안/.test(st) ? 'bg-[#e5effe] text-[#2a55b8]' : /완료|확정|확인됨/.test(st) ? 'bg-ok-bg text-ok' : /진행|수정|작성|승인/.test(st) ? 'bg-[#e6ebff] text-[#3a4ec4]' : /취소/.test(st) ? 'bg-tile text-ink-3' : 'bg-tile text-ink-2');
+// 문서함 모든 탭: 줄무늬 대신 줄 바탕 = 상태 색 + 줄 사이 선 (사용자 선택 2026-10-25, 교대 보고서 → 문서 묶음 전체). [줄 바탕, 상태 칩]
+// 순서가 중요: "확정 후 수정"은 확정보다, "AI비서 초안 (확정 대기)"는 대기보다 먼저 본다
+const rowTone = (st: string, late?: boolean): [string, string] =>
+  late ? ['bg-[#fde8eb]', 'bg-[#f8cdd3] text-[#c23042]']
+  : /확정 후 수정/.test(st) ? ['bg-[#e8f7f5]', 'bg-[#cdeee9] text-[#0f6f68]']
+  : /초안/.test(st) ? ['bg-[#f1ecff]', 'bg-[#e6dcff] text-[#5b3fc4]']
+  : /수정 중|작성 중/.test(st) ? ['bg-[#fff5d1]', 'bg-[#fde9a6] text-[#7a5600]']
+  : /취소/.test(st) ? ['bg-tile', 'bg-white text-ink-3']
+  : /대기|승인|진행/.test(st) ? ['bg-[#eaf1fe]', 'bg-[#d6e4fd] text-[#2a55b8]']
+  : /완료|확정|확인됨/.test(st) ? ['', 'bg-ok-bg text-ok']
+  : ['', 'bg-tile text-ink-2'];
 function Sum({ a, b }: { a: string; b?: string }) {
   return <div className="min-w-0"><div className="truncate font-semibold text-ink">{a}</div>{b && <div className="truncate text-small text-ink-2">{b}</div>}</div>;
 }
-const WR_LABEL = { draft: '초안', editing: '수정 중', confirmed: '확정', checked: '확인됨' } as const;
+const WR_LABEL ={ draft: '초안', editing: '수정 중', confirmed: '확정', checked: '확인됨' } as const;
 
 export default function DocBox() {
-  const { user, role, wos, wrs, srs, alerts, openWo, openRecord, go, history, shiftReports, dailyReports, pm, key } = useApp();
+  const { user, role, wos, wrs, srs, alerts, openWo, openRecord, openAfter, go, history, shiftReports, dailyReports, pm, key } = useApp();
   // 카테고리는 왼쪽 문서함 목록에서 고른다 (App, 페이지구조 v3) — 화면 키 = 카테고리 이름
   const tab: Tab = (['작업지시서', '작업기록서', '간이 작업기록', '교대 보고서', '일일 보고서'] as string[]).includes(key ?? '') ? (key as Tab) : '작업지시서';
   const [machine, setMachine] = useState('');
@@ -40,10 +50,11 @@ export default function DocBox() {
   if (role === 'SUP') {
     wos.filter((w) => w.state === 'draft' || w.state === 'editing').forEach((w) => { const m = minutesSince(w.created); todo.push({ text: `${m >= 120 ? '▲' : 'ⓘ'} 승인 대기 ${m}분 [${w.no}] ${MACHINES[w.machine].name} ${w.code}`, go: () => openWo(w.no), warn: m >= 120 }); });
     wrs.filter((r) => r.state === 'confirmed').forEach((r) => todo.push({ text: `ⓘ 확인 대기 작업기록서 [${r.no}]`, go: () => openRecord(r.woNo) }));
-    (shiftReports ?? []).filter((r) => r.status !== 'CONFIRMED' && r.partial === false).forEach((r) => todo.push({ text: `ⓘ 미확정 교대 보고서 ${r.shift_id}`, go: () => go('shift', r.shift_id) }));
+    srs.filter((r) => r.kind === 'after' && r.state === 'confirmed' && !r.checkedBy).forEach((r) => todo.push({ text: `ⓘ 확인 대기 [선조치] ${r.no} ${MACHINES[r.machine].name}`, go: () => go('sr', r.no) })); // FR-MNT-05-21
+    (shiftReports ?? []).filter((r) => r.status !== 'CONFIRMED' && r.status !== 'REVISED' && r.partial === false).forEach((r) => todo.push({ text: `ⓘ 미확정 교대 보고서 ${r.shift_id}`, go: () => go('shift', r.shift_id) }));
   }
   if (role === 'MGR') {
-    (dailyReports ?? []).filter((r) => r.status !== 'CONFIRMED').forEach((r) => todo.push({ text: `ⓘ 미확정 일일 보고서 ${r.work_date}`, go: () => go('daily', r.work_date) }));
+    (dailyReports ?? []).filter((r) => r.status !== 'CONFIRMED' && r.status !== 'REVISED').forEach((r) => todo.push({ text: `ⓘ 미확정 일일 보고서 ${r.work_date}`, go: () => go('daily', r.work_date) }));
   }
   const warnN = todo.filter((t) => t.warn).length;
   const has = (s: string) => !text || s.includes(text);
@@ -66,31 +77,32 @@ export default function DocBox() {
     rows = srs.filter((r) => role !== 'OPR' || r.savedBy === user.name || r.by === user.name || r.revisions.some((x) => x.by === user.name) || r.state === 'open')
       .map((r) => { const a = alerts.find((x) => x.id === r.alertId); return { r, a }; })
       .filter(({ r }) => (!machine || MACHINES[r.machine].name === machine) && (!code || r.code.includes(code)) && has(`${r.action} ${r.memo}`))
-      .map(({ r, a }) => ({ key: r.no, date: a?.time ?? '', go: () => go('sr', r.no), cells: [r.no, MACHINES[r.machine].name, r.code, md(a?.time), r.state === 'open' ? '작성 중' : '확정', `${r.kind === 'cause' ? '[원인 점검] ' : ''}${r.action || '—'}`] }));
+      .map(({ r, a }) => ({ key: r.no, date: a?.time ?? r.start ?? '', go: () => go('sr', r.no), cells: [r.no, MACHINES[r.machine].name, r.code || '—', md(a?.time ?? r.start),
+        r.state === 'open' ? '작성 중' : r.kind === 'after' ? (r.checkedBy ? '확인됨' : '확인 대기') : '확정', `${r.kind === 'cause' ? '[원인 점검] ' : r.kind === 'after' ? '[선조치] ' : ''}${r.action || '—'}`] }));
   } else if (tab === '교대 보고서') {
-    rows = [...(shiftReports ?? [])].reverse().filter((r) => has(String(r.notable_text))).map((r) => ({ key: r.shift_id, date: r.shift_id, warn: r.status !== 'CONFIRMED' && r.partial === false && old(r.end_at), go: () => go('shift', r.shift_id),
-      cells: [r.shift_id, '라인', '—', md(r.shift_id), r.status === 'CONFIRMED' ? '확정' : r.status === 'AI_DRAFT' ? 'AI비서 초안' : '수정 중', `실적 ${r.actual_qty} / 총 목표 ${r.target_qty} · 불량 ${r.defect_qty}`] }));
+    rows = [...(shiftReports ?? [])].reverse().filter((r) => has(String(r.notable_text))).map((r) => ({ key: r.shift_id, date: r.shift_id, warn: r.status !== 'CONFIRMED' && r.status !== 'REVISED' && r.partial === false && old(r.end_at), go: () => go('shift', r.shift_id),
+      cells: [r.shift_id, '라인', '—', md(r.shift_id), r.status === 'CONFIRMED' ? '확정' : r.status === 'REVISED' ? '확정 후 수정' : r.status === 'AI_DRAFT' ? 'AI비서 초안' : '수정 중', `실적 ${r.actual_qty} / 총 목표 ${r.target_qty} · 불량 ${r.defect_qty}`] }));
   } else {
     rows = [...(dailyReports ?? [])].reverse().filter((r) => has(String(r.issues_summary))).map((r) => ({ key: r.work_date, date: r.work_date, go: () => go('daily', r.work_date),
-      cells: [r.work_date, '라인', '—', md(r.work_date), r.status === 'CONFIRMED' ? '확정' : 'AI비서 초안 (확정 대기)', `실적 ${r.actual_qty} / ${r.target_qty ?? 180} · OEE ${r.oee_pct}%`] }));
+      cells: [r.work_date, '라인', '—', md(r.work_date), r.status === 'CONFIRMED' ? '확정' : r.status === 'REVISED' ? '확정 후 수정' : 'AI비서 초안 (확정 대기)', `실적 ${r.actual_qty} / ${r.target_qty ?? 180} · OEE ${r.oee_pct}%`] }));
   }
   const stateOpts = tab === '작업지시서' ? [...WO_STEPS.map(([, l]) => l), '취소됨'] : tab === '작업기록서' ? Object.values(WR_LABEL) : [];
 
   const today = rows.filter((r) => r.go), past = rows.filter((r) => !r.go);
   const pill = 'h-9 rounded-full border border-line bg-white px-3 text-small text-ink';
   const table = (list: Row[]) => (
-    <table className="mt-2 w-full table-fixed text-left text-body">
+    <table className="mt-2 w-full table-fixed border-separate border-spacing-0 text-left text-body">{/* 머리 줄 회청 바탕 (2안, 2026-10-25). 줄 바탕은 상태 색(rowTone) + 줄 사이 선 */}
       {/* 칸 폭: 글자 한 단계 크게(.fs-up)에 맞춤 — 알람 64px에 "5303.00" 같은 코드가 넘쳐 옆 칸으로 밀렸다 (2026-10-22). 그래도 긴 것은 … */}
       <colgroup><col className="w-[156px]" /><col className="w-[100px]" /><col className="w-[112px]" /><col className="w-[76px]" /><col className="w-[132px]" /><col /></colgroup>
-      <thead className="text-small text-ink-2"><tr>{['번호', '설비', '알람', '날짜', '상태', '요약'].map((h) => <th key={h} className="px-3 py-2 font-semibold">{h}</th>)}</tr></thead>
-      <tbody>{list.slice(0, 120).map((r, n) => (
-        <tr key={r.key} onClick={r.go} className={`${n % 2 ? 'bg-[#f8f9fd]' : ''} ${r.go ? 'cursor-pointer hover:bg-brand-tint' : ''}`}>
+      <thead className="text-small text-ink-2"><tr className="bg-ground [&>th:first-child]:rounded-l-tile [&>th:last-child]:rounded-r-tile">{['번호', '설비', '알람', '날짜', '상태', '요약'].map((h) => <th key={h} className="px-3 py-2 font-semibold">{h}</th>)}</tr></thead>
+      <tbody>{list.slice(0, 120).map((r) => { const sh = rowTone(String(r.cells[4]), r.warn); return (
+        <tr key={r.key} onClick={r.go} className={`${sh[0]} ${r.go ? 'cursor-pointer hover:bg-brand-tint' : ''}`}>
           {r.cells.map((c, i) => (
-            <td key={i} title={i < 4 && typeof c === 'string' ? c : undefined} className={`px-3 py-2.5 align-top ${i === 0 || i === 2 || i === 3 ? 'font-mono tabular-nums' : ''} ${i === 0 ? 'font-semibold' : ''} ${i === 5 ? 'min-w-0 break-words' : i === 4 ? '' : 'overflow-hidden text-ellipsis whitespace-nowrap'}`}>
-              {i === 4 ? <span className={`inline-block rounded-full px-2.5 py-0.5 text-small font-bold ${r.warn ? 'bg-warn-bg text-warn' : stTone(String(c))}`}>{r.warn ? '▲ ' : ''}{c}</span>
+            <td key={i} title={i < 4 && typeof c === 'string' ? c : undefined} className={`border-t border-line px-3 py-2.5 align-top ${i === 0 || i === 2 || i === 3 ? 'font-mono tabular-nums' : ''} ${i === 0 ? 'font-semibold' : ''} ${i === 5 ? 'min-w-0 break-words' : i === 4 ? '' : 'overflow-hidden text-ellipsis whitespace-nowrap'}`}>
+              {i === 4 ? <span className={`inline-block rounded-full px-2.5 py-0.5 text-small font-bold ${sh[1]}`}>{r.warn ? '▲ ' : ''}{c}</span>
                 : i === 5 && typeof c === 'string' ? <Sum a={c} /> : c}
             </td>))}
-        </tr>))}</tbody>
+        </tr>); })}</tbody>
     </table>
   );
 
@@ -100,7 +112,7 @@ export default function DocBox() {
         {/* 디자인 통일 C안: "내 할 일"을 결론 띠로 (bands.ts docsBand), 목록은 아래 접기 */}
         {(() => { const first = [...todo].sort((a, b) => Number(!!b.warn) - Number(!!a.warn))[0]; return <Band spec={docsBand(todo, rows.length, first?.text.replace(/^[ⓘ▲]\s*/, ''))} onAction={() => first?.go?.()} />; })()}
         {/* [1] 내 할 일 — 토글 + 개수 칩 */}
-        <details className="group rounded-card border border-line bg-white">
+        <details className="group rounded-card border border-line bg-white shadow-card">
           <summary className="flex min-h-[48px] cursor-pointer list-none items-center gap-2 px-4 text-body font-bold">
             <span className="text-ink-2 transition group-open:rotate-90">▸</span>내 할 일 전체
             <span className={`rounded-full px-2.5 py-0.5 text-small ${warnN ? 'bg-warn-bg text-warn' : 'bg-tile text-ink-2'}`}>{todo.length}{warnN ? ` · ▲ ${warnN}` : ''}</span>
@@ -117,14 +129,14 @@ export default function DocBox() {
         </details>
 
         <div className={CARD.replace('mx-auto max-w-[1100px] ', '')}>
-          <h2 className="text-band font-bold">{tab}</h2>
-          {/* [2] 필터 — 한 줄 도구 막대 */}
-          <div className="mt-3 flex flex-wrap items-center gap-2">
+          {/* [2] 필터 — 한 줄 도구 막대, 카드 맨 위 (지침카드 · 수정 이력과 같은 자리). 선조치 기록 버튼은 줄 끝 */}
+          <div className="flex flex-wrap items-center gap-2">
             {stateOpts.length > 0 && <label className="flex items-center gap-1.5 text-body font-semibold text-ink-2">상태:<select value={state} onChange={(e) => setState(e.target.value)} className={pill}><option value="">전체</option>{stateOpts.map((x) => <option key={x}>{x}</option>)}</select></label>}
             <label className="flex items-center gap-1.5 text-body font-semibold text-ink-2">설비:<select value={machine} onChange={(e) => setMachine(e.target.value)} className={pill}><option value="">전체</option>{['SAW-01', 'MIL-01', 'VF2-01', 'VF2-02', 'WSH-01', 'CMM-01'].map((m) => <option key={m}>{m}</option>)}</select></label>
             <input aria-label="알람 번호" value={code} onChange={(e) => setCode(e.target.value)} placeholder="알람 번호 (예: 992)" className={`${pill} w-[150px]`} />
             <input aria-label="비슷한 문장 찾기" value={text} onChange={(e) => setText(e.target.value)} placeholder="비슷한 문장 찾기 (예: 케이블)" className={`${pill} w-[220px]`} />
             <span className="ml-auto text-small font-semibold text-ink-2">{rows.length}건</span>
+            {(role === 'OPR' || role === 'MNT') && <button onClick={() => openAfter()} className={BTN.replace('h-11', 'h-9')} title="알람 없이 먼저 한 일을 지난 시각으로 적어요">+ 선조치 기록</button>}
           </div>
           {/* [3] 표 — 오늘 만든 문서 / 지난 기록 */}
           {rows.length === 0 ? <p className="mt-4 text-body text-ink-2">조건에 맞는 문서가 없습니다</p> : (<>

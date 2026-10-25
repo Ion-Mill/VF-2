@@ -30,9 +30,10 @@ export function ToolsScreen() {
   const list = (eq === '전체' ? all : toolsOf(eq)).slice().sort((a, b) => b.usage_pct - a.usage_pct);
   const sel = eq === '전체' ? null : list.find((t) => t.tool_id === selId) ?? list[0] ?? null;
   const nameOf = (t: R) => items.find((x) => x.item_no === t.item_no)?.item_name ?? '';
-  // 최신이 위로. 시연 기준일(10/1)까지만 보여 줌 — 10/2 이후는 시연이 밤새 흘러 생긴 기록 (사용자 요청 2026-10-16)
+  // 최신이 위로. 지금 시연 시각까지만 보여 줌 — 그 뒤는 아직 안 일어난 기록 (사용자 요청 2026-10-16, 고정 10/2 → 시연 시계 2026-10-25)
+  const now = twin?.clock.sim_at?.slice(0, 16);
   const changesAll = [...(f.data?.changes_today ?? []), ...(f.data?.past_changes ?? [])]
-    .filter((c) => String(c.changed_at) < '2026-10-02').sort((a, b) => String(b.changed_at).localeCompare(String(a.changed_at)));
+    .filter((c) => !now || String(c.changed_at).replace(' ', 'T').slice(0, 16) <= now).sort((a, b) => String(b.changed_at).localeCompare(String(a.changed_at)));
   const changes = (sel ? changesAll.filter((c) => c.tool_id === sel.tool_id) : changesAll).slice(0, 30);
   const canChange = role === 'OPR' || role === 'MNT';
 

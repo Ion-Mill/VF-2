@@ -23,6 +23,8 @@ from backend.services import steplog as SL
 
 MAX_PHRASE_CHARS = 1200   # 이보다 긴 기본 문장(행이 많은 조회)은 다듬지 않는다 — 빠뜨릴 위험이 크다 [제안]
 MAX_SELECT_CHARS = 6000   # 고르기 후보 줄 총 글자 수 [제안]
+MAX_LINES = 6             # 고르기에서 답에 쓸 줄 수 상한 (prompts.select "많아야 6개", schemas.select softMaxItems)
+OVER_PREFIX = "줄 번호 오류: 개수 "   # 개수만 넘친 거부 이유의 앞부분 — 옛 "줄 번호 오류"로 시작하는 검사와 호환된다
 
 
 def _trace(job: str) -> dict:
@@ -65,8 +67,10 @@ def validate_select(out: dict, offered: list[tuple[str, object, str]], check_lea
     if out["answerable"] is not True:
         return None, "답할 줄 없음(answerable=false)"
     known = {i: (c, t) for i, c, t in offered}
-    if not isinstance(ids, list) or not ids or len(ids) > 6 or len(set(ids)) != len(ids) or not set(ids) <= set(known):
+    if not isinstance(ids, list) or not ids or len(set(ids)) != len(ids) or not set(ids) <= set(known):
         return None, "줄 번호 오류"
+    if len(ids) > MAX_LINES:   # 번호는 모두 후보에 있고 중복도 없는데 개수만 넘쳤다 — 고칠 수 있는 형식 실수라 이유를 구체적으로 알려 다시 고르게 한다 (select_lines)
+        return None, f"{OVER_PREFIX}{len(ids)}개 > {MAX_LINES}. {MAX_LINES}개 이하로 다시 고른다"
     if not isinstance(lead, str) or len(lead) > 160:
         return None, "앞머리 길이"
     if FORBIDDEN.search(lead) or "DOC-" in lead or "§" in lead:
@@ -127,6 +131,8 @@ def select_lines(question: str, chunks, line_fn, head_fn, strict: bool = False) 
             blocks.append((head_fn(c), []))
         blocks[-1][1].append((i, t))
     feedback = None
+    check_lead = not (strict and s.split_q)
+    over: dict | None = None   # 마지막 시도가 "번호는 맞는데 개수만 넘친" 응답이면 그 응답 (아래 마지막 수단에 쓴다)
     for _ in range(2):
         tr["tries"] += 1
         try:
@@ -138,7 +144,7 @@ def select_lines(question: str, chunks, line_fn, head_fn, strict: bool = False) 
             if SL.on():
                 attempts.append({"LLM": "호출 실패", "까닭": str(e)})
             break
-        sel, reason = validate_select(out, offered, check_lead=not (strict and s.split_q))
+        sel, reason = validate_select(out, offered, check_lead=check_lead)
         if SL.on():
             o = out if isinstance(out, dict) else {}
             attempts.append({"answerable": o.get("answerable"), "line_ids": o.get("line_ids"), "앞머리": o.get("lead"),
@@ -150,8 +156,23 @@ def select_lines(question: str, chunks, line_fn, head_fn, strict: bool = False) 
                 _sl_select(strict, offered, attempts, sel, tr)
             return sel, tr
         tr["reason"], feedback = reason, reason
+        over = out if reason.startswith(OVER_PREFIX) else None
         if reason.startswith("답할 줄 없음") or time.monotonic() - t0 > s.budget_s - 5:
             break
+    if over is not None:
+        # 마지막 수단 (2026-10-25): 다시 물어도 개수만 넘쳤다 → 모델이 고른 순서의 앞 MAX_LINES개로 잇는다. 호출은 늘지 않고,
+        # 잘라낸 뒤에도 validate_select의 모든 검사(번호·앞머리 숫자·허락 문구 …)를 다시 통과해야 한다. 못 통과하면 지금처럼 None(규칙 답)이다.
+        cut = {**over, "line_ids": list(over["line_ids"][:MAX_LINES])}
+        sel, reason = validate_select(cut, offered, check_lead=check_lead)
+        if SL.on():
+            attempts.append({"LLM": f"앞 {MAX_LINES}개로 자름", "line_ids": cut["line_ids"], "검사": "통과" if sel else reason})
+        if sel:
+            tr.update(used=True, reason=None, trimmed=len(over["line_ids"]) - MAX_LINES)
+            tr["ms"] = int((time.monotonic() - t0) * 1000)
+            if SL.on():
+                _sl_select(strict, offered, attempts, sel, tr)
+            return sel, tr
+        tr["reason"] = f"앞 {MAX_LINES}개로 잘랐으나 {reason}"
     tr["ms"] = int((time.monotonic() - t0) * 1000)
     if SL.on():
         _sl_select(strict, offered, attempts, None, tr)

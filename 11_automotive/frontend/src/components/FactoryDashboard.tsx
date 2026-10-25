@@ -30,6 +30,27 @@ export const DEFAULT_PROPS: DashboardProps = {
   "autoRotate": false
 };
 
+// 천장 간판 (사용자 선택 2026-10-23): 밝은 광택 판 + 지금 구성(가운데 이름 · 아래 상태 줄 · 맨 아래 상태 띠).
+// 판 바깥 SIGN_M px은 알람 네온이 번질 자리 — 주의·고장이면 판 전체가 그 색으로 빛남 (뒤 빛 번짐 판은 루프에서 숨 쉬듯)
+const SIGN_M = 26;
+const SIGN_NEON = { WARN: ['#f59e0b', '#fff7dd', '#ffe39a', '#7a4a00'], ALARM: ['#ef4444', '#fff0f1', '#ffc4cb', '#7f1d1d'] }; // [네온, 위 바탕, 아래 바탕, 글자]
+function drawSign(c, W, H, { name, st, e0, bn, line = '#475569', strip = '#94a3b8' }) {
+  const m = SIGN_M, w = W - 2 * m, h = H - 2 * m, N = SIGN_NEON[e0];
+  const rr = (x, y, ww, hh, r) => { c.beginPath(); c.roundRect(x, y, ww, hh, r); };
+  c.clearRect(0, 0, W, H); c.save(); c.translate(m, m);
+  if (N) { rr(3, 3, w - 6, h - 6, 36); c.shadowColor = N[0]; c.lineWidth = 10; c.strokeStyle = N[0]; [60, 60, 30].forEach(b => { c.shadowBlur = b; c.stroke(); }); c.shadowBlur = 0; } // 판 둘레 네온 번짐
+  rr(0, 0, w, h, 36); const gr = c.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, N ? N[1] : '#ffffff'); gr.addColorStop(1, N ? N[2] : '#e9eef5'); c.fillStyle = gr; c.fill();
+  c.save(); rr(0, 0, w, h, 36); c.clip(); c.fillStyle = N ? N[0] : strip; c.fillRect(0, h - 18, w, 18); c.restore(); // 맨 아래 상태 띠
+  rr(1, 1, w - 2, h - 2, 35); c.lineWidth = N ? 6 : 2; c.strokeStyle = N ? N[0] : 'rgba(15,23,42,0.12)'; c.stroke();
+  c.fillStyle = 'rgba(255,255,255,0.95)'; c.fillRect(40, 2, w - 80, 2); // 위 가장자리 빛줄
+  c.textAlign = 'center'; c.textBaseline = 'alphabetic';
+  c.font = '800 100px "Pretendard Variable", sans-serif'; c.letterSpacing = '-1px'; c.fillStyle = N ? N[3] : '#0f172a'; c.fillText(name, w / 2, 118); c.letterSpacing = '0px';
+  c.font = '700 54px "Pretendard Variable", sans-serif'; c.textAlign = 'left';
+  const tail = bn ? ' · 병목' : '', w1 = c.measureText(st).width, w2 = c.measureText(tail).width, x0 = (w - w1 - w2) / 2;
+  c.fillStyle = N ? N[3] : line; c.fillText(st, x0, 196); if (bn) { c.fillStyle = '#7c3aed'; c.fillText(tail, x0 + w1, 196); }
+  c.restore();
+}
+
 export default class FactoryDashboard extends React.Component<any, any> {
   static defaultProps = DEFAULT_PROPS;
   STAT = {
@@ -489,8 +510,9 @@ export default class FactoryDashboard extends React.Component<any, any> {
     controls.keys = { LEFT: 'ArrowLeft', UP: 'ArrowUp', RIGHT: 'ArrowRight', BOTTOM: 'ArrowDown' };
     if (!EMB) controls.listenToKeyEvents(window);
     this.keys = new Set();
-    const kd = e => { if (EMB) return; if (e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) return; const k = e.key.toLowerCase(); if ('wasdqe+-='.includes(k)) { this.keys.add(k); this.goal = null; } };
-    const ku = e => this.keys.delete(e.key.toLowerCase());
+    // 자동 완성(비밀번호 등)이 보내는 키 이벤트엔 e.key가 없다 → 건너뜀 (2026-10-24)
+    const kd = e => { if (EMB || !e.key) return; if (e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) return; const k = e.key.toLowerCase(); if ('wasdqe+-='.includes(k)) { this.keys.add(k); this.goal = null; } };
+    const ku = e => { if (e.key) this.keys.delete(e.key.toLowerCase()); };
     window.addEventListener('keydown', kd); window.addEventListener('keyup', ku);
     window.addEventListener('blur', () => this.keys.clear());
     let lastW = 0, lastH = 0, viewSet = false;
@@ -700,7 +722,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
       const wall = new THREE.Mesh(new THREE.PlaneGeometry(90, 10), M(0xeceff2, { roughness: 0.9 }));
       wall.position.set(12.5, 5, -16); wall.receiveShadow = true; scene.add(wall); env.wall = wall.material;
       const decoG = new THREE.Group(); scene.add(decoG); const cur0 = cur; cur = decoG; // 배경 건물·크레인: 설계서에 없지만 3D 디자인이라 보류(H-05)로 둠
-      box(-30000, 55000, 15800, 16000, 0, 0.9, M(0xd6dbe0));
+      box(-30000, 55000, 15800, 16000, 0, 0.9, M(0x8b8e92)); // 뒷벽 아래 띠도 약 35% 어둡게 (이전 d6dbe0, 2026-10-23)
       for (let X = -6000; X < 34000; X += 5200) env.panels.push(box(X, X + 3400, 15880, 16000, 6.4, 7.0, new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 0.4 })).material);
       box(17000, 27000, 13200, 15800, 0, 2.6, M(0xe2e6e9));
       box(17000, 27000, 13200, 15800, 2.6, 5.4, mat.white);
@@ -996,7 +1018,9 @@ export default class FactoryDashboard extends React.Component<any, any> {
         const gap = xs.length > 1 ? Math.min(...xs.slice(1).map((x, i) => x - xs[i])) : 2.2;
         const SW = Math.min(3.0, Math.max(1.2, gap - 0.25)), SH = SW * 0.42; // 판끼리 닿지 않는 만큼 크게 (가장 좁은 설비 간격 기준)
         const g = new THREE.Group(); scene.add(g);
-        const frameM = new THREE.MeshStandardMaterial({ color: 0x1c232b, roughness: 0.6 }), wireM = new THREE.LineBasicMaterial({ color: 0x4b5764 });
+        const frameM = new THREE.MeshStandardMaterial({ color: 0xc9d1db, roughness: 0.6 }), wireM = new THREE.LineBasicMaterial({ color: 0xa3adb9 }); // 밝은 판에 맞춘 옅은 레일·줄 (2026-10-23)
+        const bodyM = new THREE.MeshPhysicalMaterial({ color: 0xf3f6fa, roughness: 0.35, metalness: 0.1, clearcoat: 1, clearcoatRoughness: 0.1 }); // 광택 몸체 — 옆면에 빛이 맺힘
+        const glowTex = (() => { const gc = document.createElement('canvas'); gc.width = 256; gc.height = 128; const c = gc.getContext('2d'); c.filter = 'blur(16px)'; c.fillStyle = '#fff'; c.beginPath(); c.roundRect(30, 24, 196, 80, 22); c.fill(); return new THREE.CanvasTexture(gc); })(); // 알람 때 판 뒤 빛 번짐
         let rx0 = Infinity, rx1 = -Infinity, ry = 0, rz = 0;
         const sign = (id, a, SW, SH) => {
           const x = a[0] / 1000, y = a[2] + SH / 2, z = -a[1] / 1000;
@@ -1004,9 +1028,16 @@ export default class FactoryDashboard extends React.Component<any, any> {
           const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
           const face = new THREE.Mesh(new THREE.PlaneGeometry(SW, SH), new THREE.MeshBasicMaterial({ map: tex, transparent: true, toneMapped: false, fog: false })); // 안개에 묻히지 않게 (글자·상태색 그대로)
           face.position.set(x, y, z + 0.03);
-          const back = new THREE.Mesh(new THREE.BoxGeometry(SW * 0.98, SH * 0.96, 0.05), frameM); back.position.set(x, y, z);
+          // 몸체 = 앞면 그림의 판과 같은 둥근 사각형을 뽑은 것 (각진 상자는 모서리가 판 밖으로 튀어나왔음, 2026-10-23). 바깥 여백은 네온 자리
+          const bev = 0.006, bw = SW * (1 - 2 * SIGN_M / 680) - 2 * bev - 0.006, bh = SH * (1 - 2 * SIGN_M / 286) - 2 * bev - 0.006, br = SW * 36 / 680 - bev;
+          const bs = new THREE.Shape(); bs.moveTo(-bw / 2 + br, -bh / 2); bs.lineTo(bw / 2 - br, -bh / 2); bs.quadraticCurveTo(bw / 2, -bh / 2, bw / 2, -bh / 2 + br); bs.lineTo(bw / 2, bh / 2 - br); bs.quadraticCurveTo(bw / 2, bh / 2, bw / 2 - br, bh / 2);
+          bs.lineTo(-bw / 2 + br, bh / 2); bs.quadraticCurveTo(-bw / 2, bh / 2, -bw / 2, bh / 2 - br); bs.lineTo(-bw / 2, -bh / 2 + br); bs.quadraticCurveTo(-bw / 2, -bh / 2, -bw / 2 + br, -bh / 2);
+          const bg = new THREE.ExtrudeGeometry(bs, { depth: 0.04, bevelEnabled: true, bevelThickness: bev, bevelSize: bev, bevelSegments: 2, curveSegments: 12 }); bg.translate(0, 0, -0.02);
+          const back = new THREE.Mesh(bg, bodyM); back.position.set(x, y, z);
+          const glow = new THREE.Mesh(new THREE.PlaneGeometry(SW * 1.3, SH * 1.6), new THREE.MeshBasicMaterial({ map: glowTex, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false, fog: false }));
+          glow.position.set(x, y, z - 0.04); glow.visible = false; g.add(glow);
           if (id !== 'inf' && id !== 'rack') { face.userData.mid = id; back.userData.mid = id; pickables.push(face, back); } // 판을 눌러도 그 설비 선택 (투입 대·봉재 랙은 선택 없음)
-          const top = y + SH / 2, ceil = top + 0.5;
+          const top = y + SH / 2 - SH * SIGN_M / 286, ceil = top + 0.5; // 줄은 보이는 판 윗변에 닿게
           const V3 = (vx, vy) => new THREE.Vector3(vx, vy, z);
           g.add(face, back, new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints([V3(x - SW * 0.36, top), V3(x - SW * 0.36, ceil), V3(x + SW * 0.36, top), V3(x + SW * 0.36, ceil)]), wireM));
           // 병목 배지: 판 아래 오른쪽 모서리에 반쯤 걸친 동그란 달팽이 판 (사용자 요청 2026-10-19). 한 번 그려 두고 병목일 때만 보임
@@ -1018,7 +1049,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
           const badge = new THREE.Mesh(new THREE.PlaneGeometry(bd, bd), new THREE.MeshBasicMaterial({ map: btex, transparent: true, toneMapped: false, fog: false }));
           badge.position.set(x + SW / 2 - bd * 0.2, y - SH / 2 + bd * 0.12, z + 0.06); badge.renderOrder = 6; badge.visible = false; g.add(badge);
           if (id !== 'rack') { rx0 = Math.min(rx0, x - SW * 0.7); rx1 = Math.max(rx1, x + SW * 0.7); ry = ceil; rz = z; } // 봉재 랙은 설비 줄과 깊이가 달라 레일 밖에 따로 매달림
-          return { id, cv, tex, badge, last: '' };
+          return { id, cv, tex, badge, glow, last: '' };
         };
         this.ceilSigns = ids.map(id => sign(id, this.anch['tag-' + id], SW, SH));
         if (this.anch['tag-rack']) this.ceilSigns.push(sign('rack', this.anch['tag-rack'], 1.9, 1.9 * 0.42));
@@ -2067,8 +2098,9 @@ export default class FactoryDashboard extends React.Component<any, any> {
       }
     };
 
-    const CC = { bgD: new THREE.Color(0x7a8998), bgN: new THREE.Color(0x0a0f15), black: new THREE.Color(0x05080c), flD: new THREE.Color(0x95a3b0), flN: new THREE.Color(0x10161d),
-      inD: new THREE.Color(0xb3bec8), inN: new THREE.Color(0x151d26), wlD: new THREE.Color(0x6c7b8a), wlN: new THREE.Color(0x0c1117), coD: new THREE.Color(0x5fdcf2), coN: new THREE.Color(0x8ff4ff) };
+    // 낮 바닥·배경은 약 35% 어둡게 (사용자 요청 2026-10-23 세 번, 이전 bg 7a8998 · fl 95a3b0 · in b3bec8 · wl 6c7b8a)
+    const CC = { bgD: new THREE.Color(0x505963), bgN: new THREE.Color(0x0a0f15), black: new THREE.Color(0x05080c), flD: new THREE.Color(0x616a72), flN: new THREE.Color(0x10161d),
+      inD: new THREE.Color(0x747b82), inN: new THREE.Color(0x151d26), wlD: new THREE.Color(0x465059), wlN: new THREE.Color(0x0c1117), coD: new THREE.Color(0x5fdcf2), coN: new THREE.Color(0x8ff4ff) };
     const cA = new THREE.Color(), heroPos = new THREE.Vector3(), fxOff = new THREE.Vector3(), camOff = new THREE.Vector3(), camGoal = new THREE.Vector3(), yAxis = new THREE.Vector3(0, 1, 0);
     const backOut = (x) => { const c1 = 1.4, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
     // 그림자 줄이기 (사용자 요청 2026-10-20 "그림자 줄이는 것부터"): 반지름 20cm 미만 물체(볼트·롤러·작은 판)는 그림자를 만들지 않음 — 1,715 → 약 840개. 받는 그림자는 그대로
@@ -2122,29 +2154,21 @@ export default class FactoryDashboard extends React.Component<any, any> {
         if (groups[id]) groups[id].visible = !nd;
         if (this.intro) o.visible = false;
       });
-      if (this.ceilSigns) { // 3D 천장 표지판: 설비를 확대해 볼 때는 숨기고, 상태가 바뀔 때만 다시 그림. 주의(처리 안 된 주의 알람 포함)는 주황, 고장은 빨강 판
+      if (this.ceilSigns) { // 3D 천장 표지판: 설비를 확대해 볼 때는 숨기고, 상태가 바뀔 때만 다시 그림. 주의(처리 안 된 주의 알람 포함)·고장은 판 전체가 호박색·빨강 네온으로 빛남
         if (this.ceilG) this.ceilG.visible = !sel && !this.intro && !this.tour.on;
-        const LIGHT = { RUN: '#7fe0a6', SETUP: '#9cc0ff', BLOCKED: '#f5b27a' };
+        const LINE = { RUN: '#15803d', SETUP: '#1d4ed8', BLOCKED: '#b45309' }; // 밝은 판 위 상태 줄 글자색
+        if (this.reduceMotion == null) this.reduceMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
         this.ceilSigns.forEach(S => {
           let e0 = S.id === 'inf' ? 'INF' : S.id === 'rack' ? 'RACK' : (effOf(S.id) || 'NODATA');
           if (e0 !== 'ALARM' && e0 !== 'INF' && e0 !== 'RACK' && this.props.warnIds && this.props.warnIds.includes(S.id)) e0 = 'WARN';
           const bn = !!this.props.dataMode && ((this.bnIds || {})[this.state.bn] || []).includes(S.id) && e0 !== 'ALARM' && e0 !== 'WARN'; // 주의·고장이면 그 판은 주의가 우선
+          const al = e0 === 'ALARM', wn = e0 === 'WARN';
+          S.glow.visible = al || wn; // 판 뒤 빛 번짐이 숨 쉬듯: 고장 빠르게 · 주의 천천히, 움직임 줄이기면 고정
+          if (S.glow.visible) { S.glow.material.color.set(al ? 0xff3b4f : 0xffb020); S.glow.material.opacity = this.reduceMotion ? 0.8 : al ? 0.55 + 0.45 * Math.sin(t * 5.2) : 0.65 + 0.2 * Math.sin(t * 2.2); }
           const key = e0 + (bn ? '|bn' : ''); if (key === S.last) return; S.last = key; S.badge.visible = bn;
-          const c = S.cv.getContext('2d'), W0 = S.cv.width, H0 = S.cv.height, al = e0 === 'ALARM', wn = e0 === 'WARN', sv = this.STV[e0];
-          const fg = wn ? '#2a1a00' : '#ffffff';
-          c.clearRect(0, 0, W0, H0); c.save(); c.beginPath(); c.roundRect(0, 0, W0, H0, 26); c.clip();
-          c.fillStyle = al ? '#e5484d' : wn ? '#f0a500' : '#26303a'; c.fillRect(0, 0, W0, H0);
-          if (!al && !wn) { c.fillStyle = e0 === 'INF' || e0 === 'RACK' ? '#8a97a4' : (this.STAT[e0] || this.STAT.NODATA).dot; c.fillRect(0, H0 - 24, W0, 24); }
-          c.restore();
-          c.textAlign = 'center'; c.textBaseline = 'alphabetic'; c.fillStyle = fg;
-          c.font = '800 118px "Pretendard Variable", sans-serif'; c.fillText(S.id === 'rack' ? 'RACK-01' : this.MACH[S.id].name, W0 / 2, 134);
-          c.font = '700 70px "Pretendard Variable", sans-serif';
-          c.fillStyle = al || wn ? fg : LIGHT[e0] || '#c3cbd3';
-          const st0 = e0 === 'INF' ? '투입 대' : e0 === 'RACK' ? '봉재 랙' : sv ? `${sv[0]} ${sv[1]}` : '';
-          if (!bn) c.fillText(st0, W0 / 2, 230);
-          else { // 상태 + 연보라 '· 병목' (달팽이는 판 아래 모서리의 동그란 배지)
-            const tail = ' · 병목', w1 = c.measureText(st0).width, w2 = c.measureText(tail).width, x0 = (W0 - w1 - w2) / 2;
-            c.textAlign = 'left'; c.fillText(st0, x0, 230); c.fillStyle = '#b9a8ff'; c.fillText(tail, x0 + w1, 230); }
+          const sv = this.STV[e0];
+          drawSign(S.cv.getContext('2d'), S.cv.width, S.cv.height, { name: S.id === 'rack' ? 'RACK-01' : this.MACH[S.id].name, st: e0 === 'INF' ? '투입 대' : e0 === 'RACK' ? '봉재 랙' : sv ? `${sv[0]} ${sv[1]}` : '', e0, bn,
+            line: LINE[e0] || '#475569', strip: e0 === 'INF' || e0 === 'RACK' ? '#94a3b8' : (this.STAT[e0] || this.STAT.NODATA).dot });
           S.tex.needsUpdate = true;
         });
       }

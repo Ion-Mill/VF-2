@@ -92,3 +92,31 @@ def _get_twin(base_url: str) -> object | None:
 def fetch_states(base_url: str, equipment_id: str | None = None) -> tuple[str, list[dict]] | None:
     doc = _get_twin(base_url)
     return None if doc is None else parse_states(doc, equipment_id)
+
+
+def parse_bottleneck(doc: object) -> dict | None:
+    """시연 서버 응답 → 지금 병목 {sim_at, process_code, cause_code, since_at, equipment_process, equipment_state}. 병목 공정이나 시계가 없거나 모양이 다르면 None.
+    병목 판단은 시연 서버가 DOC-07 §7.3 규칙으로 이미 했다 — 여기서는 그 결과를 읽기만 하고 다시 판단하지 않는다.
+    equipment_process = 설비가 속한 공정 (질문이 "VF2-01이 병목이야?"처럼 설비를 짚을 때 쓴다).
+    equipment_state = 설비별 지금 상태 행 (`_state_row`: 상태·시작 시각·열린 알람) — 병목 공정의 어느 설비가 멈췄는지 보일 때 쓴다 (2026-10-25)."""
+    if not isinstance(doc, dict):
+        return None
+    clock = doc.get("clock")
+    sim_at = clock.get("sim_at") if isinstance(clock, dict) else None
+    bn = doc.get("bottleneck")
+    if not isinstance(sim_at, str) or len(sim_at) < 16 or not isinstance(bn, dict):
+        return None
+    process, cause = bn.get("process_code"), bn.get("cause_code")
+    if not isinstance(process, str) or not process or not isinstance(cause, str) or not cause:
+        return None
+    since = bn.get("since_at") if isinstance(bn.get("since_at"), str) and len(bn["since_at"]) >= 16 else None
+    equipment = doc.get("equipment") if isinstance(doc.get("equipment"), dict) else {}
+    proc_of = {eq: item["process_code"] for eq, item in equipment.items()
+               if isinstance(item, dict) and isinstance(item.get("process_code"), str) and item["process_code"]}
+    states = {eq: row for eq in equipment if (row := _state_row(eq, equipment[eq])) is not None}      # 설비 상태 답이 쓰는 것과 같은 행 (상태·시작 시각·열린 알람)
+    return {"sim_at": sim_at, "process_code": process, "cause_code": cause, "since_at": since, "equipment_process": proc_of, "equipment_state": states}
+
+
+def fetch_bottleneck(base_url: str) -> dict | None:
+    doc = _get_twin(base_url)
+    return None if doc is None else parse_bottleneck(doc)

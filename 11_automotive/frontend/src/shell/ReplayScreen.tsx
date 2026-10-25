@@ -6,8 +6,8 @@
 import { SecIcon, ToneTag } from './ui';
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useApp } from "./ctx";
-import { CAUSE_KO, LAYOUT, STATE_VIEW, stateOf } from "./data";
-import { EQS, SIM, hm, md, simIso, useFetch, type Eq } from "./live";
+import { CAUSE_KO, LAYOUT, SHIFT_H, STATE_VIEW, hh, stateOf } from "./data";
+import { EQS, SIM, hm, md, simIso, useFetch, useProfile, type Eq } from "./live";
 import { ALARMS } from "./model";
 
 interface Seg {
@@ -54,16 +54,17 @@ interface Ev {
   chain: boolean;
 }
 
-// 상태 색 = 다시 보기 전용 파스텔 (사용자 요청 2026-10-21 "타임라인 색이 너무 별로, 다른 계열로"):
-// 가공은 초록 대신 파랑, 대기는 아주 옅게 물러나게, 고장 · 막힘만 빨강 · 주황 계열. 3D 아래 공통 범례(data.ts LEGEND)와는 다르다.
-// 휴식(P02)은 대기 색 빗금. 타임라인 막대만 이 파스텔, 설비 카드 글자 · 아이콘(ST_INK)은 앱 공용 상태 색 (사용자 선택 2026-10-22 "카드 아이콘 글자만")
+// 타임라인 = 15분 칸 지도 + 남색 농담 (사용자 선택 2026-10-25, 시안 C-1 — 전: 파스텔 막대가 얇고 조각이 잘아 읽기 어려웠다):
+// 정상 흐름(가공 진한 남색 · 준비 옅은 남색 · 대기 · 휴식)은 한 계열로 물러나고, 막힘 주황 · 정비 보라 · 고장 빨강만 튄다.
+// 3D 아래 공통 범례(data.ts LEGEND)와는 다르다. 설비 카드 글자 · 아이콘(ST_INK)은 앱 공용 상태 색 그대로 (2026-10-22)
 const ST_COLOR: Record<string, string> = {
-  RUN: "#7aa5f5",
-  IDLE: "#e2e8f0",
-  SETUP: "#8fd3e0",
-  BLOCKED: "#f4c27f",
-  MAINT: "#b8a6ee",
-  DOWN: "#ef8f9b",
+  RUN: "#2e4a7d",
+  IDLE: "#eef2f7",
+  SETUP: "#8aa3cf",
+  BLOCKED: "#f0a830",
+  MAINT: "#9b8ae0",
+  DOWN: "#d0283d",
+  REST: "#dde3ec",
 };
 // tailwind.config.ts 토큰과 같은 값: ok(가공) · brand(준비) · warn(막힘 · 주의) · crit(고장) · 회색(대기 · 정비 — data.ts STATE_VIEW와 같이)
 const ST_INK: Record<string, { ink: string; tile: string }> = {
@@ -75,20 +76,26 @@ const ST_INK: Record<string, { ink: string; tile: string }> = {
   DOWN: { ink: "#c23042", tile: "#fdecee" },
   WARN: { ink: "#a35a0c", tile: "#fff3e3" },
 };
-const REST = "repeating-linear-gradient(45deg,#cfd8e4 0 2px,#f3f6fa 2px 6px)";
-const segBg = (r: { state_code: string; reason_code: string | null }) =>
-  r.state_code === "IDLE" && r.reason_code === "P02"
-    ? REST
-    : (ST_COLOR[r.state_code] ?? ST_COLOR.IDLE);
-const LEG: [string, string][] = [
-  ["가공", ST_COLOR.RUN],
-  ["대기", ST_COLOR.IDLE],
-  ["준비", ST_COLOR.SETUP],
-  ["막힘", ST_COLOR.BLOCKED],
-  ["정비", ST_COLOR.MAINT],
-  ["고장", ST_COLOR.DOWN],
-  ["휴식", REST],
-];
+const ST_KO: Record<string, string> = { RUN: "가공", IDLE: "대기", SETUP: "준비", BLOCKED: "막힘", MAINT: "정비", DOWN: "고장", REST: "휴식" };
+const LEG: [string, string][] = ["RUN", "SETUP", "IDLE", "REST", "BLOCKED", "MAINT", "DOWN"].map((k) => [ST_KO[k], ST_COLOR[k]]);
+// 15분 칸: 고장 · 정비 · 막힘이 2분 넘게 있으면 그 상태(짧은 고장이 묻히지 않게), 아니면 가장 오래 있던 상태
+const CELL_MS = 15 * 60000, PROBLEM = ["DOWN", "MAINT", "BLOCKED"];
+type StateRow = { state_code: string; reason_code: string | null; start_at: string; end_at: string };
+function cellsOf(rows: StateRow[], t0: number, t1: number) {
+  const out: { a: number; b: number; key: string; mins: [string, number][] }[] = [];
+  for (let a = t0; a < t1; a += CELL_MS) {
+    const b = Math.min(t1, a + CELL_MS), tot: Record<string, number> = {};
+    rows.forEach((r) => {
+      const o = Math.min(b, Date.parse(r.end_at)) - Math.max(a, Date.parse(r.start_at));
+      if (o > 0) { const k = r.state_code === "IDLE" && r.reason_code === "P02" ? "REST" : ST_COLOR[r.state_code] ? r.state_code : "IDLE"; tot[k] = (tot[k] ?? 0) + o; }
+    });
+    const mins = Object.entries(tot).sort((x, y) => y[1] - x[1]);
+    if (!mins.length) continue;
+    const key = PROBLEM.find((k) => (tot[k] ?? 0) >= 2 * 60000) ?? mins[0][0];
+    out.push({ a, b, key, mins: mins.map(([k, ms]) => [k, Math.round(ms / 60000)]) });
+  }
+  return out;
+}
 const EV_VIEW: Record<Ev["kind"], { icon: string; color: string }> = {
   STOP: { icon: "!", color: "#c62a2f" },
   WARN: { icon: "▲", color: "#b07400" },
@@ -117,26 +124,28 @@ const WIPS: [string, number][] = [
 const alarmName = (code: string) => ALARMS[code]?.nameKo ?? "";
 const toLocalInput = (iso: string) => iso.slice(0, 16);
 const fromLocalInput = (v: string) => `${v}:00+09:00`;
-// 그 시각이 속한 교대 = 불러올 기록 범위 (주간 08:00~17:00, 야간 17:00~다음 날 05:00, 05:00~08:00은 앞 야간에 붙임). 지금보다 뒤는 자른다
+// 그 시각이 속한 교대 = 불러올 기록 범위 (주간 09:00~18:00, 야간 18:00~다음 날 06:00, 06:00~09:00은 앞 야간에 붙임 — SHIFT_H). 지금보다 뒤는 자른다
 function shiftOf(ms: number): { a: number; b: number; label: string } {
   const iso = simIso(ms),
     d = iso.slice(0, 10),
     h = Number(iso.slice(11, 13));
-  const at = (day: string, hh: string) =>
-    Date.parse(`${day}T${hh}:00:00+09:00`);
-  const prev = simIso(at(d, "12") - 864e5).slice(0, 10);
+  const { dayStart: ds, dayEnd: de, nightEnd: ne } = SHIFT_H;
+  const at = (day: string, h: number) =>
+    Date.parse(`${day}T${hh(h)}:00:00+09:00`);
+  const prev = simIso(at(d, 12) - 864e5).slice(0, 10);
   const [a, b, label] =
-    h >= 8 && h < 17
-      ? [at(d, "08"), at(d, "17"), "주간"]
-      : h >= 17
-        ? [at(d, "17"), at(d, "17") + 12 * 36e5, "야간"]
-        : [at(prev, "17"), at(d, "08"), "야간"];
+    h >= ds && h < de
+      ? [at(d, ds), at(d, de), "주간"]
+      : h >= de
+        ? [at(d, de), at(d, de) + (24 - de + ne) * 36e5, "야간"]
+        : [at(prev, de), at(d, ds), "야간"];
   return { a, b: Math.max(a + 60000, Math.min(b, SIM.now())), label };
 }
 const LANE_PX = 40; // 막대 굵기 최대값 (자리가 모자라면 같이 얇아짐)
 
 export function ReplayScreen() {
   const { key, setReplay, twin } = useApp();
+  const profile = useProfile(); // 날짜 고르기 시작 = 기록 시작일 (2026-10-25)
   const center = key ?? simIso(SIM.now() - 30 * 60000);
   const sh0 = shiftOf(Date.parse(center));
   const [from, setFrom] = useState(toLocalInput(simIso(sh0.a)));
@@ -337,6 +346,7 @@ export function ReplayScreen() {
   }, [data, byId, t0, t1]);
   const curEv = events.reduce((c, e, i) => (e.at <= t + 500 ? i : c), -1);
   const listRef = useRef<HTMLOListElement>(null);
+  const [openEv, setOpenEv] = useState<string | null>(null); // 펼친 사건 (누르면 잘린 둘째 줄을 다 보임, 다시 누르면 접음 — 2026-10-25)
   useEffect(() => {
     const el = listRef.current?.querySelector<HTMLElement>(
       '[aria-current="true"]',
@@ -388,6 +398,7 @@ export function ReplayScreen() {
     "inline-flex h-6 items-center whitespace-nowrap rounded-full px-2 text-small font-semibold";
 
   const pct = (ms: number) => ((ms - t0) / (t1 - t0)) * 100;
+  const cells = useMemo(() => (data ? Object.fromEntries(EQS.map((eq) => [eq, cellsOf((data.states[eq] ?? []) as StateRow[], t0, t1)])) : {}), [data, t0, t1]);
   const barRef = useRef<HTMLDivElement>(null);
   const seek = (e: React.PointerEvent) => {
     const r = barRef.current?.getBoundingClientRect();
@@ -401,7 +412,7 @@ export function ReplayScreen() {
   const box = "rounded-card border border-line bg-white shadow-card";
 
   return (
-    <div className="absolute bottom-3 left-4 right-4 top-3 flex flex-col gap-3 overflow-hidden text-small">
+    <div className="absolute bottom-3 left-4 right-4 top-3 mx-auto flex max-w-[1440px] flex-col gap-3 overflow-hidden text-small">{/* 다른 화면과 같은 폭 1440 가운데 */}
       {/* 결론 띠: 시각 · 무슨 일 · 완제품 · 가동 */}
       <section
         className="grid shrink-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-6 gap-y-2 rounded-card border border-line bg-white px-5 py-3 shadow-card"
@@ -514,11 +525,12 @@ export function ReplayScreen() {
                   이 구간에는 알람·병목 변화가 없습니다
                 </li>
               )}
-              {events.map((e, i) => (
-                <li key={`${e.at}-${i}`} className={e.chain ? "pl-3" : ""}>
+              {events.map((e, i) => { const id = `${e.at}-${i}`, open = openEv === id; return (
+                <li key={id} className={e.chain ? "pl-3" : ""}>
                   <button
-                    onClick={() => jump(e.at)}
+                    onClick={() => { jump(e.at); setOpenEv(open ? null : id); }}
                     aria-current={i === curEv}
+                    aria-expanded={open}
                     className={`grid w-full grid-cols-[42px_minmax(0,1fr)] items-start gap-2 rounded-tile border p-2 text-left ${i === curEv ? "border-[#9fd3e0] bg-tile" : "border-transparent hover:bg-tile"}`}
                   >
                     <span className="font-mono font-semibold leading-5">
@@ -539,15 +551,15 @@ export function ReplayScreen() {
                         </b>
                       </span>
                       <span
-                        className="mt-0.5 block truncate pl-[26px] text-small font-normal text-ink"
-                        title={e.sub}
+                        className={`mt-0.5 block pl-[26px] text-small font-normal text-ink ${open ? "whitespace-normal break-words" : "truncate"}`}
+                        title={open ? undefined : e.sub}
                       >
                         {e.sub}
                       </span>
                     </span>
                   </button>
                 </li>
-              ))}
+              ); })}
             </ol>
           </div>
         </aside>
@@ -585,7 +597,8 @@ export function ReplayScreen() {
                 return (
                   <div
                     key={eq}
-                    className={`relative flex min-h-[136px] min-w-0 flex-col gap-3 rounded-card border bg-gradient-to-b from-white to-[#f7faff] p-4 ${down ? "-translate-y-1 border-crit shadow-[inset_0_1px_0_#fff,0_0_0_1px_#c23042,0_16px_30px_-14px_rgba(194,48,66,.55)]" : wn ? "border-warn-line shadow-[inset_0_1px_0_#fff,0_14px_28px_-16px_rgba(163,90,12,.45)]" : "border-line shadow-[inset_0_1px_0_#fff,0_1px_2px_rgba(27,42,65,.05),0_12px_26px_-16px_rgba(27,42,65,.32)]"}`}
+                    className={`relative flex min-h-[136px] min-w-0 flex-col gap-3 rounded-card bg-gradient-to-b from-white to-[#f7faff] p-4 shadow-[inset_0_1px_0_#fff,0_1px_2px_rgba(27,42,65,.05),0_12px_26px_-16px_rgba(27,42,65,.32)] ${/* 테두리로 상태 (J안, 사용자 선택 2026-10-25): 평소엔 얇게, 막힘 · 주의 · 고장은 굵게, 고장은 맥박 */
+                      down ? "rp-ring border-[3px] border-[#d8394b]" : wn || st === "BLOCKED" ? "border-[3px] border-[#d9822b] !shadow-[0_0_0_4px_rgba(217,130,43,.22)]" : st === "RUN" ? "border-2 border-[#1f9d63] !shadow-[0_0_0_3px_rgba(31,157,99,.14)]" : st === "SETUP" ? "border-2 border-[#3d6fe0] !shadow-[0_0_0_3px_rgba(61,111,224,.14)]" : "border border-line"}`}
                   >
                     {(down || wn) && (
                       <span
@@ -700,7 +713,7 @@ export function ReplayScreen() {
                         type="date"
                         aria-label="날짜"
                         value={draft.d}
-                        min="2026-09-01"
+                        min={profile?.history_start}
                         max={simIso().slice(0, 10)}
                         onChange={(e) =>
                           setDraft((x) => ({ ...x, d: e.target.value }))
@@ -718,7 +731,7 @@ export function ReplayScreen() {
                       />
                     </div>
                     <span className="text-small text-ink-2">
-                      그 시각이 속한 교대(주간 08~17시 · 야간 17~05시) 기록을
+                      그 시각이 속한 교대(주간 {hh(SHIFT_H.dayStart)}~{hh(SHIFT_H.dayEnd)}시 · 야간 {hh(SHIFT_H.dayEnd)}~{hh(SHIFT_H.nightEnd)}시) 기록을
                       불러옵니다
                     </span>
                     <div className="flex justify-end gap-2">
@@ -850,18 +863,18 @@ export function ReplayScreen() {
                     {EQS.map((eq) => (
                       <div
                         key={eq}
-                        className="relative min-h-[6px] overflow-hidden rounded bg-tile"
+                        className="relative min-h-[6px] overflow-hidden"
                         style={{ height: LANE_PX }}
                       >
-                        {(data.states[eq] ?? []).map((r, i) => (
+                        {(cells[eq] ?? []).map((c) => (
                           <div
-                            key={i}
-                            title={`${r.state_code === "IDLE" && r.reason_code === "P02" ? "휴식" : STATE_VIEW[stateOf(r)].text} ${hm(r.start_at)}~${hm(r.end_at)}`}
-                            className="absolute top-0 h-full"
+                            key={c.a}
+                            title={`${eq} ${hm(simIso(c.a))}~${hm(simIso(c.b))} ${ST_KO[c.key]} (${c.mins.map(([k, m]) => `${ST_KO[k]} ${m}분`).join(" · ")})`}
+                            className="absolute top-0 h-full rounded-[3px]"
                             style={{
-                              left: `${pct(Date.parse(r.start_at))}%`,
-                              width: `${Math.max(0.2, pct(Date.parse(r.end_at)) - pct(Date.parse(r.start_at)))}%`,
-                              background: segBg(r),
+                              left: `calc(${pct(c.a)}% + 1px)`,
+                              width: `calc(${pct(c.b) - pct(c.a)}% - 2px)`,
+                              background: ST_COLOR[c.key],
                             }}
                           />
                         ))}

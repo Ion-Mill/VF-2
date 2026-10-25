@@ -15,9 +15,24 @@ export function Chip({ tone = 'mute', mono, field, children }: { tone?: Tone; mo
 }
 export const RO = <Chip>보기 전용</Chip>;
 
-// 문서 한 장의 틀
+// 문서 한 장의 틀 — data-print: [인쇄] 때 이 틀만 종이에 남김 (globals.css @media print)
 export function DocPage({ children, width = 960 }: { children: ReactNode; width?: number }) {
-  return <div className={PAGE}><div className="mx-auto flex flex-col gap-3" style={{ maxWidth: width }}>{children}</div></div>;
+  return <div className={PAGE} data-print><div className="mx-auto flex flex-col gap-3" style={{ maxWidth: width }}>{children}</div></div>;
+}
+// [인쇄]: 문서를 폭 1000px(화면과 같은 칸 배치)로 놓고 A4 한 장(여백 10mm = 718 × 1047px)에 들어갈 배율을 재서 globals.css --print-zoom에 넣는다.
+// 한 장에 넣으려면 55%보다 작아져야 하면 글자가 너무 작으니 폭만 맞추고 여러 장으로 (2026-10-23)
+const PRINT_W = 1000, PAPER_W = 718, PAPER_H = 1047, MIN_ZOOM = 0.55;
+export function printDoc() {
+  const el = document.querySelector<HTMLElement>('[data-print] > div');
+  if (el) {
+    const old = el.style.cssText;
+    el.style.maxWidth = 'none'; el.style.width = `${PRINT_W}px`;
+    const h = el.scrollHeight * 1.03; // 쪽 나눔·글꼴 오차 여유
+    el.style.cssText = old;
+    const fit = Math.min(PAPER_W / PRINT_W, PAPER_H / h);
+    document.documentElement.style.setProperty('--print-zoom', String(fit >= MIN_ZOOM ? fit : PAPER_W / PRINT_W));
+  }
+  window.print();
 }
 export function DocHead({ title, sub, right }: { title: ReactNode; sub?: ReactNode; right?: ReactNode }) {
   return (
@@ -69,11 +84,11 @@ export function Fold({ summary, children, open }: { summary: ReactNode; children
     </details>
   );
 }
-export function Kpi({ label, value, unit, sub, tone, field }: { label: ReactNode; value: ReactNode; unit?: ReactNode; sub?: ReactNode; tone?: 'main' | 'bad' | 'ok'; field?: string }) {
+export function Kpi({ label, value, unit, sub, tone, field }: { label: ReactNode; value: ReactNode; unit?: ReactNode; sub?: ReactNode; tone?: 'main' | 'bad' | 'warn' | 'ok'; field?: string }) {
   return (
     <div data-summary-field={field} className="flex min-w-0 flex-col rounded-tile border border-line bg-white px-4 py-3">{/* 흰 칸 + 선 (main도 같은 칸, 강조는 결론 띠) */}
       <span className="text-small text-ink-2">{label}</span>
-      <span className={`font-mono text-num font-bold tabular-nums ${tone === 'bad' ? 'text-crit' : tone === 'ok' ? 'text-ok' : 'text-ink'}`}>{value}{unit && <small className="ml-1 font-sans text-body font-normal text-ink-2">{unit}</small>}</span>
+      <span className={`font-mono text-num font-bold tabular-nums ${tone === 'bad' ? 'text-crit' : tone === 'warn' ? 'text-warn' : tone === 'ok' ? 'text-ok' : 'text-ink'}`}>{value}{unit && <small className="ml-1 font-sans text-body font-normal text-ink-2">{unit}</small>}</span>
       {sub && <span className="text-small text-ink-2">{sub}</span>}
     </div>
   );

@@ -10,7 +10,7 @@
 |---|---|
 | 주소 | 모두 `/api/...`, 요청·응답은 JSON. 상태 확인 `GET /api/health` |
 | 로그인 | `POST /api/auth/login` → `{"access_token", "role_code", "home"}` → 이후 `Authorization: Bearer <token>`. `POST /api/auth/logout`, `GET /api/me` |
-| 서비스 (명세서 밖) | 시뮬레이터 `X-Service-Key: <MOM_INGEST_KEY>` (`/api/ingest/*`), AI 비서 서비스 `X-Service-Key: <MOM_ASSISTANT_KEY>` (`/api/assistant/tools·drafts·notifications/*`) |
+| 서비스 (명세서 밖) | 시뮬레이터 `X-Service-Key: <MOM_INGEST_KEY>` (`/api/ingest/*`), AI 비서 서비스 `X-Service-Key: <MOM_ASSISTANT_KEY>` (`/api/assistant/tools·docs·drafts·notifications/*`) |
 | 권한 | 처리기마다 `role_permission`(target·action)으로 막는다. 없으면 403 `FORBIDDEN`. "누가 확정·승인"은 DB가 한 번 더. MGR은 모든 조회 |
 | 이름 | 응답 칸 이름은 논리 ERD 속성 이름 (`target_qty`, `carry_over_qty` …) |
 | 시각 | ISO 8601 + 시간대 (`2026-09-15T13:00:00+09:00`). 교대는 `shift_id` (`2026-09-15-D`). 기간을 비우면 시연 시계 기준 최근 24시간(일부 7일·2시간) |
@@ -87,7 +87,7 @@
 ## 4. 엔드포인트 목록
 
 <!-- BEGIN:api -->
-<!-- tools/gen_api_doc.py 가 만든 표 (145개). -->
+<!-- tools/gen_api_doc.py 가 만든 표 (146개). -->
 | 방법 | 경로 | 권한 (role_permission target·action) | 설명 |
 |---|---|---|---|
 | POST | `/api/auth/login` | 없음 | 아이디·비밀번호 로그인 → JWT. 실패도 접근 기록에 남는다 |
@@ -217,6 +217,7 @@
 | POST | `/api/internal-docs/{doc_no}/revisions/{rev}/approve` | `INTERNAL_DOC·APPROVE` | 사내 문서 개정 승인 (DOCS-02, MGR, R-52): 새 현행판 + 문서 버전 + 관련 역할 전체에게 문서 수정 알림 |
 | GET | `/api/assistant/tools` | 서비스 키 `assistant` | 이 사용자가 쓸 수 있는 도구의 JSON Schema (LLM 도구 정의에 그대로) |
 | POST | `/api/assistant/tools/{name}` | 서비스 키 `assistant` | 조회 도구 실행 (읽기 전용). 대신 묻는 사용자의 권한으로 거르고 접근 기록에 남긴다 |
+| GET | `/api/assistant/docs` | 서비스 키 `assistant` | 사내 문서 조각 전체(현행 개정만, 문서 목록 포함) — 비서가 시작할 때 한 번 읽는다(`DOCS_SOURCE=db`). 읽기 전용 연결, 접근 기록 없음 (2026-10-25) |
 | POST | `/api/assistant/drafts/work-order` | 서비스 키 `assistant` | 작업지시서 AI비서 초안 (고정 서식 블록은 AI가 쓰지 않고 붙었다는 표시만, R-33). 겹치면 기존 것에 더함 (R-71) |
 | POST | `/api/assistant/drafts/work-record` | 서비스 키 `assistant` | 정식 작업기록서 AI비서 초안 (v0 = AI). 확정은 보전 담당자 |
 | PUT | `/api/assistant/notifications/{notification_id}/message` | 서비스 키 `assistant` | 알림 문장을 비서 문장으로 바꾸기 (알릴지·중요도는 못 바꿈, R-38) |
@@ -292,7 +293,7 @@
 | INV-01~05 | `GET /api/inventory`, `POST /api/inventory/txns`, `POST /api/raw-lots/{no}/inspect`, `GET·POST /api/shipments`·`PATCH /{no}`, `PATCH /api/inventory/items/{no}/safety-stock` | inventory.* | 출하 등록은 `lines`·`confirm`까지 한 번에 |
 | TOOL-01·02 | `GET /api/tools`, `POST /api/tools/{id}/change` | inventory.tools·tool_change | |
 | SET-01~03 | `GET·PATCH /api/settings/notification-rules·targets·users` | notifications.rules·rule_update, master.targets*·users* | PATCH 본문에 `rule_code`·`user_id`. 목표는 아직 시작 안 한 교대·근무일만 |
-| SIM-01·02 | `POST /api/sim/inject`, `POST /api/sim/clock` | master.inject·set_sim_clock | inject는 `scenario_code`(S1~S6) 필수 |
+| SIM-01·02 | `POST /api/sim/inject`, `POST /api/sim/clock` | master.inject·set_sim_clock | inject는 `scenario_code`(S1·S3·S4·S6·S7, 2026-10-25 S7 더함) 필수 |
 | SIM-03 | `POST /api/sim/reset` | master.sim_reset | 시연 모드만. 시연 기준점으로 되돌리고 시연 시계를 그 시각에 멈춤 (설정·계정·접속 기록은 그대로). 기준점은 목업·생성기 적재 뒤 자동, 바꾸기는 `POST /api/sim/snapshot`(MGR) |
 
 **명세서보다 더한 것 (명세서 주소 체계 안에 둠):** `GET /api/alarms`·`/{id}`, `GET /api/kpi/stops`, `GET /api/lots/{no}`·`POST …/judge`, `GET /api/holds`, `POST /api/maint/work-orders`·`/work-records`(만들기)·`…/checks/{seq}`·`…/parts`·`…/check`, `GET·PATCH /api/maint/pm-records/{id}`·`…/confirm`, `POST /api/reports/daily/{date}/revise`, `GET /api/documents/revisions/{id}`, `GET /api/internal-docs`·`/{doc_no}`, `GET·POST /api/inspection/instructions`·`…/start`, `POST /api/inspection/cmm-imports`(올리기), `GET /api/quality/cpk`·`/defects`, `GET /api/inventory/{no}/txns`, `POST /api/raw-lots`(원자재 입고), `GET /api/shipments/candidates`·`/{no}`, `PUT·DELETE /api/shipments/{no}/lines/{lot}`, `POST /api/shipments/{no}/confirm`, `GET /api/tools/{id}/changes`, `GET /api/codes`·`/dataset`·`/sim/clock`·`/admin/retention`, `POST /api/sim/snapshot`. 서버끼리: `/api/ingest/*`, `/api/assistant/tools·drafts·notifications/*` (서비스 키).

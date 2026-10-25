@@ -208,7 +208,7 @@
     "_auto_slowdown_note": "1로 바꿀 수 있음 (설계서 4장)",
     "skip_targets": ["TODAY_DAY_END", "TODAY_NIGHT_START"],
     "_skip_note": "TODAY_DAY_END = 오늘 주간 끝(shifts.DAY.end, 지금 18:00), TODAY_NIGHT_START = 야간 시작(shifts.NIGHT.start, 지금 21:00). 그 사이는 라인 정지. 다음 날 아침으로 넘기기는 없음 (2026-10-13). 2026-10-24: 시각 글자(TODAY_17:00·TODAY_20:00)에서 이름으로 바꿈 — 옛 이름은 별칭으로 받음",
-    "buttons": ["S1", "S3", "S4", "S6"],
+    "buttons": ["S1", "S3", "S4", "S6", "S7"],
     "_buttons_note": "S2·S5는 버튼 없음 — 9월 과거 기록으로 진행 (S5는 2026-10-13에 뺌)",
     "button_rules": { "target_must_be_run": true, "lock_while_event": true, "allow_repeat": true },
     "scenarios_dir": "scenarios",

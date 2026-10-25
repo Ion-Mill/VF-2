@@ -5,17 +5,17 @@
 import { Band as CBand, LockIcon } from './ui';
 import { revsBand } from './bands';
 import { useState } from 'react';
-import { BTN, useApp } from './ctx';
+import { BTN, CARD, useApp } from './ctx';
 import { hm, md, useFetch } from './live';
 import { userName } from './model';
 import { backendMode } from './backendApi';
 import type { Revision } from './workflow';
-import { Chip, DocHead, DocPage, Sec } from './DocKit';
+import { Chip, DocHead, DocPage, printDoc, Sec } from './DocKit';
 
-const TYPE: Record<string, string> = { WO: '정비 작업지시서', WR: '작업기록서', SR: '간이 작업기록', SHIFT: '교대 보고서', DAILY: '일일 보고서', MAINT_WO: '정비 작업지시서', WORK_RECORD: '작업기록서', QUICK_RECORD: '간이 작업기록', SHIFT_REPORT: '교대 보고서', DAILY_REPORT: '일일 보고서', PM_RECORD: '예방 정비 실시 기록', SHIPMENT: '출하 기록', INTERNAL_DOC: '사내 문서' };
+const TYPE: Record<string, string> = { WO: '정비 작업지시서', WR: '작업기록서', SR: '간이 작업기록', SHIFT: '교대 보고서', DAILY: '일일 보고서', MAINT_WO: '정비 작업지시서', WORK_RECORD: '작업기록서', QUICK_RECORD: '간이 작업기록', SHIFT_REPORT: '교대 보고서', DAILY_REPORT: '일일 보고서', PM_RECORD: '예방 정비 실시 기록', SHIPMENT: '출하 기록', INTERNAL_DOC: '사내 문서', APP_USER: '직원 배치' };
 const SRV: Record<string, string> = { SHIFT: 'SHIFT_REPORT', DAILY: 'DAILY_REPORT' };
 // 서버가 고친 칸은 칸 이름이 영어로 온다 (backend/app/services/documents.py fields) → 한글로 (9월 기록은 이미 한글, 2026-10-20)
-const FIELD: Record<string, string> = { notable_text: '특이 사항', handover_text: '인계 사항', issues_summary: '오늘의 문제', title: '제목', symptom: '증상', cause: '원인', action: '조치', worker_memo: '작업자 메모', end_at: '끝난 시각', repair_min: '수리 시간', result: '결과', measured_value: '측정값', measured_unit: '단위', memo: '메모' };
+const FIELD: Record<string, string> = { notable_text: '특이 사항', handover_text: '인계 사항', issues_summary: '오늘의 문제', title: '제목', symptom: '증상', cause: '원인', action: '조치', worker_memo: '작업자 메모', end_at: '끝난 시각', repair_min: '수리 시간', result: '결과', measured_value: '측정값', measured_unit: '단위', memo: '메모', home_shift_type: '담당 교대', home_process_code: '담당 공정', home_process_code_2: '두 번째 담당 공정' };
 const blocked = (msg: string) => <div className="flex flex-col items-center gap-1 rounded-card border border-dashed border-line bg-white px-4 py-8 text-center"><LockIcon size={28} /><b>{msg}</b></div>;
 
 export function RevisionsScreen() {
@@ -53,25 +53,32 @@ export function RevisionsScreen() {
     const shown = list.filter((x) => !type || (TYPE[x.doc_type] ?? x.doc_type) === type);
     return (
       <DocPage width={1440}>
-        <DocHead title="수정 이력" sub="모든 문서 · 최근 순" right={<button onClick={back} className={BTN}>닫기</button>} />
         {role !== 'OPR' && <CBand spec={revsBand(list[0] && { at: `${md(list[0].created_at)} ${hm(list[0].created_at)}`, doc: TYPE[list[0].doc_type] ?? list[0].doc_type, no: list[0].doc_key, who: list[0].author_kind === 'AI' ? '비서' : userName(list[0].author_user_id), ver: `v${list[0].version_no}` })} />}{/* 디자인 통일 C안: 결론 띠 (bands.ts revsBand) */}
-        {role === 'OPR' ? blocked('작업자는 자기가 쓴 간이 작업기록의 이력만 볼 수 있습니다') : (<>
-          <div className="flex flex-wrap gap-1.5">{['', ...types].map((t) => <button key={t || '전체'} onClick={() => setType(t)} className={`h-9 rounded-full border px-3 text-small font-semibold ${type === t ? 'border-brand-line bg-brand-tint text-brand-ink' : 'border-line bg-white'}`}>{t || '전체'}</button>)}</div>
-          <div className="overflow-x-auto rounded-card border border-line bg-white">
-            <table className="w-full min-w-[640px] text-left text-body"><thead className="text-small text-ink-2"><tr>{['시각', '문서', '번호', '버전', '누가', '사유'].map((h) => <th key={h} className="px-3 py-2 font-semibold">{h}</th>)}</tr></thead>
-              <tbody>{shown.slice(0, 150).map((x) => <tr key={x.revision_id} onClick={() => SRV.SHIFT === x.doc_type ? go('revs', `SHIFT:${x.doc_key}`) : x.doc_type === 'DAILY_REPORT' ? go('revs', `DAILY:${x.doc_key}`) : undefined} className="cursor-pointer border-t border-line-soft hover:bg-tile">
-                <td className="px-3 py-2 font-mono">{md(x.created_at)} {hm(x.created_at)}</td><td className="px-3 py-2">{TYPE[x.doc_type] ?? x.doc_type}</td><td className="px-3 py-2 font-mono">{x.doc_key}</td><td className="px-3 py-2 font-mono">v{x.version_no}</td>
-                <td className="px-3 py-2">{x.author_kind === 'AI' ? <Chip tone="acc">비서</Chip> : <Chip>{userName(x.author_user_id)}</Chip>}</td><td className="px-3 py-2">{x.reason || <span className="text-ink-3">—</span>}</td></tr>)}</tbody></table>
+        {role === 'OPR' ? blocked('작업자는 자기가 쓴 간이 작업기록의 이력만 볼 수 있습니다') : (
+          // 결론 띠 → 흰 카드 하나 안에 필터 줄 + 표 (문서함 DocBox 틀, 2026-10-25). 인쇄 · 닫기는 필터 줄 오른쪽 끝
+          <div className={CARD}>
+            <div className="flex flex-wrap items-center gap-2">
+              <label className="flex items-center gap-1.5 text-body font-semibold text-ink-2">문서:<select value={type} onChange={(e) => setType(e.target.value)} className="h-9 rounded-full border border-line bg-white px-3 text-small text-ink"><option value="">전체</option>{types.map((t) => <option key={t}>{t}</option>)}</select></label>
+              <span className="ml-auto text-small font-semibold text-ink-2">{shown.length}건</span>
+              <button onClick={printDoc} className={BTN.replace('h-11', 'h-9')}>인쇄</button><button onClick={back} className={BTN.replace('h-11', 'h-9')}>닫기</button>{/* 필터 알약과 같은 높이 */}
+            </div>
+            {shown.length === 0 ? <p className="mt-4 text-body text-ink-2">조건에 맞는 기록이 없습니다</p> : (
+            <div className="overflow-x-auto">
+              <table className="mt-2 w-full min-w-[640px] border-separate border-spacing-0 text-left text-body"><thead className="text-small text-ink-2"><tr className="bg-ground [&>th:first-child]:rounded-l-tile [&>th:last-child]:rounded-r-tile">{['시각', '문서', '번호', '버전', '누가', '사유'].map((h) => <th key={h} className="px-3 py-2 font-semibold">{h}</th>)}</tr></thead>
+                <tbody className="[&_td]:border-t [&_td]:border-line [&_td]:px-3 [&_td]:py-2.5">{shown.slice(0, 150).map((x) => <tr key={x.revision_id} onClick={() => SRV.SHIFT === x.doc_type ? go('revs', `SHIFT:${x.doc_key}`) : x.doc_type === 'DAILY_REPORT' ? go('revs', `DAILY:${x.doc_key}`) : undefined} className="cursor-pointer hover:bg-brand-tint">
+                  <td className="font-mono">{md(x.created_at)} {hm(x.created_at)}</td><td>{TYPE[x.doc_type] ?? x.doc_type}</td><td className="font-mono">{x.doc_key}</td><td className="font-mono">v{x.version_no}</td>
+                  <td>{x.author_kind === 'AI' ? <Chip tone="acc">비서</Chip> : <Chip>{userName(x.author_user_id)}</Chip>}</td><td>{x.reason || <span className="text-ink-3">—</span>}</td></tr>)}</tbody></table>
+            </div>)}
           </div>
-        </>)}
+        )}
       </DocPage>
     );
   }
   return (
     <DocPage width={1100}>
-      <DocHead title="수정 이력" sub={`${TYPE[kind]} ${id}`} right={<><button onClick={() => go('revs', null)} className={BTN}>모든 문서 보기</button><button onClick={back} className={BTN}>닫기</button></>} />
+      <DocHead title="수정 이력" sub={`${TYPE[kind]} ${id}`} right={<><button onClick={() => go('revs', null)} className={BTN}>모든 문서 보기</button><button onClick={printDoc} className={BTN}>인쇄</button><button onClick={back} className={BTN}>닫기</button></>} />
       {isBlocked ? blocked('작업자는 자기가 쓴 간이 작업기록의 이력만 볼 수 있습니다') : revs.length === 0 ? <Sec title="버전 없음"><span className="text-body text-ink-2">저장하면 생깁니다</span></Sec> : (
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-[300px_minmax(0,1fr)]">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-[300px_minmax(0,1fr)] print:grid-cols-[300px_minmax(0,1fr)]">
           <ol className="flex flex-col gap-1.5">
             {revs.map((r, i) => (
               <li key={i}><button onClick={() => setSel(i)} aria-pressed={i === sel} className={`flex w-full flex-col gap-1 rounded-tile border px-3 py-2 text-left text-body ${i === sel ? 'border-ink bg-tile' : 'border-line bg-white hover:bg-tile'}`}>

@@ -16,7 +16,7 @@ OPUS = "claude-opus-5-5"
 SERVICE_KEY = "svc-key-9f3a77c1d2e8"
 
 # 사람·계정에 해당하는 글 — 외부로 나가는 글에 하나라도 남으면 안 된다
-LEAKS = ["U07", "보전 담당 1", "작업자 주간 3", "사번: E12345", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJVMDcifQ.c2lnbmF0dXJl",
+LEAKS = ["U07", "이도윤", "박준호", "사번: E12345", "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJVMDcifQ.c2lnbmF0dXJl",
          "Bearer abcdef1234567890", "postgresql://user:pw@host:5432/db", "비밀번호: hunter22", SERVICE_KEY]
 
 
@@ -61,7 +61,7 @@ def cli(monkeypatch, tmp_path):
 
 # ------------------------------------------------------------------ 글 한 덩어리
 def test_user_ids_names_empno_and_account_info_are_masked():
-    text = ("담당 U07(보전 담당 1)이 작업자 주간 3과 함께 점검. 사번: E12345. "
+    text = ("담당 U07(이도윤)이 박준호와 함께 점검. 사번: E12345. "
             "토큰 eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJVMDcifQ.c2lnbmF0dXJl, Bearer abcdef1234567890, "
             "접속 postgresql://user:pw@host:5432/db, 비밀번호: hunter22, 서비스 키 " + SERVICE_KEY)
     out, hits = OG.scrub_text(text)
@@ -72,13 +72,13 @@ def test_user_ids_names_empno_and_account_info_are_masked():
 
 
 def test_scrub_is_idempotent_and_ignores_non_text():
-    once, _ = OG.scrub_text("U07 보전 담당 1")
+    once, _ = OG.scrub_text("U07 이도윤")
     assert OG.scrub_text(once) == (once, {})
     assert OG.scrub_text("") == ("", {}) and OG.scrub_text(None) == (None, {})
 
 
 def test_near_misses_are_not_masked():
-    text = "U13 은 없는 ID, ABU07X 는 다른 낱말, 보전 담당 12 는 목록에 없음, 알람 992, 설비 VF2-01, 로트 LOT-2609-041-1"
+    text = "U13 은 없는 ID, ABU07X 는 다른 낱말, 김철수 는 목록에 없음, 알람 992, 설비 VF2-01, 로트 LOT-2609-041-1"
     assert OG.scrub_text(text) == (text, {})
 
 
@@ -101,9 +101,9 @@ def test_missing_user_list_falls_back_to_the_generic_id_shape(monkeypatch, tmp_p
 
 def test_log_has_kinds_and_counts_but_never_the_masked_text(caplog):
     with caplog.at_level(logging.INFO, logger="assistant"):
-        OG.scrub_messages([{"role": "user", "content": "U07 보전 담당 1 비밀번호: hunter22"}])
+        OG.scrub_messages([{"role": "user", "content": "U07 이도윤 비밀번호: hunter22"}])
     assert "person" in caplog.text and "account" in caplog.text
-    for leak in ("U07", "보전 담당", "hunter22"):
+    for leak in ("U07", "이도윤", "hunter22"):
         assert leak not in caplog.text
 
 
@@ -116,8 +116,8 @@ def test_assert_clean_blocks_material_with_people_and_passes_plain_values():
 
 # ------------------------------------------------------------------ 외부로 나가는 입구 (T-NFR-SEC-08-1)
 def test_nothing_personal_reaches_the_claude_process(cli):
-    msgs = [{"role": "system", "content": "시스템 지시: 담당 U07 보전 담당 1 은 알려 주지 않는다. " + SERVICE_KEY},
-            {"role": "user", "content": "알람 992 점검. 작업자 주간 3, 사번: E12345, eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJVMDcifQ.c2lnbmF0dXJl, "
+    msgs = [{"role": "system", "content": "시스템 지시: 담당 U07 이도윤 은 알려 주지 않는다. " + SERVICE_KEY},
+            {"role": "user", "content": "알람 992 점검. 박준호, 사번: E12345, eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJVMDcifQ.c2lnbmF0dXJl, "
                                         "Bearer abcdef1234567890, postgresql://user:pw@host:5432/db, 비밀번호: hunter22"}]
     assert C.chat_json(msgs, schemas.WRITE_ANSWER, "write_answer", 400) == {"answer": "답이에요."}
     call = cli.calls[0]

@@ -6,7 +6,8 @@ import type { Eq, SimEvent, Twin } from './live';
 import { SIM, md, simIso, tsOf } from './live';
 import type { AlertRec, Level, Notice } from './model';
 import { USERS } from './model';
-import type { WorkOrder, WorkRecord } from './workflow';
+import type { Downtime, SimpleRecord, WorkOrder, WorkRecord } from './workflow';
+import { isUnrecordedStop, stopKeyOf } from './workflow';
 
 export const RULE_NAME: Record<string, string> = {
   REPEAT_ALARM: '반복 알람 (1단계)', REPEAT_ALARM_2: '반복 알람 2단계', CAUSE_CHECK_REQUEST: '원인 점검 요청', TARGET_RISK: '목표 미달 위험',
@@ -16,12 +17,13 @@ export const RULE_NAME: Record<string, string> = {
   PM_RECORD_CHECK: '예방 정비 실시 기록 확인', DAILY_REPORT_PENDING: '일일 보고서 확정 요청', DOC_REVISED: '문서 수정', SPC_OUT: '관리도 이상',
   SHIFT_REPORT_PENDING: '교대 보고서 확정 요청', CMM_FILE_ERROR: 'CMM 결과 파일 오류', CMM_JUDGE_MISMATCH: 'CMM 판정 불일치', CMM_NO_RESULT: 'CMM 결과 미수신',
   ALARM_STOP: '알람 발생 (정지)', ALARM_WARN: '알람 발생 (주의)', ALARM_GUIDE: '알람 발생 (조작 안내)',
+  UNRECORDED_STOP: '기록 없는 정지', AFTER_RECORD_CHECK_WAIT: '선조치 기록 확인 대기', // 선조치 기록 (FR-AST-02-20·21, 2026-10-24)
 };
 // 보고 순위 (gen/reports.py RANK와 같음): 2 생산 위험 / 3 주의 / 4 참고
 const RANK_OF: Record<string, string> = {
   TARGET_RISK: '2', BOTTLENECK_MOVE: '2', WIP_WARN: '2', LOT_DUE_RISK: '2', REPEAT_ALARM_2: '3', CAUSE_CHECK_REQUEST: '3', REPEAT_ALARM: '3',
   SPC_OUT: '3', TOOL_LIFE_90: '3', PM_OVERDUE: '3', STOCK_LOW: '3', APPROVAL_WAIT_2H: '3', CMM_FILE_ERROR: '3', CMM_JUDGE_MISMATCH: '3', CMM_NO_RESULT: '3',
-  ALARM_GUIDE: '4', PM_DUE_SOON: '4', APPROVAL_WAIT_30M: '4', WO_ASSIGNED: '4', WO_DRAFT_READY: '4', WO_APPROVAL_REQUEST: '4', WR_CONFIRM_PENDING: '4', WR_CHECK_REQUEST: '4', PM_RECORD_CHECK: '4', DAILY_REPORT_PENDING: '4', SHIFT_REPORT_PENDING: '4', DOC_REVISED: '4',
+  ALARM_GUIDE: '4', PM_DUE_SOON: '4', APPROVAL_WAIT_30M: '4', WO_ASSIGNED: '4', WO_DRAFT_READY: '4', WO_APPROVAL_REQUEST: '4', WR_CONFIRM_PENDING: '4', WR_CHECK_REQUEST: '4', PM_RECORD_CHECK: '4', DAILY_REPORT_PENDING: '4', SHIFT_REPORT_PENDING: '4', DOC_REVISED: '4', UNRECORDED_STOP: '4', AFTER_RECORD_CHECK_WAIT: '4',
 };
 const LEVEL_OF: Record<string, Level> = { URGENT: '긴급', CAUTION: '주의', INFO: '참고' };
 // 예방 정비 기한 알림은 주 1회 이상 주기 항목만 (매일·교대마다 하는 점검은 교대 점검표로 봄, 생성기 config notifications.pm_alert_cycles)
@@ -30,7 +32,7 @@ const levelRule = (r: string): Level => (RANK_OF[r] === '4' ? '참고' : '주의
 
 const mk = (rule: string, key: string, text: string, roles: Role[], extra: Partial<Notice> = {}): Notice => ({
   id: `${rule}:${key}`, rule, ruleName: RULE_NAME[rule] ?? rule, level: levelRule(rule), rank: RANK_OF[rule] ?? '3', at: simIso(), ts: SIM.now(),
-  text, roles, delivery: ['WO_ASSIGNED', 'WO_DRAFT_READY', 'WO_APPROVAL_REQUEST', 'WR_CHECK_REQUEST', 'APPROVAL_WAIT_30M', 'APPROVAL_WAIT_2H', 'SHIFT_REPORT_PENDING', 'DAILY_REPORT_PENDING', 'DOC_REVISED'].includes(rule) ? 'BUBBLE' : 'LIST',
+  text, roles, delivery: ['WO_ASSIGNED', 'WO_DRAFT_READY', 'WO_APPROVAL_REQUEST', 'WR_CHECK_REQUEST', 'APPROVAL_WAIT_30M', 'APPROVAL_WAIT_2H', 'SHIFT_REPORT_PENDING', 'DAILY_REPORT_PENDING', 'DOC_REVISED', 'AFTER_RECORD_CHECK_WAIT'].includes(rule) ? 'BUBBLE' : 'LIST',
   handled: false, ...extra,
 });
 
@@ -92,6 +94,7 @@ export interface RuleCtx {
   quality: { items: { item_seq: string; item_name: string; out?: number[]; n: number; values?: { at: string; v: number }[] }[]; live_from?: string } | null;
   alerts: AlertRec[]; pastAlarms: { equipment_id: string; alarm_code: string; occurred_at: string }[]; notices: Notice[];
   rules: { repeat_days: number; repeat_count: number; target_risk_pct: number; repeat2_days: number };
+  downtimes: Downtime[] | null; srs: SimpleRecord[];
 }
 
 // 상태로 판단하는 알림 (켜질 조건, 풀릴 조건)
@@ -200,6 +203,18 @@ export function derive(c: RuleCtx): { add: Notice[]; resolve: string[] } {
   c.quality?.items.forEach((it) => {
     const out = (it.out ?? []).filter((i) => !it.values || it.values[i].at >= from);
     if (out.length) add.push(mk('SPC_OUT', `${it.item_seq}:${it.values?.[out[out.length - 1]].at ?? `${it.n}:${out[out.length - 1]}`}`, `${it.item_name} 관리도 ±3σ 밖 점 ${out.length}개 — 다음 부품 바로 측정`, ['SUP'], { open: { screen: 'quality' } }));
+  });
+  // 기록 없는 정지 (FR-AST-02-20): 선조치 기록을 저장하면(확정 전이라도) 처리됨. 교대 끝 1시간 전 주의로 올리기는 2차
+  (c.downtimes ?? []).filter(isUnrecordedStop).forEach((d) => {
+    const key = stopKeyOf(d), eq = d.equipment_id as Eq, m = ID_OF[eq];
+    if (c.srs.some((r) => r.kind === 'after' && r.stopKey === key && r.revisions.length)) { resolve.push(`UNRECORDED_STOP:${key}`); return; }
+    if (m) add.push(mk('UNRECORDED_STOP', key, `${eq} ${d.start_at.slice(11, 16)}~${d.end_at!.slice(11, 16)} (${d.minutes}분) 정지, 기록이 없어요 — 선조치 기록을 써 주세요`, ['OPR', 'MNT', 'SUP'],
+      { machine: m, open: { screen: 'after', key } }));
+  });
+  // 선조치 기록 확인 대기 (FR-AST-02-21): 선조치 기록이 확정되면 반장에게, 반장이 확인하면 처리됨
+  c.srs.filter((r) => r.kind === 'after' && r.state === 'confirmed').forEach((r) => {
+    if (r.checkedBy) resolve.push(`AFTER_RECORD_CHECK_WAIT:${r.no}`);
+    else add.push(mk('AFTER_RECORD_CHECK_WAIT', r.no, `선조치 기록 ${r.no} (${MACHINES[r.machine].name} ${r.start?.slice(11, 16) ?? ''}~${r.end?.slice(11, 16) ?? ''}) 확인해 주세요`, ['SUP'], { machine: r.machine, open: { screen: 'sr', key: r.no } }));
   });
   return { add, resolve };
 }

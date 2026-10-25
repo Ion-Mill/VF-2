@@ -736,8 +736,8 @@ def build_messages(question: str, chunks: list[Chunk], prev: dict | None = None,
     return [{"role": "system", "content": system}, {"role": "user", "content": "\n\n".join(parts)}]
 
 
-def ask(question: str, chunks: list[Chunk], prev: dict | None, s: Settings, ops_note: bool = False, retry_note: bool = False, fixed_note: str | None = None, history: list | None = None) -> dict:
-    """외부 Claude 1번 호출. 돌려주는 값: {"answer", "insufficient", "cited_raw"(받은 그대로), "raw"(받은 JSON), "ms", "sent_chars"}.
+def ask(question: str, chunks: list[Chunk], prev: dict | None, s: Settings, ops_note: bool = False, retry_note: bool = False, fixed_note: str | None = None, history: list | None = None, live_note: str | None = None) -> dict:
+    """외부 Claude 1번 호출. live_note가 있으면(설비 상태 질문, 2026-10-25) 시스템 지시 끝에 "지금 설비 상태 값 + 쓰는 법"을 붙인다 — 없으면 요청 글이 지금과 한 글자도 다르지 않다. 돌려주는 값: {"answer", "insufficient", "cited_raw"(받은 그대로), "raw"(받은 JSON), "ms", "sent_chars"}.
     연결·시간 초과·형식 오류·빈 답은 ExternalLlmFailure로 올린다 — 자동으로 로컬·다른 길로 돌아가지 않는다(앱 입구가 EXTERNAL_LLM_UNAVAILABLE로 끝냄).
     PURE_STYLE=1이면 새 지시문·스키마·max_tokens로 부르고 "answer"는 머리 문장·단계·마무리를 줄로 이은 글이며, "style": True와 "opening"·"points"·"closing" 부품이 더해진다
     (insufficient면 points·closing은 비우고 opening 한 문장만 — opening이 비어 있으면 짧은 고정 문구). 끔이면 위 계약 그대로(키도 늘지 않는다).
@@ -747,7 +747,7 @@ def ask(question: str, chunks: list[Chunk], prev: dict | None, s: Settings, ops_
     layout = style and bool(s.pure_layout)
     messages = build_messages(question, chunks, prev, system_for(s) + ("\n\n" + ASK_ONLY_NOTE if (s.ask_only and layout) else "")   # ASK_ONLY(2026-10-21): 묻는 것에만 답하고 묶음은 3개 이내
                               + ("\n\n" + RULE_OPS_NOTE if ops_note else "")   # ops_note: PURE_RULE로 문서 길에 온 질문에만
-                              + ("\n\n" + PARTIAL_NOTE if s.pure_retry else "") + ("\n\n" + RETRY_NOTE if retry_note else "") + ("\n\n" + fixed_note if fixed_note else ""),   # PURE_RETRY=1: 첫 호출에 한 줄, 넓게 다시 본 호출에 한 줄 더
+                              + ("\n\n" + PARTIAL_NOTE if s.pure_retry else "") + ("\n\n" + RETRY_NOTE if retry_note else "") + ("\n\n" + fixed_note if fixed_note else "") + ("\n\n" + live_note if live_note else ""),   # PURE_RETRY=1: 첫 호출에 한 줄, 넓게 다시 본 호출에 한 줄 더
                               history=history)
     sent = sum(len(m["content"]) for m in messages)
     t0 = time.perf_counter()

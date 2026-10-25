@@ -31,9 +31,19 @@ export interface WorkRecord {
   revisions: Revision[]; confirmedAt?: string; aiFields?: string[];
 }
 export interface SimpleRecord {
-  no: string; alertId: string; machine: MachineId; kind: 'alarm' | 'cause'; state: 'open' | 'confirmed'; action: string; parts: { item: string; qty: number }[];
+  no: string; alertId: string; machine: MachineId; kind: 'alarm' | 'cause' | 'after'; state: 'open' | 'confirmed'; action: string; parts: { item: string; qty: number }[];
   lock: boolean[]; memo: string; by?: string; savedBy?: string; revisions: Revision[]; code: string;
+  // 선조치 기록 (kind 'after', FR-MNT-05-16~22): 알람 없이 먼저 한 일을 지난 시각으로. alertId·code는 비움
+  stopKey?: string; start?: string; end?: string; urgent?: string; urgentText?: string;
+  lockDone?: boolean; lockSkip?: string; checkedBy?: string; checkedAt?: string;
 }
+// 급했던 이유 (논리 ERD 6.55 [가상])
+export const URGENT: [string, string][] = [['SAFETY', '안전 위험'], ['SPREAD', '고장 번짐 막기'], ['QUALITY', '품질 이상'], ['OTHER', '그 밖']];
+// 기록 없는 정지 (FR-MNT-05-23): 끝난 정지 구간 중 5분 이상 · 알람 없음 · 사유가 비었거나 고장(F) — 키 = 설비|시작|끝
+export interface Downtime { equipment_id: string; state_code: string; start_at: string; end_at: string | null; minutes: number; reason_suggested_code: string | null; alarm_event_id: number | null }
+export const stopKeyOf = (d: Downtime) => `${d.equipment_id}|${d.start_at}|${d.end_at}`;
+export const isUnrecordedStop = (d: Downtime) => !!d.end_at && d.minutes >= 5 && d.alarm_event_id == null && (d.state_code === 'IDLE' || d.state_code === 'DOWN')
+  && (!d.reason_suggested_code || d.reason_suggested_code.startsWith('F'));
 // SCR-14 정지 구간의 사유 입력 (구간 = 서버 /api/downtimes, 키 = 설비|시작 시각)
 export interface StopReason { reason: string; by?: string; confirmed?: boolean; confirmedBy?: string }
 
