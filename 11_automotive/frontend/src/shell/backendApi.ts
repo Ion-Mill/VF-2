@@ -24,13 +24,16 @@ type J = Record<string, any>;
 // ---------------- 로그인 ----------------
 let session: { userId: string; token: string } | null = null;
 
-export async function backendLogin(userId: string, password: string): Promise<void> {
+/** 로그인 응답 (API-AUTH-01): 화면이 이걸로 로그인 사용자를 만든다 — 직원 관리에서 새로 만든 직원은 화면의 박힌 목록(USERS)에 없다 (2026-10-25) */
+export interface LoginOut { user_id: string; user_name: string; role_code: string; process_codes?: string[]; shift_type?: string | null }
+export async function backendLogin(userId: string, password: string): Promise<LoginOut> {
   const r = await fetch(BASE + '/api/auth/login', { method: 'POST', cache: 'no-store', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user_id: userId, password }) })
     .catch(() => { throw new BackendErr('CONNECTION', '백엔드 서버에 연결하지 못했습니다'); });
   const j = await r.json().catch(() => ({}));
   if (!r.ok || typeof j.access_token !== 'string') throw new BackendErr(j.code ?? 'UNAUTHORIZED', j.message ?? '아이디 또는 비밀번호가 맞지 않습니다', r.status);
-  session = { userId, token: j.access_token };
+  session = { userId: j.user_id ?? userId, token: j.access_token };
   resetDerived();
+  return j as LoginOut;
 }
 export function backendLogout() { session = null; resetDerived(); }
 /** 이 사용자의 화면 로그인 토큰 (이브 채팅이 같이 쓴다, assistantApi.ts) */
@@ -49,9 +52,14 @@ async function call(method: string, path: string, body?: unknown): Promise<any> 
     throw new BackendErr('CONNECTION', '백엔드 서버에 연결하지 못했습니다');
   }
   const j = await r.json().catch(() => ({ code: 'SERVER', message: '응답을 읽지 못했습니다' }));
+  if (r.status === 401) {   // 토큰이 끝났거나 사용 중지·역할 바뀜 (직원 관리, 2026-10-25) → App이 로그인 화면으로
+    session = null;
+    if (typeof window !== 'undefined') window.dispatchEvent(new Event(UNAUTHORIZED_EVENT));
+  }
   if (!r.ok) throw new BackendErr(j.code ?? 'SERVER', j.message ?? '서버 오류', r.status);
   return j;
 }
+export const UNAUTHORIZED_EVENT = 'mom-unauthorized';
 const get = (path: string) => call('GET', path);
 const post = (path: string, body: unknown = {}) => call('POST', path, body);
 const qs = (o: Record<string, string | number | boolean | null | undefined>) =>
@@ -510,7 +518,10 @@ const GET: [RegExp, Handler][] = [
   [/^maint\/pm-schedule$/, () => pmSchedule()],
   [/^internal-docs$/, () => internalDocs()],
   [/^internal-docs\/([^/]+)$/, (_q, _b, p) => internalDoc(decodeURIComponent(p[1]))],
-  [/^users$/, async () => ({ users: [] })],
+  // 직원 (API-USR, 2026-10-25): 권한은 토큰으로 보므로 role 은 안 보낸다. 담당 공정이 없으면 "" 대신 null (화면은 filter(Boolean)으로 거른다)
+  [/^users$/, () => get('users')],
+  [/^staff$/, (q) => get(`staff?${qs({ period: q.get('period'), include_inactive: q.get('include_inactive') })}`)],
+  [/^staff\/([^/]+)\/activity$/, (q, _b, p) => get(`staff/${p[1]}/activity?${qs({ period: q.get('period'), size: q.get('size'), page: q.get('page') })}`)],
   // 로트·품질
   [/^lots$/, (q) => lots(q)],
   [/^inspection\/results$/, (q) => inspection(q)],
@@ -541,6 +552,10 @@ const POST: [RegExp, Handler][] = [
   [/^inventory\/txns$/, (_q, b) => inventoryTxn(b)],
   [/^shipments$/, (_q, b) => shipmentCreate(b)],
   [/^settings$/, (_q, b) => settingsSave(b)],
+  // 직원 관리 (API-USR-03~05): 배치 바꾸기 · 직원 추가 · 정보 고치기(이름·역할·사용 중지/다시 사용·비밀번호). 화면은 POST 하나로 부르고 여기서 PATCH로
+  [/^staff\/assignments$/, (_q, b) => call('PATCH', 'staff/assignments', { changes: b.changes, reason: b.reason })],
+  [/^staff$/, (_q, b) => post('staff', b)],
+  [/^staff\/([^/]+)$/, (_q, b, p) => call('PATCH', `staff/${p[1]}`, b)],
   // 비서가 다듬은 문장 (2026-10-24): 백엔드가 시연 서버의 llm_compose에 묻는다 (기다리지 않음). 없거나 실패면 준비 안 됨 → 화면은 기본 문장
   [/^assist\/([a-z-]+)$/, (_q, b, p) => post(`assist/${p[1]}`, b).catch(() => ({ ready: false }))],
 ];
