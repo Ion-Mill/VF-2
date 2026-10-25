@@ -30,7 +30,7 @@ from backend import voice_service as VOICE
 from backend.voice.pipeline import VoiceError
 from backend.chat_mapping import UnknownStatus, role_gate, to_backend
 from backend.llm import external as EXT
-from backend.rag.chunker import CorpusError, load_corpus
+from backend.rag.chunker import CorpusError, corpus_source, load_corpus
 from backend.repositories import backend_tools as BT
 from backend.safety import fixed_block as FB
 from backend.services.answer import answer
@@ -265,7 +265,7 @@ app.include_router(VOICE.router, dependencies=[Depends(service_key)])    # POST 
 @app.get("/health", dependencies=[Depends(service_key)])
 def health() -> dict:
     try:
-        corpus = {"status": "ok", "chunks": len(load_corpus())}
+        corpus = {"status": "ok", "chunks": len(load_corpus()), "docs": corpus_source()}
     except CorpusError:
         corpus = {"status": "error"}
     return {"status": "ok", "corpus": corpus, "provider": "claude" if _provider() else "local",

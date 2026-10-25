@@ -9,8 +9,7 @@ import re
 from collections import Counter
 from functools import lru_cache
 
-from backend.config import DOCS_DIR
-from backend.rag.chunker import Chunk, load_corpus
+from backend.rag.chunker import Chunk, glossary_text, load_corpus
 
 K1, B = 1.4, 0.75
 STOP = set("은 는 이 가 을 를 에 의 도 로 와 과 뭐 어떻게 무엇 해 해야 하나 하나요 돼 되나 뜨면 떠 있어 알려줘 알려 줘 좀".split())
@@ -33,7 +32,7 @@ def tokens(text: str) -> list[str]:
 @lru_cache(maxsize=1)
 def synonyms() -> dict[str, str]:
     """용어집 표의 '쓰지 않는 말'·'영어' → '표준어'."""
-    text = (DOCS_DIR / "00_용어집.md").read_text(encoding="utf-8")
+    text = glossary_text()      # 로컬 파일 또는 (DOCS_SOURCE=db) 공용 DB 조각 — chunker.glossary_text
     syn = {}
     header = None
     for line in text.splitlines():

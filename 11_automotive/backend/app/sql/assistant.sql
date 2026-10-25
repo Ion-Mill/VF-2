@@ -143,3 +143,13 @@ WITH RECURSIVE t AS (
      WHERE c.user_id = :user_id AND t.depth < CAST(:turns AS int)
 )
 SELECT chat_id, asked_at, question, answer, status FROM t ORDER BY depth;
+
+-- 비서 서비스가 시작할 때 한 번 읽는 사내 문서 (2026-10-25, 비서 DOCS_SOURCE=db). 현행 개정의 조각만, 읽기 전용 계정으로
+-- 문서 목록: 번호·이름·현행 개정·개정일 (비서의 조각 메타데이터 "Rev.N (날짜)"를 만드는 재료)
+-- name: doc_corpus_docs
+SELECT doc_no, doc_name, current_rev, rev_date FROM internal_doc ORDER BY doc_no;
+
+-- name: doc_corpus_chunks
+SELECT c.doc_no, c.doc_rev, c.section, c.chunk_text, c.chunk_id
+  FROM doc_chunk c JOIN internal_doc d ON d.doc_no = c.doc_no AND c.doc_rev = d.current_rev
+ ORDER BY c.doc_no, c.chunk_id;
