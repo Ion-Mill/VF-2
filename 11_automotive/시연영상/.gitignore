@@ -1,0 +1,8 @@
+# 촬영·편집 중간 산출물 (용량이 큼) — 최종 영상(시연영상_v*.mp4)만 필요하면 직접 add
+work/
+.venv/
+node_modules/
+
+__pycache__/
+로컬DB/run/
+*.mp4

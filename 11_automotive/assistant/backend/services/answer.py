@@ -3625,13 +3625,14 @@ def report_status_answer_v33(base: dict, role: str, question: str, p: dict) -> d
 # 지금 값은 SENSOR_LIVE=1일 때 시연 서버 값으로 답하고, 못 읽으면 "못 읽었다"고 안내한다. 지난 병목·이동 기록은 읽는 곳이 없어 안내만 한다.
 # 뜻·원인·조치·판단 규칙 질문("병목이 뭐야?", "병목은 어떻게 판단해?")은 건드리지 않는다 — 문서 길이 맞게 답한다.
 BN_WORD_V35 = re.compile(r"병목")
-BN_STUCK_V35 = re.compile(r"막(?:혀|히는|힌)")
-BN_STUCK_PLACE_V35 = re.compile(r"라인|공정")
+BN_SYN_V37 = re.compile(r"(?:제일|가장)\s*느[린려]|속도를?\s*정하는|속도\s*정하는")      # 병목 낱말 없이 같은 뜻으로 묻는 말 ("지금 어느 공정이 제일 느려?", "라인 속도를 정하는 공정이 어디야?")
+BN_STUCK_V35 = re.compile(r"막(?:혀|히|힌|혔)")
+BN_STUCK_PLACE_V35 = re.compile(r"라인|공정|제일|가장|지금|현재|설비")      # 병목 낱말 없이 "어디가 제일 막혀?"처럼 묻는 말의 문맥 (2026-10-25 말투별 시험)
 BN_NOW_V35 = re.compile(r"지금|현재|요즘|방금|아직|실시간")
 BN_WHERE_V35 = re.compile(r"어디|어느|어떤\s*공정|몇\s*번\s*공정|OP-\d{2}", re.I)
-BN_STATE_V35 = re.compile(r"언제부터|풀렸|풀린|해소|생겼|생겨|걸렸|걸려\s*있|사라졌")
-BN_DOC_HARD_V35 = re.compile(r"어떻게|방법|조치|해결|풀어|풀려면|풀지|판단|기준|규칙|왜|누가|누구|차이|달라|뜻|정의|설명|요약|종류|예방|줄이|막으려|언제\s*(?:떠|뜨|울려|나와)")
-BN_DOC_SOFT_V35 = re.compile(r"뭐야|뭔가요|뭔데|무엇|무슨|원인")      # 지금/현재 말이 함께 있으면 값 질문 ("지금 병목 원인이 뭐야?"), 없으면 뜻 질문
+BN_STATE_V35 = re.compile(r"언제부터|풀렸|풀린|해소|생겼|생겨|걸렸|걸려\s*있|사라졌|발생|생기|터졌|터진|터져|걸린|밀리|밀려|막히|막혀|막힌|막혔")
+BN_DOC_HARD_V35 = re.compile(r"어떻게|방법|조치|해결|풀어|풀려면|풀지|판단|기준|규칙|왜|누가|누구|차이|달라|뜻|정의|설명|요약|종류|예방|줄이|막으려|언제\s*(?:떠|뜨|울려|나와)|이란|란\s*[?？]|라는|라고")
+BN_DOC_SOFT_V35 = re.compile(r"뭐야|뭔가요|뭔데|무엇|무슨|원인|이유|까닭")      # 지금/현재 말이 함께 있으면 값 질문 ("지금 병목 원인이 뭐야?"), 없으면 뜻 질문
 BN_LOSS_V35 = re.compile(r"잃|몇\s*개|개수|갯수|수량")      # "손실" 낱말만으로는 걸지 않는다 ("병목은 속도 손실이야 고장 손실이야?"는 뜻 질문)
 BN_PAST_V35 = re.compile(r"어제|그제|엊그제|그저께|전날|지난|이전|예전|작년|며칠|\d+\s*월|\d+/\d+|야간|주간|몇\s*번|몇\s*차례|횟수|바뀌|바뀐|옮겨|옮긴|이동|기록|이력|내역|목록|변경|추이|추세|그래프|처음|마지막")
 BN_TODAY_V35 = re.compile(r"오늘|이번\s*(?:교대|주|달)|교대")      # 지금 말이 없으면 오늘 하루·교대 전체를 묻는 말 — 지난 값
@@ -3646,10 +3647,12 @@ BN_UNREAD_NOTE_V35 = ("확인 필요 — 지금 병목은 이 채팅이 시연 �
 def bottleneck_kind_v35(question: str, p: dict) -> str | None:
     """병목 값 질문의 갈래 — "now"(지금 병목), "past"(지난 병목·이동 기록), "loss"(병목으로 잃은 개수), 아니면 None (뜻·규칙 질문 포함, 문서 길).
     알람·로트·작업지시나 다른 운영 의도가 잡힌 질문은 그쪽 길이 먼저라 건드리지 않는다."""
-    if (p["intents"] and p["intents"] != ["alarm_count"]) or p["alarms"] or p.get("lot") or p.get("order"):   # "병목이 몇 번 바뀌었어?"의 "몇 번"이 알람 횟수로 잡히는 설정이 있다
+    named = bool(BN_WORD_V35.search(question)) or bool(BN_SYN_V37.search(question) and BN_STUCK_PLACE_V35.search(question) and (BN_WHERE_V35.search(question) or BN_NOW_V35.search(question)))
+    # 병목 낱말이 있으면 "생산이 밀리는 것 같은데 병목이 어디야?"처럼 다른 의도(생산·정지·설비 상태·알람 횟수)가 같이 잡혀도 물러나지 않는다 (지시문 방식 — 알아듣는 일은 Claude가 한다). 알람 번호·로트·작업지시는 그쪽 길이 먼저다
+    allowed = {"alarm_count", "production", "stops", "equipment_status"} if named else {"alarm_count"}   # "병목이 몇 번 바뀌었어?"의 "몇 번"이 알람 횟수로 잡히는 설정이 있다
+    if set(p["intents"]) - allowed or p["alarms"] or p.get("lot") or p.get("order"):
         return None
-    named = bool(BN_WORD_V35.search(question))
-    if not named and not (BN_STUCK_V35.search(question) and BN_STUCK_PLACE_V35.search(question) and BN_WHERE_V35.search(question)):
+    if not named and not (BN_STUCK_V35.search(question) and (BN_WHERE_V35.search(question) or BN_NOW_V35.search(question)) and BN_STUCK_PLACE_V35.search(question)):
         return None
     if BN_DOC_HARD_V35.search(question):
         return None
@@ -3658,7 +3661,7 @@ def bottleneck_kind_v35(question: str, p: dict) -> str | None:
     if BN_DOC_SOFT_V35.search(question) and not now and not past:
         return None
     loss = named and bool(BN_LOSS_V35.search(question))
-    if not (now or past or loss or BN_WHERE_V35.search(question) or BN_STATE_V35.search(question)):
+    if not (now or past or loss or BN_WHERE_V35.search(question) or BN_STATE_V35.search(question) or p.get("equipment")):   # 설비를 짚으면 "지금" 없이도 값 질문 ("VF2-01이 병목이야?")
         return None
     if loss:
         return "loss"
@@ -3671,12 +3674,35 @@ def _bn_since_text_v35(since: str | None, sim_at: str) -> str:
     return f"{since[11:16]}부터" if since[:10] == sim_at[:10] else f"{int(since[5:7])}/{int(since[8:10])} {since[11:16]}부터"
 
 
+BN_STATE_KO_V35 = {"RUN": "가공 중", "IDLE": "대기", "BLOCKED": "막힘", "SETUP": "셋업", "DOWN": "고장 정지", "MAINT": "계획 정비"}      # DOC-07 §3 상태 표의 이름
+
+
+def _bn_equipment_line_v35(row: dict, proc: str, sim_at: str) -> str:
+    """병목 공정에 속한 설비의 지금 상태 한 줄 — 시연 서버가 준 상태를 그대로 옮긴다 (원인에서 어느 설비일지 추정하지 않는다). 설비 정보가 없으면 빈 글."""
+    states = row.get("equipment_state") or {}
+    ids = sorted(e for e, pr in (row.get("equipment_process") or {}).items() if pr == proc and e in states)
+    parts = []
+    for e in ids:
+        s = states[e]
+        text = f"{e} {BN_STATE_KO_V35.get(s['last_state'], s['last_state'])}"
+        if s["last_state"] != "RUN":   # 가동 중이 아닌 설비만 알람 번호(열려 있으면)와 그 상태가 시작된 시각을 붙인다
+            extra = ([f"알람 {s['open_alarm_code']}"] if s.get("open_alarm_code") else []) + ([_bn_since_text_v35(s["since"], sim_at)] if s.get("since") else [])
+            text += f"({', '.join(extra)})" if extra else ""
+        parts.append(text)
+    return f"{proc} 설비: " + ", ".join(parts) + "." if parts else ""
+
+
+def _bn_unread_v37(base: dict) -> dict:
+    """지금 병목 값을 시연 서버에서 읽지 못했을 때의 고정 안내 (Claude 호출 없음)."""
+    return {**base, "status": "확인 필요", "mode": "규칙 (지금 병목 — 시연 서버를 읽지 못함, 고정 안내)", "conclusion": BN_UNREAD_NOTE_V35,
+            "blocks": [{"kind": "text", "text": BN_UNREAD_NOTE_V35}]}
+
+
 def bottleneck_now_answer_v35(base: dict, role: str, p: dict) -> dict:
     """지금 병목 공정·원인·시작 시각을 시연 서버 값으로 답한다 (Claude 호출 없음). 값을 못 읽으면 못 읽었다고 알린다."""
     r = T.bottleneck_now(role)
     if r is None:
-        return {**base, "status": "확인 필요", "mode": "규칙 (지금 병목 — 시연 서버를 읽지 못함, 고정 안내)", "conclusion": BN_UNREAD_NOTE_V35,
-                "blocks": [{"kind": "text", "text": BN_UNREAD_NOTE_V35}]}
+        return _bn_unread_v37(base)
     row, sim_at = r["rows"][0], r["as_of"]
     proc, cause = row["process_code"], row["cause_code"]
     where = f"{sim_at[:10]} {sim_at[11:16]} 기준, 시연 화면 시계"
@@ -3687,6 +3713,8 @@ def bottleneck_now_answer_v35(base: dict, role: str, p: dict) -> dict:
         text += " 따로 병목 원인으로 잡힌 것(공구 마모·OP-30 1대 가동·검사 강화)은 없어요." if "원인" in (p.get("raw") or "") else ""
     else:
         text = f"지금 병목은 {proc}이에요 ({where}). 병목 원인: {BN_CAUSE_KO_V35.get(cause, cause)}." + (f" {since} 이어지고 있어요." if since else "")
+    line = _bn_equipment_line_v35(row, proc, sim_at)
+    text += f" {line}" if line else ""
     eqs = list(p.get("equipment") or [])
     mine = row.get("equipment_process") or {}
     if len(eqs) == 1 and eqs[0] in mine:
@@ -3695,6 +3723,85 @@ def bottleneck_now_answer_v35(base: dict, role: str, p: dict) -> dict:
     ev = [_cite(c) for c in (_chunk("DOC-07", "7.3"),) if c]
     return {**base, **meta, "status": "답변", "mode": "규칙 (지금 병목 — 시연 서버 값, Claude 호출 없음)", "conclusion": text, "evidence": ev,
             "blocks": [{"kind": "text", "text": text}]}
+
+
+# 설비 상태 질문 (2026-10-25, 지시문 방식): "고장은 어디야?"·"지금 설비 상태"는 낱말표에 없어 문서 길로 가 "상태 기록이 없다"고 답했고, "지금 멈춰 있는 설비 있어?"는 설비를 되묻고
+# "어떤 설비가 멈췄어?"는 9월 정지 기록 "데이터 없음"을 냈다. 이런 질문에는 시연 서버의 지금 설비 상태 표를 Claude에게 재료로 함께 주고 지시문으로 그 값으로 답하게 한다 (값 읽기는 SENSOR_LIVE=1).
+# 감지는 느슨하다 — 말을 알아듣는 일은 Claude가 한다. 지시문이 "질문과 상관없으면 값을 무시"라고 한다. 값을 못 읽으면 아무것도 안 붙이고 예전 길 그대로다.
+EQS_EQUIP_V36 = re.compile(r"설비|기계|장비|라인|공정|호기|VF2-0[12]|SAW-01|MIL-01|WSH-01|CMM-01|OP-\d{2}", re.I)
+EQS_STATE_V36 = re.compile(r"상태|어때|어떠|괜찮|이상\s*없|돌아가|가동\s*중|돌고")
+EQS_FAIL_V36 = re.compile(r"고장|멈[춘춰췄]|정지|막[힌혔혀]|멎|서\s*있|다운|꺼진|꺼져")
+EQS_ASK_V36 = re.compile(r"어디|어느|어떤|있어|있나|있는지|있을까|알려|뭐|몇\s*대")
+EQS_DOC_V36 = re.compile(r"어떻게|방법|뜻|의미|기준|규칙|왜|누가|누구|차이|달라|다르|다른|비교|이란|절차|조치|해결|대처|원인|이유|구분|정의|설명|정비|점검|기한|수리|교체|PM|예방")
+EQS_PAST_V36 = re.compile(r"어제|그제|엊그제|지난|전날|이전|예전|작년|며칠|\d+\s*월|\d+/\d+|몇\s*번|몇\s*차례|횟수|이력|기록|내역|목록|통계|추이|야간|주간")
+EQS_TODAY_V36 = re.compile(r"오늘|이번\s*(?:교대|주|달)|교대")      # 지금 말이 없으면 하루·교대 전체를 묻는 말 — 지난 값
+
+
+def equipment_state_question_v36(question: str, p: dict) -> bool:
+    """지금 설비 상태·고장 난/멈춘/막힌 설비가 어디인지를 묻는 말인가. 알람 번호·로트·작업지시가 잡힌 질문, 정지·설비 상태 말고 다른 운영 의도가 잡힌 질문,
+    뜻·방법·원인·정비·기한 말과 지난 값(어제·몇 번·기록 …) 말이 든 질문은 아니다."""
+    if p["alarms"] or p.get("lot") or p.get("order") or set(p["intents"]) - {"equipment_status", "stops"}:
+        return False
+    if EQS_DOC_V36.search(question) or EQS_PAST_V36.search(question):
+        return False
+    if EQS_TODAY_V36.search(question) and not BN_NOW_V35.search(question):
+        return False
+    return bool((EQS_STATE_V36.search(question) and EQS_EQUIP_V36.search(question)) or (EQS_FAIL_V36.search(question) and EQS_ASK_V36.search(question)))
+
+
+EQS_WHY_V36 = "설비 상태 질문 — 시연 서버의 지금 설비 상태 값을 재료로 함께 준 문서 길 (지시문 방식)"
+EQS_RULES_V36 = ("[이 값 쓰는 법] 질문이 지금 설비가 어떤 상태인지, 고장 난·멈춘·막힌 설비가 어디인지를 묻는 말이면 위 값으로 답한다. 이 경우 사내 문서 조각에 답이 없어도 insufficient는 false다. "
+                 "값에 없는 설비·시각·원인은 말하지 않는다 (알람 번호의 뜻은 문서 조각에 있을 때만 말한다). 답의 첫 문장에 '시연 화면 시계 {clock} 기준'을 위 글자 그대로(연도 포함) 밝힌다. "
+                 "고장 정지·막힘 설비를 먼저 말하고, 나머지 설비는 값에 적힌 상태별로 한 줄로 묶는다 (대기인 설비를 '가동 중'이라고 부르지 않고, 값에 적힌 상태 이름 그대로 쓴다). 지난 기록·횟수·이력은 이 값에 없으므로 그런 말이면 이 채팅이 아직 읽지 못한다고 말한다. "
+                 "질문이 이 값과 상관없는 문서 질문이면 이 값을 쓰지 않는다.")
+
+
+def equipment_states_note_v36(r: dict) -> str:
+    """시연 서버의 설비별 지금 상태 → Claude 시스템 지시 끝에 붙일 글 (값 표 + 쓰는 법). 가동 중이 아닌 설비만 시작 시각과 열린 알람을 붙인다."""
+    sim_at = r["as_of"]
+    lines = _eq_state_lines_v37(r["rows"], sim_at)
+    clock =f"{sim_at[:10]} {sim_at[11:16]}"      # 연도까지 글자 그대로 — Claude가 연도를 틀리게 쓴 적이 있다 (2026 → 2025, 2026-10-25 시험)
+    return f"[지금 설비 상태 — 시연 서버가 준 값, {clock} 기준 시연 화면 시계]\n" + "\n".join(lines) + "\n" + EQS_RULES_V36.replace("{clock}", clock)
+
+
+# 병목 질문 지시문 방식 (2026-10-25, A안): 지금 값 질문은 낱말 규칙이 문장을 만들지 않고 시연 서버의 병목 값 + 설비 상태를 Claude에게 재료로 주고 지시문으로 그 값으로 답하게 한다.
+# 말투를 알아듣는 일은 Claude가 한다. 지난 병목·잃은 개수·시연 서버를 못 읽음은 지금처럼 코드가 고정 안내로 가로챈다 (값이 없는 질문을 Claude가 지어내지 않게).
+# 외부 Claude 요청이 아니면(PURE_EXTERNAL 꺼짐·로컬 요청) 예전 프로그램 문장(bottleneck_now_answer_v35) 그대로다.
+BN_WHY_V37 = "병목 질문 — 시연 서버의 지금 병목 값을 재료로 함께 준 문서 길 (지시문 방식)"
+BN_RULES_V37 = ("[이 값 쓰는 법] 질문이 지금 병목이 어느 공정인지·무엇 때문인지·언제부터인지·풀렸는지·어느 설비가 원인인지를 묻는 말이면 위 값으로 답한다. 이 경우 사내 문서 조각에 답이 없어도 insufficient는 false다. "
+                "값에 없는 공정·설비·시각·원인은 말하지 않는다. 병목 원인이 '기준 병목'이면 병목 판단 규칙에 맞는 다른 공정이 없어서 기준 병목(OP-30)으로 표시된 것이라고 말한다. "
+                "병목 공정에 속한 설비의 상태를 함께 말하되, 상태는 값에 적힌 이름 그대로 쓴다 (대기인 설비를 '가동 중'이라고 부르지 않는다). 질문이 특정 설비를 짚으면 그 설비의 공정이 지금 병목 공정인지 값으로 답한다. "
+                "'○○가 병목이야?'처럼 그 설비가 병목인지 물으면 첫머리를 늘 같은 틀로 시작한다: 그 설비의 공정이 병목 공정이면 '네, ○○ 설비는 병목 공정 OP-xx에 속해요', 아니면 '아니요, ○○ 설비는 OP-yy 공정이고 지금 병목은 OP-xx예요'. 설비 자체는 병목이 아니라는 식으로 반대로 시작하지 않는다. "
+                "답의 첫 문장에 '시연 화면 시계 {clock} 기준'을 위 글자 그대로(연도 포함) 밝힌다. 어제·지난 기록·바뀐 횟수·이동 기록은 이 값에 없으므로 그런 말이면 이 채팅이 아직 읽지 못한다고 말한다. "
+                "질문이 이 값과 상관없는 문서 질문이면 이 값을 쓰지 않는다.")
+
+
+def _eq_state_lines_v37(states: list[dict], sim_at: str) -> list[str]:
+    """설비별 지금 상태 줄들 — 가동 중이 아닌 설비만 상태가 시작된 시각과 열린 알람을 붙인다 (설비 상태 질문과 병목 질문이 같이 쓴다)."""
+    lines = []
+    for s in states:
+        st = s["last_state"]
+        text = f"- {s['equipment_id']} ({s.get('process_code') or '공정 모름'}): {BN_STATE_KO_V35.get(st, st)}"
+        if st != "RUN":
+            extra = ([_bn_since_text_v35(s["since"], sim_at)] if s.get("since") else []) + ([f"열린 알람 {s['open_alarm_code']}"] if s.get("open_alarm_code") else [])
+            text += f" ({', '.join(extra)})" if extra else ""
+        lines.append(text)
+    return lines
+
+
+def bottleneck_note_v37(r: dict) -> str:
+    """시연 서버의 지금 병목 값 → Claude 시스템 지시 끝에 붙일 글 (병목 공정·원인·시작 + 설비 상태 + 쓰는 법)."""
+    row, sim_at = r["rows"][0], r["as_of"]
+    clock = f"{sim_at[:10]} {sim_at[11:16]}"      # 연도까지 글자 그대로 (Claude가 연도를 틀리게 쓴 적이 있다)
+    cause = row["cause_code"]
+    since = _bn_since_text_v35(row.get("since_at"), sim_at)
+    states = sorted((row.get("equipment_state") or {}).values(), key=lambda x: x["equipment_id"])
+    head = [f"[지금 병목 — 시연 서버가 준 값, {clock} 기준 시연 화면 시계]", f"- 병목 공정: {row['process_code']}", f"- 병목 원인: {BN_CAUSE_KO_V35.get(cause, cause)}"]
+    if since:
+        head.append(f"- 병목 기록이 이 상태가 된 시각: {since}")
+    if states:
+        head += ["[설비 상태]"] + _eq_state_lines_v37(states, sim_at)
+    return "\n".join(head) + "\n" + BN_RULES_V37.replace("{clock}", clock)
 
 
 KPI_DATED_WORDS_V21 = re.compile(r"OEE|가동률|성능|양품|지표|효율|KPI", re.I)
@@ -4014,7 +4121,7 @@ def _pure_layout_blocks_v20(sections: list[dict], written: bool) -> list[dict]:
     return blocks
 
 
-def _pure_answer_v19(question: str, p: dict, base: dict, s, memo: dict, prev: dict | None, why: str, history: list | None = None) -> dict:
+def _pure_answer_v19(question: str, p: dict, base: dict, s, memo: dict, prev: dict | None, why: str, history: list | None = None, live_note: str | None = None) -> dict:
     """순수 외부 LLM 길의 답. 외부 호출이 실패하면 ExternalLlmFailure가 그대로 올라가 앱 입구가 EXTERNAL_LLM_UNAVAILABLE로 끝낸다 (자동 대체 없음)."""
     k = s.pure_topk
     style = bool(s.pure_style)   # 말투 바꾸기 (PURE_STYLE=1): 지시문·스키마·응답 조립만 다르다. 끄면 아래 모든 줄이 지금과 같다
@@ -4040,7 +4147,7 @@ def _pure_answer_v19(question: str, p: dict, base: dict, s, memo: dict, prev: di
         SL.step("2 질문 분류", 사용=False, 까닭="순수 외부 LLM — 분류 LLM을 부르지 않음")
         SL.step("3 찾기", 길="순수 외부 LLM", 질문=question, 방식="낱말 검색(BM25) — 원래 질문 그대로, 문턱·문지기·순위 바꾸기 없음", 요청조각수=k,
                 조각수=len(chunks), 상위=[{**_sl_chunk(c), "점수": round(sc, 2), "글자수": len(c.text), **({"확장으로 더해짐": True} if s.pure_expand and sc == 0.0 else {}), **({"안전 문서 통째로 더해짐": True} if sc == PURE.SAFETY_SCORE else {})} for sc, c in hits])
-    if not chunks:   # 찾은 조각이 하나도 없으면 Claude를 부르지 않는다 — 호출 0번이라 화면이 "외부 LLM 호출 없음"이라고 사실대로 밝힌다
+    if not chunks and not live_note:   # 찾은 조각이 하나도 없으면 Claude를 부르지 않는다 (설비 상태 값 재료가 있으면 부른다) — 호출 0번이라 화면이 "외부 LLM 호출 없음"이라고 사실대로 밝힌다
         if safety_guard:   # ② 안전 질문은 검색이 비어도 "문서에 없다"고 하지 않는다
             return _pure_unsure_v19(question, hits, base, mode, retrieval, traces, style)
         if SL.on():
@@ -4048,9 +4155,10 @@ def _pure_answer_v19(question: str, p: dict, base: dict, s, memo: dict, prev: di
         return {**base, "status": "문서에 없음", "mode": f"{mode} — 검색 결과가 없어 Claude를 부르지 않음", "retrieval": retrieval,
                 "llm_trace": traces, "conclusion": PURE_NO_DOC_CHAT_V19 if style else PURE_NO_DOC_V19}
     fixed_keys = [] if compare2 else (FB.select(question) if getattr(s, "fixed_block", False) else [])   # FIXED_BLOCK: 이 질문에 맞는 고정 서식 (0~2개). 비교 2번은 붙이지 않는다
-    got = PURE.ask(question, chunks, prev, s, ops_note=(why in (PURE.RULE_WHY, PURE.FAULT_WHY)), history=history, **({"fixed_note": FB.reference_note(fixed_keys)} if fixed_keys else {}))
+    got = PURE.ask(question, chunks, prev, s, ops_note=(why in (PURE.RULE_WHY, PURE.FAULT_WHY)), history=history, **({"fixed_note": FB.reference_note(fixed_keys)} if fixed_keys else {}),
+                   **({"live_note": live_note} if live_note else {}))
     traces.append({"job": PURE.JOB, "used": True, "reason": None, "tries": 1, "ms": got["ms"]})
-    if got["insufficient"] and s.pure_retry and not safety_guard and not compare2 and why not in (PURE.RULE_WHY, PURE.FAULT_WHY):   # PURE_RETRY=1: 첫 호출이 "조각에 답이 없다"고 했다 — 정답 조각이 상위 조각 밖(검색 9~50위)이라 못 본 것일 수 있어 더 넓게 한 번 다시 묻는다. 안전 질문·규칙 질문·비교 2번 경로는 제외
+    if got["insufficient"] and s.pure_retry and not safety_guard and not compare2 and not live_note and why not in (PURE.RULE_WHY, PURE.FAULT_WHY):   # PURE_RETRY=1: 첫 호출이 "조각에 답이 없다"고 했다 — 정답 조각이 상위 조각 밖(검색 9~50위)이라 못 본 것일 수 있어 더 넓게 한 번 다시 묻는다. 안전 질문·규칙 질문·비교 2번 경로는 제외
         wide_hits = PURE.context(question, s.pure_retry_topk, s)
         wide_chunks = [c for _, c in wide_hits]
         have = {c.chunk_id for c in chunks}
@@ -4058,7 +4166,8 @@ def _pure_answer_v19(question: str, p: dict, base: dict, s, memo: dict, prev: di
             ext = EXT.current()
             failed_before = len(ext.failures) if ext is not None else 0
             try:
-                got2 = PURE.ask(question, wide_chunks, prev, s, retry_note=True, history=history, **({"fixed_note": FB.reference_note(fixed_keys)} if fixed_keys else {}))
+                got2 = PURE.ask(question, wide_chunks, prev, s, retry_note=True, history=history, **({"fixed_note": FB.reference_note(fixed_keys)} if fixed_keys else {}),
+                                **({"live_note": live_note} if live_note else {}))
             except EXT.ExternalLlmFailure:   # 재시도는 오류를 새로 만들지 않는다 — 첫 결과("문서에 없음")를 그대로 낸다 (실패 기록도 이 호출 몫만 지운다)
                 got2 = None
                 if ext is not None:
@@ -4666,7 +4775,26 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
             return {**base, "status": "확인 필요", "mode": "규칙", "conclusion": SPEED_LOSS_NOTE_V24}
         if bn_kind == "past":
             return {**base, "status": "확인 필요", "mode": "규칙", "conclusion": BN_PAST_NOTE_V35}
-        return bottleneck_now_answer_v35(base, role, p)
+        if PURE.enabled(s):   # 지금 값: 지시문 방식 (2026-10-25, A안) — 시연 서버 값을 Claude에게 재료로 주고 말투는 Claude가 알아듣는다. 값을 못 읽으면 고정 안내(Claude 호출 없음)
+            r_bn = T.bottleneck_now(role)
+            if r_bn is None:
+                return _bn_unread_v37(base)
+            if SL.on():
+                SL.step("1 규칙 판정", 결과="지금 병목 질문 — 시연 서버 값 재료를 붙여 순수 길로 (지시문 방식)")
+            out = _pure_answer_v19(question, p, base, s, memo, prev, BN_WHY_V37, history, live_note=bottleneck_note_v37(r_bn))
+            if out.get("status") == "답변":
+                out = {**out, "current_data": [{k: r_bn[k] for k in ("tool", "range", "as_of", "label", "is_synthetic")}], "data_label": DATA_LABEL, "is_synthetic": True}
+            return out
+        return bottleneck_now_answer_v35(base, role, p)   # 외부 Claude 요청이 아니면 예전 프로그램 문장
+    if PURE.enabled(s) and s.sensor_live and equipment_state_question_v36(question, p):   # 설비 상태 질문 (2026-10-25, 지시문 방식): 시연 서버의 지금 설비 상태를 Claude에게 재료로 함께 준다. 값을 못 읽으면 예전 길 그대로
+        r_states = T.equipment_states_now(role)
+        if r_states is not None:
+            if SL.on():
+                SL.step("1 규칙 판정", 결과="설비 상태 질문 — 시연 서버 값 재료를 붙여 순수 길로", 설비수=len(r_states["rows"]))
+            out = _pure_answer_v19(question, p, base, s, memo, prev, EQS_WHY_V36, history, live_note=equipment_states_note_v36(r_states))
+            if out.get("status") == "답변":
+                out = {**out, "current_data": [{k: r_states[k] for k in ("tool", "range", "as_of", "label", "is_synthetic")}], "data_label": DATA_LABEL, "is_synthetic": True}
+            return out
     if speed_loss_unread_v24(question, p):   # 속도 손실 개수 (2026-10-21): "문서에 없음" 대신 못 읽는다는 사실과 볼 곳을 알린다 (Claude 호출 없음)
         if SL.on():
             SL.step("1 규칙 판정", 결과="속도 손실 개수 질문 — 채팅이 아직 못 읽음, 규칙이 안내 (Claude 호출 없음)")
