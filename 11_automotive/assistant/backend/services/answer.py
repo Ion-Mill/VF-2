@@ -3671,6 +3671,24 @@ def _bn_since_text_v35(since: str | None, sim_at: str) -> str:
     return f"{since[11:16]}부터" if since[:10] == sim_at[:10] else f"{int(since[5:7])}/{int(since[8:10])} {since[11:16]}부터"
 
 
+BN_STATE_KO_V35 = {"RUN": "가공 중", "IDLE": "대기", "BLOCKED": "막힘", "SETUP": "셋업", "DOWN": "고장 정지", "MAINT": "계획 정비"}      # DOC-07 §3 상태 표의 이름
+
+
+def _bn_equipment_line_v35(row: dict, proc: str, sim_at: str) -> str:
+    """병목 공정에 속한 설비의 지금 상태 한 줄 — 시연 서버가 준 상태를 그대로 옮긴다 (원인에서 어느 설비일지 추정하지 않는다). 설비 정보가 없으면 빈 글."""
+    states = row.get("equipment_state") or {}
+    ids = sorted(e for e, pr in (row.get("equipment_process") or {}).items() if pr == proc and e in states)
+    parts = []
+    for e in ids:
+        s = states[e]
+        text = f"{e} {BN_STATE_KO_V35.get(s['last_state'], s['last_state'])}"
+        if s["last_state"] != "RUN":   # 가동 중이 아닌 설비만 알람 번호(열려 있으면)와 그 상태가 시작된 시각을 붙인다
+            extra = ([f"알람 {s['open_alarm_code']}"] if s.get("open_alarm_code") else []) + ([_bn_since_text_v35(s["since"], sim_at)] if s.get("since") else [])
+            text += f"({', '.join(extra)})" if extra else ""
+        parts.append(text)
+    return f"{proc} 설비: " + ", ".join(parts) + "." if parts else ""
+
+
 def bottleneck_now_answer_v35(base: dict, role: str, p: dict) -> dict:
     """지금 병목 공정·원인·시작 시각을 시연 서버 값으로 답한다 (Claude 호출 없음). 값을 못 읽으면 못 읽었다고 알린다."""
     r = T.bottleneck_now(role)
@@ -3687,6 +3705,8 @@ def bottleneck_now_answer_v35(base: dict, role: str, p: dict) -> dict:
         text += " 따로 병목 원인으로 잡힌 것(공구 마모·OP-30 1대 가동·검사 강화)은 없어요." if "원인" in (p.get("raw") or "") else ""
     else:
         text = f"지금 병목은 {proc}이에요 ({where}). 병목 원인: {BN_CAUSE_KO_V35.get(cause, cause)}." + (f" {since} 이어지고 있어요." if since else "")
+    line = _bn_equipment_line_v35(row, proc, sim_at)
+    text += f" {line}" if line else ""
     eqs = list(p.get("equipment") or [])
     mine = row.get("equipment_process") or {}
     if len(eqs) == 1 and eqs[0] in mine:
