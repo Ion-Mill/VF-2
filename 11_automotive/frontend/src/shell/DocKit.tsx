@@ -34,10 +34,11 @@ export function printDoc() {
   }
   window.print();
 }
-export function DocHead({ title, sub, right }: { title: ReactNode; sub?: ReactNode; right?: ReactNode }) {
+// printOnly: 제목 · 설명이 화면 머리(PageHead)와 겹치는 문서 — 화면에선 숨기고 인쇄(미리보기)에서만 보임. right는 늘 보임
+export function DocHead({ title, sub, right, printOnly }: { title: ReactNode; sub?: ReactNode; right?: ReactNode; printOnly?: boolean }) {
   return (
     <div className="flex flex-wrap items-end gap-x-3 gap-y-2 pt-2">
-      <div className="min-w-0"><h2 className="text-[26px] font-bold leading-tight tracking-[-.02em]">{title}</h2>
+      <div className={`min-w-0 ${printOnly ? 'hidden print:block' : ''}`}><h2 className="text-[26px] font-bold leading-tight tracking-[-.02em]">{title}</h2>
         {sub && <div className="mt-0.5 text-small text-ink-2">{sub}</div>}</div>
       {right && <div className="ml-auto flex flex-wrap items-center gap-2">{right}</div>}
     </div>
