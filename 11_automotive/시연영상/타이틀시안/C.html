@@ -1,0 +1,23 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><link rel="stylesheet" href="common.css">
+<style>
+  .stage { background: #f5f8fe; }
+  .bg { position: absolute; inset: 0; background: url('bg3d.png') center top / cover no-repeat; transform: translateY(210px) scale(1.0); transform-origin: top center; filter: saturate(1.05); }
+  .sky { position: absolute; inset: 0; background: linear-gradient(180deg, #f5f8fe 0%, #f5f8fe 34%, rgba(245,248,254,.88) 46%, rgba(245,248,254,0) 66%); }
+  .floor { position: absolute; left: 0; right: 0; bottom: 0; height: 190px; background: linear-gradient(180deg, rgba(245,248,254,0), #f5f8fe 92%); }
+  .center { position: absolute; left: 0; right: 0; top: 118px; display: flex; flex-direction: column; align-items: center; }
+  .title { font-size: 56px; margin-top: 40px; }
+  .rule { margin-top: 34px; }
+</style></head><body><div class="stage">
+  <div class="bg"></div><div class="sky"></div><div class="floor"></div>
+  <div class="center">
+    <svg class="logo" height="108" width="387" viewBox="0 0 215 60" style="overflow:visible">
+      <text x="0" y="46" font-weight="800" font-size="46" fill="#1c232b">e</text>
+      <path d="M30 14l11 30h8l11-30" fill="none" stroke="#1c232b" stroke-width="8" stroke-linejoin="round"/>
+      <text x="62" y="46" font-weight="800" font-size="46" fill="#1c232b">e</text>
+      <rect x="94" y="14" width="3.5" height="32" fill="#5b8cf0"/>
+      <text x="105" y="46" font-weight="300" font-size="40" letter-spacing="3" fill="#5b6570">TECH</text>
+    </svg>
+    <div class="title">AI 비서 기반 제조운영관리 플랫폼</div>
+    <div class="rule"></div>
+  </div>
+</div></body></html>

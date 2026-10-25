@@ -1,0 +1,137 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>이브 커서 시안 (얼굴 + 한 손)</title>
+<body style="margin:0;background:#cfd8e3;font:14px sans-serif">
+<canvas id="cv" width="512" height="512" style="display:none"></canvas>
+<pre id="log">렌더 중…</pre>
+<script type="importmap">{"imports":{"three":"/frontend/node_modules/three/build/three.module.js"}}</script>
+<script type="module">
+// 이브 3D 모델(frontend/src/components/robot3d.js)에서 몸통·오른팔을 숨기고 얼굴 + 왼손(팔 하나)만 그린다 (2026-10-23, 사용자 요청: 얼굴과 한 손만).
+import * as THREE from 'three';
+import { createRobot } from '/frontend/src/components/robot3d.js';
+
+const SIZE = 512, cv = document.getElementById('cv');
+const renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setSize(SIZE, SIZE, false); renderer.setClearColor(0x000000, 0);
+const scene = new THREE.Scene();
+scene.add(new THREE.HemisphereLight(0xffffff, 0xd8d2c4, 1.0));
+const key = new THREE.DirectionalLight(0xffffff, 2.2); key.position.set(4, 7, 5); scene.add(key);
+const fill = new THREE.DirectionalLight(0xfff4e6, 0.5); fill.position.set(-5, 3, -4); scene.add(fill);
+const R = createRobot(THREE, { bubble: false }); scene.add(R.root); R.setMode(0);
+const P = new URLSearchParams(location.search), q = (k, d) => +(P.get(k) ?? d);
+const cam = new THREE.PerspectiveCamera(30, 1, 0.05, 20);
+cam.position.set(q('lx', -0.05), q('cy', 0.68), q('cz', 1.25)); cam.lookAt(q('lx', -0.05), q('ly', 0.68), 0);
+const HIDE = new Set(['body', 'body_seam', 'shoulder_R', 'service_hatch', 'warning_sign', 'safety_zone', 'toolbox']);
+const shoulder = R.root.getObjectByName('shoulder_L');
+const POSES = {
+  idle:  { z: q('az', -2.9), x: q('ax', 0.0), px: q('hx', -0.225), py: q('hy', 0.64), s: q('hs', 0.9), head: 0 },
+  click: { z: q('cz2', -2.5), x: q('ax', 0.0), px: q('hx', -0.225), py: q('hy', 0.60), s: q('hs', 0.9), head: -0.012 },
+};
+let t = 0;
+function draw(pose, advance = true) {   // advance=false: 시간을 더 흘리지 않고 같은 프레임을 다시 그린다 (이브가 둥실거려서, 손 마스크가 어긋나지 않게)
+  if (advance) for (let i = 0; i < 40; i++) R.update(t += 1 / 30, 1 / 30, cam);
+  R.root.traverse((o) => { if (HIDE.has(o.name) || (o.material && o.material.name === 'status_glow')) o.visible = false; });
+  shoulder.position.set(pose.px, pose.py, q('hz', 0.05)); shoulder.rotation.set(pose.x, 0, pose.z);
+  shoulder.scale.set(pose.s * q('hw', 1.5), pose.s * q('hl', 0.9), pose.s * q('hd', 1.3));   // 굵기 · 길이 · 깊이
+  const hg = R.root.getObjectByName('head_group'); hg.position.y += pose.head;
+  scene.updateMatrixWorld(true); renderer.render(scene, cam); hg.position.y -= pose.head;
+}
+const tipOf = () => { const p = shoulder.localToWorld(new THREE.Vector3(0.035, -0.2, 0)).project(cam); return { x: (p.x * 0.5 + 0.5) * SIZE, y: (1 - (p.y * 0.5 + 0.5)) * SIZE }; };
+function outlined(src, px = 7, color = '#1d3a6b') {
+  const c = document.createElement('canvas'); c.width = c.height = SIZE; const x = c.getContext('2d');
+  const m = document.createElement('canvas'); m.width = m.height = SIZE; const y = m.getContext('2d');
+  y.drawImage(src, 0, 0); y.globalCompositeOperation = 'source-in'; y.fillStyle = color; y.fillRect(0, 0, SIZE, SIZE);
+  for (let a = 0; a < 24; a++) { const r = a / 24 * Math.PI * 2; x.drawImage(m, Math.cos(r) * px, Math.sin(r) * px); }
+  x.drawImage(src, 0, 0); return c;
+}
+function makeU(hand, tip, piv, reach = 0.6) {
+  const c = document.createElement('canvas'); c.width = c.height = SIZE; const x = c.getContext('2d'); x.drawImage(hand, 0, 0);
+  const d = x.getImageData(0, 0, SIZE, SIZE).data, L = Math.hypot(piv.x - tip.x, piv.y - tip.y), ux = (piv.x - tip.x) / L, uy = (piv.y - tip.y) / L;
+  let a0 = 1e9, a1 = -1e9;
+  for (let yy = 0; yy < SIZE; yy++) for (let xx = 0; xx < SIZE; xx++) if (d[(yy * SIZE + xx) * 4 + 3] > 8) { const a = (xx - tip.x) * ux + (yy - tip.y) * uy; a0 = Math.min(a0, a); a1 = Math.max(a1, a); }
+  return (xx, yy) => Math.max(0, ((xx - tip.x) * ux + (yy - tip.y) * uy) - a0) / (reach * (a1 - a0));
+}
+// 손끝 파랑 그라데이션: 손만 따로 그린 그림(마스크)에서 손끝 쪽 45%를 진한 파랑 → 연한 파랑으로 칠하고 끝으로 갈수록 진하게
+function tinted(full, hand, tip, piv) {
+  const c = document.createElement('canvas'); c.width = c.height = SIZE; const x = c.getContext('2d'); x.drawImage(full, 0, 0);
+  const h = document.createElement('canvas'); h.width = h.height = SIZE; const hx = h.getContext('2d'); hx.drawImage(hand, 0, 0);
+  const hd = hx.getImageData(0, 0, SIZE, SIZE).data, layer = x.createImageData(SIZE, SIZE), o = layer.data;
+  const uAt = makeU(hand, tip, piv);
+  const c0 = [84, 136, 240], c1 = [140, 184, 255];
+  for (let y = 0; y < SIZE; y++) for (let xx = 0; xx < SIZE; xx++) {
+    const i = (y * SIZE + xx) * 4, a = hd[i + 3]; if (a < 8) continue;
+    const u = uAt(xx, y); if (u >= 1) continue;
+    const k = Math.min(1, Math.pow(1 - u, 0.6) * 1.05);
+    o[i] = c0[0] + (c1[0] - c0[0]) * u; o[i + 1] = c0[1] + (c1[1] - c0[1]) * u; o[i + 2] = c0[2] + (c1[2] - c0[2]) * u; o[i + 3] = 255 * 0.60 * k * (a / 255);
+  }
+  const t = document.createElement('canvas'); t.width = t.height = SIZE; t.getContext('2d').putImageData(layer, 0, 0);
+  x.globalCompositeOperation = 'source-atop'; x.drawImage(t, 0, 0); return c;
+}
+const pivotPx = () => { const p = shoulder.localToWorld(new THREE.Vector3(0, 0, 0)).project(cam); return { x: (p.x * 0.5 + 0.5) * SIZE, y: (1 - (p.y * 0.5 + 0.5)) * SIZE }; };
+function outlinedHand(spr, hand, tip, piv, px = 7) {
+  const out = document.createElement('canvas'); out.width = out.height = SIZE; const o = out.getContext('2d');
+  const sil = (bmp, color) => { const m = document.createElement('canvas'); m.width = m.height = SIZE; const y = m.getContext('2d'); y.drawImage(bmp, 0, 0); y.globalCompositeOperation = 'source-in'; y.fillStyle = color; y.fillRect(0, 0, SIZE, SIZE); return m; };
+  const dil = (m) => { const d = document.createElement('canvas'); d.width = d.height = SIZE; const x = d.getContext('2d'); for (let a = 0; a < 24; a++) { const r = a / 24 * Math.PI * 2; x.drawImage(m, Math.cos(r) * px, Math.sin(r) * px); } x.drawImage(m, 0, 0); return d; };
+  o.drawImage(dil(sil(spr, '#1d3a6b')), 0, 0);                       // 1) 전체 외곽선 (남색)
+  const hm = dil(sil(hand, '#ffffff')), hx = hm.getContext('2d'), hd = hx.getImageData(0, 0, SIZE, SIZE), d = hd.data;   // 2) 손 외곽선 = 손끝 파랑 → 뿌리 남색
+  const uAt = makeU(hand, tip, piv), c0 = [84, 136, 240], c1 = [29, 58, 107];
+  for (let y = 0; y < SIZE; y++) for (let x = 0; x < SIZE; x++) {
+    const i = (y * SIZE + x) * 4; if (d[i + 3] < 8) continue;
+    const u = uAt(x, y);
+    if (u >= 1) { d[i + 3] = 0; continue; }
+    d[i] = c0[0] + (c1[0] - c0[0]) * u; d[i + 1] = c0[1] + (c1[1] - c0[1]) * u; d[i + 2] = c0[2] + (c1[2] - c0[2]) * u;
+  }
+  hx.putImageData(hd, 0, 0); o.drawImage(hm, 0, 0);
+  o.drawImage(spr, 0, 0); return out;                                // 3) 그림
+}
+const bbox = (c) => { const d = c.getContext('2d').getImageData(0, 0, SIZE, SIZE).data; let x0 = SIZE, y0 = SIZE, x1 = 0, y1 = 0;
+  for (let y = 0; y < SIZE; y++) for (let x = 0; x < SIZE; x++) if (d[(y * SIZE + x) * 4 + 3] > 8) { x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+  return { x0, y0, x1, y1 }; };
+const save = (name, body, type = 'image/png') => fetch('/save/' + encodeURIComponent(name), { method: 'POST', body, headers: { 'Content-Type': type } });
+const blob = (c) => new Promise((r) => c.toBlob(r, 'image/png'));
+
+// 1) 두 자세를 그린다 (외곽선 포함, 클릭 지점 기록)
+const raw = {}, hs = {};
+for (const k of ['idle', 'click']) {
+  draw(POSES[k]); hs[k] = tipOf(); const piv = pivotPx(); const full = await createImageBitmap(cv);
+  const hg = R.root.getObjectByName('head_group'); hg.visible = false; draw(POSES[k], false); hg.visible = true; const hand = await createImageBitmap(cv);   // 손만
+  raw[k] = outlinedHand(tinted(full, hand, hs[k], piv), hand, hs[k], piv);
+}
+// 2) 두 자세를 모두 담는 같은 네모로 자른다 (자세가 바뀌어도 크기·자리가 같게)
+const a = bbox(raw.idle), b = bbox(raw.click), PAD = 10;
+const x0 = Math.min(a.x0, b.x0) - PAD, y0 = Math.min(a.y0, b.y0) - PAD, x1 = Math.max(a.x1, b.x1) + PAD, y1 = Math.max(a.y1, b.y1) + PAD;
+const side = Math.max(x1 - x0, y1 - y0), cx = (x0 + x1) / 2, cy = (y0 + y1) / 2, sx = cx - side / 2, sy = cy - side / 2;
+const imgs = {}, hot = {};
+for (const k of ['idle', 'click']) {
+  const c = document.createElement('canvas'); c.width = c.height = SIZE; c.getContext('2d').drawImage(raw[k], sx, sy, side, side, 0, 0, SIZE, SIZE);
+  imgs[k] = c; hot[k] = { x: (hs[k].x - sx) * SIZE / side, y: (hs[k].y - sy) * SIZE / side };
+  await save(`이브커서_${k}_512.png`, await blob(c));
+}
+await save('hotspot.json', JSON.stringify(hot, null, 1), 'application/json');
+
+// 3) 미리보기 시트
+const W = 1180, H = 470, sheet = document.createElement('canvas'); sheet.width = W; sheet.height = H;
+const g = sheet.getContext('2d');
+g.fillStyle = '#f4f7fb'; g.fillRect(0, 0, W, H);
+g.fillStyle = '#222'; g.font = 'bold 20px sans-serif';
+g.fillText('이브 커서 시안 — 얼굴 + 한 손 (평소 / 클릭)', 24, 34); g.fillText('실제 크기 56px (흰 카드 · 파스텔 블루 · 3D 배경 · 진한 배경)', 600, 34);
+let ox = 24;
+for (const k of ['idle', 'click']) {
+  g.fillStyle = '#e9eef6'; g.fillRect(ox, 50, 270, 270); g.drawImage(imgs[k], ox + 5, 55, 260, 260);
+  const hx = ox + 5 + hot[k].x * 260 / SIZE, hy = 55 + hot[k].y * 260 / SIZE;
+  g.fillStyle = '#222'; g.font = '16px sans-serif'; g.fillText(k === 'idle' ? '평소 (클릭 지점 = 파란 손끝)' : '클릭 순간', ox, 346);
+  ox += 290;
+}
+const S = 56;
+[['#ffffff', 600], ['#dbe7fb', 770], ['#6f7f94', 940], ['#1b2230', 1060]].forEach(([c, x]) => {
+  g.fillStyle = c; g.fillRect(x, 60, 110, 130);
+  g.drawImage(imgs.idle, x + 27, 66, S, S); g.drawImage(imgs.click, x + 27, 128, S, S);
+});
+g.fillStyle = '#222'; g.font = '15px sans-serif'; g.fillText('위: 평소 · 아래: 클릭 (클릭 지점 = 손끝)', 600, 215);
+g.fillStyle = '#fff'; g.fillRect(600, 232, 560, 210); g.strokeStyle = '#c8d3e3'; g.strokeRect(600, 232, 560, 210);
+g.drawImage(imgs.idle, 620, 246, 112, 112); g.drawImage(imgs.click, 750, 246, 112, 112);
+g.drawImage(imgs.idle, 900, 262, 80, 80); g.drawImage(imgs.click, 1000, 262, 80, 80);
+g.fillStyle = '#444'; g.font = '14px sans-serif'; g.fillText('112px와 80px (참고) — 56px가 작아 보이면 이 크기도 가능', 620, 410);
+await save('이브커서_미리보기.png', await blob(sheet));
+document.getElementById('log').textContent = '끝: ' + JSON.stringify(hot);
+</script>

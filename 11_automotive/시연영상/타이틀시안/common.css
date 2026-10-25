@@ -1,0 +1,11 @@
+@font-face { font-family: 'PretendardX'; font-weight: 300; src: url('file:///C:/Users/dbfla/Desktop/semi-ai/semi-ai/11_automotive/frontend/node_modules/pretendard/dist/web/static/woff2/Pretendard-Light.woff2') format('woff2'); }
+@font-face { font-family: 'PretendardX'; font-weight: 500; src: url('file:///C:/Users/dbfla/Desktop/semi-ai/semi-ai/11_automotive/frontend/node_modules/pretendard/dist/web/static/woff2/Pretendard-Medium.woff2') format('woff2'); }
+@font-face { font-family: 'PretendardX'; font-weight: 600; src: url('file:///C:/Users/dbfla/Desktop/semi-ai/semi-ai/11_automotive/frontend/node_modules/pretendard/dist/web/static/woff2/Pretendard-SemiBold.woff2') format('woff2'); }
+@font-face { font-family: 'PretendardX'; font-weight: 800; src: url('file:///C:/Users/dbfla/Desktop/semi-ai/semi-ai/11_automotive/frontend/node_modules/pretendard/dist/web/static/woff2/Pretendard-ExtraBold.woff2') format('woff2'); }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; font-family: 'PretendardX', 'Pretendard', 'Malgun Gothic', sans-serif; -webkit-font-smoothing: antialiased; }
+.stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; }
+.logo { display: block; }
+.logo text { font-family: 'PretendardX', sans-serif; }
+.title { font-weight: 600; color: #1b2a41; letter-spacing: -0.025em; text-align: center; }
+.rule { width: 72px; height: 4px; border-radius: 2px; background: #3d6fe0; margin: 0 auto; }

@@ -1,0 +1,11 @@
+<!doctype html><meta charset="utf-8">
+<style>
+ html,body{margin:0;width:1920px;height:1080px;overflow:hidden;font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif}
+ .bg{position:absolute;inset:0;width:1920px;height:1080px}
+ /* 자막: 아래 가운데, 반투명 검정 띠 + 흰 굵은 글자 40px, 아래에서 90px 띄움, 최대 2줄 */
+ .sub{position:absolute;left:50%;transform:translateX(-50%);bottom:90px;max-width:1400px;padding:14px 34px 16px;border-radius:14px;background:rgba(0,0,0,.66);color:#fff;font-weight:800;font-size:40px;line-height:1.38;text-align:center;letter-spacing:-.5px;white-space:nowrap}
+ .sub.up{bottom:auto;top:612px}   /* 홈 하단 패널(y 770~) 위로 올린 위치 */
+ .sub em{font-style:normal;color:#ffd84a}
+</style>
+<img class="bg" src="bg_home.png">
+<div class="sub up">생산은 이번 교대 실적, <em>예측</em>은 지금 속도로 마쳤을 때 수량,<br>OEE는 설비 종합 효율입니다.</div>
