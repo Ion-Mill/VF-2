@@ -145,8 +145,9 @@ def set_sim_clock(body: SimClockIn, user: User = Depends(current_user), db: Db =
 class InjectIn(BaseModel):
     equipment_id: str | None = Field(None, description="시뮬레이터가 이어져 있지 않을 때 필수 (이어져 있으면 사건이 대상 설비를 정함)")
     alarm_code: str | None = Field(None, description="시뮬레이터가 이어져 있지 않을 때 필수")
-    scenario_code: str = Field(pattern="^S[1346]$",
-                               description="사건 버튼 S1·S3·S4·S6 (2026-10-13 — S2·S5는 과거 기록이라 버튼 없음)")
+    scenario_code: str = Field(pattern="^S[13467]$",
+                               description="사건 버튼 S1·S3·S4·S6·S7 (2026-10-13 — S2·S5는 과거 기록이라 버튼 없음. "
+                                           "2026-10-25 S7 더함 — 시연 서버 사건버튼.json·config.json buttons와 같게)")
     at: datetime | None = None       # 비우면 시연 시계 지금
     lot_no: str | None = None
 
