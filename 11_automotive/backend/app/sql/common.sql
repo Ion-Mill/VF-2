@@ -20,6 +20,10 @@ SELECT user_id, user_name, role_code, home_shift_type, home_process_code, home_p
 -- name: user_public
 SELECT user_id, user_name, role_code, home_shift_type, home_process_code, home_process_code_2, is_active FROM app_user WHERE user_id = :user_id;
 
+-- 사용자마다 역할·사용 중 (3D 라인 뷰 토큰 확인이 60초 기억 — app/security.py user_states_side, 2026-10-25)
+-- name: user_states
+SELECT user_id, role_code, is_active FROM app_user;
+
 -- name: touch_login
 UPDATE app_user SET last_login_at = now() WHERE user_id = :user_id;
 
