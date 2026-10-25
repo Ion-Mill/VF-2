@@ -2076,8 +2076,12 @@ def ops_answer(role: str, p: dict, needs: list[str] | None = None,
             r = T.tool_life(role, eq, min_pct=90 if not eq else 0)
             data.append(r)
             rows = r["rows"]  # 설비를 정하면 그 설비 공구 전부, 아니면 90% 이상 전부 (자르지 않음)
-            items = [f"{t['equipment_id']} {t['tool_no']} {t['tool_name']} {t['usage_pct']}% ({float(t['used']):g}/{t['limit']})" for t in rows]
-            texts.append("공구 수명: " + (", ".join(items) or "90% 이상 없음"))
+            # 사용률이라고 밝히고 남은 비율을 붙인다 (2026-10-25) — "공구 수명 60.3%"만 있으면 외부 LLM이 남은 수명으로 읽어
+            # "60.3%가 남았어요", 가장 적게 남은 공구를 거꾸로 답했다(AWS 서버 시험). 숫자는 백엔드 값 그대로
+            items = [f"{t['equipment_id']} {t['tool_no']} {t['tool_name']} 사용률 {t['usage_pct']}%"
+                     + (f"·남은 {float(t['remaining_pct']):g}%" if t.get("remaining_pct") not in (None, "") else "")
+                     + f" ({float(t['used']):g}/{t['limit']})" for t in rows]
+            texts.append("공구 수명: " + (", ".join(items) or "사용률 90% 이상 없음"))
             add("공구 수명", items, texts[-1], r)
         elif intent == "kpi" and eq:
             r = T.kpi(role, eq, **kw)
