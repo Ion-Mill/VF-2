@@ -112,7 +112,7 @@ export default function DocBox() {
         {/* 디자인 통일 C안: "내 할 일"을 결론 띠로 (bands.ts docsBand), 목록은 아래 접기 */}
         {(() => { const first = [...todo].sort((a, b) => Number(!!b.warn) - Number(!!a.warn))[0]; return <Band spec={docsBand(todo, rows.length, first?.text.replace(/^[ⓘ▲]\s*/, ''))} onAction={() => first?.go?.()} />; })()}
         {/* [1] 내 할 일 — 토글 + 개수 칩 */}
-        <details className="group rounded-card border border-line bg-white">
+        <details className="group rounded-card border border-line bg-white shadow-card">
           <summary className="flex min-h-[48px] cursor-pointer list-none items-center gap-2 px-4 text-body font-bold">
             <span className="text-ink-2 transition group-open:rotate-90">▸</span>내 할 일 전체
             <span className={`rounded-full px-2.5 py-0.5 text-small ${warnN ? 'bg-warn-bg text-warn' : 'bg-tile text-ink-2'}`}>{todo.length}{warnN ? ` · ▲ ${warnN}` : ''}</span>
@@ -129,15 +129,14 @@ export default function DocBox() {
         </details>
 
         <div className={CARD.replace('mx-auto max-w-[1100px] ', '')}>
-          <div className="flex flex-wrap items-center gap-2">{/* 문서 이름은 화면 머리 제목에 (통일안 2026-10-24) */}
-            {(role === 'OPR' || role === 'MNT') && <button onClick={() => openAfter()} className={`${BTN} ml-auto`} title="알람 없이 먼저 한 일을 지난 시각으로 적어요">+ 선조치 기록</button>}</div>
-          {/* [2] 필터 — 한 줄 도구 막대 */}
-          <div className="mt-3 flex flex-wrap items-center gap-2">
+          {/* [2] 필터 — 한 줄 도구 막대, 카드 맨 위 (지침카드 · 수정 이력과 같은 자리). 선조치 기록 버튼은 줄 끝 */}
+          <div className="flex flex-wrap items-center gap-2">
             {stateOpts.length > 0 && <label className="flex items-center gap-1.5 text-body font-semibold text-ink-2">상태:<select value={state} onChange={(e) => setState(e.target.value)} className={pill}><option value="">전체</option>{stateOpts.map((x) => <option key={x}>{x}</option>)}</select></label>}
             <label className="flex items-center gap-1.5 text-body font-semibold text-ink-2">설비:<select value={machine} onChange={(e) => setMachine(e.target.value)} className={pill}><option value="">전체</option>{['SAW-01', 'MIL-01', 'VF2-01', 'VF2-02', 'WSH-01', 'CMM-01'].map((m) => <option key={m}>{m}</option>)}</select></label>
             <input aria-label="알람 번호" value={code} onChange={(e) => setCode(e.target.value)} placeholder="알람 번호 (예: 992)" className={`${pill} w-[150px]`} />
             <input aria-label="비슷한 문장 찾기" value={text} onChange={(e) => setText(e.target.value)} placeholder="비슷한 문장 찾기 (예: 케이블)" className={`${pill} w-[220px]`} />
             <span className="ml-auto text-small font-semibold text-ink-2">{rows.length}건</span>
+            {(role === 'OPR' || role === 'MNT') && <button onClick={() => openAfter()} className={BTN.replace('h-11', 'h-9')} title="알람 없이 먼저 한 일을 지난 시각으로 적어요">+ 선조치 기록</button>}
           </div>
           {/* [3] 표 — 오늘 만든 문서 / 지난 기록 */}
           {rows.length === 0 ? <p className="mt-4 text-body text-ink-2">조건에 맞는 문서가 없습니다</p> : (<>

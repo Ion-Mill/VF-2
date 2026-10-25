@@ -380,6 +380,22 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
   const [side, setSide] = useState<EveTab | null>(null);
   const [bandOff, setBandOff] = useState<string[]>([]); // 알림 띠에서 닫은 주의 알람 (사용자 요청 2026-10-22, 긴급은 못 닫음)
   const [ctlOpen, setCtlOpen] = useState(true); // 홈 3D 조작 줄 접기·펴기 (사용자 요청 2026-10-24)
+  // 화면 머리를 본문 카드 줄(그 화면 첫 mx-auto 칸)의 왼쪽·폭에 맞춘다 — 화면마다 폭이 1440·1100·960·900으로 달라 재서 맞춤 (사용자 요청 2026-10-25)
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const [headCol, setHeadCol] = useState<{ left: number; width: number } | null>(null);
+  useEffect(() => {
+    const area = bodyRef.current; if (!area) return;
+    let raf = 0;
+    const measure = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => {
+      const col = area.querySelector<HTMLElement>('.mx-auto'), a = area.getBoundingClientRect(), r = col?.getBoundingClientRect();
+      const next = r && r.width > 0 ? { left: Math.round(r.left - a.left), width: Math.round(r.width) } : null;
+      setHeadCol((p) => (p?.left === next?.left && p?.width === next?.width ? p : next));
+    }); };
+    measure();
+    const ro = new ResizeObserver(measure); ro.observe(area);
+    const mo = new MutationObserver(measure); mo.observe(area, { childList: true, subtree: true });   // 본문이 불러온 뒤 늦게 그려지는 화면(문서)도 따라감
+    return () => { cancelAnimationFrame(raf); ro.disconnect(); mo.disconnect(); };
+  }, []);
   const [eveI, setEveI] = useState(0); // 홈 이브 알림 띠에서 보고 있는 알람 번호
   useEffect(() => { setBandOff([]); setEveI(0); }, [runId]); // 시연을 처음으로 되돌리면(새 회차) 닫아 둔 주의 알람을 잊는다 — 알람 번호가 회차마다 같아서 안 지우면 새 알람이 띠에 안 뜬다 (2026-10-23)
   const [zone, setZone] = useState<string | null>(null);
@@ -612,19 +628,20 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
         {/* 3D 실패·긴급 알림은 이브 말풍선으로, 연결 끊김은 화면 맨 위 띠로 옮김 (2026-10-19) */}
 
         {/* 이브 창(1안, 사용자 선택 2026-10-20): 창 모양·자리는 모든 화면 같음(오른쪽, 위 바 아래 ~ 이브 버튼 위). 홈은 3D 위에 뜨고, 다른 화면은 본문이 창 폭(420 + 오른쪽 24 + 간격 12)만큼 비켜 줌 */}
-        <div className={`flex min-h-0 flex-1 flex-col ${curGroup?.label === '재고' || curGroup?.label === '문서' ? 'fs-up' : ''}`} style={{ paddingTop: home ? 0 : 88, paddingBottom: screen === 'layout2d' ? 64 : screen === 'field' ? 70 : 0, paddingRight: side && !home ? 456 : 0, transition: 'padding-right .25s ease' }}>
+        <div className={`flex min-h-0 flex-1 flex-col ${curGroup?.label === '재고' || curGroup?.label === '문서' ? 'fs-up' : ''}`} style={{ paddingTop: home || screen === 'field' ? 0 : 88,paddingBottom: screen === 'layout2d' ? 64 : screen === 'field' ? 70 : 0, paddingRight: side && !home ? 456 : 0, transition: 'padding-right .25s ease' }}>
         {/* 화면 머리 통일안 (사용자 선택 2026-10-24, 시안: claude.ai 아티팩트 "화면 머리 통일안"): 홈 말고 모든 화면 = [←] · 묶음 이름 → 제목(메뉴 이름) → 설명 한 줄,
             같은 묶음 화면 바꾸기는 위 메뉴로만 (오른쪽 탭은 위 메뉴와 겹쳐 뺌, 사용자 요청 2026-10-25). 문서는 고른 문서 이름이 제목. 전에 생산만 쓰던 흰 가로 바 · 다시 보기 결론 띠 안 ← 는 없앰 */}
-        {screen !== 'line' && screen !== 'layout2d' && (() => {
+        {/* 현장 모니터는 머리 없이 3D가 위 바 밑까지 (사용자 요청 2026-10-25) */}
+        {screen !== 'line' && screen !== 'layout2d' && screen !== 'field' && (() => {
           const doc = screen === 'docs' ? (key ?? '작업지시서') : DOC_OF[screen];
           return (
-            <div className="shrink-0 bg-ground px-4 pt-3">
+            <div className="shrink-0 bg-ground pt-3" style={headCol ? { paddingLeft: headCol.left, width: headCol.left + headCol.width } : { paddingLeft: 16, paddingRight: 16 }}>
               <PageHead title={screen === 'docs' ? doc : TITLE[screen]} sub={(doc && DOC_SUB[doc]) || SUB[screen]} onBack={back}
                 group={curGroup && <><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="text-ink-3"><path d={NAV_ICON[curGroup.label]} /></svg>{curGroup.label}</>} />
             </div>
           );
         })()}
-        <div className={`relative min-h-0 flex-1 overflow-hidden ${connected ? '' : 'grayscale-[0.6]'}`}>
+        <div ref={bodyRef} className={`relative min-h-0 flex-1 overflow-hidden ${connected ? '' : 'grayscale-[0.6]'}`}>
           <div className="absolute overflow-hidden" style={{ ...stagePos, visibility: show3D ? 'visible' : 'hidden', opacity: show3D ? 1 : 0, pointerEvents: show3D ? 'auto' : 'none' }}>
             <FactoryDashboard embedded dataMode warnIds={[...new Set(open.filter((a) => a.level === '주의').map((a) => a.machine))]} layout={LAYOUT} quality="자동" introOnLoad={false} showCards={settings.cards} alarmText={alarmText} cardText={cardText}
               cmmCard={cmmCard} bigTags={screen === 'field'} scenario="정상 가동" onReady={onReady}
@@ -654,7 +671,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
             {show3D && (
               <>
                 {screen === 'field' && (
-                  <div className="pointer-events-auto absolute left-3 top-3 z-10 flex gap-1 rounded-full border border-line bg-white/90 p-1 shadow-md">
+                  <div className="pointer-events-auto absolute left-5 top-[92px] z-10 flex gap-1 rounded-full border border-line bg-white/90 p-1 shadow-md">
                     {ZONES.map(([name, , ids]) => <button key={name} onClick={() => { setZone(name); setSnapSel(null); api3d()?.frameGroup(ids); }} className={`h-10 rounded-full px-4 text-card font-bold ${zone === name ? 'bg-brand-tint text-brand-ink' : 'hover:bg-tile'}`}>{name}</button>)}
                     <button onClick={() => { setZone(null); setSnapSel(null); api3d()?.setView('front'); }} className={`h-10 rounded-full px-4 text-card font-bold ${zone === null ? 'bg-brand-tint text-brand-ink' : 'hover:bg-tile'}`}>전체</button>
                   </div>
@@ -675,7 +692,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
                   </>); })()}
                 </div>
                 ) : screen === 'field' ? (
-                  <div className="pointer-events-auto absolute right-3 top-3 z-10 flex gap-1 rounded-full border border-line bg-white/90 p-1 shadow-md">
+                  <div className="pointer-events-auto absolute right-5 top-[92px] z-10 flex gap-1 rounded-full border border-line bg-white/90 p-1 shadow-md">
                     <button onClick={() => api3d()?.nav('zoom', 0.85)} className="h-11 w-11 rounded-full text-[22px] font-bold leading-none hover:bg-brand-tint" aria-label="확대">+</button>
                     <button onClick={() => api3d()?.nav('zoom', 1.18)} className="h-11 w-11 rounded-full text-[22px] font-bold leading-none hover:bg-brand-tint" aria-label="축소">−</button>
                   </div>

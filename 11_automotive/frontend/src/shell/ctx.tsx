@@ -52,5 +52,5 @@ export const useApp = () => {
 // 디자인 통일 C안 (2026-10-20): 값만 먼저 토큰으로 — 화면을 ui.tsx 부품(Btn·Page·Sec)으로 바꾸면서 지운다
 export const BTN = 'h-11 rounded-ctl border border-line bg-white px-4 text-body font-semibold text-ink hover:bg-tile disabled:cursor-not-allowed disabled:bg-track disabled:text-bar disabled:hover:bg-track';
 export const DARK = 'h-11 rounded-ctl bg-brand px-4 text-body font-semibold text-white hover:bg-brand-ink disabled:cursor-not-allowed disabled:bg-track disabled:text-bar';
-export const PAGE = 'absolute inset-0 overflow-y-auto bg-ground p-4';
+export const PAGE = 'absolute inset-0 overflow-y-auto bg-ground p-4 [scrollbar-gutter:stable]'; // 스크롤바 자리를 늘 비워 둠 — 긴 화면 · 짧은 화면 카드 폭이 10px씩 달라지지 않게 (2026-10-25)
 export const CARD = 'rounded-card border border-line bg-white p-4 shadow-card';

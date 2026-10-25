@@ -54,16 +54,17 @@ interface Ev {
   chain: boolean;
 }
 
-// 상태 색 = 다시 보기 전용 파스텔 (사용자 요청 2026-10-21 "타임라인 색이 너무 별로, 다른 계열로"):
-// 가공은 초록 대신 파랑, 대기는 아주 옅게 물러나게, 고장 · 막힘만 빨강 · 주황 계열. 3D 아래 공통 범례(data.ts LEGEND)와는 다르다.
-// 휴식(P02)은 대기 색 빗금. 타임라인 막대만 이 파스텔, 설비 카드 글자 · 아이콘(ST_INK)은 앱 공용 상태 색 (사용자 선택 2026-10-22 "카드 아이콘 글자만")
+// 타임라인 = 15분 칸 지도 + 남색 농담 (사용자 선택 2026-10-25, 시안 C-1 — 전: 파스텔 막대가 얇고 조각이 잘아 읽기 어려웠다):
+// 정상 흐름(가공 진한 남색 · 준비 옅은 남색 · 대기 · 휴식)은 한 계열로 물러나고, 막힘 주황 · 정비 보라 · 고장 빨강만 튄다.
+// 3D 아래 공통 범례(data.ts LEGEND)와는 다르다. 설비 카드 글자 · 아이콘(ST_INK)은 앱 공용 상태 색 그대로 (2026-10-22)
 const ST_COLOR: Record<string, string> = {
-  RUN: "#7aa5f5",
-  IDLE: "#e2e8f0",
-  SETUP: "#8fd3e0",
-  BLOCKED: "#f4c27f",
-  MAINT: "#b8a6ee",
-  DOWN: "#ef8f9b",
+  RUN: "#2e4a7d",
+  IDLE: "#eef2f7",
+  SETUP: "#8aa3cf",
+  BLOCKED: "#f0a830",
+  MAINT: "#9b8ae0",
+  DOWN: "#d0283d",
+  REST: "#dde3ec",
 };
 // tailwind.config.ts 토큰과 같은 값: ok(가공) · brand(준비) · warn(막힘 · 주의) · crit(고장) · 회색(대기 · 정비 — data.ts STATE_VIEW와 같이)
 const ST_INK: Record<string, { ink: string; tile: string }> = {
@@ -75,20 +76,26 @@ const ST_INK: Record<string, { ink: string; tile: string }> = {
   DOWN: { ink: "#c23042", tile: "#fdecee" },
   WARN: { ink: "#a35a0c", tile: "#fff3e3" },
 };
-const REST = "repeating-linear-gradient(45deg,#cfd8e4 0 2px,#f3f6fa 2px 6px)";
-const segBg = (r: { state_code: string; reason_code: string | null }) =>
-  r.state_code === "IDLE" && r.reason_code === "P02"
-    ? REST
-    : (ST_COLOR[r.state_code] ?? ST_COLOR.IDLE);
-const LEG: [string, string][] = [
-  ["가공", ST_COLOR.RUN],
-  ["대기", ST_COLOR.IDLE],
-  ["준비", ST_COLOR.SETUP],
-  ["막힘", ST_COLOR.BLOCKED],
-  ["정비", ST_COLOR.MAINT],
-  ["고장", ST_COLOR.DOWN],
-  ["휴식", REST],
-];
+const ST_KO: Record<string, string> = { RUN: "가공", IDLE: "대기", SETUP: "준비", BLOCKED: "막힘", MAINT: "정비", DOWN: "고장", REST: "휴식" };
+const LEG: [string, string][] = ["RUN", "SETUP", "IDLE", "REST", "BLOCKED", "MAINT", "DOWN"].map((k) => [ST_KO[k], ST_COLOR[k]]);
+// 15분 칸: 고장 · 정비 · 막힘이 2분 넘게 있으면 그 상태(짧은 고장이 묻히지 않게), 아니면 가장 오래 있던 상태
+const CELL_MS = 15 * 60000, PROBLEM = ["DOWN", "MAINT", "BLOCKED"];
+type StateRow = { state_code: string; reason_code: string | null; start_at: string; end_at: string };
+function cellsOf(rows: StateRow[], t0: number, t1: number) {
+  const out: { a: number; b: number; key: string; mins: [string, number][] }[] = [];
+  for (let a = t0; a < t1; a += CELL_MS) {
+    const b = Math.min(t1, a + CELL_MS), tot: Record<string, number> = {};
+    rows.forEach((r) => {
+      const o = Math.min(b, Date.parse(r.end_at)) - Math.max(a, Date.parse(r.start_at));
+      if (o > 0) { const k = r.state_code === "IDLE" && r.reason_code === "P02" ? "REST" : ST_COLOR[r.state_code] ? r.state_code : "IDLE"; tot[k] = (tot[k] ?? 0) + o; }
+    });
+    const mins = Object.entries(tot).sort((x, y) => y[1] - x[1]);
+    if (!mins.length) continue;
+    const key = PROBLEM.find((k) => (tot[k] ?? 0) >= 2 * 60000) ?? mins[0][0];
+    out.push({ a, b, key, mins: mins.map(([k, ms]) => [k, Math.round(ms / 60000)]) });
+  }
+  return out;
+}
 const EV_VIEW: Record<Ev["kind"], { icon: string; color: string }> = {
   STOP: { icon: "!", color: "#c62a2f" },
   WARN: { icon: "▲", color: "#b07400" },
@@ -390,6 +397,7 @@ export function ReplayScreen() {
     "inline-flex h-6 items-center whitespace-nowrap rounded-full px-2 text-small font-semibold";
 
   const pct = (ms: number) => ((ms - t0) / (t1 - t0)) * 100;
+  const cells = useMemo(() => (data ? Object.fromEntries(EQS.map((eq) => [eq, cellsOf((data.states[eq] ?? []) as StateRow[], t0, t1)])) : {}), [data, t0, t1]);
   const barRef = useRef<HTMLDivElement>(null);
   const seek = (e: React.PointerEvent) => {
     const r = barRef.current?.getBoundingClientRect();
@@ -854,18 +862,18 @@ export function ReplayScreen() {
                     {EQS.map((eq) => (
                       <div
                         key={eq}
-                        className="relative min-h-[6px] overflow-hidden rounded bg-tile"
+                        className="relative min-h-[6px] overflow-hidden"
                         style={{ height: LANE_PX }}
                       >
-                        {(data.states[eq] ?? []).map((r, i) => (
+                        {(cells[eq] ?? []).map((c) => (
                           <div
-                            key={i}
-                            title={`${r.state_code === "IDLE" && r.reason_code === "P02" ? "휴식" : STATE_VIEW[stateOf(r)].text} ${hm(r.start_at)}~${hm(r.end_at)}`}
-                            className="absolute top-0 h-full"
+                            key={c.a}
+                            title={`${eq} ${hm(simIso(c.a))}~${hm(simIso(c.b))} ${ST_KO[c.key]} (${c.mins.map(([k, m]) => `${ST_KO[k]} ${m}분`).join(" · ")})`}
+                            className="absolute top-0 h-full rounded-[3px]"
                             style={{
-                              left: `${pct(Date.parse(r.start_at))}%`,
-                              width: `${Math.max(0.2, pct(Date.parse(r.end_at)) - pct(Date.parse(r.start_at)))}%`,
-                              background: segBg(r),
+                              left: `calc(${pct(c.a)}% + 1px)`,
+                              width: `calc(${pct(c.b) - pct(c.a)}% - 2px)`,
+                              background: ST_COLOR[c.key],
                             }}
                           />
                         ))}

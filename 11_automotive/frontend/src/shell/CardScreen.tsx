@@ -148,10 +148,11 @@ export function CardList() {
   const days: [string, typeof list][] = [];
   list.forEach((a) => { const d = a.time.slice(0, 10); const g = days.find(([k]) => k === d); if (g) g[1].push(a); else days.push([d, [a]]); });
   const wd = (d: string) => WD[new Date(Date.UTC(+d.slice(0, 4), +d.slice(5, 7) - 1, +d.slice(8, 10))).getUTCDay()];
-  // 글자 한 단계 크게 = 문서 묶음 전체에 붙는 .fs-up (globals.css, 2026-10-22). 여기선 높이 · 여백만
-  const sel = 'h-11 rounded-full border border-line bg-white px-4 text-small';
+  // 필터 칸 = 문서함(DocBox) 도구 막대와 같은 알약 (문서 화면 틀 통일, 2026-10-25)
+  const sel = 'h-9 rounded-full border border-line bg-white px-3 text-small text-ink';
   // 고른 칸 = 꽉 찬 파랑 알약, 안 고른 칸 = 흐린 글자 (알약 토글 C안, 2026-10-24)
-  const seg = (on: boolean) => `h-[38px] rounded-full px-5 text-small font-semibold ${on ? 'bg-brand text-white' : 'text-ink-2 hover:bg-tile'}`;
+  const seg = (on: boolean) => `h-[30px] rounded-full px-4 text-small font-semibold ${on ? 'bg-brand text-white' : 'text-ink-2 hover:bg-tile'}`;
+  const lab = 'flex items-center gap-1.5 text-body font-semibold text-ink-2';
   return (
     <DocPage width={1440}>
       {(() => { // 디자인 통일 C안: 결론 띠 1개 (bands.ts cardsBand) — 처리 안 된 것 중 정지 등급 먼저
@@ -159,14 +160,17 @@ export function CardList() {
         const top = cin.filter((x) => !x.handled).sort((x, y) => Number(y.kind === 'alarm') - Number(x.kind === 'alarm') || y.minutes - x.minutes)[0];
         return <CBand spec={cardsBand(cin)} onAction={() => top && openCard(top.id)} />;
       })()}
+      {/* 결론 띠 → 흰 카드 하나 안에 필터 줄 + 목록 (문서함 DocBox 틀, 2026-10-25) */}
+      <div className={CARD}>
       <div className="flex flex-wrap items-center gap-2">
-        <div className="flex gap-0.5 rounded-full border border-line bg-white p-[3px]"><button onClick={() => setAll(false)} className={seg(!all)}>처리 필요 {open}</button><button onClick={() => setAll(true)} className={seg(all)}>전체 {alerts.length}</button></div>
+        <div className="flex gap-0.5 rounded-full border border-line bg-white p-[2px]"><button onClick={() => setAll(false)} className={seg(!all)}>처리 필요 {open}</button><button onClick={() => setAll(true)} className={seg(all)}>전체 {alerts.length}</button></div>
         <button onClick={() => setAsc((v) => !v)} className={sel} aria-label="정렬 바꾸기">{asc ? '오래된순' : '최신순'} ⇅</button>
-        <select aria-label="설비" value={mach} onChange={(e) => setMach(e.target.value)} className={sel}><option value="">설비 전체</option>{Object.entries(MACHINES).filter(([, m]) => m.eq).map(([k, m]) => <option key={k} value={k}>{m.name}</option>)}</select>
-        <select aria-label="등급" value={lv} onChange={(e) => setLv(e.target.value)} className={sel}><option value="">등급 전체</option>{['긴급', '주의', '참고'].map((l) => <option key={l}>{l}</option>)}</select>
+        <label className={lab}>설비:<select value={mach} onChange={(e) => setMach(e.target.value)} className={sel}><option value="">전체</option>{Object.entries(MACHINES).filter(([, m]) => m.eq).map(([k, m]) => <option key={k} value={k}>{m.name}</option>)}</select></label>
+        <label className={lab}>등급:<select value={lv} onChange={(e) => setLv(e.target.value)} className={sel}><option value="">전체</option>{['긴급', '주의', '참고'].map((l) => <option key={l}>{l}</option>)}</select></label>
+        <span className="ml-auto text-small font-semibold text-ink-2">{list.length}건</span>
       </div>
-      {list.length === 0 ? <div className="flex min-h-[55vh] items-center justify-center"><div className="rounded-card border border-line bg-white px-8 py-6 text-card text-ink-2">{all ? '지침카드가 없습니다' : '처리할 지침카드가 없습니다'}</div></div> : days.map(([d, as]) => (
-        <section key={d} className="flex flex-col gap-2">
+      {list.length === 0 ? <p className="mt-4 text-body text-ink-2">{all ? '지침카드가 없습니다' : '처리할 지침카드가 없습니다'}</p> : days.map(([d, as]) => (
+        <section key={d} className="mt-4 flex flex-col gap-2">
           <h3 className="text-card font-bold">{md(d)} <span className="text-body font-semibold text-ink-2">({wd(d)})</span></h3>
           <ol className="relative ml-[72px] flex flex-col gap-3 border-l-2 border-line py-1 pl-5">
             {as.map((a) => {
@@ -190,6 +194,7 @@ export function CardList() {
           </ol>
         </section>
       ))}
+      </div>
     </DocPage>
   );
 }
