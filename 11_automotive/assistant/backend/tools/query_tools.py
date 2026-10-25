@@ -42,8 +42,9 @@ def _result(tool, rows, data_range, as_of=None, **extra):
 
 
 def _period(start: date | None, end: date | None, default_days=30):
-    end = end or date(2026, 9, 30)
-    start = start or end - timedelta(days=default_days - 1)
+    # 기간을 말하지 않으면 시연 시계가 있을 때는 그 시계 기준 어제까지, 없으면 옛 9/30까지 (2026-10-25: 공용 DB가 10월 데이터로 바뀜)
+    end = end or sim_clock.default_end()
+    start = start or max(end - timedelta(days=default_days - 1), sim_clock.data_period()[0])
     if start > end:
         raise ToolInputError("기간의 시작이 끝보다 늦다")
     return start, end
@@ -251,6 +252,24 @@ def kpi(role, equipment_id, start=None, end=None, shift=None):
         for k in ("mttr_30d_min", "mtbf_30d_h", "failures_30d"):
             row.pop(k)
     return _result("지표 조회", [row], rng, as_of=now)
+
+
+def reliability(role, equipment_id):
+    """MTTR·MTBF·고장 건수 (최근 30일, `reliability` 도구가 허용된 역할만). 날짜로 찾는 지표(kpi)가 비어 있어도 읽는다 —
+    이 값은 기간과 무관하게 DB가 '지금부터 30일'로 센다 (2026-10-25: 기본 기간이 9월이라 지표가 비면 MTTR도 못 읽던 결함)."""
+    if equipment_id is None:
+        raise ToolInputError("설비를 정해야 한다")
+    _check_equipment(equipment_id)
+    if not BT.is_allowed("reliability"):
+        return _result("신뢰도 조회", [], "최근 30일", reliability_hidden=True)
+    r = _call("reliability", {"equipment_id": equipment_id})
+    mine = next((x for x in r.rows if x.get("equipment_id") == equipment_id), None)
+    rows = [] if not mine else [{
+        "equipment_id": equipment_id,
+        "mttr_30d_min": None if mine.get("mttr_min") is None else float(mine["mttr_min"]),
+        "mtbf_30d_h": None if mine.get("mtbf_hours") is None else float(mine["mtbf_hours"]),
+        "failures_30d": int(mine["failure_count"]) if mine.get("failure_count") is not None else 0}]
+    return _result("신뢰도 조회", rows, "최근 30일", as_of=r.now, reliability_hidden=False)
 
 
 # ---------------------------------------------------------------- 생산
