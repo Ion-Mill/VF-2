@@ -132,7 +132,36 @@ def _content_of(tokens: list[str]) -> list[str]:
     return sorted(set(out))
 
 
-REF_DATE = date.fromisoformat(REFERENCE_AT[:10])
+REF_DATE = date.fromisoformat(REFERENCE_AT[:10])   # 시계가 없을 때의 기준일 (옛 값, 호환용)
+
+
+def ref_date() -> date:
+    """오늘(상대 날짜의 기준): 시연 시계가 있으면 그 날짜, 없으면 REF_DATE(REFERENCE_AT). 2026-10-25: 10/1로 박혀 있어 10월 질문이 '미래'로 거절됐다."""
+    return sim_clock.anchor_date()
+
+
+def month_in_data_period(month: int):
+    """N월 중 운영 기록이 있는 기간 (처음, 마지막). 데이터 기간 밖의 달이면 None. 시계 없음 = 9월만 9/1~9/30 (옛 동작)."""
+    ds, de = sim_clock.data_period()
+    first = date(ds.year, month, 1)
+    last = (date(ds.year + (month == 12), month % 12 + 1, 1)) - timedelta(days=1)
+    if last < ds or first > de:
+        return None
+    return max(first, ds), min(last, de)
+
+
+def period_text() -> str:
+    """안내 문구의 '가상 데이터 기간' 글: 시계 없음 '2026-09-01 ~ 09-30', 시계 있음 '2026-10-01 ~ 10-26'."""
+    ds, de = sim_clock.data_period()
+    return f"{ds.isoformat()} ~ {de.strftime('%m-%d')}"
+
+
+def ref_time_text() -> str:
+    """안내 문구의 '기준 시각' 글: 시계가 있으면 시연 시계, 없으면 REFERENCE_AT."""
+    live = sim_clock.current()
+    if live is not None:
+        return live.at.strftime("%Y-%m-%d %H:%M")
+    return f"{REFERENCE_AT[:10]} {REFERENCE_AT[11:16]}"
 MIN_SCORE = 5.0          # BM25 점수 하한 [가상: 2026-10-07 평가 세트 48문항으로 맞춘 값]
 MIN_OVERLAP = 0.4        # 질문 핵심 낱말 중 근거 조각에 들어 있어야 하는 비율 [가상: "문서에 없음" 문항 최대 0.33, 문서 문항 최소 0.4]
 EQUIP_RE = re.compile(r"\b(VF2-0[12]|SAW-01|MIL-01|WSH-01|CMM-01)\b", re.I)
@@ -241,24 +270,24 @@ def resolve_dates_v3(q: str, intents: list[str], start, end):
     """날짜만 있는 말·상대 날짜를 기준일(REF_DATE) 앞의 날짜로 바꾼다. 이미 정한 날짜가 있으면 그대로 둔다."""
     if start is not None:
         return start, end
-    y = REF_DATE - timedelta(days=1)
+    y = ref_date() - timedelta(days=1)
     if DAY_BEFORE_YESTERDAY_V3.search(q):
-        d = REF_DATE - timedelta(days=2)
+        d = ref_date() - timedelta(days=2)
         return d, d
     m = DAYS_AGO_V3.search(q)
     if m:
-        d = REF_DATE - timedelta(days=int(m.group(1)))
+        d = ref_date() - timedelta(days=int(m.group(1)))
         return d, d
     if LAST_WEEK_V3.search(q):  # 지난주 = 지난 월요일 ~ 일요일
-        mon = REF_DATE - timedelta(days=REF_DATE.weekday() + 7)
+        mon = ref_date() - timedelta(days=ref_date().weekday() + 7)
         return mon, mon + timedelta(days=6)
     if THIS_WEEK_V3.search(q):  # 이번 주 = 이번 월요일 ~ 어제
-        mon = REF_DATE - timedelta(days=REF_DATE.weekday())
+        mon = ref_date() - timedelta(days=ref_date().weekday())
         return (mon, y) if mon <= y else (None, None)
     m = WEEKDAY_V3.search(q)
     if m and intents:
-        back = (REF_DATE.weekday() - WEEKDAY_NO[m.group(1)]) % 7 or 7
-        d = REF_DATE - timedelta(days=back)
+        back = (ref_date().weekday() - WEEKDAY_NO[m.group(1)]) % 7 or 7
+        d = ref_date() - timedelta(days=back)
         return d, d
     m = DAY_ONLY_V3.search(q)
     if m and intents:  # 운영 질문일 때만 — "7일 안에 3번"처럼 기간을 뜻하는 말을 날짜로 읽지 않게
@@ -379,22 +408,22 @@ def resolve_dates_v4(q: str, intents: list[str], start, end):
     "지난주 금요일"처럼 주와 요일을 함께 말하면 날짜가 분명하므로 운영 낱말이 없어도 그날로 둔다(LLM 분류의 기간보다 우선).
     요일만 있는 말·요일 여럿은 v3처럼 운영 질문일 때만 날짜로 읽는다."""
     if start is not None:
-        return start, end, start > REF_DATE
+        return start, end, start > ref_date()
     if FUTURE_V4.search(q):
         return None, None, True
     days = sorted({WEEKDAY_NO[x] for x in WEEKDAYS_V4.findall(q)})
     week = -2 if TWO_WEEKS_AGO_V4.search(q) else (-1 if LAST_WEEK_V3.search(q) else (0 if THIS_WEEK_V3.search(q) else None))
     if week is not None and days:  # "지난주 금요일" = 그날, "지난주 월~수요일" = 처음~끝
-        mon = REF_DATE - timedelta(days=REF_DATE.weekday()) + timedelta(weeks=week)
+        mon = ref_date() - timedelta(days=ref_date().weekday()) + timedelta(weeks=week)
         s, e = mon + timedelta(days=days[0]), mon + timedelta(days=days[-1])
-        if s > REF_DATE:  # "이번 주 금요일"(10/2) — 기준 시각 뒤
+        if s > ref_date():  # "이번 주 금요일"(10/2) — 기준 시각 뒤
             return None, None, True
-        return s, min(e, REF_DATE), False
+        return s, min(e, ref_date()), False
     if week == -2:  # 지지난주 = 지지난 월요일 ~ 일요일
-        mon = REF_DATE - timedelta(days=REF_DATE.weekday() + 14)
+        mon = ref_date() - timedelta(days=ref_date().weekday() + 14)
         return mon, mon + timedelta(days=6), False
     if week is None and len(days) > 1 and intents:  # 요일 여럿("목요일이랑 금요일") = 가장 가까운 지난 날들의 처음~끝
-        ds = sorted(REF_DATE - timedelta(days=(REF_DATE.weekday() - d) % 7 or 7) for d in days)
+        ds = sorted(ref_date() - timedelta(days=(ref_date().weekday() - d) % 7 or 7) for d in days)
         return ds[0], ds[-1], False
     s, e = resolve_dates_v3(q, intents, None, None)
     return s, e, False
@@ -454,6 +483,9 @@ COUNT_WORDS_V5 = re.compile(r"몇\s*(?:번|회|건)|횟수|자주")
 # L4 섞인 질문 둘째 마디: 목표·기준치·한도·정격을 몇·얼마로 물으면 문서 쪽 단서 (E3-028 "교대 목표는 몇 개야?")
 DOC_CUE_V5 = re.compile(DOC_CUE_V4.pattern + r"|(?:목표|기준치|한도|정격)\S{0,2}\s*(?:몇|얼마)")
 # "몇 건 찍혔"은 알람 횟수 (E3-024), "몇 번 멈춰?"는 정지 조회
+# 2026-10-25: "알람 몇 건이야/몇 건 있었어"도 알람 횟수다 — PARSE_V9 목록에 더한다 (알람·경보 낱말이 같이 있을 때만 — "작업지시서 몇 건"은 그대로, "몇 건 이상"은 기준 질문이라 뺀다)
+ALARM_COUNT_WORDS_V37 = r"|(?:알람|경보).{0,12}몇\s*건(?!\s*(?:이상|이하|넘|초과|미만))|몇\s*건(?!\s*(?:이상|이하|넘|초과|미만)).{0,12}(?:알람|경보)"
+ALARM_TOTAL_Q_V37 = re.compile(ALARM_COUNT_WORDS_V37[1:])   # 알람 번호 없이 전체 건수를 묻는 말투
 OPS_INTENTS_V5 = [(n, re.compile(rx.pattern + r"|몇\s*건\s*(?:이나\s*|정도\s*)?(?:찍혔|찍힌|떴|떠(?=요|\?|\s|$)|울렸)")) if n == "alarm_count"
                   else (n, re.compile(rx.pattern + r"|몇\s*번\s*(?:이나\s*|정도\s*)?멈춰(?=\?|요|\s*$)")) if n == "stops"
                   else (n, rx) for n, rx in OPS_INTENTS_V4]
@@ -462,7 +494,7 @@ OPS_INTENTS_V5 = [(n, re.compile(rx.pattern + r"|몇\s*건\s*(?:이나\s*|정도
 # 몇/얼마/개수를 묻는 꼴만 — "고장 손실이 뭐야?"·"고장 손실 계산식"은 문서 질문이라 조회로 바꾸지 않는다
 LOSS_COUNT_V26 = (r"고장\s*손실\S{0,3}\s*(?:몇|얼마)|고장\s*손실.{0,16}(?:개수|갯수|몇\s*개)"
                   r"|고장\s*(?:으로|때문에)\s*잃\S*\s*(?:개수|갯수|수량|몇\s*개|얼마)")
-OPS_INTENTS_V9 = [(n, re.compile(rx.pattern + r"|몇\s*건\s*씩\s*(?:찍혔|찍힌|떴|떠(?=요|\?|\s|$)|울렸|났|발생)")) if n == "alarm_count"
+OPS_INTENTS_V9 = [(n, re.compile(rx.pattern + r"|몇\s*건\s*씩\s*(?:찍혔|찍힌|떴|떠(?=요|\?|\s|$)|울렸|났|발생)" + ALARM_COUNT_WORDS_V37)) if n == "alarm_count"
                   else (n, re.compile(rx.pattern + "|" + LOSS_COUNT_V26)) if n == "stops"
                   else (n, re.compile(rx.pattern + r"|공구.{0,25}사용률(?!.{0,8}(?:계산|기준|정의|뜻|공식))|사용률.{0,10}공구|\d{3}\S{0,2}\s*(?:난|뜬|걸린|나온|발생한)\s*공구")) if n == "tool_life"   # "362가 난 공구가 뭐야? 사용률은?" (2026-10-21 시연 362). "공구 사용률은 어떻게 계산해?" 같은 뜻 질문은 제외
                   else (n, rx) for n, rx in OPS_INTENTS_V5]
@@ -1394,7 +1426,7 @@ def parse(question: str) -> dict:
         start = end = prev[0]
         shift = prev[1]
     elif "지난 교대" in q:  # 시계가 없으면 기준 시각 10/1 08:00의 지난 교대 = 9/30 야간
-        start = end = REF_DATE - timedelta(days=1)
+        start = end = ref_date() - timedelta(days=1)
         shift = "N"
     m = re.search(r"(\d{1,2})\s*월\s*(\d{1,2})\s*일|(?<!\d)(\d{1,2})/(\d{1,2})(?!\d)", q)
     if m:
@@ -1405,13 +1437,13 @@ def parse(question: str) -> dict:
         end, start = anchor - timedelta(days=1), anchor - timedelta(days=int(m.group(1)))
     if v6 and start is None:  # 5차 L2: "지난달 18일" = 그날 (E4-040 — "지난달"이 한 달 전체로 정해 "18일"을 버렸다)
         md = LAST_MONTH_DAY_V6.search(q)
-        last = REF_DATE.replace(day=1) - timedelta(days=1)   # 지난달 마지막 날
+        last = ref_date().replace(day=1) - timedelta(days=1)   # 지난달 마지막 날
         if md and 1 <= int(md.group(1)) <= last.day:
             start = end = last.replace(day=int(md.group(1)))
     if v2 and start is None and RECENT_WEEK_V2.search(q):
-        end, start = REF_DATE - timedelta(days=1), REF_DATE - timedelta(days=7)
+        end, start = ref_date() - timedelta(days=1), ref_date() - timedelta(days=7)
     elif v2 and start is None and RECENT_MONTH_V2.search(q):
-        end, start = REF_DATE - timedelta(days=1), REF_DATE - timedelta(days=30)
+        end, start = ref_date() - timedelta(days=1), ref_date() - timedelta(days=30)
     v4 = v3 and settings().parse_v4
     if v3:  # 붙은 말("정지게이지", "과열 정지") 안의 의도 낱말은 보지 않는다 (긴 것 우선)
         qm = COMPOUND_MASK_V3.sub(" ", ql)
@@ -1442,8 +1474,9 @@ def parse(question: str) -> dict:
         # ("이 알람 9월에 몇 건 찍혔는지 …, 1단계는 몇 번이 기준인지" — "기준" 때문에 운영 의도가 지워지던 E3-024)
         mm = MONTH_V5.search(q)
         if mm and 1 <= int(mm.group(1)) <= 12:
-            if int(mm.group(1)) == 9:
-                start, end = date(2026, 9, 1), date(2026, 9, 30)
+            got = month_in_data_period(int(mm.group(1)))
+            if got is not None:      # 시계 없음: 9월 = 9/1~9/30 (옛 동작), 시계 있음: 10월 = 10/1~오늘
+                start, end = got
             else:
                 outside = f"{int(mm.group(1))}월"
     # 설비·날짜·로트 없이 정의·기준·방법을 묻는 질문은 문서 질문이다 ("필수 정지가 뭐야?", "재공 경고 기준은?")
@@ -1929,7 +1962,8 @@ def _range_text(p):
         return f"{p['start'].isoformat()}" + (" 야간" if p["shift"] == "N" else " 주간" if p["shift"] == "D" else "")
     if p["start"]:
         return f"{p['start']} ~ {p['end']}"
-    return "2026-09-01 ~ 2026-09-30"
+    ds, de = sim_clock.default_range(30)
+    return f"{ds.isoformat()} ~ {de.isoformat()}"
 
 
 # 고장 손실만 묻는 말 (2026-10-21 사용자 시험): "고장 손실 몇 개야?"에 자재·준비·조작 그룹까지 길게 나왔다. 고장 손실 꼴(LOSS_COUNT_V26)이고 다른 그룹·건수·시간을 묻는 말이 없으면
@@ -2038,7 +2072,7 @@ def ops_answer(role: str, p: dict, needs: list[str] | None = None,
             r = T.production(role, **kw)
             data.append(r)
             if r["empty"]:
-                texts.append(f"{rng} 생산 실적: 데이터 없음 (가상 데이터 기간 2026-09-01 ~ 09-30)")
+                texts.append(f"{rng} 생산 실적: 데이터 없음 (가상 데이터 기간 {period_text()})")
                 add("", [], texts[-1], r)
             rows_txt = []
             for row in r["rows"]:
@@ -2086,8 +2120,20 @@ def ops_answer(role: str, p: dict, needs: list[str] | None = None,
         elif intent == "kpi" and eq:
             r = T.kpi(role, eq, **kw)
             data.append(r)
+            raw_q = p.get("raw", "")
+            if r["empty"] and KPI_30D_ONLY_V21.search(raw_q) and not KPI_DATED_WORDS_V21.search(raw_q):
+                # MTTR·MTBF만 묻는 질문: 날짜로 찾는 지표가 비어도 최근 30일 신뢰도 값은 읽는다 (2026-10-25)
+                rel = T.reliability(role, eq)
+                if rel["rows"]:
+                    r = rel
+                    data.append(rel)
             if r["empty"]:
                 texts.append(f"{eq} 지표: 데이터 없음")
+            elif "oee_pct" not in r["rows"][0]:
+                k = r["rows"][0]
+                mttr = "—" if k["mttr_30d_min"] is None else f"{k['mttr_30d_min']:g}분"
+                mtbf = "—" if k["mtbf_30d_h"] is None else f"{k['mtbf_30d_h']:g}시간"
+                texts.append(f"{eq} 최근 30일: MTTR {mttr}, MTBF {mtbf} (고장 {k['failures_30d']}건)")
             else:
                 k = r["rows"][0]
                 texts.append(f"{eq} {rng}: OEE {k['oee_pct']}% (가동률 {k['availability_pct']}%, 성능 {k['performance_pct']}%, "
@@ -2159,6 +2205,18 @@ def ops_answer(role: str, p: dict, needs: list[str] | None = None,
             items = [f"{k} {v}번" for k, v in sorted(by_eq.items())]
             texts.append(f"{rng} 알람 {code} 발생: " + (", ".join(items) or "없음"))
             add(f"{rng} 알람 {code} 발생", items, texts[-1], r)
+        elif intent == "alarm_count" and not p["alarms"] and ALARM_TOTAL_Q_V37.search(p.get("raw", "")):
+            # 알람 번호 없이 "알람 몇 건이야?" — 기간 안의 알람 전체 건수 (2026-10-25: 번호를 되묻기만 하고 총 건수를 못 답했다)
+            r = T.alarms(role, eq, None, start=p["start"], end=p["end"], shift=p["shift"])
+            data.append(r)
+            by_eq = {}
+            for a in r["rows"]:
+                by_eq[a["equipment_id"]] = by_eq.get(a["equipment_id"], 0) + int(a.get("times", 1))
+            total = sum(by_eq.values())
+            items = [] if eq else [f"{k} {v}건" for k, v in sorted(by_eq.items())]
+            head = f"{eq} {rng} 알람 {total}건" if eq else f"{rng} 알람 {total}건"
+            texts.append(head + (f" ({', '.join(items)})" if len(items) > 1 else ""))
+            add(head, items, texts[-1], r)
         elif intent == "alarm_count" and needs is not None:
             needs.append("알람 번호 (예: 2075)")
         elif intent == "equipment_status":
@@ -2224,7 +2282,7 @@ def related_line(role: str, p: dict) -> str | None:
         return None
     code = p["alarms"][0]["code"]
     # [11_automotive 이식 2026-10-16] 알람 횟수는 집계(times)로 센다. 반복 알람 단계·"처리 안 된 알림 N건"은 백엔드 조회 도구에 없어 말하지 않는다
-    r7 = T.alarms(role, None, code, start=REF_DATE - timedelta(days=7), end=REF_DATE - timedelta(days=1))
+    r7 = T.alarms(role, None, code, start=ref_date() - timedelta(days=7), end=ref_date() - timedelta(days=1))
     r30 = T.alarms(role, None, code)
     n7, n30 = sum(int(x["times"]) for x in r7["rows"]), sum(int(x["times"]) for x in r30["rows"])
     return f"이 알람은 최근 7일 {n7}번, 30일 {n30}번 났습니다 [{DATA_LABEL}]"
@@ -3563,7 +3621,7 @@ def pending_reports_v34(question: str, p: dict) -> bool:
 
 def pending_reports_answer_v34(base: dict, role: str, p: dict) -> dict:
     """질문의 기간(없으면 시연 어제까지 최근 7일)의 끝난 교대 중 확정 안 된 교대 목록. 채팅은 '초안이 있나'와 '작성 전인가'를 구분해 읽지 못하므로 '확정 안 된'으로 말한다."""
-    end = min(p.get("end") or (REF_DATE - timedelta(days=1)), REF_DATE - timedelta(days=1))
+    end = min(p.get("end") or (ref_date() - timedelta(days=1)), ref_date() - timedelta(days=1))
     start = p.get("start") or (end - timedelta(days=PENDING_DEFAULT_DAYS_V34 - 1))
     if start > end:
         text = "아직 끝나지 않은 날짜라 확정 여부를 볼 교대 보고서가 없어요. 교대 보고서 초안은 주간 17시, 야간 다음 날 05시에 만들어져요."
@@ -3597,7 +3655,7 @@ def report_status_answer_v33(base: dict, role: str, question: str, p: dict) -> d
     if not day:
         text = "어느 날짜의 교대 보고서인지 알려 주세요. 예: '어제 주간 교대 보고서 확정됐어?', '9월 30일 야간 교대 보고서 작성됐어?'"
         return {**base, "status": "안내", "mode": "규칙 (날짜 없는 보고서 질문 — 되묻기 고정 문구)", "conclusion": text, "blocks": [{"kind": "text", "text": text}]}
-    if day >= REF_DATE:
+    if day >= ref_date():
         text = f"{day.month}/{day.day} 교대 보고서는 아직 없어요. 교대 보고서 초안은 주간 교대가 끝나는 17시, 야간 교대가 끝나는 다음 날 05시에 만들어지고, 반장이 확정해야 보고서가 확정돼요."
         ev = [_cite(c) for c in (_chunk("DOC-01", "3.3"),) if c]
         return {**base, "status": "답변", "mode": "규칙 (아직 끝나지 않은 교대 — 문서 고정 문구)", "conclusion": text, "evidence": ev,
@@ -4039,7 +4097,7 @@ def period_notes_v21(question: str, p: dict, ops_texts: list[str]) -> list[str]:
         return []
     if p["start"] is None:
         return [] if (KPI_30D_ONLY_V21.search(question) and not KPI_DATED_WORDS_V21.search(question)) else [NO_DATE_NOTE_V21]
-    full_month = p["start"] == date(2026, 9, 1) and p["end"] == date(2026, 9, 30)
+    full_month = (p["start"], p["end"]) == sim_clock.data_period()      # 데이터 기간 전체 (시계 없음 9/1~9/30, 있음 10/1~오늘)
     if not full_month and any("MTTR" in x for x in ops_texts):
         return [MIXED_PERIOD_NOTE_V21.format(rng=_range_text(p))]
     return []
@@ -5024,12 +5082,12 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
     if v4 and p.get("future") and any(i in DATED_INTENTS_V4 for i in p["intents"]):
         # 기준 시각 뒤 날짜의 정지·실적·지표·알람 횟수는 기록이 없다 — 날짜를 버리고 한 달 전체로 답하지 않는다 (2026-10-10 3차 a)
         p = dict(p, intents=[i for i in p["intents"] if i not in DATED_INTENTS_V4])
-        future_note = (f"확인 필요 — 물으신 날짜는 기준 시각({REFERENCE_AT[:10]} {REFERENCE_AT[11:16]}) 뒤라 "
-                       "운영 기록이 없습니다 (가상 데이터 기간 2026-09-01 ~ 09-30).")
+        future_note = (f"확인 필요 — 물으신 날짜는 기준 시각({ref_time_text()}) 뒤라 "
+                       f"운영 기록이 없습니다 (가상 데이터 기간 {period_text()}).")
     elif v4 and v5_on(s) and p.get("outside") and any(i in DATED_INTENTS_V4 for i in p["intents"]):
         # 데이터 기간 밖의 달("8월에 몇 번?") — 0번이라 하거나 9월로 답하지 않는다 (4차 L4)
         p = dict(p, intents=[i for i in p["intents"] if i not in DATED_INTENTS_V4])
-        future_note = (f"확인 필요 — 물으신 기간({p['outside']})은 가상 데이터 기간(2026-09-01 ~ 09-30) 밖이라 "
+        future_note = (f"확인 필요 — 물으신 기간({p['outside']})은 가상 데이터 기간({period_text()}) 밖이라 "
                        "운영 기록이 없습니다.")
     # 섞인 질문의 문서 쪽 글: 규칙으로 고른 문장(PARSE_V3, 질문 글 그대로) → LLM이 나눈 글(SPLIT_Q) → 원래 질문.
     # 규칙이 먼저인 까닭: LLM이 나눈 글이 운영 쪽 말을 그대로 품으면("MTTR는 얼마나 나왔고 몇 분 넘으면 주의로 봐?")

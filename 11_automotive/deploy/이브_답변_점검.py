@@ -62,6 +62,20 @@ def gather(db: Db) -> tuple[datetime, list[dict]]:
         except Exception:  # noqa: BLE001 — 읽기 전용 계정이 못 읽는 표면 정답을 비운다
             return []
 
+    def alarm_n(a: str, b: str, code: str | None = None) -> tuple[int, int]:
+        """(알람 표에서 직접 센 건수, 백엔드 알람 조회 도구 합계). 정답은 앞 값 — 도구가 알람 1건을 상태 기록 2행에 걸쳐
+        두 번 세는 경우가 있다(#187 메모). 두 값이 다르면 정답 줄에 함께 적는다"""
+        q = "SELECT count(*) AS n FROM alarm_event WHERE occurred_at >= CAST(:a AS timestamptz) AND occurred_at < CAST(:b AS timestamptz)"
+        p = {"a": a, "b": b}
+        if code:
+            q, p = q + " AND alarm_code = :c", {**p, "c": code}
+        tool_n = sum(r["times"] for r in run("alarms", **{"from": a, "to": b}) if not code or r["alarm_code"] == code)
+        direct = sql(q, **p)
+        return (int(direct[0]["n"]) if direct else tool_n), tool_n
+
+    def alarm_truth(label: str, n: tuple[int, int]) -> str:
+        return f"{label} {n[0]}건" + (f" (알람 조회 도구는 {n[1]}건 — 두 번 세는 문제)" if n[0] != n[1] else "")
+
     # 실적이 있는 가장 최근 날 (날짜를 콕 집어 묻는 질문용)
     prod = run("production", from_date=str(today - timedelta(days=10)), to_date=str(yday))
     work_days = sorted({r["shift_id"][:10] for r in prod if (r["actual_qty"] or 0) > 0})
@@ -96,20 +110,18 @@ def gather(db: Db) -> tuple[datetime, list[dict]]:
                       "truth": f"{wd}-D 실적 {wd_day['actual_qty']} / 목표 {wd_day['total_target_qty']}",
                       "must": [nums(wd_day["actual_qty"])]})
 
-    y_al = run("alarms", **{"from": iso(yday), "to": iso(today)})
-    y_n = sum(r["times"] for r in y_al)
-    cases.append({"q": "어제 알람 몇 건이야?", "kind": "DB·알람(상대 날짜)", "truth": f"{yday} {y_n}건", "must": [nums(y_n)]})
-    wd_al = run("alarms", **{"from": iso(wd), "to": iso(wd + timedelta(days=1))})
-    wd_n = sum(r["times"] for r in wd_al)
-    cases.append({"q": f"{kday(wd)}에 알람 몇 번 떴어?", "kind": "DB·알람(날짜 지정)", "truth": f"{wd} {wd_n}건", "must": [nums(wd_n)]})
-    code_n = sum(r["times"] for r in alarms_7 if r["alarm_code"] == top_code)
+    y_n = alarm_n(iso(yday), iso(today))
+    cases.append({"q": "어제 알람 몇 건이야?", "kind": "DB·알람(상대 날짜)", "truth": alarm_truth(str(yday), y_n), "must": [nums(y_n[0])]})
+    wd_n = alarm_n(iso(wd), iso(wd + timedelta(days=1)))
+    cases.append({"q": f"{kday(wd)}에 알람 몇 번 떴어?", "kind": "DB·알람(날짜 지정)", "truth": alarm_truth(str(wd), wd_n),
+                  "must": [nums(wd_n[0])]})
+    code_n = alarm_n(iso(today - timedelta(days=7)), iso(today), top_code)
     cases.append({"q": f"최근 7일 {top_code} 알람 몇 번 떴어?", "kind": "DB·알람(번호)",
-                  "truth": f"{today - timedelta(days=7)}~{yday} {top_code} {code_n}번", "must": [nums(code_n)]})
+                  "truth": alarm_truth(f"{today - timedelta(days=7)}~{yday} {top_code}", code_n), "must": [nums(code_n[0])]})
     start = date(today.year, today.month, 1)
-    m_al = run("alarms", **{"from": iso(start), "to": now.isoformat()})
-    m_n = sum(r["times"] for r in m_al)
+    m_n = alarm_n(iso(start), now.isoformat())
     cases.append({"q": f"{today.month}월에 알람 몇 건 있었어?", "kind": "DB·알람(달)",
-                  "truth": f"{start}~지금 {m_n}건", "must": [nums(m_n)]})
+                  "truth": alarm_truth(f"{start}~지금", m_n), "must": [nums(m_n[0])]})
 
     k = [r for r in run("kpi", from_date=str(wd), to_date=str(wd), equipment_id="VF2-02", shift_type="DAY")]
     if k:
