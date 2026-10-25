@@ -82,6 +82,13 @@ def tool_call(name: str, body: ToolCallIn, request: Request, db: Db = Depends(ge
     return {"tool": name, "rows": rows, "now": db.scalar("common.now")}
 
 
+@router.get("/docs", dependencies=SERVICE)
+def doc_corpus(db: Db = Depends(get_ro_db)):
+    """사내 문서 조각 전체 (현행 개정만) — 비서가 시작할 때 한 번 읽는다 (비서 DOCS_SOURCE=db, 2026-10-25). 읽기 전용 연결이고,
+    사람 질문과 무관한 요청이라 접근 기록(access_log)을 남기지 않는다. 조각을 만드는 쪽은 tools/load_docs.py (이 API는 쓰지 않는다)"""
+    return {"docs": db.all("assistant.doc_corpus_docs"), "chunks": db.all("assistant.doc_corpus_chunks")}
+
+
 @router.post("/drafts/work-order", dependencies=SERVICE)
 def draft_work_order(body: WoDraftIn, db: Db = Depends(get_db)):
     """작업지시서 AI비서 초안 (고정 서식 블록은 AI가 쓰지 않고 붙었다는 표시만, R-33). 겹치면 기존 것에 더함 (R-71)"""

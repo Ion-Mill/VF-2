@@ -307,6 +307,13 @@ FLAG_CHOICES = {"NUM_MATCH": ("token", "value"), "ROUTE_POLICY": ("rescue", "llm
                 "MOM_CLAUDE_VIA": ("cli", "api")}
 
 
+def docs_source() -> str:
+    """사내 문서를 어디서 읽나 (2026-10-25): files = 로컬 가상사내문서/*.md (기본), db = 백엔드 GET /api/assistant/docs (공용 DB 읽기 전용).
+    모르는 값은 files. 켜는 법·일치도 확인은 261003_창민/문서_DB읽기_성과_20261025.md"""
+    v = {**_dotenv(), **os.environ}.get("DOCS_SOURCE", "files").strip().lower()
+    return "db" if v == "db" else "files"
+
+
 def settings() -> Settings:
     env = {**_dotenv(), **os.environ}
     get = lambda k, d="": env.get(k, d)  # noqa: E731
