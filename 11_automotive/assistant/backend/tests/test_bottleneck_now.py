@@ -85,11 +85,12 @@ def test_tool_is_denied_for_a_role_without_line_view():
 # ------------------------------------------------------------------ 질문 가르기 (37개: 지금 15 · 지난 7 · 잃은 개수 1 · 손대지 않음 14)
 NOW = ["지금 병목 어디야?", "지금 병목어디야?", "현재 병목 공정이 어디예요?", "병목 공정 어디야", "지금 어느 공정이 병목이야?", "지금 병목 공정 알려줘",
        "지금 병목으로 표시된 공정이 어디예요? 검사 쪽인가요?", "지금 라인에서 제일 막히는 곳이 어디야?", "라인이 어디서 막혀?", "지금 병목이 OP-30이야?",
-       "병목이 풀렸어?", "병목 언제부터 그랬어?", "지금 병목 원인이 뭐야?", "VF2-01이 지금 병목이야?", "VF2-02 때문에 병목 생겼어?"]
+       "병목이 풀렸어?", "병목 언제부터 그랬어?", "지금 병목 원인이 뭐야?", "VF2-01이 지금 병목이야?", "VF2-02 때문에 병목 생겼어?",
+       "지금 어느 공정이 제일 느려?", "지금 라인 속도를 정하는 공정이 어디야?"]      # 병목 낱말 없이 같은 뜻으로 묻는 말 (2026-10-25 말투별 시험에서 더함)
 PAST = ["병목이 어디로 옮겨 갔어?", "최근 병목 이동 기록 보여줘", "병목이 몇 번 바뀌었어?", "이번 교대 병목 구간 알려줘", "어제 야간에 병목이 어디였어?",
         "어제 병목 원인이 뭐였어?", "지난주 병목 공정이 어디였어?"]
 LOSS = ["오늘 병목 때문에 잃은 개수는?", "병목 때문에 몇 개 잃었어?"]
-UNTOUCHED = ["재공이 제일 많이 쌓인 구간이 어디야?", "지금 어느 공정이 제일 느려?", "지금 라인 속도를 정하는 공정이 어디야?", "LOT-2609-041-1 때문에 병목이 OP-50으로 갔어?",
+UNTOUCHED = ["재공이 제일 많이 쌓인 구간이 어디야?", "제일 느린 설비 알려줘", "LOT-2609-041-1 때문에 병목이 OP-50으로 갔어?",
              "병목이 뭐야?", "병목은 어떻게 판단해?", "병목 원인이 뭐야?", "병목 조치 방법은?", "병목 걸리면 누가 뭘 해?", "병목이랑 고장은 뭐가 달라?",
              "VF2-01 지금 상태 어때?", "오늘 생산 실적 몇 개야?", "VF2-02 공구 수명 얼마나 남았어?", "재고 부족한 품목 있어?",
              # 문서 질문 몇 개 더 — 병목 낱말이 있어도 값을 묻지 않는다
@@ -200,3 +201,84 @@ def test_the_rule_runs_before_the_continue_judge(monkeypatch):
     prev = {"question": "어제 주간 교대 보고서 작성됐어?", "conclusion": "확정됐어요.", "doc_lines": []}
     a = A.answer("지금 병목 어디야?", "MNT", {}, prev=prev)
     assert a["conclusion"].startswith("지금 병목은 OP-30이에요")
+
+
+# ------------------------------------------------------------------ 병목 공정의 설비 줄 (2026-10-25, "어떤 설비 VF2-01인지도")
+def eq_state(proc, state, since="2026-10-25T07:20:00+09:00", alarm=None):
+    return {"process_code": proc, "state_code": state, "since_at": since, "minutes": 30.0, "alarm": alarm}
+
+
+ALARM = {"alarm_code": "992", "severity": "STOP", "cleared_at": None}
+
+
+def twin_states(vf01, vf02, **over):
+    eq = {"SAW-01": eq_state("OP-10", "RUN"), "MIL-01": eq_state("OP-20", "RUN"), "VF2-01": vf01, "VF2-02": vf02,
+          "WSH-01": eq_state("OP-40", "RUN"), "CMM-01": eq_state("OP-50", "IDLE")}
+    return {**twin(cause="FAILURE", since="2026-10-24T09:35:00+09:00"), "equipment": eq, **over}
+
+
+def serve(monkeypatch, doc):
+    monkeypatch.setattr(sim_live, "fetch_bottleneck", lambda url: sim_live.parse_bottleneck(doc))
+
+
+def test_parse_keeps_each_equipment_state_row():
+    got = sim_live.parse_bottleneck(twin_states(eq_state("OP-30", "DOWN", alarm=ALARM), eq_state("OP-30", "RUN")))
+    row = got["equipment_state"]["VF2-01"]
+    assert row["last_state"] == "DOWN" and row["open_alarm_code"] == "992" and row["since"].startswith("2026-10-25T07:20") and set(got["equipment_state"]) == set(EQ) | {"VF2-01"}
+
+
+def test_parse_skips_equipment_without_a_state_code():
+    doc = twin_states({"process_code": "OP-30"}, eq_state("OP-30", "RUN"))
+    assert "VF2-01" not in sim_live.parse_bottleneck(doc)["equipment_state"]
+
+
+def test_the_failed_machine_is_named_with_its_alarm_and_start_time(monkeypatch):
+    serve(monkeypatch, twin_states(eq_state("OP-30", "DOWN", alarm=ALARM), eq_state("OP-30", "RUN")))
+    c = ask("지금 병목 어디야?")["conclusion"]
+    assert c.endswith("OP-30 설비: VF2-01 고장 정지(알람 992, 07:20부터), VF2-02 가공 중."), c
+    assert "병목 원인: 고장. 10/24 09:35부터 이어지고 있어요." in c      # 병목 시작 시각과 설비 상태 시작 시각은 따로 말한다
+
+
+def test_only_machines_of_the_bottleneck_process_are_listed(monkeypatch):
+    serve(monkeypatch, twin_states(eq_state("OP-30", "RUN"), eq_state("OP-30", "RUN")))
+    c = ask("지금 병목 어디야?")["conclusion"]
+    assert "OP-30 설비: VF2-01 가공 중, VF2-02 가공 중." in c and "SAW-01" not in c and "CMM-01" not in c
+
+
+def test_other_process_bottleneck_lists_its_own_machine(monkeypatch):
+    doc = twin_states(eq_state("OP-30", "RUN"), eq_state("OP-30", "RUN"))
+    doc["bottleneck"] = {"process_code": "OP-50", "cause_code": "C3", "alarm_event_id": None, "since_at": "2026-10-25T07:00:00+09:00"}
+    serve(monkeypatch, doc)
+    c = ask("지금 병목 어디야?")["conclusion"]
+    assert "지금 병목은 OP-50이에요" in c and c.endswith("OP-50 설비: CMM-01 대기(07:20부터).")
+
+
+@pytest.mark.parametrize("state,label", [("BLOCKED", "막힘"), ("SETUP", "셋업"), ("MAINT", "계획 정비"), ("IDLE", "대기"), ("WEIRD", "WEIRD")])
+def test_state_names(monkeypatch, state, label):
+    serve(monkeypatch, twin_states(eq_state("OP-30", state), eq_state("OP-30", "RUN")))
+    assert f"VF2-01 {label}(07:20부터)" in ask("지금 병목 어디야?")["conclusion"]
+
+
+def test_a_cleared_alarm_is_not_shown(monkeypatch):
+    serve(monkeypatch, twin_states(eq_state("OP-30", "IDLE", alarm={**ALARM, "cleared_at": "2026-10-25T07:50:00+09:00"}), eq_state("OP-30", "RUN")))
+    c = ask("지금 병목 어디야?")["conclusion"]
+    assert "VF2-01 대기(07:20부터)" in c and "알람" not in c
+
+
+def test_a_machine_without_start_time_gets_no_made_up_time(monkeypatch):
+    serve(monkeypatch, twin_states(eq_state("OP-30", "DOWN", since=None, alarm=ALARM), eq_state("OP-30", "RUN")))
+    assert "VF2-01 고장 정지(알람 992)," in ask("지금 병목 어디야?")["conclusion"]
+
+
+def test_no_equipment_info_means_no_line(monkeypatch):
+    doc = twin_states(eq_state("OP-30", "DOWN"), eq_state("OP-30", "RUN"))
+    doc["equipment"] = {}
+    serve(monkeypatch, doc)
+    c = ask("지금 병목 어디야?")["conclusion"]
+    assert "설비:" not in c and c.startswith("지금 병목은 OP-30이에요")
+
+
+def test_the_machine_line_comes_before_the_named_machine_sentence(monkeypatch):
+    serve(monkeypatch, twin_states(eq_state("OP-30", "DOWN", alarm=ALARM), eq_state("OP-30", "RUN")))
+    c = ask("VF2-01이 지금 병목이야?")["conclusion"]
+    assert c.index("OP-30 설비: VF2-01 고장 정지") < c.index("VF2-01은 OP-30 공정이라") and c.endswith("지금 병목에 해당해요.")
