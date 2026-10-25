@@ -2,7 +2,7 @@
 // SCR-01 로그인 (페이지구조 v3 1장) — 아이디(U01~U12)와 비밀번호를 직접 친다 (사용자 요청 2026-10-24, 예전엔 이름 목록에서 고르면 0000이 채워졌다). 계정은 생성기/masters/app_user.csv.
 // 백엔드 모드(기본, NEXT_PUBLIC_MOM_BACKEND≠0)면 backendApi.backendLogin으로 서버가 확인하고, 받은 토큰을 화면 API와 이브 채팅이 같이 쓴다. 꺼져 있으면 화면 안에서 비교만 한다.
 import { useState } from 'react';
-import { USERS, type UserRec } from './model';
+import { USERS, userFromLogin, type UserRec } from './model';
 import type { Role } from './data';
 import Logo from './Logo';
 import { BackendErr, backendLogin, backendMode } from './backendApi';
@@ -24,16 +24,17 @@ export default function Login({ onLogin }: { onLogin: (u: UserRec) => void }) {
     if (busy) return;
     if (!id.trim() || !pw) return setFail('아이디와 비밀번호를 넣어 주세요');
     const pick = USERS.find((u) => u.id.toLowerCase() === id.trim().toLowerCase());
-    if (!pick) return setFail(BAD);
     if (!backendMode()) {
-      if (pw !== DEMO_PW) return setFail(BAD);
+      if (!pick || pw !== DEMO_PW) return setFail(BAD);
       return onLogin(pick);
     }
-    // 화면 → 백엔드 전환 (C2): 백엔드가 비밀번호를 확인하고 토큰을 준다 (backendApi.ts)
+    // 화면 → 백엔드 전환 (C2): 백엔드가 아이디·비밀번호를 확인하고 토큰과 사용자 정보를 준다 (backendApi.ts).
+    // 박힌 목록(USERS)은 보지 않는다 — 직원 관리에서 새로 만든 직원도 로그인 (2026-10-25)
     setBusy(true);
-    try { await backendLogin(pick.id, pw); } catch (e) { setBusy(false); return setFail(e instanceof BackendErr && e.status === 401 ? BAD : '서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요'); }
+    let j;
+    try { j = await backendLogin(pick?.id ?? id.trim().toUpperCase(), pw); } catch (e) { setBusy(false); return setFail(e instanceof BackendErr && e.status === 401 ? BAD : '서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요'); }
     setBusy(false);
-    onLogin(pick);
+    onLogin(userFromLogin(j));
   };
   const field = 'flex h-12 w-full items-center rounded-full border border-line bg-white px-5 text-left text-card';
 
