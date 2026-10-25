@@ -90,7 +90,7 @@ export default function Panels({ field = false, ids }: { field?: boolean; ids?: 
             <span className="text-center text-body font-semibold leading-tight">{Q.minutes}<br />분째</span>
           </div>
           {/* 글자 한 단계씩 크게 (사용자 요청 2026-10-22 "가독성 좋게") */}
-          <div className="flex min-w-0 flex-1 flex-col gap-3 px-5 py-4">
+          <div className="flex min-w-0 flex-1 flex-col gap-2 px-5 py-3">{/* 아래 세 줄이 세로라 위아래 여백을 줄여 카드 안에 들게 (2026-10-23) */}
           <div className="flex flex-wrap items-center gap-2.5">
             <button onClick={() => selectMachine(id)} className="font-mono text-[28px] font-bold leading-tight hover:underline">{MACHINES[id].name}</button>
             <span className="rounded-ctl bg-tile px-2.5 py-0.5 font-mono text-body">{MACHINES[id].op}</span>
@@ -101,10 +101,11 @@ export default function Panels({ field = false, ids }: { field?: boolean; ids?: 
               <button onClick={() => openCard(a.id)} className="h-11 shrink-0 rounded-full bg-brand px-4 text-card font-bold text-white hover:bg-brand-ink">지침카드 →</button>
             </div>
           ) : <div className="rounded-tile bg-tile px-4 py-3 text-band font-semibold text-ink-2">지금 알람 없음</div>}
-          <div className="flex flex-wrap items-baseline gap-x-8 gap-y-2 text-band text-ink-2">
-            <span>교대 실적/목표 <b className={`${num} text-[28px] text-ink`}>{pq} / {p.total_target_qty}</b>{MACHINES[id].op === 'OP-30' && <span> (2대 합, 이 설비 {Q.shift_actual_qty})</span>}</span>
-            <span>오늘 정지 <b className={`${num} text-[28px] ${a?.level === '긴급' ? 'text-crit' : 'text-ink'}`}>{Q.stop_min}</b>분</span>
-            <span className="min-w-0 truncate">로트 {Q.lot_no ? <button onClick={() => go('lots', Q.lot_no)} className="font-mono font-semibold text-brand-ink underline">{Q.lot_no}</button> : '—'}</span>
+          {/* 한 줄에 하나씩 세로로 (사용자 요청 2026-10-23) — 왼쪽 이름 칸 폭을 맞춰 값이 한 줄로 선다 */}
+          <div className="grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-5 gap-y-0.5 text-band leading-tight text-ink-2">
+            <span>교대 실적/목표</span><span className="min-w-0 truncate"><b className={`${num} text-[28px] text-ink`}>{pq} / {p.total_target_qty}</b>{MACHINES[id].op === 'OP-30' && <span> (2대 합, 이 설비 {Q.shift_actual_qty})</span>}</span>
+            <span>오늘 정지</span><span><b className={`${num} text-[28px] ${a?.level === '긴급' ? 'text-crit' : 'text-ink'}`}>{Q.stop_min}</b>분</span>
+            <span>로트</span><span className="min-w-0 truncate">{Q.lot_no ? <button onClick={() => go('lots', Q.lot_no)} className="font-mono font-semibold text-brand-ink underline">{Q.lot_no}</button> : '—'}</span>
           </div>
           </div>
         </section>);

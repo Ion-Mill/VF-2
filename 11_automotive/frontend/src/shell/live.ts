@@ -147,6 +147,17 @@ export function useLocal<T>(key: string, init: T): [T, (v: T | ((p: T) => T)) =>
   return [v, set];
 }
 
+// 시연 서버 프로필 (영상용 video / 최종용 final — 1024_팀원별_요청.md 4장). 백엔드를 거치지 않고 /sim-api 로 직접 (next.config.mjs)
+export interface Profile {
+  name: 'video' | 'final'; clock_mode: 'accelerated' | 'wall'; controls: string[]; history_start: string; history_end: string; live_start: string;
+  shifts: Record<'DAY' | 'NIGHT', { start: string; end: string; break: string[] }>; daily_report_latest: string;
+}
+export function useProfile(): Profile | null {
+  const [p, setP] = useState<Profile | null>(null);
+  useEffect(() => { fetch('/sim-api/health', { cache: 'no-store' }).then((r) => r.json()).then((j) => setP(j.profile ?? null)).catch(() => setP(null)); }, []);
+  return p;
+}
+
 // 한 번 받아 두는 조회 (화면이 열릴 때·주기적으로)
 export function useFetch<T>(path: string | null, every = 0, deps: unknown[] = []): { data: T | null; err: string | null; reload: () => void } {
   const [data, setData] = useState<T | null>(null);

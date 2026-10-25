@@ -15,7 +15,9 @@ import { alarmSentence } from './alarmText';
 import { useAlarmText } from './assistText';
 import { rankOfAlert, rankOfNotice } from './Briefing';
 import RobotIcon from './RobotIcon';
+import { BackButton } from './ui';
 import EveThinking from './EveThinking';
+import { STATUS_KO } from './assistantStatus';
 import { PENDING_GIVEUP_MS, canStartNewChat, currentChat, isFocusRow, lastChatId, makeNewChatMark, mergeServerLog, resolvePending, sessionOf, settlePending, withNewChat, type FocusRef } from './chatLog';
 import { carryAlarm } from './carry';
 import { suggestChips } from './chips';
@@ -30,6 +32,13 @@ const TAB_ICON: Record<EveTab, string[]> = {
   알림: ['M6 16V11a6 6 0 0 1 12 0v5l2 2H4l2-2z', 'M10 20a2 2 0 0 0 4 0'],
   채팅: ['M4 5h16v11H9l-5 4z'],
   '채팅 기록': ['M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0', 'M12 7v5l3 2'],
+};
+// 메뉴 아이콘 · 고른 탭 색 = 테마 토큰(tailwind.config.ts) [바탕, 글자, 선] — 넷 다 다르게 (사용자 요청 2026-10-23)
+const TAB_COLOR: Record<EveTab, [string, string, string]> = {
+  브리핑: ['#e5effe', '#2a55b8', '#cbdcfb'], // brand
+  알림: ['#fff3e3', '#a35a0c', '#f6d6a8'], // warn
+  채팅: ['#e6f6ef', '#157a4f', '#bfe6cf'], // ok
+  '채팅 기록': ['#eef2f7', '#56667d', '#e3e9f2'], // info(회색)
 };
 // 어두운 창 위 수준 글자색 (위젯 .ma-tone-*)
 const TONE: Record<Level, string> = { 긴급: '#FF8A7E', 주의: '#FFC46B', 참고: '#A9C2FF' };
@@ -111,7 +120,7 @@ export function Eve({ tab, quick: showQuick, onPick, onClose, badges, bubble, on
   return (
     <div className={`ma-root${tab ? ' is-panel' : ''}`}>
       {toast && (
-        <div className="ma-toast ma-rise" role="status" style={shift}>
+        <div className={`ma-toast ma-rise ${toast.startsWith('⚠') ? 'is-crit' : toast.startsWith('▲') ? 'is-warn' : 'is-info'}`} role="status" style={shift}>
           <button type="button" className="ma-toast-main" onClick={openToast}>
             <Robot face={toast.startsWith('⚠') ? 'alarm' : 'news'} size={36} />
             <span className="ma-toast-text"><span className="ma-toast-time ma-mono">이브</span><strong className="ma-toast-title">{toast}</strong></span>
@@ -125,9 +134,8 @@ export function Eve({ tab, quick: showQuick, onPick, onClose, badges, bubble, on
       {menu && !tab && (
         <div className="ma-menu" role="menu" aria-label="이브 메뉴" style={shift}>
           {EVE_TABS.map((t, i) => (
-            <button key={t} type="button" role="menuitem" className="ma-menu-item ma-rise" style={{ animationDelay: `${i * 50}ms` }} onClick={() => pick(t)}>
-              <span className="ma-menu-label">{t}</span>
-              <span className="ma-menu-icon"><Icon d={TAB_ICON[t]} size={28} />{badge(t, 'ma-menu-badge')}</span>
+            <button key={t} type="button" role="menuitem" aria-label={t} title={t} className="ma-menu-item ma-rise" style={{ animationDelay: `${i * 50}ms` }} onClick={() => pick(t)}>
+              <span className="ma-menu-icon" style={{ background: TAB_COLOR[t][0], color: TAB_COLOR[t][1], borderColor: TAB_COLOR[t][2] }}><Icon d={TAB_ICON[t]} size={28} />{badge(t, 'ma-menu-badge')}</span>
             </button>
           ))}
         </div>
@@ -141,7 +149,7 @@ export function Eve({ tab, quick: showQuick, onPick, onClose, badges, bubble, on
             <button type="button" className="ma-icon-btn" onClick={onClose} aria-label="창 닫기"><Icon d={['M6 6l12 12M18 6L6 18']} /></button>
           </header>
           <div className="ma-tabs" role="tablist" aria-label="이브 메뉴">
-            {EVE_TABS.map((t) => <button key={t} type="button" role="tab" className="ma-tab" aria-selected={tab === t} onClick={() => { setFocus(null); onPick(t); }}>{t}{badge(t, 'ma-tab-badge')}</button>)}
+            {EVE_TABS.map((t) => <button key={t} type="button" role="tab" className="ma-tab" aria-selected={tab === t} style={tab === t ? { background: TAB_COLOR[t][0], color: TAB_COLOR[t][1] } : undefined} onClick={() => { setFocus(null); onPick(t); }}><Icon d={TAB_ICON[t]} size={15} />{t}{badge(t, 'ma-tab-badge')}</button>)}
           </div>
           {/* 채팅은 다른 탭으로 가도 지우지 않고 숨기기만 한다 — 보낸 질문·기다리는 답·입력 중인 글이 그대로 남는다 (2026-10-20). contents = 보일 때 모양은 그대로 */}
           <div className={tab === '채팅' ? 'contents' : 'hidden'}>
@@ -212,7 +220,7 @@ function AlertsTab({ onNotice }: { onNotice: (n: Notice) => void }) {
   // 알림 폭주: 10분 안 10건 넘으면 띠 (DOC-07 10.3)
   const recent = alerts.filter((a) => SIM.now() - a.ts < 600000).length;
   const chip = (on: boolean) => `h-9 whitespace-nowrap rounded-full border px-3 text-[12px] font-semibold ${on ? 'border-[#9DBCF4] bg-[#9DBCF4] text-[#1A1F23]' : 'border-slate-300'}`;
-  const ab = 'h-11 rounded-full border border-slate-300 px-4 text-[14px] font-semibold hover:bg-slate-50 disabled:text-slate-400';
+  const ab = 'h-11 rounded-full border border-slate-300 bg-white px-4 text-[14px] font-semibold hover:bg-slate-50 disabled:text-slate-400';
   const title = (it: Item) => (it.kind === 'a' ? `${MACHINES[it.a.machine].name} ${alarmTitle(it.a.alarm, it.a.code)}${it.n > 1 ? ` ×${it.n}` : ''}` : it.x.ruleName);
   const level = (it: Item) => (it.kind === 'a' ? it.a.level : it.x.level);
   const at = (it: Item) => (it.kind === 'a' ? it.a.time : it.x.at);
@@ -222,8 +230,11 @@ function AlertsTab({ onNotice }: { onNotice: (n: Notice) => void }) {
     const lv = level(cur), done = handledOf(cur);
     return (
       <div className="flex flex-col gap-3">
-        <button onClick={() => { setOpenId(null); setPlan(''); }} className="w-fit text-[18px] font-semibold underline">← 목록</button>
-        <div className="rounded-xl border-l-[6px] bg-white/5 p-3" style={{ borderColor: BAR[lv] }}>
+        <div className="flex items-center gap-2">
+          <BackButton onClick={() => { setOpenId(null); setPlan(''); }} />
+          <span className="text-[14px] font-medium tracking-[-.01em] text-ink-2">목록</span>
+        </div>
+        <div className="rounded-xl border border-l-[6px] border-line bg-white p-3 shadow-[0_1px_3px_rgba(27,42,65,.08)]" style={{ borderLeftColor: BAR[lv] }}>
           <div className="text-[12px] font-semibold" style={{ color: TONE[lv] }}>{LEVEL_VIEW[lv].icon} {lv} · {md(at(cur))} {hhmm(at(cur))} · {done ? '처리됨' : '처리 안 됨'}</div>
           <b className="mt-1 block text-[17px] leading-snug">{title(cur)}</b>
           {cur.kind === 'a' ? (<>
@@ -319,6 +330,7 @@ function Chat({ active, focus, headerSlot, onNewChat, ask, onAsked }: { active: 
   const [busy, setBusy] = useState(false);
   const inflight = useRef(new Set<number>());   // 이 화면이 지금 요청을 보내 둔 질문의 sentAt — 새로고침으로 끊긴 대기 줄(여기 없는 것)과 구분한다
   const [found, setFound] = useState(false);   // 답이 왔다 → 이브가 ✓ 를 띄운 뒤 답을 보여 줌 (사용자 요청 2026-10-21)
+  const [miss, setMiss] = useState(false);   // 문서에 없음·응답 없음이면 ✓ 대신 ✕ 하고 운다 (사용자 요청 2026-10-24)
   const input = useRef<HTMLInputElement>(null);
   // 마이크 (2026-10-20): 서버의 음성 스위치가 켜져 있을 때만 버튼이 보인다. 한 번 누르면 녹음 시작 → 다시 누르면 끝나고 글자로 바꿔 입력창에 **채우기만** 한다 (보내는 것은 사용자가 글자를 보고 직접)
   const [voice, setVoice] = useState<VoiceStatus>(VOICE_OFF);
@@ -379,10 +391,11 @@ function Chat({ active, focus, headerSlot, onNewChat, ask, onAsked }: { active: 
         : await api<{ answer: string; status: string; sources: ChatRow['sources']; series?: ChatRow['series'] }>('assistant/chat', { question: text, role, user_id: user.id, context: { screen, equipment_id: selected ? MACHINES[selected].eq : null } });
       row = { at, q: text, a: r.answer, status: r.status, sources: r.sources ?? [], series: r.series, ...('chatId' in r && typeof r.chatId === 'number' ? { chatId: r.chatId } : {}), ...(prevChatId !== null ? { prevChatId } : {}) };
     } catch (e) { row = { at, q: text, a: '비서 응답 없음 — ' + (e as Error).message, status: '응답 없음', sources: [], ...(prevChatId !== null ? { prevChatId } : {}) }; }
-    setFound(true); await new Promise((r) => setTimeout(r, 1100));   // 답하기 직전 ✓ 를 잠깐 보여 줌 (그동안 대기 줄은 그대로 — 새로고침돼도 되살리기가 처리)
+    const missed = row.status === STATUS_KO.NOT_IN_DOCS || row.status === STATUS_KO.NO_RESPONSE;
+    setMiss(missed); setFound(true); await new Promise((r) => setTimeout(r, missed ? 2400 : 1100));   // 답하기 직전 ✓ 를 잠깐 보여 줌, 우는 모습은 더 길게 (그동안 대기 줄은 그대로 — 새로고침돼도 되살리기가 처리)
     inflight.current.delete(sentAt);
     setLog((l) => settlePending(keep30(l), sentAt, row));
-    setBusy(false); setFound(false);
+    setBusy(false); setFound(false); setMiss(false);
   };
   // 새로고침으로 요청이 끊긴 대기 줄 되살리기: 서버 기록(백엔드 서버는 손님이 끊겨도 답을 끝까지 기록에 남긴다)에서 같은 질문의 새 답을 찾아 붙이고, 150초가 지나도 없으면 끊겼다고 알린다.
   // 백엔드를 안 쓰는 옛 길은 서버 기록이 없어 바로 알린다. 아래 waiting 동안 새 질문·[새 채팅]은 막는다
@@ -406,8 +419,11 @@ function Chat({ active, focus, headerSlot, onNewChat, ask, onAsked }: { active: 
   const ex = suggestChips({ role, onCard: screen === 'card' || screen === 'cards', alarmCode: cardCode ?? listCode, screen });   // 지침카드를 열었으면 그 알람·내 역할에 맞는 질문, 아니면 역할별 고정 말풍선. "이 화면 설명해 줘"는 정보판이 있는 화면만 (chips.ts)
   const body = useRef<HTMLDivElement>(null);
   useEffect(() => { if (ask && !waiting) { onAsked?.(); send(ask); } }, [ask, waiting]); // eslint-disable-line react-hooks/exhaustive-deps -- 작은 채팅창의 질문을 한 번 보냄 (답을 기다리는 중이면 끝난 뒤)
+  const toFocus = useRef(false);   // 눌러 연 줄로는 열 때·다시 보일 때만 간다. 질문을 보내면 이브가 나오는 맨 아래로 (사용자 요청 2026-10-24)
+  useEffect(() => { toFocus.current = true; }, [focus, active]);
   useEffect(() => {
-    const el = focus && body.current?.querySelector('[data-focus="1"]');
+    const el = toFocus.current && focus && body.current?.querySelector('[data-focus="1"]');
+    toFocus.current = false;
     if (el) el.scrollIntoView({ block: 'center' }); else if (body.current) body.current.scrollTop = body.current.scrollHeight;
   }, [log.length, waiting, focus, active]);   // active: 숨겼다 다시 보일 때도 맨 아래(또는 눌러 연 줄)로
   return (
@@ -421,7 +437,7 @@ function Chat({ active, focus, headerSlot, onNewChat, ask, onAsked }: { active: 
         <div className="ma-pad min-h-full" aria-live="polite">
           {today.length === 0 && !waiting && <EveHello />}
           {today.map((r, i) => <div key={i} data-at={r.at} {...(isFocusRow(r, focus) ? { 'data-focus': '1' } : {})} className={isFocusRow(r, focus) ? 'rounded-lg ring-2 ring-[#9DBCF4]' : ''}><Bubble r={r} meta={`${md(r.at)} ${hhmm(r.at)}`} openSource={openSource} role={role} /></div>)}
-          {waiting && <EveThinking found={found} />}
+          {waiting && <EveThinking found={found} miss={miss} />}
         </div>
       </div>
       <form className="ma-compose" onSubmit={(e) => { e.preventDefault(); if (!waiting) send(); }}>

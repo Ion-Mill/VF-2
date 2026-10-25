@@ -77,7 +77,7 @@ export function InventoryScreen() {
   const okN = Number(chosen.length > 0) + Number(enough && chosen.length > 0) + Number(chosen.length > 0 && (fifo || !!fifoWhy.trim()));
   const can = role === 'SUP' && chosen.length > 0 && enough && (fifo || fifoWhy.trim());
   const shipList = ships.data?.shipments ?? [];
-  const lastNo = shipList.map((s) => String(s.shipment_no)).sort().pop() ?? 'SHP-2609-000';
+  const lastNo = shipList.map((s) => String(s.shipment_no)).sort().pop() ?? `SHP-${today.slice(2, 4)}${today.slice(5, 7)}-000`;   // 출하가 없으면 그 달 001부터
   const nextNo = lastNo.replace(/(\d+)$/, (m) => String(Number(m) + 1).padStart(m.length, '0'));
   const fgNow = Number(inv.items.find(isFG)?.stock_qty ?? 0);
   const orders = Array.from(new Set(chosen.map(([lot]) => allLots.find((l) => l.lot_no === lot)?.order_no).filter(Boolean))).sort();

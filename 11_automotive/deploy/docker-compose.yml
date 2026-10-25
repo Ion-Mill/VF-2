@@ -11,6 +11,7 @@ services:
       DOMAIN: ${DOMAIN:?.env 에 DOMAIN 필요}
       BASIC_USER: ${BASIC_USER:?.env 에 BASIC_USER 필요}
       BASIC_HASH: ${BASIC_HASH:?.env 에 BASIC_HASH 필요}
+      GATE_TOKEN: ${GATE_TOKEN:?.env 에 GATE_TOKEN 필요}   # 접속 통과 쿠키 값 (Caddyfile)
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data

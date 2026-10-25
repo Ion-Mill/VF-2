@@ -23,6 +23,10 @@
 .PARAMETER LocalDb        내 컴퓨터의 로컬 DB(Docker)로 켠다. 설정 파일이 backend\.env.supabase 대신 backend\.env 다 (backend\README.md 의 Docker 절차).
                   두 접속 주소(MOM_DATABASE_URL, MOM_READONLY_DATABASE_URL)의 호스트가 localhost 또는 127.0.0.1 이 아니면 멈춘다.
                   이때만 MOM_DEMO_MODE=true 를 허용한다 (시연 되돌리기·시계 조작이 열린다). 이 옵션 없이는 시연 모드 true 를 거부하는 공용 DB 점검 그대로다.
+.PARAMETER SupabaseDocs   -LocalDb 와 같이 쓴다. **사내 문서만** 공용 Supabase에서 읽기 전용으로 가져온다 (운영 데이터·시연 모드는 그대로 로컬 DB). backend\.env.supabase 로 읽기 전용 백엔드 하나(기본 8021, 이름 docs_backend)를
+                  더 켜고, 비서를 켤 때 DOCS_SOURCE=db·DOCS_BACKEND_URL 을 그 프로세스에만 준다. 켜기 전에 .env.supabase 를 읽어 확인한다: 시연 모드·MOM_SIM_SYNC 가 true 가 아니고, MOM_RUN_WORKERS=false 가 있고,
+                  MOM_ASSISTANT_KEY 가 비서와 같고, DB 호스트가 공용(localhost 아님)이어야 한다. 어기면 켜지 않는다. 8021 프로세스에는 세 스위치를 false 로 한 번 더 준다. 이미 켜져 있는 비서에는 적용되지 않는다 (환경변수는 켤 때 읽는다).
+.PARAMETER DocsPort       문서 백엔드 포트 (기본 8021). -SupabaseDocs 일 때만 쓴다.
 .PARAMETER WaitSeconds    준비될 때까지 기다리는 최대 시간 (기본 60초)
 .PARAMETER DryRun         아무것도 켜지 않고 무엇을 할지만 보여 준다 (설정 점검은 한다).
 
@@ -34,6 +38,8 @@
   .\11_automotive\assistant\start_all.ps1 -Screen -Profile final
 .EXAMPLE
   .\11_automotive\assistant\start_all.ps1 -Screen -LlmCompose
+.EXAMPLE
+  .\11_automotive\assistant\start_all.ps1 -LocalDb -Screen -Profile video -LlmCompose -SupabaseDocs
 .EXAMPLE
   .\11_automotive\assistant\start_all.ps1 -BackendPort 8021 -AssistantPort 8101 -DryRun
 #>
@@ -48,6 +54,8 @@ param(
     [switch]$LlmCompose,
     [switch]$CheckDb,
     [switch]$LocalDb,
+    [switch]$SupabaseDocs,
+    [int]$DocsPort = 8021,
     [int]$WaitSeconds = 60,
     [switch]$DryRun
 )
@@ -195,6 +203,30 @@ if ($Screen) {
     $cors = Get-EnvValue $BackendEnv 'MOM_CORS_ORIGINS'
     if ($NewChat -and $cors -and -not $cors.Contains(":$ScreenPort")) { Say "[주의] MOM_CORS_ORIGINS 에 화면 포트 $ScreenPort 가 없다. 브라우저가 백엔드를 부를 때 막힌다 — backend\.env.supabase 에 http://localhost:$ScreenPort 를 더한다." Yellow }
 }
+# -SupabaseDocs (2026-10-25): 사내 문서만 공용 Supabase에서 읽기 전용으로 가져온다 — 읽기 전용 백엔드를 하나 더 켠다. 공용 DB를 지키는 설정을 켜기 전에 읽어서 확인한다
+$DocsEnvName = '.env.supabase'
+$DocsEnv = Join-Path $BackendDir $DocsEnvName
+if ($SupabaseDocs -and -not $LocalDb) {
+    Say '[알림] -SupabaseDocs 는 -LocalDb 와 같이 쓸 때만 뜻이 있다 (-LocalDb 없이는 백엔드 8020이 이미 공용 DB다). 무시한다.' Yellow
+    $SupabaseDocs = $false
+}
+if ($SupabaseDocs) {
+    if (-not (Test-Path -LiteralPath $DocsEnv)) { Fail "-SupabaseDocs 인데 backend\.env.supabase 가 없다 — 실행_안내.md 4-2  ($DocsEnv)" }
+    $keyD = Get-EnvValue $DocsEnv 'MOM_ASSISTANT_KEY'
+    if ([string]::IsNullOrEmpty($keyD) -or $keyD -cne $keyA) { Fail 'backend\.env.supabase 의 MOM_ASSISTANT_KEY 가 비어 있거나 assistant\.env 와 다르다 (같은 값이어야 문서 백엔드가 비서 요청을 받는다. 값은 화면에 찍지 않는다)' }
+    $dv = Get-EnvValue $DocsEnv 'MOM_READONLY_DATABASE_URL'
+    if ([string]::IsNullOrEmpty($dv) -or $dv.Contains('<') -or $dv.Contains('>')) { Fail 'backend\.env.supabase 의 MOM_READONLY_DATABASE_URL 이 없거나 비밀번호 자리가 <...> 그대로다' }
+    $dvHost = $null
+    if ($dv -match '@(\[[^\]]+\]|[^:/\s?]+)') { $dvHost = $Matches[1] }
+    if (@('localhost', '127.0.0.1') -contains $dvHost) { Fail '-SupabaseDocs 인데 backend\.env.supabase 의 DB 호스트가 localhost 다. 공용 Supabase가 아니다 — 문서를 Supabase에서 가져오는 것이 목적이라 켜지 않는다' }
+    foreach ($sw in 'MOM_DEMO_MODE', 'MOM_SIM_SYNC') {
+        $sv = Get-EnvValue $DocsEnv $sw
+        if ($null -ne $sv -and @('true', '1', 'yes', 'on') -contains $sv.ToLower()) { Fail "backend\.env.supabase 에 $sw=true 다. 문서 백엔드는 읽기만 해야 한다 (공용 DB에 쓰는 API가 열린다)" }
+    }
+    $dw = Get-EnvValue $DocsEnv 'MOM_RUN_WORKERS'
+    if ($null -eq $dw -or @('false', '0', 'no', 'off') -notcontains $dw.ToLower()) { Fail 'backend\.env.supabase 에 MOM_RUN_WORKERS=false 가 있어야 한다 (줄이 없으면 기본값이 true라 공용 DB에서 스케줄러가 돈다)' }
+    Say '문서 백엔드(-SupabaseDocs) 점검 OK — 공용 DB 읽기 전용, 시연 모드·중계·스케줄러 꺼짐 (값은 찍지 않는다)' Green
+}
 Say '설정 파일·가상환경·키 일치·공용 DB 쓰기 방지 설정 OK (값은 찍지 않는다)' Green
 
 # ---------------------------------------------------------------- 2. 무엇을 할지 정하기
@@ -216,6 +248,9 @@ function Resolve-Port([string]$Label, [int]$Port, [scriptblock]$IsOurs) {
 # "우리 서버인지"는 건강 확인만으로 알 수 없다 (옛 모의 서버 8000 도 /api/health 에 200으로 답한다). 명령줄에 서버 이름이 있는지도 함께 본다.
 $planBackend = Resolve-Port '백엔드' $BackendPort { param($l) ($l.FullCmd -like '*app.main:app*') -and (Test-Url "$BackendUrl/api/health") }
 $planAssistant = Resolve-Port '비서' $AssistantPort { param($l) ($l.FullCmd -like '*backend.chat_service:app*') -and (Test-Url "$AssistantUrl/health" $ServiceHeaders) }
+$DocsUrl = "http://127.0.0.1:$DocsPort"
+$planDocs = 'skip'
+if ($SupabaseDocs) { $planDocs = Resolve-Port '문서 백엔드' $DocsPort { param($l) ($l.FullCmd -like '*app.main:app*') -and (Test-Url "$DocsUrl/api/health") } }
 $planSim = 'skip'; $planScreen = 'skip'
 if ($Screen) {
     $planSim = Resolve-Port '시연 서버' $SimPort { param($l) $l.FullCmd -like '*sim_server*' }
@@ -231,6 +266,15 @@ if ($Screen -and $planSim -eq 'reuse') {
         if ($pj) { $runProfile = $pj.Value.name }
     } catch { }
     if ($runProfile -ne $Profile) { Fail "이미 켜져 있는 시연 서버의 프로필이 '$(if ($runProfile) { $runProfile } else { '없음(옛 서버)' })' 이고, 요청은 '$Profile' 이다. stop_all.ps1 로 끄고 다시 켠다." }
+}
+if ($SupabaseDocs -and $planAssistant -eq 'reuse') {
+    $via = 'unknown'
+    try {
+        $hh = Invoke-WebRequest -Uri "$AssistantUrl/health" -Headers $ServiceHeaders -UseBasicParsing -TimeoutSec 5
+        $dd = ($hh.Content | ConvertFrom-Json).corpus.PSObject.Properties['docs']
+        if ($dd -and $dd.Value.PSObject.Properties['via']) { $via = $dd.Value.via }
+    } catch { }
+    if ($via -ne 'docs_backend') { Say "[주의] 이미 켜져 있는 비서에는 -SupabaseDocs 가 적용되지 않는다 (환경변수는 켤 때 읽는다. 지금 문서 출처: $via). 비서만 끄고 다시 켠다." Yellow }
 }
 # 시연 서버의 문장 다듬기(MOM_LLM_COMPOSE) 상태 — 요약에 보인다: on | off | unknown (-LlmCompose 를 쓴 때만)
 $simCompose = $null
@@ -312,8 +356,16 @@ if ($planBackend -eq 'start') {
     Wait-Ready '백엔드' $pB { Test-Url "$BackendUrl/api/health" } (Join-Path $RunDir 'backend.err.log')
     if (-not $DryRun) { Say "백엔드 준비 OK  $BackendUrl" Green }
 }
+if ($planDocs -eq 'start') {
+    # 읽기 전용 문서 백엔드: .env.supabase 를 읽되 쓰기가 열리는 세 스위치를 환경변수로 한 번 더 false 로 고정한다 (환경변수가 --env-file 보다 앞선다)
+    $envD = $utf8.Clone(); $envD['MOM_RUN_WORKERS'] = 'false'; $envD['MOM_DEMO_MODE'] = 'false'; $envD['MOM_SIM_SYNC'] = 'false'
+    $pD = Start-Proc 'docs_backend' $BackendPy @('-m', 'uvicorn', 'app.main:app', '--env-file', $DocsEnvName, '--host', '127.0.0.1', '--port', "$DocsPort") $BackendDir $envD 'app.main:app' $DocsPort
+    Wait-Ready '문서 백엔드' $pD { Test-Url "$DocsUrl/api/health" } (Join-Path $RunDir 'docs_backend.err.log')
+    if (-not $DryRun) { Say "문서 백엔드 준비 OK  $DocsUrl  (공용 Supabase, 읽기 전용)" Green }
+}
 if ($planAssistant -eq 'start') {
     $envA = $utf8.Clone(); $envA['MOM_BACKEND_URL'] = $BackendUrl
+    if ($SupabaseDocs) { $envA['DOCS_SOURCE'] = 'db'; $envA['DOCS_BACKEND_URL'] = $DocsUrl }      # 이 프로세스에만: 문서는 문서 백엔드(Supabase)에서, 운영 데이터는 위 백엔드
     $pA = Start-Proc 'assistant' $AssistantPy @('-m', 'uvicorn', 'backend.chat_service:app', '--host', '127.0.0.1', '--port', "$AssistantPort") $AssistantDir $envA 'backend.chat_service:app' $AssistantPort
     Wait-Ready '비서' $pA { Test-Url "$AssistantUrl/health" $ServiceHeaders } (Join-Path $RunDir 'assistant.err.log')
     if (-not $DryRun) { Say "비서 준비 OK  $AssistantUrl" Green }
@@ -340,6 +392,7 @@ if ($planScreen -eq 'start') {
 Say ''
 Say ($(if ($DryRun) { '== 예행 연습 끝 (아무것도 켜지 않았다) ==' } else { '== 켜졌다 ==' })) Cyan
 Say "  백엔드   $BackendUrl/docs   [$(Get-PlanLabel $planBackend)]"
+if ($SupabaseDocs) { Say "  문서 백엔드 $DocsUrl   [$(Get-PlanLabel $planDocs)]  사내 문서만 공용 Supabase에서 읽기 전용으로 가져온다 (운영 데이터는 위 백엔드)" Yellow }
 Say "  비서     $AssistantUrl   [$(Get-PlanLabel $planAssistant)]  (밖에 열지 않는다. 확인할 때는 X-Service-Key 헤더가 필요하다)"
 if ($Screen) {
     Say "  시연서버 http://127.0.0.1:$SimPort   [$(Get-PlanLabel $planSim)]  프로필 $Profile"

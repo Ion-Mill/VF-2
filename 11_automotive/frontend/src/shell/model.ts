@@ -19,6 +19,13 @@ export const SHORT = GENERATED.short as unknown as Record<string, ShortRow>;
 export const BLOCK = GENERATED.block as unknown as string[];
 export const INVENTORY = GENERATED.inventory as unknown as InvItem[];
 export const REASONS = GENERATED.reasons as unknown as { group: string; code: string; name: string }[];
+// 직원 관리에서 바꾼 배치(서버 /api/users)를 화면의 사용자 목록에 덮어쓴다 — 로그인한 사용자도 같은 객체라 브리핑·담당 공정 알림이 바로 바뀐다 (FR-USR-01-06)
+export const applyAssignments = (rows: { user_id: string; home_shift_type: string; home_process_code: string; home_process_code_2: string }[]) => {
+  for (const r of rows) {
+    const u = USERS.find((x) => x.id === r.user_id);
+    if (u) { u.shift = r.home_shift_type as UserRec['shift']; u.procs = [r.home_process_code, r.home_process_code_2].filter(Boolean); }
+  }
+};
 export const userName = (id?: string | null) => USERS.find((u) => u.id === id)?.name ?? id ?? '—';
 
 export const ROLE_NAME: Record<Role, string> = { OPR: '현장 작업자', MNT: '보전 담당자', SUP: '라인 반장', MGR: '공장 관리자' };

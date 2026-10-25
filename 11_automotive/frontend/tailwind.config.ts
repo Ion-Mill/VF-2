@@ -19,9 +19,9 @@ const config: Config = {
         info: { DEFAULT: '#56667d', bg: '#f1f4f8' },                                     // ⓘ 참고 · 할 일 · 진행
         ink: { DEFAULT: '#1b2a41', 2: '#56667d', 3: '#7d8ca1' },                         // 글자 · 보조 글자 · 흐린 글자 (짙은 남색 쪽)
         bar: '#9fb4d6',                                                                   // 정상 막대 · 비활성 글자
-        line: { DEFAULT: '#e3e9f2', soft: '#edf1f7' },                                    // 카드 선 · 칸 안 줄
+        line: { DEFAULT: '#dde4ee', soft: '#edf1f7' },                                    // 카드 선 · 칸 안 줄 (카드 선은 회청 바탕에 맞춰 살짝 진하게 2026-10-24)
         tile: '#f3f6fb',                                                                  // 흰 버튼 hover · 옅은 칸
-        ground: '#f5f8fc',                                                                // 화면 바탕 (아주 옅은 하늘빛 흰색)
+        ground: '#e6ebf2',                                                                // 화면 바탕 (회청, 흰 카드와 구분되게 두 단계 낮춤 2026-10-24 B안)
         track: '#edf1f7',                                                                 // 막대 바탕
         // 공정 색 — 파랑 계열 안에서 이웃끼리 번갈아 다르게 (칸 바탕 / i 아이콘 · 막대 / b 시간표 막대 바탕 / t 막대 글자)
         op1: { DEFAULT: '#dff3f7', i: '#0f8299', b: '#c2e7ef', t: '#0a5a6b' }, // OP-10 절단 · 청록

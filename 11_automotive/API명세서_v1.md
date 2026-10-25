@@ -68,7 +68,7 @@
 | API-LINE-04 | GET `/api/kpi` | 지표 | 전 | 범위(라인/설비), `from`, `to` | OEE, 가동률, 성능, 양품률, MTTR·MTBF(30일), 주의 표시 | SCR-04 [8], SCR-10 [6], SCR-16, FR-PRD-01-20~23 |
 | API-LINE-05 | GET `/api/production/orders` | 작업지시 진행 표 | 전 | `shift_id` | 작업지시별 목표·완료·불량·로트·공정·납기·지연 여부·상태 | SCR-04 [11], FR-PRD-03-01~04 |
 | API-LINE-06 | GET `/api/replay` | 다시 보기 | 전 | `from`, `to` | 시각별 상태·재공·센서(5초/1분)·알람·병목 사건 | SCR-06, FR-PRD-06-01~09 |
-| API-LINE-07 | GET `/api/downtimes` | 정지 구간 목록 + 비서 추천 | 전 | `shift_id`, 설비, 미확정만 | 구간, 길이, 상태, 사유, 추천 사유(AI비서 초안) | SCR-14 **(필요 여부 판단 중)**, FR-PRD-01-18·19 |
+| API-LINE-07 | GET `/api/downtimes` | 정지 구간 목록 + 비서 추천 | 전 | `shift_id`, 설비, 미확정만 | 구간, 길이, 상태, 사유, 추천 사유(AI비서 초안), 기록 칸(이어진 기록 번호 / 기록 없음 / 필요 없음, 2026-10-24 FR-MNT-05-24) | SCR-14 **(필요 여부 판단 중)**, FR-PRD-01-18·19 |
 | API-LINE-08 | PATCH `/api/downtimes/{id}` | 정지 사유 입력 / 확정 | 입력 O·M / 확정 S | `reason_code` 또는 `confirm` | 바뀐 구간 | SCR-14, FR-PRD-01-19 |
 
 ### 2.3 알림·실시간 (AST-02)
@@ -108,11 +108,19 @@
 | API-MNT-07 | POST `.../work-orders/{id}/start` | 작업 시작 | 담당 M | — | 상태 = 진행 중 (승인 전이면 거부) | FR-MNT-03-02 |
 | API-MNT-08 | POST `.../work-orders/{id}/cancel` | 취소 (권한 없음) | — | `reason` | 거절. 상태 칸은 남음 | SCR-11 |
 | API-MNT-09 | GET·PATCH `/api/maint/work-records/{id}` | 작업기록서 조회·수정 | 조회 전 / 수정 M | `version`, 고친 칸, 체크 9칸, 사용 부품 | 칸 전부 | SCR-12, FR-MNT-05-01~08 |
-| API-MNT-10 | POST `.../work-records/{id}/assist` | 메모를 비서로 정리 | M | `memo` | AI비서 초안 칸 | FR-MNT-05-02 |
+| API-MNT-10 | POST `.../work-records/{id}/assist` | 메모를 비서로 정리 | M (선조치 간이 작업기록은 O·M, 2026-10-24) | `memo` | AI비서 초안 칸 (원인은 고장 대응 안내 DOC-03의 원인 중에서, 없으면 "모름"). 사진은 비서로 보내지 않음 | FR-MNT-05-02·18 |
 | API-MNT-11 | POST `.../work-records/{id}/confirm` | 확정 → 작업지시서 완료, 재고 차감, MTTR 다시 계산 | M | `version` | 확정, 바뀐 기록 번호 (체크 9칸 덜 차면 거부) | FR-MNT-05-05·09·10·14 |
-| API-MNT-12 | POST `/api/maint/quick-records` · `/{id}/confirm` | 간이 작업기록 저장·확정 | 저장 O·M / 확정: 주의 O·M, 다른 공정 정지 M | 알람(또는 원인 점검 요청), 조치, 체크 9칸 | 기록 번호 | SCR-13, FR-MNT-05-13·15 |
+| API-MNT-12 | POST `/api/maint/quick-records` · `/{id}/confirm` | 간이 작업기록 저장·확정 | 저장 O·M / 확정: 주의 O·M, 다른 공정 정지 M | 알람(또는 원인 점검 요청), 조치, 체크 9칸. **선조치 기록이면** (2026-10-24) 알람 비움, 작업 시작·끝 시각, `urgent_reason_code`·`urgent_reason_text`, 잠금·표지 안 했으면 `loto_skip_reason` 필수 | 기록 번호. 선조치 기록 확정: 재고 차감, 이어진 정지 구간에 사유 추천, MTTR·MTBF에는 넣지 않음. 보전 범위 일을 했거나, 잠금·표지를 했거나, 부품을 쓴 선조치 기록은 M만 확정 | SCR-13, FR-MNT-05-13·15·18~20·22 |
+| API-MNT-13 | GET `/api/maint/unrecorded-stops` | 기록 없는 정지 목록 (2026-10-24) | 전 | 설비, `shift_id` | 구간마다 `state_log_id`, 설비, 시작·끝, 길이, 상태(DOWN·IDLE), 사유(비었음 / 고장 F 그룹), 알림 등급(ⓘ 참고 / ▲ 주의) | SCR-07·14·15, FR-MNT-05-23·24, FR-AST-02-20 |
+| API-MNT-14 | POST `/api/maint/quick-records/after-the-fact` | 선조치 기록 만들기 — 알람 없이 먼저 한 일 (2026-10-24) | O·M | `state_log_id` (정지 구간에서) **또는** `equipment_id` + 작업 시작·끝 시각 (설비를 돌린 채 한 일), `urgent_reason_code`, `urgent_reason_text`(선택), `memo`(선택) | 기록 번호(`SIMPLE`, `MR-S-…`), `after_the_fact` = 참, 채운 작업 시각, 정지 구간과 시각이 다르면 경고. 미래 시각·진행 중인 일이면 `VALIDATION`. 이어 쓰기·저장·확정은 API-MNT-12, 메모 정리는 API-MNT-10(같은 `work_record` 번호) | SCR-13·14·18·26, 알림(SCR-07)·교대 보고서(SCR-15)에서 열기, FR-MNT-05-16~20 |
+| API-MNT-15 | GET·POST `/api/maint/work-records/{id}/photos` · GET·DELETE `/{photo_seq}` | 작업기록 사진 목록·올리기·내려받기·빼기 (2026-10-24) — 간이 작업기록·작업기록서 모두 | 보기 전 / 올리기·빼기 그 기록을 쓰는 O·M | POST: 사진 파일 (multipart, JPG·PNG, 한 장 10MB 이하 [가상]) | `photo_seq`(1~3), `uploaded_by`, `uploaded_at`, 내려받기는 파일. 4장째·형식·크기 틀림 `VALIDATION`, 확정 뒤 올리기·빼기 `INVALID_STATE` | SCR-12·13, FR-MNT-05-26 |
+| API-MNT-16 | POST `/api/maint/quick-records/{id}/check` | 선조치 기록 반장 확인 (2026-10-24) | S | `version` | `checked_by`, 확인 시각, 상태 = 확인. 확정 전이거나 선조치 기록이 아니면 `INVALID_STATE`. 확인 대기 알림(`AFTER_RECORD_CHECK_WAIT`)은 처리됨 | SCR-13, FR-MNT-05-21, FR-AST-02-21 |
 | API-PM-01 | GET `/api/maint/pm-schedule` | 예방 정비 일정 | 전 | 설비, 기간 | 항목·주기·다음 기한·상태, 제때 실시율, 잠금·표지 판단 | SCR-23, FR-MNT-04-01~04·08·09 |
 | API-PM-02 | POST `/api/maint/pm-records` | 정비 시작·끝 기록 (MAINT 상태). 시연 모드의 S6 정비는 시작·끝을 시뮬레이터가 기록하고 MNT는 실시 기록을 확인 | M | `pm_task_id`, 시작/끝, 실시자 | 실시 기록 (소모품 차감, MAINT 상태) | SCR-23, FR-MNT-04-05~07·10 |
+
+- **선조치 기록 규칙** (2026-10-24, 근거 `화면시안/재기획/사후작업기록_페이지구성_초안.md`): 선조치 기록도 간이 작업기록(`SIMPLE`)이라 새 문서 종류가 없다. 기록 없는 정지 = 5분 이상, 겹치는 작업기록서·간이 작업기록·예방 정비 실시 기록 없음, DOWN이거나 IDLE인데 사유가 비었거나 F 그룹 (SETUP·MAINT·BLOCKED 뺌). 기록을 저장만 해도, 사유를 O·P 그룹으로 넣어도 목록에서 빠진다.
+- **시각 표시** (FR-MNT-05-25): 간이 작업기록·작업기록서 조회(API-MNT-09, 간이도 같은 `work_record` 번호)는 알람 시각(있으면)·작업 시작·끝·작성 시각(수정 이력 v0)을 함께 준다. "늦게 씀" 같은 꼬리표·판정 칸은 없다. 기한·별도 보고서·긴급 작업지시서 API도 없다 (FR-MNT-05-27).
+- 선조치 기록·사진 칸은 논리 ERD `work_record`(`after_the_fact`, `state_log_id`, `urgent_reason_code`, `urgent_reason_text`, `loto_skip_reason`)와 새 표 `work_record_photo`(`record_no`, `photo_seq`, `file_ref`, `uploaded_by`, `uploaded_at`) 이름 그대로.
 
 ### 2.6 보고서·문서 (PRD-02·04, AST-03)
 
@@ -159,7 +167,7 @@
 |---|---|---|---|---|---|---|
 | API-SET-01 | GET·PATCH `/api/settings/notification-rules` | 알림 기준값·재발 확인 기간 | G | 값 | — | SCR-25, FR-AST-02-16 |
 | API-SET-02 | GET·PATCH `/api/settings/targets` | 교대 목표(90)·하루 목표(180) | G | 값 | — | SCR-25 |
-| API-SET-03 | GET·PATCH `/api/settings/users` | 사용자·역할 | G | 값 | — | SCR-25, NFR-SEC-04 |
+| API-SET-03 | GET·PATCH `/api/settings/users` | 사용자·역할 — **2026-10-23부터 쓰지 않음** (설정 사용자 탭을 SCR-27로 옮김 → API-USR-01·03이 대신. 번호는 남김) | G | 값 | — | SCR-25, NFR-SEC-04 |
 | API-SIM-01 | POST `/api/sim/inject` | **사건 버튼** — 누른 때(시연 시계 지금) 사건 시작 (S1·S3·S4·S6, S2·S5는 과거 기록이라 버튼 없음) | 시연 모드 | `scenario_code` (시각은 보내지 않음) | 사건 ID(실행 중에만 쓰는 번호, DB 엔터티 아님 — 알람에는 `scenario_code`로 남음), 대상 설비, 시작 시각. 대상 설비가 가공 중(RUN)이 아니거나 진행 중인 사건이 있으면 `INVALID_STATE` (같은 사건 반복은 앞 사건이 끝난 뒤 가능) | NFR-DATA-10, 설계서 7장 |
 | API-SIM-02 | GET·POST `/api/sim/clock` | 시연 시계: 조회 / 배속(180·60·10·1배)·일시정지·다시 시작·넘기기 (지금 → 18:00. 넘기는 동안 남은 주간 교대를 만든다. 다음 날 07:00으로 넘기기는 없음, 2026-10-13) | 시연 모드 | POST: `speed` 또는 `paused` 또는 넘길 시각 | 지금 시연 시각, 배속, 일시정지 여부, 진행 중 사건, 버튼별 누를 수 있는지(잠긴 이유) | NFR-DATA-10, 기획서 15장 |
 | API-SIM-03 | POST `/api/sim/reset` | 시연 데이터 처음으로 — 시연 시작 시각(영상용 10/24 09:00, 최종용은 시각 그대로 사람 조작만 지움 — 발표자 키 필요)으로 되돌림 | 시연 모드 | — | 시연 시각 09:00 | NFR-DATA-10, 테스트계획서 6장 |
@@ -189,6 +197,17 @@
 
   멈춘 때까지의 기록은 `export()`로 `out_realtime/` CSV가 된다 (번호는 과거 기록 다음부터, 논리 ERD 11.1).
 
+
+### 2.10 직원 관리 (USR-01, MGR만, 2026-10-23)
+
+| ID | 방식 · 주소 | 하는 일 | 역할 | 보내는 값 | 돌려받는 값 | 화면 · 요구사항 |
+|---|---|---|---|---|---|---|
+| API-USR-01 | GET `/api/staff` | 직원 명단 + 배치표 + 결론 띠 | G | `period` (`today`·`7d`·`30d`·`sep`, 처음 `7d`), 역할·교대 거름 | 사람마다 `user_id`, `user_name`, `role_code`, `home_shift_type`, `home_process_code`·`home_process_code_2`, `is_active`, `on_shift`(지금 근무), `period_counts`(역할별 대표 숫자). 배치표 칸(공정·보전·반장 × 주간·야간 → 사람 목록), 담당 0명 칸 목록 | SCR-27, FR-USR-01-01~03·09·12 |
+| API-USR-02 | GET `/api/staff/{user_id}/activity` | 직원 상세: 숫자 4칸 + 최근 업무 | G | `period`, `page`·`size` | `kpis`(역할별 4개, 합계만), `items`(시각, 한 일 종류, 대상 번호, 열 화면·키) — 기존 표의 `~_by` 칸을 모은 것, 채팅 기록 없음 | SCR-27, FR-USR-01-07·08·10·11 |
+| API-USR-03 | PATCH `/api/staff/assignments` | 배치 바꾸기 (한 번에 여러 사람) | G | `changes`: 사람마다 `user_id`, 바꿀 `home_shift_type`·`home_process_code`·`home_process_code_2`, `reason`(선택) | 바뀐 사람 목록, 사람마다 수정 이력 `revision_id`(`APP_USER`), 그 결과 담당 0명 칸 | SCR-27, FR-USR-01-04~06 |
+
+- **API-USR-03 규칙:** 같은 역할만 그 줄에 넣을 수 있고(공정 = OPR, 보전 = MNT, 반장 = SUP), 담당 공정은 최대 2개 — 어기면 `VALIDATION`. 역할(`role_code`)·`is_active`는 이 API로 바꾸지 않는다 (FR-USR-01-11). 저장하면 바로 적용되고, 사람마다 `document_revision`(문서 종류 `APP_USER`, 문서 키 = `user_id`) + 바뀐 칸 전·후를 남겨 **API-DOC-02 수정 이력**으로 보인다.
+- MGR이 아니면 세 API 모두 `FORBIDDEN` (NFR-SEC-04·05).
 ---
 
 ## 3. 실시간 사건 (API-STR-01)
@@ -217,6 +236,7 @@
 | 일일 보고서 AI비서 초안 만들기 + MGR에게 일일 보고서 확정 요청 알림 (`DAILY_REPORT_PENDING`, 말풍선) | 그 생산일 야간 교대 보고서가 확정될 때(API-RPT-03 성공, 06:00~07:00). 07:00까지 확정이 없으면 07:00 (미확정 교대 칸은 잠정) | FR-PRD-04-01·09 |
 | 작업지시서 AI비서 초안 + 그 설비 MNT에게 작업지시서 초안 검토 알림 (`WO_DRAFT_READY`, 말풍선) | OP-30 정지 등급 알람·반복 알람 2단계 | FR-MNT-03-01 |
 | 알림 규칙 판단, 보고 순위 매기기 | 기록이 생길 때마다 | FR-AST-02-01~19, FR-AST-COM-21 |
+| 기록 없는 정지 찾기 + 그 설비 담당 O·M·그 교대 S에게 알림 (`UNRECORDED_STOP`, ⓘ 참고 → 교대 끝 1시간 전까지 남으면 ▲ 주의) / 선조치 기록 확정 때 반장에게 확인 요청 알림 (`AFTER_RECORD_CHECK_WAIT`, ⓘ 참고) (2026-10-24) | 정지 구간이 끝날 때 · 선조치 기록 확정 때 | FR-AST-02-20·21, FR-MNT-05-23 |
 | 지표·손실·이월 계산 | 기록이 생길 때·교대 시작 | DOC-07 6~8장, R-88 |
 | 측정 결과 파일 읽기 · 측정 지시 파일 넘기기 | 파일이 생길 때 · 측정 시작 때 | FR-QLT-01-14·15 |
 | 보관 기간이 지난 데이터 처리 | 주기 [선택 필요: 기술 회의] | NFR-DATA-13 |
@@ -232,13 +252,13 @@
 | PRD-01 3D 라인 뷰 | API-LINE-01~04·07·08, API-STR-01 | MNT-02 지침카드 | API-MNT-01 |
 | PRD-02 교대 보고서 | API-RPT-01~04 | MNT-03 작업지시서 | API-MNT-02~08 |
 | PRD-03 작업지시 진행 | API-LINE-05 | MNT-04 예방 정비 | API-PM-01·02 |
-| PRD-04 일일 보고서 | API-RPT-05 | MNT-05 작업기록서 | API-MNT-09~12 |
+| PRD-04 일일 보고서 | API-RPT-05 | MNT-05 작업기록서 (선조치 기록 포함) | API-MNT-09~16 |
 | PRD-05 로트 추적 | API-LOT-01~03 | QLT-01 검사 | API-QLT-01~05 |
 | PRD-06 다시 보기 | API-LINE-06 | INV-01 재고·출하 | API-INV-01~05 |
 | AST-01 브리핑 | API-AST-01 | ML-01 공구 수명 | API-TOOL-01·02 |
 | AST-02 알림 | API-NTF-01~04, API-STR-01, API-SET-01 | AST-03 수정 이력 | API-DOC-01·02, API-RPT-04, API-DOCS-02 |
 | MNT-01 질문 답변 | API-AST-02, API-DOCS-01 | AST-COM 비서 공통 | API-AST-01·02, API-MNT-01·10 |
-| 공통·권한·시연 | API-AUTH-01~04, API-SET-02·03, API-SIM-01~03 | | |
+| 공통·권한·시연 | API-AUTH-01~04, API-SET-02·03, API-SIM-01~03 | USR-01 직원 관리 | API-USR-01~03 |
 
 ---
 
@@ -273,3 +293,6 @@
 | v1 수정 | 2026-10-21 | 알림 미리보기 [상황 일으키기] (`구현_중_수정사항/1021_수정간단내용.md` 55장, API 수 그대로): 10장 시연 API 아래에 API-SIM-01 딸림 POST `/api/sim/fire` [제안] |
 | v1 수정 | 2026-10-22 | 작업지시서 승인은 반장만 (`구현_중_수정사항/1022_수정간단내용.md` 6장, API 수 63개 그대로): API-MNT-06 역할 S·G → S, 하는 일에서 관리자 대리 승인을 뺌. API-MNT-08 취소 역할 G → 권한 없음 |
 | v1 수정 | 2026-10-24 | 교대 시각 변경(주간 09:00~18:00·야간 21:00~06:00)과 프로필 반영: 넘기기 = 지금 → 18:00, 처음으로 = 시연 시작 시각, 교대 끝 초안 18:00·06:00, 일일 보고서 06:00~07:00. 시연 서버 `GET /api/health`에 `profile`(이름·시계 방식·조작·교대·기록 시작·끝·시연 시작 시각) 추가, 최종용은 시계·사건 조작이 403이고 `POST /api/sim/reset`만 헤더 `X-Presenter-Key`로 (API 수 63개 그대로) |
+| v1 수정 | 2026-10-23 | 직원 관리 USR-01 (`구현_중_수정사항/1023_수정간단내용.md` 18장, API 63 → **66개**): 2.10 새 절 — API-USR-01 명단·배치표, API-USR-02 직원 상세, API-USR-03 배치 바꾸기(수정 이력 `APP_USER`). API-SET-03은 쓰지 않음 표시(번호 남김). 5장 대응표에 USR-01 |
+| v1 수정 | 2026-10-24 | 사후 작업기록 (근거 `화면시안/재기획/사후작업기록_페이지구성_초안.md`, API 66 → **70개**): 2.5에 API-MNT-13 기록 없는 정지 목록, API-MNT-14 사후 기록 만들기(정지 구간 또는 설비·시각), API-MNT-15 작업기록 사진(최대 3장, 외부 LLM에 안 보냄), API-MNT-16 사후 기록 반장 확인(작업기록서를 반장이 확인하는 API가 없어 새로 둠). API-MNT-12에 사후 기록 칸·확정 규칙, API-MNT-10 사후 기록은 O·M, API-LINE-07에 기록 칸. 4장 서버 자동 작업에 알림 `UNRECORDED_STOP`·`AFTER_RECORD_CHECK_WAIT`. 5장 대응표 MNT-05 = API-MNT-09~16 |
+| v1 수정 | 2026-10-24 | 선조치 기록 고침 (2026-10-24, 사용자 요청): 이름 '사후 기록' → **선조치 기록**(사후 작업지시서 → 긴급 작업지시서). 한 일 목록을 **작업자 범위**(칩·이물, 절삭유·윤활유, 도어 밖 손상 확인, 공구, 보전 부름, 기타)와 **보전 범위**(볼스크류·가이드, 커플링, 서보 모터·케이블, 서보 앰프, 주축, 축 윤활, 공압·센서, 부품 교체 — DOC-03 점검 순서의 보전 줄 기준 [가상])로 나눔. 보전 범위는 MNT에게만 보이고, 고르면 MNT만 확정. 긴급 작업지시서 자동 생성(OP-30 보전 범위만)은 **보류**. API-MNT-12 확정 조건에 보전 범위 더함. API 수 그대로 (70개) |
