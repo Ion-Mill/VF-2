@@ -19,7 +19,10 @@
                   이 옵션 없이 켜면 시연 서버의 문장 다듬기는 꺼진다(기본). 이미 켜져 있는 시연 서버에는 적용되지 않는다 (환경변수는 켤 때 읽는다) — 끄고 다시 켠다.
 .PARAMETER Profile        -Screen 과 같이 쓸 때 **꼭 필요**: video(영상용, 10/24 09:00 시작) | final(최종용, 10/26). 시연 서버가 읽을 기록과 시계를 정한다
                   (생성기\profiles\*.json). 이미 켜져 있는 시연 서버가 다른 프로필이면 멈춘다 — 먼저 stop_all.ps1 로 끈다.
-.PARAMETER CheckDb        켜기 전에 공용 DB 접속 점검(읽기만)을 먼저 한다.
+.PARAMETER CheckDb        켜기 전에 공용 DB 접속 점검(읽기만)을 먼저 한다. -LocalDb 와 같이 쓰면 로컬 DB 점검이다.
+.PARAMETER LocalDb        내 컴퓨터의 로컬 DB(Docker)로 켠다. 설정 파일이 backend\.env.supabase 대신 backend\.env 다 (backend\README.md 의 Docker 절차).
+                  두 접속 주소(MOM_DATABASE_URL, MOM_READONLY_DATABASE_URL)의 호스트가 localhost 또는 127.0.0.1 이 아니면 멈춘다.
+                  이때만 MOM_DEMO_MODE=true 를 허용한다 (시연 되돌리기·시계 조작이 열린다). 이 옵션 없이는 시연 모드 true 를 거부하는 공용 DB 점검 그대로다.
 .PARAMETER WaitSeconds    준비될 때까지 기다리는 최대 시간 (기본 60초)
 .PARAMETER DryRun         아무것도 켜지 않고 무엇을 할지만 보여 준다 (설정 점검은 한다).
 
@@ -44,6 +47,7 @@ param(
     [switch]$NewChat,
     [switch]$LlmCompose,
     [switch]$CheckDb,
+    [switch]$LocalDb,
     [int]$WaitSeconds = 60,
     [switch]$DryRun
 )
@@ -58,7 +62,8 @@ $FrontendDir = Join-Path $Auto 'frontend'
 $BackendPy = Join-Path $BackendDir '.venv\Scripts\python.exe'
 $AssistantPy = Join-Path $AssistantDir '.venv\Scripts\python.exe'
 $SimPy = Join-Path $Auto '생성기\.venv\Scripts\python.exe'
-$BackendEnv = Join-Path $BackendDir '.env.supabase'
+$BackendEnvName = $(if ($LocalDb) { '.env' } else { '.env.supabase' })      # -LocalDb 는 로컬 Docker DB 용 backend\.env, 아니면 공용 DB 용 .env.supabase
+$BackendEnv = Join-Path $BackendDir $BackendEnvName
 $AssistantEnv = Join-Path $AssistantDir '.env'
 $RunDir = Join-Path $AssistantDir '.run'
 $PidFile = Join-Path $RunDir 'pids.json'
@@ -169,6 +174,12 @@ foreach ($name in 'MOM_DATABASE_URL', 'MOM_READONLY_DATABASE_URL') {
     $v = Get-EnvValue $BackendEnv $name
     if ([string]::IsNullOrEmpty($v)) { Fail "backend\.env.supabase 에 $name 가 없다" }
     if ($v.Contains('<') -or $v.Contains('>')) { Fail "$name 의 비밀번호 자리가 아직 <...> 그대로다 (DB 담당에게 받은 값으로 채운다)" }
+    # -LocalDb: 접속 주소의 호스트가 이 컴퓨터가 아니면 켜지 않는다 (시연 모드가 켜져 있어도 되는 것은 로컬 DB 뿐이다). 주소·비밀번호는 찍지 않는다
+    if ($LocalDb) {
+        $dbHost = $null
+        if ($v -match '@(\[[^\]]+\]|[^:/\s?]+)') { $dbHost = $Matches[1] }
+        if (@('localhost', '127.0.0.1') -notcontains $dbHost) { Fail "-LocalDb 인데 $name 의 호스트가 localhost 또는 127.0.0.1 이 아니다. 공용 DB 일 수 있어 켜지 않는다 (backend\.env 를 확인한다)" }
+    }
 }
 # 공용 DB를 지키는 설정: MOM_RUN_WORKERS 기본값은 true(스케줄러·파일 감시가 돈다)라 줄이 없어도 위험하다
 # 2026-10-24: 화면 → 백엔드가 기본이 되면서, 10/1 중계를 받는 진행자 서버(MOM_SIM_SYNC=true)는 스케줄러도 돌린다 (교대 보고서 초안·시간 규칙 알림 — 같은 DB에 여러 대가 떠도 DB 잠금으로 한 번만 돈다)
@@ -179,7 +190,7 @@ $workersOff = ($null -ne $workers) -and (@('false', '0', 'no', 'off') -contains 
 if (-not $syncOn -and -not $workersOff) { Fail 'backend\.env.supabase 에 MOM_RUN_WORKERS=false 가 있어야 한다 (줄이 없으면 기본값이 true라 공용 DB에서 스케줄러가 돈다). 진행자 서버(MOM_SIM_SYNC=true)만 true 가능' }
 if ($syncOn) { Say "[알림] MOM_SIM_SYNC=true — 이 PC가 시연 진행자(10/1 중계를 공용 DB에 씀). 시연 서버를 켜면 공용 DB가 10/1 08:00 기준점으로 되돌아간다 (채팅 기록 포함). 스케줄러: $(if ($workersOff) { '꺼짐 — 교대 끝 보고서 초안이 안 생긴다. MOM_RUN_WORKERS=true 권장' } else { '켜짐' })" Yellow }
 $demo = Get-EnvValue $BackendEnv 'MOM_DEMO_MODE'
-if ($null -ne $demo -and @('true', '1', 'yes', 'on') -contains $demo.ToLower()) { Fail 'backend\.env.supabase 에 MOM_DEMO_MODE=true 다. 공용 DB에서는 false 여야 한다 (시연 되돌리기 같은 쓰기 API가 열린다)' }
+if (-not $LocalDb -and $null -ne $demo -and @('true', '1', 'yes', 'on') -contains $demo.ToLower()) { Fail 'backend\.env.supabase 에 MOM_DEMO_MODE=true 다. 공용 DB에서는 false 여야 한다 (시연 되돌리기 같은 쓰기 API가 열린다)' }
 if ($Screen) {
     $cors = Get-EnvValue $BackendEnv 'MOM_CORS_ORIGINS'
     if ($NewChat -and $cors -and -not $cors.Contains(":$ScreenPort")) { Say "[주의] MOM_CORS_ORIGINS 에 화면 포트 $ScreenPort 가 없다. 브라우저가 백엔드를 부를 때 막힌다 — backend\.env.supabase 에 http://localhost:$ScreenPort 를 더한다." Yellow }
@@ -282,7 +293,7 @@ if ($CheckDb -and -not $DryRun) {
     $old = $ErrorActionPreference
     $ErrorActionPreference = 'Continue'      # 외부 프로그램의 오류 출력이 중단으로 번지지 않게
     try {
-        & $BackendPy 'tools\check_connection.py' '--env-file' '.env.supabase' 2>&1 | ForEach-Object { Say (Hide-Secrets ([string]$_)) }
+        & $BackendPy 'tools\check_connection.py' '--env-file' $BackendEnvName 2>&1 | ForEach-Object { Say (Hide-Secrets ([string]$_)) }
         $dbExit = $LASTEXITCODE
     } finally { $ErrorActionPreference = $old; Pop-Location }
     if ($dbExit -ne 0) { Fail 'DB 접속 점검이 실패했다. 위 내용을 확인한다 (DB 담당에게 받은 값, 인터넷).' }
@@ -293,7 +304,7 @@ $utf8 = @{ PYTHONUTF8 = '1'; PYTHONUNBUFFERED = '1' }
 
 if ($planBackend -eq 'start') {
     $envB = $utf8.Clone(); $envB['MOM_ASSISTANT_URL'] = $AssistantUrl
-    $pB = Start-Proc 'backend' $BackendPy @('-m', 'uvicorn', 'app.main:app', '--env-file', '.env.supabase', '--port', "$BackendPort") $BackendDir $envB 'app.main:app' $BackendPort
+    $pB = Start-Proc 'backend' $BackendPy @('-m', 'uvicorn', 'app.main:app', '--env-file', $BackendEnvName, '--port', "$BackendPort") $BackendDir $envB 'app.main:app' $BackendPort
     Wait-Ready '백엔드' $pB { Test-Url "$BackendUrl/api/health" } (Join-Path $RunDir 'backend.err.log')
     if (-not $DryRun) { Say "백엔드 준비 OK  $BackendUrl" Green }
 }
@@ -341,6 +352,7 @@ if ($prov -eq 'claude' -and $ext -eq '1' -and $llm -eq '1') { Say '  외부 Clau
 if (-not $DryRun) {
     Say "  로그    $RunDir"
     Say '  끄기    .\11_automotive\assistant\stop_all.ps1   (이 스크립트가 켠 것만 끈다)'
-    Say '  주의    공용 DB다. 질문하면 chat_log·access_log 에 기록이 남는다 (실행_안내.md 9절)'
+    if ($LocalDb) { Say '  주의    로컬 DB(Docker)다. 시연 모드가 켜져 있어 [처음으로]·시계 조작이 이 DB에만 닿는다. 공용 DB로 돌아가려면 stop_all.ps1 뒤 -LocalDb 없이 켠다' Yellow }
+    else { Say '  주의    공용 DB다. 질문하면 chat_log·access_log 에 기록이 남는다 (실행_안내.md 9절)' }
 }
 exit 0
