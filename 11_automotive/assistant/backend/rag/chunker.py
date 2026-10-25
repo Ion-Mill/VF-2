@@ -140,12 +140,15 @@ def corpus_source() -> dict:
 
 
 def _load_db() -> tuple[Chunk, ...]:
+    from backend import config as C
     from backend.rag import db_corpus as D          # 늦게 import — 순환 import를 피한다
-    from backend.repositories import backend_tools as BT
-    payload = D.fetch(BT._env("MOM_BACKEND_URL"), BT._env("MOM_ASSISTANT_KEY"))
+    base, key = C.docs_backend()
+    payload = D.fetch(base, key)
     chunks = D.build_chunks(payload, EXPECTED_DOC_FILES)
     _SRC.clear()
-    _SRC.update({"source": "db", "glossary": D.glossary_text(payload),
+    # via: 문서를 가져온 백엔드가 운영 데이터와 같은 것인가(main_backend) 문서만 따로 정한 것인가(docs_backend). 주소는 싣지 않는다
+    _SRC.update({"source": "db", "via": "docs_backend" if C.docs_backend()[0] != C.docs_backend_main() else "main_backend",
+                 "glossary": D.glossary_text(payload),
                  "revisions": {str(d["doc_no"]): D._rev_label(d) for d in payload["docs"]}})
     return chunks
 
