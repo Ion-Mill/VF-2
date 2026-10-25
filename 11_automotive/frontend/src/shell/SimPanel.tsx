@@ -2,6 +2,7 @@
 // 시연 조작판 (UI설계서 2.1 [14], 9.6) — 시연 모드에서만. 사건 버튼 = API-SIM-01, 시계 = API-SIM-02, 처음으로 = API-SIM-03.
 // 사건은 누른 때(시연 시계 지금) 시작하고, 시각·숫자는 그때의 계산 값이다 (설계서 7장).
 import { useState } from 'react';
+import { SHIFT_H, hh } from './data';
 import { api, type Twin } from './live';
 import { ConfirmBox } from './Safety';
 
@@ -22,9 +23,10 @@ export default function SimPanel({ twin, refresh, toast, api3d, onClose }: { twi
   };
   const c = twin?.clock;
   const locked = c?.can_control === false;      // 시연 조작은 진행자만 (백엔드 MOM_SIM_CONTROL_USERS, 2026-10-24)
-  // 교대가 끝난 뒤(17:00~20:00, 05:00~)는 휴무(계획 정지) — 설비가 다 서 있어 배속을 바꿔도 3D가 안 움직인다
+  // 교대가 끝난 뒤(18:00~21:00, 06:00~09:00)는 휴무(계획 정지) — 설비가 다 서 있어 배속을 바꿔도 3D가 안 움직인다
   const off = !!twin && !!c && c.sim_at >= twin.shift.end_at;
-  const skipTo = twin?.shift.shift_type === 'DAY' ? (off ? '20:00' : '17:00') : null;
+  // 넘기기 이름은 시각 대신 TODAY_DAY_END · TODAY_NIGHT_START (생성기 realtime.py, 2026-10-24)
+  const skipTo = twin?.shift.shift_type === 'DAY' ? (off ? { to: 'TODAY_NIGHT_START', at: `${hh(SHIFT_H.nightStart)}:00`, ok: '야간 교대 시작' } : { to: 'TODAY_DAY_END', at: `${hh(SHIFT_H.dayEnd)}:00`, ok: '남은 주간 교대를 만듦' }) : null;
   const toggle = (k: string) => { const n = !fx[k]; setFx({ ...fx, [k]: n }); api3d()?.setState((s: any) => (k === 'night' || k === 'explode' ? { [k]: n } : { layers: { ...s.layers, [k]: n } })); };
   return (
     <div className="absolute right-0 top-[48px] z-30 w-[400px] rounded-tile border border-line bg-white p-3 text-small shadow-lg">
@@ -46,11 +48,11 @@ export default function SimPanel({ twin, refresh, toast, api3d, onClose }: { twi
       <div className="mt-1 flex flex-wrap gap-1">
         {[180, 60, 10, 1].map((s) => <button key={s} disabled={!twin || locked} onClick={() => call('sim/clock', { speed: s }, `배속 ×${s}`)} className={`${b} ${c?.speed === s ? 'border-brand bg-tile' : ''}`}>×{s}</button>)}
         <button disabled={!twin || locked} onClick={() => call('sim/clock', { paused: !c?.paused }, c?.paused ? '다시 시작' : '일시정지 — 3D 움직임도 멈춤')} className={b}>{c?.paused ? '▶ 다시 시작' : '⏸ 일시정지'}</button>
-        <button disabled={!skipTo || locked} onClick={() => call('sim/clock', { skip: `TODAY_${skipTo}` }, skipTo === '17:00' ? '17:00으로 넘김 — 남은 주간 교대를 만듦' : '20:00으로 넘김 — 야간 교대 시작')} className={b}>{skipTo ? `${skipTo}으로` : '넘기기 없음'}</button>
+        <button disabled={!skipTo || locked} onClick={() => skipTo && call('sim/clock', { skip: skipTo.to }, `${skipTo.at}으로 넘김 — ${skipTo.ok}`)} className={b}>{skipTo ? `${skipTo.at}으로` : '넘기기 없음'}</button>
         <button disabled={!twin || locked} onClick={() => setReset(true)} className={b}>처음으로</button>
       </div>
       {locked && <p className="mt-1 rounded bg-tile px-2 py-1 text-small font-semibold text-ink-2">시연 조작(사건·시계·처음으로)은 진행자만 할 수 있습니다. 모두가 같은 공장을 봅니다.</p>}
-      {off && <p className="mt-1 rounded bg-warn-bg px-2 py-1 text-small font-semibold text-[#7a4b00]">{skipTo ? '휴무 (야간 20:00 시작)' : '휴무'} — 설비가 모두 서 있어 배속을 바꿔도 라인이 움직이지 않습니다. {skipTo ? '[20:00으로]를 누르면 바로 시작합니다.' : '[처음으로]를 누르세요.'}</p>}
+      {off && <p className="mt-1 rounded bg-warn-bg px-2 py-1 text-small font-semibold text-[#7a4b00]">{skipTo ? `휴무 (야간 ${skipTo.at} 시작)` : '휴무'} — 설비가 모두 서 있어 배속을 바꿔도 라인이 움직이지 않습니다. {skipTo ? '[20:00으로]를 누르면 바로 시작합니다.' : '[처음으로]를 누르세요.'}</p>}
       <p className="mt-1 text-small text-ink-2">사건 알람이 뜨면 시뮬레이터가 스스로 ×10으로 감속합니다 (API-SIM-02). 다음 날 06:00 넘기기는 없음.</p>
       <div className="mb-1 mt-3 border-t border-line-soft pt-2 font-bold">원본 3D 연출 (설계서에 없음)</div>
       <div className="flex flex-wrap gap-1">
@@ -60,8 +62,8 @@ export default function SimPanel({ twin, refresh, toast, api3d, onClose }: { twi
           <button key={k} onClick={() => toggle(k)} className={`${b} ${fx[k] ? '!border-brand !bg-brand text-white' : ''}`}>{l}</button>
         ))}
       </div>
-      {reset && <ConfirmBox title="시연을 처음으로 되돌릴까요?" okLabel="처음으로" body="10/1 08:00(9/30 끝 상태)으로 돌아갑니다. 이 회차에 화면에서 만든 문서·알림 처리는 새 회차로 바뀌어 보이지 않습니다."
-        onOk={() => { setReset(false); call('sim/reset', {}, '처음으로 — 10/1 08:00'); }} onCancel={() => setReset(false)} />}
+      {reset && <ConfirmBox title="시연을 처음으로 되돌릴까요?" okLabel="처음으로" body="시연 시작 시각(앞 기록이 끝난 상태)으로 돌아갑니다. 이 회차에 화면에서 만든 문서·알림 처리는 새 회차로 바뀌어 보이지 않습니다."
+        onOk={() => { setReset(false); call('sim/reset', {}, '처음으로 — 시연 시작 시각'); }} onCancel={() => setReset(false)} />}
     </div>
   );
 }

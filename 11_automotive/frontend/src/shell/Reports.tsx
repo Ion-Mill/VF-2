@@ -6,7 +6,7 @@
 import { LockIcon } from './ui';
 import { useState, type ReactNode } from 'react';
 import { BTN, CARD, DARK, PAGE, useApp } from './ctx';
-import { CAUSE_KO, MACHINES } from './data';
+import { CAUSE_KO, MACHINES, SHIFT_H, hh } from './data';
 import { RANK_NAME, RANK_ORDER, userName } from './model';
 import { api, hm, md, simIso, useFetch } from './live';
 import { parseHandover } from './Briefing';
@@ -223,7 +223,7 @@ export function DailyReportScreen() {
 
   return (
     <DocPage width={1100}>
-      <DocHead title="일일 보고서" sub={`${md(d)} · 생산일 08:00 ~ 다음 날 05:00`} right={<Steps list={['AI비서 초안', '확정']} cur={confirmed ? 1 : 0} />} />
+      <DocHead title="일일 보고서" sub={`${md(d)} · 생산일 ${hh(SHIFT_H.dayStart)}:00 ~ 다음 날 ${hh(SHIFT_H.nightEnd)}:00`} right={<Steps list={['AI비서 초안', '확정']} cur={confirmed ? 1 : 0} />} />
       <InfoRow right={<>
         <select aria-label="날짜" value={d} onChange={(e) => go('daily', e.target.value)} className="h-11 rounded-ctl border border-line bg-white px-2 text-body">{[...(dailyReports ?? [])].reverse().map((x) => <option key={x.work_date}>{x.work_date}</option>)}</select>
         <button onClick={() => go('revs', `DAILY:${d}`)} className={BTN}>수정 이력</button><button onClick={printDoc} className={BTN}>인쇄</button><button onClick={back} className={BTN}>닫기</button>

@@ -6,7 +6,7 @@
 import { SecIcon, ToneTag } from './ui';
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useApp } from "./ctx";
-import { CAUSE_KO, LAYOUT, STATE_VIEW, stateOf } from "./data";
+import { CAUSE_KO, LAYOUT, SHIFT_H, STATE_VIEW, hh, stateOf } from "./data";
 import { EQS, SIM, hm, md, simIso, useFetch, type Eq } from "./live";
 import { ALARMS } from "./model";
 
@@ -117,20 +117,21 @@ const WIPS: [string, number][] = [
 const alarmName = (code: string) => ALARMS[code]?.nameKo ?? "";
 const toLocalInput = (iso: string) => iso.slice(0, 16);
 const fromLocalInput = (v: string) => `${v}:00+09:00`;
-// 그 시각이 속한 교대 = 불러올 기록 범위 (주간 08:00~17:00, 야간 17:00~다음 날 05:00, 05:00~08:00은 앞 야간에 붙임). 지금보다 뒤는 자른다
+// 그 시각이 속한 교대 = 불러올 기록 범위 (주간 09:00~18:00, 야간 18:00~다음 날 06:00, 06:00~09:00은 앞 야간에 붙임 — SHIFT_H). 지금보다 뒤는 자른다
 function shiftOf(ms: number): { a: number; b: number; label: string } {
   const iso = simIso(ms),
     d = iso.slice(0, 10),
     h = Number(iso.slice(11, 13));
-  const at = (day: string, hh: string) =>
-    Date.parse(`${day}T${hh}:00:00+09:00`);
-  const prev = simIso(at(d, "12") - 864e5).slice(0, 10);
+  const { dayStart: ds, dayEnd: de, nightEnd: ne } = SHIFT_H;
+  const at = (day: string, h: number) =>
+    Date.parse(`${day}T${hh(h)}:00:00+09:00`);
+  const prev = simIso(at(d, 12) - 864e5).slice(0, 10);
   const [a, b, label] =
-    h >= 8 && h < 17
-      ? [at(d, "08"), at(d, "17"), "주간"]
-      : h >= 17
-        ? [at(d, "17"), at(d, "17") + 12 * 36e5, "야간"]
-        : [at(prev, "17"), at(d, "08"), "야간"];
+    h >= ds && h < de
+      ? [at(d, ds), at(d, de), "주간"]
+      : h >= de
+        ? [at(d, de), at(d, de) + (24 - de + ne) * 36e5, "야간"]
+        : [at(prev, de), at(d, ds), "야간"];
   return { a, b: Math.max(a + 60000, Math.min(b, SIM.now())), label };
 }
 const LANE_PX = 40; // 막대 굵기 최대값 (자리가 모자라면 같이 얇아짐)
@@ -721,7 +722,7 @@ export function ReplayScreen() {
                       />
                     </div>
                     <span className="text-small text-ink-2">
-                      그 시각이 속한 교대(주간 08~17시 · 야간 17~05시) 기록을
+                      그 시각이 속한 교대(주간 {hh(SHIFT_H.dayStart)}~{hh(SHIFT_H.dayEnd)}시 · 야간 {hh(SHIFT_H.dayEnd)}~{hh(SHIFT_H.nightEnd)}시) 기록을
                       불러옵니다
                     </span>
                     <div className="flex justify-end gap-2">

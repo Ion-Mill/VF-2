@@ -4,7 +4,7 @@
 import dynamic from 'next/dynamic';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { MachineId } from '@/components/types';
-import { ID_OF, LAYOUT, LEGEND, MACHINES, type Role } from './data';
+import { ID_OF, LAYOUT, LEGEND, MACHINES, SHIFT_H, type Role } from './data';
 import { Ctx, DEFAULT_SETTINGS, type AppCtx, type History, type Inv, type Screen, type Settings } from './ctx';
 import { api, md, SIM, simIso, tsOf, useFetch, useLive, useLocal, usePersist, type SimEvent } from './live';
 import { backendLogin, backendLogout, backendMode } from './backendApi';
@@ -78,8 +78,8 @@ const DOC_OF: Partial<Record<Screen, string>> = { wo: '작업지시서', wr: '�
 // 품질 카테고리 — 문서함과 같은 모양(왼쪽 목록 + 오른쪽 화면). 품질 화면이 늘면 여기에 한 줄씩 더한다
 const QUAL_CATS: [string, Screen, string | null][] = [['검사 기록', 'quality', null], ['공정 능력 · 불량', 'qcap', null]];
 const QUAL_OF: Partial<Record<Screen, string>> = { quality: '검사 기록', qcap: '공정 능력 · 불량' };
-// 작업지시서 담당자 기본값 = 알람이 난 교대의 보전 담당자 (주간 08~17 / 야간). 반장은 필요할 때만 바꾸고 [승인]만 누른다 (2026-10-20 시안)
-const shiftMnt = (iso: string) => { const h = Number(iso.slice(11, 13)); const s = h >= 8 && h < 17 ? 'DAY' : 'NIGHT'; return USERS.find((u) => u.role === 'MNT' && u.shift === s)?.id ?? null; };
+// 작업지시서 담당자 기본값 = 알람이 난 교대의 보전 담당자 (주간 09~18 / 야간, SHIFT_H). 반장은 필요할 때만 바꾸고 [승인]만 누른다 (2026-10-20 시안)
+const shiftMnt = (iso: string) => { const h = Number(iso.slice(11, 13)); const s = h >= SHIFT_H.dayStart && h < SHIFT_H.dayEnd ? 'DAY' : 'NIGHT'; return USERS.find((u) => u.role === 'MNT' && u.shift === s)?.id ?? null; };
 // 작업지시서 작업 순서 (DOC-03 머리말 "점검 순서"): 정지 등급(OP-30) = 점검 순서 전체(★ 작업자 줄 + 보전 줄), 반복 알람 2단계 = 보전 줄 (9월 기록 MW-0903·0904와 같음).
 // "막힘 점검은 §2.1 점검 2~5와 같다"처럼 줄 전체가 다른 절을 가리키면 그 절의 해당 줄로 풀어 넣고 끝에 출처를 붙인다. 사내 문서 문장은 바꾸지 않는다 (2026-10-20)
 const fullOrder = (al: AlarmRec) => [...al.steps, ...al.maint];
