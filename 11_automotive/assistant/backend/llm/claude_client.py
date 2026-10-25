@@ -50,7 +50,8 @@ BREAK_S = 30.0
 TIMEOUT_TRIPS = 2
 LIMIT_TRIPS = 3         # cli: 사용 한도·속도 제한 오류가 연속 3번이면 이 프로세스에서는 더 부르지 않는다 (한도를 끝까지 태우지 않음)
 # 스키마에서 빼는 제약 (Anthropic 구조화 출력이 지원하지 않음). 받은 뒤 validate_constraints가 다시 본다.
-UNSUPPORTED = ("minLength", "maxLength", "minItems", "maxItems", "minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum", "multipleOf")
+# softMaxItems(2026-10-25)는 예외: API로 안 보내는 것은 같지만 validate_constraints도 보지 않는다 — 부른 쪽(jobs.validate_select)이 보고 다시 묻는다.
+UNSUPPORTED = ("minLength", "maxLength", "minItems", "maxItems", "softMaxItems", "minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum", "multipleOf")
 
 _lock = threading.Lock()
 _injected = None              # 시험이 가짜 API 클라이언트를 끼운다

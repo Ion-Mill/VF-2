@@ -117,8 +117,7 @@ def chunk_file(path: Path) -> list[Chunk]:
     return chunks
 
 
-@lru_cache(maxsize=1)
-def load_corpus(docs_dir: Path = DOCS_DIR) -> tuple[Chunk, ...]:
+def _load_files(docs_dir: Path) -> tuple[Chunk, ...]:
     if not docs_dir.exists():
         raise CorpusError(f"경로 없음·확인 필요: {docs_dir}")
     files = sorted(p for p in docs_dir.glob("*.md") if p.name.startswith(("00_", "DOC-")))
@@ -128,6 +127,52 @@ def load_corpus(docs_dir: Path = DOCS_DIR) -> tuple[Chunk, ...]:
     for f in files:
         out.extend(chunk_file(f))
     return tuple(out)
+
+
+# 사내 문서를 어디서 읽었나 (DOCS_SOURCE, 2026-10-25): 기본 files = 로컬 파일. db = 백엔드 GET /api/assistant/docs (공용 DB 읽기 전용).
+# DB가 안 되면 로컬 파일로 돌아가고 이유(예외 종류 이름만)를 남긴다 — /health가 보여 준다. 프로세스가 시작될 때 한 번만 시도한다(캐시)
+_SRC: dict = {"source": "files"}
+
+
+def corpus_source() -> dict:
+    """/health용: {"source": "files"|"db", "fallback": 이유 또는 없음, "revisions": {문서: 개정}} (db일 때만 개정 표시)"""
+    return {k: v for k, v in _SRC.items() if k != "glossary"}      # 용어집 글은 /health에 싣지 않는다
+
+
+def _load_db() -> tuple[Chunk, ...]:
+    from backend import config as C
+    from backend.rag import db_corpus as D          # 늦게 import — 순환 import를 피한다
+    base, key = C.docs_backend()
+    payload = D.fetch(base, key)
+    chunks = D.build_chunks(payload, EXPECTED_DOC_FILES)
+    _SRC.clear()
+    # via: 문서를 가져온 백엔드가 운영 데이터와 같은 것인가(main_backend) 문서만 따로 정한 것인가(docs_backend). 주소는 싣지 않는다
+    _SRC.update({"source": "db", "via": "docs_backend" if C.docs_backend()[0] != C.docs_backend_main() else "main_backend",
+                 "glossary": D.glossary_text(payload),
+                 "revisions": {str(d["doc_no"]): D._rev_label(d) for d in payload["docs"]}})
+    return chunks
+
+
+@lru_cache(maxsize=1)
+def load_corpus(docs_dir: Path = DOCS_DIR) -> tuple[Chunk, ...]:
+    from backend.config import docs_source
+    if docs_dir == DOCS_DIR and docs_source() == "db":
+        try:
+            return _load_db()
+        except Exception as e:                       # 안쪽 사정(주소·키·본문)은 싣지 않는다 — 종류 이름만
+            _SRC.clear()
+            _SRC.update({"source": "files", "fallback": type(e).__name__ + (f": {e}" if isinstance(e, CorpusError) else "")})
+    return _load_files(docs_dir)
+
+
+def glossary_text() -> str:
+    """용어집 글 (search.synonyms가 동의어 표를 읽는다): DOCS_SOURCE=db이고 DB에서 읽었으면 DB 조각에서, 아니면 로컬 파일."""
+    from backend.config import docs_source
+    if docs_source() == "db":
+        load_corpus()                                # DB 모드면 여기서 한 번 읽는다 (이미 읽었으면 캐시)
+        if _SRC.get("source") == "db":
+            return _SRC["glossary"]
+    return (DOCS_DIR / "00_용어집.md").read_text(encoding="utf-8")
 
 
 def section(doc_id: str, sec: str) -> list[Chunk]:

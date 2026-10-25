@@ -18,10 +18,12 @@ def phrase(draft_len: int) -> dict:
 
 
 def select(line_ids: list[str]) -> dict:
-    """문서 답 고르기: 후보 줄 번호만 고르고, 앞머리 한 문장을 쓴다. 줄 글은 프로그램이 원문 그대로 옮긴다."""
+    """문서 답 고르기: 후보 줄 번호만 고르고, 앞머리 한 문장을 쓴다. 줄 글은 프로그램이 원문 그대로 옮긴다.
+    line_ids의 6개 제한은 softMaxItems다(2026-10-25): API로 강제하지 못하고(maxItems 미지원), 클라이언트의 validate_constraints도 보지 않는다.
+    개수는 jobs.validate_select가 보고, 넘치면 한 번 다시 고르게 한 뒤 그래도 넘치면 앞 6개로 잇는다 — 개수 하나 때문에 질문 전체를 버리지 않는다."""
     return {"type": "object", "additionalProperties": False, "required": ["answerable", "line_ids", "lead"],
             "properties": {"answerable": {"type": "boolean"},
-                           "line_ids": {"type": "array", "maxItems": 6, "items": {"type": "string", "enum": line_ids}},
+                           "line_ids": {"type": "array", "softMaxItems": 6, "items": {"type": "string", "enum": line_ids}},
                            "lead": {"type": "string", "maxLength": 160}}}
 
 
