@@ -85,7 +85,7 @@ export function ShiftReportScreen() {
 
   return (
     <DocPage width={1100}>
-      <DocHead title="교대 보고서" sub={`${md(sid)} ${sid.endsWith('-D') ? '주간' : '야간'}${r.start_at ? ` · ${hm(r.start_at)}~${hm(r.end_at)}` : ''}`}
+      <DocHead printOnly title="교대 보고서" sub={`${md(sid)} ${sid.endsWith('-D') ? '주간' : '야간'}${r.start_at ? ` · ${hm(r.start_at)}~${hm(r.end_at)}` : ''}`}
         right={<Steps list={['AI_DRAFT', 'EDITING', 'CONFIRMED'].map((s) => `${ST[s]}${r.status === s ? ` v${ver}` : ''}`)} cur={['AI_DRAFT', 'EDITING', 'CONFIRMED'].indexOf(r.status)} />} />
       <InfoRow right={<>
         <select aria-label="교대" value={sid} onChange={(e) => go('shift', e.target.value)} className="h-11 rounded-ctl border border-line bg-white px-2 text-body">{[...(shiftReports ?? [])].reverse().map((x) => <option key={x.shift_id}>{x.shift_id}</option>)}</select>
@@ -223,7 +223,7 @@ export function DailyReportScreen() {
 
   return (
     <DocPage width={1100}>
-      <DocHead title="일일 보고서" sub={`${md(d)} · 생산일 ${hh(SHIFT_H.dayStart)}:00 ~ 다음 날 ${hh(SHIFT_H.nightEnd)}:00`} right={<Steps list={['AI비서 초안', '확정']} cur={confirmed ? 1 : 0} />} />
+      <DocHead printOnly title="일일 보고서" sub={`${md(d)} · 생산일 ${hh(SHIFT_H.dayStart)}:00 ~ 다음 날 ${hh(SHIFT_H.nightEnd)}:00`} right={<Steps list={['AI비서 초안', '확정']} cur={confirmed ? 1 : 0} />} />
       <InfoRow right={<>
         <select aria-label="날짜" value={d} onChange={(e) => go('daily', e.target.value)} className="h-11 rounded-ctl border border-line bg-white px-2 text-body">{[...(dailyReports ?? [])].reverse().map((x) => <option key={x.work_date}>{x.work_date}</option>)}</select>
         <button onClick={() => go('revs', `DAILY:${d}`)} className={BTN}>수정 이력</button><button onClick={printDoc} className={BTN}>인쇄</button><button onClick={back} className={BTN}>닫기</button>

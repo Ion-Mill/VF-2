@@ -54,17 +54,16 @@ interface Ev {
   chain: boolean;
 }
 
-// 타임라인 = 15분 칸 지도 + 남색 농담 (사용자 선택 2026-10-25, 시안 C-1 — 전: 파스텔 막대가 얇고 조각이 잘아 읽기 어려웠다):
-// 정상 흐름(가공 진한 남색 · 준비 옅은 남색 · 대기 · 휴식)은 한 계열로 물러나고, 막힘 주황 · 정비 보라 · 고장 빨강만 튄다.
-// 3D 아래 공통 범례(data.ts LEGEND)와는 다르다. 설비 카드 글자 · 아이콘(ST_INK)은 앱 공용 상태 색 그대로 (2026-10-22)
+// 타임라인 = 15분 칸 지도 (2026-10-25, 시안 C-1) + 예전(10/21~24) 파란 계열 파스텔 색 (사용자 선택 2026-10-25, 색 시안 1안 — 남색 농담에서 되돌림).
+// 휴식은 예전 색에 없어 대기보다 한 단계 옅은 회색. 3D 아래 공통 범례(data.ts LEGEND)와는 다르다. 설비 카드 글자 · 아이콘(ST_INK)은 앱 공용 상태 색 그대로 (2026-10-22)
 const ST_COLOR: Record<string, string> = {
-  RUN: "#2e4a7d",
-  IDLE: "#eef2f7",
-  SETUP: "#8aa3cf",
-  BLOCKED: "#f0a830",
-  MAINT: "#9b8ae0",
-  DOWN: "#d0283d",
-  REST: "#dde3ec",
+  RUN: "#7aa5f5",
+  IDLE: "#e2e8f0",
+  SETUP: "#8fd3e0",
+  BLOCKED: "#f4c27f",
+  MAINT: "#b8a6ee",
+  DOWN: "#ef8f9b",
+  REST: "#eef2f7",
 };
 // tailwind.config.ts 토큰과 같은 값: ok(가공) · brand(준비) · warn(막힘 · 주의) · crit(고장) · 회색(대기 · 정비 — data.ts STATE_VIEW와 같이)
 const ST_INK: Record<string, { ink: string; tile: string }> = {
@@ -398,6 +397,10 @@ export function ReplayScreen() {
     "inline-flex h-6 items-center whitespace-nowrap rounded-full px-2 text-small font-semibold";
 
   const pct = (ms: number) => ((ms - t0) / (t1 - t0)) * 100;
+  // 사건 표시: 시각이 가까운 것(폭 2.2% 안)은 한 묶음으로, 묶음 가운데를 기준으로 22px씩 옆으로 벌려 겹치지 않게 (사용자 요청 2026-10-25)
+  const marks = [...events].filter((e) => e.kind !== "OK" && !e.chain).sort((a, b) => a.at - b.at)
+    .reduce<Ev[][]>((g, e) => { const last = g[g.length - 1]; if (last && pct(e.at) - pct(last[0].at) < 2.2) last.push(e); else g.push([e]); return g; }, [])
+    .flatMap((g) => { const mid = g.reduce((s, e) => s + pct(e.at), 0) / g.length; return g.map((e, i) => ({ e, left: `calc(${mid}% + ${(i - (g.length - 1) / 2) * 22}px)` })); });
   const cells = useMemo(() => (data ? Object.fromEntries(EQS.map((eq) => [eq, cellsOf((data.states[eq] ?? []) as StateRow[], t0, t1)])) : {}), [data, t0, t1]);
   const barRef = useRef<HTMLDivElement>(null);
   const seek = (e: React.PointerEvent) => {
@@ -813,7 +816,7 @@ export function ReplayScreen() {
                 }}
               >
                 <div className="flex min-h-0 flex-col justify-center font-mono text-small">
-                  <div className="h-6 shrink-0" />
+                  <div className="h-8 shrink-0" />
                   <div className="flex min-h-0 flex-col gap-1.5">
                     {EQS.map((eq) => (
                       <span
@@ -828,10 +831,8 @@ export function ReplayScreen() {
                   <div className="h-4 shrink-0" />
                 </div>
                 <div className="flex min-h-0 flex-col justify-center">
-                  <div className="relative h-6 shrink-0">
-                    {events
-                      .filter((e) => e.kind !== "OK" && !e.chain)
-                      .map((e, i) => (
+                  <div className="relative h-8 shrink-0">{/* 위 20px = 사건 표시, 아래 = 재생 위치 손잡이 자리 (겹치지 않게) */}
+                    {marks.map(({ e, left }, i) => (
                         <button
                           key={i}
                           onClick={() => jump(e.at)}
@@ -839,7 +840,7 @@ export function ReplayScreen() {
                           aria-label={`${hm(simIso(e.at))} ${e.head} ${e.sub}로 가기`}
                           className={`absolute -translate-x-1/2 border-2 border-white text-small font-bold text-white ${e.kind === "BN" ? "top-1 h-3.5 w-3.5 rotate-45 rounded" : e.kind === "GUIDE" ? "top-1 h-3.5 w-3.5 rounded-full" : "top-0 h-5 w-5 rounded-full"}`}
                           style={{
-                            left: `${pct(e.at)}%`,
+                            left,
                             background: EV_VIEW[e.kind].color,
                           }}
                         >
@@ -881,10 +882,10 @@ export function ReplayScreen() {
                       </div>
                     ))}
                     <div
-                      className="pointer-events-none absolute -top-7 bottom-0 w-[2px] -translate-x-1/2 bg-ink"
+                      className="pointer-events-none absolute -top-[9px] bottom-0 w-[2px] -translate-x-1/2 bg-ink"
                       style={{ left: `${pct(t)}%` }}
                     >
-                      <span className="absolute -left-[5px] -top-1 h-3 w-3 rounded-full bg-ink" />
+                      <span className="absolute -left-[4px] top-0 h-2.5 w-2.5 rounded-full bg-ink" />
                     </div>
                   </div>
                   <div className="relative h-4 shrink-0 font-mono text-small text-ink-2">

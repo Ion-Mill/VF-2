@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { PAGE, useApp } from './ctx';
 import { Band as CBand } from './ui';
 import { capBand, qualityBand } from './bands';
+import { fmtNum } from './format';
 import { MASTERS } from './data';
 import { hm, md, simIso, useFetch, usePersist } from './live';
 import { userName } from './model';
@@ -172,7 +173,7 @@ export function QualityScreen({ cap = false }: { cap?: boolean }) { // cap: 공�
           <div className="mt-3 grid grid-cols-6 gap-3">{ORDER.map((k) => { const q = qItem(k); if (!q) return null; const low = q.cpk != null && q.cpk < Number(q.cpk_min); return (
             <button key={k} onClick={() => setItemSel(k)} className={`rounded-tile border border-t-4 bg-[#f6f8fd] p-3 text-left ${itemSel === k ? 'border-brand' : 'border-line-soft border-t-brand'}`}>
               <div className="text-small font-bold">{q.item_name}</div>
-              <div className={`mt-1 font-mono text-num font-bold ${low ? 'text-[#b45309]' : ''}`}>{q.cpk ?? '—'}</div>
+              <div className={`mt-1 font-mono text-num font-bold ${low ? 'text-[#b45309]' : ''}`}>{q.cpk == null ? '—' : fmtNum(Number(q.cpk), 2)}</div>
               <div className="text-small text-ink-2">기준 {q.cpk_min}{low ? ' ▲ 미달' : ''}</div></button>); })}</div>
         </section>
 
