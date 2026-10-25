@@ -192,7 +192,8 @@ def test_prepare_schema_keeps_enum_and_drops_unsupported_constraints():
     txt = json.dumps(out)
     assert "maxItems" not in txt and "maxLength" not in txt
     assert out["properties"]["line_ids"]["items"]["enum"] == ["L1", "L2"] and out["additionalProperties"] is False
-    assert "maxItems" in json.dumps(sch)   # 원래 스키마는 건드리지 않는다
+    assert "softMaxItems" in json.dumps(sch) and "maxLength" in json.dumps(sch)   # 원래 스키마는 건드리지 않는다 (줄 개수는 softMaxItems, 2026-10-25)
+    assert "softMaxItems" not in txt
 
 
 def test_grammar_argument_is_accepted_and_ignored(claude):
@@ -213,8 +214,7 @@ def test_constraints_stripped_from_the_schema_are_checked_after_receiving(claude
         call()
     sel = schemas.select(["L1", "L2"])
     fake.replies.append(reply(json.dumps({"answerable": True, "line_ids": ["L1", "L2", "L1", "L2", "L1", "L2", "L1"], "lead": "x"})))
-    with pytest.raises(LlmBadOutput, match="항목"):                                      # maxItems 6 위반
-        call(sel, "select")
+    assert len(call(sel, "select")["line_ids"]) == 7                                     # 개수 6 제한은 softMaxItems (2026-10-25) — 여기서 버리지 않고 jobs.validate_select가 보고 다시 묻는다 (test_select_overflow.py)
     fake.replies.append(reply(json.dumps({"answerable": True, "line_ids": ["L9"], "lead": "x"})))
     with pytest.raises(LlmBadOutput, match="enum"):
         call(sel, "select")
