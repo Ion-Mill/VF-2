@@ -7,6 +7,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends libgomp1 \
 WORKDIR /srv
 COPY assistant/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-COPY assistant/ .
+# 비서는 한 칸 위(11_automotive)의 사내 문서·생성기 기준표를 읽는다 (assistant/backend/config.py PROJECT_ROOT).
+# 저장소와 같은 모양으로 /srv 아래에 둔다 — assistant/만 넣으면 질문마다 문서를 못 찾아 답이 실패한다 (2026-10-25 서버에서 확인)
+COPY 가상사내문서 /srv/가상사내문서
+COPY 생성기/masters /srv/생성기/masters
+COPY 생성기/scenarios /srv/생성기/scenarios
+COPY 생성기/config.json /srv/생성기/config.json
+COPY assistant/ /srv/assistant/
+WORKDIR /srv/assistant
 EXPOSE 8100
 CMD ["python", "-m", "uvicorn", "backend.chat_service:app", "--host", "0.0.0.0", "--port", "8100"]
