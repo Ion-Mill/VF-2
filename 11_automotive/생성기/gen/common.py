@@ -11,6 +11,7 @@ import csv
 import hashlib
 import io
 import json
+import os
 import platform
 import sys
 from datetime import date, datetime, timedelta, timezone
@@ -25,10 +26,42 @@ KST = timezone(timedelta(hours=9))
 
 # ---------- 설정·기준 정보 ----------
 
-def load_config(path: Path | None = None) -> dict:
-    path = path or ROOT / "config.json"
-    with io.open(path, encoding="utf-8") as f:
-        return json.load(f)
+PROFILES = ("video", "final")
+
+
+def set_profile_from_args(argv: list[str] | None = None) -> list[str]:
+    """명령줄의 --profile video|final 을 환경변수 MOM_PROFILE에 넣고, 그 두 낱말을 뺀 나머지 인자를 돌려준다."""
+    args, rest, i = list(sys.argv[1:] if argv is None else argv), [], 0
+    while i < len(args):
+        if args[i] == "--profile" and i + 1 < len(args):
+            os.environ["MOM_PROFILE"] = args[i + 1]
+            i += 2
+        elif args[i].startswith("--profile="):
+            os.environ["MOM_PROFILE"] = args[i].split("=", 1)[1]
+            i += 1
+        else:
+            rest.append(args[i])
+            i += 1
+    return rest
+
+
+def _merge(base: dict, over: dict) -> dict:
+    """딕셔너리는 키별로 합치고, 그 밖의 값(목록 포함)은 통째로 바꾼다."""
+    out = dict(base)
+    for k, v in over.items():
+        out[k] = _merge(out[k], v) if isinstance(v, dict) and isinstance(out.get(k), dict) else v
+    return out
+
+
+def load_config(path: Path | None = None, profile: str | None = None) -> dict:
+    """config.json 위에 profiles/<profile>.json을 겹쳐 쓴다. 프로필은 인자 또는 환경변수 MOM_PROFILE (video | final) — 없으면 멈춘다."""
+    profile = profile or os.environ.get("MOM_PROFILE")
+    if profile not in PROFILES:
+        raise SystemExit(f"프로필이 필요합니다: --profile {' | '.join(PROFILES)} (또는 환경변수 MOM_PROFILE). 받은 값: {profile!r}")
+    with io.open(path or ROOT / "config.json", encoding="utf-8") as f:
+        cfg = json.load(f)
+    with io.open(ROOT / "profiles" / f"{profile}.json", encoding="utf-8") as f:
+        return _merge(cfg, json.load(f))
 
 
 def read_csv(path: Path) -> list[dict]:
@@ -61,6 +94,11 @@ class Rng:
             key = int.from_bytes(hashlib.sha256(name.encode("utf-8")).digest()[:8], "little")
             self._cache[name] = np.random.default_rng([self.seed, key])
         return self._cache[name]
+
+    def fresh(self, name: str) -> np.random.Generator:
+        """stream(name)을 처음 부를 때와 같은 난수를 새로 만든다 (모아 두지 않음 — 여러 번 불러도 같은 값)."""
+        key = int.from_bytes(hashlib.sha256(name.encode("utf-8")).digest()[:8], "little")
+        return np.random.default_rng([self.seed, key])
 
 
 # ---------- 시각 ----------
@@ -148,6 +186,33 @@ class Out:
         self.counts[entity] = len(rows)
 
 
+class MemOut(Out):
+    """Out과 같은 칸·순서·글자(CSV 칸 값)로, 파일 대신 메모리에 둔다 (시연 서버 → DB 중계, 2026-10-23).
+    tables[엔터티] = (칸 이름들, [칸 값 튜플, …])"""
+
+    def __init__(self):
+        self.counts: dict[str, int] = {}
+        self.tables: dict[str, tuple[list[str], list[tuple]]] = {}
+
+    def clear(self):
+        self.tables.clear()
+
+    def write(self, entity: str, columns: list[str], rows: list[dict], sort_key=None):
+        if sort_key is not None:
+            rows = sorted(rows, key=sort_key)
+        for r in rows:
+            unknown = {k for k in r if not k.startswith("_")} - set(columns)
+            if unknown:
+                raise KeyError(f"{entity}: ERD에 없는 칸 {sorted(unknown)}")
+        self.tables[entity] = (list(columns), [tuple(_cell(r.get(c)) for c in columns) for r in rows])
+        self.counts[entity] = len(rows)
+
+    def write_tuples(self, entity: str, columns: list[str], rows: list[tuple]):
+        rows.sort(key=lambda r: r[:3])
+        self.tables[entity] = (list(columns), [tuple(_cell(v) for v in r) for r in rows])
+        self.counts[entity] = len(rows)
+
+
 def sha256_of(paths: list[Path]) -> str:
     h = hashlib.sha256()
     for p in sorted(paths):
@@ -162,7 +227,8 @@ def write_manifest(cfg: dict, out: Out, stage: str, validation: dict | None = No
         "stage": stage,
         "created_at": fmt_dt(datetime.now(KST)),
         "seed": cfg["run"]["seed"],
-        "config_sha256": sha256_of([ROOT / "config.json"]),
+        "profile": os.environ.get("MOM_PROFILE"),
+        "config_sha256": sha256_of([ROOT / "config.json", ROOT / "profiles" / f"{os.environ.get('MOM_PROFILE')}.json"]),
         "masters_sha256": sha256_of(list((ROOT / cfg["run"]["masters_dir"]).glob("*.csv"))),
         "python": platform.python_version(),
         "numpy": np.__version__,

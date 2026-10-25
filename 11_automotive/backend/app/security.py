@@ -11,7 +11,7 @@ import jwt
 from fastapi import Depends, Header
 
 from .config import get_settings
-from .db import Db, get_db
+from .db import Db, get_db, side_engine
 from .domain.permissions import PermissionTable
 from .domain.tokens import decode_token
 from .errors import AppError
@@ -73,6 +73,29 @@ def current_user(authorization: str | None = Header(default=None), db: Db = Depe
     if not row or not row["is_active"]:
         raise AppError(401, "UNAUTHORIZED", "사용 중인 사용자가 아님")
     return User(row["user_id"], row["user_name"], row["role_code"], row["home_process_code"], row.get("home_process_code_2") or None)
+
+
+def token_user(authorization: str | None = Header(default=None)) -> User:
+    """DB를 읽지 않는 로그인 확인 (2026-10-24): 토큰 서명·만료와 토큰 안의 역할만 본다.
+    1초마다 모든 화면이 부르는 /api/line/twin 전용 — 여기서 요청마다 DB 연결을 잡으면 접속자가 많을 때 연결 줄이 막힌다.
+    읽기만 하는 주소에만 쓴다 (사용 중지·역할 변경은 다음 로그인부터 반영). 바꾸는 주소는 지금처럼 current_user"""
+    if not authorization or not authorization.lower().startswith("bearer "):
+        raise AppError(401, "UNAUTHORIZED", "로그인 필요")
+    try:
+        claims = decode_token(authorization[7:], get_settings().jwt_secret)
+    except jwt.PyJWTError:
+        raise AppError(401, "UNAUTHORIZED", "로그인이 만료됐거나 올바르지 않음") from None
+    if not claims.get("role"):
+        raise AppError(401, "UNAUTHORIZED", "로그인이 만료됐거나 올바르지 않음")
+    return User(claims["sub"], claims["sub"], claims["role"])
+
+
+def permissions_side() -> PermissionTable:
+    """권한표 (60초 기억). 기억이 지났으면 요청과 다른 작은 연결 줄(db.side_engine)로 다시 읽는다"""
+    if _perm_cache is not None and time.monotonic() - _perm_cache[0] <= PERM_TTL_SECONDS:
+        return _perm_cache[1]
+    with side_engine().connect() as conn:
+        return permissions(Db(conn))
 
 
 def require(target: str, action: str) -> Callable[..., Actor]:

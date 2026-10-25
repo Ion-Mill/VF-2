@@ -71,6 +71,15 @@ def _dotenv() -> dict[str, str]:
     return out
 
 
+def anthropic_api_key() -> str:
+    """채팅 API 열쇠. 프로세스 환경 변수가 있으면 그것을 쓰고, 없으면 이 폴더 `.env`의 ANTHROPIC_API_KEY를 쓴다.
+    빈 값은 없는 것으로 본다. 값은 로그·예외 글에 넣지 않는다."""
+    env = os.environ.get("ANTHROPIC_API_KEY", "").strip()
+    if env:
+        return env
+    return _dotenv().get("ANTHROPIC_API_KEY", "").strip()
+
+
 @dataclass(frozen=True)
 class Settings:
     llm_enabled: bool
@@ -137,7 +146,7 @@ class Settings:
     safe_write_proc: bool = False    # 3단계: 절차 줄
     safe_write_words: bool = False   # 4단계: 안전 낱말이 든 줄
     # 비교 실험 (2026-10-14 사용자 결정): LLM 공급자 local(기본, llama.cpp) | claude(Anthropic API). claude는 시험용 복사본의 비교 실험 전용이다 —
-    # 환경변수 MOM_EXTERNAL_LLM_OK=1(os.environ에서만 읽음)이 없으면 꺼진다. 열쇠(ANTHROPIC_API_KEY)는 여기에 담지 않는다 (claude_client가 os.environ에서 읽음).
+    # 환경변수 MOM_EXTERNAL_LLM_OK=1(os.environ에서만 읽음)이 없으면 꺼진다. 열쇠(ANTHROPIC_API_KEY)는 Settings에 담지 않는다 (claude_client가 환경 변수 또는 이 폴더 .env에서 읽음).
     # 지시문 후보 (2026-10-14 비교 실험 C단계, 둘 다 DOC_WRITE가 켜졌을 때만 동작, 기본 꺼짐): 새로 쓰기 지시문에 좋은 답 예시·안전 낱말 남기기 한 줄 / 줄의 절 제목
     write_shots: bool = False
     write_titles: bool = False
@@ -158,9 +167,12 @@ class Settings:
     # 위험한 부탁·권한·화면 설명·불량 원인·이어 묻기로 걸러지지 않은 질문을 "낱말 검색 상위 조각 + 질문 → 외부 Claude 1번 → 답을 그대로" 길로 보낸다
     # (줄 고르기·따로 검증·새 글 검사·분류 LLM 없음). 기본 꺼짐 = 지금 동작. 로컬 요청이면 이 스위치와 상관없이 지금 동작 그대로.
     # pure_keep_signals: 0(기본) = 알람 번호·날짜·설비·운영 낱말 길도 끄고 전부 순수 길 / 1 = 그 신호가 있는 질문은 기존 길 그대로(신호 없는 질문만 순수 길)
+    # pure_compare: 0(기본, 비교 1번) = 수량·설비 상태·안전 순서는 프로그램이 답한다. 1(비교 2번) = 그 셋도 순수 길이 한 번 답하고, 없어도 프로그램 길로 되돌리거나 고정 서식으로 바꾸지 않는다 (2026-10-23).
+    # 문서 질문은 둘 다 순수 길. 센서 값 질문은 이 스위치와 상관없이 지금 길 그대로.
     # pure_topk: 순수 길에서 Claude에 주는 조각 수 (1~60, 기본 8 — 예시 파일은 30: DOC-01·02·07 점검표 72·75·79% → 94·93·94%, 2026-10-18)
     pure_external: bool = False
     pure_keep_signals: bool = False
+    pure_compare: bool = False
     pure_topk: int = 8
     # pure_style: 1이면 순수 길(위 pure_external)의 Claude 지시문·답 형식을 "옆자리 선배가 풀어서 말하는" 대화체로 바꾼다
     # (opening·points·closing 짜임 — 서버가 화면의 번호 목록·본문 블록으로 조립. 코드 검사·재시도는 더하지 않는다). 기본 꺼짐 = 지금 말투 그대로.
@@ -251,13 +263,13 @@ class Settings:
     def llm_label(self) -> str:
         """화면·평가 기록에 쓰는 LLM 이름표 — 외부로 나가는 모드를 로컬이라고 적지 않는다 (정직한 표시)."""
         if self.claude_app:
-            return "외부 LLM(Claude Sonnet 5.5)"   # 앱 스위치로 고른 외부 모드 (평가 경로의 "(Claude, 실험)"과 구분)
+            return "외부 LLM(Claude Haiku 5.5)"   # 앱 스위치로 고른 외부 모드 (2026-10-23 Haiku 5.5 medium). 평가 경로의 "(Claude, 실험)"과 구분
         return "외부 LLM(Claude, 실험)" if self.llm_provider == "claude" else "로컬 LLM"
 
     @property
     def pure_label(self) -> str:
         """순수 길 답의 mode 앞 이름표 — PURE_MODEL이 있으면 실제로 부른 모델 이름, 없으면 llm_label 그대로(글자가 지금과 같다).
-        llm_label(/health·단계 로그용 전역 이름표)은 pure_answer 밖의 호출이 Sonnet 그대로라 바꾸지 않는다."""
+        llm_label(/health·단계 로그용 전역 이름표)은 채팅 앱 모델(Haiku 5.5)이다. PURE_MODEL이 있으면 그 호출만 다른 이름을 쓴다."""
         if self.claude_app and self.pure_model:
             return f"외부 LLM({CLAUDE_MODEL_NAMES.get(self.pure_model, self.pure_model)})"   # 표에 없는 ID(손으로 만든 설정)는 ID 그대로
         return self.llm_label
@@ -281,7 +293,7 @@ class Settings:
                 "safe_write_proc": self.safe_write_proc, "safe_write_words": self.safe_write_words,
                 "write_shots": self.write_shots, "write_titles": self.write_titles, "write_rules_v17": self.write_rules_v17,
                 "answer_gate_v17": self.answer_gate_v17, "table_fill_v18": self.table_fill_v18, "oblige_check": self.oblige_check,
-                "pure_external": self.pure_external, "pure_keep_signals": self.pure_keep_signals, "pure_topk": self.pure_topk, "pure_style": self.pure_style, "pure_screen_summary": self.pure_screen_summary,
+                "pure_external": self.pure_external, "pure_keep_signals": self.pure_keep_signals, "pure_compare": self.pure_compare, "pure_topk": self.pure_topk, "pure_style": self.pure_style, "pure_screen_summary": self.pure_screen_summary,
                 "pure_layout": self.pure_layout, "pure_expand": self.pure_expand, "pure_safety": self.pure_safety, "pure_period": self.pure_period, "pure_rule": self.pure_rule, "pure_retry": self.pure_retry, "pure_retry_topk": self.pure_retry_topk, "pure_fault": self.pure_fault, "pure_rule_wide": self.pure_rule_wide, "pure_faultdoc": self.pure_faultdoc, "pure_model": self.pure_model,
                 "llm_provider": self.llm_provider, "claude_via": self.claude_via, "claude_model": self.claude_model,
                 "claude_effort": self.claude_effort,
@@ -370,6 +382,7 @@ def settings() -> Settings:
         oblige_check=get("OBLIGE_CHECK", "1").strip().lower() not in ("0", "false", "no"),   # 기본 켜짐 — 모르는 값도 켜짐(지금 동작)
         pure_external=get("PURE_EXTERNAL", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 동작)
         pure_keep_signals=get("PURE_KEEP_SIGNALS", "0").strip().lower() in ("1", "true", "yes"),
+        pure_compare=get("PURE_COMPARE", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 = 비교 1번. 1 = 비교 2번 (2026-10-23)
         pure_topk=_int_clamped(get("PURE_TOPK", "8"), 8, 1, 60),
         pure_style=get("PURE_STYLE", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐(지금 말투)
         pure_layout=get("PURE_LAYOUT", "0").strip().lower() in ("1", "true", "yes"),   # 기본 꺼짐 — 모르는 값·빈 값도 꺼짐 (PURE_STYLE=1일 때만 뜻이 있다)
@@ -394,9 +407,9 @@ def settings() -> Settings:
         sim_server_url=(get("SIM_SERVER_URL", "http://127.0.0.1:8765").strip() or "http://127.0.0.1:8765"),
         pure_model=_pure_model(get("PURE_MODEL", PURE_MODEL_DEFAULT)),   # 줄 없음 = Haiku(기본), 빈 줄·claude-sonnet-5-5·모르는 이름 = Sonnet(예전 동작). 앱 외부 요청에서만 쓰인다
         llm_provider=provider,
-        claude_model="claude-sonnet-5-5" if claude_app else get("MOM_CLAUDE_MODEL", "claude-opus-5-5").strip(),   # 앱 스위치: Sonnet 5.5 medium, 구독 로그인(cli) 고정 (2026-10-15 사용자 결정). 2026-10-19: 순수 길 본 답변만 PURE_MODEL로 달라질 수 있다 — claude_client가 그 호출에서만 갈라 준다
+        claude_model="claude-haiku-5-5" if claude_app else get("MOM_CLAUDE_MODEL", "claude-opus-5-5").strip(),   # 앱 스위치: Haiku 5.5 medium, API (2026-10-23). 평가 경로는 MOM_CLAUDE_MODEL. 순수 길 본 답변만 PURE_MODEL로 달라질 수 있다 — claude_client가 그 호출에서만 갈라 준다
         claude_effort="medium" if claude_app else choice("MOM_CLAUDE_EFFORT", "low"),
-        claude_via="cli" if claude_app else choice("MOM_CLAUDE_VIA", "cli"),
+        claude_via="api" if claude_app else choice("MOM_CLAUDE_VIA", "cli"),   # 채팅 앱은 API (2026-10-23). 열쇠는 환경 변수 ANTHROPIC_API_KEY만. 평가 경로는 MOM_CLAUDE_VIA, 기본 cli
         claude_cost_cap_usd=0.0 if claude_app else _float(get("MOM_CLAUDE_COST_CAP_USD", "20"), 20.0),   # 앱 스위치: 사용 상한 없음(사용자 결정)
         external_app=app_on, proc_limit=proc_limit, claude_app=claude_app,
         think_app=think_app, think_budget=THINK.DEEP_BUDGET if think_on else 0,

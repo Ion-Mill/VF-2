@@ -130,7 +130,7 @@ def build_shipments(cfg, sim: Sim, order_due: dict[str, date]):
         if not pick:
             continue
         left_out = [l for l in due_lots if not ok(l) and l.fg_qty > 0 and l.lot_no not in shipped]
-        no = f"SHP-2609-{len(heads) + 1:03d}"
+        no = f"SHP-{d:%y%m}-{len(heads) + 1:03d}"
         memo = []
         if left_out:
             memo.append("부분 출하: " + ", ".join(
@@ -207,7 +207,7 @@ def build_inventory(cfg, sim: Sim, masters, rng, pm_rows, mnt, ship_lines, ship_
         add(it, "USE", -round(q, 2), p["done_at"], p["recorded_by"], "PM_RECORD", pm_record_id=p["pm_record_id"])
     # 원자재: 입고·로트 투입
     for ml in sim.materials:
-        add("RM-6061", "IN", ml.received_qty, at(ml.received_date, "09:00"), "U10", "MATERIAL_RECEIPT",
+        add("RM-6061", "IN", ml.received_qty, at(ml.received_date, "10:00"), "U10", "MATERIAL_RECEIPT",
             material_lot_no=ml.material_lot_no)
     for lot in sim.lots:
         first = min(p.start["OP-10"] for p in lot.parts)
@@ -239,7 +239,7 @@ def build_inventory(cfg, sim: Sim, masters, rng, pm_rows, mnt, ship_lines, ship_
     mondays = [d for d in cal.workdays if d.strftime("%a").upper()[:3] == wd and d > cal.workdays[0]]
     below = set(cfg["inventory"]["below_safety_at_month_end"])
     for d in mondays:
-        when = at(d, "09:00")
+        when = at(d, "10:00")
         for it, x in items.items():
             if x["category"] not in ("TOOL", "CONSUMABLE") or it == "CS-WLUB":
                 continue
@@ -258,8 +258,8 @@ def build_inventory(cfg, sim: Sim, masters, rng, pm_rows, mnt, ship_lines, ship_
                 q = math.ceil(need / PACK[it]) * PACK[it] if it in PACK else math.ceil(need)
             if q > 0:
                 add(it, "IN", q, when, owner_user[x["owner_role"]], "RECEIPT")
-    # 월말 실사 조정 (9/30): 공구·소모품·원자재 1~2건, 완제품 0~1건
-    end = at(cal.days[-1], "16:00")
+    # 기록 끝 실사 조정 (마지막 근무일): 공구·소모품·원자재 1~2건, 완제품 0~1건
+    end = at(cal.workdays[-1], "17:00")
     cands = [it for it, x in items.items() if x["category"] in ("TOOL",) and it not in below]
     for it in r.choice(cands, int(r.integers(1, 3)), replace=False):
         add(str(it), "ADJUST", float(r.choice([-1, 1])), end, "U10", "STOCKTAKE", memo="월말 실사 차이 (장부보다 1개 다름)")

@@ -113,9 +113,21 @@ def test_lock_is_read_from_the_process_environment_only(monkeypatch, tmp_path):
 @pytest.mark.parametrize("drop", ["ANTHROPIC_API_KEY", "MOM_USAGE_LEDGER", "MOM_EXTERNAL_LLM_OK"])
 def test_gate_needs_key_ledger_and_lock(claude, monkeypatch, drop):
     monkeypatch.delenv(drop, raising=False)
+    if drop == "ANTHROPIC_API_KEY":
+        import backend.config as cfg
+        monkeypatch.setattr(cfg, "_dotenv", lambda: {})
     CC.use_client(None)   # 가짜 클라이언트가 열쇠 없음 검사를 건너뛰지 않게
     with pytest.raises(LlmUnavailable):
         call()
+
+
+def test_api_key_uses_dotenv_when_the_environment_is_empty(monkeypatch):
+    import backend.config as cfg
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.setattr(cfg, "_dotenv", lambda: {"ANTHROPIC_API_KEY": "sk-ant-from-dotenv"})
+    assert cfg.anthropic_api_key() == "sk-ant-from-dotenv"
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-from-env")
+    assert cfg.anthropic_api_key() == "sk-ant-from-env"
 
 
 def test_ledger_name_must_be_usage_jsonl(claude, monkeypatch, tmp_path):
@@ -292,3 +304,182 @@ def test_llm_trace_style_failure_does_not_write_a_ledger_row_when_the_call_never
     with pytest.raises(LlmUnavailable):
         call()
     assert not (tmp / "usage_t.jsonl").exists()
+
+
+# ------------------------------------------------------------------ Claude 실패 한 번 → Gemini 한 번 (2026-10-24). 네트워크·진짜 열쇠 없음
+GEMINI_KEY = "gemini-test-key-zzzz"
+MARKER = "UNIQUE_BODY_MARKER"
+_SCHEMA = {"type": "object", "additionalProperties": False, "required": ["answer"], "properties": {"answer": {"type": "string"}}}
+
+
+def _gemini_env(monkeypatch, tmp_path):
+    monkeypatch.setenv("EXTERNAL_LLM_APP", "1")
+    monkeypatch.setenv("LLM_ENABLED", "1")
+    monkeypatch.setenv("LLM_JOBS", "write")
+    monkeypatch.setenv("FOLLOWUP_V2", "0")
+    monkeypatch.setenv("ANTHROPIC_API_KEY", KEY)
+    monkeypatch.setenv("GEMINI_API_KEY", GEMINI_KEY)
+    monkeypatch.setenv("MOM_USAGE_LEDGER", str(tmp_path / "usage_t.jsonl"))
+    monkeypatch.setattr(CC, "_call_api", lambda *a, **k: (_ for _ in ()).throw(LlmUnavailable("응답 시간 초과")))
+    monkeypatch.setattr("backend.llm.gemini_client.time.sleep", lambda *_a, **_k: None)
+
+
+def _install_gemini(payload):
+    seen = []
+
+    def transport(url, body, headers, timeout):
+        seen.append((url, body, headers, timeout))
+        if isinstance(payload, Exception):
+            raise payload
+        return payload
+
+    G = __import__("backend.llm.gemini_client", fromlist=["use_transport"])
+    G.use_transport(transport)
+    return seen, G
+
+
+def _ok(obj):
+    raw = json.dumps({"candidates": [{"finishReason": "STOP", "content": {"parts": [
+        {"text": "생각 과정", "thought": True}, {"text": json.dumps(obj, ensure_ascii=False)}]}}],
+        "usageMetadata": {"promptTokenCount": 10, "candidatesTokenCount": 4}}, ensure_ascii=False).encode()
+    return 200, raw
+
+
+def test_claude_success_does_not_call_gemini(monkeypatch, tmp_path):
+    from backend.llm import external as EXT
+    _gemini_env(monkeypatch, tmp_path)
+    monkeypatch.setattr(CC, "_call_api", lambda *a, **k: {"answer": "claude"})
+    seen, G = _install_gemini(_ok({"answer": "gemini"}))
+    try:
+        with EXT.external_request("claude"):
+            out = CC.chat_json_claude([{"role": "user", "content": MARKER}], _SCHEMA, "pure_answer", 100)
+    finally:
+        G.use_transport(None)
+    assert out == {"answer": "claude"} and seen == []
+
+
+def test_claude_failure_uses_one_gemini_json(monkeypatch, tmp_path):
+    from backend.llm import external as EXT
+    _gemini_env(monkeypatch, tmp_path)
+    seen, G = _install_gemini(_ok({"answer": "대체 답"}))
+    try:
+        with EXT.external_request("claude") as ext:
+            out = CC.chat_json_claude([{"role": "system", "content": "지시"}, {"role": "user", "content": MARKER}], _SCHEMA, "pure_answer", 100)
+            assert ext.material_failure() is None
+    finally:
+        G.use_transport(None)
+    assert out == {"answer": "대체 답"} and len(seen) == 1
+    url, body, headers, timeout = seen[0]
+    assert url.endswith("/models/gemini-3.8-flash:generateContent")
+    assert body["generationConfig"]["thinkingConfig"]["thinkingLevel"] == "medium"
+    assert body["generationConfig"]["responseMimeType"] == "application/json"
+    assert headers["x-goog-api-key"] == GEMINI_KEY and timeout == 20
+    raw = (tmp_path / "usage_t.jsonl").read_text(encoding="utf-8")
+    row = json.loads(raw.splitlines()[-1])
+    assert row["model"] == "gemini-3.8-flash" and row["effort"] == "medium" and row["via"] == "api"
+    assert GEMINI_KEY not in raw and MARKER not in raw and "생각 과정" not in raw
+
+
+def test_both_failures_keep_the_unavailable_message_and_stop_at_one_gemini(monkeypatch, tmp_path):
+    from backend.chat_service import UNAVAILABLE_MESSAGE, Unavailable, _failure_line, _unavailable
+    from backend.llm import external as EXT
+    _gemini_env(monkeypatch, tmp_path)
+    seen, G = _install_gemini(LlmUnavailable("연결 실패"))
+    old = CC._down_until
+    CC._down_until = 10**12
+    try:
+        with EXT.external_request("claude"):
+            with pytest.raises(EXT.ExternalLlmFailure) as ei:
+                CC.chat_json_claude([{"role": "user", "content": MARKER}], _SCHEMA, "lookup_decide", 100)
+        assert CC._down_until == 10**12
+    finally:
+        CC._down_until = old
+        G.use_transport(None)
+    assert len(seen) == 1
+    line = _failure_line(ei.value)
+    assert GEMINI_KEY not in line and MARKER not in line and "Gemini" in line
+    body = json.loads(_unavailable(None, Unavailable(line)).body)
+    assert body["message"] == UNAVAILABLE_MESSAGE + "\n" + "Gemini 호출이 그 밖으로 실패했습니다."
+
+
+def test_polish_failure_keeps_the_program_sentence(monkeypatch, tmp_path):
+    from backend.llm import external as EXT
+    from backend.services.answer import _followup_answer
+    _gemini_env(monkeypatch, tmp_path)
+    seen, G = _install_gemini(LlmUnavailable("응답 시간 초과"))
+    prev = {"status": "답변", "conclusion": "프로그램 원문 문장", "doc_lines": ["프로그램 원문 문장"], "ops_texts": [],
+            "steps": [], "evidence": [], "current_data": None, "related": [], "caution": None, "data_label": None,
+            "is_synthetic": False, "links": [], "alarm": None, "procedure": None, "future": None, "pure": False,
+            "question": "q", "context": {}, "blocks": []}
+    try:
+        with EXT.external_request("claude"):
+            out = _followup_answer("simple", "MGR", prev, {"sources": []}, settings(), {})
+    finally:
+        G.use_transport(None)
+    assert len(seen) == 2
+    assert out["status"] == "답변" and "프로그램 원문 문장" in out["conclusion"]
+    assert "원문 그대로" in out["conclusion"]
+
+
+def test_cli_runner_does_not_call_gemini(monkeypatch, tmp_path):
+    from backend.llm import external as EXT
+    _gemini_env(monkeypatch, tmp_path)
+    seen, G = _install_gemini(_ok({"answer": "gemini"}))
+
+    def run(cmd, stdin_text, timeout):
+        raise OSError("cli")
+
+    CC.use_runner(run)
+    try:
+        with EXT.external_request("claude"):
+            with pytest.raises(LlmUnavailable):
+                CC.chat_json_claude([{"role": "user", "content": MARKER}], _SCHEMA, "phrase", 50)
+    finally:
+        CC.use_runner(None)
+        G.use_transport(None)
+    assert seen == []
+
+
+def test_gemini_retries_http_503_once(monkeypatch, tmp_path):
+    from backend.llm import external as EXT
+    from backend.llm import gemini_client as G
+    _gemini_env(monkeypatch, tmp_path)
+    waits = []
+    monkeypatch.setattr("backend.llm.gemini_client.time.sleep", lambda n: waits.append(n))
+    seen = []
+    state = {"n": 0}
+
+    def transport(url, body, headers, timeout):
+        seen.append((url, body, headers, timeout))
+        state["n"] += 1
+        if state["n"] == 1:
+            raise LlmUnavailable("HTTP 503")
+        return _ok({"answer": "다시 받은 답"})
+
+    G.use_transport(transport)
+    try:
+        with EXT.external_request("claude"):
+            out = CC.chat_json_claude([{"role": "user", "content": MARKER}], _SCHEMA, "pure_answer", 100)
+    finally:
+        G.use_transport(None)
+    assert out == {"answer": "다시 받은 답"} and len(seen) == 2 and waits == [G.RETRY_WAIT_S]
+    assert seen[0][3] == 20 and seen[1][3] == 20
+    assert seen[0][1]["generationConfig"]["thinkingConfig"]["thinkingLevel"] == "medium"
+
+
+def test_second_503_keeps_the_unavailable_message(monkeypatch, tmp_path):
+    from backend.chat_service import UNAVAILABLE_MESSAGE, Unavailable, _failure_line, _unavailable
+    from backend.llm import external as EXT
+    _gemini_env(monkeypatch, tmp_path)
+    seen, G = _install_gemini(LlmUnavailable("HTTP 503"))
+    try:
+        with EXT.external_request("claude"):
+            with pytest.raises(EXT.ExternalLlmFailure) as ei:
+                CC.chat_json_claude([{"role": "user", "content": MARKER}], _SCHEMA, "lookup_decide", 100)
+    finally:
+        G.use_transport(None)
+    assert len(seen) == 2
+    line = _failure_line(ei.value)
+    assert GEMINI_KEY not in line and MARKER not in line
+    body = json.loads(_unavailable(None, Unavailable(line)).body)
+    assert body["message"] == UNAVAILABLE_MESSAGE + "\n" + "Gemini가 바빠 503을 냈습니다."

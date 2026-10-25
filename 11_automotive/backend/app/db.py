@@ -16,6 +16,7 @@ from .sqlfiles import load_all
 
 _engine: Engine | None = None
 _ro_engine: Engine | None = None
+_side_engine: Engine | None = None
 
 
 def engine() -> Engine:
@@ -26,6 +27,18 @@ def engine() -> Engine:
                                 max_overflow=int(s.db_max_overflow),
                                 connect_args={"options": "-c timezone=Asia/Seoul"})
     return _engine
+
+
+def side_engine() -> Engine:
+    """요청 밖 짧은 일(접근 기록 쓰기, 가상 데이터 표시 읽기)용 작은 연결 줄 (2026-10-24).
+    이 일들은 미들웨어에서 요청이 아직 자기 연결을 쥐고 있을 때 돈다 — 같은 줄(engine)을 쓰면 접속자가 많을 때
+    모두가 서로의 연결을 기다리다 30초 뒤 TimeoutError가 난다(여러 명 접속 시험에서 실제로 남). 줄을 따로 두면 서로 막지 않는다"""
+    global _side_engine
+    if _side_engine is None:
+        s = get_settings()
+        _side_engine = create_engine(s.database_url, pool_pre_ping=True, pool_size=1, max_overflow=1, pool_timeout=10,
+                                     connect_args={"options": "-c timezone=Asia/Seoul"})
+    return _side_engine
 
 
 def readonly_engine() -> Engine:

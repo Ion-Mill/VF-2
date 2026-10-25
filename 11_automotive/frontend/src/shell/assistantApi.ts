@@ -6,9 +6,11 @@
 // - 켜는 스위치: 환경변수 NEXT_PUBLIC_MOM_API (백엔드 주소, 예 http://127.0.0.1:8000). **없으면 꺼짐** — 채팅은 지금처럼 시연 서버의 규칙 답(live.ts api())을 쓴다.
 //   바꾸면 `npm run dev`를 다시 켠다 (빌드할 때 글자로 박힌다). 백엔드의 MOM_CORS_ORIGINS에 이 화면 주소(localhost:3000)가 있어야 한다.
 // - 브라우저가 백엔드를 직접 부르므로 화면 서버(Next) 프록시의 30초 제한을 받지 않는다 (외부 LLM 답은 20초 넘게 걸릴 수 있다).
-// - 로그인: 화면 로그인(Login.tsx → loginBackend)이 백엔드 /api/auth/login으로 받은 토큰을 채팅도 같이 쓴다 (2026-10-23).
-//   토큰은 **메모리에만** 둔다. 새로고침·계정 바꾸기·토큰 만료 뒤에는 다음 질문에서 시연 비밀번호(DEMO_PW)로 조용히 다시 받는다.
+// - 로그인: 화면 로그인(Login.tsx → backendApi.backendLogin)이 받은 토큰을 채팅도 같이 쓴다 (2026-10-23, 2026-10-25 main 합칠 때 backendApi로 옮김).
+//   토큰은 **메모리에만** 둔다. 그 토큰이 없거나 만료되면 다음 질문에서 시연 비밀번호(Login.tsx DEMO_PW)로 조용히 다시 받는다.
 // - 실패는 명세대로 "응답 없음" — 옛 규칙 답으로 몰래 바꿔 주지 않는다 (숫자가 엇갈리지 않게).
+import { DEMO_PW } from './Login';
+import { backendMode, backendToken } from './backendApi';
 import { buildAskContext } from './carry';
 import { STATUS_KO } from './assistantStatus';
 import { itemKeysOf } from './briefChecks';
@@ -19,11 +21,13 @@ export interface AssistantSource { doc_no: string; doc_name: string; rev: string
 export interface AssistantResult { answer: string; status: string; sources: AssistantSource[]; series?: undefined; chatId?: number }   // series = 옛 규칙 답의 센서 그래프. 새 길에는 없다. chatId = 서버 chat_log 번호 (이어서 물을 때 prev_chat_id로 보낸다)
 
 const BASE = (process.env.NEXT_PUBLIC_MOM_API ?? '').trim().replace(/\/+$/, '');
-export const backendChatEnabled = () => BASE !== '';
+// 백엔드 모드(기본, 2026-10-24)면 주소가 없어도 같은 주소 /api(화면 서버가 백엔드로 넘김)로 백엔드 비서를 쓴다
+export const backendChatEnabled = () => BASE !== '' || backendMode();
 
 // 한 질문을 기다리는 최대 시간: 백엔드가 비서를 기다리는 130초 + 여유 10초
 export const ASK_TIMEOUT_MS = 140_000;
 export const NO_RESPONSE_TEXT = '비서가 지금 답하지 못합니다. 잠시 후 다시 시도해 주세요';
+export const DISCONNECT_TEXT = '연결이 끊겨 답을 받지 못했어요. 다시 질문해 주세요.';
 
 // 화면 이름 → UI설계서 화면 번호 (비서가 "이 화면 설명해 줘"에 쓴다). 모르는 화면은 보내지 않는다.
 export const SCREEN_CODE: Record<string, string> = {
@@ -32,11 +36,7 @@ export const SCREEN_CODE: Record<string, string> = {
   pm: 'SCR-23', idocs: 'SCR-24', settings: 'SCR-25',
 };
 
-// 시연용: 모든 계정 비밀번호 0000 (사용자 결정 2026-10-15). 로그인 화면의 자동 입력도 이 값을 쓴다
-export const DEMO_PW = '0000';
-
 const tokens = new Map<string, string>();          // 사용자 ID → 토큰 (메모리만)
-const LOGIN_TIMEOUT_MS = 10_000;
 
 class Http extends Error { constructor(public status: number) { super(`HTTP ${status}`); } }
 
@@ -54,29 +54,18 @@ async function post(path: string, body: unknown, token?: string, timeoutMs = ASK
   } finally { clearTimeout(timer); }
 }
 
-/** 백엔드 로그인 (AUTH-01). 받은 토큰을 채팅이 같이 쓰게 둔다. 'bad' = 아이디·비밀번호 틀림(401), 'down' = 연결 안 됨·다른 오류 */
-export async function loginBackend(userId: string, password: string): Promise<'ok' | 'bad' | 'down'> {
-  try {
-    const j = await post('/api/auth/login', { user_id: userId, password }, undefined, LOGIN_TIMEOUT_MS);
-    if (typeof j?.access_token !== 'string') return 'down';
-    tokens.set(userId, j.access_token);
-    return 'ok';
-  } catch (e) {
-    return e instanceof Http && e.status === 401 ? 'bad' : 'down';
-  }
-}
-
 async function tokenFor(userId: string, fresh = false): Promise<string> {
-  const have = tokens.get(userId);
+  const have = tokens.get(userId) ?? backendToken(userId);   // 화면 로그인 토큰을 먼저 쓴다
   if (have && !fresh) return have;
-  // shortcut: 다시 받을 때 시연 비밀번호를 쓴다, 계정마다 비밀번호가 달라지면 401 때 로그인 화면으로 보낸다
-  if (await loginBackend(userId, DEMO_PW) !== 'ok') throw new Error('로그인 실패');
-  return tokens.get(userId)!;
+  const j = await post('/api/auth/login', { user_id: userId, password: DEMO_PW });
+  if (typeof j?.access_token !== 'string') throw new Error('토큰 없음');
+  tokens.set(userId, j.access_token);
+  return j.access_token;
 }
 
 export const forgetTokens = () => tokens.clear();
 
-const none = (): AssistantResult => ({ answer: NO_RESPONSE_TEXT, status: STATUS_KO.NO_RESPONSE, sources: [] });
+const dropped = (): AssistantResult => ({ answer: DISCONNECT_TEXT, status: STATUS_KO.NO_RESPONSE, sources: [] });
 
 // 백엔드 답의 출처 줄을 화면 모양으로 (문서 번호·절이 없는 줄은 버린다)
 const toSources = (v: unknown): AssistantSource[] => Array.isArray(v)
@@ -113,11 +102,10 @@ export async function askAssistant(question: string, userId: string, screen: str
     }
     const chatId = typeof j?.chat_id === 'number' ? j.chat_id : undefined;   // 답이 없어도(NO_RESPONSE) 질문은 서버 기록에 남는다
     const status = STATUS_KO[String(j?.status)] ?? STATUS_KO.NO_RESPONSE;
-    if (typeof j?.answer !== 'string' || !j.answer.trim()) return { ...none(), chatId };   // 비서가 못 답하면 백엔드는 200 + 답 없음(NO_RESPONSE)을 준다
-    if (status === STATUS_KO.NO_RESPONSE) return { ...none(), chatId };
-    return { answer: j.answer, status, sources: toSources(j.sources), chatId };
+    if (typeof j?.answer === 'string' && j.answer.trim()) return { answer: j.answer, status, sources: toSources(j.sources), chatId };
+    return { ...dropped(), chatId };                                   // 답 문장이 없으면 비서가 응답을 끝내기 전에 끊긴 것이다
   } catch {
-    return none();                                                     // 연결 안 됨·시간 초과·503·로그인 실패 — 이유를 화면에 내보내지 않는다
+    return dropped();                                                  // 백엔드에 닿지 못함·시간 초과
   }
 }
 
@@ -146,8 +134,9 @@ export async function fetchChatLog(userId: string): Promise<ServerChatRow[] | nu
     return j.filter((x: any) => typeof x?.chat_id === 'number' && typeof x.asked_at === 'string' && typeof x.question === 'string')
       .map((x: any): ServerChatRow => {
         const status = STATUS_KO[String(x.status)] ?? STATUS_KO.NO_RESPONSE;
-        const ok = typeof x.answer === 'string' && x.answer.trim() !== '' && status !== STATUS_KO.NO_RESPONSE;
-        return { at: kst(x.asked_at), q: x.question, a: ok ? x.answer : NO_RESPONSE_TEXT, status: ok ? status : STATUS_KO.NO_RESPONSE, sources: ok ? toSources(x.sources) : [], chatId: x.chat_id, ...(typeof x.prev_chat_id === 'number' ? { prevChatId: x.prev_chat_id } : {}) };
+        const text = typeof x.answer === 'string' && x.answer.trim() !== '' ? x.answer : '';
+        const failed = status === STATUS_KO.NO_RESPONSE;
+        return { at: kst(x.asked_at), q: x.question, a: text || (failed ? DISCONNECT_TEXT : NO_RESPONSE_TEXT), status, sources: text && !failed ? toSources(x.sources) : [], chatId: x.chat_id, ...(typeof x.prev_chat_id === 'number' ? { prevChatId: x.prev_chat_id } : {}) };
       })
       .reverse();
   } catch {

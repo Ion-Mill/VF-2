@@ -26,7 +26,7 @@ from starlette.concurrency import run_in_threadpool
 from . import errors
 from .audit import log_access
 from .config import get_settings
-from .db import Db, engine
+from .db import Db, engine, side_engine
 from .domain import synthetic
 from .domain.tokens import decode_token
 from .realtime import broadcaster
@@ -43,7 +43,7 @@ async def lifespan(app: FastAPI):
     broadcaster.start()
     tasks: list[asyncio.Task] = []
     if s.run_workers:
-        tasks = [asyncio.create_task(scheduler.run_forever(), name="mom-scheduler"),
+        tasks = [asyncio.create_task(scheduler.run_forever(s.scheduler_seconds), name="mom-scheduler"),
                  asyncio.create_task(cmm_watcher.run_forever(), name="mom-cmm-watcher")]
     yield
     for t in tasks:
@@ -51,6 +51,7 @@ async def lifespan(app: FastAPI):
     await asyncio.gather(*tasks, return_exceptions=True)
     await broadcaster.stop()
     engine().dispose()
+    side_engine().dispose()
 
 
 app = FastAPI(title="MOM 백엔드 — 자동차 부품 절삭가공 라인 운영 관리", version="0.1.0", lifespan=lifespan)
@@ -91,7 +92,7 @@ def synthetic_flag() -> bool:
     """dataset_info.is_virtual (60초 기억). 읽지 못하면 앞 값 — 처음 값은 가상(true)"""
     if time.monotonic() - _synthetic["at"] > 60:
         try:
-            with engine().connect() as conn:
+            with side_engine().connect() as conn:     # 요청 연결과 다른 줄 (db.side_engine)
                 v = Db(conn).scalar("common.is_synthetic")
             _synthetic.update(at=time.monotonic(), flag=True if v is None else bool(v))
         except Exception:

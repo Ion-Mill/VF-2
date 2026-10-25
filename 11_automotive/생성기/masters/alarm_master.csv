@@ -1,5 +1,5 @@
 alarm_code,process_code,name_en,name_ko,original_desc,easy_desc,severity,responder,responder_note,lockout_level,chain_rule,doc02_section,source_ref,is_virtual_code
-992,OP-30,AMPLIFIER OVER CURRENT,전류가 높은 증폭기(AMPLIFIER OVER CURRENT),,서보 앰프가 모터에 너무 큰 전류가 흐르는 것을 감지했다. 공구 파손·무거운 절삭·충돌이 원인일 수 있다. 바로 앞의 108·994 알람과 함께 뜨면 충돌을 먼저 의심한다,STOP,MNT,,FULL,108 → 994 → 992 (과부하 뒤 과전류는 충돌 신호),§4.1,Haas NGC 알람 목록 (2025-01-30) CSV 1016행,false
+992,OP-30,AMPLIFIER OVER CURRENT,전류가 높은 증폭기(AMPLIFIER OVER CURRENT),,서보 앰프가 모터에 너무 큰 전류가 흐르는 것을 감지했다. 공구 파손·무거운 절삭·충돌이 원인일 수 있다. 축 부하가 갑자기 오른 뒤에 뜨면 충돌을 먼저 의심한다,STOP,MNT,,FULL,,§4.1,Haas NGC 알람 목록 (2025-01-30) CSV 1016행,false
 994,OP-30,AMPLIFIER OVERLOAD,증폭기 과부하,,"서보 앰프에 높은 부하가 오래 걸렸다. 속도·이송이 공구·재료에 맞는지, 공구가 무뎌지거나 부러졌는지 본다",STOP,MNT,,FULL,,§4.2,Haas NGC 알람 목록 (2025-01-30) CSV 819행,false
 991,OP-30,AMPLIFIER OVER TEMPERATURE,온도가 초과한 증폭기,,서보 앰프 온도가 한계를 넘었다. 축에 높은 부하가 오래 걸린 것이 원인일 수 있다. 앰프가 식을 때까지 기다린 뒤 부하를 줄인다,STOP,MNT,,FULL,,§4.3,Haas NGC 알람 목록 (2025-01-30) CSV 703행,false
 993,OP-30,AMPLIFIER SHORT CIRCUIT,단락,,서보 앰프 쪽에서 단락이 감지됐다. 앞의 축 알람이 어느 축인지 알려 준다. 모터 케이블·커넥터를 점검해야 하므로 잠금·표지가 필요하다,STOP,MNT,,FULL,,§4.4,Haas NGC 알람 목록 (2025-01-30) CSV 96행,false

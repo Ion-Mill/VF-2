@@ -12,7 +12,8 @@ from pydantic import BaseModel, Field
 from ..config import get_settings
 from ..db import Db, get_db
 from ..errors import AppError
-from ..security import Actor, User, current_user, require
+from ..security import Actor, User, current_user, require, require_any
+from ..services import sim_link
 from .common import changed
 
 router = APIRouter(prefix="/api", tags=["기준 정보·설정·시연"])
@@ -82,9 +83,19 @@ def user_update(body: UserIn, _: Actor = Depends(require("SETTINGS", "SETTING"))
 
 
 # ---------------- 시연 (SIM-01·02, NFR-DATA-10·11) ----------------
+def _sim_control(user: User) -> None:
+    """시연 조작(시계·사건·처음으로·상황 일으키기)은 MOM_SIM_CONTROL_USERS에 든 사람만 (비우면 누구나 — 2026-10-24).
+    여러 명이 같은 공장(DB 1개)을 볼 때, 누가 [처음으로]를 눌러 모두의 10/1 기록이 지워지는 일을 막는다"""
+    allowed = get_settings().sim_control_users
+    if allowed and user.user_id not in allowed:
+        raise AppError(403, "FORBIDDEN", "시연 조작은 진행자만 할 수 있음 (MOM_SIM_CONTROL_USERS)", {"reason": "SIM_CONTROL"})
+
+
 @router.get("/sim/clock")
 def sim_clock(_: User = Depends(current_user), db: Db = Depends(get_db)):
-    """시연 시계 지금 값 (app_now)"""
+    """시연 시계 지금 값 (app_now). 시뮬레이터가 이어져 있으면(MOM_SIM_URL) 시뮬레이터 시계·사건 버튼 상태·회차(run_id)"""
+    if sim_link.enabled():
+        return sim_link.call("GET", "sim/clock")
     return db.one("common.sim_clock")
 
 
@@ -100,13 +111,19 @@ class SimClockIn(BaseModel):
 
 @router.post("/sim/clock")
 def set_sim_clock(body: SimClockIn, user: User = Depends(current_user), db: Db = Depends(get_db)):
-    """시연 시계 배속·일시정지·넘기기 (API-SIM-02, NFR-DATA-10). 시연 모드에서는 누구나 배속·일시정지·17:00 넘기기,
+    """진행자 제한: MOM_SIM_CONTROL_USERS (2026-10-24).
+    시연 시계 배속·일시정지·넘기기 (API-SIM-02, NFR-DATA-10). 시연 모드에서는 누구나 배속·일시정지·17:00 넘기기,
     시각 직접 지정(sim_at)과 시연 모드 밖은 MGR만. 지금 시연 시각을 돌려준다.
     넘기는 동안 남은 주간 교대 기록을 만드는 일은 시뮬레이터(생성기 Realtime.skip) 몫 — 서버 연결 방식은 [선택 필요: 기술 회의]"""
+    _sim_control(user)
+    target = body.skip or ("TODAY_17:00" if body.skip_to_1700 else None)
+    if sim_link.enabled() and body.sim_at is None:
+        # 시뮬레이터가 시계의 주인 — 넘기면 DB 중계가 DB 시계를 따라 맞춘다 (배속·일시정지·넘기기는 시연 발표자 누구나, 기획서 15장)
+        return sim_link.call("POST", "sim/clock", {k: v for k, v in {"speed": body.speed, "paused": body.paused, "skip": target}.items()
+                                                    if v is not None})
     if (not get_settings().demo_mode or body.sim_at is not None) and user.role_code != "MGR":
         raise AppError(403, "FORBIDDEN", "시각 직접 지정과 시연 모드 밖 시계 바꾸기는 MGR만")
     sim_at = body.sim_at
-    target = body.skip or ("TODAY_17:00" if body.skip_to_1700 else None)
     if target:
         hhmm = target.split("_", 1)[1]
         t = db.one("common.today_at", hhmm=hhmm)
@@ -118,8 +135,8 @@ def set_sim_clock(body: SimClockIn, user: User = Depends(current_user), db: Db =
 
 
 class InjectIn(BaseModel):
-    equipment_id: str
-    alarm_code: str
+    equipment_id: str | None = Field(None, description="시뮬레이터가 이어져 있지 않을 때 필수 (이어져 있으면 사건이 대상 설비를 정함)")
+    alarm_code: str | None = Field(None, description="시뮬레이터가 이어져 있지 않을 때 필수")
     scenario_code: str = Field(pattern="^S[1346]$",
                                description="사건 버튼 S1·S3·S4·S6 (2026-10-13 — S2·S5는 과거 기록이라 버튼 없음)")
     at: datetime | None = None       # 비우면 시연 시계 지금
@@ -130,17 +147,27 @@ class InjectIn(BaseModel):
 def inject(body: InjectIn, user: User = Depends(current_user), db: Db = Depends(get_db)):
     """시연 사건 넣기 (SIM-01, NFR-DATA-11) — 알람 1건을 '주입' 표시로 기록 (알림·반복 알람 판정은 실제와 같게).
     시연 모드가 아니면 MGR만"""
+    _sim_control(user)
+    if sim_link.enabled():
+        # 시뮬레이터가 사건을 처음부터 끝까지 돌린다 (알람 연쇄·정지·로트) — 알람은 DB 중계로 들어온다
+        return sim_link.call("POST", "sim/inject", {"scenario_code": body.scenario_code})
     if not get_settings().demo_mode and user.role_code != "MGR":
         raise AppError(403, "FORBIDDEN", "시연 모드가 아니면 MGR만 사건을 넣을 수 있음")
+    if not body.equipment_id or not body.alarm_code:
+        raise AppError(422, "VALIDATION", "equipment_id·alarm_code가 필요함")
     return {"alarm_event_id": db.scalar("alarms.ingest", equipment_id=body.equipment_id, alarm_code=body.alarm_code,
                                         occurred_at=body.at, lot_no=body.lot_no, prev_alarm_event_id=None, is_injected=True,
                                         scenario_code=body.scenario_code)}
 
 
 @router.post("/sim/reset")
-def sim_reset(_: User = Depends(current_user), db: Db = Depends(get_db)):
+def sim_reset(user: User = Depends(current_user), db: Db = Depends(get_db)):
     """시연 데이터 처음으로 (SIM-03, 시연 모드만): 운영 데이터를 시연 기준점으로 되돌리고 시연 시계를 그 시각에 멈춘다.
     설정·계정·접속 기록은 그대로. 화면에는 실시간 connection 사건이 가서 전부 다시 읽는다. 기준점이 없으면 INVALID_STATE"""
+    _sim_control(user)
+    if sim_link.enabled():
+        # 시뮬레이터만 되돌린다 — 회차가 바뀌면 DB 중계가 DB를 시연 기준점으로 되돌린다 (두 번 되돌리지 않게)
+        return sim_link.call("POST", "sim/reset")
     if not get_settings().demo_mode:
         raise AppError(403, "FORBIDDEN", "시연 모드에서만 시연 데이터를 되돌릴 수 있음")
     return db.one("common.demo_reset")["result"]
@@ -153,3 +180,78 @@ def sim_snapshot(_: Actor = Depends(require("SETTINGS", "SETTING")), db: Db = De
     if not get_settings().demo_mode:
         raise AppError(403, "FORBIDDEN", "시연 모드에서만 시연 기준점을 바꿀 수 있음")
     return {"tables": db.scalar("common.demo_snapshot")}
+
+
+# ---------------- 시뮬레이터에만 있는 시연 조작 (2026-10-23, 화면 → 백엔드 전환 C2 — MOM_SIM_URL이 있을 때만) ----------------
+def _need_sim():
+    if not sim_link.enabled():
+        raise AppError(404, "NOT_FOUND", "시뮬레이터가 이어져 있지 않음 (MOM_SIM_URL)")
+
+
+class SimFireIn(BaseModel):
+    kind: str = Field(pattern="^(warn|stop|air|maint)$", description="알림 미리보기 [상황 일으키기] (API-SIM-01 딸림)")
+
+
+@router.post("/sim/fire")
+def sim_fire(body: SimFireIn, user: User = Depends(current_user)):
+    """알림 미리보기 [상황 일으키기] — 시뮬레이터가 지금 분에 진짜 알람을 일으킨다 (화면 담당 확인용)"""
+    _sim_control(user)
+    _need_sim()
+    return sim_link.call("POST", "sim/fire", {"kind": body.kind})
+
+
+class SimEquipmentIn(BaseModel):
+    equipment_id: str
+
+
+@router.post("/sim/work-record-confirmed")
+def sim_work_record_confirmed(body: SimEquipmentIn,
+                              actor: Actor = Depends(require_any(("WORK_RECORD", "CONFIRM"), ("WORK_RECORD_SIMPLE", "CONFIRM")))):
+    """작업기록서 확정 뒤 고장 설비 복귀 (API-MNT-11 시연 연결): 시뮬레이터가 그 설비의 고장(DOWN)을 끝낸다"""
+    _need_sim()
+    return sim_link.call("POST", "maint/work-records/confirm", {"equipment_id": body.equipment_id, "by": actor.user_id})
+
+
+class SimPmStartIn(BaseModel):
+    equipment_id: str
+    minutes: int = Field(60, ge=1, le=480)
+    pm_task_ids: list[str] = []
+
+
+@router.post("/sim/pm-start")
+def sim_pm_start(body: SimPmStartIn, actor: Actor = Depends(require("PM_RECORD", "CREATE"))):
+    """[정비 시작] (API-PM-02 시연 연결): 시뮬레이터가 그 설비를 정비(MAINT)로 둔다. 기록은 DB 중계로 들어온다"""
+    _need_sim()
+    return sim_link.call("POST", "maint/pm-start", {**body.model_dump(), "role": "MNT", "user_id": actor.user_id})
+
+
+class SimPmEndIn(BaseModel):
+    equipment_id: str
+    pm_task_ids: list[str] = []
+    done_by: str | None = None
+    result: str = "NORMAL"
+    memo: str | None = None
+    items: list[dict] = []
+
+
+@router.post("/sim/pm-end")
+def sim_pm_end(body: SimPmEndIn, actor: Actor = Depends(require("PM_RECORD", "CREATE"))):
+    """[정비 끝] (API-PM-02 시연 연결): 시뮬레이터가 정비를 끝내고 실시 기록을 남긴다"""
+    _need_sim()
+    return sim_link.call("POST", "maint/pm-end", {**body.model_dump(), "role": "MNT", "user_id": actor.user_id})
+
+
+# ---------------- 비서가 다듬은 문장 (2026-10-24, 화면 → 백엔드 전환 — 시연 서버 llm_compose를 그대로 씀) ----------------
+@router.post("/assist/{kind}")
+def assist_text(kind: str, body: dict, _: User = Depends(current_user)):
+    """화면이 기본 문장을 보여 주면서 비서(외부 Claude)가 다듬어 둔 문장이 있는지 묻는다 — 기다리지 않는다.
+    kind = work-order-text · guide-card-text · briefing-text · alarm-text. 다듬기는 시연 서버(MOM_LLM_COMPOSE=1)가 비서 서비스에
+    백그라운드로 맡기고 받아 둔다 (frontend/tools/llm_compose.py). 시뮬레이터가 없거나 꺼져 있거나 실패하면 {ready: false} — 화면은 기본 문장"""
+    if kind not in ("work-order-text", "guide-card-text", "briefing-text", "alarm-text"):
+        raise AppError(404, "NOT_FOUND", f"없는 문장 종류: {kind}")
+    if not sim_link.enabled():
+        return {"ready": False}
+    try:
+        return sim_link.call("POST", f"assist/{kind}", body)
+    except AppError:
+        return {"ready": False}

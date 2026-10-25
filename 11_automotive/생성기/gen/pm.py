@@ -39,6 +39,7 @@ def build_pm(cfg, cal, masters, rng, maint_done: list[dict]) -> tuple[list[dict]
     overdue = {k: date.fromisoformat(v) for k, v in pp["overdue_due"].items()}
     month_sessions = {w["window"].equipment_id: w for w in maint_done if w["window"].kind == "PM_MONTHLY"}
     shift_of_day = {(s.work_date, s.shift_type): s for s in cal.shifts}
+    day_h, night_h = (int(cfg["shifts"][k]["start"][:2]) for k in ("DAY", "NIGHT"))   # 주간 시작 시·야간 시작 시
     recs: list[dict] = []
 
     def who(t, d, st="DAY"):
@@ -49,8 +50,8 @@ def build_pm(cfg, cal, masters, rng, maint_done: list[dict]) -> tuple[list[dict]
 
     def add(t, due, done_at, base=False):
         d = done_at.date()
-        st = "NIGHT" if done_at.hour < 8 or done_at.hour >= 20 else "DAY"
-        d_sh = d - timedelta(days=1) if done_at.hour < 8 else d
+        st = "NIGHT" if done_at.hour < day_h or done_at.hour >= night_h else "DAY"
+        d_sh = d - timedelta(days=1) if done_at.hour < day_h else d
         done_by, mnt = who(t, d_sh, st) if d_sh in wset else (("U02" if t["default_role"] == "OPR" else "U07"), "U07")
         res = "REFILLED" if t["default_item_no"] else "NORMAL"
         mv = mu = None
@@ -58,7 +59,7 @@ def build_pm(cfg, cal, masters, rng, maint_done: list[dict]) -> tuple[list[dict]
             mv, mu = round(float(r.uniform(6.6, 8.2)), 1), "%"
         recs.append({"pm_task_id": t["pm_task_id"], "due_date": due, "done_at": done_at, "done_by": done_by,
                      "recorded_by": mnt, "result": res, "measured_value": mv, "measured_unit": mu,
-                     "memo": "9/1 전 마지막 실시 (시작 상태)" if base else None, "status": "CONFIRMED",
+                     "memo": "기록 시작 전 마지막 실시 (시작 상태)" if base else None, "status": "CONFIRMED",
                      "current_version": 0})
 
     def work_time(d, hm0, hm1):
@@ -68,24 +69,26 @@ def build_pm(cfg, cal, masters, rng, maint_done: list[dict]) -> tuple[list[dict]
 
     for t in tasks:
         cyc, tid, eq = t["cycle_code"], t["pm_task_id"], t["equipment_id"]
-        # 시작 상태: 9/1 전 마지막 실시
+        # 시작 상태: 기록 시작일 전 마지막 실시 (시작일 기준 며칠 전)
         if cyc == "DAILY":
-            last = date(2026, 8, 31)
+            last = day0 - timedelta(days=1)
         elif cyc == "WEEKLY":
-            last = date(2026, 8, 25) + timedelta(days=int(r.integers(0, 7)))
+            last = day0 - timedelta(days=7) + timedelta(days=int(r.integers(0, 7)))
         elif cyc == "MONTHLY":
             if tid in overdue:
                 last = _add_month(overdue[tid], -1)
             elif eq in month_sessions:
                 last = _add_month(month_sessions[eq]["window"].due, -1)
+            elif eq in pp["vf2_monthly_due"] and isinstance(pp["vf2_monthly_due"][eq], str):   # 정비 구간 없이 기한만 정함 (기록 기간 전에 한 것)
+                last = _add_month(date.fromisoformat(pp["vf2_monthly_due"][eq]), -1)
             else:
-                last = date(2026, 8, 2) + timedelta(days=int(r.integers(0, 28)))
+                last = day0 - timedelta(days=30) + timedelta(days=int(r.integers(0, 28)))
         elif cyc == "HALF_YEAR":
-            last = date(2026, 4, 10) + timedelta(days=int(r.integers(0, 130)))
+            last = day0 - timedelta(days=144) + timedelta(days=int(r.integers(0, 130)))
         elif cyc == "YEARLY":
-            last = date(2025, 10, 10) + timedelta(days=int(r.integers(0, 320)))
+            last = day0 - timedelta(days=326) + timedelta(days=int(r.integers(0, 320)))
         elif cyc == "EVERY_8H_USE":
-            last = date(2026, 8, 31)
+            last = day0 - timedelta(days=1)
         else:
             continue
         add(t, None if cyc == "EVERY_8H_USE" else _add_month(last, 0), at(last, "09:30"), base=True)
@@ -106,8 +109,10 @@ def build_pm(cfg, cal, masters, rng, maint_done: list[dict]) -> tuple[list[dict]
             if tid in overdue and due >= overdue[tid]:
                 break                                      # 기한 넘김 (시연 S2)
             dd = due
-            while dd not in wset:
+            while dd not in wset and dd <= day1:        # 기한이 휴무일이면 다음 근무일로 (기록 끝을 넘으면 그만)
                 dd += timedelta(days=1)
+            if dd > day1:
+                break
             if cyc in ("DAILY", "WEEKLY") and r.random() > on_time:
                 later = [x for x in workdays if x > dd]
                 dd = later[0] if later else dd
@@ -116,7 +121,7 @@ def build_pm(cfg, cal, masters, rng, maint_done: list[dict]) -> tuple[list[dict]
                 dd = later[min(int(r.integers(*pp["monthly_late_days"])), len(later) - 1)]
             if dd > day1:
                 break
-            hm = ("08:05", "09:30") if t["default_role"] == "OPR" else ("08:30", "11:30")
+            hm = ("09:05", "10:30") if t["default_role"] == "OPR" else ("09:30", "12:30")
             done_at = work_time(dd, *hm)
             add(t, due, done_at)
             due = next_due(dd, cyc)

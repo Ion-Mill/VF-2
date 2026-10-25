@@ -1,11 +1,13 @@
 """시연 데이터 서버 자가 점검 — 서버를 켠 채로 실행: python tools/check_server.py
 처음으로(reset)를 부르므로 시연 중에는 돌리지 말 것."""
 import json
+import os
 import time
+from datetime import datetime, timedelta
 import urllib.error
 import urllib.request
 
-BASE = "http://127.0.0.1:8765/api/"
+BASE = f"http://127.0.0.1:{os.environ.get('MOM_SIM_PORT', '8765')}/api/"
 
 
 def call(path, body=None, raw=None):
@@ -26,11 +28,17 @@ def ok(path, body=None):
 
 ok("sim/reset", {})
 ok("sim/clock", {"speed": 180})
+# 날짜는 서버가 알려 주는 값(프로필)에서: 기록 끝 날 일일 보고서, 그 날 야간 교대, 실시간 시작 한 시간 (2026-10-24)
+prof = ok("health")["profile"]
+last_day = ok("reports/daily")["reports"][-1]["work_date"]
+t0 = datetime.fromisoformat(prof["live_start"])
+t1 = t0 + timedelta(hours=1)
+rep = lambda x: x.strftime("%Y-%m-%dT%H:%M:%S") + "%2B09:00"
 for p in ["health", "line/twin", "production/target", "kpi", "production/orders", "downtimes", "notifications/past-open",
           "internal-docs", "internal-docs/search?q=994", "internal-docs/DOC-03/sections/2.1", "maint/pm-schedule", "maint/history",
-          "reports/shift", "reports/daily", "reports/daily/2026-09-30", "reports/shift/2026-09-30-N", "documents/revisions",
+          "reports/shift", "reports/daily", f"reports/daily/{last_day}", f"reports/shift/{last_day}-N", "documents/revisions",
           "lots", "inspection/cmm-imports", "quality/summary", "inventory", "shipments", "tools", "settings", "users",
-          "replay?from=2026-10-01T08:00:00%2B09:00&to=2026-10-01T09:00:00%2B09:00"]:
+          f"replay?from={rep(t0)}&to={rep(t1)}"]:
     ok(p)
 
 # 잘못된 몸통은 400 (서버가 죽지 않음)

@@ -1,11 +1,14 @@
 'use client';
 // SCR-01 로그인 (페이지구조 v3 1장) — 아이디(U01~U12)와 비밀번호를 직접 친다 (사용자 요청 2026-10-24, 예전엔 이름 목록에서 고르면 0000이 채워졌다). 계정은 생성기/masters/app_user.csv.
-// 백엔드가 켜져 있으면(NEXT_PUBLIC_MOM_API) 서버 /api/auth/login으로 확인하고 받은 토큰을 이브 채팅이 같이 쓴다 (2026-10-23). 꺼져 있으면 화면 안에서 비교만 한다.
+// 백엔드 모드(기본, NEXT_PUBLIC_MOM_BACKEND≠0)면 backendApi.backendLogin으로 서버가 확인하고, 받은 토큰을 화면 API와 이브 채팅이 같이 쓴다. 꺼져 있으면 화면 안에서 비교만 한다.
 import { useState } from 'react';
 import { USERS, type UserRec } from './model';
 import type { Role } from './data';
 import Logo from './Logo';
-import { DEMO_PW, backendChatEnabled, loginBackend } from './assistantApi';
+import { BackendErr, backendLogin, backendMode } from './backendApi';
+
+// 시연용: 모든 계정 비밀번호 0000 (사용자 결정 2026-10-15)
+export const DEMO_PW = '0000';   // assistantApi.ts·App.tsx(새로고침 뒤 다시 로그인)도 같은 값을 쓴다
 
 const HINT_ROLE: [Role, string][] = [['OPR', '작업자'], ['MNT', '보전'], ['SUP', '반장'], ['MGR', '관리자']];
 // 시연 계정 안내 — 사용자 표에서 역할별 첫·끝 아이디를 뽑는다 (예: 작업자 U01~U06)
@@ -21,16 +24,15 @@ export default function Login({ onLogin }: { onLogin: (u: UserRec) => void }) {
     if (busy) return;
     if (!id.trim() || !pw) return setFail('아이디와 비밀번호를 넣어 주세요');
     const pick = USERS.find((u) => u.id.toLowerCase() === id.trim().toLowerCase());
-    if (!backendChatEnabled()) {
-      if (!pick || pw !== DEMO_PW) return setFail(BAD);
+    if (!pick) return setFail(BAD);
+    if (!backendMode()) {
+      if (pw !== DEMO_PW) return setFail(BAD);
       return onLogin(pick);
     }
-    if (!pick) return setFail(BAD);
+    // 화면 → 백엔드 전환 (C2): 백엔드가 비밀번호를 확인하고 토큰을 준다 (backendApi.ts)
     setBusy(true);
-    const r = await loginBackend(pick.id, pw);
+    try { await backendLogin(pick.id, pw); } catch (e) { setBusy(false); return setFail(e instanceof BackendErr && e.status === 401 ? BAD : '서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요'); }
     setBusy(false);
-    if (r === 'bad') return setFail(BAD);
-    if (r === 'down') return setFail('서버에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요');
     onLogin(pick);
   };
   const field = 'flex h-12 w-full items-center rounded-full border border-line bg-white px-5 text-left text-card';

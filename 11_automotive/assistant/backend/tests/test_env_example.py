@@ -27,7 +27,8 @@ def test_example_values_are_read_back_clean(monkeypatch):
         m = re.match(r"([A-Za-z_]\w*)=(.*)", line)
         if m:
             tmp[m.group(1)] = m.group(2).strip()
-    assert tmp["EXTERNAL_LLM_APP"] == "0" and tmp["LLM_ENABLED"] == "0" and tmp["ASSISTANT_PROVIDER"] == "local"   # 기본은 외부로 안 나감
+    assert tmp["EXTERNAL_LLM_APP"] == "1" and tmp["LLM_ENABLED"] == "1" and tmp["ASSISTANT_PROVIDER"] == "claude"   # 예시 기본은 외부 Claude
+    assert tmp["ASSISTANT_VOICE"] == "1" and tmp["VOICE_MODEL"] == "large-v3-turbo"
     assert tmp["LLM_JOBS"] == "write,route"
     assert all("#" not in v for v in tmp.values())
 

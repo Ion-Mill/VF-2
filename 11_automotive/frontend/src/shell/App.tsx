@@ -7,6 +7,8 @@ import type { MachineId } from '@/components/types';
 import { ID_OF, LAYOUT, LEGEND, MACHINES, type Role } from './data';
 import { Ctx, DEFAULT_SETTINGS, type AppCtx, type History, type Inv, type Screen, type Settings } from './ctx';
 import { api, md, SIM, simIso, tsOf, useFetch, useLive, useLocal, usePersist, type SimEvent } from './live';
+import { backendLogin, backendLogout, backendMode } from './backendApi';
+import { causeNoticeId, createRecord, loadDocs, openWoSeen, resolveNotice, saveSr, saveWo, saveWr, type Docs } from './backendDocs';
 import { askGuideCard } from './assistText';
 import { ALARMS, ROLE_NAME, USERS, applyAssignments, homeScreen, levelOfSev, type AlarmRec, type AlertRec, type Notice, type UserRec } from './model';
 import { derive, fromEvents, fromPast, groupPmPast, repeatOf, type RuleCtx } from './rules';
@@ -17,7 +19,7 @@ import Briefing from './Briefing';
 import CardScreen, { CardList } from './CardScreen';
 import DocBox from './DocBox';
 import Layout2D from './Layout2D';
-import Login from './Login';
+import Login, { DEMO_PW } from './Login';
 import Logo from './Logo';
 import Panels from './Panels';
 import HomeHud, { GLASS } from './HomeHud';
@@ -130,8 +132,13 @@ export default function App() {
   const [user, setUserRaw] = useState<UserRec | null>(null);
   const [ready, setReady] = useState(false); // 서버 그리기 때는 저장소를 못 읽어서, 읽기 전에는 로그인 화면을 잠깐도 보이지 않는다
   useEffect(() => {
-    try { const id = sessionStorage.getItem(SESSION_USER); const u = USERS.find((x) => x.id === id); if (u) setUserRaw(u); } catch { /* 저장소를 못 쓰면 로그인부터 */ }
-    setReady(true);
+    let u: UserRec | undefined;
+    try { const id = sessionStorage.getItem(SESSION_USER); u = USERS.find((x) => x.id === id); } catch { /* 저장소를 못 쓰면 로그인부터 */ }
+    if (!u || !backendMode()) { if (u) setUserRaw(u); setReady(true); return; }
+    // 백엔드 토큰은 메모리에만 있어 새로고침하면 사라진다 → 같은 계정으로 다시 받는다. 못 받으면 로그인 화면
+    // shortcut: 시연 비밀번호로 다시 받는다, 계정마다 비밀번호가 달라지면 토큰을 sessionStorage에 두는 쪽으로
+    const who = u;
+    backendLogin(who.id, DEMO_PW).then(() => setUserRaw(who), () => { /* 로그인 화면으로 */ }).finally(() => setReady(true));
   }, []);
   const setUser = (u: UserRec | null) => {
     try { if (u) sessionStorage.setItem(SESSION_USER, u.id); else sessionStorage.removeItem(SESSION_USER); } catch { /* 저장 못 해도 화면은 계속 */ }
@@ -148,7 +155,7 @@ const RoleChip = ({ role }: { role: Role }) => <span className={`rounded-md px-1
 const procLabel = (u: UserRec) => (u.role === 'OPR' && u.procs.length ? `${[...u.procs].sort().map((c) => Number(c.slice(3)) / 10).join('·')}공정` : '');   // OP-10·OP-20 → 1·2공정
 function ShiftChip({ type, start, end, now, finished }: { type: 'DAY' | 'NIGHT'; start: string; end: string; now: string; finished: boolean }) {
   const off = now < start || now >= end, day = type === 'DAY';
-  // 시뮬레이터는 10/1 08:00부터 하루치만 돈다 — 다음 날 08:00에 끝나면 다음 주간 교대가 없어 '교대 대기'로 남던 것 (2026-10-25)
+  // 시뮬레이터 기록 기간(프로필)이 끝나면 다음 주간 교대가 없어 '교대 대기'로 남던 것 (2026-10-25)
   if (finished) return <span className="rounded-tile border border-dashed border-line px-2.5 py-1 text-card font-semibold text-ink-3" title="시연 하루가 끝났어요. 시연 조작판의 [처음으로]를 누르세요">시연 끝</span>;
   if (off) return <span className="rounded-tile border border-dashed border-line px-2.5 py-1 text-card font-semibold text-ink-3">교대 대기</span>;
   const icon = day
@@ -166,10 +173,23 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
   const role = user.role;
 
   // ---------- 이 브라우저에 남기는 문서·알림 (시연 회차별) ----------
-  const [wos, setWos] = usePersist<WorkOrder[]>('wos', [], runId);
-  const [wrs, setWrs] = usePersist<WorkRecord[]>('wrs', [], runId);
-  const [srs, setSrs] = usePersist<SimpleRecord[]>('srs', [], runId);
-  const [notices, setNotices] = usePersist<Notice[]>('notices', [], runId);
+  const [wosL, setWos] = usePersist<WorkOrder[]>('wos', [], runId);
+  const [wrsL, setWrs] = usePersist<WorkRecord[]>('wrs', [], runId);
+  const [srsL, setSrs] = usePersist<SimpleRecord[]>('srs', [], runId);
+  const [noticesL, setNotices] = usePersist<Notice[]>('notices', [], runId);
+  // 백엔드 모드 (화면 → 백엔드 전환 C2 다음 단계, 2026-10-24 — backendDocs.ts): 작업지시서·작업기록서·간이 기록·알림을 백엔드에서 읽고 쓴다.
+  // 화면이 스스로 만들던 작업지시서 초안·규칙 알림은 끈다 (DB가 만든다). 아직 저장 안 한 간이 기록만 화면 안에 잠시 둔다 (번호 NEW:)
+  const BM = backendMode();
+  const [bdocs, setBdocs] = useState<Docs | null>(null);
+  const [draftSrs, setDraftSrs] = useState<SimpleRecord[]>([]);
+  const making = useRef<Set<string>>(new Set());                    // 만드는 중인 작업기록서 (작업지시서 번호)
+  const saveQ = useRef<Record<string, Promise<unknown> | undefined>>({});          // 문서별 저장 줄
+  const reloadDocs = useCallback(() => { if (BM) loadDocs().then(setBdocs).catch(() => undefined); }, [BM]);
+  useEffect(() => { if (!BM) return undefined; reloadDocs(); const t = setInterval(reloadDocs, 4000); return () => clearInterval(t); }, [BM, reloadDocs, runId]);
+  const wos = BM ? bdocs?.wos ?? [] : wosL;
+  const wrs = BM ? bdocs?.wrs ?? [] : wrsL;
+  const srs = BM ? [...(bdocs?.srs ?? []), ...draftSrs.filter((d) => !(bdocs?.srs ?? []).some((x) => x.alertId === d.alertId && x.kind === d.kind))] : srsL;
+  const notices = BM ? bdocs?.notices ?? [] : noticesL;
   const [handledA, setHandledA] = usePersist<Record<string, { by: string; ts: number }>>('handled', {}, runId);
   const [acked, setAcked] = usePersist<Record<string, string[]>>('acked', {}, runId); // 사용자별 긴급 팝업 [확인]
   const [hushed, setHushed] = useState<string[]>([]); // 팝업을 닫을 때 이미 쌓여 있던 긴급 알람 — 다음 팝업으로 이어 떠도 소리는 안 냄 (사용자 요청 2026-10-22)
@@ -194,7 +214,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
 
   // ---------- 알람 기록 = 시뮬레이터 알람 이벤트 ----------
   const alerts: AlertRec[] = useMemo(() => (twin?.alarms ?? []).map((e) => {
-    const id = `a-${e.alarm_event_id}`, h = handledA[id];
+    const id = `a-${e.alarm_event_id}`, h = handledA[id] ?? bdocs?.handled[id];
     const guideDone = e.severity === 'GUIDE' && !!e.cleared_at; // 조작 안내는 작업자가 고치면(알람 해제) 처리
     return {
       id, eventId: e.alarm_event_id, prevId: e.prev_alarm_event_id, machine: ID_OF[e.equipment_id], code: e.alarm_code,
@@ -202,7 +222,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
       time: e.occurred_at, ts: tsOf(e.occurred_at), cleared: e.cleared_at, lot: e.lot_no, scenario: e.scenario_code,
       handled: !!h || guideDone, handledTs: h?.ts, handledBy: h?.by ?? (guideDone ? '알람 해제' : undefined),
     } as AlertRec;
-  }), [twin?.alarms, handledA]);
+  }), [twin?.alarms, handledA, bdocs?.handled]);
 
   // 새 알람 → OP-30 정지 등급이면 작업지시서 초안 + 문서 알림, 반복 알람 판단
   const seenAlarm = useRef<Set<number>>(new Set());
@@ -213,7 +233,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
     downtimes: downF.data?.downtimes ?? null, srs,
   });
   const addNotices = useCallback((ns: Notice[]) => {
-    if (!ns.length) return;
+    if (!ns.length || BM) return;
     setNotices((l) => { const have = new Set(l.map((x) => x.id)); const n = ns.filter((x) => !have.has(x.id)); return n.length ? [...l, ...n] : l; });
   }, [setNotices]);
   useEffect(() => { seenAlarm.current = new Set(); }, [runId]);
@@ -225,6 +245,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
     const add: Notice[] = [];
     fresh.forEach((a) => {
       if (a.alarm?.steps.length && (a.kind === 'alarm' || a.kind === 'warn')) askGuideCard(a.code, a.alarm.steps).catch(() => undefined); // 카드가 열리기 전에 비서가 풀어 쓸 시간을 번다 (2026-10-17, 꺼져 있으면 아무 일도 없음)
+      if (BM) return;                     // 백엔드 모드: 작업지시서 초안·반복 알람 알림·원인 점검 요청은 DB가 만든다
       if (a.kind === 'alarm' && MACHINES[a.machine].op === 'OP-30' && a.alarm) createWo(a, 'STOP_ALARM'); // 같은 설비 열린 작업지시서 검사는 createWo 안에서
       const r = repeatOf(a, ruleCtx());
       if (r) {
@@ -303,7 +324,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
   useEffect(() => { if (pastOpen.data) addNotices(groupPmPast(pastOpen.data.notifications.map(fromPast))); }, [pastOpen.data, addNotices]);
   // 상태로 판단하는 알림 (5초마다)
   useEffect(() => {
-    if (!twin) return;
+    if (!twin || BM) return;
     const t = setTimeout(() => {
       const { add, resolve } = derive(ruleCtx());
       addNotices(add);
@@ -360,6 +381,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
   const [bandOff, setBandOff] = useState<string[]>([]); // 알림 띠에서 닫은 주의 알람 (사용자 요청 2026-10-22, 긴급은 못 닫음)
   const [ctlOpen, setCtlOpen] = useState(true); // 홈 3D 조작 줄 접기·펴기 (사용자 요청 2026-10-24)
   const [eveI, setEveI] = useState(0); // 홈 이브 알림 띠에서 보고 있는 알람 번호
+  useEffect(() => { setBandOff([]); setEveI(0); }, [runId]); // 시연을 처음으로 되돌리면(새 회차) 닫아 둔 주의 알람을 잊는다 — 알람 번호가 회차마다 같아서 안 지우면 새 알람이 띠에 안 뜬다 (2026-10-23)
   const [zone, setZone] = useState<string | null>(null);
   const curGroup = GROUPS.find((g) => g.subs.some(([, s2]) => s2 === screen) || g.related?.includes(screen));
   useEffect(() => { // 펼친 메뉴 바깥을 누르거나 Esc면 닫기
@@ -377,10 +399,21 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
 
   // ---------- 문서 열기 ----------
   const openCard = (id: string) => { hushAll(); setAcked((s) => ({ ...s, [user.id]: [...(s[user.id] ?? []), id] })); go('card', id); };
-  const openWo = (no: string) => { setNotices((l) => l.map((x) => ((x.rule === 'WO_ASSIGNED' || x.rule === 'WO_DRAFT_READY') && x.open?.key === no && x.roles.includes(role) && (!x.userIds || x.userIds.includes(user.id)) ? { ...x, handled: true, handledBy: user.name, handledAt: simIso() } : x))); go('wo', no); };
+  const openWo = (no: string) => { if (BM) { openWoSeen(no).then(reloadDocs); go('wo', no); return; } setNotices((l) => l.map((x) => ((x.rule === 'WO_ASSIGNED' || x.rule === 'WO_DRAFT_READY') && x.open?.key === no && x.roles.includes(role) && (!x.userIds || x.userIds.includes(user.id)) ? { ...x, handled: true, handledBy: user.name, handledAt: simIso() } : x))); go('wo', no); };
   // 작업기록서 = 작업지시서 화면 아래 칸 (2026-10-20). nav=false면 만들기만 하고 화면은 그대로
   const openRecord = (woNo: string, nav = true) => {
     const wo = wos.find((w) => w.no === woNo); if (!wo) return;
+    if (BM) {                              // 백엔드가 만든다 (잠금·표지 9칸·작업 순서 체크칸 같이)
+      // [작업 시작]은 작업지시서 저장(시작)과 같은 순간에 부른다 → 그 저장이 끝난 뒤 만든다 (같은 지시서 줄). 두 번 눌러도 한 번만
+      if (!wrs.some((r) => r.woNo === woNo) && !making.current.has(woNo)) {
+        making.current.add(woNo);
+        (saveQ.current[`wo:${woNo}`] ?? Promise.resolve()).catch(() => undefined)
+          .then(() => createRecord(woNo)).then(reloadDocs).catch((e) => toast((e as Error).message))
+          .finally(() => making.current.delete(woNo));
+      }
+      if (nav) go('wr', woNo);
+      return;
+    }
     if (!wrs.some((r) => r.woNo === woNo)) {
       const rec: WorkRecord = { no: nextNo('MR', wrs), woNo, state: 'draft', memo: '', cause: '', action: '', parts: [], stepChecks: wo.steps.map(() => false), lock: LOCK.map(() => false), start: '', end: '', revisions: [] };
       setWrs((l) => [...l, rec]); setWos((l) => l.map((x) => (x.no === woNo ? { ...x, recordNo: rec.no } : x)));
@@ -390,6 +423,11 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
   function openSimple(alertId: string, kind: 'alarm' | 'cause' = 'alarm', nav = true) {
     const al = alerts.find((x) => x.id === alertId); if (!al) return;
     let no = srs.find((r) => r.alertId === alertId && r.kind === kind)?.no;
+    if (!no && BM) {                       // 처음 저장할 때 백엔드에 만든다 — 그때까지 임시 번호
+      no = `NEW:${alertId}:${kind}`;
+      const d: SimpleRecord = { no, alertId, machine: al.machine, kind, code: al.code, state: 'open', action: '', parts: [], lock: LOCK.map(() => false), memo: '', revisions: [] };
+      setDraftSrs((l) => [...l.filter((x) => x.no !== d.no), d]);
+    }
     if (!no) {
       no = nextNo('MR-S', srs);
       const r: SimpleRecord = { no, alertId, machine: al.machine, kind, code: al.code, state: 'open', action: '', parts: [], lock: LOCK.map(() => false), memo: '', revisions: [] };
@@ -417,12 +455,40 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
     live.refresh();
   };
 
+  // 백엔드 모드 저장: 화면은 바로 새 값으로 보이고(낙관적), 백엔드에 저장한 뒤 다시 읽는다. 실패하면 알림 띠로 알리고 다시 읽어 되돌린다
+  // 같은 문서의 저장은 줄 세워 하나씩 (앞 저장이 버전을 올리므로 다음 저장 전에 목록을 다시 읽어 최신 버전으로 — CONFLICT_VERSION 막기, 2026-10-24)
+  const bSave = (run: () => Promise<unknown>, optimistic: (d: Docs) => Docs, key = '*') => {
+    setBdocs((d) => (d ? optimistic(d) : d));
+    const before = saveQ.current[key];
+    const p = (before ?? Promise.resolve()).catch(() => undefined)
+      .then(async () => { if (before) await loadDocs(); return run(); });
+    saveQ.current[key] = p;
+    p.catch((e) => toast((e as Error).message)).finally(reloadDocs);
+    return p;
+  };
+  const putSrL = (r: SimpleRecord) => setSrs((l) => l.map((x) => (x.no === r.no ? r : x)));
+  const bSaveSr = (r: SimpleRecord) => {
+    const prev = srs.find((x) => x.no === r.no); if (!prev) return;
+    if (r.no.startsWith('NEW:')) setDraftSrs((l) => l.map((x) => (x.no === r.no ? r : x)));
+    else setBdocs((d) => (d ? { ...d, srs: d.srs.map((x) => (x.no === r.no ? r : x)) } : d));
+    saveSr(prev, r, r.kind === 'cause' ? causeNoticeId(r.machine) : undefined)
+      .then((no) => {
+        if (no !== r.no) {                 // 처음 저장 — 임시 번호를 DB 번호로 바꾸고 보던 화면도 따라간다
+          setDraftSrs((l) => l.filter((x) => x.no !== r.no));
+          if (screen === 'sr' && key === r.no) go('sr', no);
+        }
+      })
+      .catch((e) => toast((e as Error).message)).finally(reloadDocs);
+  };
+
   const myNotices = notices.filter((n) => role === 'MGR' || (n.roles.includes(role) && (!n.userIds || n.userIds.includes(user.id) || n.past)));
   const ctx: AppCtx = {
     user, role, setUser, twin, connected, lastOk: live.lastOk, alerts, notices, myNotices, wos, wrs, srs,
-    putWo: (w) => setWos((l) => l.map((x) => (x.no === w.no ? w : x))), putWr: (w) => setWrs((l) => l.map((x) => (x.no === w.no ? w : x))), putSr: (r) => setSrs((l) => l.map((x) => (x.no === r.no ? r : x))),
+    putWo: (w) => { if (BM) { const prev = wos.find((x) => x.no === w.no)!; bSave(() => saveWo(prev, w), (d) => ({ ...d, wos: d.wos.map((x) => (x.no === w.no ? w : x)) }), `wo:${w.no}`); } else setWos((l) => l.map((x) => (x.no === w.no ? w : x))); },
+    putWr: (w) => { if (BM) { const prev = wrs.find((x) => x.no === w.no)!; bSave(() => saveWr(prev, w), (d) => ({ ...d, wrs: d.wrs.map((x) => (x.no === w.no ? w : x)) }), `wr:${w.no}`); } else setWrs((l) => l.map((x) => (x.no === w.no ? w : x))); },
+    putSr: (r) => (BM ? bSaveSr(r) : putSrL(r)),
     addNotice: (n) => addNotices([n]),
-    handleNotice: (id, plan) => setNotices((l) => l.map((x) => (x.id === id ? { ...x, handled: true, handledBy: user.name, handledAt: simIso(), plan } : x))),
+    handleNotice: (id, plan) => (BM ? void bSave(() => resolveNotice(id, plan), (d) => ({ ...d, notices: d.notices.map((x) => (x.id === id ? { ...x, handled: true, handledBy: user.name, plan } : x)) }), `n:${id}`) : setNotices((l) => l.map((x) => (x.id === id ? { ...x, handled: true, handledBy: user.name, handledAt: simIso(), plan } : x)))),
     markAlert: (ids, by) => setHandledA((h) => ({ ...h, ...Object.fromEntries(ids.map((i) => [i, { by, ts: Date.now() }])) })),
     screen, key, go, back, openCard, openWo, openRecord, openSimple: (id, kind) => openSimple(id, kind ?? 'alarm'), openAfter,
     openSource: (doc, sec) => setSource([doc, sec]), openReplay: (at) => go('replay', at),
@@ -519,7 +585,7 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
             {acct && (
               <div className="absolute right-0 top-[52px] z-30 w-[220px] rounded-tile border border-line bg-white py-1 shadow-lg">{/* 계정 바꾸기 목록은 뺐다 — 다른 계정은 로그아웃 뒤 아이디 로그인 (사용자 요청 2026-10-24) */}
                 <div className="px-4 py-2.5"><div className="text-body font-bold">{user.name}</div><div className="text-small text-ink-2">{ROLE_NAME[user.role]} {user.role} · {user.id}{procLabel(user) && ` · ${procLabel(user)}`}</div></div>
-                <button onClick={() => setUser(null)} className="flex h-11 w-full items-center border-t border-line-soft px-4 text-left text-body text-ink-2 hover:bg-tile">로그아웃</button>
+                <button onClick={() => { backendLogout(); setUser(null); }} className="flex h-11 w-full items-center border-t border-line-soft px-4 text-left text-body text-ink-2 hover:bg-tile">로그아웃</button>
               </div>
             )}
           </div>

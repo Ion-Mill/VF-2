@@ -2,7 +2,7 @@
 
 -- 교대 보고서. target_qty = 총 목표 (목표 + 이월, R-88 — 생산 칸). 이월이 잠정이면 carry_over_is_provisional
 -- name: shift_report
-SELECT r.*, s.work_date, s.shift_type, s.supervisor_user_id, s.target_qty AS shift_target_qty, s.carry_over_qty,
+SELECT r.*, s.work_date, s.shift_type, s.start_at, s.end_at, s.supervisor_user_id, s.target_qty AS shift_target_qty, s.carry_over_qty,
        t.carry_over_is_provisional
   FROM shift_report r JOIN shift s USING (shift_id) JOIN v_shift_target t USING (shift_id)
  WHERE r.shift_id = :shift_id;
@@ -360,3 +360,52 @@ SELECT s.shift_id, s.shift_type, s.target_qty + s.carry_over_qty AS total_target
   FROM shift s LEFT JOIN shift_report r USING (shift_id)
  WHERE s.work_date = CAST(:work_date AS date)
  ORDER BY s.start_at;
+
+-- ---------- 화면 → 백엔드 전환 C2 (2026-10-23): 목록·이력 한 번에 ----------
+-- 시작했지만 아직 초안이 없는 교대(진행 중·막 끝남)도 미리보기 줄로 함께 (preview = true, 2026-10-24 — 화면 → 백엔드 전환).
+-- 미리보기는 저장하지 않는다 — 교대가 끝나면 스케줄러가 진짜 초안을 만든다
+-- name: shift_report_list
+SELECT r.shift_id, r.status, r.current_version, s.work_date, s.shift_type, s.start_at, s.end_at, s.supervisor_user_id,
+       false AS preview, false AS in_progress
+  FROM shift_report r JOIN shift s USING (shift_id)
+UNION ALL
+SELECT s.shift_id, 'AI_DRAFT', 0, s.work_date, s.shift_type, s.start_at, s.end_at, s.supervisor_user_id,
+       true AS preview, s.end_at > app_now() AS in_progress
+  FROM shift s
+ WHERE s.start_at <= app_now() AND s.start_at >= app_now() - interval '2 days'
+   AND NOT EXISTS (SELECT 1 FROM shift_report r WHERE r.shift_id = s.shift_id)
+ ORDER BY start_at;
+
+-- 교대가 시작했나·진행 중인가 (미리보기)
+-- name: shift_started
+SELECT s.start_at <= app_now() AS started, s.end_at > app_now() AS in_progress FROM shift s WHERE s.shift_id = :shift_id;
+
+-- 교대 구간 알람 등급별 코드 (교대 보고서 특이 사항 문장 — 2026-10-24)
+-- name: report_alarm_codes
+WITH w AS (SELECT start_at AS f, least(end_at, app_now()) AS t FROM shift WHERE shift_id = :shift_id)
+SELECT a.severity_at_event AS severity, count(*)::int AS n, string_agg(DISTINCT a.alarm_code, ', ' ORDER BY a.alarm_code) AS codes
+  FROM alarm_event a CROSS JOIN w WHERE a.occurred_at >= w.f AND a.occurred_at < w.t
+ GROUP BY a.severity_at_event;
+
+-- 교대 구간에 걸린 로트 보류 (교대 보고서 특이 사항 문장)
+-- name: report_holds
+SELECT h.lot_no FROM lot_hold h JOIN shift s ON h.held_at >= s.start_at AND h.held_at < s.end_at
+ WHERE s.shift_id = :shift_id ORDER BY h.held_at;
+
+-- name: daily_report_list
+SELECT work_date, status, current_version FROM daily_report ORDER BY work_date;
+
+-- 최근 문서 버전 (모든 문서). OPR(OWN)은 자기가 고친 것만
+-- name: revisions_recent
+SELECT r.revision_id, r.doc_type, r.doc_key, r.version_no, r.author_kind, r.author_user_id, r.created_at, r.reason, r.status_after
+  FROM document_revision r
+ WHERE CAST(:own_user AS text) IS NULL OR r.author_user_id = CAST(:own_user AS text)
+ ORDER BY r.revision_id DESC LIMIT CAST(:limit AS int);
+
+-- name: revision_changes_of
+SELECT revision_id, field_name, before_value, after_value FROM document_revision_change
+ WHERE revision_id = ANY(string_to_array(CAST(:ids AS text), ',')::bigint[]) ORDER BY revision_id;
+
+-- 사내 문서 조각 (절마다 첫 줄 = "문서 > 1. 제목 > 1.1 제목", 긴 절은 (1/3)처럼 나뉨) — 화면 절 목록으로 다시 모은다
+-- name: internal_doc_chunks
+SELECT section, chunk_text FROM doc_chunk WHERE doc_no = :doc_no ORDER BY chunk_id;

@@ -1,6 +1,6 @@
 'use client';
 // SCR-09 지침카드 — 알람 번호로 알람 코드집(DOC-02)·고장 대응 매뉴얼(DOC-03)·안전 작업 기준서(DOC-05)를 규칙으로 찾는다.
-// 생산 영향·지난 기록·의심 로트는 시뮬레이터·9월 기록. "먼저 할 일"은 비서 정리가 준비되면 그것을 본문으로 보이고 DOC-03 점검 순서의 ★(작업자) 줄 원문은 "원문 보기"에 둔다 (2026-10-19, UI설계서 SCR-09 [5]). 준비 전·실패·꺼짐이면 ★ 줄 원문 그대로 (비서 응답 없음 모양).
+// 생산 영향·지난 기록·의심 로트는 시뮬레이터·9월 기록. "먼저 할 일"(작업자 ★ 줄)과 "보전 담당자 단계"는 비서 정리가 준비되면 그것을 본문으로 보이고 DOC-03 원문은 "원문 보기"에 둔다. 준비 전·실패·꺼짐이면 원문 그대로.
 import { useState } from 'react';
 import { BTN, CARD, DARK, PAGE, useApp } from './ctx';
 import { LAYOUT, MACHINES } from './data';
@@ -12,13 +12,17 @@ import { useGuideCardText } from './assistText';
 import { Band as CBand } from './ui';
 import { cardsBand } from './bands';
 
+// 비서 정리 칸의 안내 글줄과 "원문(DOC-03) 보기"를 보일지. 숨김 (사용자 지시, 2026-10-25). true로 바꾸면 되돌아온다.
+const SHOW_PLAIN_NOTE = false;
+
 const SEV_KO: Record<string, string> = { STOP: '정지', WARN: '주의', GUIDE: '조작 안내' };
 
 // 시안(2026-10-20): 결론 띠 → 먼저 할 일(큰 번호) → 보전 단계(펼침) → 생산 영향 숫자 → 안전 고정 서식. 지난 기록(표)·출처는 접음.
 export default function CardScreen({ alertId }: { alertId: string }) {
   const { alerts, back, wos, srs, openWo, openSimple, user, history, go, openSource } = useApp();
   const alert = alerts.find((x) => x.id === alertId);
-  const guideText = useGuideCardText(alert?.code, alert?.alarm?.steps); // 비서가 쉬운 말로 다듬은 "먼저 할 일" (없으면 null). 훅이라 아래 early return보다 위
+  const guideText = useGuideCardText(alert?.code, alert?.alarm?.steps, 'steps'); // 먼저 할 일. 훅이라 아래 early return보다 위
+  const maintText = useGuideCardText(alert?.code, alert?.alarm?.maint, 'maint'); // 보전 담당자 단계. 작업자 줄과 캐시를 나누려고 part를 붙인다
   if (!alert) return <div className={PAGE}><div className={CARD}>알람 기록을 찾지 못했습니다 (시연을 처음으로 되돌렸을 수 있음) <button onClick={back} className={BTN}>닫기</button></div></div>;
   const a = alert.alarm, lv = LEVEL_VIEW[alert.level], eq = MACHINES[alert.machine].eq!;
   const op30 = MACHINES[alert.machine].op === 'OP-30';
@@ -34,6 +38,7 @@ export default function CardScreen({ alertId }: { alertId: string }) {
   const src2 = (d: string) => { const m = d.match(/(DOC-\d+|GLOSSARY)\s+§?([\d.]+)/); return m ? <button key={d} onClick={() => openSource(m[1], m[2])} className="underline">{d}</button> : <span key={d}>{d}</span>; };
   const tone = alert.level === '긴급' ? 'crit' : alert.level === '주의' ? 'warn' : 'mute';
   const assisted = a && a.steps.length ? guideText : null; // 비서 정리가 준비된 때만 본문으로 (줄 수가 원문과 같은 것만 훅이 돌려준다), 원문은 접어 둔다 (팀원 2026-10-19)
+  const maintAssisted = a && a.maint.length ? maintText : null;
   const rule = a?.chain.match(/\(([^)]+)\)/)?.[1];
   const who = mine ? '나' : (a?.responder === 'MNT' ? '보전 담당자' : '그 설비 작업자');
   const respText = `처리 책임: ${who}`;
@@ -72,12 +77,24 @@ export default function CardScreen({ alertId }: { alertId: string }) {
           {assisted ? (
             <div className="flex flex-col gap-2">
               <NumList items={assisted} big />
-              <p className="text-small text-ink-2">비서(외부 LLM)가 쉬운 말로 다듬은 글입니다. 원문과 다르면 원문(DOC-03)을 따릅니다.</p>
-              <details className="text-body"><summary className="cursor-pointer font-semibold text-ink-2">원문(DOC-03) 보기</summary><div className="mt-2 rounded-tile border border-line p-3"><NumList items={a.steps} /></div></details>
+              {SHOW_PLAIN_NOTE && <>
+                <p className="text-small text-ink-2">비서(외부 LLM)가 쉬운 말로 다듬은 글입니다. 원문과 다르면 원문(DOC-03)을 따릅니다.</p>
+                <details className="text-body"><summary className="cursor-pointer font-semibold text-ink-2">원문(DOC-03) 보기</summary><div className="mt-2 rounded-tile border border-line p-3"><NumList items={a.steps} /></div></details>
+              </>}
             </div>
           ) : a.steps.length ? <NumList items={a.steps} big /> : <span className="text-body text-ink-2">{a.doc03.join(' · ') || '해당 절 없음'}</span>}
         </Sec>
-        {a.maint.length > 0 && <Sec title="보전 담당자 단계" right={<Chip>보전 {a.maint.length}단계</Chip>}><NumList items={a.maint} start={a.steps.length + 1} /></Sec>}
+        {a.maint.length > 0 && <Sec title="보전 담당자 단계" right={<>{maintAssisted && <Chip tone="acc">비서 정리</Chip>}<Chip>보전 {a.maint.length}단계</Chip></>}>
+          {maintAssisted ? (
+            <div className="flex flex-col gap-2">
+              <NumList items={maintAssisted} start={a.steps.length + 1} big />
+              {SHOW_PLAIN_NOTE && <>
+                <p className="text-small text-ink-2">비서(외부 LLM)가 쉬운 말로 다듬은 글입니다. 원문과 다르면 원문(DOC-03)을 따릅니다.</p>
+                <details className="text-body"><summary className="cursor-pointer font-semibold text-ink-2">원문(DOC-03) 보기</summary><div className="mt-2 rounded-tile border border-line p-3"><NumList items={a.maint} start={a.steps.length + 1} /></div></details>
+              </>}
+            </div>
+          ) : <NumList items={a.maint} start={a.steps.length + 1} />}
+        </Sec>}
         <div className="contents" data-summary-panel="SCR-09">
         <Sec title="생산 영향" field="생산 영향" right={<Chip field="추정">추정</Chip>}>
           <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3">

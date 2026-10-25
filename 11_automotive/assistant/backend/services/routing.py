@@ -12,10 +12,11 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from datetime import date, timedelta
+from datetime import date
 
 from backend.config import REFERENCE_AT, Settings
 from backend.llm import jobs
+from backend.services import sim_clock
 from backend.services import steplog as SL
 
 REF_DATE = date.fromisoformat(REFERENCE_AT[:10])
@@ -66,19 +67,8 @@ def rule_route(p: dict, question: str) -> Route:
 
 
 def _period_dates(period: str) -> tuple[date | None, date | None, str | None]:
-    """기간 이름 → (시작, 끝, 정해지는 교대). 날짜는 코드가 정한다 (merge_route와 같은 뜻)."""
-    y = REF_DATE - timedelta(days=1)
-    if period == "today":
-        return REF_DATE, REF_DATE, None
-    if period == "yesterday":
-        return y, y, None
-    if period == "last_shift":  # 기준 시각 10/1 08:00의 지난 교대 = 9/30 야간
-        return y, y, "N"
-    if period == "recent_7":
-        return REF_DATE - timedelta(days=7), y, None
-    if period == "recent_30":
-        return REF_DATE - timedelta(days=30), y, None
-    return None, None, None
+    """기간 이름 → (시작, 끝, 정해지는 교대). 날짜는 코드가 정한다 (merge_route와 같은 뜻). 시계가 없으면 10/1·9/30 야간."""
+    return sim_clock.named_period(period)
 
 
 def strong_rules(p: dict) -> bool:

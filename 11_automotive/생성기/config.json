@@ -5,27 +5,24 @@
     "seed": 20260901,
     "_seed_note": "_new — 값 자체는 의미 없음. 같은 seed면 같은 결과",
     "masters_dir": "masters",
-    "out_dir": "out"
+    "_out_note": "2026-10-24 — out_dir·기간·날짜가 붙은 값은 프로필(profiles/video.json, final.json)이 채움. 생성기는 --profile video|final 필수 (MOM_PROFILE 환경변수도 됨)"
   },
   "period": {
     "_source": "설계서 5.2",
-    "start_date": "2026-09-01",
-    "end_date": "2026-09-30",
     "closed_weekdays": ["SUN"],
-    "closed_dates": ["2026-09-06", "2026-09-13", "2026-09-20", "2026-09-27"],
-    "work_days": 26
+    "_period_note": "2026-10-24 — start_date·end_date는 프로필이 정함. 휴무는 일요일 규칙만 (날짜 목록 closed_dates는 프로필에서 따로 넣을 때만)"
   },
   "shifts": {
     "_source": "설계서 5.2, DOC-07 §4.1",
-    "DAY": { "start": "08:00", "end": "17:00", "break": ["12:00", "13:00"] },
-    "NIGHT": { "start": "20:00", "end": "05:00", "break": ["00:00", "01:00"] },
-    "_break_note": "_new — 문서는 '휴식 1시간 포함'만 있고 시각이 없음. 교대 가운데에 둠 (정지 사유 P02)",
+    "DAY": { "start": "09:00", "end": "18:00", "break": ["13:00", "14:00"] },
+    "NIGHT": { "start": "21:00", "end": "06:00", "break": ["01:00", "02:00"] },
+    "_break_note": "_new — 문서는 '휴식 1시간 포함'만 있고 시각이 없음. 교대 가운데에 둠 (정지 사유 P02). 2026-10-24 교대 시각을 08~17 / 20~05에서 09~18 / 21~06으로 바꿈",
     "planned_minutes": 480,
-    "line_stop_between": [["17:00", "20:00"], ["05:00", "08:00"]],
-    "shift_report_draft_at": { "DAY": "17:00", "NIGHT": "05:00" },
-    "daily_report_draft": { "on": "NIGHT_SHIFT_REPORT_CONFIRMED", "latest": "06:00" },
-    "_daily_report_note": "2026-10-13 — 야간 교대 보고서 확정 즉시, 확정이 없으면 06:00 (설계서 5.2)",
-    "production_day_rule": "그날 주간 + 그날 밤 야간 (D 08:00 ~ D+1 05:00)"
+    "line_stop_between": [["18:00", "21:00"], ["06:00", "09:00"]],
+    "shift_report_draft_at": { "DAY": "18:00", "NIGHT": "06:00" },
+    "daily_report_draft": { "on": "NIGHT_SHIFT_REPORT_CONFIRMED", "latest": "07:00" },
+    "_daily_report_note": "2026-10-13 — 야간 교대 보고서 확정 즉시, 확정이 없으면 07:00 (2026-10-24: 야간 끝 06:00 + 1시간)",
+    "production_day_rule": "그날 주간 + 그날 밤 야간 (D 09:00 ~ D+1 06:00)"
   },
   "targets": {
     "_source": "설계서 5.3, 15.1",
@@ -71,15 +68,7 @@
     "group_repeat_within_min": 1,
     "group_repeat_count": 3,
     "repeat_rule": { "window_days": 7, "count": 3, "stage2_recur_days": 7, "close_after_days": 7 },
-    "repeat_cases": [
-      { "id": "case1_S2", "equipment": "VF2-02", "alarm": "2075", "stage": 1,
-        "early_window": ["2026-09-01", "2026-09-07"],
-        "last_week_three": { "third_at": "2026-09-29T23:12", "window_start": "2026-09-23" },
-        "action_plan_saved": false, "no_recur_on": "2026-09-30" },
-      { "id": "case2_stage2", "equipment": "VF2-02", "alarm": "108", "stage": 2,
-        "occurrences": [["2026-09-08", "DAY"], ["2026-09-09", "NIGHT"], ["2026-09-10", "DAY"], ["2026-09-14", "DAY"]],
-        "cause_check": ["2026-09-15", "DAY"], "close_check_until": "2026-09-22" }
-    ],
+    "_repeat_cases_note": "2026-10-24 — repeat_cases(사례 날짜)는 프로필이 정함",
     "avoid_other_repeats": true,
     "check_guide_share_min": 0.70
   },
@@ -142,7 +131,7 @@
     "_source": "설계서 5.11·5.12, 15.3",
     "on_time_rate": [0.90, 0.95],
     "monthly_some_late": true,
-    "overdue_for_demo": { "count": [2, 3], "must_include": "PM-VF2-02-2.3-01", "must_due": "2026-09-28" },
+    "overdue_for_demo": { "count": [2, 3], "must_include": "PM-VF2-02-2.3-01" },
     "missed_refill_event": "9월 말 VF2-02 축 윤활유 보충을 빠뜨림 (재고·2075와 이어짐, 설계서 15.5)",
     "repair_min": [30, 180],
     "work_orders_30d": [5, 9]
@@ -152,7 +141,7 @@
     "change_alert_pct": 90,
     "cycle_up_from_pct": 80,
     "early_break": "따로 만들지 않음 (2026-10-14 — 공구 수명 예측 모델을 뺌). 수명 편차는 교체 시점 90~99%와 5% 한도 사용으로, 일찍 부러지는 것은 충돌 S1의 엔드밀만",
-    "end_state": { "VF2-01-T05_pct_at_0930_end": 90, "VF2-01-T05_pct_range": [90, 94], "_note": "2026-10-14: 9/30 끝 VF2-01 T05 = 90% (10/1 아침 교체 권고 대상 = 90% 이상). 공구 교체 한 번이 흐름을 흔들어 정확히 맞지 않으면 90~94% 안의 값을 씀. 처음엔 92%였으나 생성 결과에 맞춰 90%로 바꿈" }
+    "end_state": { "VF2-01-T05_pct_at_end": 90, "VF2-01-T05_pct_range": [90, 94], "_note": "2026-10-14: 기록 끝 VF2-01 T05 = 90% (시작 아침 교체 권고 대상 = 90% 이상). 공구 교체 한 번이 흐름을 흔들어 정확히 맞지 않으면 90~94% 안의 값을 씀. 2026-10-24: 키 이름을 ..._at_0930_end → ..._at_end로" }
   },
   "inventory": {
     "_source": "설계서 5.14, 15.5, 기준정보_목록 6장 결정 3",
@@ -163,13 +152,12 @@
     "m6_tap_qty_per_receipt": 12,
     "below_safety_at_month_end": ["CS-WLUB", "TL-TAP6"],
     "stocktake_adjust_30d": [1, 2],
-    "fg_stocktake_adjust": { "count": [0, 1], "qty": [1, 2], "date": "2026-09-30" }
+    "fg_stocktake_adjust": { "count": [0, 1], "qty": [1, 2] }
   },
   "shipment": {
     "_source": "설계서 5.20",
     "time": "14:00",
     "customer": "CUST-01",
-    "first_date": "2026-09-02",
     "fifo": true,
     "split_lot": false,
     "expected_count_30d": 25,
@@ -181,10 +169,9 @@
     "revised_fields": [1, 2],
     "versions_per_doc": [1, 3],
     "past_docs_status": "CONFIRMED",
-    "night_report_confirm_window": ["05:00", "06:00"],
+    "night_report_confirm_window": ["06:00", "07:00"],
     "daily_report_created_at": "NIGHT_REPORT_CONFIRMED_AT",
-    "unconfirmed_daily_reports": ["2026-09-30"],
-    "_unconfirmed_note": "9/30 일일 보고서만 확정 대기(v0) — 시연 MGR 팝업용 (설계서 5.16, 2026-10-13)"
+    "_unconfirmed_note": "기록 끝 날의 일일 보고서만 확정 대기(v0) — 시연 MGR 팝업용 (설계서 5.16, 2026-10-13). 날짜는 프로필(unconfirmed_daily_reports)이 정함"
   },
   "notifications": {
     "_source": "논리 ERD 5.H.5·6.36·6.54, DOC-07 10장, 설계서 5.8",
@@ -213,15 +200,14 @@
   },
   "realtime": {
     "_source": "설계서 4장·7장, 요구사항 NFR-DATA-10",
-    "start": "2026-10-01T08:00",
-    "inherit_state_from": "2026-09-30 끝",
+    "inherit_state_from": "기록 끝",
     "random_alarms": false,
     "speeds": [180, 60, 10, 1],
     "default_speed": 60,
     "auto_slowdown_to": 10,
     "_auto_slowdown_note": "1로 바꿀 수 있음 (설계서 4장)",
-    "skip_targets": ["TODAY_17:00", "TODAY_20:00"],
-    "_skip_note": "17:00 = 주간 끝, 20:00 = 야간 시작(17:00~20:00 휴무). 다음 날 06:00으로 넘기기는 없음 (2026-10-13, 20:00은 2026-10-20)",
+    "skip_targets": ["TODAY_DAY_END", "TODAY_NIGHT_START"],
+    "_skip_note": "TODAY_DAY_END = 오늘 주간 끝(shifts.DAY.end, 지금 18:00), TODAY_NIGHT_START = 야간 시작(shifts.NIGHT.start, 지금 21:00). 그 사이는 라인 정지. 다음 날 아침으로 넘기기는 없음 (2026-10-13). 2026-10-24: 시각 글자(TODAY_17:00·TODAY_20:00)에서 이름으로 바꿈 — 옛 이름은 별칭으로 받음",
     "buttons": ["S1", "S3", "S4", "S6", "S7"],
     "_buttons_note": "S2·S5는 버튼 없음 — 9월 과거 기록으로 진행 (S5는 2026-10-13에 뺌)",
     "button_rules": { "target_must_be_run": true, "lock_while_event": true, "allow_repeat": true },
@@ -232,7 +218,6 @@
     "_cmm_drop_note": "_new (2026-10-14) — 10/1 측정마다 결과 파일(CSV, CMM 조사 5.2 양식)을 떨어뜨리는 공유 폴더 흉내 (out_realtime/cmm_drop/). 처음으로 되돌리면 비움",
     "wait_human_tool": "VF2-01-T05",
     "_wait_note": "_new (2026-10-14) — 10/1에 이 공구는 자동 교체하지 않고 사람이 화면에서 교체할 때까지 기다림 (S3 장면). 안 하면 한도 → 362 → 시뮬레이터 교체",
-    "out_dir": "out_realtime",
     "_out_note": "_new — 실시간 모드 기록(10/1 08:00 ~)을 과거 기록(out/)과 따로 둔다. 번호는 과거 기록 뒤에 이어 붙임 (2026-10-13)"
   },
   "sim": {
@@ -257,7 +242,7 @@
     "_cause1_note": "병목 원인 ①: 엔드밀(T02)이 80%를 넘을 때 주 1~2번만 사이클 8.0~8.5분 구간을 만들고 그 공구는 98~100%에서 교체",
     "warn_random_codes": { "VF2-01": ["108", "174", "2075", "120"], "VF2-02": ["174", "120"] },
     "_warn_note": "362는 공구 한도에서만 생김. VF2-02의 108·2075는 반복 알람 사례에서만 생김. 같은 설비·같은 알람은 7일에 2번까지 (우연한 반복 막기)",
-    "crash_chain": { "equipment": "VF2-01", "window": ["2026-09-14", "2026-09-25"], "gap_min": [1, 3] },
+    "crash_chain": { "equipment": "VF2-01", "gap_min": [1, 3] },
     "_crash_note": "과거 30일 충돌 1건 (로트 보류 '충돌 알람 후 1건', 설계서 5.5). 108 → 994 → 992, DOWN·작업지시서는 마지막 992에 붙임",
     "alarm_reason_map": {
       "992": "F01", "994": "F01", "991": "F01", "993": "F01", "103": "F01", "254": "F02", "966": "F02", "2073": "F04", "552": "F06",
@@ -271,11 +256,9 @@
     "defect_boost_parts_after_alarm": 30,
     "_defect_note": "공구 사용률 90% 넘은 공구로 깎은 부품, 992·108 뒤 30개는 불량 확률 3배 (설계서 5.5 '불량이 늘어나는 조건'). 전체 0.5~1.0%가 되게 base를 맞춤",
     "pm_plan": {
-      "vf2_monthly_due": { "VF2-01": ["2026-09-08", "2026-09-25"], "VF2-02": "2026-10-01" },
-      "overdue_due": { "PM-VF2-02-2.3-01": "2026-09-28", "PM-VF2-02-2.3-07": "2026-09-29" },
       "monthly_session_min": [60, 90],
       "monthly_late_days": [0, 3],
-      "maint_start_window": ["09:00", "14:00"],
+      "maint_start_window": ["10:00", "15:00"],
       "_pm_note": "VF2-01 매월 항목은 9월 안 한 날에 묶어서 정비(원인 ② 1회). VF2-02 매월 항목은 10/1 S6에서 함. 그중 축 윤활유·주축 윤활 탱크 2개는 9/28·9/29 기한을 넘김(시연 S2). 6개월·1년 항목은 9월에 기한이 오지 않게 둠"
     },
     "wo_approve_after_min": [10, 40],

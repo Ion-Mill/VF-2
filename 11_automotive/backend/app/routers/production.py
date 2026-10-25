@@ -9,6 +9,7 @@ from pydantic import BaseModel, Field
 
 from ..db import Db, get_db
 from ..errors import AppError
+from ..services import sim_link
 from ..security import Actor, require, require_any
 from .common import must, period
 
@@ -72,6 +73,19 @@ def suspect_lots(since: datetime | None = Query(None, description="이 시각 �
     return db.all("production.suspect_lots", alarm_event_id=None, lot_no=None, since=since)
 
 
+@router.get("/lots/screen")
+def lots_screen(lot: str | None = Query(None, description="고른 로트 — 그 로트의 실적 줄·알람도 같이"),
+                _: Actor = Depends(require("PRODUCTION", "VIEW")), db: Db = Depends(get_db)):
+    """로트 화면 한 번에 (2026-10-23, 화면 → 백엔드 전환 C2 — SCR-19·20·21): 모든 로트(오래된 것부터 — 검사 방식·판정·게이지 합불·
+    공정별 완료 수·마지막 보류·출하 내역), 고른 로트의 실적 줄·알람, 실시간 구간 앞 보류, 원자재 로트"""
+    before = db.scalar("line.live_from")
+    return {"lots": db.all("production.lots_screen"),
+            "reports": db.all("production.lot_reports", lot_no=lot) if lot else [],
+            "alarms": db.all("production.lot_alarms", lot_no=lot) if lot else [],
+            "past_holds": db.all("production.holds_before", before=before),
+            "materials": db.all("production.material_lots"), "live_from": before}
+
+
 @router.get("/lots/{lot_no}")
 def lot(lot_no: str, _: Actor = Depends(require("PRODUCTION", "VIEW")), db: Db = Depends(get_db)):
     """로트 1개 (완료 수량·검사 방식·출하 수량)"""
@@ -114,7 +128,11 @@ class HoldIn(BaseModel):
 
 @router.post("/lots/{lot_no}/hold")
 def hold(lot_no: str, body: HoldIn, actor: Actor = Depends(require("LOT_HOLD", "INPUT")), db: Db = Depends(get_db)):
-    """보류 (LOT-02, 사람만 — 비서는 제안만, R-51). 보류되면 측정은 강화 검사로 바뀐다. 로트 상태를 돌려준다"""
+    """보류 (LOT-02, 사람만 — 비서는 제안만, R-51). 보류되면 측정은 강화 검사로 바뀐다. 로트 상태를 돌려준다.
+    시뮬레이터가 이어져 있으면(MOM_SIM_URL) 시뮬레이터가 보류한다 (강화 검사로 OP-50이 느려짐) — 기록은 DB 중계로 들어온다"""
+    if sim_link.enabled():
+        sim_link.call("POST", f"lots/{lot_no}/hold", {"role": actor.role, "user_id": actor.user_id, "reason": body.reason})
+        return {"hold_id": None, "lot": db.one("production.lot", lot_no=lot_no), "via": "simulator"}
     hold_id = db.scalar("production.lot_hold", lot_no=lot_no, actor=actor.user_id, trigger_type=body.trigger_type,
                         reason=body.reason, next_lots=body.next_lots, alarm_event_id=body.alarm_event_id, tool_id=body.tool_id)
     return {"hold_id": hold_id, "lot": db.one("production.lot", lot_no=lot_no)}
@@ -122,11 +140,17 @@ def hold(lot_no: str, body: HoldIn, actor: Actor = Depends(require("LOT_HOLD", "
 
 class ReleaseIn(BaseModel):
     pass_qty: int | None = Field(None, ge=0, description="해제 때 합격 수량 (비우면 완료 수량 − 폐기 수량)")
+    approver: str | None = Field(None, description="시뮬레이터 연결 때: 폐기를 승인한 관리자 (시뮬레이터가 폐기 승인과 함께 남김)")
 
 
 @router.post("/lots/{lot_no}/release")
 def release(lot_no: str, body: ReleaseIn, actor: Actor = Depends(require("LOT_HOLD", "INPUT")), db: Db = Depends(get_db)):
-    """보류 해제 (LOT-02, SUP·MGR) — 합격 수량을 정해 출하 가능으로 (합격 0개면 INVALID_STATE — 전부 불량은 폐기)"""
+    """보류 해제 (LOT-02, SUP·MGR) — 합격 수량을 정해 출하 가능으로 (합격 0개면 INVALID_STATE — 전부 불량은 폐기).
+    시뮬레이터가 이어져 있으면 시뮬레이터가 해제한다 (완제품 입고·폐기 승인) — 기록은 DB 중계로 들어온다"""
+    if sim_link.enabled():
+        sim_link.call("POST", f"lots/{lot_no}/release", {"role": actor.role, "user_id": actor.user_id,
+                                                          **({"approver": body.approver} if body.approver else {})})
+        return {"lot": db.one("production.lot", lot_no=lot_no), "via": "simulator"}
     db.scalar("production.lot_release", hold_id=_open_hold(db, lot_no), actor=actor.user_id, pass_qty=body.pass_qty)
     return {"lot": db.one("production.lot", lot_no=lot_no)}
 

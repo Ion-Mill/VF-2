@@ -40,3 +40,65 @@ SELECT fn_start_lot(:order_no, :material_lot_no, CAST(:input_qty AS int), CAST(:
 
 -- name: lot_arrived
 SELECT fn_lot_to_inspection(:lot_no);
+
+-- ---------------------------------------------------------------------
+-- 시연 서버 → DB 표 맞추기 (POST /api/ingest/sync, 2026-10-23 — app/services/sim_sync.py). 시연 모드만.
+-- 시뮬레이터 10/1 기록(생성기 export와 같은 칸·번호)을 표째로 덮어쓴다. 넣는 문장은 표·칸 이름이 바뀌어 서비스가 만들고,
+-- 표·칸 이름은 아래 목록(DB 카탈로그)에 있는 것만 쓴다.
+-- name: sync_columns
+SELECT c.table_name::text, c.column_name::text, (c.is_generated = 'ALWAYS') AS generated,
+       CASE WHEN c.is_nullable = 'NO' AND c.is_identity = 'NO' THEN c.column_default END AS not_null_default
+  FROM information_schema.columns c
+ WHERE c.table_schema = 'public' AND c.table_name IN (SELECT jsonb_array_elements_text(CAST(:tables AS jsonb)))
+ ORDER BY c.table_name, c.ordinal_position;
+
+-- name: sync_pkeys
+SELECT c.conrelid::regclass::text AS table_name, a.attname::text AS column_name
+  FROM pg_constraint c JOIN LATERAL unnest(c.conkey) WITH ORDINALITY k(attnum, n) ON true
+  JOIN pg_attribute a ON a.attrelid = c.conrelid AND a.attnum = k.attnum
+ WHERE c.contype = 'p' AND c.connamespace = 'public'::regnamespace
+   AND c.conrelid::regclass::text IN (SELECT jsonb_array_elements_text(CAST(:tables AS jsonb)))
+ ORDER BY 1, k.n;
+
+-- name: sync_identity
+SELECT table_name::text, column_name::text FROM information_schema.columns
+ WHERE table_schema = 'public' AND is_identity = 'YES'
+   AND table_name IN (SELECT jsonb_array_elements_text(CAST(:tables AS jsonb)));
+
+-- 생성기 적재(tools/load_generated.py)와 같게: 알림·자동 규칙 끔(app.loading). 순환 외래 키는 원래 커밋 때 확인(95_deferred_fks)
+-- name: sync_loading
+SELECT set_config('app.loading', :value, true);
+
+-- 넣은 뒤 업무 번호 카운터(PO 등)·공구 누적 같은 "지금 상태" 칸을 맞춘다 (load_generated --realtime 끝과 같음)
+-- name: sync_after
+SELECT (SELECT count(*) FROM fn_sync_doc_numbers()) AS doc_numbers, fn_sync_after_load() AS tools;
+
+-- 새로 들어온 알람의 뒷일 = fn_ingest_alarm의 기록 뒤 부분 (등급별 알림 R-38 → OP-30 정지 초안 → 반복 알람 R-70)
+-- name: sync_alarm_notify
+SELECT fn_raise_notification(
+           CASE m.severity WHEN 'STOP' THEN 'ALARM_STOP' WHEN 'WARN' THEN 'ALARM_WARN' ELSE 'ALARM_GUIDE' END,
+           format('%s 알람 %s (%s)', a.equipment_id, a.alarm_code, m.name_ko),
+           jsonb_build_object('alarm_event_id', a.alarm_event_id, 'equipment_id', a.equipment_id, 'lot_no', a.lot_no),
+           a.occurred_at,
+           p_recipients => ARRAY(SELECT u.user_id FROM app_user u
+                                  WHERE u.is_active AND (m.severity = 'STOP'
+                                        OR (u.role_code = 'OPR' AND (fn_equipment_process(a.equipment_id)
+                                                IN (u.home_process_code, u.home_process_code_2) OR u.home_process_code IS NULL))
+                                        OR (u.role_code = 'MNT' AND m.severity = 'WARN'))))
+  FROM alarm_event a JOIN alarm_master m USING (alarm_code)
+ WHERE a.alarm_event_id = :alarm_event_id;
+
+-- name: sync_alarm_auto_wo
+SELECT fn_auto_work_order_draft(a.alarm_event_id, 'STOP_ALARM')
+  FROM alarm_event a JOIN alarm_master m USING (alarm_code)
+ WHERE a.alarm_event_id = :alarm_event_id AND m.severity = 'STOP' AND fn_equipment_process(a.equipment_id) = 'OP-30';
+
+-- name: sync_alarm_repeat
+SELECT fn_check_repeat_alarm(a.alarm_event_id)
+  FROM alarm_event a JOIN alarm_master m USING (alarm_code)
+ WHERE a.alarm_event_id = :alarm_event_id AND m.severity <> 'GUIDE';
+
+-- DB에 그 함수가 있나 (옛 로컬 DB에는 10/20에 생긴 fn_auto_work_order_draft가 없을 수 있다)
+-- name: sync_has_function
+SELECT EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
+                WHERE n.nspname = 'public' AND p.proname = :fn) AS ok;

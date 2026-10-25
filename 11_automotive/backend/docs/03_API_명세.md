@@ -235,6 +235,8 @@
 | POST | `/api/ingest/lots/{lot_no}/arrived` | 서비스 키 `ingest` | 로트가 OP-50에 도착 → 검사 대기 |
 | POST | `/api/ingest/cmm` | 서비스 키 `ingest` | CMM 결과 파일 내용 (공유 폴더 대신 API로 보낼 때) |
 | POST | `/api/ingest/clock` | 서비스 키 `ingest` | 시연 시계를 시뮬레이터 시계에 맞춘다 (팀과 논의/비서_시뮬레이터_DB_연결_논의 3-1 "서비스 키로 부르는 시계 입구", 2026-10-20). |
+| POST | `/api/ingest/sync` | 서비스 키 `ingest` | 시뮬레이터 10/1 기록을 표째로 DB에 맞춘다 (시연 서버 DB 중계, 2026-10-23 — app/services/sim_sync.py). |
+| POST | `/api/ingest/reset` | 서비스 키 `ingest` | 시연 데이터 처음으로 (시연 서버 [처음으로]·켤 때, 2026-10-23): 운영 데이터를 시연 기준점으로 되돌리고 그 뒤 센서 값을 지운다 |
 <!-- END:api -->
 
 이 밖에 `GET /api/health` (DB 연결 확인, 권한 없음).
@@ -296,3 +298,48 @@
 **명세서보다 더한 것 (명세서 주소 체계 안에 둠):** `GET /api/alarms`·`/{id}`, `GET /api/kpi/stops`, `GET /api/lots/{no}`·`POST …/judge`, `GET /api/holds`, `POST /api/maint/work-orders`·`/work-records`(만들기)·`…/checks/{seq}`·`…/parts`·`…/check`, `GET·PATCH /api/maint/pm-records/{id}`·`…/confirm`, `POST /api/reports/daily/{date}/revise`, `GET /api/documents/revisions/{id}`, `GET /api/internal-docs`·`/{doc_no}`, `GET·POST /api/inspection/instructions`·`…/start`, `POST /api/inspection/cmm-imports`(올리기), `GET /api/quality/cpk`·`/defects`, `GET /api/inventory/{no}/txns`, `POST /api/raw-lots`(원자재 입고), `GET /api/shipments/candidates`·`/{no}`, `PUT·DELETE /api/shipments/{no}/lines/{lot}`, `POST /api/shipments/{no}/confirm`, `GET /api/tools/{id}/changes`, `GET /api/codes`·`/dataset`·`/sim/clock`·`/admin/retention`, `POST /api/sim/snapshot`. 서버끼리: `/api/ingest/*`, `/api/assistant/tools·drafts·notifications/*` (서비스 키).
 
 **명세서와 다른 점:** 없음 (63개 모두). 명세서 밖으로 더한 것은 위 목록, 오류는 예상 못 한 서버 오류에만 500 `INTERNAL_ERROR`.
+
+## 7. 화면 → 백엔드 전환 (C2, 2026-10-23) — 화면 한 번에 읽기·시뮬레이터 연결
+
+화면(`frontend/src/shell/backendApi.ts`, 스위치 `NEXT_PUBLIC_MOM_BACKEND=1`)이 시연 서버 대신 이 서버만 부를 때 쓰는 것. 기존 응답 모양은 바꾸지 않고 칸·주소를 더했다. 권한은 각 화면의 상세 조회와 같다 (`tests/test_role_matrix.py`).
+
+| 주소 | 하는 일 | 권한 |
+|---|---|---|
+| `GET /api/line/twin?full=true` | 트윈 + 시간대별 실적·설비별 지표·MTTR·작업지시·공구·실시간 구간 알람·지금 센서·설비별 멈춘 분/고장 손실·지금 사유·오늘 완제품·마지막 측정 24개·의심 로트·병목 기록·`live_from`·시뮬레이터 시계(`sim`) | LINE·FIELD 보기 |
+| `GET /api/replay` (칸 더함) | `alarms`(알람 전체 칸), `bottleneck`(원인·앞 공정, 구간 앞 1줄 포함), `done`(OP-50 실적 줄 끝 시각·합격 수), 상태 줄에 `reason_suggested_code`·`alarm_event_id` | LINE 보기 |
+| `GET /api/reports/shift`, `GET /api/reports/daily` | 보고서 목록 (상태·버전, 교대는 시각·반장) | 각 보고서 보기 |
+| `GET /api/reports/shift/{id}` (칸 더함) | `start_at`·`end_at` | 그대로 |
+| `GET /api/documents/revisions?limit=` | 모든 문서의 최근 버전 + 바뀐 칸(`changes{번호: […]}`), 볼 수 있는 문서만, OPR은 자기 것 | 수정 이력 보기 |
+| `GET /api/internal-docs/{doc}?sections=true` | 현행판 문서 조각(`doc_chunk`)을 절 목록 `{section, title, level, text}`로 | 사내 문서 보기 |
+| `GET /api/maint/history` | 실시간 구간 앞(시연: 9월) 작업지시서·단계·작업기록서·점검·부품·알람 | 지침카드 보기 |
+| `GET /api/maint/pm-schedule` (칸 더함) | `today_records`(오늘·초안 실시 기록), `open_windows`(지금 열린 정비 구간) | 그대로 |
+| `GET /api/lots/screen?lot=` | 모든 로트(검사 방식·판정·게이지 합불·공정별 완료 수·마지막 보류·출하 내역) + 고른 로트의 실적 줄·알람 + 실시간 구간 앞 보류 + 원자재 로트 | 생산 보기 |
+| `GET /api/inventory/screen` | 13품목 + 실시간 구간 시작 때 재고(`stock_at_start`) + 실시간 거래 전부·그 앞 거래 | 재고 보기 |
+| `GET /api/tools/changes` | 공구 교체 — 실시간 구간(`changes_today`)·그 앞(`past_changes`) | 공구 보기 |
+| `GET /api/shipments?lines=true` | 출하마다 로트 줄까지 | 출하 보기 |
+| `GET /api/inspection/cmm-imports?limit=` | 최대 5000 (500 → 5000) | 그대로 |
+
+**시뮬레이터 연결 (`MOM_SIM_URL`이 있을 때만, `app/services/sim_link.py`).** 시뮬레이터가 주인인 일은 이 서버가 로그인·권한을 확인한 뒤 시뮬레이터에 넘기고, 기록은 DB 중계(`/api/ingest/sync`)로 들어온다 — 같은 표에 둘이 쓰지 않게.
+
+| 주소 | 시뮬레이터가 이어져 있을 때 | 권한 |
+|---|---|---|
+| `GET·POST /api/sim/clock`, `POST /api/sim/inject`, `POST /api/sim/reset` | 시뮬레이터 시계·사건 버튼·처음으로로 넘김 (inject는 `scenario_code`만). reset은 시뮬레이터만 — DB는 중계가 되돌림 | 로그인 |
+| `POST /api/sim/fire` `{kind: warn·stop·air·maint}` | 알림 미리보기 [상황 일으키기] | 로그인 |
+| `POST /api/sim/work-record-confirmed` `{equipment_id}` | 작업기록서 확정 뒤 고장 설비 복귀 | 작업기록서·간이 기록 확정 |
+| `POST /api/sim/pm-start`·`/api/sim/pm-end` | [정비 시작]·[정비 끝] | 예방 정비 기록 만들기 (MNT) |
+| `POST /api/lots/{lot}/hold`·`/release` | 시뮬레이터가 보류·해제 (`via: simulator`) | 그대로 (SUP·MGR) |
+| `POST /api/tools/{id}/change` | 시뮬레이터가 교체 (`via: simulator`) | 그대로 (OPR·MNT) |
+
+시뮬레이터에 연결하지 못하면 503 `INVALID_STATE` "시뮬레이터(시연 서버)에 연결하지 못함". 시뮬레이터가 거절하면 그 상태·코드·문장 그대로.
+
+### 7-1. 화면 → 백엔드가 기본 (2026-10-24, `docs/09_화면_백엔드_연결_설계.md`)
+
+| 주소 | 바뀐 것 | 권한 |
+|---|---|---|
+| `GET /api/line/twin?full=true` | 결과를 `MOM_TWIN_CACHE_SECONDS`(기본 1초) 동안 모두가 같이 씀(고치는 동안은 바로 앞 값). 로그인은 **토큰만** 확인(역할은 토큰 안 값, 권한표 60초 기억) — DB 연결을 잡지 않음. 칸 `sim_control`(이 사용자가 시연 조작 가능한지) | LINE·FIELD 보기 (그대로) |
+| `GET /api/reports/shift` | 시작했지만 초안이 없는 교대(최근 2일)를 미리보기 줄로 함께 — `preview`, `in_progress` | 그대로 |
+| `GET /api/reports/shift/{id}` | 초안이 없으면 DB 저장점 안에서 초안을 만들어 읽고 되돌린 **미리보기**(`preview: true`, DB에 안 남음). 특이 사항이 `(비서 문장 대기)`면 기본 문장 5개(실적·필수 정지·병목·불량·알람) | 그대로 |
+| `POST /api/assist/{kind}` (새) | 비서가 다듬은 문장이 준비됐는지 (`work-order-text`·`guide-card-text`·`briefing-text`·`alarm-text`) — 시연 서버 llm_compose에 물음, 없거나 실패면 `{ready: false}` | 로그인 |
+| `POST /api/sim/clock·inject·reset·fire` | `MOM_SIM_CONTROL_USERS`(쉼표, 비우면 누구나)에 없으면 403 `FORBIDDEN` (`reason: SIM_CONTROL`) | 로그인 + 진행자 |
+
+설정 더함: `MOM_SIM_CONTROL_USERS`, `MOM_TWIN_CACHE_SECONDS`(0 = 끔), `MOM_SCHEDULER_SECONDS`(기본 60, 진행자 5). 접근 기록 쓰기·가상 표시 읽기는 요청과 다른 작은 연결 줄(`db.side_engine`, 1+1)을 쓴다 — 여러 명 접속 때 같은 줄을 서로 기다리다 막히던 것을 없앰.

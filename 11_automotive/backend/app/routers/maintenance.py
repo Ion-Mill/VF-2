@@ -25,8 +25,13 @@ router = APIRouter(prefix="/api/maint", tags=["정비"])
 # ---------------- 작업지시서 (MNT-02~08) ----------------
 @router.get("/work-orders")
 def wo_list(status: str | None = None, mine: bool = False, limit: int = Query(100, le=500),
+            detail: bool = Query(False, description="칸 전부 + 알람 번호·작업 순서·예상 부품 (2026-10-24 화면 → 백엔드 전환 — 열람 처리 없음)"),
+            since: datetime | None = Query(None, description="detail일 때: 이 시각 뒤에 만든 것만"),
             actor: Actor = Depends(require("WORK_ORDER", "VIEW")), db: Db = Depends(get_db)):
-    """작업지시서 목록 (MNT-02). mine = 내가 담당인 것만"""
+    """작업지시서 목록 (MNT-02). mine = 내가 담당인 것만. detail=true면 화면이 1건씩 열지 않고 그리는 칸 전부 —
+    1건 조회(GET …/{wo_no})와 달리 담당자 배정 알림을 처리하지 않는다 (목록을 주기적으로 읽어도 알림이 남게)"""
+    if detail:
+        return db.all("maintenance.wo_list_detail", since=since)
     return db.all("maintenance.wo_list", status=status, assignee=actor.user_id if mine else None, limit=limit)
 
 
@@ -154,10 +159,14 @@ def _record_perm(db: Db, actor: Actor, record_no: str, action: str) -> dict:
 @router.get("/work-records")
 def wr_list(record_type: str | None = None, status: str | None = None, limit: int = Query(100, le=500),
             equipment_id: str | None = None, alarm_code: str | None = None,
+            detail: bool = Query(False, description="칸 전부 + 체크(잠금·표지·작업 순서)·사용 부품 (2026-10-24 화면 → 백엔드 전환)"),
+            since: datetime | None = Query(None, description="detail일 때: 이 시각 뒤에 시작한 것만 (시작 전 기록 포함)"),
             actor: Actor = Depends(WR_VIEW), db: Db = Depends(get_db)):
     """작업기록 목록 (OPR은 간이 기록만). 설비·알람 번호로 거르기 (같은 사례 찾기 — 2026-10-20)"""
     if not permissions(db).allows(actor.role, "WORK_RECORD", "VIEW"):
         record_type = "SIMPLE"           # OPR은 간이 기록만 (13.1)
+    if detail:
+        return db.all("maintenance.wr_list_detail", record_type=record_type, since=since)
     return db.all("maintenance.wr_list", record_type=record_type, status=status, limit=limit,
                   equipment_id=equipment_id, alarm_code=alarm_code)
 
@@ -317,7 +326,24 @@ def pm_schedule(equipment_id: str | None = None, frm: date | None = Query(None, 
                 _: Actor = Depends(require("PM_SCHEDULE", "VIEW")), db: Db = Depends(get_db)):
     """예방 정비 일정 (PM-01): 항목·주기·다음 기한·넘긴 날 수·잠금·표지 수준, 제때 실시율(기간, 기본 최근 30일 — 목표 90%)"""
     return {"items": db.all("maintenance.pm_schedule", equipment_id=equipment_id),
-            "on_time": db.all("maintenance.pm_on_time", equipment_id=equipment_id, **{"from": frm, "to": to})}
+            "on_time": db.all("maintenance.pm_on_time", equipment_id=equipment_id, **{"from": frm, "to": to}),
+            # 2026-10-23 (화면 → 백엔드 전환 C2): 오늘 실시 기록(초안 포함)·지금 열린 정비 구간 — SCR-23 [정비 끝]·오늘 기록
+            "today_records": db.all("maintenance.pm_today_records"),
+            "open_windows": db.all("maintenance.pm_open_windows")}
+
+
+@router.get("/history")
+def history(_: Actor = Depends(require("GUIDE_CARD", "VIEW")), db: Db = Depends(get_db)):
+    """정비 과거 기록 한 번에 (2026-10-23, 화면 → 백엔드 전환 C2): 실시간 구간 앞(시연: 9월)의 작업지시서·단계·작업기록서·점검·부품·알람.
+    지침카드의 예상 부품(같은 알람에 쓴 부품)·지난 조치, 문서함의 지난 문서에 쓴다"""
+    before = db.scalar("line.live_from")
+    group = lambda rows, key: {k: [r for r in rows if r[key] == k] for k in dict.fromkeys(r[key] for r in rows)}
+    return {"work_orders": db.all("maintenance.history_work_orders", before=before),
+            "steps": group(db.all("maintenance.history_steps", before=before), "wo_no"),
+            "work_records": db.all("maintenance.history_work_records", before=before),
+            "checks": group(db.all("maintenance.history_checks", before=before), "record_no"),
+            "parts": group(db.all("maintenance.history_parts", before=before), "record_no"),
+            "alarms": db.all("maintenance.history_alarms", before=before), "before": before}
 
 
 class PmRecordIn(BaseModel):

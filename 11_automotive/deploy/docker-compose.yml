@@ -1,0 +1,76 @@
+# AWS 서버(리눅스+도커) 한 대에서 전체를 켠다. 사용: ./mom.sh up   (배포_안내.md)
+# 바깥에는 caddy 만 열린다 (80·443). 나머지는 도커 안쪽 네트워크로만 서로 부른다.
+# 비밀 값은 이 폴더의 backend.env · assistant.env · .env 에 서버에서 직접 넣는다 (저장소에 없음, *.example 참고)
+name: mom
+services:
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    environment:
+      DOMAIN: ${DOMAIN:?.env 에 DOMAIN 필요}
+      BASIC_USER: ${BASIC_USER:?.env 에 BASIC_USER 필요}
+      BASIC_HASH: ${BASIC_HASH:?.env 에 BASIC_HASH 필요}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on: [web, sim, backend]
+
+  web:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.web
+    restart: unless-stopped
+    expose: ["3000"]
+
+  sim:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.sim
+      args:
+        BUILD_PROFILE: ${MOM_PROFILE:-final}
+    restart: unless-stopped
+    expose: ["8765"]
+    environment:
+      MOM_PROFILE: ${MOM_PROFILE:-final}
+      MOM_ASSISTANT_URL: http://assistant:8100
+      MOM_LLM_COMPOSE: ${MOM_LLM_COMPOSE:-0}
+      MOM_PRESENTER_KEY: ${MOM_PRESENTER_KEY:-}   # 최종용에서 처음으로를 부를 때 필요한 발표자 키 (비어 있으면 거절)
+      MOM_PRETEND_NOW: ${MOM_PRETEND_NOW:-}       # 리허설용: 예) 2026-10-26T17:00 이면 그 시각에서 흐르는 것처럼. 발표 때는 비워 둔다
+    volumes:
+      - sim_live:/app/생성기/out_live            # 최종용의 사람 조작·회차 번호 (서버를 다시 켜도 같은 세계)
+    env_file:
+      - path: assistant.env        # MOM_ASSISTANT_KEY 만 쓴다 (문장 다듬기용)
+        required: false
+
+  backend:
+    build:
+      context: ../backend
+    restart: unless-stopped
+    expose: ["8000"]
+    # 공용 DB(Supabase)를 쓰므로 이미지의 시작 스크립트(빈 DB에 데이터 적재)는 건너뛴다 — 공용 DB에 적재가 돌지 않게
+    entrypoint: []
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    env_file: backend.env
+    environment:
+      MOM_ASSISTANT_URL: http://assistant:8100
+
+  assistant:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.assistant
+    restart: unless-stopped
+    expose: ["8100"]
+    env_file: assistant.env
+    environment:
+      MOM_BACKEND_URL: http://backend:8000
+      SIM_SERVER_URL: http://sim:8765
+    volumes:
+      - whisper_models:/models
+
+volumes:
+  sim_live:
+  caddy_data:
+  caddy_config:
+  whisper_models:

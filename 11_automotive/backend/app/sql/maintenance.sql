@@ -46,10 +46,6 @@ SELECT fn_auto_process(ARRAY(SELECT notification_id FROM notification
 -- name: wo_start
 UPDATE maintenance_work_order SET status = 'IN_PROGRESS' WHERE wo_no = :wo_no AND status = 'APPROVED';
 
--- name: wo_cancel
-UPDATE maintenance_work_order SET status = 'CANCELLED', cancelled_by = :actor, cancelled_at = app_now(), cancel_reason = :reason
- WHERE wo_no = :wo_no AND status IN ('AI_DRAFT','EDITING','APPROVED');
-
 -- name: wr_list
 SELECT w.record_no, w.record_type, w.wo_no, w.alarm_event_id, a.alarm_code, w.cause_check_notification_id, w.equipment_id, w.status,
        w.confirmed_by, w.confirmed_at, w.checked_by, w.start_at, w.end_at, w.repair_min, w.current_version
@@ -138,8 +134,12 @@ UPDATE work_record SET status = 'CHECKED', checked_by = :actor, checked_at = app
 -- name: pm_schedule
 SELECT d.pm_task_id, d.equipment_id, d.doc04_section, d.area, d.item_name, d.cycle_code, d.lockout_level, d.default_role,
        d.default_item_no, d.on_calendar, d.source_tag, d.last_done_at, d.next_due_date,
-       (CAST(app_now() AT TIME ZONE 'Asia/Seoul' AS date) - d.next_due_date) AS days_overdue
+       (CAST(app_now() AT TIME ZONE 'Asia/Seoul' AS date) - d.next_due_date) AS days_overdue,
+       -- 마지막 실시 기록의 실시자·상태·기한 (SCR-23 "마지막 실시" 칸에 누가 했는지 — 시연 서버와 같게, 2026-10-24)
+       lr.done_by AS last_done_by, lr.status AS last_status, lr.due_date AS last_due_date
   FROM v_pm_task_due d
+  LEFT JOIN LATERAL (SELECT r.done_by, r.status, r.due_date FROM pm_record r
+                      WHERE r.pm_task_id = d.pm_task_id AND r.done_at IS NOT NULL ORDER BY r.done_at DESC LIMIT 1) lr ON true
  WHERE d.is_active AND (CAST(:equipment_id AS text) IS NULL OR d.equipment_id = CAST(:equipment_id AS text))
  ORDER BY d.next_due_date NULLS LAST, d.pm_task_id;
 
@@ -215,3 +215,67 @@ SELECT a.alarm_code FROM work_record w
 
 -- name: assist_items
 SELECT item_no, item_name FROM inventory_item WHERE category IN ('TOOL','CONSUMABLE') AND is_active ORDER BY item_no;
+
+-- ---------- 정비 이력 한 번에 (2026-10-23, 화면 → 백엔드 전환 C2) — 실시간 구간 앞(과거 기록)만: 지침카드 예상 부품·지난 조치 ----------
+-- name: history_work_orders
+SELECT w.*, array_to_string(v.trigger_kind::text[], '|') AS trigger_kind
+  FROM maintenance_work_order w LEFT JOIN v_work_order v USING (wo_no)
+ WHERE w.created_at < CAST(:before AS timestamptz) ORDER BY w.wo_no;
+
+-- name: history_steps
+SELECT s.* FROM work_order_step s JOIN maintenance_work_order w USING (wo_no)
+ WHERE w.created_at < CAST(:before AS timestamptz) ORDER BY s.wo_no, s.step_no;
+
+-- name: history_work_records
+SELECT * FROM work_record WHERE start_at < CAST(:before AS timestamptz) ORDER BY record_no;
+
+-- name: history_checks
+SELECT c.* FROM work_record_check c JOIN work_record r USING (record_no)
+ WHERE r.start_at < CAST(:before AS timestamptz) ORDER BY c.record_no, c.check_seq;
+
+-- name: history_parts
+SELECT p.* FROM work_record_part p JOIN work_record r USING (record_no)
+ WHERE r.start_at < CAST(:before AS timestamptz) ORDER BY p.record_no, p.item_no;
+
+-- name: history_alarms
+SELECT * FROM alarm_event WHERE occurred_at < CAST(:before AS timestamptz) ORDER BY alarm_event_id;
+
+-- 예방 정비 화면: 오늘 기록·지금 열린 정비(MAINT) 구간
+-- name: pm_today_records
+SELECT r.* FROM pm_record r
+ WHERE r.done_at >= date_trunc('day', app_now() AT TIME ZONE 'Asia/Seoul') AT TIME ZONE 'Asia/Seoul' OR r.status = 'DRAFT'
+ ORDER BY r.pm_record_id;
+
+-- name: pm_open_windows
+SELECT equipment_id, start_at, end_at, 'MAINT' AS kind FROM equipment_state_log
+ WHERE state_code = 'MAINT' AND start_at <= app_now() AND coalesce(end_at, 'infinity') > app_now()
+ ORDER BY start_at;
+
+-- 작업지시서 작업 순서 고치기 (2026-10-23, 화면 → 백엔드 전환 C2 다음 단계 — SCR-11 [저장]에서 순서도 고친다).
+-- 통째로 바꾼다: 지우고 다시 넣기. 근거 절(source_section)은 같은 글자의 옛 단계 것을 그대로, 새로 쓴 단계는 '사람 작성'
+-- name: wo_steps_clear
+DELETE FROM work_order_step WHERE wo_no = :wo_no;
+
+-- name: wo_step_add
+INSERT INTO work_order_step (wo_no, step_no, step_text, source_section) VALUES (:wo_no, :step_no, :step_text, :source_section);
+
+-- ---------- 화면 → 백엔드 전환 C2 다음 단계 (2026-10-24): 화면 목록 한 번에 (단계·부품·체크까지, 열람 처리 같은 부수 효과 없음) ----------
+-- name: wo_list_detail
+SELECT v.*, a.alarm_code,
+       (SELECT coalesce(jsonb_agg(s.step_text ORDER BY s.step_no), '[]'::jsonb) FROM work_order_step s WHERE s.wo_no = v.wo_no) AS steps,
+       (SELECT coalesce(jsonb_agg(p.item_no ORDER BY p.item_no), '[]'::jsonb) FROM work_order_part p WHERE p.wo_no = v.wo_no) AS parts
+  FROM v_work_order v LEFT JOIN alarm_event a USING (alarm_event_id)
+ WHERE v.created_at >= coalesce(CAST(:since AS timestamptz), '-infinity')
+ ORDER BY v.created_at, v.wo_no;
+
+-- name: wr_list_detail
+SELECT w.*, a.alarm_code,
+       (SELECT coalesce(jsonb_agg(jsonb_build_object('check_seq', c.check_seq, 'check_kind', c.check_kind, 'step_no', c.step_no,
+                                                     'loto_step_code', c.loto_step_code, 'is_checked', c.is_checked) ORDER BY c.check_seq), '[]'::jsonb)
+          FROM work_record_check c WHERE c.record_no = w.record_no) AS checks,
+       (SELECT coalesce(jsonb_agg(jsonb_build_object('item_no', p.item_no, 'qty', p.qty) ORDER BY p.item_no), '[]'::jsonb)
+          FROM work_record_part p WHERE p.record_no = w.record_no) AS parts
+  FROM work_record w LEFT JOIN alarm_event a ON a.alarm_event_id = w.alarm_event_id
+ WHERE (CAST(:record_type AS text) IS NULL OR w.record_type = CAST(:record_type AS text))
+   AND coalesce(w.start_at, 'infinity') >= coalesce(CAST(:since AS timestamptz), '-infinity')
+ ORDER BY w.start_at NULLS LAST, w.record_no;

@@ -35,15 +35,15 @@ export function useAlarmText(id: string | undefined, text: string): string | nul
   return got && got.key === key ? got.text : null;
 }
 
-/** 알람 지침카드 '먼저 할 일'(DOC-03 ★ 줄)을 비서가 쉽게 풀어 쓴 줄을 묻는다. 알람이 뜰 때 한 번 불러 두면 카드가 열릴 때는 준비돼 있다. */
-export function askGuideCard(code: string, steps: string[]) {
-  return api<{ ready: boolean; lines?: string[] }>('assist/guide-card-text', { code, steps });
+/** 알람 지침카드 점검 줄을 비서가 쉽게 풀어 쓴 줄을 묻는다. part=steps는 먼저 할 일, part=maint는 보전 담당자 단계. */
+export function askGuideCard(code: string, steps: string[], part: 'steps' | 'maint' = 'steps') {
+  return api<{ ready: boolean; lines?: string[] }>('assist/guide-card-text', { code, steps, part });
 }
 
-/** 카드 "먼저 할 일"에 쓸 '비서 정리' 줄. 준비될 때까지 4초마다 최대 30번 묻고, 끝내 안 되면 null(원문만 보임). */
-export function useGuideCardText(code: string | undefined, steps: string[] | undefined): string[] | null {
+/** 카드 점검 칸에 쓸 '비서 정리' 줄. 준비될 때까지 4초마다 최대 30번 묻고, 끝내 안 되면 null(원문만 보임). */
+export function useGuideCardText(code: string | undefined, steps: string[] | undefined, part: 'steps' | 'maint' = 'steps'): string[] | null {
   const [lines, setLines] = useState<string[] | null>(null);
-  const key = code && steps && steps.length ? `${code}|${steps.join('\n')}` : '';
+  const key = code && steps && steps.length ? `${part}|${code}|${steps.join('\n')}` : '';
   useEffect(() => {
     setLines(null);
     if (!key) return;
@@ -52,7 +52,7 @@ export function useGuideCardText(code: string | undefined, steps: string[] | und
     let timer: ReturnType<typeof setTimeout> | undefined;
     const again = () => { if (alive && ++n < 30) timer = setTimeout(ask, 4000); };
     const ask = () => {
-      askGuideCard(code!, steps!)
+      askGuideCard(code!, steps!, part)
         .then((r) => { if (!alive) return; if (r.ready && r.lines && r.lines.length === steps!.length) setLines(r.lines); else again(); })
         .catch(again);
     };

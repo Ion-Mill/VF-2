@@ -1,0 +1,2 @@
+wo_no,trigger_kind,alarm_event_id,pm_record_id,trigger_notification_id,equipment_id,lot_no,created_at,title,symptom,status,assignee_user_id,approved_by,approved_at,cancelled_by,cancelled_at,cancel_reason,safety_block_doc_rev,has_high_voltage_notice,completed_at,current_version
+MW-1009,STOP_ALARM,293,,,VF2-01,LOT-2610-104-1,2026-10-26T11:35:00+09:00,VF2-01 알람 992 전류가 높은 증폭기(AMPLIFIER OVER CURRENT) — 점검·수리,서보 앰프가 모터에 너무 큰 전류가 흐르는 것을 감지. 앞에 붙은 축 번호(1.992~11.992)가 어느 축 앰프인지 알려 준다,DONE,U08,U10,2026-10-26T11:45:00+09:00,,,,DOC-05 Rev.2,true,2026-10-26T13:30:00+09:00,1

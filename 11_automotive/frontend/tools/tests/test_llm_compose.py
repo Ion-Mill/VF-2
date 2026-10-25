@@ -101,6 +101,39 @@ def test_polished_does_not_block_while_the_assistant_is_slow():
     assert c.polished("shift_report", "S1", DRAFT) is not None
 
 
+def test_guide_card_parts_start_while_other_jobs_hold_the_shared_seats():
+    """보고서·작업지시서가 공유 자리 2개를 잡은 채 멈춰 있어도 지침카드 두 칸은 그 정지가 풀리기 전에 비서를 부른다."""
+    entered = []
+    lock = threading.Lock()
+    others_holding = threading.Event()
+    release_others = threading.Event()
+    both_guides = threading.Event()
+
+    def post(kind, lines):
+        with lock:
+            entered.append(kind)
+            n_other = sum(1 for k in entered if k != "guide_card")
+            n_guide = sum(1 for k in entered if k == "guide_card")
+        if n_other >= 2:
+            others_holding.set()
+        if n_guide >= 2:
+            both_guides.set()
+        if kind != "guide_card":
+            release_others.wait(3)
+        return {"lines": [{"id": line["id"], "text": "다듬음: " + line["text"]} for line in lines]}
+
+    c = Composer(run_id=lambda: 1, post=post, enabled=True)
+    assert c.polished("daily_report", "D", ["문장"]) is None
+    assert c.polished("work_order", "MW-1", ["제목"]) is None
+    assert others_holding.wait(1.0)
+    assert c.polished("guide_card", "992:steps", ["작업자 줄"]) is None
+    assert c.polished("guide_card", "992:maint", ["보전 줄"]) is None
+    assert both_guides.wait(1.0), entered
+    assert not release_others.is_set()
+    release_others.set()
+    c.wait_idle()
+
+
 def test_same_input_is_sent_only_once_even_while_pending():
     fake = Fake("block")
     c = make(fake)
@@ -486,6 +519,30 @@ def test_guide_card_text_is_two_step_and_keyed_by_alarm_code(monkeypatch):
     assert SS.guide_card_text(body) == {"ready": True, "lines": ["다듬음: " + s for s in CARD_STEPS]}
     assert SS.guide_card_text({"code": "992", "steps": CARD_STEPS})["ready"]                   # 같은 코드·같은 줄은 한 번만 만든다
     assert len(fake.calls) == 1 and fake.calls[0][0] == "guide_card"
+
+
+def test_guide_card_maint_is_cached_apart_from_worker_steps(monkeypatch):
+    SS = _sim_server(monkeypatch)
+    fake = Fake()
+    SS.COMPOSER = Composer(run_id=lambda: 1, post=fake, enabled=True)
+    steps = {"code": "992", "steps": CARD_STEPS}
+    maint = {"code": "992", "part": "maint", "steps": ["잠금·표지 후 볼스크류가 손으로 도는지 본다"]}
+    assert SS.guide_card_text(steps) == {"ready": False}
+    assert SS.guide_card_text(maint) == {"ready": False}
+    SS.COMPOSER.wait_idle()
+    assert SS.guide_card_text(steps)["ready"] is True
+    got = SS.guide_card_text(maint)
+    assert got["ready"] is True and got["lines"] == ["다듬음: 잠금·표지 후 볼스크류가 손으로 도는지 본다"]
+    assert len(fake.calls) == 2 and [c[0] for c in fake.calls] == ["guide_card", "guide_card"]
+
+
+def test_guide_card_text_rejects_unknown_part(monkeypatch):
+    SS = _sim_server(monkeypatch)
+    fake = Fake()
+    SS.COMPOSER = Composer(run_id=lambda: 1, post=fake, enabled=True)
+    with pytest.raises(SS.ApiError) as e:
+        SS.guide_card_text({"code": "992", "part": "safety", "steps": CARD_STEPS})
+    assert e.value.status == 400 and fake.calls == []
 
 
 def test_guide_card_text_off_means_not_ready(monkeypatch):

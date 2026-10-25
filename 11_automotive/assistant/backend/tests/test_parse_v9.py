@@ -271,7 +271,7 @@ def _card(code):
 
 @pytest.mark.parametrize("q", ["552 뜨면 뭐부터 봐?", "992 왜 떠?", "알람 991 영문 이름이 뭐였지?", "2075 알람 뜻이 뭐야?",
                                "174 알람 지난달에 몇 번 났어?", "2075 알람 몇 번 났고 왜 나는 거야?", "이 알람 누가 조치해? 작업자가 해도 돼?",
-                               "992 뜨기 바로 전에 994가 먼저 떠 있었으면 뭘 의심해야 돼?"])   # 카드 쉬운 설명에 "바로 앞 … 의심"이 있음
+                               "992 뜨기 전에 축 부하가 갑자기 오른 뒤엔 뭘 의심해야 돼?"])   # 카드 쉬운 설명에 "축 부하가 갑자기 오른 뒤에 … 의심"이 있음 (2026-10-23, 옛 "바로 앞 108·994" 문구를 뺌)
 def test_alarm_plain_questions_card_only(flow, q):
     al = [{"code": "2075"}] if "이 알람" in q else A.parse(q)["alarms"][:1]
     assert A.alarm_doc_plan_v9(q, al, _card(al[0]["code"])) is None, (q, A.alarm_topic_left_v9(q, al, _card(al[0]["code"])))
