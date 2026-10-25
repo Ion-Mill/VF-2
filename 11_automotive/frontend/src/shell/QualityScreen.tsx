@@ -287,7 +287,7 @@ export function QualityScreen({ cap = false }: { cap?: boolean }) { // cap: 공�
         {/* 결과 파일 · 재측정 · 수동 입력 */}
         <div className="grid grid-cols-[1.6fr_1fr] items-stretch gap-4">{/* 결과 파일 높이 = 오른쪽(재측정·수동 입력) 끝까지 (사용자 요청 2026-10-19) */}
           <section className={`${box} flex flex-col`}>
-            <H3><span className="whitespace-nowrap">결과 파일 (가져오기 기록)</span> <span className="text-body font-normal text-ink-2">— 9월 {cmm.data?.counts.past ?? '—'}건 · 오늘 {cmm.data?.counts.today ?? '—'}건 · 9월 오류 {cmm.data?.errors_30d.length ?? 0}건</span></H3>
+            <H3><span className="whitespace-nowrap">결과 파일 (가져오기 기록)</span> <span className="text-body font-normal text-ink-2">— 지난 기록 {cmm.data?.counts.past ?? '—'}건 · 오늘 {cmm.data?.counts.today ?? '—'}건 · 최근 30일 오류 {cmm.data?.errors_30d.length ?? 0}건</span></H3>
             {/* 이브 열림: [contain:size]로 표 높이가 칸 높이를 늘리지 않게 → 오른쪽(재측정·수동 입력) 끝에 맞춰 자르고 안에서 스크롤 */}
             <div className="mt-3 min-h-[130px] flex-1 overflow-y-auto [contain:size]">
             <table className="w-full text-left text-body">
@@ -327,7 +327,7 @@ export function QualityScreen({ cap = false }: { cap?: boolean }) { // cap: 공�
           {/* 고른 로트가 강화·보류와 상관없으면 그 로트 기준으로 먼저 말하고, 9월 보류 기록은 접어 둠 — 어느 로트를 쳐도 "보류"가 보이던 것 고침 (사용자 요청 2026-10-21) */}
           {enhPast && <p className="mt-2 text-body"><b className="font-mono">{lot || '—'}</b> — 보통 검사 ({plan?.plan_mode === 'FULL' ? '전수' : '발췌'}) · 강화 · 보류 없음{L ? ` · ${STATUS[L.status] ?? L.status}` : ''}</p>}
           <details open={!enhPast} className="mt-3">
-          {enhPast && <summary className="cursor-pointer text-body text-ink-2">참고: 최근 강화 기록 (시연 데이터 9월 · 이 로트와 별개)</summary>}
+          {enhPast && <summary className="cursor-pointer text-body text-ink-2">참고: 최근 강화 기록 (지난 기록 · 이 로트와 별개)</summary>}
           <div className="mt-3 grid grid-cols-[1.6fr_1fr] gap-6">
             <table className="w-full text-left text-body">
               <thead className="bg-brand-tint text-small text-ink-2"><tr><th className="px-2 py-2">로트</th><th className="px-2">왜 강화</th><th className="px-2">상태</th><th className="px-2 text-right">측정한 부품 / 로트</th></tr></thead>

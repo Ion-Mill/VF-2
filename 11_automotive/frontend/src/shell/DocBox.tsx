@@ -72,7 +72,7 @@ export default function DocBox() {
       cells: [r.shift_id, '라인', '—', md(r.shift_id), r.status === 'CONFIRMED' ? '확정' : r.status === 'AI_DRAFT' ? 'AI비서 초안' : '수정 중', `실적 ${r.actual_qty} / 총 목표 ${r.target_qty} · 불량 ${r.defect_qty}`] }));
   } else {
     rows = [...(dailyReports ?? [])].reverse().filter((r) => has(String(r.issues_summary))).map((r) => ({ key: r.work_date, date: r.work_date, go: () => go('daily', r.work_date),
-      cells: [r.work_date, '라인', '—', md(r.work_date), r.status === 'CONFIRMED' ? '확정' : 'AI비서 초안 (확정 대기)', `실적 ${r.actual_qty} / 180 · OEE ${r.oee_pct}%`] }));
+      cells: [r.work_date, '라인', '—', md(r.work_date), r.status === 'CONFIRMED' ? '확정' : 'AI비서 초안 (확정 대기)', `실적 ${r.actual_qty} / ${r.target_qty ?? 180} · OEE ${r.oee_pct}%`] }));
   }
   const stateOpts = tab === '작업지시서' ? [...WO_STEPS.map(([, l]) => l), '취소됨'] : tab === '작업기록서' ? Object.values(WR_LABEL) : [];
 
@@ -129,7 +129,7 @@ export default function DocBox() {
           {/* [3] 표 — 오늘 만든 문서 / 지난 기록 */}
           {rows.length === 0 ? <p className="mt-4 text-body text-ink-2">조건에 맞는 문서가 없습니다</p> : (<>
             {today.length > 0 && <>{past.length > 0 && <h3 className="mt-4 text-small font-bold text-ink-2">오늘 만든 문서 · 눌러서 열기</h3>}{table(today)}</>}
-            {past.length > 0 && <><h3 className="mt-4 text-small font-bold text-ink-2">지난 기록 (9월 · 보기만)</h3>{table(past)}</>}
+            {past.length > 0 && <><h3 className="mt-4 text-small font-bold text-ink-2">지난 기록 (보기만)</h3>{table(past)}</>}
           </>)}
         </div>
       </div>

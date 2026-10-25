@@ -109,7 +109,7 @@
 | GET | `/api/line/layout` | `LINE_VIEW·VIEW` 또는 `FIELD_VIEW·VIEW` | 공장·설비 실제 크기 배치 (LINE-01) — 바닥·통로·재공 자리·설비 외형·부품 도형. 3D 장면을 처음 그릴 때 한 번 |
 | GET | `/api/line/twin` | `LINE_VIEW·VIEW` 또는 `FIELD_VIEW·VIEW` | 지금 상태 한 번에 (LINE-02): 설비별 상태·지속 시간·현재 로트·현재 알람, 재공, 병목, 교대 진행(총 목표 = 목표 + 이월, |
 | GET | `/api/replay` | `LINE_VIEW·VIEW` | 다시 보기 (LINE-06, PRD-06): 시각별 상태·재공·알람·병목 사건, equipment_id를 주면 그 설비 센서 값 |
-| GET | `/api/alarms` | `LINE_VIEW·VIEW` 또는 `FIELD_VIEW·VIEW` 또는 `GUIDE_CARD·VIEW` | 기간 안 알람 목록 (기본 최근 24시간) |
+| GET | `/api/alarms` | `LINE_VIEW·VIEW` 또는 `FIELD_VIEW·VIEW` 또는 `GUIDE_CARD·VIEW` | 기간 안 알람 목록 (기본 최근 24시간). 2026-10-25: `handled_by`·`handled_at` = 이 알람의 작업기록서(직접 또는 작업지시서를 거쳐)가 확정·확인된 사람·시각 — 트윈(`/api/line/twin?full=true`)의 알람에도 같이 온다 |
 | GET | `/api/alarms/{alarm_event_id}` | `LINE_VIEW·VIEW` 또는 `FIELD_VIEW·VIEW` 또는 `GUIDE_CARD·VIEW` | 알람 1건 + 코드집 내용 |
 | GET | `/api/maint/guide-card/{alarm_event_id}` | `GUIDE_CARD·VIEW` | 지침카드 (MNT-01, FR-MNT-02): 알람·심각도·누가·연쇄 알람·먼저 할 일·안전 블록·생산 영향·지난 기록·출처 목록. |
 | GET | `/api/downtimes` | `DOWNTIME_REASON·VIEW` | 정지 구간 목록 + 비서 추천 사유 (LINE-07, SCR-14 — 필요 여부 판단 중). shift_id 또는 기간(기본 최근 24시간) |
@@ -236,7 +236,7 @@
 | POST | `/api/ingest/cmm` | 서비스 키 `ingest` | CMM 결과 파일 내용 (공유 폴더 대신 API로 보낼 때) |
 | POST | `/api/ingest/clock` | 서비스 키 `ingest` | 시연 시계를 시뮬레이터 시계에 맞춘다 (팀과 논의/비서_시뮬레이터_DB_연결_논의 3-1 "서비스 키로 부르는 시계 입구", 2026-10-20). |
 | POST | `/api/ingest/sync` | 서비스 키 `ingest` | 시뮬레이터 실시간 기록을 표째로 DB에 맞춘다 (시연 서버 DB 중계, 2026-10-23 — app/services/sim_sync.py). 2026-10-25: 표 25개까지(작업지시서·작업기록서·문서 버전 8개 더함 — 최종용 오전 사건 문서만 옴), jsonb 칸은 JSON 값으로, 이미 확정된 작업기록서와 함께 온 알람의 알림은 그 확정으로 처리. `/api/sim/clock`의 `skip`은 `TODAY_DAY_END`·`TODAY_NIGHT_START`(그날 교대에서 시각, 옛 `TODAY_17:00`·`TODAY_20:00`도 받음). |
-| POST | `/api/ingest/reset` | 서비스 키 `ingest` | 시연 데이터 처음으로 (시연 서버 [처음으로]·켤 때, 2026-10-23): 운영 데이터를 시연 기준점으로 되돌리고 그 뒤 센서 값을 지운다 |
+| POST | `/api/ingest/reset` | 서비스 키 `ingest` | 시연 데이터 처음으로 (시연 서버 [처음으로]·켤 때, 2026-10-23): 운영 데이터를 시연 기준점으로 되돌리고 그 뒤 센서 값을 지운다. 시뮬레이터 시작점(시각·표마다 마지막 번호)을 함께 보내 되돌린 기준점과 다르면 409 `BASELINE_MISMATCH`로 되돌리기를 취소한다. `clock`·`sync`·`reset`은 `MOM_SIM_SYNC=true` 또는 시연 모드일 때만 (아니면 409 `SIM_SYNC_OFF`, 2026-10-23 H-10) |
 <!-- END:api -->
 
 이 밖에 `GET /api/health` (DB 연결 확인, 권한 없음).

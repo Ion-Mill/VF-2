@@ -1,4 +1,4 @@
-"""시연 서버 → DB 표 맞추기 (POST /api/ingest/sync, 2026-10-23). 시연 모드(로컬 Docker DB)에서만 부른다.
+"""시연 서버 → DB 표 맞추기 (POST /api/ingest/sync, 2026-10-23). MOM_SIM_SYNC=true 또는 시연 모드일 때만 열린다 (아래 "켜는 곳").
 
 시연 서버(frontend/tools/db_relay.py)가 몇 초마다 생성기 10/1 기록(Realtime.tables() — out_realtime CSV와 같은 칸·번호·글자)
 중 바뀐 줄만 보낸다. 여기서는 tools/load_generated.py --realtime 과 같은 규칙으로 넣는다:

@@ -7,11 +7,14 @@
 --   쓰는 곳: 속도 손실(병목 구간 계획 수), 로트 예상 완료 시각(납기 지연 위험)
 -- =====================================================================
 
--- 교대 하나의 휴식 시작 시각 = 그 교대 시작 + 4시간 (교대 행이 없으면 옛 고정값 주간 12:00·야간 00:00)
+-- 교대 하나의 휴식 시작 시각 = 그 교대 시작 + 4시간. 그날 교대 행이 없으면 가장 최근 같은 종류 교대의 시작 시각을 본뜬다
+--   (fn_ensure_work_day와 같은 방식, 2026-10-25), 교대가 하나도 없으면 옛 고정값 주간 12:00·야간 00:00
 CREATE OR REPLACE FUNCTION fn_shift_break_start(p_shift_type text, p_work_date date) RETURNS timestamptz
 LANGUAGE sql STABLE AS $$
     SELECT coalesce(
         (SELECT s.start_at + interval '4 hours' FROM shift s WHERE s.work_date = p_work_date AND s.shift_type = p_shift_type),
+        (SELECT (p_work_date + (t.start_at AT TIME ZONE 'Asia/Seoul')::time) AT TIME ZONE 'Asia/Seoul' + interval '4 hours'
+           FROM shift t WHERE t.shift_type = p_shift_type ORDER BY t.start_at DESC LIMIT 1),
         CASE WHEN p_shift_type = 'DAY' THEN (p_work_date + time '12:00') AT TIME ZONE 'Asia/Seoul'
              ELSE (p_work_date + 1 + time '00:00') AT TIME ZONE 'Asia/Seoul' END);
 $$;

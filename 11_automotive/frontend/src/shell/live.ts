@@ -9,7 +9,8 @@ import { BackendErr, backendMode, backendRoute } from './backendApi';
 export type Eq = 'SAW-01' | 'MIL-01' | 'VF2-01' | 'VF2-02' | 'WSH-01' | 'CMM-01';
 export const EQS: Eq[] = ['SAW-01', 'MIL-01', 'VF2-01', 'VF2-02', 'WSH-01', 'CMM-01'];
 
-export interface AlarmEv { alarm_event_id: number; equipment_id: Eq; alarm_code: string; severity: 'STOP' | 'WARN' | 'GUIDE'; occurred_at: string; cleared_at: string | null; lot_no: string | null; prev_alarm_event_id: number | null; scenario_code: string | null }
+export interface AlarmEv { alarm_event_id: number; equipment_id: Eq; alarm_code: string; severity: 'STOP' | 'WARN' | 'GUIDE'; occurred_at: string; cleared_at: string | null; lot_no: string | null; prev_alarm_event_id: number | null; scenario_code: string | null;
+  handled_by?: string | null; handled_at?: string | null }   // 백엔드 모드: DB에서 이 알람의 작업기록서가 확정된 사람·시각 (2026-10-25)
 export interface ToolRow { tool_id: string; tool_no: string; item_no: string; equipment_id: Eq; usage_pct: number; cum: number; limit: number; per_part: number; left_parts: number | null; warn: boolean }
 export interface EqLive {
   state_code: 'RUN' | 'IDLE' | 'SETUP' | 'DOWN' | 'MAINT' | 'BLOCKED'; reason_code: string | null; reason_name: string | null; warn_marker: boolean;
