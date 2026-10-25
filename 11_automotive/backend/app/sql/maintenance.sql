@@ -46,10 +46,6 @@ SELECT fn_auto_process(ARRAY(SELECT notification_id FROM notification
 -- name: wo_start
 UPDATE maintenance_work_order SET status = 'IN_PROGRESS' WHERE wo_no = :wo_no AND status = 'APPROVED';
 
--- name: wo_cancel
-UPDATE maintenance_work_order SET status = 'CANCELLED', cancelled_by = :actor, cancelled_at = app_now(), cancel_reason = :reason
- WHERE wo_no = :wo_no AND status IN ('AI_DRAFT','EDITING','APPROVED');
-
 -- name: wr_list
 SELECT w.record_no, w.record_type, w.wo_no, w.alarm_event_id, a.alarm_code, w.cause_check_notification_id, w.equipment_id, w.status,
        w.confirmed_by, w.confirmed_at, w.checked_by, w.start_at, w.end_at, w.repair_min, w.current_version
