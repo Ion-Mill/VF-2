@@ -116,7 +116,7 @@ export function WorkRecordPanel({ woNo }: { woNo: string }) {
           {mttr && <span className="text-ink-2">{eq} 고장 {mttr.failures}건 (30일)</span>}
         </div>
       </Sec>
-      <Fold summary={`같은 사례 — 9월 ${eq} · 알람 ${wo.code}`}>
+      <Fold summary={`같은 사례 — ${eq} · 알람 ${wo.code}`}>
         {same.length ? <ul className="flex flex-col gap-1">{same.map((r) => <li key={r.record_no}><span className="font-mono">{r.record_no}</span> · {md(r.start_at)} · 원인 {r.cause} · 조치 {r.action} · {r.repair_min}분</li>)}</ul> : <span className="text-ink-2">없음</span>}
       </Fold>
       <SrcFold>

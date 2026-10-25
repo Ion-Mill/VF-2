@@ -42,7 +42,7 @@ SELECT fn_start_lot(:order_no, :material_lot_no, CAST(:input_qty AS int), CAST(:
 SELECT fn_lot_to_inspection(:lot_no);
 
 -- ---------------------------------------------------------------------
--- 시연 서버 → DB 표 맞추기 (POST /api/ingest/sync, 2026-10-23 — app/services/sim_sync.py). 시연 모드만.
+-- 시연 서버 → DB 표 맞추기 (POST /api/ingest/sync, 2026-10-23 — app/services/sim_sync.py). MOM_SIM_SYNC=true 또는 시연 모드만 (docs/05_결정기록.md H-10).
 -- 시뮬레이터 10/1 기록(생성기 export와 같은 칸·번호)을 표째로 덮어쓴다. 넣는 문장은 표·칸 이름이 바뀌어 서비스가 만들고,
 -- 표·칸 이름은 아래 목록(DB 카탈로그)에 있는 것만 쓴다.
 -- name: sync_columns

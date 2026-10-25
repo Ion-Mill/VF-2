@@ -1,10 +1,10 @@
 -- 스케줄러가 부르는 것: 보고서 초안·시간 규칙 알림·보관 기간 보고 (PRD-02·04, DOC-07 10.2, NFR-DATA-04)
 
--- 교대가 끝나면(주간 17:00·야간 05:00) 그 교대 보고서 AI비서 초안 (이미 있으면 'EXISTS')
+-- 교대가 끝나면(shift.end_at — 09~18/21~06이면 18:00·06:00) 그 교대 보고서 AI비서 초안 (이미 있으면 'EXISTS')
 -- name: shift_draft
 SELECT fn_create_shift_report_draft(:shift_id) AS result;
 
--- 06:00 전날 일일 보고서 초안. 반환: 확정 안 된 교대 수 (잠정)
+-- 전날 일일 보고서 초안 (늦어도 야간 끝 + 1시간 — 아래 daily_due). 반환: 확정 안 된 교대 수 (잠정)
 -- name: daily_draft
 SELECT fn_create_daily_report_draft(CAST(:work_date AS date)) AS pending_shifts;
 
@@ -16,7 +16,7 @@ SELECT fn_ensure_work_day(CAST(app_now() AT TIME ZONE 'Asia/Seoul' AS date))
 -- name: time_rules
 SELECT fn_run_time_rules(CAST(:cmm_wait_min AS int)) AS created;
 
--- 끝난 지 하루가 안 된 교대 중 보고서(버전 포함)가 아직 없는 것 → 교대 보고서 초안 대상 (주간 17:00·야간 05:00)
+-- 끝난 지 하루가 안 된 교대 중 보고서(버전 포함)가 아직 없는 것 → 교대 보고서 초안 대상 (교대 끝 = shift.end_at)
 -- name: ended_shifts
 SELECT s.shift_id FROM shift s
  WHERE s.end_at <= app_now() AND s.end_at > app_now() - interval '1 day'

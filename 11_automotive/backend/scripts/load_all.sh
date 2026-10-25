@@ -20,8 +20,9 @@ else PY=python; fi
 export PYTHONUTF8=1 PGCLIENTENCODING=${PGCLIENTENCODING:-UTF8}   # Windows 콘솔 코드 페이지(CP949)와 섞이지 않게
 : "${GEN_DIR:?GEN_DIR = 생성기 폴더 (masters/ out/)}"
 : "${DOCS_DIR:?DOCS_DIR = 11_automotive 폴더 (가상사내문서/)}"
-# 2026-10-24: 프로필 폴더. 최종용 GEN_OUT_DIR=out_final GEN_RT_DIR=out_realtime_final, 영상용 out_video·out_realtime_video (안 주면 옛 out·out_realtime)
-OUT_DIR_OPT="--out-dir ${GEN_OUT_DIR:-out} --rt-dir ${GEN_RT_DIR:-out_realtime}"
+# 2026-10-24: 프로필 폴더. 최종용 GEN_OUT_DIR=out_final GEN_RT_DIR=out_realtime_final, 영상용 out_video·out_realtime_video.
+#   2026-10-25: 안 주면 최종용(10월 데이터 — 팀 결정으로 9월 out/은 더 쓰지 않음)
+OUT_DIR_OPT="--out-dir ${GEN_OUT_DIR:-out_final} --rt-dir ${GEN_RT_DIR:-out_realtime_final}"
 SENSOR=0; REALTIME=0; KEEP=0
 for a in "$@"; do
   case "$a" in --sensor) SENSOR=1 ;; --realtime) REALTIME=1 ;; --keep) KEEP=1 ;; *) echo "모르는 옵션 $a"; exit 2 ;; esac
@@ -63,5 +64,6 @@ elif [[ $SENSOR == 1 ]]; then
   echo "== 7. 센서 (따로)"
   "$PY" tools/load_generated.py "$GEN_DIR" --psql "$PSQL_CMD" --sensor-only $OUT_DIR_OPT $([[ $REALTIME == 1 ]] && echo --realtime)
 fi
-psql -X -tA -c "SELECT 'DB 크기 ' || pg_size_pretty(pg_database_size(current_database()))"
+# 한글은 SQL 밖에서 찍는다 — Windows psql은 명령줄 인자를 시스템 글자(CP949)로 넘겨 서버가 UTF8 오류로 거절한다 (2026-10-25)
+echo "DB 크기 $(psql -X -tA -c "SELECT pg_size_pretty(pg_database_size(current_database()))")"
 echo "완료"

@@ -16,6 +16,8 @@ CREATE OR REPLACE FUNCTION fn_shift_break_start(p_shift_type text, p_work_date d
 LANGUAGE sql STABLE AS $$
     SELECT coalesce(
         (SELECT s.start_at + interval '4 hours' FROM shift s WHERE s.work_date = p_work_date AND s.shift_type = p_shift_type),
+        (SELECT (p_work_date + (t.start_at AT TIME ZONE 'Asia/Seoul')::time) AT TIME ZONE 'Asia/Seoul' + interval '4 hours'
+           FROM shift t WHERE t.shift_type = p_shift_type ORDER BY t.start_at DESC LIMIT 1),
         CASE WHEN p_shift_type = 'DAY' THEN (p_work_date + time '12:00') AT TIME ZONE 'Asia/Seoul'
              ELSE (p_work_date + 1 + time '00:00') AT TIME ZONE 'Asia/Seoul' END);
 $$;
@@ -107,6 +109,17 @@ BEGIN
     RETURN n;
 END $$;
 COMMENT ON FUNCTION fn_demo_snapshot_refresh(text[]) IS '시연 기준점의 표 몇 개만 지금 값으로 (사내 문서 조각 적재 뒤 — 실시간 기록은 기준점에 넣지 않음)';
+-- 새 함수 권한 (db/roles.sql·supabase/sql/lockdown.sql과 같게): 앱 계정만. 공용 DB는 함수 기본 권한이 PUBLIC 실행이라 꼭 거둔다
+REVOKE EXECUTE ON FUNCTION fn_demo_snapshot_refresh(text[]) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION fn_demo_snapshot_refresh(text[]) TO mom_app;
+DO $$
+DECLARE v_roles text;
+BEGIN
+    SELECT string_agg(quote_ident(rolname), ', ') INTO v_roles FROM pg_roles WHERE rolname IN ('anon', 'authenticated');
+    IF v_roles IS NOT NULL THEN
+        EXECUTE format('REVOKE ALL ON FUNCTION fn_demo_snapshot_refresh(text[]) FROM %s', v_roles);
+    END IF;
+END $$;
 
 CREATE OR REPLACE FUNCTION fn_demo_reset() RETURNS jsonb
 LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp AS $$

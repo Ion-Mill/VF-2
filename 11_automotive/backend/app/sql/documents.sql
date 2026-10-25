@@ -157,7 +157,9 @@ WITH docs AS (
     UNION ALL
     SELECT 'DAILY_REPORT', d.work_date::text, d.work_date::text || ' 일일 보고서', d.status, NULL,
            coalesce((SELECT max(s.end_at) FROM shift s WHERE s.work_date = d.work_date) + interval '1 hour',
-                    (d.work_date + 1)::timestamp AT TIME ZONE 'Asia/Seoul' + interval '6 hours'),   -- 늦어도 = 야간 끝 + 1시간
+                    ((d.work_date + 1) + coalesce((SELECT (t.end_at AT TIME ZONE 'Asia/Seoul')::time FROM shift t WHERE t.shift_type = 'NIGHT'
+                                                     ORDER BY t.start_at DESC LIMIT 1), time '05:00')) AT TIME ZONE 'Asia/Seoul'
+                    + interval '1 hour'),   -- 늦어도 = 야간 끝 + 1시간 (그날 교대가 없으면 가장 최근 야간 교대의 끝 시각)
            d.status IN ('AI_DRAFT','EDITING') AND CAST(:role AS text) = 'MGR'
       FROM daily_report d
     UNION ALL
@@ -365,14 +367,15 @@ SELECT s.shift_id, s.shift_type, s.target_qty + s.carry_over_qty AS total_target
 -- ---------- 화면 → 백엔드 전환 C2 (2026-10-23): 목록·이력 한 번에 ----------
 -- 시작했지만 아직 초안이 없는 교대(진행 중·막 끝남)도 미리보기 줄로 함께 (preview = true, 2026-10-24 — 화면 → 백엔드 전환).
 -- 미리보기는 저장하지 않는다 — 교대가 끝나면 스케줄러가 진짜 초안을 만든다
+-- 실적·목표·불량·특이 사항 = 화면 문서함 목록의 요약·검색 칸 (2026-10-25). 미리보기 줄은 지금까지의 진행 값(v_shift_progress)
 -- name: shift_report_list
 SELECT r.shift_id, r.status, r.current_version, s.work_date, s.shift_type, s.start_at, s.end_at, s.supervisor_user_id,
-       false AS preview, false AS in_progress
+       false AS preview, false AS in_progress, r.target_qty, r.actual_qty, r.defect_qty, r.notable_text
   FROM shift_report r JOIN shift s USING (shift_id)
 UNION ALL
 SELECT s.shift_id, 'AI_DRAFT', 0, s.work_date, s.shift_type, s.start_at, s.end_at, s.supervisor_user_id,
-       true AS preview, s.end_at > app_now() AS in_progress
-  FROM shift s
+       true AS preview, s.end_at > app_now() AS in_progress, p.total_target_qty, p.actual_qty, p.defect_qty, ''
+  FROM shift s LEFT JOIN v_shift_progress p USING (shift_id)
  WHERE s.start_at <= app_now() AND s.start_at >= app_now() - interval '2 days'
    AND NOT EXISTS (SELECT 1 FROM shift_report r WHERE r.shift_id = s.shift_id)
  ORDER BY start_at;
@@ -393,8 +396,10 @@ SELECT a.severity_at_event AS severity, count(*)::int AS n, string_agg(DISTINCT 
 SELECT h.lot_no FROM lot_hold h JOIN shift s ON h.held_at >= s.start_at AND h.held_at < s.end_at
  WHERE s.shift_id = :shift_id ORDER BY h.held_at;
 
+-- 실적·OEE·오늘의 문제 = 화면 문서함 목록의 요약·검색 칸 (2026-10-25)
 -- name: daily_report_list
-SELECT work_date, status, current_version FROM daily_report ORDER BY work_date;
+SELECT work_date, status, current_version, target_qty, actual_qty, defect_qty, oee_pct, issues_summary
+  FROM daily_report ORDER BY work_date;
 
 -- 최근 문서 버전 (모든 문서). OPR(OWN)은 자기가 고친 것만
 -- name: revisions_recent

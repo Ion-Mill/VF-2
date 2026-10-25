@@ -105,7 +105,7 @@ export default function CardScreen({ alertId }: { alertId: string }) {
         </Sec>
         </div>
         <div className="contents" data-summary-skip><Sec title="안전" right={a.severity === 'STOP' ? SafeTag : undefined}><SafetyBlock machine={alert.machine} alarm={a} /></Sec></div>
-        <Fold summary={`지난 기록 — 9월 ${eq} · 알람 ${alert.code}`}>
+        <Fold summary={`지난 기록 — ${eq} · 알람 ${alert.code}`}>
           {past.length ? (
             <div className="overflow-x-auto"><table className="w-full min-w-[620px] table-fixed text-left text-body">
               <colgroup><col className="w-[132px]" /><col className="w-[72px]" /><col className="w-[112px]" /><col /><col /><col className="w-[96px]" /></colgroup>{/* 폭 = 글자 한 단계 크게(.fs-up)에 맞춤 (2026-10-22) */}
