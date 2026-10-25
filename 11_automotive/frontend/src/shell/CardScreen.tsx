@@ -133,7 +133,8 @@ export function CardList() {
   const wd = (d: string) => WD[new Date(Date.UTC(+d.slice(0, 4), +d.slice(5, 7) - 1, +d.slice(8, 10))).getUTCDay()];
   // 글자 한 단계 크게 = 문서 묶음 전체에 붙는 .fs-up (globals.css, 2026-10-22). 여기선 높이 · 여백만
   const sel = 'h-11 rounded-full border border-line bg-white px-4 text-small';
-  const seg = (on: boolean) => `h-11 px-5 text-small font-semibold ${on ? 'bg-brand-tint text-brand-ink' : 'bg-white'}`;
+  // 고른 칸 = 꽉 찬 파랑 알약, 안 고른 칸 = 흐린 글자 (알약 토글 C안, 2026-10-24)
+  const seg = (on: boolean) => `h-[38px] rounded-full px-5 text-small font-semibold ${on ? 'bg-brand text-white' : 'text-ink-2 hover:bg-tile'}`;
   return (
     <DocPage width={1440}>
       {(() => { // 디자인 통일 C안: 결론 띠 1개 (bands.ts cardsBand) — 처리 안 된 것 중 정지 등급 먼저
@@ -142,7 +143,7 @@ export function CardList() {
         return <CBand spec={cardsBand(cin)} onAction={() => top && openCard(top.id)} />;
       })()}
       <div className="flex flex-wrap items-center gap-2">
-        <div className="flex overflow-hidden rounded-full border border-line"><button onClick={() => setAll(false)} className={seg(!all)}>처리 필요 {open}</button><button onClick={() => setAll(true)} className={seg(all)}>전체 {alerts.length}</button></div>
+        <div className="flex gap-0.5 rounded-full border border-line bg-white p-[3px]"><button onClick={() => setAll(false)} className={seg(!all)}>처리 필요 {open}</button><button onClick={() => setAll(true)} className={seg(all)}>전체 {alerts.length}</button></div>
         <button onClick={() => setAsc((v) => !v)} className={sel} aria-label="정렬 바꾸기">{asc ? '오래된순' : '최신순'} ⇅</button>
         <select aria-label="설비" value={mach} onChange={(e) => setMach(e.target.value)} className={sel}><option value="">설비 전체</option>{Object.entries(MACHINES).filter(([, m]) => m.eq).map(([k, m]) => <option key={k} value={k}>{m.name}</option>)}</select>
         <select aria-label="등급" value={lv} onChange={(e) => setLv(e.target.value)} className={sel}><option value="">등급 전체</option>{['긴급', '주의', '참고'].map((l) => <option key={l}>{l}</option>)}</select>

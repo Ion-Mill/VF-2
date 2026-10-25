@@ -175,9 +175,9 @@ export function Tabs({ items, value, onChange, label, big }: { items: TabItem[];
         const on = t.key === value;
         return (
           <button key={t.key} role="tab" aria-selected={on} type="button" onClick={() => onChange(t.key)}
-            className={`flex items-center gap-1.5 rounded-ctl font-semibold ${big ? 'h-12 px-6 text-card' : 'h-9 px-4 text-body'} ${on ? 'bg-brand-tint text-brand-ink' : 'text-ink-2 hover:bg-tile'}`}>
+            className={`flex items-center gap-1.5 rounded-ctl font-semibold ${big ? 'h-12 px-6 text-card' : 'h-9 px-4 text-body'} ${on ? 'bg-brand text-white' : 'text-ink-2 hover:bg-tile'}`}>
             {t.label}{t.count != null && <span>{t.count}</span>}
-            {!!t.warn && <span className="text-warn">▲ {t.warn}</span>}
+            {!!t.warn && <span className={on ? 'text-white' : 'text-warn'}>▲ {t.warn}</span>}
           </button>
         );
       })}

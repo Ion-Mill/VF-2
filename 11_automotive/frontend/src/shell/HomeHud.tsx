@@ -85,9 +85,11 @@ export default function HomeHud() {
               return (
                 <button key={o.order_no} data-summary-field="작업지시" onClick={() => go('lots', o.lots[o.lots.length - 1] ?? null)} className="grid grid-cols-[auto_minmax(40px,1fr)_auto_auto] items-center gap-4 rounded-tile px-1.5 py-2 text-left hover:bg-white/70">
                   <b className="font-mono text-[20px] text-ink">{o.order_no}</b>
-                  <div className="h-2.5 rounded-[5px] bg-track"><div className="h-2.5 rounded-[5px] bg-brand" style={{ width: `${Math.min(100, (o.done_qty / Math.max(1, o.order_qty)) * 100)}%` }} /></div>
-                  <span className="font-mono text-[20px] font-bold text-ink">{fmtFrac(o.done_qty, o.order_qty)}</span>
-                  <span className={`inline-flex h-[30px] items-center gap-1.5 justify-self-end whitespace-nowrap rounded-[8px] px-[11px] text-[15px] font-semibold ${tone}`}>{(o.delay || run) && <i className="h-[7px] w-[7px] rounded-full bg-current" />}{txt}</span>
+                  {/* 막대 바탕: 유리 판 위라 track(#edf1f7)은 안 보여 bar 40%로 진하게 (2026-10-24) */}
+                  <div className="h-2.5 rounded-[5px] bg-bar/40"><div className="h-2.5 rounded-[5px] bg-brand" style={{ width: `${Math.min(100, (o.done_qty / Math.max(1, o.order_qty)) * 100)}%` }} /></div>
+                  {/* 줄마다 따로인 grid라 수량·상태 칸 폭을 고정해 세로 줄을 맞춘다 (2026-10-24) */}
+                  <span className="min-w-[7ch] text-right font-mono text-[20px] font-bold text-ink">{fmtFrac(o.done_qty, o.order_qty)}</span>
+                  <span className={`inline-flex h-[30px] min-w-[92px] items-center justify-center gap-1.5 whitespace-nowrap rounded-[8px] px-[11px] text-[15px] font-semibold ${tone}`}>{(o.delay || run) && <i className="h-[7px] w-[7px] rounded-full bg-current" />}{txt}</span>
                 </button>);
             })}
           </div>

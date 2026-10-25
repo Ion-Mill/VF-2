@@ -563,7 +563,11 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
                 // 이브 알림 띠 — 10/18 내용 그대로(알람 코드집 규칙 문장), 모양만 화이트 카드 테마 + 긴급 빨강 · 주의 노랑 테두리 (사용자 요청 2026-10-21)
                 <div className={`pointer-events-auto absolute left-[400px] right-5 top-[92px] z-10 flex h-14 items-center gap-2.5 rounded-card border-2 bg-white pl-3 pr-2 text-body shadow-card ${crit ? 'border-crit' : 'border-warn-mark'}`} role="status">
                   <Robot size={34} />{/* 이브가 알려 주는 띠 — 얼굴은 이브 창 머리와 같은 그림 (사용자 요청 2026-10-22) */}
-                  <span className={`inline-flex h-8 shrink-0 items-center gap-1.5 rounded-ctl px-3 font-bold ${crit ? 'bg-crit-bg text-crit' : 'bg-warn-bg text-warn'}`}><i className="h-2 w-2 rounded-full bg-current" />{bandCur.level}</span>
+                  <span className={`inline-flex h-8 shrink-0 items-center gap-1.5 rounded-ctl px-3 font-bold ${crit ? 'bg-crit-bg text-crit' : 'bg-warn-bg text-warn'}`}><i className={`h-2 w-2 rounded-full bg-current ${crit ? 'band-ping-fast' : 'band-ping'}`} />
+                    {/* 점 맥박 + 경고 아이콘 (시안 B, 2026-10-24) — 띠 테두리는 그대로 */}
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      {crit ? <path d="M7.86 2h8.28L22 7.86v8.28L16.14 22H7.86L2 16.14V7.86zM12 8v4M12 16h.01" /> : <path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" />}
+                    </svg>{bandCur.level}</span>
                   <span className="min-w-0 flex-1 truncate text-ink-2"><b className="font-bold text-ink">{MACHINES[bandCur.machine].name} {(a?.nameKo ?? '알람').replace(/\s*\([A-Z0-9 ._/-]+\)/, '')}({bandCur.code})</b> {Math.max(1, Math.round((SIM.now() - bandCur.ts) / 60000))}분째예요. {a?.steps[0] ? `먼저: ${a.steps[0]}` : a?.easy ?? '지침카드를 확인해 주세요.'}</span>
                   <span className="inline-flex h-8 shrink-0 items-center whitespace-nowrap rounded-ctl border border-line px-2.5 text-small text-ink-2" title="알람 코드집으로 만든 문장">근거 · {a?.doc03[0] ?? 'DOC-02 알람 코드집'}</span>
                   {bandList.length > 1 && <button onClick={() => setEveI((i) => i + 1)} className="shrink-0 px-1 text-small tabular-nums text-ink-3 hover:text-ink" aria-label="다음 알람">{(eveI % bandList.length) + 1} / {bandList.length} ›</button>}

@@ -510,8 +510,9 @@ export default class FactoryDashboard extends React.Component<any, any> {
     controls.keys = { LEFT: 'ArrowLeft', UP: 'ArrowUp', RIGHT: 'ArrowRight', BOTTOM: 'ArrowDown' };
     if (!EMB) controls.listenToKeyEvents(window);
     this.keys = new Set();
-    const kd = e => { if (EMB) return; if (e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) return; const k = e.key.toLowerCase(); if ('wasdqe+-='.includes(k)) { this.keys.add(k); this.goal = null; } };
-    const ku = e => this.keys.delete(e.key.toLowerCase());
+    // 자동 완성(비밀번호 등)이 보내는 키 이벤트엔 e.key가 없다 → 건너뜀 (2026-10-24)
+    const kd = e => { if (EMB || !e.key) return; if (e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) return; const k = e.key.toLowerCase(); if ('wasdqe+-='.includes(k)) { this.keys.add(k); this.goal = null; } };
+    const ku = e => { if (e.key) this.keys.delete(e.key.toLowerCase()); };
     window.addEventListener('keydown', kd); window.addEventListener('keyup', ku);
     window.addEventListener('blur', () => this.keys.clear());
     let lastW = 0, lastH = 0, viewSet = false;

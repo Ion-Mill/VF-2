@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-html,body{margin:0;height:100%;background:#f5f8fc;}
+html,body{margin:0;height:100%;background:#e6ebf2;}
 a{color:#2a55b8;}
 a:hover{color:#1f4596;}
 canvas{outline:none;display:block;}
@@ -140,7 +140,7 @@ h1,h2,h3{letter-spacing:-.01em;}
 .ma-panel .ma-voice-note{margin:0 6px 8px;text-align:center;font-size:12.5px;line-height:1.45;color:#56667d}
 
 /* 이브 창 시안 2 · 보통 바이올렛 (사용자 선택 2026-10-21): 퓨어 실버 창 + 연보라 테두리. 보라는 링크·칩·선택 탭 점·체크 칸·[보기] 테두리에만 (위 시안 4b의 연보라 바탕을 덮음) */
-.ma-panel{background:linear-gradient(180deg,#e8edf5 0%,#dfe6f0 100%)!important; /* 안의 흰 카드와 구분되게 한 단계 어둡게 (사용자 요청 2026-10-23) */border:2px solid #cbdcfb;box-shadow:0 20px 50px rgba(28,37,48,.16);--ma-panel-line:#e3e9f2}
+.ma-panel{background:linear-gradient(180deg,#e8edf5 0%,#dfe6f0 100%)!important; /* 안의 흰 카드와 구분되게 한 단계 어둡게 (사용자 요청 2026-10-23) */border:2px solid #9fb4d6;box-shadow:0 24px 50px -12px rgba(27,42,65,.32),0 2px 6px rgba(27,42,65,.06); /* 회청 화면 바탕과 구분되게 테두리 진하게 · 그림자 깊게 (시안 B, 2026-10-24) */--ma-panel-line:#e3e9f2}
 .ma-panel .border-slate-200,.ma-panel .border-slate-300,.ma-panel .border-white\/25{border-color:#e3e9f2}
 .ma-panel .ma-check{appearance:none;-webkit-appearance:none;margin:0;border:1.5px solid #c7d6f5;border-radius:8px;background:#fff;cursor:pointer}
 .ma-panel .ma-check:checked{border-color:#1b2a41;background:#1b2a41 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7'/%3E%3C/svg%3E") center/16px no-repeat}
@@ -186,3 +186,8 @@ h1,h2,h3{letter-spacing:-.01em;}
 .ma-toast.is-info .ma-toast-time{color:#2a55b8}
 .ma-toast.is-info .ma-btn-primary{background:#3d6fe0;color:#fff}
 .ma-toast.is-info .ma-btn-ghost{background:#fff;border-color:#e3e9f2;color:#3a4a61}
+/* 홈 이브 알림 띠 상태 점 맥박 (시안 B, 2026-10-24): 주의 1.6초 · 긴급 1초, 동작 줄이기면 멈춤 */
+@keyframes bandPing{0%{box-shadow:0 0 0 0 currentColor}70%,100%{box-shadow:0 0 0 7px transparent}}
+.band-ping{animation:bandPing 1.6s ease-out infinite}
+.band-ping-fast{animation:bandPing 1s ease-out infinite}
+@media (prefers-reduced-motion:reduce){.band-ping,.band-ping-fast{animation:none}}
