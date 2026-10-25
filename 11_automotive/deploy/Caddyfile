@@ -3,25 +3,34 @@
 {$DOMAIN} {
 	encode gzip
 
-	basic_auth {
-		{$BASIC_USER} {$BASIC_HASH}
-	}
+	# 접속 비밀번호는 처음 한 번만 묻고, 맞히면 통과 쿠키(mom_gate, 7일)를 준다 (2026-10-25)
+	#   화면이 백엔드를 부를 때 Authorization 머리글에 로그인 토큰(Bearer)을 넣어서, 비밀번호만으로는 화면을 옮길 때마다 다시 묻는다
+	@nogate not header Cookie *mom_gate={$GATE_TOKEN}*
 
-	# 시연 서버 (화면의 /api/*). 흐름(스트림)이 끊기지 않게 바로바로 내보낸다
-	handle /api/* {
-		reverse_proxy sim:8765 {
-			flush_interval -1
+	# route 안은 적은 순서대로 돈다 (밖에 두면 caddy가 handle 을 먼저 돌려서 비밀번호 검사를 건너뛴다)
+	route {
+		basic_auth @nogate {
+			{$BASIC_USER} {$BASIC_HASH}
 		}
-	}
+		# 위 비밀번호를 통과한 응답에만 붙는다 (틀리면 여기까지 오지 않음)
+		header @nogate Set-Cookie "mom_gate={$GATE_TOKEN}; Path=/; Max-Age=604800; Secure; HttpOnly; SameSite=Lax"
 
-	# 백엔드 (이브 채팅·음성 등, 화면의 NEXT_PUBLIC_MOM_API=/mom-api) — 앞의 /mom-api 를 떼고 넘긴다
-	handle_path /mom-api/* {
-		reverse_proxy backend:8000 {
-			flush_interval -1
+		# 시연 서버 (화면의 /api/*). 흐름(스트림)이 끊기지 않게 바로바로 내보낸다
+		handle /api/* {
+			reverse_proxy sim:8765 {
+				flush_interval -1
+			}
 		}
-	}
 
-	handle {
-		reverse_proxy web:3000
+		# 백엔드 (이브 채팅·음성 등, 화면의 NEXT_PUBLIC_MOM_API=/mom-api) — 앞의 /mom-api 를 떼고 넘긴다
+		handle_path /mom-api/* {
+			reverse_proxy backend:8000 {
+				flush_interval -1
+			}
+		}
+
+		handle {
+			reverse_proxy web:3000
+		}
 	}
 }
