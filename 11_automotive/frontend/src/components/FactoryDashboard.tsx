@@ -1007,7 +1007,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
         const tex = new THREE.CanvasTexture(cv); tex.anisotropy = 8;
         const m = new THREE.Mesh(new THREE.PlaneGeometry(3.6, 0.9), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, fog: false, toneMapped: false }));
         const a = this.anch[id]; m.rotation.x = -Math.PI / 2; m.position.set(a[0] / 1000 + 0.5, 0.09, -1.35); m.renderOrder = 5; // 상자 컨베이어(Y 1,765~) 앞 통로 바닥 scene.add(m);
-        return { key, name, code, cv, tex, last: '', m };
+        return { key, name, code, cv, tex, last: '', m, baseX: m.position.x };
       });
       // SOAK-01 보라색 온도 맞춤 선반은 그리지 않음 (사용자 요청 2026-10-19)
       // 천장 표지판 (사용자 선택 2026-10-19, 시안 A를 3D로): 앱 화면에서는 설비 이름표를 장면 안 실제 판으로 천장 레일에 매단다.
@@ -1978,8 +1978,10 @@ export default class FactoryDashboard extends React.Component<any, any> {
         c.globalAlpha = 1; c.fillStyle = col; c.textBaseline = 'alphabetic';
         c.font = '800 34px "Pretendard Variable", sans-serif'; const lab = F.code ? F.name : `${F.name} 입고 박스`; c.fillText(lab, 12, 92); let x = 24 + c.measureText(lab).width;
         c.font = '700 84px "Pretendard Variable", sans-serif'; const num = nd ? '—' : String(n); c.fillText(num, x, 96); x += c.measureText(num).width + 8;
-        if (!nd) { c.globalAlpha = 0.75; c.font = '600 40px "Pretendard Variable", sans-serif'; c.fillText(`/${lim}`, x, 96); }
+        if (!nd) { c.globalAlpha = 0.75; c.font = '600 40px "Pretendard Variable", sans-serif'; c.fillText(`/${lim}`, x, 96); x += c.measureText(`/${lim}`).width; }
         F.tex.needsUpdate = true;
+        // 마지막 FG-01 글자는 길어서 공장 바닥 끝(plant 폭)을 넘었다 — 그린 글자 끝이 바닥 안(끝에서 0.15m)에 오게 왼쪽으로 당긴다 (사용자 요청 2026-10-25)
+        if (F.key === 'fg' && this.LY && this.LY.plant) F.m.position.x = Math.min(F.baseX, this.LY.plant.width_x_mm / 1000 - 0.15 + 1.8 - x * 3.6 / 512);
       });
       const ph = (id) => this.phOf(id);
       const run = (id) => this.state.st[id] === 'RUN';
