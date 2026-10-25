@@ -65,6 +65,7 @@ export const alarmEv = (a: J) => ({
   alarm_event_id: Number(a.alarm_event_id), equipment_id: a.equipment_id as Eq, alarm_code: String(a.alarm_code),
   severity: (a.severity_at_event ?? a.severity) as 'STOP' | 'WARN' | 'GUIDE', occurred_at: a.occurred_at, cleared_at: a.cleared_at ?? null,
   lot_no: a.lot_no ?? null, prev_alarm_event_id: num(a.prev_alarm_event_id), scenario_code: a.scenario_code ?? null,
+  handled_by: a.handled_by ?? null, handled_at: a.handled_at ?? null,   // DB에서 작업기록서 확정으로 처리됨 (alarms.list, 2026-10-25)
 });
 const stdCycle = (eq: Eq) => {
   const e = LAYOUT.equipment[eq];

@@ -912,7 +912,7 @@ class Realtime:
                          wo_offset=self.past["maintenance_work_order"], simple_offset=simple, now_dt=self.now())
         # 문서 버전(document_revision): 과거 기록과 같은 모양 — 작업지시서 v0 AI 초안 → v1 담당이 고쳐 저장, 작업기록서(정식)
         # v0 AI 초안 → 약 60% v1 사람이 고침, 간이는 v0. 문서마다 v0~current_version이 빠짐없이 있어야 한다 (R-35). 번호는 과거 뒤.
-        rr = self.rng.stream("revisions-live")
+        rr = self.rng.fresh("revisions-live")          # 부를 때마다 같은 값 (위 build_mnt 실시간과 같은 까닭, 2026-10-25)
         share = self.cfg["reports"].get("revised_share", 0.6)
         revs, chg = [], []
         rid0 = self.past["document_revision"]

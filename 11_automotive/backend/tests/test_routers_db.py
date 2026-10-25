@@ -118,7 +118,10 @@ class RouterFlows(unittest.TestCase):
         self.assertEqual((k["scope"], len(k["rows"])), ("line", 1))                 # 라인 OEE 1줄 (OP-30 2대 합)
         self.assertIn("mttr_min", k["reliability"][0])
         ke = self.call(production.kpi, "U10", scope="equipment", shift_id="2026-09-15-D", equipment_id="VF2-01")
-        self.assertEqual(ke["rows"][0]["is_availability_warn"], True)              # 가동률 36.7% < 60% (OP-30)
+        # 진행 중 교대의 계획 시간 = 지금까지 지난 근무 분 (2026-10-23 결정, 1023 메모 11장): 13:00 = 300분 − 휴식 60분 = 240분,
+        # VF2-01 RUN 176분 → 가동률 73.3% (480분 기준이던 때는 36.7%로 주의였음)
+        self.assertAlmostEqual(float(ke["rows"][0]["availability_pct"]), 73.3, delta=0.2)
+        self.assertEqual(ke["rows"][0]["is_availability_warn"], False)
         orders = self.call(production.orders, "U10", shift_id="2026-09-15-D")
         self.assertTrue(all("is_late" in o and "defect_qty" in o for o in orders))
 

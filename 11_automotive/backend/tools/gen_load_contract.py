@@ -30,7 +30,7 @@ def gen_headers(gen):
     out = {}
     if not gen:
         return out
-    for sub in ("masters", "out"):
+    for sub in ("masters", "out_final"):   # 2026-10-25: 10월 최종용 데이터 (9월 out/은 더 쓰지 않음)
         folder = os.path.join(gen, sub)
         if not os.path.isdir(folder):
             continue

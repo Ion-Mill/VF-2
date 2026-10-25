@@ -9,10 +9,15 @@ SELECT fn_ingest_alarm(:equipment_id, :alarm_code, CAST(:occurred_at AS timestam
 UPDATE alarm_event SET cleared_at = coalesce(CAST(:cleared_at AS timestamptz), app_now())
  WHERE alarm_event_id = :alarm_event_id AND cleared_at IS NULL;
 
+-- handled_by·handled_at = 이 알람의 작업기록서(직접 또는 작업지시서를 거쳐)가 확정·확인된 사람·시각 (2026-10-25).
+--   화면이 작업기록서를 못 읽는 역할(작업자)이나 기록서보다 트윈을 먼저 받은 때에도 이미 처리된 알람을 긴급으로 띄우지 않게
 -- name: list
 SELECT a.alarm_event_id, a.equipment_id, a.alarm_code, m.name_ko, a.severity_at_event, a.occurred_at, a.cleared_at, a.lot_no,
-       a.prev_alarm_event_id, a.is_injected, a.scenario_code
+       a.prev_alarm_event_id, a.is_injected, a.scenario_code, h.confirmed_by AS handled_by, h.confirmed_at AS handled_at
   FROM alarm_event a JOIN alarm_master m USING (alarm_code)
+  LEFT JOIN LATERAL (SELECT r.confirmed_by, r.confirmed_at FROM work_record r LEFT JOIN maintenance_work_order w ON w.wo_no = r.wo_no
+                      WHERE r.status IN ('CONFIRMED', 'CHECKED') AND (r.alarm_event_id = a.alarm_event_id OR w.alarm_event_id = a.alarm_event_id)
+                      ORDER BY r.confirmed_at LIMIT 1) h ON true
  WHERE a.occurred_at >= CAST(:from AS timestamptz) AND a.occurred_at < CAST(:to AS timestamptz)
    AND (CAST(:equipment_id AS text) IS NULL OR a.equipment_id = CAST(:equipment_id AS text))
    AND (CAST(:alarm_code AS text) IS NULL OR a.alarm_code = CAST(:alarm_code AS text))

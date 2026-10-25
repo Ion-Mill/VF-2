@@ -31,6 +31,9 @@ class Settings(BaseModel):
     # 시연 조작(시계·사건 버튼·[처음으로]·[상황 일으키기])을 할 수 있는 사용자 (2026-10-24, 여러 명이 같은 공장을 볼 때).
     #   비우면 로그인한 누구나 (지금까지와 같음). 배포처럼 여러 명이 쓰면 진행자만: 예 MOM_SIM_CONTROL_USERS=U12
     sim_control_users: list[str] = []
+    # 최종용(실제 시각) 시연 서버의 [처음으로]는 발표자 키가 있어야 한다 (2026-10-25, 1024 팀원별 요청 4장). 화면이 보낸
+    #   X-Presenter-Key를 그대로 넘기고, 화면이 안 보냈으면 이 값(시연 서버 MOM_PRESENTER_KEY와 같게)을 넘긴다. 비우면 화면 값만
+    presenter_key: str = ""
     # 화면이 1초마다 부르는 /api/line/twin?full=true 결과를 이만큼 서버에 두고 같이 쓴다 (2026-10-24, 여러 명 접속).
     #   한 번 계산에 쿼리 19개 — 접속자 수와 관계없이 1초에 한 번만 DB를 읽는다. 0이면 끔
     twin_cache_seconds: float = 1.0

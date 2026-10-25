@@ -50,8 +50,13 @@ await as('U10');
 const tw0 = await B.backendRoute('line/twin');
 const sid = tw0.shift?.shift_id;
 const anyLot = (await B.backendRoute('lots')).lots?.at(-1)?.lot_no;
-const READS = ['line/twin', 'stream/events?after=0', `replay?from=2026-10-01T08:00:00%2B09:00&to=2026-10-01T08:30:00%2B09:00`,
-  'reports/shift', `reports/shift/${sid}`, 'reports/daily', 'reports/daily/2026-09-30', 'documents/revisions', 'notifications/past-open',
+// 날짜는 데이터에서 (2026-10-25 — 9월 데이터·최종용·영상용 어느 것이든): 가장 최근 일일 보고서, 지금 교대 시작부터 30분 재생
+const dl = await B.backendRoute('reports/daily');
+const lastDay = (Array.isArray(dl) ? dl : dl.reports ?? []).map((d) => String(d.work_date ?? '')).filter(Boolean).sort().at(-1);
+const r0 = new Date(tw0.shift?.start_at ?? Date.now()), r1 = new Date(r0.getTime() + 30 * 60000);
+const enc = (d) => encodeURIComponent(d.toISOString());
+const READS = ['line/twin', 'stream/events?after=0', `replay?from=${enc(r0)}&to=${enc(r1)}`,
+  'reports/shift', `reports/shift/${sid}`, 'reports/daily', `reports/daily/${lastDay}`, 'documents/revisions', 'notifications/past-open',
   'notifications/rules', 'maint/history', 'maint/pm-schedule', 'internal-docs', 'internal-docs/DOC-03', 'users', 'lots', `lots?lot=${anyLot}`,
   `inspection/results?lot=${anyLot}`, 'inspection/cmm-imports', 'quality/summary', 'inventory', 'shipments', 'tools', 'settings'];
 for (const [role, u] of Object.entries(USERS)) {
@@ -70,10 +75,12 @@ if (READ_ONLY) { console.log(`\n실패 ${fail}`); process.exit(fail ? 1 : 0); }
 console.log('\n② 시연 대본 S1 (DB에 씀)');
 await as('U10');
 await B.backendRoute('sim/reset', {});
-await waitFor('[처음으로] 뒤 DB가 08:00으로', async () => {
+// 기준점 = 그날 첫 교대 시작 (옛 9월 데이터 08:00, 영상용·최종용 09:00 — 2026-10-25 시각을 박지 않음)
+await waitFor('[처음으로] 뒤 DB가 교대 시작으로', async () => {
   const t = await B.backendRoute('line/twin');
-  return t.clock?.sim_at?.slice(11, 16) <= '08:05' && (t.alarms ?? []).length === 0 ? t : null;
-}, 60000) && ok('[처음으로] — 시뮬레이터·DB 함께 08:00');
+  const st = t.shift?.start_at, at = t.clock?.sim_at;
+  return st && at && new Date(at) - new Date(st) <= 20 * 60000 && (t.alarms ?? []).length === 0 ? t : null;   // 영상용은 ×60으로 흘러 20분 여유
+}, 60000) && ok('[처음으로] — 시뮬레이터·DB 함께 교대 시작');
 const before = await D.loadDocs();
 await B.backendRoute('sim/clock', { speed: 60 });
 // S1은 VF2-01이 가공 중일 때만 걸린다 (아니면 409 INVALID_STATE "대상 설비 가공 중 아님")
@@ -165,9 +172,18 @@ if (wo) {
 // 간이 기록 (경고·조작 안내 알람에 작업자가 남김) — 처음 저장 때 DB 번호
 await as('U01');
 try {
-  const t = await B.backendRoute('line/twin');
-  const al = (t.alarms ?? []).find((a) => a.severity !== 'STOP') ?? (t.alarms ?? [])[0];
-  if (!al) throw new Error('알람 없음');
+  // S1은 정지 알람(992) 한 건뿐이라(2026-10-23) 경고 알람이 없으면 S4(공기 압력 저하 → 120)를 걸고 기다린다 (2026-10-25)
+  const warn = async () => ((await B.backendRoute('line/twin')).alarms ?? []).find((a) => a.severity !== 'STOP');
+  let al = await warn();
+  if (!al) {
+    await as('U10');
+    await waitFor('S4 시작 (VF2-01 가공 중)', () => B.backendRoute('sim/inject', { scenario_code: 'S4' }).then(() => true).catch((e) => {
+      if (e.code === 'INVALID_STATE') return null; throw e;
+    }), 180000);
+    await as('U01');
+    al = await waitFor('S4 경고 알람', warn, 300000);   // 알람 앞뒤 5초 센서로 중계가 몇 분 걸릴 수 있음
+  }
+  if (!al) throw new Error('경고 알람 없음');
   const machine = Object.entries((await import(pathToFileURL(join(dir, 'data.mjs')).href)).ID_OF).find(([eq]) => eq === al.equipment_id)?.[1];
   const draft = { no: `NEW:a-${al.alarm_event_id}:alarm`, alertId: `a-${al.alarm_event_id}`, machine, kind: 'alarm', code: al.alarm_code, state: 'open', action: '', parts: [], lock: Array(9).fill(false), memo: '', revisions: [] };
   const no = await D.saveSr(draft, { ...draft, action: '칩 제거 후 재시작', memo: '흐름 점검' });

@@ -5,8 +5,9 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Header
 from pydantic import BaseModel, Field
 
 from ..config import get_settings
@@ -99,11 +100,16 @@ def sim_clock(_: User = Depends(current_user), db: Db = Depends(get_db)):
     return db.one("common.sim_clock")
 
 
+LEGACY_SKIP = {"TODAY_17:00": "TODAY_DAY_END", "TODAY_20:00": "TODAY_NIGHT_START"}   # 시각이 이름에 박혀 있던 옛 이름 (생성기와 같음)
+
+
 class SimClockIn(BaseModel):
     mode: str = "SIM"
-    skip_to_1700: bool = Field(False, description="넘기기: 지금 → 오늘 17:00 (API-SIM-02, 2026-10-13 — 다음 날 06:00으로 넘기기는 없음)")
-    skip: str | None = Field(None, pattern="^TODAY_(17|20):00$",
-                             description="넘기기 목표 (생성기·시연 패널과 같은 이름): TODAY_17:00 / TODAY_20:00 (17:00 뒤 휴무 → 야간 시작, 2026-10-20)")
+    skip_to_1700: bool = Field(False, description="넘기기: 지금 → 오늘 주간 교대 끝 (옛 이름 그대로, API-SIM-02 — 다음 날 아침으로 넘기기는 없음)")
+    skip: str | None = Field(None, pattern="^TODAY_(DAY_END|NIGHT_START|17:00|20:00)$",
+                             description="넘기기 목표 (생성기 Realtime.skip과 같은 이름): TODAY_DAY_END(오늘 주간 교대 끝) / "
+                                         "TODAY_NIGHT_START(야간 교대 시작 — 주간 끝 뒤 휴무). 옛 이름 TODAY_17:00·TODAY_20:00도 받음 "
+                                         "(시각은 그날 교대에서, 2026-10-25)")
     sim_at: datetime | None = Field(None, description="시계를 이 시각으로 (MGR 준비용 — 시연 발표 중 넘기기는 skip_to_1700)")
     speed: float | None = Field(None, description="배속 180·60·10·1 (1초 = 1분 → 60)")
     paused: bool | None = None
@@ -112,11 +118,11 @@ class SimClockIn(BaseModel):
 @router.post("/sim/clock")
 def set_sim_clock(body: SimClockIn, user: User = Depends(current_user), db: Db = Depends(get_db)):
     """진행자 제한: MOM_SIM_CONTROL_USERS (2026-10-24).
-    시연 시계 배속·일시정지·넘기기 (API-SIM-02, NFR-DATA-10). 시연 모드에서는 누구나 배속·일시정지·17:00 넘기기,
+    시연 시계 배속·일시정지·넘기기 (API-SIM-02, NFR-DATA-10). 시연 모드에서는 누구나 배속·일시정지·주간 끝 넘기기,
     시각 직접 지정(sim_at)과 시연 모드 밖은 MGR만. 지금 시연 시각을 돌려준다.
     넘기는 동안 남은 주간 교대 기록을 만드는 일은 시뮬레이터(생성기 Realtime.skip) 몫 — 서버 연결 방식은 [선택 필요: 기술 회의]"""
     _sim_control(user)
-    target = body.skip or ("TODAY_17:00" if body.skip_to_1700 else None)
+    target = body.skip or ("TODAY_DAY_END" if body.skip_to_1700 else None)
     if sim_link.enabled() and body.sim_at is None:
         # 시뮬레이터가 시계의 주인 — 넘기면 DB 중계가 DB 시계를 따라 맞춘다 (배속·일시정지·넘기기는 시연 발표자 누구나, 기획서 15장)
         return sim_link.call("POST", "sim/clock", {k: v for k, v in {"speed": body.speed, "paused": body.paused, "skip": target}.items()
@@ -125,11 +131,13 @@ def set_sim_clock(body: SimClockIn, user: User = Depends(current_user), db: Db =
         raise AppError(403, "FORBIDDEN", "시각 직접 지정과 시연 모드 밖 시계 바꾸기는 MGR만")
     sim_at = body.sim_at
     if target:
-        hhmm = target.split("_", 1)[1]
-        t = db.one("common.today_at", hhmm=hhmm)
+        name = LEGACY_SKIP.get(target, target).split("_", 1)[1]          # DAY_END | NIGHT_START
+        label = "주간 교대 끝" if name == "DAY_END" else "야간 교대 시작"
+        t = db.one("common.skip_target", target=name)
+        if t["at"] is None:
+            raise AppError(409, "INVALID_STATE", f"오늘 {label}이 없음 (휴무일 또는 교대 없음)", {"reason": "NO_SHIFT_" + name})
         if t["past"] in (True, "t"):
-            raise AppError(409, "INVALID_STATE", f"이미 {hhmm}이 지남 — 넘기기는 지금 → 오늘 {hhmm}만",
-                           {"reason": "PAST_" + hhmm.replace(":", "")})
+            raise AppError(409, "INVALID_STATE", f"이미 {label}이 지남 — 넘기기는 지금 → 오늘 {label}만", {"reason": "PAST_" + name})
         sim_at = t["at"]
     return db.one("common.sim_set", mode=body.mode, sim_at=sim_at, speed=body.speed, paused=body.paused)
 
@@ -161,13 +169,14 @@ def inject(body: InjectIn, user: User = Depends(current_user), db: Db = Depends(
 
 
 @router.post("/sim/reset")
-def sim_reset(user: User = Depends(current_user), db: Db = Depends(get_db)):
+def sim_reset(user: User = Depends(current_user), db: Db = Depends(get_db),
+              x_presenter_key: Annotated[str | None, Header(description="최종용 시연 서버의 발표자 키 (그대로 넘김, 2026-10-25)")] = None):
     """시연 데이터 처음으로 (SIM-03, 시연 모드만): 운영 데이터를 시연 기준점으로 되돌리고 시연 시계를 그 시각에 멈춘다.
     설정·계정·접속 기록은 그대로. 화면에는 실시간 connection 사건이 가서 전부 다시 읽는다. 기준점이 없으면 INVALID_STATE"""
     _sim_control(user)
     if sim_link.enabled():
         # 시뮬레이터만 되돌린다 — 회차가 바뀌면 DB 중계가 DB를 시연 기준점으로 되돌린다 (두 번 되돌리지 않게)
-        return sim_link.call("POST", "sim/reset")
+        return sim_link.call("POST", "sim/reset", presenter_key=x_presenter_key or get_settings().presenter_key or None)
     if not get_settings().demo_mode:
         raise AppError(403, "FORBIDDEN", "시연 모드에서만 시연 데이터를 되돌릴 수 있음")
     return db.one("common.demo_reset")["result"]

@@ -50,6 +50,23 @@ BEGIN
 END $$;
 COMMENT ON FUNCTION fn_demo_snapshot() IS '시연 기준점 만들기 (SIM-03). 목업(dev/90)·생성기 적재 뒤 부른다';
 
+-- 기준점의 표 몇 개만 지금 값으로 바꾼다 (2026-10-25). 사내 문서 조각처럼 기준점을 만든 뒤에 넣는 기준 자료용 —
+-- 전부 다시 찍으면(fn_demo_snapshot) 그사이 붙인 실시간 기록(생성기 --realtime, 최종용 10/26 오전)까지 기준점에 들어가
+-- 시연 서버 [처음으로] 때 시뮬레이터 시작점과 달라진다(BASELINE_MISMATCH). 기준점에 없는 표·없는 기준점은 건너뜀. 반환: 바꾼 표 수
+CREATE OR REPLACE FUNCTION fn_demo_snapshot_refresh(p_tables text[]) RETURNS int
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp AS $$
+DECLARE t text; n int := 0;
+BEGIN
+    FOR t IN SELECT x FROM unnest(p_tables) x
+              WHERE x = ANY ((SELECT tables FROM demo_snapshot.meta WHERE id = 1)::text[]) LOOP
+        EXECUTE format('DROP TABLE IF EXISTS demo_snapshot.%I', t);
+        EXECUTE format('CREATE TABLE demo_snapshot.%I AS SELECT * FROM public.%I', t, t);
+        n := n + 1;
+    END LOOP;
+    RETURN n;
+END $$;
+COMMENT ON FUNCTION fn_demo_snapshot_refresh(text[]) IS '시연 기준점의 표 몇 개만 지금 값으로 (사내 문서 조각 적재 뒤 — 실시간 기록은 기준점에 넣지 않음)';
+
 -- 반환: {"tables": 되돌린 표 수, "sim_at": 시연 시계}
 -- session_replication_role = replica (트리거·외래 키 확인 끔)는 함수 안에서만 — 끝나면 원래대로
 -- 함수 SET 절이나 set_config()로 걸지 않고 EXECUTE 'SET LOCAL …'로 건다: Supabase는 postgres 역할이 슈퍼유저가 아니라
@@ -59,12 +76,26 @@ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public, pg_temp AS $$
 DECLARE
     m demo_snapshot.meta%ROWTYPE; t text; v_cols text; r record;
     v_prev text := current_setting('session_replication_role');
+    v_lock text := current_setting('lock_timeout'); v_try int;
 BEGIN
     SELECT * INTO m FROM demo_snapshot.meta WHERE id = 1;
     IF NOT FOUND THEN
         RAISE EXCEPTION '시연 기준점이 없음 — 먼저 fn_demo_snapshot() (POST /api/sim/snapshot)' USING ERRCODE = '23514';
     END IF;
     SET CONSTRAINTS ALL IMMEDIATE;     -- 같은 트랜잭션에 미뤄 둔 외래 키 확인이 있으면 먼저 끝낸다 (TRUNCATE 전)
+    -- 표 잠금을 먼저 한꺼번에 (2026-10-25): TRUNCATE가 표를 하나씩 잠그는 동안 화면 조회가 다른 표를 쥐고 있으면 교착 → 500
+    --   (DB 중계 [처음으로] 때 실제로 났음). 짧게(0.5초 — 교착 판정 1초 전) 기다려 못 잡으면 놓고 조금 쉬었다 다시 — 조회는 죽이지 않는다
+    FOR v_try IN 1..15 LOOP                -- 최대 약 20초 (중계는 30초 기다림)
+        BEGIN
+            PERFORM set_config('lock_timeout', '500ms', true);
+            EXECUTE 'LOCK TABLE ' || (SELECT string_agg(format('public.%I', x), ', ') FROM unnest(m.tables) x) || ' IN ACCESS EXCLUSIVE MODE';
+            EXIT;
+        EXCEPTION WHEN lock_not_available OR deadlock_detected THEN
+            IF v_try = 15 THEN RAISE; END IF;
+            PERFORM pg_sleep(0.1 * v_try);
+        END;
+    END LOOP;
+    PERFORM set_config('lock_timeout', v_lock, true);
     EXECUTE 'SET LOCAL session_replication_role = replica';
     EXECUTE 'TRUNCATE ' || (SELECT string_agg(format('public.%I', x), ', ') FROM unnest(m.tables) x);
     FOREACH t IN ARRAY m.tables LOOP

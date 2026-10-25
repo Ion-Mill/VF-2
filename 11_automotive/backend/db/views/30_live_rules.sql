@@ -152,6 +152,9 @@ BEGIN
                                               WHERE equipment_id = a.equipment_id AND status NOT IN ('DONE','CANCELLED')) THEN
         RETURN NULL;   -- 그 설비에 진행 중인 작업지시서가 있으면 새로 만들지 않는다 (화면과 같음)
     END IF;
+    IF p_trigger = 'STOP_ALARM' AND EXISTS (SELECT 1 FROM maintenance_work_order WHERE alarm_event_id = p_alarm_event_id) THEN
+        RETURN NULL;   -- 이 알람의 작업지시서가 이미 있음 (2026-10-25 — DB 중계가 오전 사건의 끝난 작업지시서와 알람을 같이 보낼 때)
+    END IF;
     SELECT 'DOC-03 §' || section INTO v_sec FROM alarm_guide_map WHERE alarm_code = a.alarm_code AND doc_no = 'DOC-03' ORDER BY seq LIMIT 1;
     v_sec := coalesce(v_sec, 'DOC-03');
     -- 작업 순서 (참조 줄 풀기)
@@ -193,7 +196,8 @@ BEGIN
                 p_steps => v_steps, p_parts => v_parts, p_lot_no => a.lot_no, p_at => a.occurred_at);
     -- 담당 = 알람 시각 교대의 보전 담당자 (사람이 바꿀 수 있음)
     SELECT shift_type INTO v_shift FROM shift WHERE start_at <= a.occurred_at AND end_at > a.occurred_at;
-    v_shift := coalesce(v_shift, CASE WHEN extract(hour FROM a.occurred_at AT TIME ZONE 'Asia/Seoul') BETWEEN 8 AND 16 THEN 'DAY' ELSE 'NIGHT' END);
+    -- 교대 사이(라인 정지)면 바로 앞에 시작한 교대 (2026-10-25 — 시각 8~16시를 박지 않음)
+    v_shift := coalesce(v_shift, (SELECT shift_type FROM shift WHERE start_at <= a.occurred_at ORDER BY start_at DESC LIMIT 1), 'DAY');
     SELECT user_id INTO v_mnt FROM app_user WHERE is_active AND role_code = 'MNT' AND home_shift_type = v_shift ORDER BY user_id LIMIT 1;
     UPDATE maintenance_work_order SET assignee_user_id = coalesce(assignee_user_id, v_mnt)
      WHERE wo_no = v_wo AND status = 'AI_DRAFT' AND v_mnt IS NOT NULL;

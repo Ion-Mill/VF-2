@@ -127,7 +127,7 @@ export function PmAll() {
         </div>
       ))}
       <div className="rounded-tile border border-line bg-white px-3 py-2.5">
-        <div className="text-small text-ink-2">실시율 · 9월</div>
+        <div className="text-small text-ink-2">실시율 · 지난 기록</div>
         <div className={`font-mono text-num font-bold leading-tight ${rate !== null && rate < GOAL_PCT ? AMBER : ''}`}>{rate == null ? '—' : rate.toFixed(1)}<span className="text-body font-normal text-ink-2">%</span></div>
         <div className="relative my-1.5 h-2.5 rounded-full bg-track" role="img" aria-label={`실시율 ${rate ?? '—'}%, 목표 ${GOAL_PCT}%`}>
           <i className="absolute inset-y-0 left-0 rounded-full bg-warn-mark" style={{ width: `${rate ?? 0}%` }} />

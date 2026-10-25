@@ -10,7 +10,7 @@ import { api, md, SIM, simIso, tsOf, useFetch, useLive, useLocal, usePersist, ty
 import { backendLogin, backendLogout, backendMode } from './backendApi';
 import { causeNoticeId, createRecord, loadDocs, openWoSeen, resolveNotice, saveSr, saveWo, saveWr, type Docs } from './backendDocs';
 import { askGuideCard } from './assistText';
-import { ALARMS, ROLE_NAME, USERS, applyAssignments, homeScreen, levelOfSev, type AlarmRec, type AlertRec, type Notice, type UserRec } from './model';
+import { ALARMS, ROLE_NAME, USERS, applyAssignments, homeScreen, levelOfSev, userName, type AlarmRec, type AlertRec, type Notice, type UserRec } from './model';
 import { derive, fromEvents, fromPast, groupPmPast, repeatOf, type RuleCtx } from './rules';
 import { LOCK } from './Safety';
 import { nextNo, pad, rev, type Downtime, type SimpleRecord, type WorkOrder, type WorkRecord } from './workflow';
@@ -214,7 +214,8 @@ function Frame({ user, setUser }: { user: UserRec; setUser: (u: UserRec | null) 
 
   // ---------- 알람 기록 = 시뮬레이터 알람 이벤트 ----------
   const alerts: AlertRec[] = useMemo(() => (twin?.alarms ?? []).map((e) => {
-    const id = `a-${e.alarm_event_id}`, h = handledA[id] ?? bdocs?.handled[id];
+    // 백엔드 모드는 트윈 알람에 DB의 처리(작업기록서 확정)가 같이 온다 — 작업기록서를 못 읽는 역할도 처리된 알람을 긴급으로 안 띄움 (2026-10-25)
+    const id = `a-${e.alarm_event_id}`, h = handledA[id] ?? bdocs?.handled[id] ?? (e.handled_at ? { by: userName(e.handled_by), ts: tsOf(e.handled_at) } : undefined);
     const guideDone = e.severity === 'GUIDE' && !!e.cleared_at; // 조작 안내는 작업자가 고치면(알람 해제) 처리
     return {
       id, eventId: e.alarm_event_id, prevId: e.prev_alarm_event_id, machine: ID_OF[e.equipment_id], code: e.alarm_code,

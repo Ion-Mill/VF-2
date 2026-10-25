@@ -57,7 +57,7 @@ export function toolsBand(tools: ToolRow[], limitPct = 90): BandSpec {
 // ---------------------------------------------------------------- 예방 정비 (PmScreen 전체 장비)
 // counts = PmScreen countOf(pm.tasks) 결과, overEqs = 기한 지남 설비(급한 순), onTime = pm.on_time_rate_pct, target = 90
 export function pmBand(counts: { over: number; soon: number; week: number }, overEqs: string[], onTime: number | null, target = 90): BandSpec {
-  const rate = onTime == null ? '' : `9월 실시율 ${fmtPct(onTime)} (목표 ${target}%)`;
+  const rate = onTime == null ? '' : `지난 기록 실시율 ${fmtPct(onTime)} (목표 ${target}%)`;
   return pickBand([
     counts.over > 0 && { tone: 'warn', title: `기한 지남 ${counts.over}건 — ${overEqs[0] ?? ''} 먼저`, desc: [counts.soon ? `오늘 ${counts.soon}건` : '', rate].filter(Boolean).join(' · '), action: overEqs[0] ? `${overEqs[0]} 보기` : undefined },
     counts.soon > 0 && { tone: 'todo', title: `오늘 기한 ${counts.soon}건`, desc: rate || undefined },

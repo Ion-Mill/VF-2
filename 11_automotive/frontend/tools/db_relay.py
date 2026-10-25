@@ -8,7 +8,8 @@
 잠금: 처음에 시계 입구(/api/ingest/clock)를 부른다. 백엔드가 MOM_SIM_SYNC=true(또는 시연 모드)가 아니면 409 → 중계가 스스로 꺼진다.
   (2026-10-20의 "주소가 로컬이어야 함" 잠금은 없앴다 — 공용 DB에도 쓰기로 했으므로 백엔드 스위치 하나로 정한다)
 보내는 것 (2026-10-23): 생성기 Realtime.tables() — out_realtime CSV와 같은 17개 표(작업지시·로트·실적·설비 상태·알람·병목·재공·
-  공구·검사·측정 결과·불량·보류·예방 정비·재고 거래·센서). SYNC_EVERY_SEC마다 앞에 보낸 것과 비교해 **바뀐 줄만**
+  공구·검사·측정 결과·불량·보류·예방 정비·재고 거래·센서). 2026-10-25: + 작업지시서·작업기록서·문서 버전 8개 표 — 최종용(실제 시각)의
+  미리 짠 오전 사건 문서만 (시연 서버 _relay_tables가 고름, 실시간 시작 뒤 정지의 작업지시서는 DB가 초안을 만든다). SYNC_EVERY_SEC마다 앞에 보낸 것과 비교해 **바뀐 줄만**
   /api/ingest/sync로 보낸다 (백엔드가 기본 키로 덮어씀). 번호는 시뮬레이터 번호 그대로 (9월 번호 다음부터) — 그래서 1단계의
   "알람 번호 대응표"는 없앴다. 새 알람의 알림·반복 알람 판정·재공 경고 등은 백엔드가 실제 받기와 같게 만든다.
 [처음으로] (2026-10-23): 시연 회차(run_id)가 바뀌면 먼저 /api/ingest/reset으로 DB를 시연 기준점(9월 끝, 10/1 08:00)으로
@@ -33,9 +34,12 @@ SENSOR = "sensor_sample"
 SENSOR_PK = ("equipment_id", "sensor_code", "sampled_at", "interval_type")
 SENSOR_CHUNK = 5000                 # 센서는 한 요청에 5천 줄씩 (그 밖의 표는 하루치를 합쳐도 수천 줄)
 # 넣는 순서 (백엔드 app/services/sim_sync.py TABLES와 같게 — 하나씩 다시 보낼 때 부모 먼저)
-ORDER = ["production_order", "production_lot", "inspection_plan", "alarm_event", "pm_record", "equipment_state_log",
-         "operation_report", "tool_change", "tool_usage", "bottleneck_log", "wip_log", "lot_hold", "cmm_import",
-         "inspection_result", "defect_record", "inventory_txn", SENSOR]
+ORDER = ["production_order", "production_lot", "alarm_event", "lot_hold", "inspection_plan", "pm_record", "equipment_state_log",
+         "operation_report", "tool_change", "tool_usage", "bottleneck_log", "wip_log", "cmm_import",
+         "inspection_result", "defect_record",
+         "maintenance_work_order", "work_order_step", "work_order_part", "work_record", "work_record_check", "work_record_part",
+         "document_revision", "document_revision_change",     # 2026-10-25: 최종용 오전 사건 문서만 (sim_server._relay_tables)
+         "inventory_txn", SENSOR]
 
 # snap(last_sig) → (sig, run_id, tables | None). 상태가 그대로(sig == last_sig)면 tables = None (표를 다시 만들지 않음)
 Snap = Callable[[object], tuple[object, int, "dict[str, tuple[list[str], list[tuple]]] | None"]]

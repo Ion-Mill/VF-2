@@ -201,7 +201,7 @@ class SyncTable(BaseModel):
 
 
 class SyncIn(BaseModel):
-    tables: dict[str, SyncTable] = Field(max_length=20)
+    tables: dict[str, SyncTable] = Field(max_length=30)   # sim_sync.TABLES 25개 (2026-10-25 문서 표 8개 더함)
 
 
 @router.post("/sync")

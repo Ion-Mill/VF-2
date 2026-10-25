@@ -686,7 +686,7 @@ $$;
 -- 그 생산일 야간 이월을 다시 계산한다. 반환: 야간 이월 값 (그날 야간 교대가 없으면 NULL)
 --   주간 실적 = 주간 교대 보고서가 확정됐으면 그 실적, 아니면 원기록 집계 (이때 이월은 "잠정" — v_shift_target)
 --   주간 기록(교대 보고서도 공정 실적도)이 없으면 0
--- 부르는 곳: 주간 교대 보고서 초안(17:00, 야간 시작 전), 주간 교대 보고서 확정(다시 계산), 스케줄러(지금 야간),
+-- 부르는 곳: 주간 교대 보고서 초안(주간 끝, 야간 시작 전), 주간 교대 보고서 확정(다시 계산), 스케줄러(지금 야간),
 --           생성기 데이터 적재 뒤(tools/load_generated.py)
 CREATE OR REPLACE FUNCTION fn_refresh_carry_over(p_work_date date) RETURNS int
 LANGUAGE plpgsql AS $$

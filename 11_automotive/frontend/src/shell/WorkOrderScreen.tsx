@@ -109,7 +109,7 @@ export default function WorkOrderScreen({ no, focusRecord }: { no: string; focus
         {wo.parts.length ? <div className="flex flex-wrap gap-1.5">{wo.parts.map((p) => { const s = stockOf(p); return <Chip key={p} tone={s?.low ? 'warn' : 'ok'}>{s?.item_name ?? p} · 재고 {s?.stock_qty ?? '—'}{s?.unit ?? ''} (안전 {s?.safety_stock ?? '—'}){s?.low ? ' ▲' : ''}</Chip>; })}</div>
           : <span className="text-body text-ink-2">없음</span>}
       </Sec>
-      <Fold summary={`비슷한 과거 작업 — 9월 ${eq} · 알람 ${wo.code}`}>
+      <Fold summary={`비슷한 과거 작업 — ${eq} · 알람 ${wo.code}`}>
         {similar.length ? <ul className="flex flex-col gap-1">{similar.map((w) => { const r = recOf(w.wo_no); return <li key={w.wo_no}><span className="font-mono">{w.wo_no}</span> · {md(w.created_at)} · {w.title}{r ? ` → ${r.record_no} 원인: ${r.cause} / 조치: ${r.action} (${r.repair_min}분)` : ''}</li>; })}</ul>
           : <span className="text-ink-2">같은 설비·같은 알람 작업지시서 없음</span>}
       </Fold>

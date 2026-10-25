@@ -42,11 +42,11 @@ SELECT fn_start_lot(:order_no, :material_lot_no, CAST(:input_qty AS int), CAST(:
 SELECT fn_lot_to_inspection(:lot_no);
 
 -- ---------------------------------------------------------------------
--- 시연 서버 → DB 표 맞추기 (POST /api/ingest/sync, 2026-10-23 — app/services/sim_sync.py). 시연 모드만.
+-- 시연 서버 → DB 표 맞추기 (POST /api/ingest/sync, 2026-10-23 — app/services/sim_sync.py). MOM_SIM_SYNC=true 또는 시연 모드만 (docs/05_결정기록.md H-10).
 -- 시뮬레이터 10/1 기록(생성기 export와 같은 칸·번호)을 표째로 덮어쓴다. 넣는 문장은 표·칸 이름이 바뀌어 서비스가 만들고,
 -- 표·칸 이름은 아래 목록(DB 카탈로그)에 있는 것만 쓴다.
 -- name: sync_columns
-SELECT c.table_name::text, c.column_name::text, (c.is_generated = 'ALWAYS') AS generated,
+SELECT c.table_name::text, c.column_name::text, (c.is_generated = 'ALWAYS') AS generated, c.data_type::text AS data_type,
        CASE WHEN c.is_nullable = 'NO' AND c.is_identity = 'NO' THEN c.column_default END AS not_null_default
   FROM information_schema.columns c
  WHERE c.table_schema = 'public' AND c.table_name IN (SELECT jsonb_array_elements_text(CAST(:tables AS jsonb)))
@@ -92,6 +92,17 @@ SELECT fn_raise_notification(
 SELECT fn_auto_work_order_draft(a.alarm_event_id, 'STOP_ALARM')
   FROM alarm_event a JOIN alarm_master m USING (alarm_code)
  WHERE a.alarm_event_id = :alarm_event_id AND m.severity = 'STOP' AND fn_equipment_process(a.equipment_id) = 'OP-30';
+
+-- 이미 확정된 작업기록서와 함께 들어온 알람(최종용 오전 사건, 2026-10-25): 알람 알림을 그 확정으로 처리 —
+-- fn_confirm_work_record의 "알람 알림 자동 처리 (6.36)"와 같게 (처리자 = 확정자, 시각 = 확정 시각)
+-- name: sync_alarm_done
+SELECT fn_auto_process(ARRAY(SELECT n.notification_id FROM notification n
+                              WHERE n.alarm_event_id = :alarm_event_id AND n.rule_code IN ('ALARM_STOP','ALARM_WARN')
+                                AND NOT n.is_processed), w.confirmed_by, w.confirmed_at)
+  FROM work_record w LEFT JOIN maintenance_work_order o ON o.wo_no = w.wo_no
+ WHERE coalesce(w.alarm_event_id, o.alarm_event_id) = :alarm_event_id AND w.status IN ('CONFIRMED','CHECKED')
+   AND w.confirmed_at IS NOT NULL
+ ORDER BY w.confirmed_at LIMIT 1;
 
 -- name: sync_alarm_repeat
 SELECT fn_check_repeat_alarm(a.alarm_event_id)

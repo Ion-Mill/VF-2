@@ -15,10 +15,15 @@
     notification_rule — 물리 추가 칸은 그대로 둠), 운영 기록은 그대로 넣는다. app.loading = on (알림 NOTIFY·자동 알림 끔),
     순환 FK는 커밋 때 확인. CHECK·FK·고유·겹침 금지·역할 트리거는 그대로 걸린다 — 규칙을 어긴 데이터는 들어가지 않는다.
  4. 일련번호 시퀀스·업무 번호 카운터를 맞추고, 알람 ↔ 관련 재고 품목, 시연 기준점(fn_demo_snapshot — SIM-03이
-    되돌아갈 10/1 08:00 상태), dataset_info(manifest)를 남긴다.
+    되돌아갈 실시간 시작 상태), dataset_info(manifest)를 남긴다.
  5. 줄 수가 manifest rows와 같은지 확인한다 (다르면 종료 코드 3).
---realtime: out_realtime 의 10/1 기록을 9월 번호 다음부터 붙인다 (작업지시·로트는 덮어씀, ERD 11.1).
-  시연 기준점은 9월 끝(10/1 08:00)에서 만들므로, 시연 전에 SIM-03(처음으로)을 누르면 리허설 기록이 사라진다.
+날짜 (2026-10-25): 기록 기간·실시간 시작은 manifest의 profile(final|video)로 생성기 profiles/<이름>.json에서 읽는다
+  (최종용 10/1~10/25·10/26 09:00, 영상용 10/1~10/23·10/24 09:00). profile이 없는 옛 out/ 은 9/1~9/30·10/1 08:00.
+  시연 기준점 시각 = 실시간 시작 = 시연 서버 시뮬레이터 시작점(Realtime.baseline) — DB 중계 [처음으로]가 이 둘을 비교한다.
+--realtime: 실시간 기록(out_realtime*)을 과거 번호 다음부터 붙인다 (작업지시·로트는 덮어씀, ERD 11.1).
+  시연 기준점은 과거 기록 끝(실시간 시작)에서 만들므로, SIM-03(처음으로)을 누르면 실시간 기록이 사라진다.
+  단 실시간 날짜의 근무일·교대(work_day·shift)는 기록이 아니라 달력이라 기준점 전에 넣는다 — 되돌린 뒤 시뮬레이터가 다시
+  보내는 실시간 기록이 그 교대를 가리킨다.
 표준 라이브러리 + psql만 쓴다.
 """
 import argparse
@@ -32,6 +37,7 @@ import tempfile
 
 EXCLUDE_ALWAYS = {("inventory_item", "on_hand_qty")}   # 거래(inventory_txn) 트리거가 채운다
 SENSOR = "sensor_sample"
+CALENDAR = ("work_day", "shift")      # 실시간 날짜의 근무일·교대 — 기준점 전에 넣는 달력 (머리 설명 --realtime)
 
 # CSV에 있지만 DB가 계산으로 보이는 칼럼 (논리 ERD "계산" 속성 — 넣지 않고, 넣은 뒤 같은지 확인)
 IGNORE = {
@@ -96,6 +102,15 @@ def load_order(tables, fks):
     return [t for t in order if t not in DERIVED] + [t for t in order if t in DERIVED]
 
 
+def demo_dates(gen_dir, manifest):
+    """(기록 시작일, 기록 끝일, 실시간 시작 'YYYY-MM-DDTHH:MM') — manifest의 profile로 생성기 프로필 파일에서 (위 머리 설명)"""
+    prof = manifest.get("profile")
+    if not prof:
+        return "2026-09-01", "2026-09-30", "2026-10-01T08:00"
+    cfg = json.load(open(os.path.join(gen_dir, "profiles", f"{prof}.json"), encoding="utf-8"))
+    return cfg["period"]["start_date"], cfg["period"]["end_date"], cfg["realtime"]["start"]
+
+
 def read_manifest(folder):
     p = os.path.join(folder, "manifest.json")
     if not os.path.exists(p):
@@ -156,7 +171,7 @@ def copy_cmd(table, cols, path):
             f"WITH (FORMAT csv, HEADER true, ENCODING 'UTF8')")
 
 
-def table_lines(t, path, upsert, pk, checks, defaults):
+def table_lines(t, path, upsert, pk, checks, defaults, tmp=None):
     """테이블 1개를 넣는 SQL 줄들.
     빈칸(NULL)인데 DB는 NOT NULL + 기본값인 칼럼(예: production_lot.scrap_qty 빈칸 = 0)은 기본값으로 넣는다 (ERD 필수 "—")"""
     hdr = header(path)
@@ -168,7 +183,7 @@ def table_lines(t, path, upsert, pk, checks, defaults):
     dflt = {c: defaults[(t, c)] for c in cols if defaults.get((t, c))}
     if not upsert and not ignored and not derived and not dflt:
         return [copy_cmd(t, cols, path)]
-    tmp = f"_ld_{t}"
+    tmp = tmp or f"_ld_{t}"
     lines = [f"CREATE TEMP TABLE {tmp} ON COMMIT DROP AS SELECT {', '.join(cols)} FROM {t} WITH NO DATA;"]
     lines += [f"ALTER TABLE {tmp} ADD COLUMN {c} text;" for c in ignored]
     lines.append(copy_cmd(tmp, hdr, path))
@@ -226,8 +241,8 @@ def main():
     ap.add_argument("--realtime", action="store_true", help="10/1 리허설 기록(out_realtime)도 넣음")
     ap.add_argument("--sensor", action="store_true", help="센서 CSV도 같이 넣음 (기본은 뺌 — --sensor-only로 따로)")
     ap.add_argument("--sensor-only", action="store_true", help="센서 CSV만 넣음 (9월, --realtime이면 10/1도)")
-    ap.add_argument("--out-dir", default="out", help="과거 기록 폴더 이름 (기본 out). 프로필 도입 뒤: out_final | out_video (2026-10-24)")
-    ap.add_argument("--rt-dir", default="out_realtime", help="실시간 기록 폴더 이름 (기본 out_realtime). 프로필 도입 뒤: out_realtime_final | out_realtime_video")
+    ap.add_argument("--out-dir", default="out_final", help="과거 기록 폴더 이름 (기본 out_final — 2026-10-25 10월 데이터로). out_video | 옛 9월 out")
+    ap.add_argument("--rt-dir", default="out_realtime_final", help="실시간 기록 폴더 이름 (기본 out_realtime_final — 2026-10-25). out_realtime_video")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--keep-going", action="store_true", help="진단용: 테이블마다 따로 넣고 실패를 모두 보고")
     a = ap.parse_args()
@@ -276,6 +291,12 @@ def main():
     checks1, checks2 = [], []
     files1 = {**masters, **past}
     order1, steps1 = build(files1, lambda t: t in masters, pks, fks, checks1, defaults)
+    # 실시간 날짜의 근무일·교대는 기준점 전에 (머리 설명 --realtime). 있으면 고치고 없으면 넣기
+    cal = {t: rt.pop(t) for t in CALENDAR if t in rt}
+    steps_cal = [(t, table_lines(t, cal[t], True, pks.get(t, []), checks1, defaults, tmp=f"_ld_rt_{t}")) for t in CALENDAR if t in cal]
+    steps1 = steps1 + steps_cal
+    p_from, p_to, rt_start = demo_dates(a.gen_dir, manifest)
+    print(f"기록 기간 {p_from} ~ {p_to}, 시연 기준점(실시간 시작) {rt_start}")
     order2, steps2 = build(rt, lambda t: True, pks, fks, checks2, defaults) if rt else ([], [])
     print("넣는 순서:", " → ".join(order1))
     if order2:
@@ -305,14 +326,14 @@ def main():
     if not a.sensor_only:
         after1 += ["SELECT count(*) FROM fn_sync_doc_numbers();",
                    "SELECT fn_sync_after_load();",   # 공구 누적 등 "지금 상태" 칸 (masters = 9/1 시작 상태)
-                   "SELECT fn_ensure_work_day(DATE '2026-10-01');",   # 시연 날 근무일·교대 (9월 기록에는 없음)
+                   f"SELECT fn_ensure_work_day(DATE '{rt_start[:10]}');",   # 시연 날 근무일·교대 (실시간 기록에 있으면 그대로)
                    "SELECT fn_seed_alarm_related_items();",
-                   # SIM-03(시연 데이터 처음으로)이 돌아갈 곳 = 9월 기록 끝 (10/1 08:00, 시계는 SIM으로 멈춤)
-                   "SELECT fn_sim_set('SIM', '2026-10-01 08:00+09', 60, true);",
+                   # SIM-03(시연 데이터 처음으로)이 돌아갈 곳 = 과거 기록 끝 = 실시간 시작 (시계는 SIM으로 멈춤)
+                   f"SELECT fn_sim_set('SIM', '{rt_start.replace('T', ' ')}+09', 60, true);",
                    "SELECT fn_demo_snapshot();",
                    f"""UPDATE dataset_info SET seed = {int(manifest.get('seed') or 0) or 'NULL'},
                        config_sha256 = {("'" + manifest['config_sha256'] + "'") if manifest.get('config_sha256') else 'NULL'},
-                       period_from = DATE '2026-09-01', period_to = DATE '{'2026-10-01' if rt else '2026-09-30'}',
+                       period_from = DATE '{p_from}', period_to = DATE '{p_to}',
                        loaded_at = now(), manifest = '{meta}'::jsonb WHERE id = 1;"""]
     after1 += ["\\o"]
     scripts = [head + [l for _, ls in steps1 for l in ls] + check_lines(checks1) + after1 + ["COMMIT;"]]

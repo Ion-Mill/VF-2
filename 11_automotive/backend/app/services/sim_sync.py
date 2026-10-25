@@ -1,4 +1,4 @@
-"""시연 서버 → DB 표 맞추기 (POST /api/ingest/sync, 2026-10-23). 시연 모드(로컬 Docker DB)에서만 부른다.
+"""시연 서버 → DB 표 맞추기 (POST /api/ingest/sync, 2026-10-23). MOM_SIM_SYNC=true 또는 시연 모드일 때만 열린다 (아래 "켜는 곳").
 
 시연 서버(frontend/tools/db_relay.py)가 몇 초마다 생성기 10/1 기록(Realtime.tables() — out_realtime CSV와 같은 칸·번호·글자)
 중 바뀐 줄만 보낸다. 여기서는 tools/load_generated.py --realtime 과 같은 규칙으로 넣는다:
@@ -13,10 +13,15 @@
 DB도 시연 기준점(9월 끝, fn_demo_reset)으로 되돌린 뒤 다시 보낸다 (POST /api/ingest/reset). 되돌릴 때 기준점의 시각·마지막 번호가
 시뮬레이터 시작점과 같은지 확인한다(check_baseline). 켜는 곳: MOM_SIM_SYNC=true(공용 DB 포함 — "DB 1개 = 공장 1개") 또는 시연 모드.
 표·칸 이름은 SQL 글자에 들어가므로 아래 TABLES와 DB 카탈로그에 있는 것만 쓴다.
+2026-10-25: 작업지시서·작업기록서·문서 버전 표도 받는다 — 시연 서버는 최종용(실제 시각)에서 미리 짠 오전 사건(실시간 시작 전에
+끝난 정지)의 문서만 보낸다(MW-1009·MR-1009 등). 실시간 시작 뒤 정지의 작업지시서는 지금처럼 DB가 초안을 만든다(백엔드가 주인).
+jsonb 칸(cmm_import.raw_header, document_revision.content_snapshot)은 CSV 글자(JSON 문장)를 JSON 값으로 바꿔 넣는다.
 """
 from __future__ import annotations
 
 import json
+import logging
+import time
 from typing import TYPE_CHECKING, Any
 
 from sqlalchemy import text
@@ -27,14 +32,20 @@ if TYPE_CHECKING:
     from ..db import Db
 
 # 넣는 순서 (외래 키 부모 먼저 — 대부분의 외래 키는 바로 확인한다)
-TABLES = ["production_order", "production_lot", "inspection_plan", "alarm_event", "pm_record", "equipment_state_log",
-          "operation_report", "tool_change", "tool_usage", "bottleneck_log", "wip_log", "lot_hold", "cmm_import",
-          "inspection_result", "defect_record", "inventory_txn", "sensor_sample"]
-APPEND_ONLY = {"inventory_txn"}                              # 고치기·지우기 금지 표 (trg_append_only)
+# 2026-10-25: lot_hold를 inspection_plan 앞으로 (inspection_plan.hold_id → lot_hold — 보류가 있는 회차에서 외래 키 오류였음)
+TABLES = ["production_order", "production_lot", "alarm_event", "lot_hold", "inspection_plan", "pm_record", "equipment_state_log",
+          "operation_report", "tool_change", "tool_usage", "bottleneck_log", "wip_log", "cmm_import",
+          "inspection_result", "defect_record",
+          "maintenance_work_order", "work_order_step", "work_order_part", "work_record", "work_record_check", "work_record_part",
+          "document_revision", "document_revision_change",
+          "inventory_txn", "sensor_sample"]
+APPEND_ONLY = {"inventory_txn", "document_revision", "document_revision_change"}   # 고치기·지우기 금지 표 (trg_append_only)
 LIVE = {"wip_log", "inspection_result", "bottleneck_log"}    # 새 줄에 실시간 알림 트리거를 돌림
 DELETABLE = {"sensor_sample"}                                # 1분 값이 5초 값으로 바뀌면 옛 줄을 지움 (알람 앞뒤 30분)
 
 _meta: dict[str, Any] | None = None
+log = logging.getLogger("mom.sim_sync")
+SLOW_SEC = 3.0                                               # 이보다 오래 걸린 맞추기는 표마다 걸린 시간을 남긴다 (2026-10-25)
 
 
 def _q(name: str) -> str:
@@ -46,15 +57,18 @@ def meta(db: Db) -> dict[str, Any]:
     global _meta
     if _meta is None:
         cols: dict[str, dict[str, str | None]] = {t: {} for t in TABLES}
+        jsonb: dict[str, set[str]] = {t: set() for t in TABLES}
         for r in db.all("ingest.sync_columns", tables=TABLES):
             if not r["generated"]:
                 cols[r["table_name"]][r["column_name"]] = r["not_null_default"]
+                if r["data_type"] == "jsonb":
+                    jsonb[r["table_name"]].add(r["column_name"])
         pk: dict[str, list[str]] = {t: [] for t in TABLES}
         for r in db.all("ingest.sync_pkeys", tables=TABLES):
             pk[r["table_name"]].append(r["column_name"])
         ident = {r["table_name"]: r["column_name"] for r in db.all("ingest.sync_identity", tables=TABLES)}
         auto_wo = bool(db.scalar("ingest.sync_has_function", fn="fn_auto_work_order_draft"))
-        _meta = {"cols": cols, "pk": pk, "ident": ident, "auto_wo": auto_wo}
+        _meta = {"cols": cols, "pk": pk, "ident": ident, "auto_wo": auto_wo, "jsonb": jsonb}
     return _meta
 
 
@@ -90,9 +104,12 @@ def apply(db: Db, tables: dict[str, dict]) -> dict[str, Any]:
         raise validation(f"맞출 수 없는 표: {unknown}", tables=unknown)
     db.exec("ingest.sync_loading", value="on")
     out: dict[str, Any] = {"tables": {}, "new_alarms": []}
+    t0 = time.monotonic()
+    took: dict[str, float] = {}
     for t in TABLES:
         if t not in tables:
             continue
+        t1 = time.monotonic()
         body = tables[t]
         columns = list(body.get("columns") or [])
         bad = [c for c in columns if c not in m["cols"][t]]
@@ -117,13 +134,16 @@ def apply(db: Db, tables: dict[str, dict]) -> dict[str, Any]:
             else:
                 res.pop("new_ids", None)
         out["tables"][t] = res
+        took[t] = time.monotonic() - t1
     # 일련번호를 넣은 데이터의 최대값 다음으로 (플랫폼이 새로 만드는 줄이 시뮬레이터 번호와 겹치지 않게)
     for t in tables:
         c = m["ident"].get(t)
         if c:
             db.conn.execute(text(f"SELECT setval(pg_get_serial_sequence(:t, :c), "
                                  f"coalesce((SELECT max({_q(c)}) FROM {_q(t)}), 0) + 1, false)"), {"t": t, "c": c})
+    t1 = time.monotonic()
     db.one("ingest.sync_after")
+    took["(sync_after)"] = time.monotonic() - t1
     # 새 알람의 뒷일은 실제 알람 받기와 같게 (알림 켬)
     db.exec("ingest.sync_loading", value="off")
     for aid in sorted(out["new_alarms"]):
@@ -131,6 +151,11 @@ def apply(db: Db, tables: dict[str, dict]) -> dict[str, Any]:
         if m["auto_wo"]:
             db.all("ingest.sync_alarm_auto_wo", alarm_event_id=aid)
         db.all("ingest.sync_alarm_repeat", alarm_event_id=aid)
+        db.all("ingest.sync_alarm_done", alarm_event_id=aid)
+    total = time.monotonic() - t0
+    if total > SLOW_SEC:
+        log.warning("맞추기 %.1f초 — %s", total, ", ".join(f"{k} {v:.1f}초({len((tables.get(k) or {}).get('upsert') or [])}줄)"
+                                                    for k, v in sorted(took.items(), key=lambda kv: -kv[1])[:6]))
     return out
 
 
@@ -138,6 +163,13 @@ def _upsert(db: Db, t: str, columns: list[str], rows: list[list], m: dict) -> di
     pk = m["pk"][t]
     dflt = m["cols"][t]
     recs = [{c: (None if v in (None, "") else v) for c, v in zip(columns, r)} for r in rows]
+    for c in m["jsonb"][t] & set(columns):                  # JSON 문장 → JSON 값 (안 하면 jsonb에 글자 하나로 들어감)
+        for r in recs:
+            if isinstance(r[c], str):
+                try:
+                    r[c] = json.loads(r[c])
+                except ValueError:
+                    pass
     if len(recs) != len(rows) or any(len(r) != len(columns) for r in rows):
         raise validation(f"{t}: 칸 수가 맞지 않는 줄", table=t)
     vals = [f"coalesce(x.{_q(c)}, {dflt[c]})" if dflt.get(c) else f"x.{_q(c)}" for c in columns]
