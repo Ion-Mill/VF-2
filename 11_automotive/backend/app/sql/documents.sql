@@ -156,7 +156,8 @@ WITH docs AS (
       FROM shift_report r JOIN shift s USING (shift_id)
     UNION ALL
     SELECT 'DAILY_REPORT', d.work_date::text, d.work_date::text || ' 일일 보고서', d.status, NULL,
-           (d.work_date + 1)::timestamp AT TIME ZONE 'Asia/Seoul' + interval '6 hours',
+           coalesce((SELECT max(s.end_at) FROM shift s WHERE s.work_date = d.work_date) + interval '1 hour',
+                    (d.work_date + 1)::timestamp AT TIME ZONE 'Asia/Seoul' + interval '6 hours'),   -- 늦어도 = 야간 끝 + 1시간
            d.status IN ('AI_DRAFT','EDITING') AND CAST(:role AS text) = 'MGR'
       FROM daily_report d
     UNION ALL

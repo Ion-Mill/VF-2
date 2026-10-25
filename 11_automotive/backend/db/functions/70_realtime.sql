@@ -160,7 +160,8 @@ BEGIN
 END $$;
 
 -- 근무일·교대 만들기 (시연 10/1부터 — 생성기 9월 기록에는 9/30까지만 있다). 이미 있으면 그대로. 반환: 새로 만든 교대 수
--- 값은 가장 최근 근무일을 본뜬다 (주간 08:00~17:00·야간 20:00~05:00, 계획 시간·목표·반장, 하루 목표 180 — 설계서 5.2).
+-- 값은 가장 최근 근무일을 본뜬다 (교대 시각·계획 시간·목표·반장, 하루 목표 180 — 설계서 5.2). 일요일은 휴무로 만든다
+-- (생성기 휴무 규칙, 2026-10-24 — 교대 시각도 본뜨므로 08~17/20~05·09~18/21~06 어느 데이터든 그대로 따라감).
 -- 야간 이월(carry_over_qty)은 0으로 두고 주간이 끝나면 fn_refresh_carry_over가 채운다 (R-88). 휴무일 지정은 MGR이 work_day에서
 CREATE OR REPLACE FUNCTION fn_ensure_work_day(p_date date) RETURNS int
 LANGUAGE plpgsql AS $$
@@ -170,7 +171,7 @@ BEGIN
        AND EXISTS (SELECT 1 FROM shift s WHERE s.work_date = work_day.work_date);
     IF tpl IS NULL THEN RETURN 0; END IF;
     INSERT INTO work_day (work_date, is_workday, daily_target_qty)
-    SELECT p_date, true, daily_target_qty FROM work_day WHERE work_date = tpl
+    SELECT p_date, extract(isodow FROM p_date) <> 7, daily_target_qty FROM work_day WHERE work_date = tpl
     ON CONFLICT (work_date) DO NOTHING;
     IF NOT (SELECT is_workday FROM work_day WHERE work_date = p_date) THEN RETURN 0; END IF;
     WITH ins AS (

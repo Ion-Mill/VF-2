@@ -382,8 +382,8 @@ SELECT s.shift_id, s.work_date, s.shift_type, s.start_at, s.end_at, s.planned_ti
 
 -- ---------------------------------------------------------------------
 -- 교대 진행·예측 (R-48·R-88, DOC-07 8장, FR-PRD-01-15·16, FR-AST-02-04). 지난 교대는 교대 끝 시각 기준 값
---   교대 안 휴식 1시간 [가상: 팀 결정 2026-10-08]: 주간 12:00~13:00, 야간 00:00~01:00 (교대 사이 17:00~20:00·05:00~08:00은
---     라인 정지). 지난 계획 시간 = 교대 시작부터 지난 분 − 그중 휴식 분 (최대 계획 가동 시간) — DOC-07 8장 예 "4시간(240분) 뒤
+--   교대 안 휴식 1시간 [가상: 팀 결정 2026-10-08]: 교대 시작 4시간 뒤부터 (2026-10-25부터 shift.start_at에서 계산 —
+--     교대 08~17/20~05면 12:00·00:00, 09~18/21~06이면 13:00·01:00. 교대 사이는 라인 정지). 지난 계획 시간 = 교대 시작부터 지난 분 − 그중 휴식 분 (최대 계획 가동 시간) — DOC-07 8장 예 "4시간(240분) 뒤
 --     … 남은 240분"과 같음 (12:00 = 휴식 시작)
 --   속도 = 최근 계획 60분(휴식이 끼면 그만큼 앞으로 늘린 창)의 실적 ÷ 60, 교대 시작 후 1시간 안은 지금까지 실적 ÷ 지난 계획 시간
 --   예측 = 실적 + 속도 × 남은 계획 시간 (반올림한 개수). 부족 = max(0, 총 목표 − 예측)
@@ -393,8 +393,7 @@ SELECT s.shift_id, s.work_date, s.shift_type, s.start_at, s.end_at, s.planned_ti
 CREATE OR REPLACE VIEW v_shift_progress AS
 WITH b0 AS (
     SELECT t.*, least(greatest(app_now(), t.start_at), t.end_at) AS as_of,
-           CASE t.shift_type WHEN 'DAY' THEN (t.work_date + time '12:00') AT TIME ZONE 'Asia/Seoul'
-                             ELSE (t.work_date + 1 + time '00:00') AT TIME ZONE 'Asia/Seoul' END AS break_start_at
+           t.start_at + interval '4 hours' AS break_start_at
       FROM v_shift_target t
 ), b AS (
     SELECT b0.*, b0.break_start_at + interval '1 hour' AS break_end_at,

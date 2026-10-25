@@ -25,11 +25,15 @@ def enabled() -> bool:
     return bool(get_settings().sim_url)
 
 
-def call(method: str, path: str, body: dict[str, Any] | None = None) -> Any:
-    """시뮬레이터의 /api/<path>를 부른다. 시뮬레이터 오류({code, message, detail})는 같은 상태·코드로 돌려준다"""
+def call(method: str, path: str, body: dict[str, Any] | None = None, presenter_key: str | None = None) -> Any:
+    """시뮬레이터의 /api/<path>를 부른다. 시뮬레이터 오류({code, message, detail})는 같은 상태·코드로 돌려준다.
+    presenter_key: 최종용 [처음으로]의 발표자 키 (X-Presenter-Key — 2026-10-25)"""
     url = get_settings().sim_url.rstrip("/") + "/api/" + path.lstrip("/")
     data = json.dumps(body or {}, ensure_ascii=False).encode("utf-8") if method != "GET" else None
-    req = urllib.request.Request(url, data=data, method=method, headers={"Content-Type": "application/json"})
+    headers = {"Content-Type": "application/json"}
+    if presenter_key:
+        headers["X-Presenter-Key"] = presenter_key
+    req = urllib.request.Request(url, data=data, method=method, headers=headers)
     try:
         with urllib.request.urlopen(req, timeout=TIMEOUT_SEC) as r:     # noqa: S310 — 설정한 시뮬레이터 주소만
             return json.loads(r.read() or b"{}")

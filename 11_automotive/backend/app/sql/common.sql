@@ -58,7 +58,11 @@ SELECT fn_demo_snapshot() AS tables;
 -- name: is_synthetic
 SELECT is_virtual FROM dataset_info WHERE id = 1;
 
--- 오늘(시연 시계, 한국 시간) HH:MM — 시연 넘기기 목표 TODAY_17:00·TODAY_20:00 (API-SIM-02, 2026-10-20 — 전 today_1700)
--- name: today_at
+-- 시연 넘기기 목표 시각 (API-SIM-02): 오늘(시연 시계, 한국 시간) 주간 교대 끝(DAY_END) 또는 야간 교대 시작(NIGHT_START).
+-- 2026-10-25: 시각(17:00·20:00)을 박지 않고 그날 shift 행에서 — 생성기 Realtime.skip과 같은 이름. 그날 교대가 없으면 at = NULL
+-- name: skip_target
 SELECT t.at, app_now() >= t.at AS past
-  FROM (SELECT (CAST(app_now() AT TIME ZONE 'Asia/Seoul' AS date) + CAST(:hhmm AS time)) AT TIME ZONE 'Asia/Seoul' AS at) t;
+  FROM (SELECT CASE CAST(:target AS text) WHEN 'DAY_END' THEN s.end_at WHEN 'NIGHT_START' THEN s.start_at END AS at
+          FROM (SELECT CAST(app_now() AT TIME ZONE 'Asia/Seoul' AS date) AS d) today
+          LEFT JOIN shift s ON s.work_date = today.d
+                           AND s.shift_type = CASE CAST(:target AS text) WHEN 'DAY_END' THEN 'DAY' ELSE 'NIGHT' END) t;

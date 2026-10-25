@@ -133,7 +133,8 @@ def main():
         print("멈춤:\n  " + "\n  ".join(problems))
         sys.exit(2)
     if not a.no_snapshot:
-        lines.append("SELECT fn_demo_snapshot() FROM demo_snapshot.meta WHERE id = 1;")
+        # 기준점에서 문서 표만 바꾼다 — 전부 다시 찍으면 적재 뒤 붙인 실시간 기록(--realtime)까지 기준점에 들어감 (2026-10-25)
+        lines.append("SELECT fn_demo_snapshot_refresh(ARRAY['internal_doc', 'doc_chunk']);")
     lines.append("COMMIT;")
     if a.dry_run:
         print(f"(dry-run) 조각 {total}개")
