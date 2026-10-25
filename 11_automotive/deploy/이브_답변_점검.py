@@ -6,7 +6,7 @@
   - 질문은 U12(공장 관리자)로 /api/assistant/chat에 보낸다: 화면과 같은 길(백엔드 → 비서 → Claude). 질문마다 외부 Claude 요금이
     조금 들고, 질문·답이 공용 DB chat_log에 U12 기록으로 남는다(사용자가 묻는 것과 같다).
   - 판정: 정답의 숫자·이름이 답 글자 안에 있으면 "맞음", 없으면 "확인 필요"(말을 바꿔 썼을 수 있으니 사람이 본다).
-  - 환경 변수: DRY=1 이면 정답만 뽑고 묻지 않는다. ONLY=1,4,7 이면 그 번호만. SET=발표 이면 발표용 후보 질문 19개
+  - 환경 변수: DRY=1 이면 정답만 뽑고 묻지 않는다. ONLY=1,4,7 이면 그 번호만. SET=발표 이면 발표용 질문 18개
     (docker compose exec -T -e SET=발표 backend python - < 이브_답변_점검.py). 숫자로 가릴 수 없는 문서 질문은 "사람이 봄".
 답이 어느 길로 갔는지는 이어서 이브 컨테이너에서 이브_답변_출처.py.
 """
@@ -212,11 +212,8 @@ def gather(db: Db) -> tuple[datetime, list[dict]]:
         demo.append({"q": "VF2-02 최근 작업기록 알려줘", "kind": "DB·작업기록",
                      "truth": f"가장 최근 {wr[0]['record_no']} ({wr[0]['confirmed_at']}) 알람 {wr[0]['alarm_code']} — {wr[0]['action']}",
                      "must": [[wr[0]["record_no"]]]})
-    pm7 = sorted(run("pm_due", within_days=7, equipment_id="VF2-02"), key=lambda r: str(r["next_due_date"]))
-    demo.append({"q": "VF2-02 예방 정비 기한 다가오는 거 있어?", "kind": "DB·정비",
-                 "truth": ", ".join(f"{r['item_name']} {r['next_due_date']}" for r in pm7[:4]) or "없음 (7일 안)",
-                 "must": [[pm7[0]["item_name"]]] if pm7 else [["없"]]})
-    m6 = [r for r in run("inventory") if "M6 탭" == r["item_name"]]
+    # "VF2-02 예방 정비 기한 다가오는 거 있어?"는 뺐다 (2026-10-26 서버 시험: 넘긴 것만 보고 다가오는 것은 "정보 없음" — 발표 뒤 고칠 것)
+    m6 =[r for r in run("inventory") if "M6 탭" == r["item_name"]]
     if m6:
         demo.append({"q": "M6 탭 재고 얼마나 있어?", "kind": "DB·재고",
                      "truth": f"M6 탭 {float(m6[0]['on_hand_qty']):g}{m6[0]['unit']} (안전 재고 {float(m6[0]['safety_stock']):g}, 부족 {m6[0]['is_low']})",
