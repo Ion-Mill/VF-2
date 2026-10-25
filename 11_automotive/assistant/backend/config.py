@@ -314,6 +314,19 @@ def docs_source() -> str:
     return "db" if v == "db" else "files"
 
 
+def docs_backend() -> tuple[str, str]:
+    """사내 문서(DOCS_SOURCE=db)를 가져올 백엔드의 (주소, 서비스 키) (2026-10-25 2차): DOCS_BACKEND_URL·DOCS_BACKEND_KEY가 있으면 그것,
+    비어 있으면 운영 데이터와 같은 MOM_BACKEND_URL·MOM_ASSISTANT_KEY. start_all.ps1 -SupabaseDocs 는 읽기 전용 백엔드(8021)를 켜고 주소를 이 프로세스에만 준다."""
+    env = {**_dotenv(), **os.environ}
+    get = lambda k: (env.get(k) or "").strip()  # noqa: E731
+    return get("DOCS_BACKEND_URL") or get("MOM_BACKEND_URL"), get("DOCS_BACKEND_KEY") or get("MOM_ASSISTANT_KEY")
+
+
+def docs_backend_main() -> str:
+    """운영 데이터를 가져오는 백엔드 주소 (MOM_BACKEND_URL) — 문서 백엔드가 이것과 다르면 /health에 via=docs_backend"""
+    return ({**_dotenv(), **os.environ}.get("MOM_BACKEND_URL") or "").strip()
+
+
 def settings() -> Settings:
     env = {**_dotenv(), **os.environ}
     get = lambda k, d="": env.get(k, d)  # noqa: E731

@@ -174,3 +174,56 @@ def test_fetch_over_http_sends_key_and_reads_json():
             D.fetch(base, "wrong-key")
     finally:
         srv.shutdown()
+
+
+# ---- 2차 (2026-10-25): 문서만 따로 정한 백엔드(DOCS_BACKEND_URL)에서 가져오기 — start_all.ps1 -SupabaseDocs 가 8021을 켜고 주소를 준다 ----
+def test_docs_backend_defaults_to_main_backend(monkeypatch):
+    from backend.config import docs_backend
+    for k in ("DOCS_BACKEND_URL", "DOCS_BACKEND_KEY"):
+        monkeypatch.delenv(k, raising=False)
+    monkeypatch.setenv("MOM_BACKEND_URL", "http://127.0.0.1:8020")
+    monkeypatch.setenv("MOM_ASSISTANT_KEY", "k-main")
+    assert docs_backend() == ("http://127.0.0.1:8020", "k-main")
+
+
+def test_docs_backend_own_url_and_key_win(monkeypatch):
+    from backend.config import docs_backend
+    monkeypatch.setenv("MOM_BACKEND_URL", "http://127.0.0.1:8020")
+    monkeypatch.setenv("MOM_ASSISTANT_KEY", "k-main")
+    monkeypatch.setenv("DOCS_BACKEND_URL", "http://127.0.0.1:8021")
+    assert docs_backend() == ("http://127.0.0.1:8021", "k-main")           # 키를 따로 안 주면 비서 키 그대로
+    monkeypatch.setenv("DOCS_BACKEND_KEY", "k-docs")
+    assert docs_backend() == ("http://127.0.0.1:8021", "k-docs")
+    monkeypatch.setenv("DOCS_BACKEND_URL", "   ")                          # 빈 값(공백)은 안 준 것과 같다
+    assert docs_backend()[0] == "http://127.0.0.1:8020"
+
+
+@pytest.mark.parametrize("docs_url,via", [("", "main_backend"), ("http://127.0.0.1:8021", "docs_backend")])
+def test_db_mode_asks_the_docs_backend_and_reports_via(monkeypatch, docs_url, via):
+    monkeypatch.setenv("DOCS_SOURCE", "db")
+    monkeypatch.setenv("MOM_BACKEND_URL", "http://127.0.0.1:8020")
+    monkeypatch.setenv("MOM_ASSISTANT_KEY", "k-main")
+    monkeypatch.setenv("DOCS_BACKEND_URL", docs_url)
+    monkeypatch.delenv("DOCS_BACKEND_KEY", raising=False)
+    payload, asked = _payload(), {}
+
+    def fake(base, key, timeout=D.TIMEOUT_S):
+        asked.update(base=base, key=key)
+        return payload
+    monkeypatch.setattr(D, "fetch", fake)
+    assert len(K.load_corpus()) == 195
+    assert asked == {"base": docs_url or "http://127.0.0.1:8020", "key": "k-main"}
+    src = K.corpus_source()
+    assert src["source"] == "db" and src["via"] == via
+    assert "127.0.0.1" not in str(src)                                      # 주소는 /health에 싣지 않는다
+
+
+def test_docs_backend_down_falls_back_to_files(monkeypatch):
+    """문서 백엔드(8021)가 꺼져 있으면 운영 백엔드(8020)로 몰래 바꾸지 않고 파일로 돌아간다."""
+    monkeypatch.setenv("DOCS_SOURCE", "db")
+    monkeypatch.setenv("MOM_BACKEND_URL", "http://127.0.0.1:8020")
+    monkeypatch.setenv("DOCS_BACKEND_URL", "http://127.0.0.1:1")           # 아무도 안 듣는 포트
+    monkeypatch.setenv("MOM_ASSISTANT_KEY", "k")
+    assert len(K.load_corpus()) == 195
+    src = K.corpus_source()
+    assert src["source"] == "files" and src["fallback"]
