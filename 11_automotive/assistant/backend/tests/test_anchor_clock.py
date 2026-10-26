@@ -278,7 +278,8 @@ def test_total_alarm_count_with_no_alarms_says_zero(flags, live, monkeypatch):
     assert "2026-10-25 알람 0건" in _answer_text(out)
 
 
-def test_how_many_times_without_a_code_still_asks_for_the_alarm_number(flags, monkeypatch):
-    """"몇 번" 말투는 예전처럼 알람 번호를 되묻는다 (전체 건수 분기는 '알람…몇 건' 말투에만)."""
+def test_how_many_times_without_a_code_now_answers_the_total_too(flags, monkeypatch):
+    """"몇 번" 말투도 번호가 없으면 기간 안 전체 건수로 답한다 (2026-10-25 AWS 점검 보고 — 전에는 알람 번호를 되물었다)."""
     out, fb = _count_answer(monkeypatch, "알람 몇 번 났어?")
-    assert "알람 번호" in _answer_text(out) and "alarms" not in fb.tools_called()
+    text = _answer_text(out)
+    assert out["status"] == "답변" and "알람 번호" not in text and "알람 5건" in text and "alarms" in fb.tools_called(), text
