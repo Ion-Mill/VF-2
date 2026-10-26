@@ -215,6 +215,17 @@ class TestAssistantReadOnly(DbCase):
             ro.all("common.user_by_id", user_id="U10")
         self.assertEqual(ro.one("common.user_public", user_id="U10")["role_code"], "SUP")
 
+    def test_alarms_counts_split_idle_once(self):
+        # 주의 등급 IDLE이 휴식을 끼면 알람 1건에 상태 기록 2줄 → 횟수는 1 (2026-10-26, DB 담당 요청). COMMIT 없이 끝나 되돌아간다
+        split = ("BEGIN; UPDATE equipment_state_log SET end_at = '2026-09-15 10:52+09' WHERE state_log_id = 1; "
+                 "INSERT INTO equipment_state_log (equipment_id, state_code, start_at, end_at, alarm_event_id) VALUES "
+                 "('VF2-01', 'IDLE', '2026-09-15 10:52+09', '2026-09-15 10:53+09', 1), "
+                 "('VF2-01', 'IDLE', '2026-09-15 10:53+09', '2026-09-15 10:54+09', NULL), "
+                 "('VF2-01', 'IDLE', '2026-09-15 10:54+09', '2026-09-15 10:55+09', 1); SET LOCAL ROLE mom_ai_ro; ")
+        rows = {r["alarm_code"]: r for r in tools.run(PsqlDb(self.psql, prefix=split), "alarms", self.ARGS["alarms"])}
+        self.assertEqual(rows["108"]["times"], "1")
+        self.assertEqual(rows["994"]["down_min"], "2.0")
+
 
 class TestScheduleQueries(DbCase):
     DB_NAME = "mom_svc_sched"
