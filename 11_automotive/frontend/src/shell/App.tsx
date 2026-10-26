@@ -7,10 +7,10 @@ import type { MachineId } from '@/components/types';
 import { ID_OF, LAYOUT, LEGEND, MACHINES, SHIFT_H, type Role } from './data';
 import { Ctx, DEFAULT_SETTINGS, type AppCtx, type History, type Inv, type Screen, type Settings } from './ctx';
 import { api, md, SIM, simIso, tsOf, useFetch, useLive, useLocal, usePersist, type SimEvent } from './live';
-import { backendLogin, backendLogout, backendMode } from './backendApi';
+import { backendLogin, backendLogout, backendMode, UNAUTHORIZED_EVENT } from './backendApi';
 import { causeNoticeId, createRecord, loadDocs, openWoSeen, resolveNotice, saveSr, saveWo, saveWr, type Docs } from './backendDocs';
 import { askGuideCard } from './assistText';
-import { ALARMS, ROLE_NAME, USERS, applyAssignments, homeScreen, levelOfSev, userName, type AlarmRec, type AlertRec, type Notice, type UserRec } from './model';
+import { ALARMS, ROLE_NAME, USERS, applyAssignments, homeScreen, levelOfSev, userFromLogin, userName, type AlarmRec, type AlertRec, type Notice, type UserRec } from './model';
 import { derive, fromEvents, fromPast, groupPmPast, repeatOf, type RuleCtx } from './rules';
 import { LOCK } from './Safety';
 import { nextNo, pad, rev, type Downtime, type SimpleRecord, type WorkOrder, type WorkRecord } from './workflow';
@@ -133,13 +133,19 @@ export default function App() {
   const [intro, setIntro] = useState(false); // 로그인 화면에서 막 들어왔을 때만 3D 오프닝 (새로고침으로 다시 들어온 때는 안 함, 사용자 요청 2026-10-25)
   const [ready, setReady] = useState(false); // 서버 그리기 때는 저장소를 못 읽어서, 읽기 전에는 로그인 화면을 잠깐도 보이지 않는다
   useEffect(() => {
-    let u: UserRec | undefined;
-    try { const id = sessionStorage.getItem(SESSION_USER); u = USERS.find((x) => x.id === id); } catch { /* 저장소를 못 쓰면 로그인부터 */ }
-    if (!u || !backendMode()) { if (u) setUserRaw(u); setReady(true); return; }
+    let id: string | null = null;
+    try { id = sessionStorage.getItem(SESSION_USER); } catch { /* 저장소를 못 쓰면 로그인부터 */ }
+    const u = USERS.find((x) => x.id === id);
+    if (!id || !backendMode()) { if (u) setUserRaw(u); setReady(true); return; }
     // 백엔드 토큰은 메모리에만 있어 새로고침하면 사라진다 → 같은 계정으로 다시 받는다. 못 받으면 로그인 화면
-    // shortcut: 시연 비밀번호로 다시 받는다, 계정마다 비밀번호가 달라지면 토큰을 sessionStorage에 두는 쪽으로
-    const who = u;
-    backendLogin(who.id, DEMO_PW).then(() => setUserRaw(who), () => { /* 로그인 화면으로 */ }).finally(() => setReady(true));
+    // shortcut: 시연 비밀번호로 다시 받는다, 계정마다 비밀번호가 달라지면(직원 관리에서 만든 직원 = 8자 이상) 토큰을 sessionStorage에 두는 쪽으로
+    backendLogin(id, DEMO_PW).then((j) => setUserRaw(userFromLogin(j)), () => { /* 로그인 화면으로 */ }).finally(() => setReady(true));
+  }, []);
+  // 토큰이 끝났거나 사용 중지·역할이 바뀌어 백엔드가 401을 주면 로그인 화면으로 (직원 관리, 2026-10-25)
+  useEffect(() => {
+    const off = () => { try { sessionStorage.removeItem(SESSION_USER); } catch { /* 저장 못 해도 화면은 계속 */ } setUserRaw(null); };
+    window.addEventListener(UNAUTHORIZED_EVENT, off);
+    return () => window.removeEventListener(UNAUTHORIZED_EVENT, off);
   }, []);
   const setUser = (u: UserRec | null) => {
     try { if (u) sessionStorage.setItem(SESSION_USER, u.id); else sessionStorage.removeItem(SESSION_USER); } catch { /* 저장 못 해도 화면은 계속 */ }

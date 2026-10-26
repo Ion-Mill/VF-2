@@ -20,11 +20,23 @@ export const BLOCK = GENERATED.block as unknown as string[];
 export const INVENTORY = GENERATED.inventory as unknown as InvItem[];
 export const REASONS = GENERATED.reasons as unknown as { group: string; code: string; name: string }[];
 // 직원 관리에서 바꾼 배치(서버 /api/users)를 화면의 사용자 목록에 덮어쓴다 — 로그인한 사용자도 같은 객체라 브리핑·담당 공정 알림이 바로 바뀐다 (FR-USR-01-06)
-export const applyAssignments = (rows: { user_id: string; home_shift_type: string; home_process_code: string; home_process_code_2: string }[]) => {
+// 백엔드 /api/users·직원 추가 응답은 이름·역할도 준다 → 직원 관리에서 새로 만든 직원(U13…)을 목록에 더하고 이름·역할도 맞춘다 (2026-10-25). 담당 공정 없음 = null
+export const applyAssignments = (rows: { user_id: string; user_name?: string; role_code?: string; home_shift_type: string | null; home_process_code: string | null; home_process_code_2: string | null }[]) => {
   for (const r of rows) {
+    const procs = [r.home_process_code, r.home_process_code_2].filter(Boolean) as string[];
     const u = USERS.find((x) => x.id === r.user_id);
-    if (u) { u.shift = r.home_shift_type as UserRec['shift']; u.procs = [r.home_process_code, r.home_process_code_2].filter(Boolean); }
+    if (!u) { if (r.user_name && r.role_code) USERS.push({ id: r.user_id, name: r.user_name, role: r.role_code as Role, shift: (r.home_shift_type ?? 'DAY') as UserRec['shift'], procs }); continue; }
+    if (r.user_name) u.name = r.user_name;
+    if (r.role_code) u.role = r.role_code as Role;
+    if (r.home_shift_type) u.shift = r.home_shift_type as UserRec['shift'];
+    u.procs = procs;
   }
+};
+/** 백엔드 로그인 응답 → 화면 로그인 사용자 (목록에도 넣거나 덮어써서 이름 표시·담당 공정 알림이 같은 객체를 본다) */
+export const userFromLogin = (j: { user_id: string; user_name: string; role_code: string; process_codes?: string[]; shift_type?: string | null }): UserRec => {
+  const p = j.process_codes ?? [];
+  applyAssignments([{ user_id: j.user_id, user_name: j.user_name, role_code: j.role_code, home_shift_type: j.shift_type ?? null, home_process_code: p[0] ?? null, home_process_code_2: p[1] ?? null }]);
+  return USERS.find((u) => u.id === j.user_id)!;
 };
 export const userName = (id?: string | null) => USERS.find((u) => u.id === id)?.name ?? id ?? '—';
 

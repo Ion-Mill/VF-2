@@ -115,6 +115,8 @@ def period_range(period: str, now: datetime) -> tuple[datetime, datetime]:
     """오늘 · 7일 · 30일 · 9월 전체 (처음 값 7일, FR-USR-01-09). 끝 = 지금(시연 시계)."""
     if period == "sep":
         return datetime(2026, 9, 1, tzinfo=now.tzinfo), datetime(2026, 10, 1, tzinfo=now.tzinfo)
+    if period == "all":   # 기록 전체 = 첫 교대부터 (화면 버튼 "기록 전체", 백엔드와 같은 값 2026-10-25). 생성기 기록은 9/1보다 앞서지 않는다
+        return datetime(2026, 9, 1, tzinfo=now.tzinfo), now
     if period == "today":
         return now.replace(hour=0, minute=0, second=0, microsecond=0), now
     days = {"30d": 30}.get(period, 7)
@@ -191,4 +193,5 @@ if __name__ == "__main__":
     from datetime import timezone
     now = datetime(2026, 10, 1, 10, 0, tzinfo=timezone(timedelta(hours=9)))
     assert period_range("7d", now)[0].day == 24 and period_range("today", now)[0].hour == 0 and period_range("sep", now)[1].month == 10
+    assert period_range("all", now) == (datetime(2026, 9, 1, tzinfo=now.tzinfo), now)
     print("server_staff 자체 시험 통과")
