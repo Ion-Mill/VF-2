@@ -52,7 +52,9 @@ export default function CardScreen({ alertId }: { alertId: string }) {
 
   return (
     <DocPage width={900}>
-      <DocHead title="지침카드" sub={`${md(alert.time)} ${hhmm(alert.time)} 발생${alert.scenario ? ` · 사건 ${alert.scenario}` : ''}`} right={<button onClick={back} className={BTN}>닫기</button>} />
+      {/* 제목이 화면 머리(PageHead "지침카드")와 겹쳐 화면에선 숨김 — 인쇄에서만 보임. 발생 시각 줄은 닫기 옆에 남김 (사용자 요청 2026-10-25) */}
+      <DocHead printOnly title="지침카드" sub={`${md(alert.time)} ${hhmm(alert.time)} 발생${alert.scenario ? ` · 사건 ${alert.scenario}` : ''}`}
+        right={<><span className="text-small text-ink-2 print:hidden">{md(alert.time)} {hhmm(alert.time)} 발생{alert.scenario ? ` · 사건 ${alert.scenario}` : ''}</span><button onClick={back} className={BTN}>닫기</button></>} />
       {!a ? <Band tone="crit" title={<>{alert.code} — 알람 코드집에 없음</>} chips={<Chip tone="solid-crit">보전 담당자 호출</Chip>} /> : (<>
         <div className="contents" data-summary-panel="SCR-09">
         <Band tone={tone}
