@@ -43,3 +43,20 @@ coverage/
 
 # Logs
 *.log
+
+# 저작권 자료(제조사 매뉴얼·번역본·논문·보도자료·웹 저장본 등 외부 원문)는 올리지 않는다 — 11_automotive/docs/README.md
+# 이미 올라가 있는 직접 쓴 조사 문서(.md)와 출처 목록만 남겨 두었다.
+11_automotive/docs/haas/
+11_automotive/docs/kosha/
+11_automotive/docs/related/
+11_automotive/docs/**/*.pdf
+11_automotive/docs/**/*.html
+11_automotive/docs/**/*.htm
+11_automotive/docs/**/*.docx
+11_automotive/docs/**/*.hwpx
+11_automotive/docs/**/*.xlsx
+11_automotive/docs/**/*.txt
+11_automotive/docs/**/*.csv
+11_automotive/docs/**/*.json
+11_automotive/analysis/text/
+11_automotive/data/haas_ngc_mtconnect/
