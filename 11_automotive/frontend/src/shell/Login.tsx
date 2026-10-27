@@ -1,5 +1,5 @@
 'use client';
-// SCR-01 로그인 (페이지구조 v3 1장) — 아이디(U01~U12)와 비밀번호를 직접 친다 (사용자 요청 2026-10-24, 예전엔 이름 목록에서 고르면 0000이 채워졌다). 계정은 생성기/masters/app_user.csv.
+// SCR-01 로그인 (페이지구조 v3 1장) — 아이디(U01~U12)와 비밀번호를 직접 친다 (사용자 요청 2026-10-24, 예전엔 이름 목록에서 고르면 0000이 채워졌다). 계정은 데이터생성기/masters/app_user.csv.
 // 백엔드 모드(기본, NEXT_PUBLIC_MOM_BACKEND≠0)면 backendApi.backendLogin으로 서버가 확인하고, 받은 토큰을 화면 API와 이브 채팅이 같이 쓴다. 꺼져 있으면 화면 안에서 비교만 한다.
 import { useState } from 'react';
 import { USERS, userFromLogin, type UserRec } from './model';

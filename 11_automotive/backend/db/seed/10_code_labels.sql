@@ -1,4 +1,4 @@
--- 생성: tools/gen_code_labels.py (논리ERD_최종본 6장). 손으로 고치지 말고 스크립트를 다시 돌린다.
+-- 생성: tools/gen_code_labels.py (논리ERD 6장). 손으로 고치지 말고 스크립트를 다시 돌린다.
 INSERT INTO code_label (code_group, code, name_ko, sort_order, source_ref) VALUES
   ('equipment_state_log.state_code', 'RUN', '가공 중', 1, '6.1'),
   ('equipment_state_log.state_code', 'IDLE', '대기', 2, '6.1'),

@@ -76,7 +76,7 @@ def isolation(equipment_id: str) -> dict:
 
 
 def _ref(section: str) -> dict:
-    """DOC-05 절 가리킴. doc_no는 API명세서_v1 출처 칸 이름(2026-10-11 P1) — 옛 칸 doc_id도 둔다.
+    """DOC-05 절 가리킴. doc_no는 API명세서 출처 칸 이름(2026-10-11 P1) — 옛 칸 doc_id도 둔다.
     문서 이름·개정(rev)이 든 출처 전체는 지침카드가 이 가리킴으로 services.cite.cite()를 불러 붙인다."""
     return {"doc_id": "DOC-05", "doc_no": "DOC-05", "section": section}
 

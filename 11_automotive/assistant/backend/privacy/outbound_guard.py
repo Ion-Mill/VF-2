@@ -4,7 +4,7 @@
 외부 호출은 `llm/claude_client._chat_json_claude` 한 곳을 지나므로 거기서 `scrub_messages`를 부르면 `/chat`과 새 문장 입구가 모두 덮인다.
 
 무엇을 가리나
-  · 사용자 ID — `생성기/masters/app_user.csv`의 user_id (U01 …). 목록을 못 읽으면 `U\\d{2}` 꼴 전부.
+  · 사용자 ID — `데이터생성기/masters/app_user.csv`의 user_id (U01 …). 목록을 못 읽으면 `U\\d{2}` 꼴 전부.
   · 사람 이름 — 같은 파일의 user_name. 단, 사내 문서 조각에 이미 나오는 말(예: 직무명 "공장 관리자")은 사람 이름이 아니라서 가리지 않는다.
   · 사원 번호 — "사원번호/사번/employee no" 라벨이 붙은 번호.
   · 계정 정보 — 토큰(JWT·Bearer·sk-…), 접속 주소(postgres://…), "비밀번호/token/api_key: 값" 꼴, 그리고 이 서버 환경의 비밀값 자체(서비스 키 등).

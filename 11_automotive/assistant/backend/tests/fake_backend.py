@@ -10,7 +10,7 @@ from typing import Callable
 NOW = "2026-10-01T08:00:00+09:00"
 KEY = "test-service-key"
 
-# 센서 7종 (생성기/masters/sensor_item.csv) — 정상 범위 [참고]. 값 (최소, 평균, 최대, 마지막)은 시험용 가짜다 (조사 노트 5장의 모양: 설비가 서 있는 시간이라 주축 부하 0 근처,
+# 센서 7종 (데이터생성기/masters/sensor_item.csv) — 정상 범위 [참고]. 값 (최소, 평균, 최대, 마지막)은 시험용 가짜다 (조사 노트 5장의 모양: 설비가 서 있는 시간이라 주축 부하 0 근처,
 # 주축 모터 온도는 정상 범위 아래라 `is_out_of_normal=True` 한 종류, 나머지는 범위 안).
 SENSORS = [  # (코드, 이름, 단위, 정상 최소, 정상 최대)
     ("SpindleLoadPct", "주축 부하", "%", 0, 185), ("SpindleMotorTemp", "주축 모터 온도", "℃", 28, 42), ("AirPressure", "공기 압력", "psi", 100, 110),

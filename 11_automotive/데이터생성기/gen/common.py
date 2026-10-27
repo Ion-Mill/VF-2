@@ -19,7 +19,7 @@ from pathlib import Path
 
 import numpy as np
 
-ROOT = Path(__file__).resolve().parent.parent          # 생성기/
+ROOT = Path(__file__).resolve().parent.parent          # 데이터생성기/
 PROJECT = ROOT.parent                                   # 11_automotive/
 KST = timezone(timedelta(hours=9))
 

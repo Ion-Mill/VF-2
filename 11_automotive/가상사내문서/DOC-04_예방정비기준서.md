@@ -7,7 +7,7 @@
 | 개정 | Rev.3 (2026-10-24) |
 | 승인 | 공장 관리자 (MGR) |
 | 구분 | **가상 사내 문서** (실제 문서를 바탕으로 작성) |
-| 제작 기준 | [가상데이터설계서_최종본.md 13장](../가상데이터설계서_최종본.md#13-가상-사내-문서-제작-기준), 값은 [설계서 5.12·5.14·15.3·15.5](../가상데이터설계서_최종본.md#15-가상-기준값-추천과-근거), 용어는 [00_용어집.md](00_용어집.md) |
+| 제작 기준 | [가상데이터설계서.md 13장](../가상데이터설계서.md#13-가상-사내-문서-제작-기준), 값은 [설계서 5.12·5.14·15.3·15.5](../가상데이터설계서.md#15-가상-기준값-추천과-근거), 용어는 [00_용어집.md](00_용어집.md) |
 
 ---
 
@@ -358,8 +358,8 @@
 | 3.3 세척액 수위 | Bransonic Ultrasonic Bath 사용 설명서 | PDF 14쪽, PDF 68쪽 표 7.1 | 영어 | `docs/line/branson_bransonic_manual_en_5410610.pdf` |
 | 3.4 측정기 | NPL GPG 42 Issue 2 CMM 검증 | 9장, PDF 60·66·69쪽 | 영어 | `docs/maintenance/다른공정_정비/CMM_verification_NPL_GPG42_Issue2.pdf` |
 | 1장 목표 | NASA RCM Guide (2008) 12장 | 12.10.3 PDF 191쪽, 표 12-4 PDF 190쪽 | 영어 | `docs/maintenance/정비지표/Maintenance_KPI_benchmarks_NASA_RCM_Guide2008.pdf` |
-| 4장 품목·안전 재고, 3.2 | 가상 운영 데이터 설계서 최종본 | 5.12, 5.14, 15.3, 15.5 | 한국어 | `가상데이터설계서_최종본.md` |
-| 2장·3장 항목 목록, 4장 차감 | 기획서 최종본 | MNT-04, INV-01 | 한국어 | `기획서_최종본.md` |
+| 4장 품목·안전 재고, 3.2 | 가상 운영 데이터 설계서 최종본 | 5.12, 5.14, 15.3, 15.5 | 한국어 | `가상데이터설계서.md` |
+| 2장·3장 항목 목록, 4장 차감 | 기획서 최종본 | MNT-04, INV-01 | 한국어 | `기획서.md` |
 | 4장 재고 담당 | NCS 공작기계 보전관리 학습모듈 LM1505010407 | PDF 42쪽 보전 자재 적정 재고, 99쪽 보전 자재 분류 표, 100쪽 보전 자재 관리 순서 | 한국어 | `docs/maintenance/정비문서서식/NCS_LM1505010407_공작기계보전관리_보전이력양식.pdf` (조사: `docs/production/운영기준_근거/완제품_재고담당_현장화면_조사.md` 2장) |
 | 5장 정비 시간 옮기기 | Subramaniyan 외 (2018), Production & Manufacturing Research 6(1) (CC BY) / Vorne OEE.com FAQ | 237쪽 / "Should preventative maintenance affect my OEE score?" | 영어 | `docs/production/병목_재공/PMR2018_Subramaniyan_datadriven_bottleneck_active_period_CCBY.pdf`, `docs/production/OEE_손실/vorne_oeecom_faq.txt` (조사: `docs/production/운영기준_근거/병목조치_반복알람_우선순위_조사.md` 2장) |
 

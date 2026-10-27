@@ -10,14 +10,14 @@
 
 ## 실행
 
-서버 세 개를 켠다: 백엔드(:8000) · 시연 데이터 서버(:8765, 가짜 공장) · 화면(:3000). 생성기 가상환경(`11_automotive/생성기/.venv`, Python 3.12)과 백엔드 가상환경이 먼저 설치돼 있어야 한다 (`npm run setup`).
+서버 세 개를 켠다: 백엔드(:8000) · 시연 데이터 서버(:8765, 가짜 공장) · 화면(:3000). 생성기 가상환경(`11_automotive/데이터생성기/.venv`, Python 3.12)과 백엔드 가상환경이 먼저 설치돼 있어야 한다 (`npm run setup`).
 
 한 번에: `11_automotive/`에서 `npm run dev` (2026-10-24부터 백엔드까지 셋 다. 예전 두 개만은 `npm run dev:sim-web` + `.env.local`에 `NEXT_PUBLIC_MOM_BACKEND=0`).
 화면이 움직이려면 **진행자 PC 한 대**의 `backend/.env.supabase`에 `MOM_SIM_SYNC=true`·`MOM_SIM_URL=http://127.0.0.1:8765`·`MOM_RUN_WORKERS=true`·`MOM_SCHEDULER_SECONDS=5`가 있어야 한다 — 시연 서버가 그 파일을 읽어 DB 중계를 스스로 켠다 (아래 "10/1 기록을 DB에도 넣기"). 따로 켤 때는 아래처럼.
 
 ```
 # 1) 시연 데이터 서버 (포트 8765) — 이 폴더에서
-..\생성기\.venv\Scripts\python.exe tools\sim_server.py
+..\데이터생성기\.venv\Scripts\python.exe tools\sim_server.py
 
 # 2) 화면 (처음 한 번 npm install)
 npm run dev            # http://localhost:3000  (3000을 쓰는 중이면 npm run dev -- -p 3100)
@@ -33,7 +33,7 @@ Git Bash에서 한글이 깨지면 1) 앞에 `PYTHONIOENCODING=utf-8`을 붙인�
 | 2 | `backend/<MOM_ENV_FILE>`(기본 `.env.supabase`)의 `MOM_READONLY_DATABASE_URL` | `npm run dev:api`와 같은 DB, 읽기 전용 계정 |
 | 3 | 그 파일에 `MOM_AI_DB_PASSWORD`만 있으면(Docker `.env`) | 로컬 Docker DB(127.0.0.1:5432/mom)의 `mom_ai_ro` |
 
-주소가 없거나, 접속이 안 되거나, DB의 생성기 데이터가 이 PC의 `생성기/out/`과 다르면(`dataset_info.config_sha256`) 예전처럼 CSV를 읽고 그 까닭을 한 줄로 찍는다. 처음 한 번 `npm run setup:sim`(또는 `생성기\.venv\Scripts\python -m pip install -r 생성기\requirements.txt`)으로 `psycopg`를 깐다. 기준 정보(`masters/`)는 생성기 실시간 모드가 같은 파일을 쓰므로 CSV 그대로다.
+주소가 없거나, 접속이 안 되거나, DB의 생성기 데이터가 이 PC의 `데이터생성기/out/`과 다르면(`dataset_info.config_sha256`) 예전처럼 CSV를 읽고 그 까닭을 한 줄로 찍는다. 처음 한 번 `npm run setup:sim`(또는 `데이터생성기\.venv\Scripts\python -m pip install -r 데이터생성기\requirements.txt`)으로 `psycopg`를 깐다. 기준 정보(`masters/`)는 생성기 실시간 모드가 같은 파일을 쓰므로 CSV 그대로다.
 
 **10/1 기록을 DB에도 넣기 (DB 중계, 2026-10-23 — `tools/db_relay.py`. 2026-10-24부터 백엔드 환경 파일에 `MOM_SIM_SYNC=true`면 스스로 켜짐).** 켜면 시뮬레이터가 만드는 10/1 기록(작업지시·로트·실적·설비 상태·알람·병목·재공·공구·검사·측정 결과·불량·보류·예방 정비·재고 거래·센서 = `out_realtime` CSV와 같은 17개 표)을 3초마다 바뀐 줄만 **백엔드가 쓰는 DB(공용 Supabase `mom-db`)**에 넣는다. 새 알람의 알림·반복 알람 판정·작업지시서 초안, 재공 경고·병목 이동 알림은 DB가 만든다. DB 시계도 시연 시계를 따라간다. **[처음으로]를 누르면(그리고 시연 서버를 켤 때) DB도 시연 기준점(10/1 08:00)으로 되돌린다.**
 
@@ -64,7 +64,7 @@ Git Bash에서 한글이 깨지면 1) 앞에 `PYTHONIOENCODING=utf-8`을 붙인�
 점검 (서버가 켜진 채로, **처음으로 되돌리므로 시연 중에는 돌리지 말 것**):
 
 ```
-..\생성기\.venv\Scripts\python.exe tools\check_server.py     # → check_server: OK
+..\데이터생성기\.venv\Scripts\python.exe tools\check_server.py     # → check_server: OK
 npx tsc --noEmit
 ```
 
@@ -74,14 +74,14 @@ npx tsc --noEmit
 tools/
   sim_server.py        시연 데이터 서버 (표준 라이브러리 HTTP). /api/... 전부, 오류 형식 {code, message, detail}
   server_live.py       10/1 실시간 계산: 트윈·생산·OEE·손실·작업지시·로트·재고·공구·정비·다시 보기·교대 보고서 초안
-  server_past.py       9월 기록(백엔드 DB, 못 쓰면 생성기/out/ CSV), masters, 가상사내문서 읽기·검색
+  server_past.py       9월 기록(백엔드 DB, 못 쓰면 데이터생성기/out/ CSV), masters, 가상사내문서 읽기·검색
   server_assistant.py  AI 비서 (규칙 기반: 알람 코드·지표·병목·재공·공구·재고 + 사내 문서 검색, 역할 권한)
   llm_compose.py       비서(8100)의 POST /compose/{kind}를 백그라운드로 불러 다듬은 문장을 받아 두었다가 내줌 (기다리지 않음, 기본 꺼짐 MOM_LLM_COMPOSE=1)
   build_data.py        masters·사내 문서 → src/shell/generated.ts, tools/data.json (masters가 바뀌면 다시 돌림)
   check_server.py      서버 자가 점검
   backend_adapter_check.mjs  화면 → 백엔드 전환(C2) 대조: 같은 시각 시연 서버와 backendApi.ts 응답을 칸마다 비교 (두 서버가 켜진 채로)
   backend_flow_check.mjs     화면 → 백엔드 흐름 점검 (2026-10-24): backendApi.ts·backendDocs.ts로 역할 4개 읽기 + S1 대본(작업지시서~복귀) — DB에 씀, --read-only
-  tests/               llm_compose·시연 서버 입구·9월 DB 읽기(test_past_db) 시험 (`..\생성기\.venv\Scripts\python.exe -m pytest tools/tests -q`)
+  tests/               llm_compose·시연 서버 입구·9월 DB 읽기(test_past_db) 시험 (`..\데이터생성기\.venv\Scripts\python.exe -m pytest tools/tests -q`)
 src/components/FactoryDashboard.tsx   원본 3D (+ dataMode: applyLive, 실제 좌표 배치, 재공 맞춤, 병목·상태 표시)
 src/shell/            화면 틀(App)·2D 화면 전부·알림 규칙(rules.ts)·API 연결(live.ts)
 src/shell/backendApi.ts  화면 → 백엔드 (C2, 기본 켜짐 — 끄기 NEXT_PUBLIC_MOM_BACKEND=0): 시연 서버 주소 이름 → 백엔드 API, 응답을 화면 모양으로

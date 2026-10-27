@@ -48,7 +48,7 @@
 4. `uvicorn backend.app:app --host 127.0.0.1 --port 8000`으로 켠다. `/api/health`의 `external_llm.server_switch`·`available`이 `true`인지 본다.
 5. `pytest backend/tests`로 확인한다.
 
-**Claude를 고르는 방법:** 이 코드 그대로는 질문 요청 본문의 `"llm": "claude"`가 그 요청만 Claude로 보낸다(`app.py`). 이 칸이 없으면 로컬 LLM 경로다. `API명세서_v1.md`의 AST-02 요청(`question`, `context`)에는 `llm` 칸이 없으므로, Claude만 쓰려면 받는 쪽 서버가 요청을 넘길 때 이 값을 붙이도록 고친다(화면에서 보내게 하지 않는다).
+**Claude를 고르는 방법:** 이 코드 그대로는 질문 요청 본문의 `"llm": "claude"`가 그 요청만 Claude로 보낸다(`app.py`). 이 칸이 없으면 로컬 LLM 경로다. `API명세서.md`의 AST-02 요청(`question`, `context`)에는 `llm` 칸이 없으므로, Claude만 쓰려면 받는 쪽 서버가 요청을 넘길 때 이 값을 붙이도록 고친다(화면에서 보내게 하지 않는다).
 
 ## 4. 알려진 예외
 

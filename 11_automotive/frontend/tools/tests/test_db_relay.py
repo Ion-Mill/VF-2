@@ -1,6 +1,6 @@
 """시연 서버 → 백엔드 DB 중계 시험 (2026-10-20, 2026-10-23 고침 — db_relay.py) — 가짜 백엔드로 (네트워크·DB를 부르지 않음).
 
-실행 (frontend/ 폴더에서):  ..\\생성기\\.venv\\Scripts\\python -m pytest tools/tests -q
+실행 (frontend/ 폴더에서):  ..\\데이터생성기\\.venv\\Scripts\\python -m pytest tools/tests -q
 지키는 것: ① 주소·키가 없으면 안 켜짐 (공용 DB 백엔드 주소도 됨 — "DB 1개 = 공장 1개", 2026-10-23)
 ② 백엔드가 시계를 거절하면(MOM_SIM_SYNC·시연 모드 둘 다 꺼짐) 안 켜짐
 ③ 처음 맞출 때 DB를 먼저 되돌리고 줄을 보냄 ④ 다음부터는 바뀐 줄만 ⑤ 센서 1분 값이 5초 값으로 바뀌면 옛 줄을 지움

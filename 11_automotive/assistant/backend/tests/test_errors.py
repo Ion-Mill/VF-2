@@ -1,4 +1,4 @@
-"""API 오류 형식 {code, message, detail} — 코드 7개 (API명세서_v1 1장 "오류 형식", 2026-10-11 멈춤 ③ P4).
+"""API 오류 형식 {code, message, detail} — 코드 7개 (API명세서 1장 "오류 형식", 2026-10-11 멈춤 ③ P4).
 
 HTTP 상태 번호는 명세에 없어 [제안]으로 정했다 (backend/errors.py 표). detail은 늘 객체다.
 """

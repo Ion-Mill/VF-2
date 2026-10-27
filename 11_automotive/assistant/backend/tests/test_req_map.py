@@ -1,6 +1,6 @@
 """시험 ↔ 요구사항 대응표 점검 (tests/req_map.json, 테스트계획서_v1 시험 ID 방식 T-<요구사항 ID>-<번호>, 2026-10-11 P2).
 
-- 시험 ID 꼴과 요구사항 ID가 맞는지, 요구사항 ID가 요구사항정의서_최종본에 있는지
+- 시험 ID 꼴과 요구사항 ID가 맞는지, 요구사항 ID가 요구사항정의서에 있는지
 - 테스트계획서_v1 4장의 경계·예외 시험 30개가 모두 대응표에 있는지 (없는 것도 '없음'으로 적는다)
 - 대응표에 적은 시험 함수가 실제로 있는지 — 시험 이름을 바꾸면 대응표도 함께 고친다
 기준 문서는 팀 문서를 읽기만 한다. 위치는 두 곳 중 문서 두 개가 모두 있는 곳을 쓴다(2026-10-15 사용자 결정 "추천대로" — 기획 문서가
@@ -13,7 +13,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
-PLAN_FILES = ("요구사항정의서_최종본.md", "테스트계획서_v1.md")
+PLAN_FILES = ("요구사항정의서.md", "테스트계획서_v1.md")
 PLAN_DIRS = (ROOT / "기획서 최종본", ROOT / "참고문서" / "매뉴얼" / "11_automotive")
 
 
@@ -40,7 +40,7 @@ def test_ids_have_plan_form():
 
 
 def test_req_ids_exist_in_requirements():
-    text = (PLAN_DIR / "요구사항정의서_최종본.md").read_text(encoding="utf-8")
+    text = (PLAN_DIR / "요구사항정의서.md").read_text(encoding="utf-8")
     assert [it["req_id"] for it in MAP if f"| {it['req_id']} |" not in text] == []
 
 

@@ -153,7 +153,7 @@ class Past:
     def __init__(self, root: Path, cutoff: datetime | None = None, log=print):
         """root = 11_automotive 폴더, cutoff = 실시간 시작 시각 (없으면 DB를 쓰지 않고 CSV)."""
         from gen.common import load_config      # 프로필(MOM_PROFILE)이 정한 기록 폴더 (out_video / out_final)
-        out, ms = root / "생성기" / load_config()["run"]["out_dir"], root / "생성기" / "masters"
+        out, ms = root / "데이터생성기" / load_config()["run"]["out_dir"], root / "데이터생성기" / "masters"
         self.root = root
         self.source = "csv"
         db, why = None, "시작 시각 없음"

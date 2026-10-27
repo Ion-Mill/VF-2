@@ -56,7 +56,7 @@ def build(state: DemoState, alarm_event_id: str, role: str) -> dict:
     eq = a["equipment_id"]
     proc = state.equipment()[eq]["process"]
     key = alarm_key(a)
-    # is_synthetic: 알람 사건·정지 시간·손실·지난 기록은 가상 운영 데이터 (API명세서_v1 공통 규칙, 2026-10-11 P1)
+    # is_synthetic: 알람 사건·정지 시간·손실·지난 기록은 가상 운영 데이터 (API명세서 공통 규칙, 2026-10-11 P1)
     head = {"alarm_event_id": alarm_event_id, "equipment_id": eq, "process": proc, "occurred_at": a["occurred_at"],
             "key": key, "data_label": DATA_LABEL, "is_synthetic": True, "as_of": now.isoformat()}
     if m is None:  # SCR-09 상태 표: 코드집에 없는 번호
