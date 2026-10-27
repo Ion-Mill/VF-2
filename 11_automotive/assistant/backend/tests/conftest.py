@@ -12,7 +12,7 @@ def pytest_configure(config):
 
 
 def pytest_collection_modifyitems(config, items):
-    """이 저장소에서 통과하지 못하는 옛 시험 76개는 까닭과 함께 xfail(strict)로 표시한다 — legacy_expected_failures.py 참고."""
+    """이 저장소에서 통과하지 못하는 옛 시험 74개는 까닭과 함께 xfail(strict)로 표시한다 — legacy_expected_failures.py 참고."""
     from backend.tests.legacy_expected_failures import BY_ID, REASONS
     for item in items:
         key = item.nodeid.split("backend/tests/", 1)[-1]

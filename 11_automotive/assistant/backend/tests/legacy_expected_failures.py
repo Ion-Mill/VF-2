@@ -1,4 +1,4 @@
-"""묶음의 옛 시험 중 이 저장소에서 통과하지 못하는 76개와 그 까닭 ([11_automotive 이식 2026-10-16]).
+"""묶음의 옛 시험 중 이 저장소에서 통과하지 못하는 74개 (2026-10-27에 test_req_map 두 개를 고쳐 76 → 74)와 그 까닭 ([11_automotive 이식 2026-10-16]).
 
 conftest.py가 이 목록을 xfail(strict=True)로 표시한다 — 실패로 두지도, 몰래 지우지도 않는다. 까닭이 사라져 통과하게 되면(strict) 알려 준다.
 목록은 시험 이름 그대로다(backend/tests/ 기준). 새로 만든 시험은 여기에 넣지 않는다.
@@ -63,9 +63,7 @@ EXPECTED_FAILURES: dict[str, list[str]] = {
         "test_errors.py::test_conflict_version",
         "test_followup.py::test_api_answer_id_and_followup",
     ],
-    "B": [  # 7개
-        "test_req_map.py::test_req_ids_exist_in_requirements",
-        "test_req_map.py::test_all_boundary_tests_in_plan_are_mapped",
+    "B": [  # 5개 (test_req_map 두 개는 2026-10-27 문서 없이 돌게 고쳐 뺐다)
         "test_step_log.py::test_t11_viewer_prints_a_step_table_and_is_read_only",
         "test_step_log.py::test_t11_viewer_command_line_filters_and_exit_codes",
         "test_run_blind_sb.py::test_take_option_removes_the_pair_and_returns_the_value",
