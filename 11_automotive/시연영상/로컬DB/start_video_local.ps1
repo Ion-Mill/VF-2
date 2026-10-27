@@ -35,7 +35,7 @@ Start-Sleep 6
 Write-Host '비서 시작함'
 # 3. 시연 서버 (영상용 프로필, DB 중계는 .env.local-video 의 MOM_SIM_SYNC·MOM_INGEST_KEY 를 읽어 켜짐)
 $e = $u.Clone(); $e['MOM_PROFILE'] = 'video'; $e['MOM_LLM_COMPOSE'] = '1'; $e['MOM_BACKEND_URL'] = $BackendUrl; $e['MOM_ENV_FILE'] = '.env.local-video'
-Start-P 'sim_server' "$Auto\생성기\.venv\Scripts\python.exe" @('tools\sim_server.py') "$Auto\frontend" $e | Out-Null
+Start-P 'sim_server' "$Auto\데이터생성기\.venv\Scripts\python.exe" @('tools\sim_server.py') "$Auto\frontend" $e | Out-Null
 if (-not (Wait-Url 'http://127.0.0.1:8765/api/health')) { Write-Host '시연 서버 안 켜짐'; Get-Content "$Run\sim_server.err.log" -Tail 12; exit 1 }
 Write-Host '시연 서버 OK'
 # 4. 화면 (백엔드 길, 새 비서 채팅)

@@ -11,7 +11,7 @@ def chunk(doc_id: str, sec: str) -> Chunk | None:
 
 
 def evidence(c: Chunk, snippet: str = "") -> dict:
-    # doc_no·rev = API명세서_v1 공통 규칙의 출처 칸 이름 {doc_name, doc_no, rev, section} (2026-10-11 P1).
+    # doc_no·rev = API명세서 공통 규칙의 출처 칸 이름 {doc_name, doc_no, rev, section} (2026-10-11 P1).
     # 화면이 옮겨 갈 때까지 옛 칸(doc_id·revision)도 둔다. 원문 출처 칸은 없다 (D-03)
     plain = re.sub(r"\s+", " ", re.sub(r"[|#*]", " ", c.text)).strip()
     return {"cite": c.cite, "doc_id": c.doc_id, "doc_name": c.doc_name, "revision": c.revision, "section": c.section,

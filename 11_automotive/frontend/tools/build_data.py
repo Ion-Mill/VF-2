@@ -1,6 +1,6 @@
 """가상 데이터·사내 문서에서 화면에 쓸 값을 뽑아 src/shell/generated.ts 를 만든다.
 
-원본: 생성기/masters/app_user.csv, alarm_master.csv, alarm_guide_map.csv,
+원본: 데이터생성기/masters/app_user.csv, alarm_master.csv, alarm_guide_map.csv,
       가상사내문서/DOC-03(점검 순서 ★ 줄), DOC-05(§3 차단 지점·저장 에너지, §2.4 짧은 작업 줄, §7 고정 서식)
 실행: python tools/build_data.py   (이 폴더 기준. 결과 파일은 직접 고치지 않는다)
 """
@@ -19,7 +19,7 @@ def tags(s):
 
 # ---------- 사용자 ----------
 users = []
-for r in csv.DictReader(open(ROOT / '생성기/masters/app_user.csv', encoding='utf-8-sig')):
+for r in csv.DictReader(open(ROOT / '데이터생성기/masters/app_user.csv', encoding='utf-8-sig')):
     users.append({
         'id': r['user_id'], 'name': r['user_name'], 'role': r['role_code'], 'shift': r['home_shift_type'],
         'procs': [p for p in (r['home_process_code'], r['home_process_code_2']) if p],
@@ -63,11 +63,11 @@ def doc03_steps(code):
 
 
 guide_map = {}
-for r in csv.DictReader(open(ROOT / '생성기/masters/alarm_guide_map.csv', encoding='utf-8-sig')):
+for r in csv.DictReader(open(ROOT / '데이터생성기/masters/alarm_guide_map.csv', encoding='utf-8-sig')):
     guide_map.setdefault(r['alarm_code'], []).append(f"{r['doc_no']} {r['section']}")
 
 alarms = {}
-for r in csv.DictReader(open(ROOT / '생성기/masters/alarm_master.csv', encoding='utf-8-sig')):
+for r in csv.DictReader(open(ROOT / '데이터생성기/masters/alarm_master.csv', encoding='utf-8-sig')):
     steps, sec, extra = doc03_steps(r['alarm_code'])
     alarms[r['alarm_code']] = {
         'code': r['alarm_code'], 'process': r['process_code'], 'nameKo': r['name_ko'], 'nameEn': r['name_en'],
@@ -79,17 +79,17 @@ for r in csv.DictReader(open(ROOT / '생성기/masters/alarm_master.csv', encodi
 
 # ---------- 재고 ----------
 stock = {}
-for r in csv.DictReader(open(ROOT / '생성기/out/inventory_txn.csv', encoding='utf-8-sig')):
+for r in csv.DictReader(open(ROOT / '데이터생성기/out/inventory_txn.csv', encoding='utf-8-sig')):
     stock[r['item_no']] = stock.get(r['item_no'], 0) + float(r['qty_change'] or 0)
 inventory = []
-for r in csv.DictReader(open(ROOT / '생성기/masters/inventory_item.csv', encoding='utf-8-sig')):
+for r in csv.DictReader(open(ROOT / '데이터생성기/masters/inventory_item.csv', encoding='utf-8-sig')):
     if r['category'] in ('TOOL', 'CONSUMABLE', 'MAINT', 'SUPPLY') or r['item_no'].startswith(('TL-', 'CS-')):
         inventory.append({'no': r['item_no'], 'name': r['item_name'], 'unit': r['unit'], 'owner': r['owner_role'],
                           'safety': float(r['safety_stock'] or 0), 'stock': stock.get(r['item_no'], 0)})
 
 # ---------- 교대 보고서 (지난 교대 브리핑·문서함) ----------
 reports = []
-for r in csv.DictReader(open(ROOT / '생성기/out/shift_report.csv', encoding='utf-8-sig')):
+for r in csv.DictReader(open(ROOT / '데이터생성기/out/shift_report.csv', encoding='utf-8-sig')):
     reports.append({'id': r['shift_id'], 'status': r['status'], 'target': int(r['target_qty']), 'actual': int(r['actual_qty']), 'defect': int(r['defect_qty']),
                     'notable': r['notable_text'], 'handover': r['handover_text'], 'by': r['confirmed_by']})
 last = reports[-1]
@@ -99,7 +99,7 @@ for part in re.split(r' / (?=\d(?:-\d)? )', last['handover']):
     if m:
         ranked.append({'rank': m.group(1), 'name': m.group(2), 'items': [] if m.group(3).strip() == '-' else [x.strip() for x in m.group(3).split('; ')]})
 orders = [{'no': r['order_no'], 'qty': int(r['order_qty']), 'status': r['status']}
-          for r in csv.DictReader(open(ROOT / '생성기/out/production_order.csv', encoding='utf-8-sig')) if r['status'] in ('IN_PROGRESS', 'WAITING')]
+          for r in csv.DictReader(open(ROOT / '데이터생성기/out/production_order.csv', encoding='utf-8-sig')) if r['status'] in ('IN_PROGRESS', 'WAITING')]
 briefing = {'last': {k: last[k] for k in ('id', 'target', 'actual', 'defect', 'notable')}, 'ranked': ranked, 'orders': orders,
             'reports': [{k: x[k] for k in ('id', 'status', 'target', 'actual', 'defect')} for x in reports]}
 
@@ -167,7 +167,7 @@ for l in doc05:
         break
 
 # ---------- 공장 배치 (3D·2D 배치도의 실제 좌표, SCR-04 "실제 크기 배치") ----------
-M = lambda n: list(csv.DictReader(open(ROOT / f'생성기/masters/{n}.csv', encoding='utf-8-sig')))
+M = lambda n: list(csv.DictReader(open(ROOT / f'데이터생성기/masters/{n}.csv', encoding='utf-8-sig')))
 pl = M('plant_layout')[0]
 layout = {
     'plant': {k: float(pl[k]) for k in ('width_x_mm', 'depth_y_mm', 'ceiling_z_mm', 'aisle_width_mm', 'work_band_mm', 'equipment_gap_mm')},

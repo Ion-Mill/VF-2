@@ -212,7 +212,7 @@ def test_glossary_term_stays():
     # 그대로 두는 것: 용어집 낱말 뜻, 사내 설계서 링크
     ("| Troubleshooting Guide (TSG) | 고장 대응 안내 (사내: 고장 대응 매뉴얼) | 트러블슈팅 |",
      "| Troubleshooting Guide (TSG) | 고장 대응 안내 (사내: 고장 대응 매뉴얼) | 트러블슈팅 |"),
-    ("출처: [설계서 5.1](../가상데이터설계서_최종본.md#51-설비). CMM-01 [참고]", "출처: [설계서 5.1](../가상데이터설계서_최종본.md#51-설비). CMM-01 [참고]"),
+    ("출처: [설계서 5.1](../가상데이터설계서.md#51-설비). CMM-01 [참고]", "출처: [설계서 5.1](../가상데이터설계서.md#51-설비). CMM-01 [참고]"),
 ])
 def test_sanitize_unnamed_source_examples(raw, want):
     assert sanitize(raw) == want

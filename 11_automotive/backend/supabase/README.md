@@ -23,7 +23,7 @@ supabase link --project-ref <project-ref> && supabase db push       # Supabase C
 psql -v ON_ERROR_STOP=1 -f supabase/migrations/20261014000000_mom_schema.sql   # 또는 psql
 
 # 3) 계정·잠그기·데이터 (생성기·사내 문서 폴더가 필요)
-export GEN_DIR=../생성기 DOCS_DIR=..
+export GEN_DIR=../데이터생성기 DOCS_DIR=..
 export MOM_APP_DB_PASSWORD='<새로 정함>' MOM_AI_DB_PASSWORD='<새로 정함>' MOM_DEMO_PASSWORD='<시연 비밀번호>'
 ./supabase/load_data.sh              # 센서도: --sensor (DB 약 160MB) / 10/1 리허설도: --realtime
 ```
@@ -79,7 +79,7 @@ uvicorn app.main:app --env-file .env.supabase                # → http://localh
 | 걸린 것 | 고친 것 |
 |---|---|
 | Supabase `postgres`는 슈퍼유저가 아니라 함수 SET 절·`set_config()`로 `session_replication_role`을 못 바꿈 → 스키마 단계에서 멈췄을 것 | `fn_demo_reset`이 `EXECUTE 'SET LOCAL …'`로 걸고 끝에 되돌림 |
-| Windows psql은 `\copy` 파일 경로의 한글(`…/생성기/…`)을 못 읽음 | `tools/load_generated.py`가 생성기 폴더에서 psql을 돌리고 CSV를 상대 경로(`masters/x.csv`)로 넘김. 임시 SQL 파일 경로가 한글이면 생성기 폴더에 둠 |
+| Windows psql은 `\copy` 파일 경로의 한글(`…/데이터생성기/…`)을 못 읽음 | `tools/load_generated.py`가 생성기 폴더에서 psql을 돌리고 CSV를 상대 경로(`masters/x.csv`)로 넘김. 임시 SQL 파일 경로가 한글이면 생성기 폴더에 둠 |
 | `roles.sql`·`lockdown.sql`에서 btree_gist 확장 함수(관리 계정 소유)마다 "no privileges" 경고 수백 줄 | 두 파일에서 경고를 숨김 (`client_min_messages = error`). 우리 함수 권한은 그대로 걸림 |
 | `load_data.sh`를 다시 돌리면 이미 넣은 생성기 데이터와 부딪혀 멈춤 | `scripts/load_all.sh`가 생성기 데이터(`dataset_info.loaded_at`)·센서가 이미 있으면 그 단계를 건너뜀 |
 | Windows의 `python3`는 Store 안내로 이어지는 가짜 실행 파일일 수 있음 | `load_all.sh`가 실제로 도는 파이썬을 고르고 `PYTHONUTF8=1`·`PGCLIENTENCODING=UTF8`을 건다 |

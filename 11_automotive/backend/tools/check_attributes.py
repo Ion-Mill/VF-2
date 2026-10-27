@@ -1,7 +1,7 @@
 """논리 ERD 5장 엔터티 정의서의 속성 ↔ 실제 DB 칼럼 대조.
 
 쓰는 법:
-    python tools/check_attributes.py <논리ERD_최종본.md 경로> --psql "psql -d mom"
+    python tools/check_attributes.py <논리ERD.md 경로> --psql "psql -d mom"
 
 물리 설계에서 일부러 칼럼으로 두지 않은 속성(계산 → 뷰)은 VIEW_ATTRS에 적고,
 그 뷰에 정말 그 칼럼이 있는지도 확인한다. 빠진 칼럼이 있으면 종료 코드 1.

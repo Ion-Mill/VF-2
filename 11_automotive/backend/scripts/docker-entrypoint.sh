@@ -14,11 +14,11 @@ until pg_isready -q; do echo "DB 기다리는 중..."; sleep 1; done
 if [[ "$(psql -X -tA -c "SELECT to_regclass('public.app_user') IS NOT NULL")" != "t" ]]; then
   if [[ "${MOM_LOAD_DATA:-1}" == "1" ]]; then
     AUTO=${MOM_AUTOMOTIVE_DIR:-/data/automotive}
-    if [[ ! -d "$AUTO/생성기/masters" ]]; then
-      echo "생성기 폴더가 없음: $AUTO/생성기 — docker-compose.yml 의 AUTOMOTIVE_DIR 확인 (또는 MOM_LOAD_DATA=0)"; exit 1
+    if [[ ! -d "$AUTO/데이터생성기/masters" ]]; then
+      echo "생성기 폴더가 없음: $AUTO/데이터생성기 — docker-compose.yml 의 AUTOMOTIVE_DIR 확인 (또는 MOM_LOAD_DATA=0)"; exit 1
     fi
     echo "DB가 비어 있음 → 스키마 + 생성기 데이터 + 사내 문서"
-    GEN_DIR="$AUTO/생성기" DOCS_DIR="$AUTO" ./scripts/load_all.sh \
+    GEN_DIR="$AUTO/데이터생성기" DOCS_DIR="$AUTO" ./scripts/load_all.sh \
       $([[ "${MOM_LOAD_SENSOR:-0}" == "1" ]] && echo --sensor) $([[ "${MOM_LOAD_REALTIME:-0}" == "1" ]] && echo --realtime)
   else
     echo "DB가 비어 있음 → 스키마만"

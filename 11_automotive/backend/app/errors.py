@@ -1,4 +1,4 @@
-"""오류 → HTTP 응답 (API명세서_v1 1장).
+"""오류 → HTTP 응답 (API명세서 1장).
 
 형식: {"code": "...", "message": "쉬운 한국어 문장", "detail": {...}}. 코드는 명세서의 7개만 쓴다:
   UNAUTHORIZED 401 · FORBIDDEN 403 · NOT_FOUND 404 · VALIDATION 422 · INVALID_STATE 409 · CONFLICT_VERSION 409 ·

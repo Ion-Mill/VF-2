@@ -1,6 +1,6 @@
 """시연 서버 보고서 칸 시험 (2026-10-20 정비 탭 확인 요청 1·2) — 백엔드(FastAPI)와 같은 규칙인지.
 
-실행 (frontend/ 폴더에서):  ..\\생성기\\.venv\\Scripts\\python -m pytest tools/tests -q
+실행 (frontend/ 폴더에서):  ..\\데이터생성기\\.venv\\Scripts\\python -m pytest tools/tests -q
 지키는 것: ① 오늘의 문제 글 끝 "관리자 메모: …"를 메모로 떼어 낸다(백엔드 fn_split_memo와 같음) ② 글은 그대로 두고 memo 칸만 더한다
 ③ 정지 ↔ 작업지시서: 정지 알람으로 만든 것 먼저, 없으면 그 알람의 반복 알람 2단계 알림으로 만든 것 ④ 상태는 보고서 시점 기준
 """
@@ -12,7 +12,7 @@ from types import SimpleNamespace
 
 HERE = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(HERE))
-sys.path.insert(0, str(HERE.parent.parent / "생성기"))
+sys.path.insert(0, str(HERE.parent.parent / "데이터생성기"))
 
 _out, sys.stdout = sys.stdout, io.StringIO()     # sim_server가 sys.stdout.buffer를 감싸 바꾸므로(콘솔 한글) 시험 출력 잡기와 부딪히지 않게
 import sim_server  # noqa: E402

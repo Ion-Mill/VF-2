@@ -102,7 +102,7 @@ def csv_info(path: Path) -> tuple[list[str], int]:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--env", default=".env.supabase", help="backend/ 안 환경 파일 (기본 .env.supabase)")
-    ap.add_argument("--gen", default=str(ROOT / "생성기"), help="생성기 폴더")
+    ap.add_argument("--gen", default=str(ROOT / "데이터생성기"), help="생성기 폴더")
     ap.add_argument("--app", action="store_true", help="읽기 계정 대신 앱 계정(MOM_DATABASE_URL) — 그래도 읽기만 한다")
     ap.add_argument("--no-sensor", action="store_true", help="센서 CSV 세기 건너뜀")
     a = ap.parse_args()

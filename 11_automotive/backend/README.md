@@ -3,8 +3,8 @@
 `11_automotive` 문서(논리 ERD 최종본 59개 엔터티·설계서·UI 설계서·기획서·API 명세서 v1·DOC-01~07, **구현_중_수정사항 2026-10-14까지 반영**)를 바탕으로 만든 **백엔드 설계 + PostgreSQL DDL + 실행 뼈대**다.
 **가상 데이터 생성기 9월 기록(seed 20260901)·가상 사내 문서 8개를 실제로 넣어 확인했다** (적재 점검 20개 0건 — `docs/04`).
 
-- DB: PostgreSQL 16 — 테이블 69개(논리 엔터티 59개 — `chat_log` 포함 + 물리 추가 10개), 뷰 18개, 업무 함수 55개, 트리거 47개로 업무 규칙(R-xx)을 막는다
-- API: Python FastAPI + SQLAlchemy 2(Core) + psycopg 3 — 엔드포인트 138개(API명세서_v1 63개 주소·오류 코드 그대로 + 서버끼리·보조), SQL은 `app/sql/*.sql` 이름 붙은 쿼리 199개
+- DB: PostgreSQL 16 — 테이블 72개(논리 엔터티 59개 — `chat_log` 포함 + 물리 추가, 파티션 제외, 2026-10-27 코드로 센 값), 뷰 18개, 업무 함수 55개, 트리거 47개로 업무 규칙(R-xx)을 막는다
+- API: Python FastAPI + SQLAlchemy 2(Core) + psycopg 3 — 엔드포인트 168개(2026-10-27 코드로 센 값 — API명세서과 맞는 83개 + 시뮬레이터 입구·비서 도구·QR·묶음 조회 등 서버끼리·보조, 대조는 API명세서 2.11절), SQL은 `app/sql/*.sql` 이름 붙은 쿼리 285개
 - 실시간: PostgreSQL `LISTEN/NOTIFY` → SSE (`/api/stream/events`, 사건 이름은 API명세서 3장)
 - 가상 표시: 운영 데이터 응답마다 `is_synthetic` (객체는 맨 위, 목록은 줄마다) + 머리글 `X-Synthetic-Data`
 - 시연: `POST /api/sim/reset` = 시연 기준점(10/1 08:00 = 9월 끝, `demo_snapshot` 스키마, 생성기 적재 뒤 자동)으로 되돌리기 — 시연 모드만. 센서는 복사하지 않고 기준점 뒤 값만 지움
@@ -20,7 +20,7 @@
 |---|---|
 | [docs/01_백엔드_설계서.md](docs/01_백엔드_설계서.md) | 구조, 계층별 책임, 트랜잭션·권한·실시간·워커·AI 비서 경계, 오류 처리 |
 | [docs/02_물리ERD.md](docs/02_물리ERD.md) | 논리 → 물리 변환 규칙, 테이블 목록(실제 DB에서 생성), 영역별 관계 그림 |
-| [docs/03_API_명세.md](docs/03_API_명세.md) | 엔드포인트 136개와 권한, 공통 규칙(오류 형식·시각·페이지), 주요 흐름 예, **API명세서_v1 API ID ↔ 이 서버 주소 대응표** |
+| [docs/03_API_명세.md](docs/03_API_명세.md) | 엔드포인트 136개와 권한, 공통 규칙(오류 형식·시각·페이지), 주요 흐름 예, **API명세서 API ID ↔ 이 서버 주소 대응표** |
 | [docs/04_데이터적재_약속.md](docs/04_데이터적재_약속.md) | 생성기 CSV 약속(논리 ERD 11.1), 적재 순서·점검 20개, 사내 문서 조각, CMM 결과 파일 양식 2가지 |
 | [docs/05_결정기록.md](docs/05_결정기록.md) | [제안]·[선택 필요]·[확인 필요] 목록과 이유 |
 | [docs/06_역할별_권한.md](docs/06_역할별_권한.md) | OPR·MNT·SUP·MGR 권한 — 세 겹(관문·범위·DB), 역할별 할 수 있는 일, scope·"그 사람만" 규칙, 채팅 권한, 시험 |
@@ -101,7 +101,7 @@ docker compose down -v        # 처음부터 다시 (DB 볼륨 지움)
 
 ```bash
 createdb mom
-export PGDATABASE=mom GEN_DIR=../생성기 DOCS_DIR=.. \
+export PGDATABASE=mom GEN_DIR=../데이터생성기 DOCS_DIR=.. \
        MOM_APP_DB_PASSWORD=... MOM_AI_DB_PASSWORD=... MOM_DEMO_PASSWORD=...
 ./scripts/load_all.sh [--sensor] [--realtime]      # 스키마 → 계정 → 데이터 → 문서 → 비밀번호 → 점검 (PYTHON=python 으로 바꿀 수 있음)
 pip install -r requirements.txt
@@ -129,7 +129,7 @@ PGHOST=... PGPORT=... ./scripts/test_all.sh
 4. 파이썬 시험 (DB로) 24개 — 문서 버전 저장, 기록 만들기, CMM 파일 받기·감시 폴더 옮기기, 비서 도구 14개를 읽기 전용 계정으로, 라우터 처리기로 업무 흐름(로그인 → 작업지시서 → 작업기록서 확정, 보류, 출하, 측정 결과 올리기, 보고서 확정, 비서·설비 데이터 받기, 역할별 범위 — 입고 품목 주인·원자재 로트·OPR 수정 이력·대리 승인, QR 조회·입고·실사·출하 전 확인·측정 시작 확인)
 
 문서의 자동 생성 부분(테이블 목록·API 목록·CSV 칼럼 약속)은 스키마·라우터를 바꾼 뒤 `python tools/update_docs.py --psql "psql -d mom_test" --gen <생성기 폴더>`로 다시 만든다.
-최신 논리 ERD와 다시 대조: `python tools/check_attributes.py <논리ERD_최종본.md> --psql ...` (속성), `tools/check_relations.py` (관계), `tools/gen_code_labels.py` (6장 코드).
+최신 논리 ERD와 다시 대조: `python tools/check_attributes.py <논리ERD.md> --psql ...` (속성), `tools/check_relations.py` (관계), `tools/gen_code_labels.py` (6장 코드).
 
 ## 확인 범위 (솔직하게)
 

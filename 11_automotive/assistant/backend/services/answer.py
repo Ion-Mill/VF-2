@@ -1563,7 +1563,7 @@ def _chunk(doc_id: str, sec: str) -> Chunk | None:
 
 
 def _cite(c: Chunk, snippet: str = "") -> dict:
-    # doc_no·rev는 API명세서_v1 공통 규칙의 출처 칸 이름 {doc_name, doc_no, rev, section} (2026-10-11 P1).
+    # doc_no·rev는 API명세서 공통 규칙의 출처 칸 이름 {doc_name, doc_no, rev, section} (2026-10-11 P1).
     # 화면이 옮겨 갈 때까지 옛 칸(doc_id·revision)도 둔다. 값은 같다 — services/cite.evidence와 같은 모양
     plain = re.sub(r"\s+", " ", re.sub(r"[|#*]", " ", c.text)).strip()
     return {"cite": c.cite, "doc_id": c.doc_id, "doc_name": c.doc_name, "revision": c.revision, "section": c.section,
@@ -4834,7 +4834,7 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
                 memo["ctx_alarm_note"] = p["alarms"][0]["code"]
                 memo["record_context"] = {**context, "alarm_key": p["alarms"][0]["code"]}   # 기록에 남겨 다음 짧은 질문도 같은 알람으로 잇는다
                 memo["alarm_chain"] = True
-    # is_synthetic (API명세서_v1 공통 규칙·NFR-DATA-08, 2026-10-11 P1): 답에 가상 운영 데이터(조회 결과·관련 기록)가 들어가면 True.
+    # is_synthetic (API명세서 공통 규칙·NFR-DATA-08, 2026-10-11 P1): 답에 가상 운영 데이터(조회 결과·관련 기록)가 들어가면 True.
     # 사내 문서만 쓴 답은 False (사내 문서는 따로 "가상 사내 문서"로 표시한다)
     base = {"question": question, "steps": [], "evidence": [], "current_data": [], "related": None, "caution": None,
             "data_label": None, "is_synthetic": False, "links": [],

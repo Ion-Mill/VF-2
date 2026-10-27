@@ -3,13 +3,13 @@
 FROM python:3.12-slim
 ENV PYTHONUNBUFFERED=1 PYTHONUTF8=1 TZ=Asia/Seoul
 WORKDIR /app
-COPY 생성기/requirements.txt /tmp/requirements.txt
+COPY 데이터생성기/requirements.txt /tmp/requirements.txt
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
-COPY 생성기 /app/생성기
+COPY 데이터생성기 /app/데이터생성기
 COPY frontend/tools /app/frontend/tools
 COPY 가상사내문서 /app/가상사내문서
 ARG BUILD_PROFILE=final
-RUN cd /app/생성기 && python generate.py --profile ${BUILD_PROFILE}
+RUN cd /app/데이터생성기 && python generate.py --profile ${BUILD_PROFILE}
 ENV MOM_SIM_HOST=0.0.0.0 MOM_SIM_PORT=8765
 EXPOSE 8765
 WORKDIR /app/frontend

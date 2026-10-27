@@ -10,7 +10,7 @@ from pydantic import ValidationError
 
 from app.routers.master import InjectIn
 
-GEN_CONFIG = Path(__file__).resolve().parents[2] / "생성기" / "config.json"
+GEN_CONFIG = Path(__file__).resolve().parents[2] / "데이터생성기" / "config.json"
 
 
 class InjectCodeTest(unittest.TestCase):
