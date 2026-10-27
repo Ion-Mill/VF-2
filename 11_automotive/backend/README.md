@@ -3,8 +3,8 @@
 `11_automotive` 문서(논리 ERD 최종본 59개 엔터티·설계서·UI 설계서·기획서·API 명세서 v1·DOC-01~07, **구현_중_수정사항 2026-10-14까지 반영**)를 바탕으로 만든 **백엔드 설계 + PostgreSQL DDL + 실행 뼈대**다.
 **가상 데이터 생성기 9월 기록(seed 20260901)·가상 사내 문서 8개를 실제로 넣어 확인했다** (적재 점검 20개 0건 — `docs/04`).
 
-- DB: PostgreSQL 16 — 테이블 69개(논리 엔터티 59개 — `chat_log` 포함 + 물리 추가 10개), 뷰 18개, 업무 함수 55개, 트리거 47개로 업무 규칙(R-xx)을 막는다
-- API: Python FastAPI + SQLAlchemy 2(Core) + psycopg 3 — 엔드포인트 138개(API명세서_v1 63개 주소·오류 코드 그대로 + 서버끼리·보조), SQL은 `app/sql/*.sql` 이름 붙은 쿼리 199개
+- DB: PostgreSQL 16 — 테이블 72개(논리 엔터티 59개 — `chat_log` 포함 + 물리 추가, 파티션 제외, 2026-10-27 코드로 센 값), 뷰 18개, 업무 함수 55개, 트리거 47개로 업무 규칙(R-xx)을 막는다
+- API: Python FastAPI + SQLAlchemy 2(Core) + psycopg 3 — 엔드포인트 168개(2026-10-27 코드로 센 값 — API명세서_v1과 맞는 83개 + 시뮬레이터 입구·비서 도구·QR·묶음 조회 등 서버끼리·보조, 대조는 API명세서 2.11절), SQL은 `app/sql/*.sql` 이름 붙은 쿼리 285개
 - 실시간: PostgreSQL `LISTEN/NOTIFY` → SSE (`/api/stream/events`, 사건 이름은 API명세서 3장)
 - 가상 표시: 운영 데이터 응답마다 `is_synthetic` (객체는 맨 위, 목록은 줄마다) + 머리글 `X-Synthetic-Data`
 - 시연: `POST /api/sim/reset` = 시연 기준점(10/1 08:00 = 9월 끝, `demo_snapshot` 스키마, 생성기 적재 뒤 자동)으로 되돌리기 — 시연 모드만. 센서는 복사하지 않고 기준점 뒤 값만 지움
