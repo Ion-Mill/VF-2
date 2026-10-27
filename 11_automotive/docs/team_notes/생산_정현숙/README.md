@@ -33,9 +33,9 @@ production/
 |---|---|---|
 | 1 | [01_생산파트_기능정의.md](01_생산파트_기능정의.md) | 기능 8개, 화면, 데이터, 권한, API, 시연 |
 | 2 | [02_AI비서_역할.md](02_AI비서_역할.md) | 브리핑, 알림, 질문 답변, 보고서, 하지 않는 일, 평가 |
-| 3 | [research/CRITERIA_SUMMARY.md](research/CRITERIA_SUMMARY.md) | 가상 데이터를 만들 때 유지·조정할 값 |
-| 4 | [research/INDEX.md](research/INDEX.md) | 새로 찾은 문서와 못 찾은 문서 |
-| 5 | [TEAM_DECISIONS_AND_NEEDS.md](TEAM_DECISIONS_AND_NEEDS.md) | 팀 결정 사항, 더 필요한 것 |
+| 3 | research/CRITERIA_SUMMARY.md | 가상 데이터를 만들 때 유지·조정할 값 |
+| 4 | research/INDEX.md | 새로 찾은 문서와 못 찾은 문서 |
+| 5 | TEAM_DECISIONS_AND_NEEDS.md | 팀 결정 사항, 더 필요한 것 |
 
 ## 2. reference/ — 기존 문서 (생산 파트용)
 

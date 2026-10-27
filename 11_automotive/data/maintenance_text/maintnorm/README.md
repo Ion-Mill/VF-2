@@ -87,7 +87,7 @@ The following table provides a summary of the MaintNorm corpus statistics. This 
 
 ## 4. Models
 
-We've conducted experiments using sequence-to-sequence Transformer-based models to enable automatic lexical normalisation and masking of maintenance short texts. For comprehensive details about the models, their training methodologies, and steps to reproduce our experiments, kindly refer to the [Models](./MODELS.md) section in this repository.
+We've conducted experiments using sequence-to-sequence Transformer-based models to enable automatic lexical normalisation and masking of maintenance short texts. For comprehensive details about the models, their training methodologies, and steps to reproduce our experiments, kindly refer to the Models section in this repository.
 
 ## 5. Results
 

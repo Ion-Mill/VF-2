@@ -1,7 +1,7 @@
 # 생산 파트 가상 데이터 기준 종합 (초안)
 
 > 합친 자료: [BENCHMARKS.md](BENCHMARKS.md)(외부 벤치마크), [PROFILING_REPORT.md](PROFILING_REPORT.md)(로컬 실제 데이터 계산), [INDEX.md](INDEX.md)(보강 문서)
-> 비교 대상: [가상 데이터 설계서](../../AUTOMOTIVE_MACHINING_SYNTHETIC_DATA_PLAN.md) v0.1
+> 비교 대상: 가상 데이터 설계서 v0.1
 > 표시: **[실측]** 로컬 데이터 직접 계산 / **[외부]** 웹 자료(대부분 검색 요약, 인용 전 원문 확인) / **[가정]** 근거 없음, 팀 가정값으로 표시
 
 ## 1. 설계안 가정값별 판정
