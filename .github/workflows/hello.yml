@@ -1,0 +1,13 @@
+name: hello
+
+on: push
+
+jobs:
+  say-hello:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: 인사하기
+        run: echo "안녕 MOM"
+
+      - name: 어떤 컴퓨터인지 보기
+        run: uname -a
