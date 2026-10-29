@@ -1,4 +1,4 @@
-"""MOM 백엔드 진입점: uvicorn app.main:app — 주소·오류 코드는 11_automotive/API명세서_v1.md (docs/03_API_명세.md 6장)
+"""MOM 백엔드 진입점: uvicorn app.main:app — 주소·오류 코드는 11_automotive/API명세서.md (docs/03_API_명세.md 6장)
 
   /api/auth·me·demo        로그인 (AUTH)      /api/line·replay·production·kpi   3D 라인 뷰·생산 (LINE)
   /api/notifications       알림 (NTF)         /api/assistant/briefing·chat       비서 (AST)

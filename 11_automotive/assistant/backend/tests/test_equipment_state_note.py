@@ -82,15 +82,16 @@ def test_other_questions_do_not(q):
 
 
 # ------------------------------------------------------------------ 값 표 글
-def test_note_lists_each_machine_and_only_the_stopped_ones_get_time_and_alarm():
+def test_note_lists_each_machine_with_time_and_minutes_and_only_the_stopped_ones_get_the_alarm():
     note = A.equipment_states_note_v36(T.equipment_states_now("MNT"))
     assert "2026-10-25 09:00 기준 시연 화면 시계" in note
-    assert "- VF2-01 (OP-30): 고장 정지 (07:20부터, 열린 알람 992)" in note
-    assert "- VF2-02 (OP-30): 대기 (07:20부터)" in note and "- WSH-01 (OP-40): 막힘 (07:20부터)" in note
-    assert "- SAW-01 (OP-10): 가공 중\n" in note and "- CMM-01 (OP-50): 가공 중\n" in note
+    assert "- VF2-01 (OP-30): 고장 정지 (07:20부터, 30분째, 열린 알람 992)" in note
+    assert "- VF2-02 (OP-30): 대기 (07:20부터, 30분째)" in note and "- WSH-01 (OP-40): 막힘 (07:20부터, 30분째)" in note
+    assert "- SAW-01 (OP-10): 가공 중 (07:20부터, 30분째)\n" in note and "- CMM-01 (OP-50): 가공 중 (07:20부터, 30분째)\n" in note      # 가동 중 설비도 시작 시각과 N분째를 준다
     assert note.rstrip().endswith("이 값을 쓰지 않는다.") and "insufficient는 false" in note
     assert "'시연 화면 시계 2026-10-25 09:00 기준'을 위 글자 그대로(연도 포함)" in note and "{clock}" not in note      # 시계 글자를 박아 둔다 (연도 오기 방지)
-    assert "대기인 설비를 '가동 중'이라고 부르지 않고" in note
+    assert "대기인 설비를 '가동 중'이라고 부르지 않는다" in note
+    assert "[답의 범위] 묻는 것에만 답한다." in note and "설비 하나를 짚으면 그 설비만 말한다" in note and "'N분째'·'N시간째' 글자를 그대로 쓰고 직접 계산하지 않는다" in note      # 범위 규칙 (2026-10-25)
 
 
 def test_tool_is_none_when_off_or_unreadable_and_denied_without_line_view(monkeypatch):

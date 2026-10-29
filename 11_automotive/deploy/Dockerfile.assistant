@@ -10,11 +10,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # 비서는 한 칸 위(11_automotive)의 사내 문서·생성기 기준표를 읽는다 (assistant/backend/config.py PROJECT_ROOT).
 # 저장소와 같은 모양으로 /srv 아래에 둔다 — assistant/만 넣으면 질문마다 문서를 못 찾아 답이 실패한다 (2026-10-25 서버에서 확인)
 COPY 가상사내문서 /srv/가상사내문서
-COPY 생성기/masters /srv/생성기/masters
-COPY 생성기/scenarios /srv/생성기/scenarios
-COPY 생성기/config.json /srv/생성기/config.json
-# 알람 기준표를 읽는 저장소(csv_repo)는 생성기/out/alarm_event.csv 가 없으면 만들어지지 않아 알람 질문이 실패한다 (센서 원본은 .dockerignore 로 뺌)
-COPY 생성기/out /srv/생성기/out
+COPY 데이터생성기/masters /srv/데이터생성기/masters
+COPY 데이터생성기/scenarios /srv/데이터생성기/scenarios
+COPY 데이터생성기/config.json /srv/데이터생성기/config.json
+# 알람 기준표를 읽는 저장소(csv_repo)는 데이터생성기/out/alarm_event.csv 가 없으면 만들어지지 않아 알람 질문이 실패한다 (센서 원본은 .dockerignore 로 뺌)
+COPY 데이터생성기/out /srv/데이터생성기/out
 COPY assistant/ /srv/assistant/
 WORKDIR /srv/assistant
 EXPOSE 8100

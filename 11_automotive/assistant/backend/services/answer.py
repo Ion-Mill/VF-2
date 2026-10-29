@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 import re
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from functools import lru_cache
 
 from backend.auth.permissions import PermissionDenied, require
@@ -214,6 +214,7 @@ YESTERDAY_V2 = re.compile(r"어제|어젯|간밤|전날")
 EQUIP_ALIAS_V2 = [(re.compile(r"1\s*호기|일호기|1번\s*(?:기계|설비)"), "VF2-01"), (re.compile(r"2\s*호기|이호기|2번\s*(?:기계|설비)"), "VF2-02")]
 RECENT_WEEK_V2 = re.compile(r"(?:최근|지난)\s*(?:일주일|1주일|한\s*주)|일주일\s*(?:동안|간)")
 RECENT_MONTH_V2 = re.compile(r"(?:최근|지난)\s*(?:한\s*달|30일)|지난\s*달|지난달")
+THIS_MONTH_V38 = re.compile(r"이번\s*달|이번달|금월")
 # 규칙 보강 2차 (PARSE_V3=1, 2026-10-10 2차 계획 — research_notes/로컬 LLM 연결/남은문제_업계해법_조사_20261010.md).
 # 봉인 시험 E에서 step4가 틀린 원인: 날짜만 있는 말·상대 날짜, 붙은 말 오분류, 두 가지를 같이 묻는 질문, 조작 요청 꼴, 알람의 없는 세부.
 OPS_INTENTS_V3 = [
@@ -484,8 +485,22 @@ COUNT_WORDS_V5 = re.compile(r"몇\s*(?:번|회|건)|횟수|자주")
 DOC_CUE_V5 = re.compile(DOC_CUE_V4.pattern + r"|(?:목표|기준치|한도|정격)\S{0,2}\s*(?:몇|얼마)")
 # "몇 건 찍혔"은 알람 횟수 (E3-024), "몇 번 멈춰?"는 정지 조회
 # 2026-10-25: "알람 몇 건이야/몇 건 있었어"도 알람 횟수다 — PARSE_V9 목록에 더한다 (알람·경보 낱말이 같이 있을 때만 — "작업지시서 몇 건"은 그대로, "몇 건 이상"은 기준 질문이라 뺀다)
-ALARM_COUNT_WORDS_V37 = r"|(?:알람|경보).{0,12}몇\s*건(?!\s*(?:이상|이하|넘|초과|미만))|몇\s*건(?!\s*(?:이상|이하|넘|초과|미만)).{0,12}(?:알람|경보)"
+# 2026-10-25 후속(AWS 점검 보고): "알람 몇 개 떴어/알람 건수·횟수 알려줘/알람 얼마나 떴어"도 같은 질문이다. 기준·방법을 묻는 말("건수 집계 기준은?", "횟수는 어떻게 세?")과 "몇 개 이상"은 뺀다.
+ALARM_COUNT_WORDS_V37 = (r"|(?:알람|경보).{0,12}몇\s*(?:건|개)(?!\s*(?:이상|이하|넘|초과|미만))|몇\s*(?:건|개)(?!\s*(?:이상|이하|넘|초과|미만)).{0,12}(?:알람|경보)"
+                         r"|(?:알람|경보).{0,6}(?:건수|횟수)(?!.{0,8}(?:기준|정의|어떻게|왜|뜻|방법|규칙|의미|세는|세나|계산))"
+                         r"|(?:알람|경보).{0,8}얼마나\s*(?:많이\s*)?(?:떴|뜨|났|울렸|발생)")
 ALARM_TOTAL_Q_V37 = re.compile(ALARM_COUNT_WORDS_V37[1:])   # 알람 번호 없이 전체 건수를 묻는 말투
+
+
+def lot_line_v38(l: dict) -> str:
+    """로트 한 줄 — DB 상태 코드(IN_PROCESS …) 대신 공식 한글 이름. 합격이면 판정 시각, 합격 전이면 "아직 합격 판정 전"을 덧붙인다 (2026-10-25 AWS 점검 보고)."""
+    line = f"{l['lot_id']} {l['qty']}개 {l.get('status_ko') or l.get('status') or '상태 모름'}"
+    status, passed = l.get("status"), l.get("passed_at")
+    if status == "PASSED" and isinstance(passed, str) and len(passed) >= 16:
+        line += f", 합격 판정 {int(passed[5:7])}/{int(passed[8:10])} {passed[11:16]}"
+    elif status in T.LOT_BEFORE_PASS:
+        line += ", 아직 합격 판정 전"
+    return line
 OPS_INTENTS_V5 = [(n, re.compile(rx.pattern + r"|몇\s*건\s*(?:이나\s*|정도\s*)?(?:찍혔|찍힌|떴|떠(?=요|\?|\s|$)|울렸)")) if n == "alarm_count"
                   else (n, re.compile(rx.pattern + r"|몇\s*번\s*(?:이나\s*|정도\s*)?멈춰(?=\?|요|\s*$)")) if n == "stops"
                   else (n, rx) for n, rx in OPS_INTENTS_V4]
@@ -1444,6 +1459,10 @@ def parse(question: str) -> dict:
         end, start = ref_date() - timedelta(days=1), ref_date() - timedelta(days=7)
     elif v2 and start is None and RECENT_MONTH_V2.search(q):
         end, start = ref_date() - timedelta(days=1), ref_date() - timedelta(days=30)
+    elif v2 and start is None and THIS_MONTH_V38.search(q):   # "이번 달 알람 몇 번이나 떴어?" (2026-10-25 AWS 점검 보고): 오늘이 든 달의, 기록이 있는 기간 (시계 없음이면 9월이 아니라 날짜 없음 = 예전 동작)
+        got = month_in_data_period(ref_date().month)
+        if got is not None:
+            start, end = got
     v4 = v3 and settings().parse_v4
     if v3:  # 붙은 말("정지게이지", "과열 정지") 안의 의도 낱말은 보지 않는다 (긴 것 우선)
         qm = COMPOUND_MASK_V3.sub(" ", ql)
@@ -1544,7 +1563,7 @@ def _chunk(doc_id: str, sec: str) -> Chunk | None:
 
 
 def _cite(c: Chunk, snippet: str = "") -> dict:
-    # doc_no·rev는 API명세서_v1 공통 규칙의 출처 칸 이름 {doc_name, doc_no, rev, section} (2026-10-11 P1).
+    # doc_no·rev는 API명세서 공통 규칙의 출처 칸 이름 {doc_name, doc_no, rev, section} (2026-10-11 P1).
     # 화면이 옮겨 갈 때까지 옛 칸(doc_id·revision)도 둔다. 값은 같다 — services/cite.evidence와 같은 모양
     plain = re.sub(r"\s+", " ", re.sub(r"[|#*]", " ", c.text)).strip()
     return {"cite": c.cite, "doc_id": c.doc_id, "doc_name": c.doc_name, "revision": c.revision, "section": c.section,
@@ -2148,7 +2167,7 @@ def ops_answer(role: str, p: dict, needs: list[str] | None = None,
         elif intent == "lots" and (p["lot"] or p["order"]):
             r = T.lots(role, p["lot"], p["order"])
             data.append(r)
-            items = [f"{l['lot_id']} {l['qty']}개 {l['status']}" for l in r["rows"]]
+            items = [lot_line_v38(l) for l in r["rows"]]      # DB 코드(IN_PROCESS …)를 공식 한글 이름으로 (2026-10-25 AWS 점검 보고)
             if r.get("unsupported"):   # [11_automotive 이식 2026-10-16] 작업지시 번호로 로트를 찾는 조회는 백엔드 도구에 없다 — "데이터 없음"이라고 하지 않는다
                 texts.append("로트: 작업지시 번호로는 아직 찾을 수 없습니다. 로트 번호(예: LOT-2609-001-1)로 물어봐 주세요")
             else:
@@ -2205,8 +2224,8 @@ def ops_answer(role: str, p: dict, needs: list[str] | None = None,
             items = [f"{k} {v}번" for k, v in sorted(by_eq.items())]
             texts.append(f"{rng} 알람 {code} 발생: " + (", ".join(items) or "없음"))
             add(f"{rng} 알람 {code} 발생", items, texts[-1], r)
-        elif intent == "alarm_count" and not p["alarms"] and ALARM_TOTAL_Q_V37.search(p.get("raw", "")):
-            # 알람 번호 없이 "알람 몇 건이야?" — 기간 안의 알람 전체 건수 (2026-10-25: 번호를 되묻기만 하고 총 건수를 못 답했다)
+        elif intent == "alarm_count" and not p["alarms"]:
+            # 알람 번호 없이 "알람 몇 건이야/몇 번 떴어?" — 기간 안의 알람 전체 건수 (2026-10-25: 번호를 되묻기만 하고 총 건수를 못 답했다. 후속: "몇 번" 말투도 같은 질문이라 낱말 조건을 풀었다)
             r = T.alarms(role, eq, None, start=p["start"], end=p["end"], shift=p["shift"])
             data.append(r)
             by_eq = {}
@@ -2217,8 +2236,6 @@ def ops_answer(role: str, p: dict, needs: list[str] | None = None,
             head = f"{eq} {rng} 알람 {total}건" if eq else f"{rng} 알람 {total}건"
             texts.append(head + (f" ({', '.join(items)})" if len(items) > 1 else ""))
             add(head, items, texts[-1], r)
-        elif intent == "alarm_count" and needs is not None:
-            needs.append("알람 번호 (예: 2075)")
         elif intent == "equipment_status":
             ids = p.get("status_ids")
             if ids is None:
@@ -3814,7 +3831,11 @@ def equipment_state_question_v36(question: str, p: dict) -> bool:
 EQS_WHY_V36 = "설비 상태 질문 — 시연 서버의 지금 설비 상태 값을 재료로 함께 준 문서 길 (지시문 방식)"
 EQS_RULES_V36 = ("[이 값 쓰는 법] 질문이 지금 설비가 어떤 상태인지, 고장 난·멈춘·막힌 설비가 어디인지를 묻는 말이면 위 값으로 답한다. 이 경우 사내 문서 조각에 답이 없어도 insufficient는 false다. "
                  "값에 없는 설비·시각·원인은 말하지 않는다 (알람 번호의 뜻은 문서 조각에 있을 때만 말한다). 답의 첫 문장에 '시연 화면 시계 {clock} 기준'을 위 글자 그대로(연도 포함) 밝힌다. "
-                 "고장 정지·막힘 설비를 먼저 말하고, 나머지 설비는 값에 적힌 상태별로 한 줄로 묶는다 (대기인 설비를 '가동 중'이라고 부르지 않고, 값에 적힌 상태 이름 그대로 쓴다). 지난 기록·횟수·이력은 이 값에 없으므로 그런 말이면 이 채팅이 아직 읽지 못한다고 말한다. "
+                 "[답의 범위] 묻는 것에만 답한다. ① 질문이 설비 하나를 짚으면 그 설비만 말한다: 상태 이름, 시작 시각, 'N분째', 열린 알람. 다른 설비 이야기는 하지 않는다. "
+                 "② 고장 난·멈춘·막힌 설비가 어디인지 물으면 그런 설비(고장 정지·막힘)만 말한다. 하나도 없으면 '지금 고장 난 설비는 없어요'처럼 한 문장으로 끝내고 다른 설비의 상태는 나열하지 않는다. "
+                 "③ 모든 설비·지금 설비 상태를 물으면 6대를 모두 말하되, 첫 문장에 값 표의 '[상태별 대수]' 줄을 그대로 옮기고(직접 세지 않는다) 고장 정지·막힘 설비를 먼저 말한다. "
+                 "상태는 값에 적힌 이름 그대로 쓴다 (대기인 설비를 '가동 중'이라고 부르지 않는다). 상태가 이어진 시간은 값 표의 'N분째'·'N시간째' 글자를 그대로 쓰고 직접 계산하지 않는다. "
+                 "지난 기록·횟수·이력은 이 값에 없으므로 그런 말이면 이 채팅이 아직 읽지 못한다고 말한다. "
                  "질문이 이 값과 상관없는 문서 질문이면 이 값을 쓰지 않는다.")
 
 
@@ -3823,7 +3844,18 @@ def equipment_states_note_v36(r: dict) -> str:
     sim_at = r["as_of"]
     lines = _eq_state_lines_v37(r["rows"], sim_at)
     clock =f"{sim_at[:10]} {sim_at[11:16]}"      # 연도까지 글자 그대로 — Claude가 연도를 틀리게 쓴 적이 있다 (2026 → 2025, 2026-10-25 시험)
-    return f"[지금 설비 상태 — 시연 서버가 준 값, {clock} 기준 시연 화면 시계]\n" + "\n".join(lines) + "\n" + EQS_RULES_V36.replace("{clock}", clock)
+    return (f"[지금 설비 상태 — 시연 서버가 준 값, {clock} 기준 시연 화면 시계]\n" + "\n".join(lines) + "\n" + _state_count_line_v38(r["rows"]) + "\n"
+            + EQS_RULES_V36.replace("{clock}", clock))
+
+
+def _state_count_line_v38(states: list[dict]) -> str:
+    """상태별 대수 한 줄 — 프로그램이 센다 (Claude가 직접 세다 "6대 중 4대"로 틀린 적이 있다, 2026-10-26 시험). 고장 정지·막힘이 먼저."""
+    counts: dict[str, int] = {}
+    for s in states:
+        counts[s["last_state"]] = counts.get(s["last_state"], 0) + 1
+    order = ["DOWN", "BLOCKED", "RUN", "SETUP", "IDLE", "MAINT"]
+    keys = [k for k in order if k in counts] + sorted(k for k in counts if k not in order)
+    return f"[상태별 대수] 모두 {len(states)}대: " + ", ".join(f"{BN_STATE_KO_V35.get(k, k)} {counts[k]}대" for k in keys)
 
 
 # 병목 질문 지시문 방식 (2026-10-25, A안): 지금 값 질문은 낱말 규칙이 문장을 만들지 않고 시연 서버의 병목 값 + 설비 상태를 Claude에게 재료로 주고 지시문으로 그 값으로 답하게 한다.
@@ -3832,21 +3864,52 @@ def equipment_states_note_v36(r: dict) -> str:
 BN_WHY_V37 = "병목 질문 — 시연 서버의 지금 병목 값을 재료로 함께 준 문서 길 (지시문 방식)"
 BN_RULES_V37 = ("[이 값 쓰는 법] 질문이 지금 병목이 어느 공정인지·무엇 때문인지·언제부터인지·풀렸는지·어느 설비가 원인인지를 묻는 말이면 위 값으로 답한다. 이 경우 사내 문서 조각에 답이 없어도 insufficient는 false다. "
                 "값에 없는 공정·설비·시각·원인은 말하지 않는다. 병목 원인이 '기준 병목'이면 병목 판단 규칙에 맞는 다른 공정이 없어서 기준 병목(OP-30)으로 표시된 것이라고 말한다. "
-                "병목 공정에 속한 설비의 상태를 함께 말하되, 상태는 값에 적힌 이름 그대로 쓴다 (대기인 설비를 '가동 중'이라고 부르지 않는다). 질문이 특정 설비를 짚으면 그 설비의 공정이 지금 병목 공정인지 값으로 답한다. "
+                "병목 공정에 속한 설비의 상태를 함께 말하되, 상태는 값에 적힌 이름 그대로 쓴다 (대기인 설비를 '가동 중'이라고 부르지 않는다). 상태가 이어진 시간은 값 표의 'N분째' 글자를 그대로 쓰고 직접 계산하지 않는다. 질문이 특정 설비를 짚으면 그 설비의 공정이 지금 병목 공정인지 값으로 답한다. "
                 "'○○가 병목이야?'처럼 그 설비가 병목인지 물으면 첫머리를 늘 같은 틀로 시작한다: 그 설비의 공정이 병목 공정이면 '네, ○○ 설비는 병목 공정 OP-xx에 속해요', 아니면 '아니요, ○○ 설비는 OP-yy 공정이고 지금 병목은 OP-xx예요'. 설비 자체는 병목이 아니라는 식으로 반대로 시작하지 않는다. "
                 "답의 첫 문장에 '시연 화면 시계 {clock} 기준'을 위 글자 그대로(연도 포함) 밝힌다. 어제·지난 기록·바뀐 횟수·이동 기록은 이 값에 없으므로 그런 말이면 이 채팅이 아직 읽지 못한다고 말한다. "
                 "질문이 이 값과 상관없는 문서 질문이면 이 값을 쓰지 않는다.")
 
 
+def _state_minutes_v38(s: dict, sim_at: str) -> int | None:
+    """그 상태가 이어진 분. 시연 서버가 준 경과 분(minutes)이 있으면 그것을, 없거나 0이면 시연 시계 − 시작 시각으로 계산한다. 둘 다 모르면 None."""
+    m = s.get("minutes")
+    if isinstance(m, (int, float)) and not isinstance(m, bool) and m > 0:
+        return int(m)
+    since = s.get("since")
+    if isinstance(since, str) and len(since) >= 16:
+        try:
+            d = datetime.fromisoformat(sim_at) - datetime.fromisoformat(since)
+        except ValueError:
+            return None
+        return max(0, int(d.total_seconds() // 60))
+    return None
+
+
+def _minutes_text_v38(m: int | None) -> str:
+    """경과 분을 "N분째"로. 값 표에 이 글자를 그대로 주고 Claude가 다시 계산하지 않게 한다 (2026-10-25 AWS 점검 보고: '몇 분째'가 없었다)."""
+    if m is None:
+        return ""
+    if m < 1:
+        return "방금 시작"
+    if m < 60:
+        return f"{m}분째"
+    if m < 1440:
+        return f"{m // 60}시간째" if m % 60 == 0 else f"{m // 60}시간 {m % 60}분째"
+    d, rest = divmod(m, 1440)
+    return f"{d}일째" if rest < 60 else f"{d}일 {rest // 60}시간째"
+
+
 def _eq_state_lines_v37(states: list[dict], sim_at: str) -> list[str]:
-    """설비별 지금 상태 줄들 — 가동 중이 아닌 설비만 상태가 시작된 시각과 열린 알람을 붙인다 (설비 상태 질문과 병목 질문이 같이 쓴다)."""
+    """설비별 지금 상태 줄들 — 모든 설비에 상태가 시작된 시각과 "N분째"를, 열린 알람이 있으면 그 번호를 붙인다 (설비 상태 질문과 병목 질문이 같이 쓴다)."""
     lines = []
     for s in states:
         st = s["last_state"]
         text = f"- {s['equipment_id']} ({s.get('process_code') or '공정 모름'}): {BN_STATE_KO_V35.get(st, st)}"
-        if st != "RUN":
-            extra = ([_bn_since_text_v35(s["since"], sim_at)] if s.get("since") else []) + ([f"열린 알람 {s['open_alarm_code']}"] if s.get("open_alarm_code") else [])
-            text += f" ({', '.join(extra)})" if extra else ""
+        extra = ([_bn_since_text_v35(s["since"], sim_at)] if s.get("since") else [])
+        mt = _minutes_text_v38(_state_minutes_v38(s, sim_at))
+        extra += [mt] if mt else []
+        extra += [f"열린 알람 {s['open_alarm_code']}"] if st != "RUN" and s.get("open_alarm_code") else []
+        text += f" ({', '.join(extra)})" if extra else ""
         lines.append(text)
     return lines
 
@@ -4771,7 +4834,7 @@ def _answer(question: str, role: str, context: dict | None = None, prev: dict | 
                 memo["ctx_alarm_note"] = p["alarms"][0]["code"]
                 memo["record_context"] = {**context, "alarm_key": p["alarms"][0]["code"]}   # 기록에 남겨 다음 짧은 질문도 같은 알람으로 잇는다
                 memo["alarm_chain"] = True
-    # is_synthetic (API명세서_v1 공통 규칙·NFR-DATA-08, 2026-10-11 P1): 답에 가상 운영 데이터(조회 결과·관련 기록)가 들어가면 True.
+    # is_synthetic (API명세서 공통 규칙·NFR-DATA-08, 2026-10-11 P1): 답에 가상 운영 데이터(조회 결과·관련 기록)가 들어가면 True.
     # 사내 문서만 쓴 답은 False (사내 문서는 따로 "가상 사내 문서"로 표시한다)
     base = {"question": question, "steps": [], "evidence": [], "current_data": [], "related": None, "caution": None,
             "data_label": None, "is_synthetic": False, "links": [],

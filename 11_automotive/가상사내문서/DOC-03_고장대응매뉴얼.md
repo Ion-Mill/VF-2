@@ -7,7 +7,7 @@
 | 개정      | **Rev.1 (2026-10-07)** — 처음 작성 Rev.0 (2026-10-05). 바뀐 내용은 6장                                                              |
 | 승인      | 공장 관리자 (MGR)                                                                                                                   |
 | 구분      | **가상 사내 문서** (실제 문서를 바탕으로 작성)                                                                                      |
-| 제작 기준 | [가상데이터설계서\_최종본.md 13장](../가상데이터설계서_최종본.md#13-가상-사내-문서-제작-기준), 용어는 [00\_용어집.md](00_용어집.md) |
+| 제작 기준 | [가상데이터설계서\_최종본.md 13장](../가상데이터설계서.md#13-가상-사내-문서-제작-기준), 용어는 [00\_용어집.md](00_용어집.md) |
 
 ---
 
@@ -763,7 +763,7 @@
 | 2.5 [참고] 균형 장치 | Haas Mill Service Manual 96-8100 rev L (2005-06), 1.8 Hydraulic Counterbalance 34쪽 / Mechanical Service Manual 96-0283D (2011-06), Counterbalance Air Pressure 인쇄 10쪽 | 영어                       | `docs/haas/en_mill_service_manual_2005.pdf`, `docs/haas/en_mechanical_service_manual_2011.pdf`                                                             |
 | 2.5 [참고] 균형 장치 | Hydraulic Counterbalance TSG (2024-11-04 갱신, 웹 보관본) System Pressure Chart                                                                                           | 영어                       | `docs/haas/web_snapshots/tsg_hydraulic_counterbalance_wayback20250713.html`                                                                                |
 | 2.5, 2.9 VF-2 사양   | VF-2 제품 사양 (Drive System, Max Torque w/opt Gearbox, Axis Motors)                                                                                                      | 영어                       | `docs/haas/ngc_official/09_설비사양·설치/VF-2-spec_vf-2-product-page/VF-2-spec__norev__20261003__body.md`                                                  |
-| 심각도·누가          | 설계서 15.2 / DOC-02                                                                                                                                                      | 한국어                     | `가상데이터설계서_최종본.md`, `가상사내문서/DOC-02_알람코드집.md`                                                                                          |
+| 심각도·누가          | 설계서 15.2 / DOC-02                                                                                                                                                      | 한국어                     | `가상데이터설계서.md`, `가상사내문서/DOC-02_알람코드집.md`                                                                                          |
 | 1.4                  | 병목 조치·반복 알람·"전부 보고" 순서 조사 (팀 조사, 2026-10-07) 3장                                                                                                       | 한국어                     | `docs/production/운영기준_근거/병목조치_반복알람_우선순위_조사.md`                                                                                         |
 | 1.4                  | NASA Reliability-Centered Maintenance Guide (2008-09) 5.5.3 (PDF 64쪽), 5.5.8 (PDF 70~73쪽)                                                                               | 영어                       | `docs/maintenance/정비지표/Maintenance_KPI_benchmarks_NASA_RCM_Guide2008.pdf`                                                                              |
 | 1.4                  | NCS LM1503020305 공정설비보전관리 (PDF 36·43·64쪽)                                                                                                                        | 한국어                     | `docs/maintenance/NCS_현장용어/LM1503020305_공정설비보전관리.pdf`                                                                                          |

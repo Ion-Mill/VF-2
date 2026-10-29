@@ -1,8 +1,8 @@
 // 가상환경의 python 을 운영체제에 맞게 찾아 실행한다 (Windows: .venv\Scripts\python.exe, macOS·Linux: .venv/bin/python)
 // npm 스크립트는 Windows에서 cmd.exe 로 돌아 ".venv/Scripts/python" 경로를 못 읽으므로 이걸 거친다.
 //   node scripts/py.mjs api          백엔드 API 개발 서버 (:8000, --reload). 환경 파일 = MOM_ENV_FILE (기본 .env.supabase)
-//   node scripts/py.mjs sim          시연 데이터 서버 frontend/tools/sim_server.py (:8765, 생성기/.venv 로 실행)
-//   node scripts/py.mjs @gen ...     생성기/.venv 의 python 에 인자를 그대로 넘김 (작업 폴더 = 생성기)
+//   node scripts/py.mjs sim          시연 데이터 서버 frontend/tools/sim_server.py (:8765, 데이터생성기/.venv 로 실행)
+//   node scripts/py.mjs @gen ...     데이터생성기/.venv 의 python 에 인자를 그대로 넘김 (작업 폴더 = 생성기)
 //   node scripts/py.mjs ...          backend/.venv 의 python 에 인자를 그대로 넘김 (작업 폴더 = backend)
 // (Node 24는 스크립트 뒤 인자의 --env-file 까지 자기 옵션으로 읽으므로 uvicorn 의 --env-file 은 여기서 붙인다)
 import { spawn } from "node:child_process";
@@ -13,7 +13,7 @@ import { fileURLToPath } from "node:url";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");   // 11_automotive
 const VENVS = {
   backend: { dir: join(root, "backend"), setup: "npm run setup:api" },
-  gen: { dir: join(root, "생성기"), setup: "npm run setup:sim  (생성기/실행_안내.md)" },
+  gen: { dir: join(root, "데이터생성기"), setup: "npm run setup:sim  (데이터생성기/실행_안내.md)" },
 };
 
 function venvPython(name) {

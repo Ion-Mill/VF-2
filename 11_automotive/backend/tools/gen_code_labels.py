@@ -1,7 +1,7 @@
 """논리 ERD 6장 코드 목록 → db/seed/10_code_labels.sql 생성.
 
 쓰는 법:
-    python tools/gen_code_labels.py <논리ERD_최종본.md> > db/seed/10_code_labels.sql
+    python tools/gen_code_labels.py <논리ERD.md> > db/seed/10_code_labels.sql
 
 코드 목록이 바뀌면 이 스크립트를 다시 돌린다 (손으로 고치지 않음). 표준 라이브러리만 쓴다.
 """
@@ -94,7 +94,7 @@ def main(path):
                 continue
             order += 1
             rows.append((g, c, n, order, num))
-    print("-- 생성: tools/gen_code_labels.py (논리ERD_최종본 6장). 손으로 고치지 말고 스크립트를 다시 돌린다.")
+    print("-- 생성: tools/gen_code_labels.py (논리ERD 6장). 손으로 고치지 말고 스크립트를 다시 돌린다.")
     print("INSERT INTO code_label (code_group, code, name_ko, sort_order, source_ref) VALUES")
     print(",\n".join(f"  ({q(g)}, {q(c)}, {q(n)}, {o}, {q(s)})" for g, c, n, o, s in rows))
     print("ON CONFLICT (code_group, code) DO UPDATE SET name_ko = EXCLUDED.name_ko, sort_order = EXCLUDED.sort_order,")

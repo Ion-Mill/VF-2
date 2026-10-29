@@ -18,7 +18,7 @@
 .PARAMETER LlmCompose     -Screen 과 같이 쓴다. 시연 서버를 켤 때 MOM_LLM_COMPOSE=1 을 그 프로세스에만 준다 — 교대·일일 보고서 문장, 작업지시서 제목·증상, 지침카드 "먼저 할 일" 풀이를 비서(외부 Claude)가 다듬는다.
                   이 옵션 없이 켜면 시연 서버의 문장 다듬기는 꺼진다(기본). 이미 켜져 있는 시연 서버에는 적용되지 않는다 (환경변수는 켤 때 읽는다) — 끄고 다시 켠다.
 .PARAMETER Profile        -Screen 과 같이 쓸 때 **꼭 필요**: video(영상용, 10/24 09:00 시작) | final(최종용, 10/26). 시연 서버가 읽을 기록과 시계를 정한다
-                  (생성기\profiles\*.json). 이미 켜져 있는 시연 서버가 다른 프로필이면 멈춘다 — 먼저 stop_all.ps1 로 끈다.
+                  (데이터생성기\profiles\*.json). 이미 켜져 있는 시연 서버가 다른 프로필이면 멈춘다 — 먼저 stop_all.ps1 로 끈다.
 .PARAMETER CheckDb        켜기 전에 공용 DB 접속 점검(읽기만)을 먼저 한다. -LocalDb 와 같이 쓰면 로컬 DB 점검이다.
 .PARAMETER LocalDb        내 컴퓨터의 로컬 DB(Docker)로 켠다. 설정 파일이 backend\.env.supabase 대신 backend\.env 다 (backend\README.md 의 Docker 절차).
                   두 접속 주소(MOM_DATABASE_URL, MOM_READONLY_DATABASE_URL)의 호스트가 localhost 또는 127.0.0.1 이 아니면 멈춘다.
@@ -69,7 +69,7 @@ $BackendDir = Join-Path $Auto 'backend'
 $FrontendDir = Join-Path $Auto 'frontend'
 $BackendPy = Join-Path $BackendDir '.venv\Scripts\python.exe'
 $AssistantPy = Join-Path $AssistantDir '.venv\Scripts\python.exe'
-$SimPy = Join-Path $Auto '생성기\.venv\Scripts\python.exe'
+$SimPy = Join-Path $Auto '데이터생성기\.venv\Scripts\python.exe'
 $BackendEnvName = $(if ($LocalDb) { '.env' } else { '.env.supabase' })      # -LocalDb 는 로컬 Docker DB 용 backend\.env, 아니면 공용 DB 용 .env.supabase
 $BackendEnv = Join-Path $BackendDir $BackendEnvName
 $AssistantEnv = Join-Path $AssistantDir '.env'

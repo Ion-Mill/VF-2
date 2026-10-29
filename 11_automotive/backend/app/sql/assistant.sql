@@ -7,8 +7,10 @@ SELECT equipment_id, process_code, state_code, state_since, state_minutes, warn_
        lock_record_no IS NOT NULL AS is_locked, current_lot_no
   FROM v_equipment_now WHERE CAST(:equipment_id AS text) IS NULL OR equipment_id = CAST(:equipment_id AS text);
 
+-- 횟수는 알람 번호로 센다: WARN·GUIDE 정지가 쉬는 시간·교대 사이에 끊기면 알람 1건에 상태 기록이 2줄 (2026-10-26).
+-- down_min은 그대로 — DOWN 기록은 알람마다 1줄뿐이다 (ux_state_log_alarm_down)
 -- name: alarms
-SELECT a.equipment_id, a.alarm_code, m.name_ko, a.severity_at_event, count(*)::int AS times, min(a.occurred_at) AS first_at,
+SELECT a.equipment_id, a.alarm_code, m.name_ko, a.severity_at_event, count(DISTINCT a.alarm_event_id)::int AS times, min(a.occurred_at) AS first_at,
        max(a.occurred_at) AS last_at,
        round(sum(extract(epoch FROM (coalesce(s.end_at, app_now()) - s.start_at)) / 60) FILTER (WHERE s.state_code = 'DOWN'), 1) AS down_min
   FROM alarm_event a JOIN alarm_master m USING (alarm_code)

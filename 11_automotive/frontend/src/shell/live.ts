@@ -1,5 +1,5 @@
 'use client';
-// 시연 데이터 서버(tools/sim_server.py, /api/*)와 잇는 곳. API 이름은 API명세서_v1.
+// 시연 데이터 서버(tools/sim_server.py, /api/*)와 잇는 곳. API 이름은 API명세서.
 // - 실시간 상태(API-LINE-02)와 실시간 사건(API-STR-01)을 1초마다 받는다. 전송 방식(SSE 등)은 [선택 필요: 기술 회의]라 묻는 방식(polling)으로 했다.
 // - 시연 모드의 시각은 모두 시뮬레이터 시계 (NFR-DATA-10): SIM.now()
 // - 화면에서 만든 문서(작업지시서·작업기록서 등)는 DB가 [선택 필요: 기술 회의]라 이 브라우저(localStorage)에 시연 회차(run_id)별로 남긴다.

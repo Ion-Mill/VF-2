@@ -297,6 +297,13 @@ def production(role, start=None, end=None, shift=None):
 
 
 # ---------------------------------------------------------------- 로트
+# 로트 상태의 공식 한글 이름 — DB 시드(backend/db/seed/10_code_labels.sql, production_lot.status)와 같다. 채팅에 DB 코드(IN_PROCESS …)를 그대로 보이지 않는다
+# (2026-10-25 AWS 점검 보고). 시험이 시드 파일을 읽어 같은지 단정한다 — 시드가 바뀌면 여기도 맞춘다.
+LOT_STATUS_KO = {"IN_PROCESS": "생산 중", "WAIT_INSPECTION": "검사 대기", "WAIT_JUDGEMENT": "판정 대기", "HOLD_REVIEW": "보류 검토",
+                 "PASSED": "합격 (출하 가능)", "ON_HOLD": "보류", "RELEASED": "해제", "SCRAPPED": "폐기"}
+LOT_BEFORE_PASS = frozenset({"IN_PROCESS", "WAIT_INSPECTION", "WAIT_JUDGEMENT", "HOLD_REVIEW"})      # 아직 합격 판정이 나기 전
+
+
 def lots(role, lot_id=None, order_id=None):
     if not lot_id and not order_id:
         raise ToolInputError("로트 번호나 작업지시 번호가 필요하다")
@@ -305,7 +312,7 @@ def lots(role, lot_id=None, order_id=None):
                        note="작업지시 번호로 로트를 찾는 조회는 아직 없습니다 (로트 번호로 물어봐 주세요)")
     r = _call("lot", {"lot_no": lot_id})
     rows = [{"lot_id": x["lot_no"], "lot_no": x["lot_no"], "qty": x.get("input_qty"), "status": x.get("status"),
-             "completed_qty": x.get("completed_qty"), "plan_mode": x.get("plan_mode"), "passed_at": x.get("passed_at"),
+             "status_ko": LOT_STATUS_KO.get(x.get("status"), x.get("status")), "completed_qty": x.get("completed_qty"), "plan_mode": x.get("plan_mode"), "passed_at": x.get("passed_at"),
              "shipped_qty": x.get("shipped_qty"), "shipment_nos": x.get("shipment_nos"), "trace": x.get("trace")} for x in r.rows]
     return _result("로트·작업지시 조회", rows, lot_id, as_of=r.now)
 

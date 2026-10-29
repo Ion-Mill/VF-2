@@ -109,7 +109,7 @@ def test_note_has_bottleneck_values_equipment_states_and_pinned_clock():
     note = A.bottleneck_note_v37({"rows": [sim_live.parse_bottleneck(TWIN) | {"sim_at": None}], "as_of": "2026-10-25T09:00:00+09:00"})
     assert "[지금 병목 — 시연 서버가 준 값, 2026-10-25 09:00 기준 시연 화면 시계]" in note
     assert "- 병목 공정: OP-30" in note and "- 병목 원인: 고장" in note and "10/24 09:35부터" in note
-    assert "- VF2-01 (OP-30): 고장 정지 (10/24 09:35부터, 열린 알람 992)" in note and "- VF2-02 (OP-30): 대기 (07:20부터)" in note and "- CMM-01 (OP-50): 대기 (07:20부터)" in note
+    assert "- VF2-01 (OP-30): 고장 정지 (10/24 09:35부터, 30분째, 열린 알람 992)" in note and "- VF2-02 (OP-30): 대기 (07:20부터, 30분째)" in note and "- CMM-01 (OP-50): 대기 (07:20부터, 30분째)" in note
     assert "'시연 화면 시계 2026-10-25 09:00 기준'을 위 글자 그대로(연도 포함)" in note and "{clock}" not in note
     assert "대기인 설비를 '가동 중'이라고 부르지 않는다" in note and "insufficient는 false" in note and note.rstrip().endswith("이 값을 쓰지 않는다.")
 

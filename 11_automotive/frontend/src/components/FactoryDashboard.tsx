@@ -1004,7 +1004,7 @@ export default class FactoryDashboard extends React.Component<any, any> {
       // 재공 수를 바닥에 칠한 글자로 (사용자 선택 2026-10-19) — 떠 있는 재공 판이 설비를 가려서. 각도에 따라 읽기 어려운 건 감수
       if (this.props.dataMode) this.floorWip = [['wip-1', 'w1', 'WIP-1', 'WIP-10-20'], ['wip-2', 'w2', 'WIP-2', 'WIP-20-30'], ['wip-3', 'w3', 'WIP-3', 'WIP-30-40'], ['wip-4', 'w4', 'WIP-4', 'WIP-40-50'], ['fg-01', 'fg', 'FG-01', null]].map(([id, key, name, code]) => {
         const cv = document.createElement('canvas'); cv.width = 512; cv.height = 128;
-        const tex = new THREE.CanvasTexture(cv); tex.anisotropy = 8;
+        const tex = new THREE.CanvasTexture(cv); tex.anisotropy = 8; tex.colorSpace = THREE.SRGBColorSpace; // 빠져 있어 글자가 물 빠진 회색으로 보였다 (사용자 요청 "재공 글씨 진하게" 2026-10-25)
         const m = new THREE.Mesh(new THREE.PlaneGeometry(3.6, 0.9), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, fog: false, toneMapped: false }));
         const a = this.anch[id]; m.rotation.x = -Math.PI / 2; m.position.set(a[0] / 1000 + 0.5, 0.09, -1.35); m.renderOrder = 5; // 상자 컨베이어(Y 1,765~) 앞 통로 바닥 scene.add(m);
         return { key, name, code, cv, tex, last: '', m, baseX: m.position.x };
@@ -1976,9 +1976,9 @@ export default class FactoryDashboard extends React.Component<any, any> {
         const c = F.cv.getContext('2d'); c.clearRect(0, 0, 512, 128);
         const col = F.code ? (hot ? '#c2570c' : '#2a323b') : '#1f7a45';
         c.globalAlpha = 1; c.fillStyle = col; c.textBaseline = 'alphabetic';
-        c.font = '800 34px "Pretendard Variable", sans-serif'; const lab = F.code ? F.name : `${F.name} 입고 박스`; c.fillText(lab, 12, 92); let x = 24 + c.measureText(lab).width;
-        c.font = '700 84px "Pretendard Variable", sans-serif'; const num = nd ? '—' : String(n); c.fillText(num, x, 96); x += c.measureText(num).width + 8;
-        if (!nd) { c.globalAlpha = 0.75; c.font = '600 40px "Pretendard Variable", sans-serif'; c.fillText(`/${lim}`, x, 96); x += c.measureText(`/${lim}`).width; }
+        c.font = '900 34px "Pretendard Variable", sans-serif'; const lab = F.code ? F.name : `${F.name} 입고 박스`; c.fillText(lab, 12, 92); let x = 24 + c.measureText(lab).width;
+        c.font = '900 84px "Pretendard Variable", sans-serif'; const num = nd ? '—' : String(n); c.fillText(num, x, 96); x += c.measureText(num).width + 8;
+        if (!nd) { c.globalAlpha = 0.9; c.font = '800 40px "Pretendard Variable", sans-serif'; c.fillText(`/${lim}`, x, 96); x += c.measureText(`/${lim}`).width; }
         F.tex.needsUpdate = true;
         // 마지막 FG-01 글자는 길어서 공장 바닥 끝(plant 폭)을 넘었다 — 그린 글자 끝이 바닥 안(끝에서 0.15m)에 오게 왼쪽으로 당긴다 (사용자 요청 2026-10-25)
         if (F.key === 'fg' && this.LY && this.LY.plant) F.m.position.x = Math.min(F.baseX, this.LY.plant.width_x_mm / 1000 - 0.15 + 1.8 - x * 3.6 / 512);

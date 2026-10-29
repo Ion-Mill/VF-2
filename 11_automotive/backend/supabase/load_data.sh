@@ -6,7 +6,7 @@
 #   다시 돌려도 된다 — 이미 넣은 생성기 데이터·센서는 건너뛴다 (scripts/load_all.sh)
 #   export PGHOST=aws-0-ap-northeast-2.pooler.supabase.com PGPORT=5432 PGUSER=postgres.<project-ref> PGPASSWORD=… \
 #          PGDATABASE=postgres PGSSLMODE=require
-#   export GEN_DIR=../생성기 DOCS_DIR=..
+#   export GEN_DIR=../데이터생성기 DOCS_DIR=..
 #   export MOM_APP_DB_PASSWORD=… MOM_AI_DB_PASSWORD=… [MOM_DEMO_PASSWORD=…]
 #   ./supabase/load_data.sh [--sensor] [--realtime] [--schema]
 #   --schema : 스키마도 여기서 만든다 (마이그레이션을 안 쓸 때 — db/apply.sh)

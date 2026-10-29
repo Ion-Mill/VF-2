@@ -11,7 +11,7 @@
     "dev:web": "npm --prefix frontend run dev",
     "setup": "npm install && npm run setup:api && npm run setup:sim && npm run setup:web",
     "setup:api": "cd backend && python -m venv .venv && cd .. && node scripts/py.mjs -m pip install -r requirements.txt",
-    "setup:sim": "cd 생성기 && python -m venv .venv && cd .. && node scripts/py.mjs @gen -m pip install -r requirements.txt",
+    "setup:sim": "cd 데이터생성기 && python -m venv .venv && cd .. && node scripts/py.mjs @gen -m pip install -r requirements.txt",
     "setup:web": "npm --prefix frontend install"
   },
   "devDependencies": {

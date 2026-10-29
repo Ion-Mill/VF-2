@@ -1,6 +1,6 @@
 """시연 서버의 문장 다듬기 도우미(llm_compose.py) 시험 — 실제 비서·Claude를 부르지 않는다 (가짜 post와 가짜 HTTP 서버).
 
-실행 (frontend/ 폴더에서):  ..\\생성기\\.venv\\Scripts\\python -m pytest tools/tests -q
+실행 (frontend/ 폴더에서):  ..\\데이터생성기\\.venv\\Scripts\\python -m pytest tools/tests -q
 지키는 것: ① 기다리지 않는다(요청 스레드가 막히지 않는다) ② 꺼짐이면 아무것도 안 보낸다 ③ 같은 입력은 한 번만 보낸다 ④ 입력이 바뀌면 옛 문장을 안 쓴다
 ⑤ 실패는 기본 문장 그대로(None)이고 쉬었다 다시 한다 ⑥ 처음으로(run_id 변경)에 늦게 온 결과는 버린다 ⑦ 이 PC가 아닌 주소·키 없음은 보내지 않는다.
 """
@@ -354,7 +354,7 @@ def _sim_server(monkeypatch):
 # ------------------------------------------------------------------ 일일 보고서 '오늘의 문제' (생성기가 미리 만든 날짜, 2026-10-19)
 def _daily_rows():
     import csv
-    path = TOOLS.parents[1] / "생성기" / "out" / "daily_report.csv"
+    path = TOOLS.parents[1] / "데이터생성기" / "out" / "daily_report.csv"
     return list(csv.DictReader(open(path, encoding="utf-8")))
 
 

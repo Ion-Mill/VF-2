@@ -1,4 +1,4 @@
-// UI설계서_최종본 2.2(메뉴)·2.3(상태 표시) 표와 공장 배치(데이터). 숫자는 시연 데이터 서버·생성기 기준 정보에서 온다.
+// UI설계서 2.2(메뉴)·2.3(상태 표시) 표와 공장 배치(데이터). 숫자는 시연 데이터 서버·생성기 기준 정보에서 온다.
 import type { MachineId } from '@/components/types';
 import { GENERATED } from './generated';
 import type { Eq } from './live';
@@ -67,7 +67,7 @@ export const LEGEND: { icon: string; text: string; color: string }[] = [
 ];
 
 export const CAUSE_KO: Record<string, string> = { C1: '원인 ① 사이클 시간 증가 (공구 마모)', C2: '원인 ② OP-30 1대만 가동', C3: '원인 ③ 검사 강화', FAILURE: '고장', BASE: '기준 병목' };
-// 교대 시각(시) — 원본은 생성기/config.json "shifts" (2026-10-24 08~17·20~05 → 09~18·21~06). 바뀌면 두 곳을 같이 고친다
+// 교대 시각(시) — 원본은 데이터생성기/config.json "shifts" (2026-10-24 08~17·20~05 → 09~18·21~06). 바뀌면 두 곳을 같이 고친다
 export const SHIFT_H = { dayStart: 9, dayEnd: 18, nightStart: 21, nightEnd: 6 };
 export const hh = (h: number) => String(h).padStart(2, '0');
 export const WIP_NAME: Record<string, string> = { 'WIP-10-20': 'WIP-1', 'WIP-20-30': 'WIP-2', 'WIP-30-40': 'WIP-3', 'WIP-40-50': 'WIP-4' };

@@ -1,7 +1,7 @@
 """논리 ERD 7장 관계 정의표 ↔ 실제 DB 외래 키 대조.
 
 쓰는 법:
-    python tools/check_relations.py <논리ERD_최종본.md 경로> --psql "psql -d mom"
+    python tools/check_relations.py <논리ERD.md 경로> --psql "psql -d mom"
 
 표준 라이브러리만 쓴다. DB 조회는 psql 명령으로 한다 (드라이버 없이도 돌아가게).
 결과: 관계마다 OK / MISSING(외래 키 없음) / 예외 목록(물리 설계에서 뷰·계산으로 바꾼 것)을 출력하고,
