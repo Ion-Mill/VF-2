@@ -1,6 +1,6 @@
 """시연 서버가 9월 기록을 DB에서 읽는 부분 시험 (2026-10-23, server_past.py) — DB 없이 도는 것만.
 
-실행 (frontend/ 폴더에서):  ..\\생성기\\.venv\\Scripts\\python -m pytest tools/tests -q
+실행 (frontend/ 폴더에서):  ..\\데이터생성기\\.venv\\Scripts\\python -m pytest tools/tests -q
 지키는 것: ① DB 값을 생성기 CSV와 같은 글자로 바꾼다 ② 접속 주소를 고르는 순서(MOM_PAST_DB_URL → 백엔드 환경 파일 → 로컬 Docker)
 ③ 주소가 없거나 DB를 못 읽으면 CSV로 돈다 ④ 표마다 10/1 시작 전 조건이 있다
 DB 값 = CSV 값 대조는 DB가 있어야 해서 여기서는 안 한다 (구현_중_수정사항/1023_수정간단내용.md에 결과).
@@ -12,7 +12,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(HERE))
-sys.path.insert(0, str(HERE.parent.parent / "생성기"))
+sys.path.insert(0, str(HERE.parent.parent / "데이터생성기"))
 
 from gen.common import KST  # noqa: E402
 import server_past  # noqa: E402

@@ -15,7 +15,7 @@ from backend.config import PROJECT_ROOT, REFERENCE_AT
 from backend.repositories.csv_repo import get_repo
 from backend.services.shifts import shift_id_of
 
-SCENARIO_DIR = PROJECT_ROOT / "생성기" / "scenarios"   # [11_automotive 이식 2026-10-16] 원본: ROOT/simulator/scenarios
+SCENARIO_DIR = PROJECT_ROOT / "데이터생성기" / "scenarios"   # [11_automotive 이식 2026-10-16] 원본: ROOT/simulator/scenarios
 # 시나리오 시작 시각 [가상]: UI설계서 SCR-07·SCR-09 그림의 10:58 발생 (기획서 15장 시연 2막)
 SCENARIO_START = {"S1": "2026-10-01T10:58:00+09:00"}
 STATE_NOTE = "시연 상태는 메모리에만 있습니다. 서버를 다시 켜면 처음(2026-10-01 08:00)으로 돌아갑니다."
@@ -83,7 +83,7 @@ class DemoState:
     # ------------------------------------------------------------ 이벤트 (SSE)
     def emit(self, type_: str, data: dict, roles: set[str] | None = None, users: set[str] | None = None) -> dict:
         """roles·users가 None이면 모두에게. 받는 사람 거르기는 SSE 보낼 때 서버에서 한다.
-        시연 상태의 사건은 모두 가상 운영 기록이라 SSE 데이터에 is_synthetic을 붙인다 (API명세서_v1 공통 규칙, 2026-10-11 P1)."""
+        시연 상태의 사건은 모두 가상 운영 기록이라 SSE 데이터에 is_synthetic을 붙인다 (API명세서 공통 규칙, 2026-10-11 P1)."""
         with self.lock:
             ev = {"id": len(self.events) + 1, "type": type_, "data": {**data, "is_synthetic": True}, "roles": roles, "users": users,
                   "at": self.now.isoformat()}

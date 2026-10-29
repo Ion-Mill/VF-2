@@ -1,5 +1,5 @@
 """시연 데이터 서버의 읽기(GET) 길을 한 번씩 불러 500 오류가 없는지 본다 — 켜 놓은 채로 어느 프로필이든 (쓰는 길을 누르지 않아 시연 중에도 괜찮다).
-실행: ../생성기/.venv/Scripts/python tools/smoke_server.py [포트]   (2026-10-24, 재고 화면 500 오류를 놓쳤던 뒤에 만듦)"""
+실행: ../데이터생성기/.venv/Scripts/python tools/smoke_server.py [포트]   (2026-10-24, 재고 화면 500 오류를 놓쳤던 뒤에 만듦)"""
 import json
 import sys
 import urllib.error

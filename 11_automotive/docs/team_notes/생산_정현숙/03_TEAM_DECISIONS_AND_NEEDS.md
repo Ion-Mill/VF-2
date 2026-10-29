@@ -1,7 +1,7 @@
 # 팀이 정할 것 · 더 필요한 것 (생산 파트)
 
 > 작성일: 2026-10-03 / 대상: 생산 파트 가상 데이터 제작 전 준비 단계
-> 근거: [기획서 17장](../AUTOMOTIVE_MACHINING_MOM_PLATFORM_PLAN.md), [CRITERIA_SUMMARY.md](research/CRITERIA_SUMMARY.md), [INDEX.md](research/INDEX.md), [BENCHMARKS.md](research/BENCHMARKS.md), [PROFILING_REPORT.md](research/PROFILING_REPORT.md), [기능 정의서](01_생산파트_기능정의.md), [AI 비서 역할](02_AI비서_역할.md)
+> 근거: 기획서 17장, CRITERIA_SUMMARY.md, INDEX.md, BENCHMARKS.md, PROFILING_REPORT.md, [기능 정의서](01_생산파트_기능정의.md), [AI 비서 역할](02_AI비서_역할.md)
 > 표시: **[결정]** 팀이 골라야 함 / **[확인]** 사실 확인이 필요함 / **[작성]** 팀이 만들어야 하는 산출물 / **[자료]** 더 찾아야 할 문서
 
 ---
@@ -95,13 +95,13 @@
 
 | # | 확인할 것 | 방법 |
 |---|---|---|
-| V1 | 외부 벤치마크 수치(OEE, 정지, 셋업, 불량, 공구 수명) | [BENCHMARKS.md](research/BENCHMARKS.md)는 5개 출처만 직접 열람했고 나머지는 검색 요약. 인용하는 수치는 원문 확인 |
+| V1 | 외부 벤치마크 수치(OEE, 정지, 셋업, 불량, 공구 수명) | BENCHMARKS.md는 5개 출처만 직접 열람했고 나머지는 검색 요약. 인용하는 수치는 원문 확인 |
 | V2 | 웹 문서 수치 | WebFetch가 요약을 거친 값이라 세부 수치는 원문 재확인 |
 | V3 | 한글 PDF 하나(`koreascience_JAKO201931262479549.pdf`) | 한글이 깨져 영문 초록만 확인. 원문 열람 필요 |
 | V4 | VF-2 사양 | 중고기 목록 기반 2차 출처. `man_vf_vm_specifications.txt`로 확인 |
 | V5 | 4TU 보고유형 D/S/B 뜻, 데이터 이용 조건 | 데이터 제공처(NooL, 4TU.ResearchData)에 문의, 라이선스 확인 |
 | V6 | ProdSim(SimPy 기반)의 라이선스 | 미확인. 코드 재사용 전 확인. SmartManPy는 LGPL |
-| V7 | 기사로만 확인한 현장 통계(스마트공장 도입률, 협력사 수, 정비 중 끼임 비율) | 원문(중기부, 한국자동차산업협동조합, 고용노동부) 확인 ([기획서 3.1](../AUTOMOTIVE_MACHINING_MOM_PLATFORM_PLAN.md)) |
+| V7 | 기사로만 확인한 현장 통계(스마트공장 도입률, 협력사 수, 정비 중 끼임 비율) | 원문(중기부, 한국자동차산업협동조합, 고용노동부) 확인 (기획서 3.1) |
 | V8 | 현장 가정("매뉴얼이 흩어져 있다", "경험에 의존한다") | 가공 공장 1곳 인터뷰 |
 | V9 | 설계안 근거 없는 값 17개 | BENCHMARKS.md 3부 목록. 발표에서 "가정값"이라고 밝힘 |
 
@@ -127,7 +127,7 @@
 
 ## 3. 근거 없이 "가정"으로 표시해야 하는 값
 
-[CRITERIA_SUMMARY.md 4장](research/CRITERIA_SUMMARY.md) 기준. 발표·화면에서 "가정"으로 밝힌다.
+CRITERIA_SUMMARY.md 4장 기준. 발표·화면에서 "가정"으로 밝힌다.
 
 공정 사이클타임(특히 OP-20·30), VF-2 알람 빈도, DOWN 비율과 정지 30~180분, MTBF·MTTR 대표값, 세척·텀블링 배치 크기, CMM 측정 시간과 전수/발취 비율, 일 생산량·납기·인수인계 시간, 공구 마모 드리프트 속도, 모든 경고 기준값.
 

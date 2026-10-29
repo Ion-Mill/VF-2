@@ -2,7 +2,7 @@
 
 - 대응표: tests/req_map.json (시험 ID → 요구사항 ID → 이 파일의 시험 함수, 상태 있음·일부·없음).
 - 계산기 수준 시험은 그 계산을 쓰는 화면·알림이 아직 없으면 대응표에 "일부"로 적는다.
-- 숫자는 요구사항정의서_최종본 수용 기준에서 가져온다 (root-cause-guards 8절: 운영 질문의 정답 기준은 수용 기준에서).
+- 숫자는 요구사항정의서 수용 기준에서 가져온다 (root-cause-guards 8절: 운영 질문의 정답 기준은 수용 기준에서).
 """
 from datetime import datetime, timedelta
 

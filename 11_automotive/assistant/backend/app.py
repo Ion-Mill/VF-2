@@ -3,7 +3,7 @@
 역할은 시연 모드에서 X-Role(+ X-User) 머리말로 받는다 (로그인 방식은 [선택 필요: 기술 회의]). 권한 검사는 서버에서 한다.
 설비 조작·설정 변경·자동 승인 API는 없다 (ai-operations-assistant 규칙 2.6).
 
-주소 이름·오류 형식은 API명세서_v1에 맞춘다 (2026-10-11 멈춤 ③ P4 — 옛 주소는 두지 않는다):
+주소 이름·오류 형식은 API명세서에 맞춘다 (2026-10-11 멈춤 ③ P4 — 옛 주소는 두지 않는다):
 지침카드 MNT-01 `/api/maint/guide-card/{alarm_event_id}`, 사내 문서 DOCS-01 `/api/internal-docs/…`, 알림 처리 NTF-03 `…/resolve`,
 실시간 STR-01 `/api/stream/events`, 시연 SIM-01·03 `/api/sim/inject`·`/api/sim/reset`, 교대 보고서 확정 RPT-03
 `/api/reports/shift/{shift_id}/confirm`. 오류는 {code, message, detail} (backend/errors.py).
@@ -223,7 +223,7 @@ def doc_section(doc_no: str, section: str, x_role: str = Header(default="")):
     lines = [l for l in text.splitlines() if l.strip() and not set(l.strip()) <= set("|-: ")]
     return {"doc_id": c.doc_id, "doc_name": c.doc_name, "revision": c.revision, "section": c.section, "title": c.title,
             "cite": c.cite, "summary": " ".join(lines[:3])[:240], "text": text,
-            "doc_no": c.doc_id, "rev": c.revision}  # API명세서_v1 출처 칸 이름 (2026-10-11 P1, 옛 칸도 둠)
+            "doc_no": c.doc_id, "rev": c.revision}  # API명세서 출처 칸 이름 (2026-10-11 P1, 옛 칸도 둠)
 
 
 # ---------------------------------------------------------------- 알림 (SCR-07·08, NTF-01·03)

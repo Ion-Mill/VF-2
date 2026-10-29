@@ -1,6 +1,6 @@
 """교대 보고서 표시 정리 시험 (2026-10-19) — 실제 비서·Claude를 부르지 않는다.
 
-실행 (frontend/ 폴더에서):  ..\\생성기\\.venv\\Scripts\\python -m pytest tools/tests -q
+실행 (frontend/ 폴더에서):  ..\\데이터생성기\\.venv\\Scripts\\python -m pytest tools/tests -q
 지키는 것: ① 특이 사항의 불량 문장은 로트 보류가 있어도 한 문장이라 5문장이 유지된다 (요구사항 FR-PRD-02-07은 3~5문장)
 ② 비서가 다듬은 글에만 notable_source 표시가 붙는다 — 화면 머리글이 "AI비서 초안"으로 바뀌는 근거. 진행 중·사람이 고친·확정된 보고서와 원본 dict에는 안 붙는다.
 """

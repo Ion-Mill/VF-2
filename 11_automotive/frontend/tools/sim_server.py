@@ -1,10 +1,10 @@
 """시연 데이터 서버 — 생성기 실시간 모드(10/1)와 과거 기록(9월)을 화면에 내준다.
 
-API명세서_v1 2.9 "생성기와 잇는 방법" [제안] 그대로: 서버가 Realtime 객체를 만들고 실제 시간마다 tick(초)를 부른다.
+API명세서 2.9 "생성기와 잇는 방법" [제안] 그대로: 서버가 Realtime 객체를 만들고 실제 시간마다 tick(초)를 부른다.
 서버 방식(프레임워크·DB)은 [선택 필요: 기술 회의] — 여기서는 Python 표준 라이브러리만 쓴다 (생성기 가상환경 그대로, 9월 기록 DB 읽기만 psycopg — server_past.py).
 
 실행 (데이터적용본 폴더에서):
-  ..\\생성기\\.venv\\Scripts\\python tools\\sim_server.py        → http://127.0.0.1:8765
+  ..\\데이터생성기\\.venv\\Scripts\\python tools\\sim_server.py        → http://127.0.0.1:8765
 화면(npm run dev)은 next.config.mjs rewrites로 /api/* 를 이 서버에 넘긴다.
 """
 from __future__ import annotations
@@ -25,7 +25,7 @@ from urllib.parse import parse_qs, unquote, urlparse
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]                      # 11_automotive
-GEN = ROOT / "생성기"
+GEN = ROOT / "데이터생성기"
 sys.path.insert(0, str(GEN))
 sys.path.insert(0, str(HERE))
 if hasattr(sys.stdout, "buffer"):

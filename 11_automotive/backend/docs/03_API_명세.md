@@ -1,6 +1,6 @@
 # 03. API 명세
 
-> **주소·오류 코드는 `11_automotive/API명세서_v1.md`(API 63개)를 그대로 따른다** (2026-10-08). API ID ↔ 처리기 대응은 6장.
+> **주소·오류 코드는 `11_automotive/API명세서.md`(API 63개)를 그대로 따른다** (2026-10-08). API ID ↔ 처리기 대응은 6장.
 > 서버를 띄우면 `/docs`(OpenAPI)가 요청·응답 모델까지 보여 준다. 이 문서는 사람이 읽는 요약이다.
 > 4장 표는 `tools/gen_api_doc.py`가 라우터에서 만든다 (권한 칸 = 처리기에 걸린 `require(...)`).
 
@@ -269,7 +269,7 @@
 
 모르는 입력 칸, 형식이 틀린 값, 너무 넓은 기간은 422로 거절한다. 도구 입력 칸 = SQL 매개변수 (`tests/test_static_calls.py`가 확인).
 
-## 6. API명세서_v1 ↔ 이 서버 (2026-10-08 — 주소를 명세서에 맞춤)
+## 6. API명세서 ↔ 이 서버 (2026-10-08 — 주소를 명세서에 맞춤)
 
 명세서 63개는 **명세서 주소 그대로**다. 아래는 API ID → 처리기 (`app/routers/파일.함수`)와 명세서보다 더한 것.
 
@@ -301,7 +301,7 @@
 | SET-01~03 | `GET·PATCH /api/settings/notification-rules·targets·users` | notifications.rules·rule_update, master.targets*·users* | PATCH 본문에 `rule_code`·`user_id`. 목표는 아직 시작 안 한 교대·근무일만. 사용자 PATCH는 2026-10-25부터 USR-05와 같은 길(확인·수정 이력, 돌려주는 값 `{user, revision_id, version_no}`) |
 | SIM-01·02 | `POST /api/sim/inject`, `POST /api/sim/clock` | master.inject·set_sim_clock | inject는 `scenario_code`(S1·S3·S4·S6·S7, 2026-10-25 S7 더함) 필수 |
 | USR-01~03 | `GET /api/staff`, `GET /api/staff/{user_id}/activity`, `PATCH /api/staff/assignments` | staff.staff_list·staff_activity·staff_assign (`services/staff.py`) | 2026-10-25. 명세서 밖으로 `GET /api/users`(로그인한 누구나, 이름·역할·담당 교대·공정·사용 중만 — 화면 이름 표시·배치 바로 적용, 시연 서버 `users`와 같은 모양) 더함. 기간 `period` = `today`·`7d`(처음)·`30d`·`sep`(9월, 옛 값)·**`all`(기록 전체, 더함)**. 명단은 사용 중인 직원만(`include_inactive=true`면 사용 중지도 맨 뒤). 배치 바꾸기는 `procs`(목록, 화면 모양)도 받음. 업무 기록 = 기존 표의 "누가" 칸 (`sql/staff.sql events`) — 설정 변경 숫자는 접근 기록(실제 시각)에서 |
-| USR-04·05 [제안] | `POST /api/staff`, `PATCH /api/staff/{user_id}` | staff.staff_create·staff_update | 2026-10-25 (`구현_중_수정사항/1025_직원관리_백엔드_요청.md` 3장, 팀 결정 "A·B 다 한다" — API명세서_v1에는 아직 없음). 지우기 없음(사용 중지). 비밀번호 최소 `MOM_PASSWORD_MIN_LENGTH`(기본 8 [선택 필요]). 중복 아이디 409 `INVALID_STATE`(`DUPLICATE`), 규칙 위반 422 `VALIDATION`(`SELF`·`LAST_MGR`·`PROCESS_ROLE`·`PROCESS`·`SHIFT`·`PASSWORD`·`NO_CHANGE`). 고치면 사람마다 수정 이력 `APP_USER`. SET-03 PATCH도 같은 길 |
+| USR-04·05 [제안] | `POST /api/staff`, `PATCH /api/staff/{user_id}` | staff.staff_create·staff_update | 2026-10-25 (`구현_중_수정사항/1025_직원관리_백엔드_요청.md` 3장, 팀 결정 "A·B 다 한다" — API명세서에는 아직 없음). 지우기 없음(사용 중지). 비밀번호 최소 `MOM_PASSWORD_MIN_LENGTH`(기본 8 [선택 필요]). 중복 아이디 409 `INVALID_STATE`(`DUPLICATE`), 규칙 위반 422 `VALIDATION`(`SELF`·`LAST_MGR`·`PROCESS_ROLE`·`PROCESS`·`SHIFT`·`PASSWORD`·`NO_CHANGE`). 고치면 사람마다 수정 이력 `APP_USER`. SET-03 PATCH도 같은 길 |
 | SIM-03 | `POST /api/sim/reset` | master.sim_reset | 시연 모드만. 시연 기준점으로 되돌리고 시연 시계를 그 시각에 멈춤 (설정·계정·접속 기록은 그대로). 기준점은 목업·생성기 적재 뒤 자동, 바꾸기는 `POST /api/sim/snapshot`(MGR) |
 
 **명세서보다 더한 것 (명세서 주소 체계 안에 둠):** `GET /api/alarms`·`/{id}`, `GET /api/kpi/stops`, `GET /api/lots/{no}`·`POST …/judge`, `GET /api/holds`, `POST /api/maint/work-orders`·`/work-records`(만들기)·`…/checks/{seq}`·`…/parts`·`…/check`, `GET·PATCH /api/maint/pm-records/{id}`·`…/confirm`, `POST /api/reports/daily/{date}/revise`, `GET /api/documents/revisions/{id}`, `GET /api/internal-docs`·`/{doc_no}`, `GET·POST /api/inspection/instructions`·`…/start`, `POST /api/inspection/cmm-imports`(올리기), `GET /api/quality/cpk`·`/defects`, `GET /api/inventory/{no}/txns`, `POST /api/raw-lots`(원자재 입고), `GET /api/shipments/candidates`·`/{no}`, `PUT·DELETE /api/shipments/{no}/lines/{lot}`, `POST /api/shipments/{no}/confirm`, `GET /api/tools/{id}/changes`, `GET /api/codes`·`/dataset`·`/sim/clock`·`/admin/retention`, `POST /api/sim/snapshot`. 서버끼리: `/api/ingest/*`, `/api/assistant/tools·drafts·notifications/*` (서비스 키).

@@ -9,13 +9,13 @@ from backend.llm import think as THINK    # Qwen "깊게 생각" 버튼의 요�
 ROOT = Path(__file__).resolve().parent.parent   # 11_automotive/assistant — .env를 읽는 곳
 # [11_automotive 이식 2026-10-16] 원본은 ROOT/simulator·참고문서/…를 읽었다. 이 폴더에서는 한 칸 위(11_automotive)의 생성기·가상사내문서를 본다
 PROJECT_ROOT = ROOT.parent
-SIM_OUT = PROJECT_ROOT / "생성기" / "out"
-SIM_MASTERS = PROJECT_ROOT / "생성기" / "masters"
+SIM_OUT = PROJECT_ROOT / "데이터생성기" / "out"
+SIM_MASTERS = PROJECT_ROOT / "데이터생성기" / "masters"
 DOCS_DIR = PROJECT_ROOT / "가상사내문서"
 EXPECTED_DOC_FILES = 8  # 용어집 + DOC-01~07 (ai-operations-assistant 규칙 3.1)
 REFERENCE_AT = "2026-10-01T08:00:00+09:00"  # 시연 기준 시각 (가상 데이터 마지막 날 다음 교대 시작)
 DATA_LABEL = "가상 운영 데이터"
-SIM_CONFIG = PROJECT_ROOT / "생성기" / "config.json"   # [11_automotive 이식 2026-10-16]
+SIM_CONFIG = PROJECT_ROOT / "데이터생성기" / "config.json"   # [11_automotive 이식 2026-10-16]
 
 
 def targets() -> dict[str, int]:

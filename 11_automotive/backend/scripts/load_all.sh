@@ -2,7 +2,7 @@
 # 빈 DB 하나에 스키마 → 계정 권한 → 생성기 데이터(기준 정보 + 9월) → 사내 문서 조각 → (개발·시연 비밀번호) → 점검 → (센서)
 # 쓰는 법 (Git Bash·Linux·Docker 안 모두):
 #   PGHOST=localhost PGPORT=5432 PGUSER=mom_owner PGPASSWORD=… PGDATABASE=mom \
-#   GEN_DIR=../생성기 DOCS_DIR=.. \
+#   GEN_DIR=../데이터생성기 DOCS_DIR=.. \
 #   MOM_APP_DB_PASSWORD=… MOM_AI_DB_PASSWORD=… [MOM_DEMO_PASSWORD=…] ./scripts/load_all.sh [--sensor] [--realtime] [--keep]
 #   --sensor   센서 CSV(9월 약 98만 행, 약 15초)도 넣음 — 기본은 뺌 (Supabase 무료 한도를 보고 정함)
 #   --realtime 10/1 리허설 기록(out_realtime)도 붙임 (SIM-03을 누르면 사라짐)

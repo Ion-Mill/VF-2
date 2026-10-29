@@ -13,11 +13,11 @@ data
 gemini
 docs
 backend/tests
-# 생성기/out 은 비서가 읽는다(알람 기준·기록, assistant/backend/repositories/csv_repo.py) — 비서가 안 쓰는 센서 원본(53MB)만 뺀다 (2026-10-25)
-생성기/out/sensor_sample.csv
-생성기/out_video
-생성기/out_realtime
-생성기/out_realtime_video
-생성기/out_live
+# 데이터생성기/out 은 비서가 읽는다(알람 기준·기록, assistant/backend/repositories/csv_repo.py) — 비서가 안 쓰는 센서 원본(53MB)만 뺀다 (2026-10-25)
+데이터생성기/out/sensor_sample.csv
+데이터생성기/out_video
+데이터생성기/out_realtime
+데이터생성기/out_realtime_video
+데이터생성기/out_live
 **/*.mp4
 **/*.zip

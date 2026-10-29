@@ -131,7 +131,7 @@ def _base(nid, kind, at, **kw) -> dict:
             "needs_plan": bool(k.get("needs_plan")), "equipment_id": "", "process": "", "title": "", "sentence": "",
             "related": "", "records": [], "evidence": [], "links": [], "bundle": [], "over_24h": False,
             "rule_tag": None, "alarm_event_id": None, "group_key": nid, "data_label": DATA_LABEL,
-            "is_synthetic": True, **kw}  # 알림은 가상 운영 기록에서 만든다 (API명세서_v1 공통 규칙, 2026-10-11 P1)
+            "is_synthetic": True, **kw}  # 알림은 가상 운영 기록에서 만든다 (API명세서 공통 규칙, 2026-10-11 P1)
 
 
 def _alarm_notes(state: DemoState, now: datetime) -> list[dict]:
